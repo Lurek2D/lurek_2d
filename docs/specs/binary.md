@@ -263,29 +263,6 @@ This module is mostly self-contained inside the `Foundations` group. Cross-modul
 
 - `content/examples/binary.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_binary_unit.lua` (present)
-- Rust: `tests/rust/unit/binary_tests.rs`
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Evidence test | `tests/lua/evidence/test_binary_evidence.lua` |
-| Golden test | `tests/lua/golden/test_binary_golden.lua` |
-| Current artifact | `tests/artifacts/current/binary/binary_buffer_surface_snapshot.txt` |
-| Current artifact | `tests/artifacts/current/binary/binary_compression_msgpack_snapshot.txt` |
-| Current artifact | `tests/artifacts/current/binary/binary_compression_snapshot.txt` |
-| Current artifact | `tests/artifacts/current/binary/binary_encode_reference_values.txt` |
-| Current artifact | `tests/artifacts/current/binary/binary_hash_reference_values.txt` |
-| Current artifact | `tests/artifacts/current/binary/binary_low_level_buffers_trace.txt` |
-| Current artifact | `tests/artifacts/current/binary/binary_pack_roundtrip_snapshot.txt` |
-| Current artifact | `tests/artifacts/current/binary/binary_toml_roundtrip_snapshot.toml` |
-| Baseline artifact | `tests/artifacts/baselines/binary/binary_encode_reference_values.txt` |
-| Baseline artifact | `tests/artifacts/baselines/binary/binary_hash_reference_values.txt` |
-| Baseline artifact | `tests/artifacts/baselines/binary/binary_toml_roundtrip_snapshot.toml` |
-
 ## Architecture Links
 
 - Intentionally empty.

@@ -4,47 +4,6 @@
 
 Manages OS window lifecycles, displays, VSync syncs, and viewport scaling with native dialogs.
 
-## When To Use
-
-- Event-loop display data, staged window-management requests, and viewport conversion helpers work together so a project can reason about screen state without embedding platform-specific code in gameplay modules.
-- Fullscreen choices, placement, resizing, file-dialog support, and coordinate conversion matter because the window is both a presentation target and a user-facing operating-system object.
-- The module is useful for settings screens, startup configuration, tool windows, and any feature that needs to query or change how the engine occupies the desktop.
-
-## Minimal Example
-
-Example block: `lurek.window.getDimensions`
-
-```lua
-do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local w, h = lurek.window.getDimensions()
-    local pixel_w, pixel_h = lurek.window.getPixelDimensions()
-    local dpi = lurek.window.getDPIScale()
-    local title = lurek.window.getTitle()
-    lurek.log.info("window '" .. title .. "' dimensions = " .. w .. "x" .. h)
-    lurek.log.info("pixel size = " .. pixel_w .. "x" .. pixel_h .. " dpi=" .. dpi)
-end
-```
-
-## Common Patterns
-
-- Start with `lurek.window.close` when exploring this module.
-- Start with `lurek.window.flash` when exploring this module.
-- Start with `lurek.window.focus` when exploring this module.
-- Start with `lurek.window.fromPixels` when exploring this module.
-- Start with `lurek.window.getCurrentDisplay` when exploring this module.
-
-## API Reference
-
-- This page is the generated API reference for this module.
-
 ## Summary
 
 - The `window` module is the desktop-window control surface for users who need display selection, viewport scaling, mode changes, and OS-facing window behavior under one runtime API.
@@ -56,6 +15,10 @@ end
 - Read it as the owner of desktop-window policy and scaling behavior. Other modules render or process input within the window, but `window` decides how that host surface is configured and managed.
 
 This module primarily collaborates with `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
+
+## API Reference
+
+- This page is the generated API reference for this module.
 
 ## Functions
 
@@ -71,13 +34,6 @@ lurek.window.close()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     -- Call lurek.window.close() to programmatically end the session, e.g. from a Quit button.
     -- Safe to query the function exists before calling it in a headless test context.
@@ -103,19 +59,12 @@ lurek.window.flash()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.window.setDisplay(0)
     lurek.window.flash()
     lurek.window.requestAttention()
-    example_print_log("display orientation:", lurek.window.getDisplayOrientation())
-    example_print_log("system theme:", lurek.window.getSystemTheme())
+    lurek.log.info(tostring("display orientation:") .. " " .. tostring(lurek.window.getDisplayOrientation()))
+    lurek.log.info(tostring("system theme:") .. " " .. tostring(lurek.window.getSystemTheme()))
 end
 ```
 
@@ -133,13 +82,6 @@ lurek.window.focus()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local before = lurek.window.hasFocus()
     lurek.window.focus()
@@ -176,13 +118,6 @@ lurek.window.fromPixels(value)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local logical = lurek.window.fromPixels(200)
     local pixels = lurek.window.toPixels(100)
@@ -212,20 +147,13 @@ lurek.window.getCurrentDisplay()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local count = lurek.window.getDisplayCount()
-    example_print_log("display count:", count)
+    lurek.log.info(tostring("display count:") .. " " .. tostring(count))
     local current = lurek.window.getCurrentDisplay()
-    example_print_log("current display index:", current)
+    lurek.log.info(tostring("current display index:") .. " " .. tostring(current))
     local name = lurek.window.getDisplayName(current)
-    example_print_log("display name:", name)
+    lurek.log.info(tostring("display name:") .. " " .. tostring(name))
 end
 ```
 
@@ -249,13 +177,6 @@ lurek.window.getDPIScale()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local s = lurek.window.getDPIScale()
     local native = lurek.window.getNativeDPIScale()
@@ -292,19 +213,12 @@ lurek.window.getDesktopDimensions(display)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dw, dh = lurek.window.getDesktopDimensions()
-    example_print_log("desktop resolution:", dw, dh)
+    lurek.log.info(tostring("desktop resolution:") .. " " .. tostring(dw) .. " " .. tostring(dh))
     local displays = lurek.window.getDisplays()
     local d = displays[1] or { index = -1, name = "none", width = 0, height = 0, scale = 0 }
-    example_print_log("display", d.index, d.name, d.width .. "x" .. d.height, "scale:", d.scale)
+    lurek.log.info(tostring("display") .. " " .. tostring(d.index) .. " " .. tostring(d.name) .. " " .. tostring(d.width .. "x" .. d.height) .. " " .. tostring("scale:") .. " " .. tostring(d.scale))
 end
 ```
 
@@ -329,13 +243,6 @@ lurek.window.getDimensions()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local w, h = lurek.window.getDimensions()
     local pixel_w, pixel_h = lurek.window.getPixelDimensions()
@@ -366,20 +273,13 @@ lurek.window.getDisplayCount()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local count = lurek.window.getDisplayCount()
-    example_print_log("display count:", count)
+    lurek.log.info(tostring("display count:") .. " " .. tostring(count))
     local current = lurek.window.getCurrentDisplay()
-    example_print_log("current display index:", current)
+    lurek.log.info(tostring("current display index:") .. " " .. tostring(current))
     local name = lurek.window.getDisplayName(current)
-    example_print_log("display name:", name)
+    lurek.log.info(tostring("display name:") .. " " .. tostring(name))
 end
 ```
 
@@ -409,20 +309,13 @@ lurek.window.getDisplayName(display)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local count = lurek.window.getDisplayCount()
-    example_print_log("display count:", count)
+    lurek.log.info(tostring("display count:") .. " " .. tostring(count))
     local current = lurek.window.getCurrentDisplay()
-    example_print_log("current display index:", current)
+    lurek.log.info(tostring("current display index:") .. " " .. tostring(current))
     local name = lurek.window.getDisplayName(current)
-    example_print_log("display name:", name)
+    lurek.log.info(tostring("display name:") .. " " .. tostring(name))
 end
 ```
 
@@ -446,19 +339,12 @@ lurek.window.getDisplayOrientation()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.window.setDisplay(0)
     lurek.window.flash()
     lurek.window.requestAttention()
-    example_print_log("display orientation:", lurek.window.getDisplayOrientation())
-    example_print_log("system theme:", lurek.window.getSystemTheme())
+    lurek.log.info(tostring("display orientation:") .. " " .. tostring(lurek.window.getDisplayOrientation()))
+    lurek.log.info(tostring("system theme:") .. " " .. tostring(lurek.window.getSystemTheme()))
 end
 ```
 
@@ -482,19 +368,12 @@ lurek.window.getDisplays()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dw, dh = lurek.window.getDesktopDimensions()
-    example_print_log("desktop resolution:", dw, dh)
+    lurek.log.info(tostring("desktop resolution:") .. " " .. tostring(dw) .. " " .. tostring(dh))
     local displays = lurek.window.getDisplays()
     local d = displays[1] or { index = -1, name = "none", width = 0, height = 0, scale = 0 }
-    example_print_log("display", d.index, d.name, d.width .. "x" .. d.height, "scale:", d.scale)
+    lurek.log.info(tostring("display") .. " " .. tostring(d.index) .. " " .. tostring(d.name) .. " " .. tostring(d.width .. "x" .. d.height) .. " " .. tostring("scale:") .. " " .. tostring(d.scale))
 end
 ```
 
@@ -518,13 +397,6 @@ lurek.window.getFullscreen()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local enabled, fsType = lurek.window.getFullscreen()
     local flag = lurek.window.isFullscreen()
@@ -554,13 +426,6 @@ lurek.window.getFullscreenModes()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local modes = lurek.window.getFullscreenModes()
     local m = modes[1] or { width = 0, height = 0, refreshRate = 0 }
@@ -591,13 +456,6 @@ lurek.window.getGameHeight()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local gw = lurek.window.getGameWidth()
     local gh = lurek.window.getGameHeight()
@@ -627,13 +485,6 @@ lurek.window.getGameWidth()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local gw = lurek.window.getGameWidth()
     local gh = lurek.window.getGameHeight()
@@ -663,13 +514,6 @@ lurek.window.getHeight()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local w = lurek.window.getWidth()
     local h = lurek.window.getHeight()
@@ -702,13 +546,6 @@ lurek.window.getMode()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local w, h, flags = lurek.window.getMode()
     local title = lurek.window.getTitle()
@@ -739,13 +576,6 @@ lurek.window.getNativeDPIScale()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local s = lurek.window.getNativeDPIScale()
     local runtime = lurek.window.getDPIScale()
@@ -776,13 +606,6 @@ lurek.window.getPixelDimensions()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pw, ph = lurek.window.getPixelDimensions()
     local lw, lh = lurek.window.getDimensions()
@@ -813,13 +636,6 @@ lurek.window.getPosition()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local x, y = lurek.window.getPosition()
     local w, h = lurek.window.getDimensions()
@@ -853,13 +669,6 @@ lurek.window.getSafeArea()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sx, sy, sw, sh = lurek.window.getSafeArea()
     local w, h = lurek.window.getDimensions()
@@ -890,13 +699,6 @@ lurek.window.getScaleInfo()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.window.setScaleMode("letterbox")
     local mode = lurek.window.getScaleMode()
@@ -927,13 +729,6 @@ lurek.window.getScaleMode()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.window.setScaleMode("letterbox")
     local mode = lurek.window.getScaleMode()
@@ -964,19 +759,12 @@ lurek.window.getSystemTheme()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.window.setDisplay(0)
     lurek.window.flash()
     lurek.window.requestAttention()
-    example_print_log("display orientation:", lurek.window.getDisplayOrientation())
-    example_print_log("system theme:", lurek.window.getSystemTheme())
+    lurek.log.info(tostring("display orientation:") .. " " .. tostring(lurek.window.getDisplayOrientation()))
+    lurek.log.info(tostring("system theme:") .. " " .. tostring(lurek.window.getSystemTheme()))
 end
 ```
 
@@ -1000,13 +788,6 @@ lurek.window.getTitle()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local title = lurek.window.getTitle()
     local has_focus = lurek.window.hasFocus()
@@ -1036,20 +817,13 @@ lurek.window.getVSync()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.window.setVSync(1)
-    example_print_log("vsync:", lurek.window.getVSync())
+    lurek.log.info(tostring("vsync:") .. " " .. tostring(lurek.window.getVSync()))
     lurek.window.setVSync(0)
-    example_print_log("vsync off:", lurek.window.getVSync())
+    lurek.log.info(tostring("vsync off:") .. " " .. tostring(lurek.window.getVSync()))
     lurek.window.setVSync(-1)
-    example_print_log("adaptive vsync:", lurek.window.getVSync())
+    lurek.log.info(tostring("adaptive vsync:") .. " " .. tostring(lurek.window.getVSync()))
 end
 ```
 
@@ -1073,13 +847,6 @@ lurek.window.getWidth()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local w = lurek.window.getWidth()
     local h = lurek.window.getHeight()
@@ -1110,13 +877,6 @@ lurek.window.hasFocus()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local before = lurek.window.hasFocus()
     lurek.window.focus()
@@ -1147,13 +907,6 @@ lurek.window.hasMouseFocus()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local v = lurek.window.hasMouseFocus()
     local cursor_focus = lurek.window.cursor.hasFocus()
@@ -1183,13 +936,6 @@ lurek.window.isFullscreen()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local v = lurek.window.isFullscreen()
     local enabled, mode = lurek.window.getFullscreen()
@@ -1219,13 +965,6 @@ lurek.window.isHighDPIAllowed()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local v = lurek.window.isHighDPIAllowed()
     local runtime = lurek.window.getDPIScale()
@@ -1255,13 +994,6 @@ lurek.window.isMaximized()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.window.maximize()
     local maximized = lurek.window.isMaximized()
@@ -1292,13 +1024,6 @@ lurek.window.isMinimized()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.window.minimize()
     local minimized = lurek.window.isMinimized()
@@ -1329,13 +1054,6 @@ lurek.window.isOpen()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local open = lurek.window.isOpen()
     local visible = lurek.window.isVisible()
@@ -1366,13 +1084,6 @@ lurek.window.isResizable()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local resizable = lurek.window.isResizable()
     local open = lurek.window.isOpen()
@@ -1403,13 +1114,6 @@ lurek.window.isVisible()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local visible = lurek.window.isVisible()
     local open = lurek.window.isOpen()
@@ -1434,20 +1138,13 @@ lurek.window.maximize()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.window.maximize()
-    example_print_log("maximized:", lurek.window.isMaximized())
+    lurek.log.info(tostring("maximized:") .. " " .. tostring(lurek.window.isMaximized()))
     lurek.window.restore()
-    example_print_log("after restore:", lurek.window.isMaximized())
+    lurek.log.info(tostring("after restore:") .. " " .. tostring(lurek.window.isMaximized()))
     lurek.window.minimize()
-    example_print_log("minimized:", lurek.window.isMinimized())
+    lurek.log.info(tostring("minimized:") .. " " .. tostring(lurek.window.isMinimized()))
     lurek.window.restore()
 end
 ```
@@ -1466,20 +1163,13 @@ lurek.window.minimize()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.window.maximize()
-    example_print_log("maximized:", lurek.window.isMaximized())
+    lurek.log.info(tostring("maximized:") .. " " .. tostring(lurek.window.isMaximized()))
     lurek.window.restore()
-    example_print_log("after restore:", lurek.window.isMaximized())
+    lurek.log.info(tostring("after restore:") .. " " .. tostring(lurek.window.isMaximized()))
     lurek.window.minimize()
-    example_print_log("minimized:", lurek.window.isMinimized())
+    lurek.log.info(tostring("minimized:") .. " " .. tostring(lurek.window.isMinimized()))
     lurek.window.restore()
 end
 ```
@@ -1504,13 +1194,6 @@ lurek.window.onDpiChange(func)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local last_scale = 0
     lurek.window.onDpiChange(function(scale) last_scale = scale end)
@@ -1547,23 +1230,16 @@ lurek.window.openFileDialog(opts)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local opts = { title = "Select file", multiple = true }
     local interactive = lurek.runtime.getEnv("LUREK_RUN_INTERACTIVE_DIALOGS") == "1"
     if interactive then
         local files = lurek.window.openFileDialog(opts)
-        example_print_log("selected file count:", #files)
-        example_print_log("first file:", tostring(files[1]))
+        lurek.log.info(tostring("selected file count:") .. " " .. tostring(#files))
+        lurek.log.info(tostring("first file:") .. " " .. tostring(tostring(files[1])))
     else
-        example_print_log("set LUREK_RUN_INTERACTIVE_DIALOGS=1 to run the blocking file dialog example")
-        example_print_log("dialog title:", opts.title)
+        lurek.log.info(tostring("set LUREK_RUN_INTERACTIVE_DIALOGS=1 to run the blocking file dialog example"))
+        lurek.log.info(tostring("dialog title:") .. " " .. tostring(opts.title))
     end
 end
 ```
@@ -1588,13 +1264,6 @@ lurek.window.pollDpiChange()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local callback_hits = 0
     lurek.window.onDpiChange(function(_scale) callback_hits = callback_hits + 1 end)
@@ -1620,19 +1289,12 @@ lurek.window.requestAttention()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.window.setDisplay(0)
     lurek.window.flash()
     lurek.window.requestAttention()
-    example_print_log("display orientation:", lurek.window.getDisplayOrientation())
-    example_print_log("system theme:", lurek.window.getSystemTheme())
+    lurek.log.info(tostring("display orientation:") .. " " .. tostring(lurek.window.getDisplayOrientation()))
+    lurek.log.info(tostring("system theme:") .. " " .. tostring(lurek.window.getSystemTheme()))
 end
 ```
 
@@ -1650,20 +1312,13 @@ lurek.window.restore()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.window.maximize()
-    example_print_log("maximized:", lurek.window.isMaximized())
+    lurek.log.info(tostring("maximized:") .. " " .. tostring(lurek.window.isMaximized()))
     lurek.window.restore()
-    example_print_log("after restore:", lurek.window.isMaximized())
+    lurek.log.info(tostring("after restore:") .. " " .. tostring(lurek.window.isMaximized()))
     lurek.window.minimize()
-    example_print_log("minimized:", lurek.window.isMinimized())
+    lurek.log.info(tostring("minimized:") .. " " .. tostring(lurek.window.isMinimized()))
     lurek.window.restore()
 end
 ```
@@ -1688,19 +1343,12 @@ lurek.window.setDisplay(display)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.window.setDisplay(0)
     lurek.window.flash()
     lurek.window.requestAttention()
-    example_print_log("display orientation:", lurek.window.getDisplayOrientation())
-    example_print_log("system theme:", lurek.window.getSystemTheme())
+    lurek.log.info(tostring("display orientation:") .. " " .. tostring(lurek.window.getDisplayOrientation()))
+    lurek.log.info(tostring("system theme:") .. " " .. tostring(lurek.window.getSystemTheme()))
 end
 ```
 
@@ -1725,13 +1373,6 @@ lurek.window.setFullscreen(enabled, fstype)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local before_enabled, before_type = lurek.window.getFullscreen()
     lurek.window.setFullscreen(true, "desktop")
@@ -1764,13 +1405,6 @@ lurek.window.setIcon(path)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.window.setIcon("content/examples/assets/images/sample_icon.png")
     local title = lurek.window.getTitle()
@@ -1802,13 +1436,6 @@ lurek.window.setMode(w, h, flags)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local old_w, old_h, old_flags = lurek.window.getMode()
     lurek.window.setMode(1280, 720, { fullscreen = false, fullscreentype = "desktop", vsync = 1 })
@@ -1841,13 +1468,6 @@ lurek.window.setPosition(x, y)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local x, y = lurek.window.getPosition()
     lurek.window.setPosition(100, 100)
@@ -1879,13 +1499,6 @@ lurek.window.setScaleMode(mode)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local previous = lurek.window.getScaleMode()
     lurek.window.setScaleMode("letterbox")
@@ -1917,13 +1530,6 @@ lurek.window.setTitle(title)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local previous = lurek.window.getTitle()
     lurek.window.setTitle("My Game - Level 1")
@@ -1954,20 +1560,13 @@ lurek.window.setVSync(mode)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.window.setVSync(1)
-    example_print_log("vsync:", lurek.window.getVSync())
+    lurek.log.info(tostring("vsync:") .. " " .. tostring(lurek.window.getVSync()))
     lurek.window.setVSync(0)
-    example_print_log("vsync off:", lurek.window.getVSync())
+    lurek.log.info(tostring("vsync off:") .. " " .. tostring(lurek.window.getVSync()))
     lurek.window.setVSync(-1)
-    example_print_log("adaptive vsync:", lurek.window.getVSync())
+    lurek.log.info(tostring("adaptive vsync:") .. " " .. tostring(lurek.window.getVSync()))
 end
 ```
 
@@ -2000,13 +1599,6 @@ lurek.window.showMessageBox(title, message, box_type, btn_type)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local title = "Save?"
     local message = "Do you want to save before exit?"
@@ -2015,9 +1607,9 @@ do
     local interactive = lurek.runtime.getEnv("LUREK_RUN_INTERACTIVE_DIALOGS") == "1"
     if interactive then
         local result = lurek.window.showMessageBox(title, message, box_type, btn_type)
-        example_print_log("message box result:", result)
+        lurek.log.info(tostring("message box result:") .. " " .. tostring(result))
     else
-        example_print_log("set LUREK_RUN_INTERACTIVE_DIALOGS=1 to run the blocking message box example")
+        lurek.log.info(tostring("set LUREK_RUN_INTERACTIVE_DIALOGS=1 to run the blocking message box example"))
     end
 end
 ```
@@ -2048,13 +1640,6 @@ lurek.window.toPixels(value)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local logical = lurek.window.fromPixels(200)
     local pixels = lurek.window.toPixels(100)
@@ -2084,13 +1669,6 @@ lurek.window.windowConfig(opts)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local previous = lurek.window.getTitle()
     lurek.window.windowConfig({ title = "Configured Window", width = 1024, height = 768, fullscreen = false, vsync = 1, scaleMode = "letterbox" })

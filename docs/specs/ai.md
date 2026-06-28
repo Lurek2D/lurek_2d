@@ -769,25 +769,6 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 
 - `content/examples/ai.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_ai_unit.lua` (present)
-- Rust: `tests/rust/unit/ai_tests.rs`
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Evidence test | `tests/lua/evidence/test_ai_evidence.lua` |
-| Golden test | `tests/lua/golden/test_ai_golden.lua` |
-| Current artifact | `tests/artifacts/current/ai/ai_behavior_tree_debug.json` |
-| Current artifact | `tests/artifacts/current/ai/ai_blackboard_snapshot.json` |
-| Current artifact | `tests/artifacts/current/ai/ai_constructor_surface_snapshot.txt` |
-| Current artifact | `tests/artifacts/current/ai/ai_goap_plan_trace.json` |
-| Current artifact | `tests/artifacts/current/ai/ai_state_machine_transitions.txt` |
-| Current artifact | `tests/artifacts/current/ai/ai_utility_scorecard.json` |
-| Baseline artifact | `tests/artifacts/baselines/ai/ai_state_machine_transitions.txt` |
-
 ## Architecture Links
 
 - Intentionally empty.

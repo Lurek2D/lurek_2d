@@ -383,44 +383,6 @@ This module primarily collaborates with `procgen`. Its responsibility should sta
 
 - `content/examples/mapblock.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_mapblock_unit.lua` (present)
-- Rust: `tests/rust/unit/mapblock_tests.rs`
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Evidence test | `tests/lua/evidence/test_mapblock_evidence.lua` |
-| Golden test | `tests/lua/golden/test_mapblock_golden.lua` |
-| Current artifact | `tests/artifacts/current/mapblock/mapblock_detail_level0.png` |
-| Current artifact | `tests/artifacts/current/mapblock/mapblock_detail_level1.png` |
-| Current artifact | `tests/artifacts/current/mapblock/mapblock_edge_interior_constraints.png` |
-| Current artifact | `tests/artifacts/current/mapblock/mapblock_generation_timeline.gif` |
-| Current artifact | `tests/artifacts/current/mapblock/mapblock_macro_placement.png` |
-| Current artifact | `tests/artifacts/current/mapblock/mapblock_multilevel_layers.png` |
-| Current artifact | `tests/artifacts/current/mapblock/mapblock_result_contract_histogram.png` |
-| Current artifact | `tests/artifacts/current/mapblock/mapblock_script_pipeline_storyboard.png` |
-| Current artifact | `tests/artifacts/current/mapblock/mapblock_scripted_paint_diagnostics.png` |
-| Current artifact | `tests/artifacts/current/mapblock/mapblock_socket_constraints.png` |
-| Current artifact | `tests/artifacts/current/mapblock/mapblock_solver_footprints.png` |
-| Current artifact | `tests/artifacts/current/mapblock/mapblock_strategic_tactical_split.png` |
-| Current artifact | `tests/artifacts/current/mapblock/mapblock_transform_export.png` |
-| Current artifact | `tests/artifacts/current/mapblock/mapblock_two_level_cutaway.png` |
-| Current artifact | `tests/artifacts/current/mapblock/mapblock_two_stage_manifest.json` |
-| Baseline artifact | `tests/artifacts/baselines/mapblock/mapblock_edge_interior_constraints.png` |
-| Baseline artifact | `tests/artifacts/baselines/mapblock/mapblock_generation_timeline.gif` |
-| Baseline artifact | `tests/artifacts/baselines/mapblock/mapblock_multilevel_layers.png` |
-| Baseline artifact | `tests/artifacts/baselines/mapblock/mapblock_result_contract_histogram.png` |
-| Baseline artifact | `tests/artifacts/baselines/mapblock/mapblock_script_pipeline_storyboard.png` |
-| Baseline artifact | `tests/artifacts/baselines/mapblock/mapblock_scripted_paint_diagnostics.png` |
-| Baseline artifact | `tests/artifacts/baselines/mapblock/mapblock_socket_constraints.png` |
-| Baseline artifact | `tests/artifacts/baselines/mapblock/mapblock_solver_footprints.png` |
-| Baseline artifact | `tests/artifacts/baselines/mapblock/mapblock_strategic_tactical_split.png` |
-| Baseline artifact | `tests/artifacts/baselines/mapblock/mapblock_transform_export.png` |
-| Baseline artifact | `tests/artifacts/baselines/mapblock/mapblock_two_level_cutaway.png` |
-
 ## Architecture Links
 
 - Intentionally empty.

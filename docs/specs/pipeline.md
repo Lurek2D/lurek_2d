@@ -269,15 +269,6 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 - `content/examples/pipeline.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_pipeline_unit.lua` (present)
-- Rust: `tests/rust/unit/pipeline_tests.rs`
-
-## Evidence / Golden
-
-- No evidence or golden artifacts registered.
-
 ## Architecture Links
 
 - Intentionally empty.

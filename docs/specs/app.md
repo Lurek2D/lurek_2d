@@ -255,15 +255,6 @@ This module primarily collaborates with `event`, `filesystem`, `image`, `input`,
 
 - `content/examples/engine.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_engine_unit.lua` (present)
-- Rust: `tests/rust/unit/app_tests.rs`
-
-## Evidence / Golden
-
-- No evidence or golden artifacts registered.
-
 ## Architecture Links
 
 - Intentionally empty.

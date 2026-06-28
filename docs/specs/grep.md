@@ -183,15 +183,6 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 - `content/examples/grep.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_grep_unit.lua` (present)
-- Rust: `tests/rust/unit/grep_tests.rs`
-
-## Evidence / Golden
-
-- No evidence or golden artifacts registered.
-
 ## Architecture Links
 
 - Intentionally empty.

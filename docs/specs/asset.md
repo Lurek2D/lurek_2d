@@ -155,15 +155,6 @@ This module is mostly self-contained inside the `Feature Systems` group. Cross-m
 
 - `content/examples/asset.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_asset_unit.lua` (present)
-- Rust: `tests/rust/unit/asset_tests.rs`
-
-## Evidence / Golden
-
-- No evidence or golden artifacts registered.
-
 ## Architecture Links
 
 - Intentionally empty.

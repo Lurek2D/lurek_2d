@@ -344,43 +344,6 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 
 - `content/examples/particle.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_particle_unit.lua` (present)
-- Rust: `tests/rust/unit/particle_tests.rs`
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Evidence test | `tests/lua/evidence/test_particle_evidence.lua` |
-| Golden test | `tests/lua/golden/test_particle_golden.lua` |
-| Current artifact | `tests/artifacts/current/particle/particle_archetype_showcase.png` |
-| Current artifact | `tests/artifacts/current/particle/particle_attractor_field.gif` |
-| Current artifact | `tests/artifacts/current/particle/particle_bounds_bounce_box.gif` |
-| Current artifact | `tests/artifacts/current/particle/particle_control_state_timeline.gif` |
-| Current artifact | `tests/artifacts/current/particle/particle_emission_area_shapes.png` |
-| Current artifact | `tests/artifacts/current/particle/particle_lifecycle_chart.png` |
-| Current artifact | `tests/artifacts/current/particle/particle_paint_composite.png` |
-| Current artifact | `tests/artifacts/current/particle/particle_shader_visual_01_dissolve.png` |
-| Current artifact | `tests/artifacts/current/particle/particle_shader_visual_02_glow.png` |
-| Current artifact | `tests/artifacts/current/particle/particle_shader_visual_03_trail_tint.png` |
-| Current artifact | `tests/artifacts/current/particle/particle_shape_size_keyframes.png` |
-| Current artifact | `tests/artifacts/current/particle/particle_subemitter_death_burst.gif` |
-| Current artifact | `tests/artifacts/current/particle/particle_trail_ribbon_decay.gif` |
-| Current artifact | `tests/artifacts/current/particle/particle_velocity_burst.gif` |
-| Baseline artifact | `tests/artifacts/baselines/particle/particle_archetype_showcase.png` |
-| Baseline artifact | `tests/artifacts/baselines/particle/particle_attractor_field.gif` |
-| Baseline artifact | `tests/artifacts/baselines/particle/particle_bounds_bounce_box.gif` |
-| Baseline artifact | `tests/artifacts/baselines/particle/particle_control_state_timeline.gif` |
-| Baseline artifact | `tests/artifacts/baselines/particle/particle_emission_area_shapes.png` |
-| Baseline artifact | `tests/artifacts/baselines/particle/particle_lifecycle_chart.png` |
-| Baseline artifact | `tests/artifacts/baselines/particle/particle_paint_composite.png` |
-| Baseline artifact | `tests/artifacts/baselines/particle/particle_shape_size_keyframes.png` |
-| Baseline artifact | `tests/artifacts/baselines/particle/particle_subemitter_death_burst.gif` |
-| Baseline artifact | `tests/artifacts/baselines/particle/particle_trail_ribbon_decay.gif` |
-| Baseline artifact | `tests/artifacts/baselines/particle/particle_velocity_burst.gif` |
-
 ## Architecture Links
 
 - `docs/architecture/module-scope-boundaries.md`

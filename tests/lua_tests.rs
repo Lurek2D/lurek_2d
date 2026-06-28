@@ -1530,11 +1530,6 @@ fn lua_unit_mapblock_unit() {
 }
 
 #[test]
-fn lua_unit_midi_unit() {
-    run_lua_test("unit/test_midi_unit.lua");
-}
-
-#[test]
 fn lua_unit_minimap_unit() {
     run_lua_test("unit/test_minimap_unit.lua");
 }

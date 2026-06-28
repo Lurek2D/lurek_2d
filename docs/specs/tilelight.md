@@ -137,26 +137,6 @@ This module primarily collaborates with `tilefield`. Its responsibility should s
 
 - `content/examples/tilelight.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_tilelight_unit.lua` (present)
-- Rust: none detected.
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Evidence test | `tests/lua/evidence/test_tilelight_evidence.lua` |
-| Golden test | `tests/lua/golden/test_tilelight_golden.lua` |
-| Current artifact | `tests/artifacts/current/tilelight/tilelight_hex_sources_blockers.png` |
-| Current artifact | `tests/artifacts/current/tilelight/tilelight_multilevel_samples.txt` |
-| Current artifact | `tests/artifacts/current/tilelight/tilelight_multilevel_volume.png` |
-| Current artifact | `tests/artifacts/current/tilelight/tilelight_square_sources_blockers.png` |
-| Baseline artifact | `tests/artifacts/baselines/tilelight/tilelight_hex_sources_blockers.png` |
-| Baseline artifact | `tests/artifacts/baselines/tilelight/tilelight_multilevel_samples.txt` |
-| Baseline artifact | `tests/artifacts/baselines/tilelight/tilelight_multilevel_volume.png` |
-| Baseline artifact | `tests/artifacts/baselines/tilelight/tilelight_square_sources_blockers.png` |
-
 ## Architecture Links
 
 - Intentionally empty.

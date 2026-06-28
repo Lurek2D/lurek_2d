@@ -307,44 +307,6 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 
 - `content/examples/compute.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_compute_unit.lua` (present)
-- Rust: `tests/rust/unit/compute_tests.rs`
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Evidence test | `tests/lua/evidence/test_compute_evidence.lua` |
-| Golden test | `tests/lua/golden/test_compute_golden.lua` |
-| Current artifact | `tests/artifacts/current/compute/compute_affine_transform_snapshot.txt` |
-| Current artifact | `tests/artifacts/current/compute/compute_array_constructor_snapshot.txt` |
-| Current artifact | `tests/artifacts/current/compute/compute_covariance_projection_trace.txt` |
-| Current artifact | `tests/artifacts/current/compute/compute_feature_engineering_trace.txt` |
-| Current artifact | `tests/artifacts/current/compute/compute_fft_roundtrip_snapshot.txt` |
-| Current artifact | `tests/artifacts/current/compute/compute_gaussian_kernel_heatmap.png` |
-| Current artifact | `tests/artifacts/current/compute/compute_linear_model_solve_trace.txt` |
-| Current artifact | `tests/artifacts/current/compute/compute_ndarray_fill_summary.txt` |
-| Current artifact | `tests/artifacts/current/compute/compute_parallel_threshold_trace.txt` |
-| Current artifact | `tests/artifacts/current/compute/compute_range_rotation_snapshot.txt` |
-| Current artifact | `tests/artifacts/current/compute/compute_region_morphology_trace.txt` |
-| Current artifact | `tests/artifacts/current/compute/compute_signal_analysis_pipeline.txt` |
-| Current artifact | `tests/artifacts/current/compute/compute_spatial_segmentation_atlas.png` |
-| Baseline artifact | `tests/artifacts/baselines/compute/compute_affine_transform_snapshot.txt` |
-| Baseline artifact | `tests/artifacts/baselines/compute/compute_array_constructor_snapshot.txt` |
-| Baseline artifact | `tests/artifacts/baselines/compute/compute_covariance_projection_trace.txt` |
-| Baseline artifact | `tests/artifacts/baselines/compute/compute_feature_engineering_trace.txt` |
-| Baseline artifact | `tests/artifacts/baselines/compute/compute_fft_roundtrip_snapshot.txt` |
-| Baseline artifact | `tests/artifacts/baselines/compute/compute_gaussian_kernel_heatmap.png` |
-| Baseline artifact | `tests/artifacts/baselines/compute/compute_linear_model_solve_trace.txt` |
-| Baseline artifact | `tests/artifacts/baselines/compute/compute_ndarray_fill_summary.txt` |
-| Baseline artifact | `tests/artifacts/baselines/compute/compute_parallel_threshold_trace.txt` |
-| Baseline artifact | `tests/artifacts/baselines/compute/compute_range_rotation_snapshot.txt` |
-| Baseline artifact | `tests/artifacts/baselines/compute/compute_region_morphology_trace.txt` |
-| Baseline artifact | `tests/artifacts/baselines/compute/compute_signal_analysis_pipeline.txt` |
-| Baseline artifact | `tests/artifacts/baselines/compute/compute_spatial_segmentation_atlas.png` |
-
 ## Architecture Links
 
 - Intentionally empty.

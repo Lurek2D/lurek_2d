@@ -130,30 +130,6 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 - `content/examples/cinematic.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_cinematic_unit.lua` (present)
-- Rust: `src/cinematic/cinematic_legacy.rs`
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Evidence test | `tests/lua/evidence/test_cinematic_evidence.lua` |
-| Golden test | `tests/lua/golden/test_cinematic_golden.lua` |
-| Current artifact | `tests/artifacts/current/cinematic/cinematic_completion_controls.png` |
-| Current artifact | `tests/artifacts/current/cinematic/cinematic_labels_branching.png` |
-| Current artifact | `tests/artifacts/current/cinematic/cinematic_legacy_cut_list.png` |
-| Current artifact | `tests/artifacts/current/cinematic/cinematic_multitrack_schedule.png` |
-| Current artifact | `tests/artifacts/current/cinematic/cinematic_playhead_controls.gif` |
-| Current artifact | `tests/artifacts/current/cinematic/cinematic_signal_audio_sequence.png` |
-| Baseline artifact | `tests/artifacts/baselines/cinematic/cinematic_completion_controls.png` |
-| Baseline artifact | `tests/artifacts/baselines/cinematic/cinematic_labels_branching.png` |
-| Baseline artifact | `tests/artifacts/baselines/cinematic/cinematic_legacy_cut_list.png` |
-| Baseline artifact | `tests/artifacts/baselines/cinematic/cinematic_multitrack_schedule.png` |
-| Baseline artifact | `tests/artifacts/baselines/cinematic/cinematic_playhead_controls.gif` |
-| Baseline artifact | `tests/artifacts/baselines/cinematic/cinematic_signal_audio_sequence.png` |
-
 ## Architecture Links
 
 - Intentionally empty.

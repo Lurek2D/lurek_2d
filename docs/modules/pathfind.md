@@ -2,54 +2,7 @@
 
 ## Purpose
 
-Navigates grids, hex layouts, isometric maps, navmeshes, and province graphs.
-
-## When To Use
-
-- It supports several spatial models at once, including weighted grids, hex and isometric spaces, province-style graphs, influence fields, and other routing abstractions, so different worlds can still share one navigation family.
-- A* is only part of the surface. The module also covers bidirectional search, Jump Point Search, hierarchical routing, graph travel, flow fields, influence maps, steering, local avoidance, and reachability-style analysis under one subsystem.
-- This breadth matters because movement questions differ dramatically across features. Some systems need one precise route, others need shared guidance, tactical pressure, move ranges, or background jobs for expensive searches.
-
-## Minimal Example
-
-Example block: `lurek.pathfind.graphRoute`
-
-```lua
-do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-
-    local edges = {
-        { from = 1, to = 2 },
-        { from = 2, to = 3 },
-        { from = 1, to = 4 },
-        { from = 4, to = 3 },
-    }
-    local route = lurek.pathfind.graphRoute(edges, 1, 3, {
-        algorithm = "dijkstra",
-        cost = function(from, to)
-            if (from == 1 and to == 2) or (from == 2 and to == 3) then
-                return 12
-            end
-            return 1
-        end,
-    })
-    pathfind_log("graph route hops=" .. tostring(route and #route or 0) .. " via=" .. tostring(route and route[2]))
-end
-```
-
-## Common Patterns
-
-- Start with `lurek.pathfind.cancelAsyncPath` when exploring this module.
-- Start with `lurek.pathfind.clearAsyncPaths` when exploring this module.
-- Start with `lurek.pathfind.getAsyncPendingCount` when exploring this module.
-- Start with `lurek.pathfind.getThreadCount` when exploring this module.
-- Start with `lurek.pathfind.graphConnected` when exploring this module.
-
-## API Reference
-
-- This page is the generated API reference for this module.
+Navigates grids, hex layouts, isometric maps, navmeshes, and province graphs. - Employs A*, JPS, bidirectional search, HPA*, and async thread pools. - Uses Dijkstra flow fields, tactical influence maps, steering stacks, context steering, ORCA-style local avoidance, and debug visual overlays.
 
 ## Summary
 
@@ -74,6 +27,10 @@ end
 - Read `pathfind` as the reusable navigation and local-movement analysis layer of the engine, not as an animation or physics integration system.
 
 This module primarily collaborates with `flownet`, `image`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
+## API Reference
+
+- This page is the generated API reference for this module.
 
 ## Functions
 
@@ -101,16 +58,6 @@ lurek.pathfind.cancelAsyncPath(request_id)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.pathfind.clearAsyncPaths()
     local nav = lurek.pathfind.newNavGrid(24, 24)
@@ -121,7 +68,7 @@ do
         goal_y = 24,
         stream_budget = 4,
     })
-    example_print_log("cancelled = " .. tostring(lurek.pathfind.cancelAsyncPath(request_id)))
+    lurek.log.info("cancelled = " .. tostring(lurek.pathfind.cancelAsyncPath(request_id)))
 end
 ```
 
@@ -139,16 +86,6 @@ lurek.pathfind.clearAsyncPaths()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.pathfind.clearAsyncPaths()
     local nav = lurek.pathfind.newNavGrid(12, 12)
@@ -160,7 +97,7 @@ do
         stream_budget = 2,
     })
     lurek.pathfind.clearAsyncPaths()
-    example_print_log("pending = " .. tostring(lurek.pathfind.getAsyncPendingCount()))
+    lurek.log.info("pending = " .. tostring(lurek.pathfind.getAsyncPendingCount()))
 end
 ```
 
@@ -184,16 +121,6 @@ lurek.pathfind.getAsyncPendingCount()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.pathfind.clearAsyncPaths()
     local before = lurek.pathfind.getAsyncPendingCount()
@@ -206,8 +133,8 @@ do
         stream_budget = 2,
     })
     local after = lurek.pathfind.getAsyncPendingCount()
-    example_print_log("pending_before = " .. tostring(before))
-    example_print_log("pending_after = " .. tostring(after))
+    lurek.log.info("pending_before = " .. tostring(before))
+    lurek.log.info("pending_after = " .. tostring(after))
     lurek.pathfind.clearAsyncPaths()
 end
 ```
@@ -232,25 +159,15 @@ lurek.pathfind.getThreadCount()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tc = lurek.pathfind.getThreadCount()
     local nav = lurek.pathfind.newNavGrid(8, 8)
     nav:setBlocked(4, 4, true)
     local pending = lurek.pathfind.getAsyncPendingCount()
 
-    pathfind_log("thread count = " .. tc)
-    pathfind_log("pending async jobs = " .. pending)
-    pathfind_log("sample grid blocked = " .. tostring(nav:isBlocked(4, 4)))
+    lurek.log.info("thread count = " .. tc)
+    lurek.log.info("pending async jobs = " .. pending)
+    lurek.log.info("sample grid blocked = " .. tostring(nav:isBlocked(4, 4)))
 end
 ```
 
@@ -283,9 +200,6 @@ lurek.pathfind.graphConnected(edges, from, to, opts)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
 
     local edges = {
         { from = 1, to = 2 },
@@ -294,7 +208,7 @@ do
     local forward = lurek.pathfind.graphConnected(edges, 1, 3, { directed = true })
     local backward_directed = lurek.pathfind.graphConnected(edges, 3, 1, { directed = true })
     local backward_undirected = lurek.pathfind.graphConnected(edges, 3, 1)
-    pathfind_log("graph connected forward=" .. tostring(forward) .. " directed_back=" .. tostring(backward_directed) .. " undirected_back=" .. tostring(backward_undirected))
+    lurek.log.info("graph connected forward=" .. tostring(forward) .. " directed_back=" .. tostring(backward_directed) .. " undirected_back=" .. tostring(backward_undirected))
 end
 ```
 
@@ -326,9 +240,6 @@ lurek.pathfind.graphConnectedComponents(edges, nodes, opts)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
 
     local edges = {
         { from = 7, to = 8 },
@@ -338,7 +249,7 @@ do
     local components = lurek.pathfind.graphConnectedComponents(edges, { 7, 8, 9, 10, 20, 21 })
     local isolated = components[2] and components[2][1] or nil
     local largest = components[1] and #components[1] or 0
-    pathfind_log("graph components=" .. tostring(#components) .. " largest=" .. tostring(largest) .. " isolated=" .. tostring(isolated))
+    lurek.log.info("graph components=" .. tostring(#components) .. " largest=" .. tostring(largest) .. " isolated=" .. tostring(isolated))
 end
 ```
 
@@ -371,9 +282,6 @@ lurek.pathfind.graphRoute(edges, from, to, opts)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
 
     local edges = {
         { from = 1, to = 2 },
@@ -390,7 +298,7 @@ do
             return 1
         end,
     })
-    pathfind_log("graph route hops=" .. tostring(route and #route or 0) .. " via=" .. tostring(route and route[2]))
+    lurek.log.info("graph route hops=" .. tostring(route and #route or 0) .. " via=" .. tostring(route and route[2]))
 end
 ```
 
@@ -422,9 +330,6 @@ lurek.pathfind.graphRoutes(edges, requests, opts)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
 
     local edges = {
         { 1, 2 },
@@ -438,7 +343,7 @@ do
     })
     local first_len = routes[1] and #routes[1] or 0
     local third_len = routes[3] and #routes[3] or 0
-    pathfind_log("graph route batch first=" .. tostring(first_len) .. " third=" .. tostring(third_len) .. " second_nil=" .. tostring(routes[2] == nil))
+    lurek.log.info("graph route batch first=" .. tostring(first_len) .. " third=" .. tostring(third_len) .. " second_nil=" .. tostring(routes[2] == nil))
 end
 ```
 
@@ -468,21 +373,14 @@ lurek.pathfind.newContextSteering(slots)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local cs = lurek.pathfind.newContextSteering(8)
   cs:addSeekTarget(0, 0, 1.0)
   local slot_count = cs:slotCount()
   cs:addSeekTarget(256, 128, 1.0)
   local dx, dy = cs:evaluate(0, 0, 1, 0)
-  example_print_log("lurek.pathfind.newContextSteering: ok=" .. tostring(cs ~= nil))
-  example_print_log("lurek.pathfind.newContextSteering: dir=" .. tostring(dx) .. "," .. tostring(dy))
+  lurek.log.info("lurek.pathfind.newContextSteering: ok=" .. tostring(cs ~= nil))
+  lurek.log.info("lurek.pathfind.newContextSteering: dir=" .. tostring(dx) .. "," .. tostring(dy))
 end
 ```
 
@@ -512,16 +410,6 @@ lurek.pathfind.newFlowField(grid_ud)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
@@ -533,8 +421,8 @@ do
     local ff = lurek.pathfind.newFlowField(nav)
     ff:calculate(20, 10)
 
-    example_print_log("calculated = " .. tostring(ff:isCalculated()))
-    example_print_log("targets = " .. #ff:getTargets())
+    lurek.log.info("calculated = " .. tostring(ff:isCalculated()))
+    lurek.log.info("targets = " .. #ff:getTargets())
 end
 ```
 
@@ -565,16 +453,6 @@ lurek.pathfind.newGoalMap(width, height)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local gm = lurek.pathfind.newGoalMap(16, 16)
     gm:addSource(8, 8, 1)
@@ -582,9 +460,9 @@ do
     local ready = gm:isReady()
     local center_distance = gm:distanceAt(8, 8)
 
-    pathfind_log("goal map type = " .. gm:type())
-    pathfind_log("goal map ready = " .. tostring(ready))
-    pathfind_log("center distance = " .. center_distance)
+    lurek.log.info("goal map type = " .. gm:type())
+    lurek.log.info("goal map ready = " .. tostring(ready))
+    lurek.log.info("center distance = " .. center_distance)
 end
 ```
 
@@ -616,24 +494,14 @@ lurek.pathfind.newHexGrid(width, height, layout_str)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local hex = lurek.pathfind.newHexGrid(12, 10, "flat")
 
     hex:setBlocked(5, 5, true)
     hex:setBlocked(6, 5, true)
 
-    example_print_log("blocked_5_5 = " .. tostring(hex:isBlocked(5, 5)))
-    example_print_log("blocked_1_1 = " .. tostring(hex:isBlocked(1, 1)))
+    lurek.log.info("blocked_5_5 = " .. tostring(hex:isBlocked(5, 5)))
+    lurek.log.info("blocked_1_1 = " .. tostring(hex:isBlocked(1, 1)))
 end
 ```
 
@@ -664,9 +532,6 @@ lurek.pathfind.newHexGridFromField(field_ud, opts)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
 
     local field = lurek.tilefield.new({ width = 6, height = 6, topology = "hex" })
     field:setBlock(3, 3, 1, "move", true)
@@ -674,7 +539,7 @@ do
     local grid = lurek.pathfind.newHexGridFromField(field, { level = 1, channel = "move", layout = "flat" })
     local route = grid:findPath(1, 3, 6, 3) or {}
     local blocked = grid:isBlocked(3, 3)
-    pathfind_log("field hex route nodes=" .. tostring(#route) .. " blocked=" .. tostring(blocked))
+    lurek.log.info("field hex route nodes=" .. tostring(#route) .. " blocked=" .. tostring(blocked))
 end
 ```
 
@@ -706,21 +571,14 @@ lurek.pathfind.newInfluenceMap(w, h, cs)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local imap = lurek.pathfind.newInfluenceMap(32, 32, 16)
   imap:addLayer("debug")
   local map_width = imap:getWidth()
   imap:addLayer("danger")
   imap:setInfluence("danger", 4, 5, 0.9)
-  example_print_log("lurek.pathfind.newInfluenceMap: ok=" .. tostring(imap ~= nil))
-  example_print_log("lurek.pathfind.newInfluenceMap: width=" .. tostring(imap:getWidth()))
+  lurek.log.info("lurek.pathfind.newInfluenceMap: ok=" .. tostring(imap ~= nil))
+  lurek.log.info("lurek.pathfind.newInfluenceMap: width=" .. tostring(imap:getWidth()))
 end
 ```
 
@@ -751,15 +609,12 @@ lurek.pathfind.newIsoGrid(width, height)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
 
     local grid = lurek.pathfind.newIsoGrid(6, 5)
     grid:setBlocked(3, 3, true)
     local route = grid:findPath(1, 3, 6, 3) or {}
     local blocked = grid:isBlocked(3, 3)
-    pathfind_log("iso route nodes=" .. tostring(#route) .. " blocked=" .. tostring(blocked))
+    lurek.log.info("iso route nodes=" .. tostring(#route) .. " blocked=" .. tostring(blocked))
 end
 ```
 
@@ -790,16 +645,13 @@ lurek.pathfind.newIsoGridFromField(field_ud, opts)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
 
     local field = lurek.tilefield.new({ width = 6, height = 5, topology = "iso_square" })
     field:setBlock(3, 3, 1, "move", true)
     field:setCost(4, 3, 1, "move", 3)
     local grid = lurek.pathfind.newIsoGridFromField(field, { level = 1, channel = "move" })
     local route = grid:findPath(1, 3, 6, 3) or {}
-    pathfind_log("field iso route nodes=" .. tostring(#route) .. " cost=" .. tostring(grid:getCost(4, 3)))
+    lurek.log.info("field iso route nodes=" .. tostring(#route) .. " cost=" .. tostring(grid:getCost(4, 3)))
 end
 ```
 
@@ -830,16 +682,6 @@ lurek.pathfind.newJpsGrid(width, height)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local jps = lurek.pathfind.newJpsGrid(30, 30)
 
@@ -847,8 +689,8 @@ do
     jps:setBlocked(15, 11, true)
     jps:setBlocked(15, 12, true)
 
-    example_print_log("blocked_15_10 = " .. tostring(jps:isBlocked(15, 10)))
-    example_print_log("blocked_1_1 = " .. tostring(jps:isBlocked(1, 1)))
+    lurek.log.info("blocked_15_10 = " .. tostring(jps:isBlocked(15, 10)))
+    lurek.log.info("blocked_1_1 = " .. tostring(jps:isBlocked(1, 1)))
 end
 ```
 
@@ -879,16 +721,6 @@ lurek.pathfind.newNavGrid(width, height)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(50, 50)
     local w, h = nav:getDimensions()
@@ -896,9 +728,9 @@ do
     local chunk = nav:getChunkSize()
     local center_blocked = nav:isBlocked(25, 25)
 
-    pathfind_log("city nav dims = " .. w .. "x" .. h)
-    pathfind_log("default chunk = " .. chunk)
-    pathfind_log("market center blocked = " .. tostring(center_blocked))
+    lurek.log.info("city nav dims = " .. w .. "x" .. h)
+    lurek.log.info("default chunk = " .. chunk)
+    lurek.log.info("market center blocked = " .. tostring(center_blocked))
 end
 ```
 
@@ -929,23 +761,13 @@ lurek.pathfind.newNavGridFromField(field_ud, opts)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local field = lurek.tilefield.new({ width = 6, height = 6 })
     field:applyProfile(3, 3, 1, "wall")
     local grid = lurek.pathfind.newNavGridFromField(field, { level = 1, channel = "move" })
     local blocked = grid:isBlocked(3, 3)
     local width = grid:getWidth()
-    pathfind_log("field navgrid width=" .. width .. " blocked=" .. tostring(blocked))
+    lurek.log.info("field navgrid width=" .. width .. " blocked=" .. tostring(blocked))
 end
 ```
 
@@ -975,16 +797,13 @@ lurek.pathfind.newNavGridFromProvider(provider)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
     local provider = { width = 3, height = 2, blocked = { false, true, false, false, false, false }, costs = { 1, 4, 1, 1, 1, 1 } }
     local ok, value = pcall(function()
         local nav = lurek.pathfind.newNavGridFromProvider(provider)
         return nav:getCost(2, 1)
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -1016,16 +835,6 @@ lurek.pathfind.newNavGridFromTileMap(tm_ud, layer_index, blocked_table)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tm = lurek.tilemap.newTileMap(16, 16, 8)
     local layer_index = tm:addLayer("ground", 8, 8)
@@ -1035,9 +844,9 @@ do
 
     local ng = lurek.pathfind.newNavGridFromTileMap(tm, layer_index, { 2 })
 
-    example_print_log("dims = " .. ng:getWidth() .. "x" .. ng:getHeight())
-    example_print_log("blocked_3_3 = " .. tostring(ng:isBlocked(3, 3)))
-    example_print_log("blocked_4_3 = " .. tostring(ng:isBlocked(4, 3)))
+    lurek.log.info("dims = " .. ng:getWidth() .. "x" .. ng:getHeight())
+    lurek.log.info("blocked_3_3 = " .. tostring(ng:isBlocked(3, 3)))
+    lurek.log.info("blocked_4_3 = " .. tostring(ng:isBlocked(4, 3)))
 end
 ```
 
@@ -1061,16 +870,6 @@ lurek.pathfind.newNavMesh()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local mesh = lurek.pathfind.newNavMesh()
     local id1 = mesh:addPolygon({
@@ -1084,8 +883,8 @@ do
         { x = 150, y = 80 },
     })
 
-    example_print_log("polygons = " .. mesh:getPolygonCount())
-    example_print_log("ids = " .. id1 .. "," .. id2)
+    lurek.log.info("polygons = " .. mesh:getPolygonCount())
+    lurek.log.info("ids = " .. id1 .. "," .. id2)
 end
 ```
 
@@ -1115,19 +914,12 @@ lurek.pathfind.newORCASolver(time_horizon)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local orca = lurek.pathfind.newORCASolver(1.5)
   orca:addAgent(0, 0, 0.5, 3.0)
   local preview_count = orca:agentCount()
-  example_print_log("lurek.pathfind.newORCASolver: ok=" .. tostring(orca ~= nil))
-  example_print_log("lurek.pathfind.newORCASolver: agents=" .. tostring(orca:agentCount()))
+  lurek.log.info("lurek.pathfind.newORCASolver: ok=" .. tostring(orca ~= nil))
+  lurek.log.info("lurek.pathfind.newORCASolver: agents=" .. tostring(orca:agentCount()))
 end
 ```
 
@@ -1157,16 +949,6 @@ lurek.pathfind.newPathFlowField(grid_ud)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local grid = lurek.pathfind.newPathGrid(15, 15, 32)
     local aiff = lurek.pathfind.newPathFlowField(grid)
@@ -1174,9 +956,9 @@ do
     aiff:setGoal(10, 10)
 
     local gx, gy = aiff:getGoal()
-    example_print_log("dims = " .. aiff:getWidth() .. "x" .. aiff:getHeight())
-    example_print_log("has_goal = " .. tostring(aiff:hasGoal()))
-    example_print_log("goal = " .. gx .. "," .. gy)
+    lurek.log.info("dims = " .. aiff:getWidth() .. "x" .. aiff:getHeight())
+    lurek.log.info("has_goal = " .. tostring(aiff:hasGoal()))
+    lurek.log.info("goal = " .. gx .. "," .. gy)
 end
 ```
 
@@ -1208,16 +990,6 @@ lurek.pathfind.newPathGrid(w, h, cell_size)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local grid = lurek.pathfind.newPathGrid(20, 15, 32)
     grid:setWalkable(10, 8, false)
@@ -1226,9 +998,9 @@ do
     local cell_size = grid:getCellSize()
     local chokepoint_open = grid:isWalkable(10, 7)
 
-    pathfind_log("patrol grid = " .. width .. "x" .. height)
-    pathfind_log("patrol cell size = " .. cell_size)
-    pathfind_log("approach tile walkable = " .. tostring(chokepoint_open))
+    lurek.log.info("patrol grid = " .. width .. "x" .. height)
+    lurek.log.info("patrol cell size = " .. cell_size)
+    lurek.log.info("approach tile walkable = " .. tostring(chokepoint_open))
 end
 ```
 
@@ -1258,16 +1030,13 @@ lurek.pathfind.newPathGridFromProvider(provider)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
     local provider = { width = 3, height = 2, cellSize = 16, walkable = { true, false, true, true, true, true } }
     local ok, value = pcall(function()
         local grid = lurek.pathfind.newPathGridFromProvider(provider)
         return grid:getCellSize()
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -1297,16 +1066,6 @@ lurek.pathfind.newPathfinder(grid_ud)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(30, 30)
 
@@ -1319,11 +1078,11 @@ do
     local pf = lurek.pathfind.newPathfinder(nav)
     local path = pf:findPath(1, 12, 30, 12)
     if path then
-        example_print_log("steps = " .. #path)
-        example_print_log("first = " .. path[1].x .. "," .. path[1].y)
-        example_print_log("last = " .. path[#path].x .. "," .. path[#path].y)
+        lurek.log.info("steps = " .. #path)
+        lurek.log.info("first = " .. path[1].x .. "," .. path[1].y)
+        lurek.log.info("last = " .. path[#path].x .. "," .. path[#path].y)
     else
-        example_print_log("steps = 0")
+        lurek.log.info("steps = 0")
     end
 end
 ```
@@ -1348,20 +1107,13 @@ lurek.pathfind.newSteeringManager()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local steer = lurek.pathfind.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
   steer:addSeek(320, 180, 1.0)
-  example_print_log("lurek.pathfind.newSteeringManager: ok=" .. tostring(steer ~= nil))
-  example_print_log("lurek.pathfind.newSteeringManager: behaviors=" .. tostring(steer:getBehaviorCount()))
+  lurek.log.info("lurek.pathfind.newSteeringManager: ok=" .. tostring(steer ~= nil))
+  lurek.log.info("lurek.pathfind.newSteeringManager: behaviors=" .. tostring(steer:getBehaviorCount()))
 end
 ```
 
@@ -1385,16 +1137,6 @@ lurek.pathfind.pollAsyncPaths()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.pathfind.clearAsyncPaths()
     local nav = lurek.pathfind.newNavGrid(24, 24)
@@ -1416,8 +1158,8 @@ do
         end
         lurek.timer.sleep(0.001)
     end
-    example_print_log("request = " .. tostring(request_id))
-    example_print_log("events = " .. tostring(#seen))
+    lurek.log.info("request = " .. tostring(request_id))
+    lurek.log.info("events = " .. tostring(#seen))
 end
 ```
 
@@ -1447,16 +1189,6 @@ lurek.pathfind.rangeMap(opts)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local result = lurek.pathfind.rangeMap({
         width = 10,
@@ -1467,10 +1199,10 @@ do
         diagonal = true,
     })
 
-    example_print_log("dims = " .. result.width .. "x" .. result.height)
-    example_print_log("cells = " .. #result.cells)
+    lurek.log.info("dims = " .. result.width .. "x" .. result.height)
+    lurek.log.info("cells = " .. #result.cells)
     if #result.cells > 0 then
-        example_print_log("first = " .. result.cells[1].x .. "," .. result.cells[1].y .. "," .. result.cells[1].cost)
+        lurek.log.info("first = " .. result.cells[1].x .. "," .. result.cells[1].y .. "," .. result.cells[1].cost)
     end
 end
 ```
@@ -1502,23 +1234,13 @@ lurek.pathfind.rangeMapFromField(field_ud, opts)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local field = lurek.tilefield.new({ width = 6, height = 6 })
     field:setCost(2, 1, 1, "move", 2)
     local range = lurek.pathfind.rangeMapFromField(field, { origin = { x = 1, y = 1, z = 1 }, budget = 4 })
     local count = #range.cells
     local width = range.width
-    pathfind_log("field range width=" .. width .. " cells=" .. count)
+    lurek.log.info("field range width=" .. width .. " cells=" .. count)
 end
 ```
 
@@ -1542,16 +1264,6 @@ lurek.pathfind.setThreadCount(count)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local previous = lurek.pathfind.getThreadCount()
     local target = previous < 2 and 2 or previous
@@ -1560,9 +1272,9 @@ do
     local actual = lurek.pathfind.getThreadCount()
     local nav = lurek.pathfind.newNavGrid(6, 6)
 
-    pathfind_log("thread count target = " .. target)
-    pathfind_log("thread count actual = " .. actual)
-    pathfind_log("worker sample dims = " .. nav:getWidth() .. "x" .. nav:getHeight())
+    lurek.log.info("thread count target = " .. target)
+    lurek.log.info("thread count actual = " .. actual)
+    lurek.log.info("worker sample dims = " .. nav:getWidth() .. "x" .. nav:getHeight())
 end
 ```
 
@@ -1593,16 +1305,6 @@ lurek.pathfind.submitAsyncPath(grid_ud, opts)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.pathfind.clearAsyncPaths()
     local nav = lurek.pathfind.newNavGrid(24, 24)
@@ -1613,7 +1315,7 @@ do
         goal_y = 24,
         stream_budget = 4,
     })
-    example_print_log("request_id = " .. tostring(request_id))
+    lurek.log.info("request_id = " .. tostring(request_id))
 end
 ```
 
@@ -1680,16 +1382,6 @@ LAIFlowField:getDirection(x, y)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local grid = lurek.pathfind.newPathGrid(10, 10, 16)
     local aiff = lurek.pathfind.newPathFlowField(grid)
@@ -1697,8 +1389,8 @@ do
     aiff:setGoal(10, 10)
 
     local dx, dy = aiff:getDirection(1, 1)
-    example_print_log("dir = " .. dx .. "," .. dy)
-    example_print_log("distance = " .. aiff:getDistance(1, 1))
+    lurek.log.info("dir = " .. dx .. "," .. dy)
+    lurek.log.info("distance = " .. aiff:getDistance(1, 1))
 end
 ```
 
@@ -1729,16 +1421,6 @@ LAIFlowField:getDistance(x, y)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local grid = lurek.pathfind.newPathGrid(10, 10, 16)
     local aiff = lurek.pathfind.newPathFlowField(grid)
@@ -1746,8 +1428,8 @@ do
     aiff:setGoal(10, 10)
 
     local dx, dy = aiff:getDirection(1, 1)
-    example_print_log("dir = " .. dx .. "," .. dy)
-    example_print_log("distance = " .. aiff:getDistance(1, 1))
+    lurek.log.info("dir = " .. dx .. "," .. dy)
+    lurek.log.info("distance = " .. aiff:getDistance(1, 1))
 end
 ```
 
@@ -1772,16 +1454,6 @@ LAIFlowField:getGoal()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local grid = lurek.pathfind.newPathGrid(15, 15, 32)
     local aiff = lurek.pathfind.newPathFlowField(grid)
@@ -1789,8 +1461,8 @@ do
     aiff:setGoal(10, 10)
 
     local gx, gy = aiff:getGoal()
-    example_print_log("goal = " .. gx .. "," .. gy)
-    example_print_log("has_goal = " .. tostring(aiff:hasGoal()))
+    lurek.log.info("goal = " .. gx .. "," .. gy)
+    lurek.log.info("has_goal = " .. tostring(aiff:hasGoal()))
 end
 ```
 
@@ -1814,24 +1486,14 @@ LAIFlowField:getHeight()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pg = lurek.pathfind.newPathGrid(32, 32, 1)
     local ff = lurek.pathfind.newPathFlowField(pg)
 
     ff:setGoal(16, 16)
 
-    example_print_log("dims = " .. ff:getWidth() .. "x" .. ff:getHeight())
-    example_print_log("has_goal = " .. tostring(ff:hasGoal()))
+    lurek.log.info("dims = " .. ff:getWidth() .. "x" .. ff:getHeight())
+    lurek.log.info("has_goal = " .. tostring(ff:hasGoal()))
 end
 ```
 
@@ -1855,24 +1517,14 @@ LAIFlowField:getWidth()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pg = lurek.pathfind.newPathGrid(32, 32, 1)
     local ff = lurek.pathfind.newPathFlowField(pg)
 
     ff:setGoal(16, 16)
 
-    example_print_log("dims = " .. ff:getWidth() .. "x" .. ff:getHeight())
-    example_print_log("has_goal = " .. tostring(ff:hasGoal()))
+    lurek.log.info("dims = " .. ff:getWidth() .. "x" .. ff:getHeight())
+    lurek.log.info("has_goal = " .. tostring(ff:hasGoal()))
 end
 ```
 
@@ -1896,23 +1548,13 @@ LAIFlowField:hasGoal()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pg = lurek.pathfind.newPathGrid(32, 32, 1)
     local ff = lurek.pathfind.newPathFlowField(pg)
 
-    example_print_log("has_goal_before = " .. tostring(ff:hasGoal()))
+    lurek.log.info("has_goal_before = " .. tostring(ff:hasGoal()))
     ff:setGoal(16, 16)
-    example_print_log("has_goal_after = " .. tostring(ff:hasGoal()))
+    lurek.log.info("has_goal_after = " .. tostring(ff:hasGoal()))
 end
 ```
 
@@ -1937,16 +1579,6 @@ LAIFlowField:setGoal(x, y)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local grid = lurek.pathfind.newPathGrid(15, 15, 32)
     local aiff = lurek.pathfind.newPathFlowField(grid)
@@ -1954,8 +1586,8 @@ do
     aiff:setGoal(10, 10)
 
     local gx, gy = aiff:getGoal()
-    example_print_log("has_goal = " .. tostring(aiff:hasGoal()))
-    example_print_log("goal = " .. gx .. "," .. gy)
+    lurek.log.info("has_goal = " .. tostring(aiff:hasGoal()))
+    lurek.log.info("goal = " .. gx .. "," .. gy)
 end
 ```
 
@@ -1979,16 +1611,6 @@ LAIFlowField:type()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local grid = lurek.pathfind.newPathGrid(5, 5, 32)
     local aiff = lurek.pathfind.newPathFlowField(grid)
@@ -1997,9 +1619,9 @@ do
     local width = aiff:getWidth()
     local height = aiff:getHeight()
 
-    pathfind_log("ai flow field type = " .. type_name)
-    pathfind_log("field dims = " .. width .. "x" .. height)
-    pathfind_log("goal ready = " .. tostring(aiff:hasGoal()))
+    lurek.log.info("ai flow field type = " .. type_name)
+    lurek.log.info("field dims = " .. width .. "x" .. height)
+    lurek.log.info("goal ready = " .. tostring(aiff:hasGoal()))
 end
 ```
 
@@ -2029,16 +1651,6 @@ LAIFlowField:typeOf(name)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local grid = lurek.pathfind.newPathGrid(5, 5, 32)
     local aiff = lurek.pathfind.newPathFlowField(grid)
@@ -2047,9 +1659,9 @@ do
     local is_object = aiff:typeOf("LObject")
     local is_flow_field = aiff:typeOf("LFlowField")
 
-    pathfind_log("matches LAIFlowField = " .. tostring(is_ai_flow_field))
-    pathfind_log("matches LObject = " .. tostring(is_object))
-    pathfind_log("matches LFlowField = " .. tostring(is_flow_field))
+    lurek.log.info("matches LAIFlowField = " .. tostring(is_ai_flow_field))
+    lurek.log.info("matches LObject = " .. tostring(is_object))
+    lurek.log.info("matches LFlowField = " .. tostring(is_flow_field))
 end
 ```
 
@@ -2086,19 +1698,12 @@ LContextSteering:addAvoidBounds(min_x, min_y, max_x, max_y, margin, weight)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local cs = lurek.pathfind.newContextSteering(8)
   cs:addSeekTarget(0, 0, 1.0)
   local slot_count = cs:slotCount()
     cs:addAvoidBounds(0, 0, 800, 600, 30.0, 1.0)
-    example_print_log("avoid bounds set for 800x600 area")
+    lurek.log.info("avoid bounds set for 800x600 area")
 end
 ```
 
@@ -2125,19 +1730,12 @@ LContextSteering:addAvoidPoint(x, y, radius, weight)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local cs = lurek.pathfind.newContextSteering(8)
   cs:addSeekTarget(0, 0, 1.0)
   local slot_count = cs:slotCount()
     cs:addAvoidPoint(50, 50, 20.0, 1.5)
-    example_print_log("avoid point at (50, 50) radius 20")
+    lurek.log.info("avoid point at (50, 50) radius 20")
 end
 ```
 
@@ -2163,19 +1761,12 @@ LContextSteering:addSeekTarget(tx, ty, weight)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local cs = lurek.pathfind.newContextSteering(8)
   cs:addSeekTarget(0, 0, 1.0)
   local slot_count = cs:slotCount()
     cs:addSeekTarget(200, 150, 1.0)
-    example_print_log("seek target added at (200, 150)")
+    lurek.log.info("seek target added at (200, 150)")
 end
 ```
 
@@ -2200,19 +1791,12 @@ LContextSteering:addWander(jitter, weight)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local cs = lurek.pathfind.newContextSteering(8)
   cs:addSeekTarget(0, 0, 1.0)
   local slot_count = cs:slotCount()
     cs:addWander(0.3, 0.5)
-    example_print_log("wander behavior added")
+    lurek.log.info("wander behavior added")
 end
 ```
 
@@ -2236,13 +1820,6 @@ LContextSteering:chosenMagnitude()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local cs = lurek.pathfind.newContextSteering(8)
   cs:addSeekTarget(0, 0, 1.0)
@@ -2250,7 +1827,7 @@ do
     cs:addSeekTarget(200, 200, 1.0)
     cs:evaluate(0, 0, 0, 0)
     local mag = cs:chosenMagnitude()
-    example_print_log("magnitude = " .. mag)
+    lurek.log.info("magnitude = " .. mag)
 end
 ```
 
@@ -2268,13 +1845,6 @@ LContextSteering:clearBehaviors()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local cs = lurek.pathfind.newContextSteering(8)
   cs:addSeekTarget(0, 0, 1.0)
@@ -2282,7 +1852,7 @@ do
     cs:addSeekTarget(100, 100, 1.0)
     cs:addAvoidPoint(50, 50, 10.0, 1.0)
     cs:clearBehaviors()
-    example_print_log("behaviors cleared")
+    lurek.log.info("behaviors cleared")
 end
 ```
 
@@ -2316,13 +1886,6 @@ LContextSteering:evaluate(ax, ay, vx, vy)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local cs = lurek.pathfind.newContextSteering(8)
   cs:addSeekTarget(0, 0, 1.0)
@@ -2330,7 +1893,7 @@ do
     cs:addSeekTarget(300, 200, 1.0)
     cs:addAvoidPoint(150, 150, 30.0, 2.0)
     local dx, dy = cs:evaluate(100, 100, 1.0, 0.0)
-    example_print_log("direction = " .. dx .. ", " .. dy)
+    lurek.log.info("direction = " .. dx .. ", " .. dy)
 end
 ```
 
@@ -2354,19 +1917,12 @@ LContextSteering:slotCount()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local cs = lurek.pathfind.newContextSteering(16)
   cs:addSeekTarget(0, 0, 1.0)
   local slot_count = cs:slotCount()
     local type_name = cs:type()
-    example_print_log("slots = " .. cs:slotCount())
+    lurek.log.info("slots = " .. cs:slotCount())
 end
 ```
 
@@ -2390,19 +1946,12 @@ LContextSteering:type()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local cs = lurek.pathfind.newContextSteering(8)
   cs:addSeekTarget(0, 0, 1.0)
   local slot_count = cs:slotCount()
-    example_print_log("type = " .. cs:type())
-  example_print_log("matches = " .. tostring(cs:typeOf("LContextSteering")))
+    lurek.log.info("type = " .. cs:type())
+  lurek.log.info("matches = " .. tostring(cs:typeOf("LContextSteering")))
 end
 ```
 
@@ -2432,19 +1981,12 @@ LContextSteering:typeOf(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local cs = lurek.pathfind.newContextSteering(8)
   cs:addSeekTarget(0, 0, 1.0)
   local slot_count = cs:slotCount()
     local type_name = cs:type()
-    example_print_log("is LContextSteering = " .. tostring(cs:typeOf("LContextSteering")))
+    lurek.log.info("is LContextSteering = " .. tostring(cs:typeOf("LContextSteering")))
 end
 ```
 
@@ -2478,16 +2020,6 @@ LFlowField:calculate(tx, ty, unit_size)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
@@ -2496,8 +2028,8 @@ do
     local ff = lurek.pathfind.newFlowField(nav)
     ff:calculate(20, 10)
 
-    example_print_log("calculated = " .. tostring(ff:isCalculated()))
-    example_print_log("targets = " .. #ff:getTargets())
+    lurek.log.info("calculated = " .. tostring(ff:isCalculated()))
+    lurek.log.info("targets = " .. #ff:getTargets())
 end
 ```
 
@@ -2522,16 +2054,6 @@ LFlowField:calculateMulti(targets, unit_size)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(15, 15)
 
@@ -2544,9 +2066,9 @@ do
     })
 
     local targets = ff:getTargets()
-    example_print_log("targets = " .. #targets)
-    example_print_log("first = " .. targets[1].x .. "," .. targets[1].y)
-    example_print_log("last = " .. targets[#targets].x .. "," .. targets[#targets].y)
+    lurek.log.info("targets = " .. #targets)
+    lurek.log.info("first = " .. targets[1].x .. "," .. targets[1].y)
+    lurek.log.info("last = " .. targets[#targets].x .. "," .. targets[#targets].y)
 end
 ```
 
@@ -2577,16 +2099,6 @@ LFlowField:getCostToTarget(x, y)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(10, 10)
 
@@ -2596,8 +2108,8 @@ do
     ff:calculate(10, 10)
 
     local dx, dy = ff:getDirection(1, 1)
-    example_print_log("dir = " .. dx .. "," .. dy)
-    example_print_log("cost = " .. ff:getCostToTarget(1, 1))
+    lurek.log.info("dir = " .. dx .. "," .. dy)
+    lurek.log.info("cost = " .. ff:getCostToTarget(1, 1))
 end
 ```
 
@@ -2629,16 +2141,6 @@ LFlowField:getDirection(x, y)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(10, 10)
 
@@ -2648,9 +2150,9 @@ do
     ff:calculate(10, 10)
 
     local dx, dy = ff:getDirection(1, 1)
-    example_print_log("dir = " .. dx .. "," .. dy)
-    example_print_log("angle = " .. ff:getDirectionAngle(1, 1))
-    example_print_log("cost = " .. ff:getCostToTarget(1, 1))
+    lurek.log.info("dir = " .. dx .. "," .. dy)
+    lurek.log.info("angle = " .. ff:getDirectionAngle(1, 1))
+    lurek.log.info("cost = " .. ff:getCostToTarget(1, 1))
 end
 ```
 
@@ -2681,16 +2183,6 @@ LFlowField:getDirectionAngle(x, y)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(10, 10)
 
@@ -2699,8 +2191,8 @@ do
     local ff = lurek.pathfind.newFlowField(nav)
     ff:calculate(10, 10)
 
-    example_print_log("angle = " .. ff:getDirectionAngle(1, 1))
-    example_print_log("cost = " .. ff:getCostToTarget(1, 1))
+    lurek.log.info("angle = " .. ff:getDirectionAngle(1, 1))
+    lurek.log.info("cost = " .. ff:getCostToTarget(1, 1))
 end
 ```
 
@@ -2724,16 +2216,6 @@ LFlowField:getTargets()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(15, 15)
 
@@ -2746,8 +2228,8 @@ do
     })
 
     local targets = ff:getTargets()
-    example_print_log("targets = " .. #targets)
-    example_print_log("first = " .. targets[1].x .. "," .. targets[1].y)
+    lurek.log.info("targets = " .. #targets)
+    lurek.log.info("first = " .. targets[1].x .. "," .. targets[1].y)
 end
 ```
 
@@ -2771,23 +2253,13 @@ LFlowField:isCalculated()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local grid = lurek.pathfind.newNavGrid(16, 16)
     local ff = lurek.pathfind.newFlowField(grid)
 
-    example_print_log("calculated_before = " .. tostring(ff:isCalculated()))
+    lurek.log.info("calculated_before = " .. tostring(ff:isCalculated()))
     ff:calculate(8, 8, 1)
-    example_print_log("calculated_after = " .. tostring(ff:isCalculated()))
+    lurek.log.info("calculated_after = " .. tostring(ff:isCalculated()))
 end
 ```
 
@@ -2822,16 +2294,6 @@ LFlowField:steer(wx, wy, speed, tw, th)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(10, 10)
 
@@ -2841,7 +2303,7 @@ do
     ff:calculate(10, 10)
 
     local vx, vy = ff:steer(50, 50, 100, 32, 32)
-    example_print_log("velocity = " .. vx .. "," .. vy)
+    lurek.log.info("velocity = " .. vx .. "," .. vy)
 end
 ```
 
@@ -2865,16 +2327,6 @@ LFlowField:type()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(5, 5)
     local ff = lurek.pathfind.newFlowField(nav)
@@ -2883,9 +2335,9 @@ do
     local calculated = ff:isCalculated()
     local targets = ff:getTargets()
 
-    pathfind_log("flow field type = " .. type_name)
-    pathfind_log("calculated = " .. tostring(calculated))
-    pathfind_log("target count = " .. #targets)
+    lurek.log.info("flow field type = " .. type_name)
+    lurek.log.info("calculated = " .. tostring(calculated))
+    lurek.log.info("target count = " .. #targets)
 end
 ```
 
@@ -2915,16 +2367,6 @@ LFlowField:typeOf(name)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(5, 5)
     local ff = lurek.pathfind.newFlowField(nav)
@@ -2933,9 +2375,9 @@ do
     local is_object = ff:typeOf("LObject")
     local is_ai_flow_field = ff:typeOf("LAIFlowField")
 
-    pathfind_log("matches LFlowField = " .. tostring(is_flow_field))
-    pathfind_log("matches LObject = " .. tostring(is_object))
-    pathfind_log("matches LAIFlowField = " .. tostring(is_ai_flow_field))
+    lurek.log.info("matches LFlowField = " .. tostring(is_flow_field))
+    lurek.log.info("matches LObject = " .. tostring(is_object))
+    lurek.log.info("matches LAIFlowField = " .. tostring(is_ai_flow_field))
 end
 ```
 
@@ -2969,16 +2411,6 @@ LGoalMap:addSource(x, y, weight)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local gm = lurek.pathfind.newGoalMap(16, 16)
     gm:addSource(8, 8, 1)
@@ -2988,9 +2420,9 @@ do
     local flank_distance = gm:distanceAt(4, 12)
     local corner_distance = gm:distanceAt(1, 1)
 
-    pathfind_log("origin distance = " .. origin_distance)
-    pathfind_log("flank source distance = " .. flank_distance)
-    pathfind_log("corner distance = " .. corner_distance)
+    lurek.log.info("origin distance = " .. origin_distance)
+    lurek.log.info("flank source distance = " .. flank_distance)
+    lurek.log.info("corner distance = " .. corner_distance)
 end
 ```
 
@@ -3008,16 +2440,6 @@ LGoalMap:bake()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local gm = lurek.pathfind.newGoalMap(16, 16)
     gm:addSource(8, 8, 1)
@@ -3026,9 +2448,9 @@ do
     local distance_mid = gm:distanceAt(10, 8)
     local distance_corner = gm:distanceAt(1, 1)
 
-    pathfind_log("ready after bake = " .. tostring(ready))
-    pathfind_log("east lane distance = " .. distance_mid)
-    pathfind_log("corner distance = " .. distance_corner)
+    lurek.log.info("ready after bake = " .. tostring(ready))
+    lurek.log.info("east lane distance = " .. distance_mid)
+    lurek.log.info("corner distance = " .. distance_corner)
 end
 ```
 
@@ -3046,22 +2468,12 @@ LGoalMap:clearSources()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local gm = lurek.pathfind.newGoalMap(16, 16)
     gm:addSource(8, 8, 1)
     gm:clearSources()
     gm:bake()
-    example_print_log("ready_after_clear = " .. tostring(gm:isReady()))
+    lurek.log.info("ready_after_clear = " .. tostring(gm:isReady()))
 end
 ```
 
@@ -3092,22 +2504,12 @@ LGoalMap:distanceAt(x, y)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local gm = lurek.pathfind.newGoalMap(10, 10)
     gm:addSource(5, 5, 1)
     gm:bake()
-    example_print_log("distance_5_5 = " .. gm:distanceAt(5, 5))
-    example_print_log("distance_1_1 = " .. gm:distanceAt(1, 1))
+    lurek.log.info("distance_5_5 = " .. gm:distanceAt(5, 5))
+    lurek.log.info("distance_1_1 = " .. gm:distanceAt(1, 1))
 end
 ```
 
@@ -3140,22 +2542,12 @@ LGoalMap:flee(x, y, fear)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local gm = lurek.pathfind.newGoalMap(10, 10)
     gm:addSource(5, 5, 1)
     gm:bake()
     local dx, dy = gm:flee(5, 6, 1.0)
-    example_print_log("flee = " .. dx .. "," .. dy)
+    lurek.log.info("flee = " .. dx .. "," .. dy)
 end
 ```
 
@@ -3187,22 +2579,12 @@ LGoalMap:floodFill(cx, cy, threshold)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local gm = lurek.pathfind.newGoalMap(12, 12)
     gm:addSource(6, 6, 1)
     gm:bake()
     local cells = gm:floodFill(6, 6, 4)
-    example_print_log("flood_cells = " .. #cells)
+    lurek.log.info("flood_cells = " .. #cells)
 end
 ```
 
@@ -3234,22 +2616,12 @@ LGoalMap:gradientAt(x, y)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local gm = lurek.pathfind.newGoalMap(10, 10)
     gm:addSource(10, 10, 1)
     gm:bake()
     local dx, dy = gm:gradientAt(1, 1)
-    example_print_log("gradient = " .. dx .. "," .. dy)
+    lurek.log.info("gradient = " .. dx .. "," .. dy)
 end
 ```
 
@@ -3273,22 +2645,12 @@ LGoalMap:isReady()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local gm = lurek.pathfind.newGoalMap(8, 8)
     gm:addSource(4, 4, 1)
-    example_print_log("ready_before = " .. tostring(gm:isReady()))
+    lurek.log.info("ready_before = " .. tostring(gm:isReady()))
     gm:bake()
-    example_print_log("ready_after = " .. tostring(gm:isReady()))
+    lurek.log.info("ready_after = " .. tostring(gm:isReady()))
 end
 ```
 
@@ -3312,16 +2674,6 @@ LGoalMap:restore(blob)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local gm = lurek.pathfind.newGoalMap(12, 12)
     gm:addSource(6, 6, 1)
@@ -3330,7 +2682,7 @@ do
 
     local gm2 = lurek.pathfind.newGoalMap(12, 12)
     gm2:restore(blob)
-    example_print_log("distance_restored = " .. gm2:distanceAt(6, 6))
+    lurek.log.info("distance_restored = " .. gm2:distanceAt(6, 6))
 end
 ```
 
@@ -3354,22 +2706,12 @@ LGoalMap:save()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local gm = lurek.pathfind.newGoalMap(12, 12)
     gm:addSource(6, 6, 1)
     gm:bake()
     local blob = gm:save()
-    example_print_log("blob_bytes = " .. #blob)
+    lurek.log.info("blob_bytes = " .. #blob)
 end
 ```
 
@@ -3393,16 +2735,6 @@ LGoalMap:setBlocker(fn)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local gm = lurek.pathfind.newGoalMap(16, 16)
     gm:addSource(8, 8, 1)
@@ -3410,7 +2742,7 @@ do
         return x == 9 and y >= 4 and y <= 12
     end)
     gm:bake()
-    example_print_log("distance_12_8 = " .. gm:distanceAt(12, 8))
+    lurek.log.info("distance_12_8 = " .. gm:distanceAt(12, 8))
 end
 ```
 
@@ -3434,16 +2766,6 @@ LGoalMap:setSources(sources)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local gm = lurek.pathfind.newGoalMap(16, 16)
     gm:setSources({
@@ -3451,7 +2773,7 @@ do
         { x = 13, y = 13, weight = 2 },
     })
     gm:bake()
-    example_print_log("ready = " .. tostring(gm:isReady()))
+    lurek.log.info("ready = " .. tostring(gm:isReady()))
 end
 ```
 
@@ -3475,16 +2797,6 @@ LGoalMap:type()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local gm = lurek.pathfind.newGoalMap(8, 8)
     gm:addSource(4, 4, 1)
@@ -3492,9 +2804,9 @@ do
     local type_name = gm:type()
     local ready = gm:isReady()
 
-    pathfind_log("goal map type = " .. type_name)
-    pathfind_log("ready = " .. tostring(ready))
-    pathfind_log("center distance = " .. gm:distanceAt(4, 4))
+    lurek.log.info("goal map type = " .. type_name)
+    lurek.log.info("ready = " .. tostring(ready))
+    lurek.log.info("center distance = " .. gm:distanceAt(4, 4))
 end
 ```
 
@@ -3524,16 +2836,6 @@ LGoalMap:typeOf(name)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local gm = lurek.pathfind.newGoalMap(8, 8)
     gm:addSource(4, 4, 1)
@@ -3542,9 +2844,9 @@ do
     local is_object = gm:typeOf("LObject")
     local is_nav_mesh = gm:typeOf("LNavMesh")
 
-    pathfind_log("matches LGoalMap = " .. tostring(is_goal_map))
-    pathfind_log("matches LObject = " .. tostring(is_object))
-    pathfind_log("matches LNavMesh = " .. tostring(is_nav_mesh))
+    lurek.log.info("matches LGoalMap = " .. tostring(is_goal_map))
+    lurek.log.info("matches LObject = " .. tostring(is_object))
+    lurek.log.info("matches LNavMesh = " .. tostring(is_nav_mesh))
 end
 ```
 
@@ -3585,16 +2887,6 @@ LHexGrid:distance(c1, r1, c2, r2)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local hex = lurek.pathfind.newHexGrid(10, 10)
     hex:setBlocked(3, 3, true)
@@ -3602,9 +2894,9 @@ do
     local same_cell_distance = hex:distance(1, 1, 1, 1)
     local scout_distance = hex:distance(2, 4, 7, 4)
 
-    pathfind_log("flank distance = " .. flank_distance)
-    pathfind_log("same cell distance = " .. same_cell_distance)
-    pathfind_log("frontline distance = " .. scout_distance)
+    lurek.log.info("flank distance = " .. flank_distance)
+    lurek.log.info("same cell distance = " .. same_cell_distance)
+    lurek.log.info("frontline distance = " .. scout_distance)
 end
 ```
 
@@ -3636,25 +2928,15 @@ LHexGrid:fieldOfView(col, row, max_range)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local hex = lurek.pathfind.newHexGrid(15, 15)
 
     hex:setBlocked(8, 8, true)
 
     local visible = hex:fieldOfView(7, 7, 3)
-    example_print_log("visible = " .. #visible)
+    lurek.log.info("visible = " .. #visible)
     if #visible > 0 then
-        example_print_log("first = " .. visible[1].col .. "," .. visible[1].row)
+        lurek.log.info("first = " .. visible[1].col .. "," .. visible[1].row)
     end
 end
 ```
@@ -3688,16 +2970,6 @@ LHexGrid:findPath(fc, fr, tc, tr)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local hex = lurek.pathfind.newHexGrid(10, 10)
 
@@ -3707,11 +2979,11 @@ do
 
     local path = hex:findPath(1, 5, 10, 5)
     if path then
-        example_print_log("steps = " .. #path)
-        example_print_log("first = " .. path[1].col .. "," .. path[1].row)
-        example_print_log("last = " .. path[#path].col .. "," .. path[#path].row)
+        lurek.log.info("steps = " .. #path)
+        lurek.log.info("first = " .. path[1].col .. "," .. path[1].row)
+        lurek.log.info("last = " .. path[#path].col .. "," .. path[#path].row)
     else
-        example_print_log("steps = 0")
+        lurek.log.info("steps = 0")
     end
 end
 ```
@@ -3743,16 +3015,6 @@ LHexGrid:isBlocked(col, row)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local hex = lurek.pathfind.newHexGrid(12, 10, "flat")
     hex:setBlocked(4, 4, true)
@@ -3761,9 +3023,9 @@ do
     local ridge_neighbor = hex:isBlocked(5, 4)
     local open_hex = hex:isBlocked(4, 5)
 
-    pathfind_log("ridge blocked = " .. tostring(ridge))
-    pathfind_log("ridge neighbor blocked = " .. tostring(ridge_neighbor))
-    pathfind_log("southern hex blocked = " .. tostring(open_hex))
+    lurek.log.info("ridge blocked = " .. tostring(ridge))
+    lurek.log.info("ridge neighbor blocked = " .. tostring(ridge_neighbor))
+    lurek.log.info("southern hex blocked = " .. tostring(open_hex))
 end
 ```
 
@@ -3795,25 +3057,15 @@ LHexGrid:rangeOfMovement(col, row, budget)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local hex = lurek.pathfind.newHexGrid(12, 12)
 
     hex:setCost(6, 6, 3)
 
     local reachable = hex:rangeOfMovement(6, 6, 4)
-    example_print_log("reachable = " .. #reachable)
+    lurek.log.info("reachable = " .. #reachable)
     if #reachable > 0 then
-        example_print_log("first = " .. reachable[1].col .. "," .. reachable[1].row)
+        lurek.log.info("first = " .. reachable[1].col .. "," .. reachable[1].row)
     end
 end
 ```
@@ -3840,24 +3092,14 @@ LHexGrid:setBlocked(col, row, blocked)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local hex = lurek.pathfind.newHexGrid(12, 10, "flat")
 
     hex:setBlocked(5, 5, true)
     hex:setBlocked(6, 5, true)
 
-    example_print_log("blocked_5_5 = " .. tostring(hex:isBlocked(5, 5)))
-    example_print_log("blocked_6_5 = " .. tostring(hex:isBlocked(6, 5)))
+    lurek.log.info("blocked_5_5 = " .. tostring(hex:isBlocked(5, 5)))
+    lurek.log.info("blocked_6_5 = " .. tostring(hex:isBlocked(6, 5)))
 end
 ```
 
@@ -3883,16 +3125,6 @@ LHexGrid:setCost(col, row, cost)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local hex = lurek.pathfind.newHexGrid(8, 8)
 
@@ -3900,9 +3132,9 @@ do
     hex:setCost(5, 4, 4)
 
     local reachable = hex:rangeOfMovement(4, 4, 4)
-    example_print_log("reachable = " .. #reachable)
+    lurek.log.info("reachable = " .. #reachable)
     if #reachable > 0 then
-        example_print_log("first = " .. reachable[1].col .. "," .. reachable[1].row)
+        lurek.log.info("first = " .. reachable[1].col .. "," .. reachable[1].row)
     end
 end
 ```
@@ -3927,25 +3159,15 @@ LHexGrid:type()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local hex = lurek.pathfind.newHexGrid(5, 5, "pointy")
     hex:setCost(3, 3, 2)
     local type_name = hex:type()
     local reachable = hex:rangeOfMovement(3, 3, 3)
 
-    pathfind_log("hex grid type = " .. type_name)
-    pathfind_log("reachable cells = " .. #reachable)
-    pathfind_log("center blocked = " .. tostring(hex:isBlocked(3, 3)))
+    lurek.log.info("hex grid type = " .. type_name)
+    lurek.log.info("reachable cells = " .. #reachable)
+    lurek.log.info("center blocked = " .. tostring(hex:isBlocked(3, 3)))
 end
 ```
 
@@ -3975,16 +3197,6 @@ LHexGrid:typeOf(name)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local hex = lurek.pathfind.newHexGrid(5, 5, "pointy")
     hex:setBlocked(2, 2, true)
@@ -3992,9 +3204,9 @@ do
     local is_object = hex:typeOf("LObject")
     local is_jps_grid = hex:typeOf("LJpsGrid")
 
-    pathfind_log("matches LHexGrid = " .. tostring(is_hex_grid))
-    pathfind_log("matches LObject = " .. tostring(is_object))
-    pathfind_log("matches LJpsGrid = " .. tostring(is_jps_grid))
+    lurek.log.info("matches LHexGrid = " .. tostring(is_hex_grid))
+    lurek.log.info("matches LObject = " .. tostring(is_object))
+    lurek.log.info("matches LJpsGrid = " .. tostring(is_jps_grid))
 end
 ```
 
@@ -4026,20 +3238,13 @@ LInfluenceMap:addLayer(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local im = lurek.pathfind.newInfluenceMap(16, 16, 1.0)
   im:addLayer("debug")
   local map_width = im:getWidth()
     im:addLayer("threat")
     im:addLayer("resources")
-    example_print_log("layers added: threat, resources")
+    lurek.log.info("layers added: threat, resources")
 end
 ```
 
@@ -4067,13 +3272,6 @@ LInfluenceMap:blend(layer_a, weight_a, layer_b, weight_b, dest)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local im = lurek.pathfind.newInfluenceMap(8, 8, 1.0)
   im:addLayer("debug")
@@ -4085,7 +3283,7 @@ do
   im:setInfluence("reward", 4, 4, 0.8)
   im:blend("threat", 0.5, "reward", 0.5, "combined")
   local val = im:getInfluence("combined", 4, 4)
-    example_print_log("blended (4,4) = " .. val)
+    lurek.log.info("blended (4,4) = " .. val)
 end
 ```
 
@@ -4103,13 +3301,6 @@ LInfluenceMap:clearAll()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local im = lurek.pathfind.newInfluenceMap(8, 8, 1.0)
   im:addLayer("debug")
@@ -4119,7 +3310,7 @@ do
   im:setInfluence("a", 1, 1, 1.0)
     im:setInfluence("b", 2, 2, 0.5)
     im:clearAll()
-    example_print_log("all cleared, a(1,1) = " .. im:getInfluence("a", 1, 1))
+    lurek.log.info("all cleared, a(1,1) = " .. im:getInfluence("a", 1, 1))
 end
 ```
 
@@ -4143,13 +3334,6 @@ LInfluenceMap:clearLayer(layer)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local im = lurek.pathfind.newInfluenceMap(8, 8, 1.0)
   im:addLayer("debug")
@@ -4158,7 +3342,7 @@ do
     im:setInfluence("marks", 2, 2, 1.0)
     im:clearLayer("marks")
     local val = im:getInfluence("marks", 2, 2)
-    example_print_log("after clear = " .. val)
+    lurek.log.info("after clear = " .. val)
 end
 ```
 
@@ -4183,13 +3367,6 @@ LInfluenceMap:decay(layer, factor)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local im = lurek.pathfind.newInfluenceMap(8, 8, 1.0)
   im:addLayer("debug")
@@ -4198,7 +3375,7 @@ do
     im:setInfluence("heat", 4, 4, 1.0)
     im:decay("heat", 0.5)
     local val = im:getInfluence("heat", 4, 4)
-    example_print_log("heat after decay = " .. val)
+    lurek.log.info("heat after decay = " .. val)
 end
 ```
 
@@ -4222,19 +3399,12 @@ LInfluenceMap:getCellSize()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local im = lurek.pathfind.newInfluenceMap(8, 8, 2.5)
   im:addLayer("debug")
   local map_width = im:getWidth()
     local map_height = im:getHeight()
-    example_print_log("cell size = " .. im:getCellSize())
+    lurek.log.info("cell size = " .. im:getCellSize())
 end
 ```
 
@@ -4258,19 +3428,12 @@ LInfluenceMap:getHeight()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local im = lurek.pathfind.newInfluenceMap(16, 12, 2.0)
   im:addLayer("debug")
   local map_width = im:getWidth()
     local cell_size = im:getCellSize()
-    example_print_log("height = " .. im:getHeight())
+    lurek.log.info("height = " .. im:getHeight())
 end
 ```
 
@@ -4302,13 +3465,6 @@ LInfluenceMap:getInfluence(layer, x, y)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local im = lurek.pathfind.newInfluenceMap(10, 10, 1.0)
   im:addLayer("debug")
@@ -4316,7 +3472,7 @@ do
     im:addLayer("food")
     im:setInfluence("food", 4, 4, 0.75)
     local val = im:getInfluence("food", 4, 4)
-    example_print_log("food at (4,4) = " .. val)
+    lurek.log.info("food at (4,4) = " .. val)
 end
 ```
 
@@ -4347,13 +3503,6 @@ LInfluenceMap:getMaxPosition(layer)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local im = lurek.pathfind.newInfluenceMap(10, 10, 1.0)
   im:addLayer("debug")
@@ -4362,7 +3511,7 @@ do
     im:setInfluence("gold", 7, 3, 0.9)
     im:setInfluence("gold", 2, 8, 0.4)
     local mx, my = im:getMaxPosition("gold")
-    example_print_log("max gold at (" .. mx .. ", " .. my .. ")")
+    lurek.log.info("max gold at (" .. mx .. ", " .. my .. ")")
 end
 ```
 
@@ -4393,13 +3542,6 @@ LInfluenceMap:getMinPosition(layer)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local im = lurek.pathfind.newInfluenceMap(10, 10, 1.0)
   im:addLayer("debug")
@@ -4408,7 +3550,7 @@ do
     im:setInfluence("cold", 1, 1, -0.5)
     im:setInfluence("cold", 5, 5, 0.3)
     local mx, my = im:getMinPosition("cold")
-    example_print_log("min cold at (" .. mx .. ", " .. my .. ")")
+    lurek.log.info("min cold at (" .. mx .. ", " .. my .. ")")
 end
 ```
 
@@ -4432,19 +3574,12 @@ LInfluenceMap:getWidth()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local im = lurek.pathfind.newInfluenceMap(16, 12, 2.0)
   im:addLayer("debug")
   local map_width = im:getWidth()
     local map_height = im:getHeight()
-    example_print_log("width = " .. im:getWidth())
+    lurek.log.info("width = " .. im:getWidth())
 end
 ```
 
@@ -4474,20 +3609,13 @@ LInfluenceMap:hasLayer(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local im = lurek.pathfind.newInfluenceMap(8, 8, 2.0)
   im:addLayer("debug")
   local map_width = im:getWidth()
     im:addLayer("heat")
-    example_print_log("has heat = " .. tostring(im:hasLayer("heat")))
-    example_print_log("has cold = " .. tostring(im:hasLayer("cold")))
+    lurek.log.info("has heat = " .. tostring(im:hasLayer("heat")))
+    lurek.log.info("has cold = " .. tostring(im:hasLayer("cold")))
 end
 ```
 
@@ -4512,13 +3640,6 @@ LInfluenceMap:propagate(layer, momentum)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local im = lurek.pathfind.newInfluenceMap(10, 10, 1.0)
   im:addLayer("debug")
@@ -4527,7 +3648,7 @@ do
     im:setInfluence("scent", 5, 5, 1.0)
     im:propagate("scent", 0.8)
     local neighbor = im:getInfluence("scent", 4, 5)
-    example_print_log("scent propagated to (4,5) = " .. neighbor)
+    lurek.log.info("scent propagated to (4,5) = " .. neighbor)
 end
 ```
 
@@ -4561,13 +3682,6 @@ LInfluenceMap:queryRect(layer, wx, wy, ww, wh)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local im = lurek.pathfind.newInfluenceMap(10, 10, 1.0)
   im:addLayer("debug")
@@ -4576,7 +3690,7 @@ do
     im:setInfluence("energy", 2, 2, 0.5)
     im:setInfluence("energy", 3, 3, 0.5)
     local total = im:queryRect("energy", 1, 1, 4, 4)
-    example_print_log("energy in rect = " .. total)
+    lurek.log.info("energy in rect = " .. total)
 end
 ```
 
@@ -4603,13 +3717,6 @@ LInfluenceMap:setInfluence(layer, x, y, value)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local im = lurek.pathfind.newInfluenceMap(10, 10, 1.0)
   im:addLayer("debug")
@@ -4617,7 +3724,7 @@ do
     im:addLayer("danger")
     im:setInfluence("danger", 5, 5, 1.0)
     im:setInfluence("danger", 3, 7, 0.5)
-    example_print_log("set influence at (5,5) and (3,7)")
+    lurek.log.info("set influence at (5,5) and (3,7)")
 end
 ```
 
@@ -4646,13 +3753,6 @@ LInfluenceMap:stampInfluence(layer, wx, wy, radius, value, falloff)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local im = lurek.pathfind.newInfluenceMap(20, 20, 1.0)
   im:addLayer("debug")
@@ -4660,7 +3760,7 @@ do
     im:addLayer("noise")
     im:stampInfluence("noise", 10.0, 10.0, 3.0, 1.0, 0.5)
     local center = im:getInfluence("noise", 10, 10)
-    example_print_log("noise center = " .. center)
+    lurek.log.info("noise center = " .. center)
 end
 ```
 
@@ -4684,19 +3784,12 @@ LInfluenceMap:type()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local im = lurek.pathfind.newInfluenceMap(4, 4, 1.0)
   im:addLayer("debug")
   local map_width = im:getWidth()
-    example_print_log("type = " .. im:type())
-  example_print_log("matches = " .. tostring(im:typeOf("LInfluenceMap")))
+    lurek.log.info("type = " .. im:type())
+  lurek.log.info("matches = " .. tostring(im:typeOf("LInfluenceMap")))
 end
 ```
 
@@ -4726,19 +3819,12 @@ LInfluenceMap:typeOf(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local im = lurek.pathfind.newInfluenceMap(4, 4, 1.0)
   im:addLayer("debug")
   local map_width = im:getWidth()
     local type_name = im:type()
-    example_print_log("is LInfluenceMap = " .. tostring(im:typeOf("LInfluenceMap")))
+    lurek.log.info("is LInfluenceMap = " .. tostring(im:typeOf("LInfluenceMap")))
 end
 ```
 
@@ -4779,9 +3865,6 @@ LIsoGrid:findPath(fx, fy, tx, ty)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
 
     local grid = lurek.pathfind.newIsoGrid(7, 5)
     grid:setBlocked(4, 1, true)
@@ -4789,7 +3872,7 @@ do
     grid:setBlocked(4, 3, true)
     local route = grid:findPath(1, 2, 7, 2) or {}
     local last = route[#route] or { x = 0, y = 0 }
-    pathfind_log("iso path nodes=" .. tostring(#route) .. " last=" .. tostring(last.x) .. "," .. tostring(last.y))
+    lurek.log.info("iso path nodes=" .. tostring(#route) .. " last=" .. tostring(last.x) .. "," .. tostring(last.y))
 end
 ```
 
@@ -4820,9 +3903,6 @@ LIsoGrid:getCost(x, y)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
 
     local grid = lurek.pathfind.newIsoGrid(5, 5)
     grid:setCost(2, 2, 3.5)
@@ -4830,7 +3910,7 @@ do
     local bridge = grid:getCost(2, 2)
     local lane = grid:getCost(2, 3)
     local plain = grid:getCost(1, 1)
-    pathfind_log("iso costs bridge=" .. tostring(bridge) .. " lane=" .. tostring(lane) .. " plain=" .. tostring(plain))
+    lurek.log.info("iso costs bridge=" .. tostring(bridge) .. " lane=" .. tostring(lane) .. " plain=" .. tostring(plain))
 end
 ```
 
@@ -4861,16 +3941,13 @@ LIsoGrid:isBlocked(x, y)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
 
     local grid = lurek.pathfind.newIsoGrid(5, 5)
     grid:setBlocked(4, 2, true)
     local wall = grid:isBlocked(4, 2)
     local floor = grid:isBlocked(4, 3)
     local route = grid:findPath(1, 2, 5, 2) or {}
-    pathfind_log("iso blocked wall=" .. tostring(wall) .. " floor=" .. tostring(floor) .. " route=" .. tostring(#route))
+    lurek.log.info("iso blocked wall=" .. tostring(wall) .. " floor=" .. tostring(floor) .. " route=" .. tostring(#route))
 end
 ```
 
@@ -4896,16 +3973,13 @@ LIsoGrid:setBlocked(x, y, blocked)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
 
     local grid = lurek.pathfind.newIsoGrid(5, 5)
     grid:setBlocked(2, 3, true)
     grid:setBlocked(2, 4, true)
     local first = grid:isBlocked(2, 3)
     local second = grid:isBlocked(2, 4)
-    pathfind_log("iso blockers first=" .. tostring(first) .. " second=" .. tostring(second))
+    lurek.log.info("iso blockers first=" .. tostring(first) .. " second=" .. tostring(second))
 end
 ```
 
@@ -4931,16 +4005,13 @@ LIsoGrid:setCost(x, y, cost)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
 
     local grid = lurek.pathfind.newIsoGrid(5, 5)
     grid:setCost(3, 2, 2.5)
     grid:setCost(3, 3, 4.0)
     local road = grid:getCost(3, 2)
     local mud = grid:getCost(3, 3)
-    pathfind_log("iso costs road=" .. tostring(road) .. " mud=" .. tostring(mud))
+    lurek.log.info("iso costs road=" .. tostring(road) .. " mud=" .. tostring(mud))
 end
 ```
 
@@ -4964,16 +4035,13 @@ LIsoGrid:type()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
 
     local grid = lurek.pathfind.newIsoGrid(4, 4)
     grid:setCost(2, 2, 2)
     local type_name = grid:type()
     local cost = grid:getCost(2, 2)
     local route = grid:findPath(1, 1, 4, 4) or {}
-    pathfind_log("iso type=" .. type_name .. " cost=" .. tostring(cost) .. " route=" .. tostring(#route))
+    lurek.log.info("iso type=" .. type_name .. " cost=" .. tostring(cost) .. " route=" .. tostring(#route))
 end
 ```
 
@@ -5003,16 +4071,13 @@ LIsoGrid:typeOf(name)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
 
     local grid = lurek.pathfind.newIsoGrid(4, 4)
     grid:setBlocked(2, 2, true)
     local is_iso = grid:typeOf("LIsoGrid")
     local is_object = grid:typeOf("LObject")
     local is_hex = grid:typeOf("LHexGrid")
-    pathfind_log("iso typeOf iso=" .. tostring(is_iso) .. " object=" .. tostring(is_object) .. " hex=" .. tostring(is_hex))
+    lurek.log.info("iso typeOf iso=" .. tostring(is_iso) .. " object=" .. tostring(is_object) .. " hex=" .. tostring(is_hex))
 end
 ```
 
@@ -5053,16 +4118,6 @@ LJpsGrid:findPath(fx, fy, tx, ty)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local jps = lurek.pathfind.newJpsGrid(50, 50)
 
@@ -5073,11 +4128,11 @@ do
 
     local path = jps:findPath(1, 25, 50, 25)
     if path then
-        example_print_log("points = " .. #path)
-        example_print_log("first = " .. path[1].x .. "," .. path[1].y)
-        example_print_log("last = " .. path[#path].x .. "," .. path[#path].y)
+        lurek.log.info("points = " .. #path)
+        lurek.log.info("first = " .. path[1].x .. "," .. path[1].y)
+        lurek.log.info("last = " .. path[#path].x .. "," .. path[#path].y)
     else
-        example_print_log("points = 0")
+        lurek.log.info("points = 0")
     end
 end
 ```
@@ -5109,16 +4164,6 @@ LJpsGrid:isBlocked(x, y)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local jps = lurek.pathfind.newJpsGrid(30, 30)
     jps:setBlocked(9, 9, true)
@@ -5127,9 +4172,9 @@ do
     local wall_neighbor = jps:isBlocked(10, 9)
     local lane_open = jps:isBlocked(9, 10)
 
-    pathfind_log("wall center blocked = " .. tostring(wall_center))
-    pathfind_log("wall neighbor blocked = " .. tostring(wall_neighbor))
-    pathfind_log("lane blocked = " .. tostring(lane_open))
+    lurek.log.info("wall center blocked = " .. tostring(wall_center))
+    lurek.log.info("wall neighbor blocked = " .. tostring(wall_neighbor))
+    lurek.log.info("lane blocked = " .. tostring(lane_open))
 end
 ```
 
@@ -5155,16 +4200,6 @@ LJpsGrid:setBlocked(x, y, blocked)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local jps = lurek.pathfind.newJpsGrid(30, 30)
 
@@ -5172,8 +4207,8 @@ do
     jps:setBlocked(15, 11, true)
     jps:setBlocked(15, 12, true)
 
-    example_print_log("blocked_15_10 = " .. tostring(jps:isBlocked(15, 10)))
-    example_print_log("blocked_15_12 = " .. tostring(jps:isBlocked(15, 12)))
+    lurek.log.info("blocked_15_10 = " .. tostring(jps:isBlocked(15, 10)))
+    lurek.log.info("blocked_15_12 = " .. tostring(jps:isBlocked(15, 12)))
 end
 ```
 
@@ -5197,16 +4232,6 @@ LJpsGrid:type()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local jps = lurek.pathfind.newJpsGrid(5, 5)
     jps:setBlocked(3, 3, true)
@@ -5214,9 +4239,9 @@ do
     local blocked_center = jps:isBlocked(3, 3)
     local path = jps:findPath(1, 1, 5, 5)
 
-    pathfind_log("jps grid type = " .. type_name)
-    pathfind_log("center blocked = " .. tostring(blocked_center))
-    pathfind_log("corner route nodes = " .. tostring(path and #path or 0))
+    lurek.log.info("jps grid type = " .. type_name)
+    lurek.log.info("center blocked = " .. tostring(blocked_center))
+    lurek.log.info("corner route nodes = " .. tostring(path and #path or 0))
 end
 ```
 
@@ -5246,16 +4271,6 @@ LJpsGrid:typeOf(name)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local jps = lurek.pathfind.newJpsGrid(5, 5)
     jps:setBlocked(2, 2, true)
@@ -5263,9 +4278,9 @@ do
     local is_object = jps:typeOf("LObject")
     local is_hex_grid = jps:typeOf("LHexGrid")
 
-    pathfind_log("matches LJpsGrid = " .. tostring(is_jps_grid))
-    pathfind_log("matches LObject = " .. tostring(is_object))
-    pathfind_log("matches LHexGrid = " .. tostring(is_hex_grid))
+    lurek.log.info("matches LJpsGrid = " .. tostring(is_jps_grid))
+    lurek.log.info("matches LObject = " .. tostring(is_object))
+    lurek.log.info("matches LHexGrid = " .. tostring(is_hex_grid))
 end
 ```
 
@@ -5291,16 +4306,6 @@ LNavGrid:clearDirty()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(50, 50)
 
@@ -5309,7 +4314,7 @@ do
     nav:clearDirty()
     nav:rebuildAbstract()
 
-    example_print_log("chunk = " .. nav:getChunkSize())
+    lurek.log.info("chunk = " .. nav:getChunkSize())
 end
 ```
 
@@ -5333,16 +4338,6 @@ LNavGrid:fill(cost)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(20, 20)
     nav:fill(3)
@@ -5351,9 +4346,9 @@ do
     local far_corner_cost = nav:getCost(20, 20)
     local plaza_cost = nav:getCost(10, 10)
 
-    pathfind_log("default patrol cost = " .. border_cost)
-    pathfind_log("far corner cost = " .. far_corner_cost)
-    pathfind_log("plaza override cost = " .. plaza_cost)
+    lurek.log.info("default patrol cost = " .. border_cost)
+    lurek.log.info("far corner cost = " .. far_corner_cost)
+    lurek.log.info("plaza override cost = " .. plaza_cost)
 end
 ```
 
@@ -5381,24 +4376,14 @@ LNavGrid:fillRect(x, y, w, h, cost)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
     nav:fillRect(5, 5, 5, 5, 0)
 
-    example_print_log("blocked_5_5 = " .. tostring(nav:isBlocked(5, 5)))
-    example_print_log("blocked_10_10 = " .. tostring(nav:isBlocked(10, 10)))
-    example_print_log("blocked_11_11 = " .. tostring(nav:isBlocked(11, 11)))
+    lurek.log.info("blocked_5_5 = " .. tostring(nav:isBlocked(5, 5)))
+    lurek.log.info("blocked_10_10 = " .. tostring(nav:isBlocked(10, 10)))
+    lurek.log.info("blocked_11_11 = " .. tostring(nav:isBlocked(11, 11)))
 end
 ```
 
@@ -5432,23 +4417,13 @@ LNavGrid:findHpaPath(sx, sy, gx, gy, unit_size)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(16, 16)
     nav:setChunkSize(4)
     nav:rebuildAbstract()
     local path = nav:findHpaPath(1, 1, 16, 16, 1)
-    example_print_log("hpa path exists = " .. tostring(path ~= nil))
-    example_print_log("hpa path len = " .. tostring(path and #path or 0))
+    lurek.log.info("hpa path exists = " .. tostring(path ~= nil))
+    lurek.log.info("hpa path len = " .. tostring(path and #path or 0))
 end
 ```
 
@@ -5472,16 +4447,6 @@ LNavGrid:getChunkSize()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(100, 100)
     nav:setChunkSize(12)
@@ -5489,9 +4454,9 @@ do
     local chunk_size = nav:getChunkSize()
     local dimensions = nav:getWidth() .. "x" .. nav:getHeight()
 
-    pathfind_log("chunk size = " .. chunk_size)
-    pathfind_log("sector dims = " .. dimensions)
-    pathfind_log("warehouse blocked = " .. tostring(nav:isBlocked(60, 60)))
+    lurek.log.info("chunk size = " .. chunk_size)
+    lurek.log.info("sector dims = " .. dimensions)
+    lurek.log.info("warehouse blocked = " .. tostring(nav:isBlocked(60, 60)))
 end
 ```
 
@@ -5522,16 +4487,6 @@ LNavGrid:getCost(x, y)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(30, 30)
     nav:fill(1)
@@ -5541,9 +4496,9 @@ do
     local deep_water = nav:getCost(8, 8)
     local dry_ground = nav:getCost(1, 1)
 
-    pathfind_log("shallow water cost = " .. shallow_water)
-    pathfind_log("deep water cost = " .. deep_water)
-    pathfind_log("dry ground cost = " .. dry_ground)
+    lurek.log.info("shallow water cost = " .. shallow_water)
+    lurek.log.info("deep water cost = " .. deep_water)
+    lurek.log.info("dry ground cost = " .. dry_ground)
 end
 ```
 
@@ -5567,16 +4522,6 @@ LNavGrid:getDiagonalMode()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(10, 10)
     nav:setDiagonalMode("nocornercut")
@@ -5584,9 +4529,9 @@ do
     local mode = nav:getDiagonalMode()
     local blocked_neighbor = nav:isBlocked(4, 5)
 
-    pathfind_log("formation diagonal mode = " .. mode)
-    pathfind_log("blocked neighbor = " .. tostring(blocked_neighbor))
-    pathfind_log("origin walkable = " .. tostring(nav:isWalkable(1, 1)))
+    lurek.log.info("formation diagonal mode = " .. mode)
+    lurek.log.info("blocked neighbor = " .. tostring(blocked_neighbor))
+    lurek.log.info("origin walkable = " .. tostring(nav:isWalkable(1, 1)))
 end
 ```
 
@@ -5611,16 +4556,6 @@ LNavGrid:getDimensions()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local ng = lurek.pathfind.newNavGrid(20, 15)
     local w, h = ng:getDimensions()
@@ -5628,9 +4563,9 @@ do
     local width = ng:getWidth()
     local height = ng:getHeight()
 
-    pathfind_log("nav dims = " .. w .. "x" .. h)
-    pathfind_log("width via getter = " .. width)
-    pathfind_log("height via getter = " .. height)
+    lurek.log.info("nav dims = " .. w .. "x" .. h)
+    lurek.log.info("width via getter = " .. width)
+    lurek.log.info("height via getter = " .. height)
 end
 ```
 
@@ -5654,23 +4589,13 @@ LNavGrid:getHeight()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local ng = lurek.pathfind.newNavGrid(20, 15)
     local w, h = ng:getDimensions()
     local height = ng:getHeight()
 
-    example_print_log("dims = " .. w .. "x" .. h)
-    example_print_log("height = " .. height)
+    lurek.log.info("dims = " .. w .. "x" .. h)
+    lurek.log.info("height = " .. height)
 end
 ```
 
@@ -5694,23 +4619,13 @@ LNavGrid:getWidth()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local ng = lurek.pathfind.newNavGrid(20, 15)
     local w, h = ng:getDimensions()
     local width = ng:getWidth()
 
-    example_print_log("dims = " .. w .. "x" .. h)
-    example_print_log("width = " .. width)
+    lurek.log.info("dims = " .. w .. "x" .. h)
+    lurek.log.info("width = " .. width)
 end
 ```
 
@@ -5741,16 +4656,6 @@ LNavGrid:isBlocked(x, y)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(30, 30)
     nav:fill(1)
@@ -5760,9 +4665,9 @@ do
     local second_barricade = nav:isBlocked(13, 12)
     local alley = nav:isBlocked(12, 13)
 
-    pathfind_log("barricade = " .. tostring(barricade))
-    pathfind_log("second barricade = " .. tostring(second_barricade))
-    pathfind_log("alley blocked = " .. tostring(alley))
+    lurek.log.info("barricade = " .. tostring(barricade))
+    lurek.log.info("second barricade = " .. tostring(second_barricade))
+    lurek.log.info("alley blocked = " .. tostring(alley))
 end
 ```
 
@@ -5794,25 +4699,15 @@ LNavGrid:isWalkable(x, y, unit_size)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
     nav:fill(1)
     nav:setBlocked(6, 6, true)
 
-    example_print_log("walkable_1x1 = " .. tostring(nav:isWalkable(5, 5)))
-    example_print_log("walkable_blocked = " .. tostring(nav:isWalkable(6, 6)))
-    example_print_log("walkable_2x2 = " .. tostring(nav:isWalkable(5, 5, 2)))
+    lurek.log.info("walkable_1x1 = " .. tostring(nav:isWalkable(5, 5)))
+    lurek.log.info("walkable_blocked = " .. tostring(nav:isWalkable(6, 6)))
+    lurek.log.info("walkable_2x2 = " .. tostring(nav:isWalkable(5, 5, 2)))
 end
 ```
 
@@ -5836,16 +4731,6 @@ LNavGrid:loadFromString(data)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(10, 10)
 
@@ -5856,8 +4741,8 @@ do
     local nav2 = lurek.pathfind.newNavGrid(10, 10)
     nav2:loadFromString(data)
 
-    example_print_log("blocked_5_5 = " .. tostring(nav2:isBlocked(5, 5)))
-    example_print_log("cost_3_3 = " .. nav2:getCost(3, 3))
+    lurek.log.info("blocked_5_5 = " .. tostring(nav2:isBlocked(5, 5)))
+    lurek.log.info("cost_3_3 = " .. nav2:getCost(3, 3))
 end
 ```
 
@@ -5875,24 +4760,14 @@ LNavGrid:rebuildAbstract()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(64, 64)
 
     nav:setChunkSize(8)
     nav:rebuildAbstract()
 
-    example_print_log("chunk = " .. nav:getChunkSize())
-    example_print_log("blocked_1_1 = " .. tostring(nav:isBlocked(1, 1)))
+    lurek.log.info("chunk = " .. nav:getChunkSize())
+    lurek.log.info("blocked_1_1 = " .. tostring(nav:isBlocked(1, 1)))
 end
 ```
 
@@ -5916,16 +4791,6 @@ LNavGrid:saveToString()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(10, 10)
 
@@ -5934,8 +4799,8 @@ do
 
     local data = nav:saveToString()
 
-    example_print_log("bytes = " .. #data)
-    example_print_log("blocked_5_5 = " .. tostring(nav:isBlocked(5, 5)))
+    lurek.log.info("bytes = " .. #data)
+    lurek.log.info("blocked_5_5 = " .. tostring(nav:isBlocked(5, 5)))
 end
 ```
 
@@ -5961,16 +4826,6 @@ LNavGrid:setBlocked(x, y, blocked)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(30, 30)
     nav:fill(1)
@@ -5980,9 +4835,9 @@ do
     local blocked_corridor = nav:isBlocked(10, 11)
     local detour_open = nav:isWalkable(11, 10)
 
-    pathfind_log("main gate blocked = " .. tostring(blocked_gate))
-    pathfind_log("corridor blocked = " .. tostring(blocked_corridor))
-    pathfind_log("detour open = " .. tostring(detour_open))
+    lurek.log.info("main gate blocked = " .. tostring(blocked_gate))
+    lurek.log.info("corridor blocked = " .. tostring(blocked_corridor))
+    lurek.log.info("detour open = " .. tostring(detour_open))
 end
 ```
 
@@ -6006,16 +4861,6 @@ LNavGrid:setChunkSize(size)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(100, 100)
     nav:setChunkSize(16)
@@ -6024,9 +4869,9 @@ do
     local chunk_size = nav:getChunkSize()
     local blocked_hub = nav:isBlocked(40, 40)
 
-    pathfind_log("hpa chunk size = " .. chunk_size)
-    pathfind_log("blocked logistics hub = " .. tostring(blocked_hub))
-    pathfind_log("nav width = " .. nav:getWidth())
+    lurek.log.info("hpa chunk size = " .. chunk_size)
+    lurek.log.info("blocked logistics hub = " .. tostring(blocked_hub))
+    lurek.log.info("nav width = " .. nav:getWidth())
 end
 ```
 
@@ -6052,16 +4897,6 @@ LNavGrid:setCost(x, y, cost)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(30, 30)
     nav:fill(1)
@@ -6071,9 +4906,9 @@ do
     local path_cost = nav:getCost(5, 6)
     local swamp_blocked = nav:isBlocked(5, 5)
 
-    pathfind_log("swamp cost = " .. swamp_cost)
-    pathfind_log("trail cost = " .. path_cost)
-    pathfind_log("swamp blocked = " .. tostring(swamp_blocked))
+    lurek.log.info("swamp cost = " .. swamp_cost)
+    lurek.log.info("trail cost = " .. path_cost)
+    lurek.log.info("swamp blocked = " .. tostring(swamp_blocked))
 end
 ```
 
@@ -6097,16 +4932,6 @@ LNavGrid:setDiagonalMode(mode)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(10, 10)
     nav:setDiagonalMode("always")
@@ -6114,9 +4939,9 @@ do
     local mode = nav:getDiagonalMode()
     local direct_corner = nav:isWalkable(4, 4)
 
-    pathfind_log("scout diagonal mode = " .. mode)
-    pathfind_log("corner tile open = " .. tostring(direct_corner))
-    pathfind_log("blocked pivot = " .. tostring(nav:isBlocked(5, 5)))
+    lurek.log.info("scout diagonal mode = " .. mode)
+    lurek.log.info("corner tile open = " .. tostring(direct_corner))
+    lurek.log.info("blocked pivot = " .. tostring(nav:isBlocked(5, 5)))
 end
 ```
 
@@ -6143,16 +4968,6 @@ LNavGrid:setDirty(x, y, w, h)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(50, 50)
 
@@ -6162,8 +4977,8 @@ do
     nav:setDirty(20, 20, 10, 10)
     nav:rebuildAbstract()
 
-    example_print_log("blocked_25_25 = " .. tostring(nav:isBlocked(25, 25)))
-    example_print_log("chunk = " .. nav:getChunkSize())
+    lurek.log.info("blocked_25_25 = " .. tostring(nav:isBlocked(25, 25)))
+    lurek.log.info("chunk = " .. nav:getChunkSize())
 end
 ```
 
@@ -6187,16 +5002,6 @@ LNavGrid:type()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(5, 5)
     nav:setCost(3, 3, 9)
@@ -6204,9 +5009,9 @@ do
     local dims = nav:getWidth() .. "x" .. nav:getHeight()
     local center_cost = nav:getCost(3, 3)
 
-    pathfind_log("nav grid type = " .. type_name)
-    pathfind_log("debug dims = " .. dims)
-    pathfind_log("center cost = " .. center_cost)
+    lurek.log.info("nav grid type = " .. type_name)
+    lurek.log.info("debug dims = " .. dims)
+    lurek.log.info("center cost = " .. center_cost)
 end
 ```
 
@@ -6236,16 +5041,6 @@ LNavGrid:typeOf(name)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(5, 5)
     nav:setBlocked(2, 3, true)
@@ -6253,9 +5048,9 @@ do
     local is_object = nav:typeOf("LObject")
     local is_path_grid = nav:typeOf("LPathGrid")
 
-    pathfind_log("matches LNavGrid = " .. tostring(is_nav_grid))
-    pathfind_log("matches LObject = " .. tostring(is_object))
-    pathfind_log("matches LPathGrid = " .. tostring(is_path_grid))
+    lurek.log.info("matches LNavGrid = " .. tostring(is_nav_grid))
+    lurek.log.info("matches LObject = " .. tostring(is_object))
+    lurek.log.info("matches LPathGrid = " .. tostring(is_path_grid))
 end
 ```
 
@@ -6293,16 +5088,6 @@ LNavMesh:addPolygon(vertices)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local mesh = lurek.pathfind.newNavMesh()
     local id = mesh:addPolygon({
@@ -6311,8 +5096,8 @@ do
         { x = 30, y = 45 },
     })
 
-    example_print_log("polygon_id = " .. id)
-    example_print_log("polygon_count = " .. mesh:getPolygonCount())
+    lurek.log.info("polygon_id = " .. id)
+    lurek.log.info("polygon_count = " .. mesh:getPolygonCount())
 end
 ```
 
@@ -6344,16 +5129,6 @@ LNavMesh:connectPolygons(a, b, bidirectional)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local mesh = lurek.pathfind.newNavMesh()
     local a = mesh:addPolygon({
@@ -6374,9 +5149,9 @@ do
     local ab = mesh:connectPolygons(a, b, true)
     local bc = mesh:connectPolygons(b, c, false)
 
-    example_print_log("connected_ab = " .. tostring(ab))
-    example_print_log("connected_bc = " .. tostring(bc))
-    example_print_log("polygon_count = " .. mesh:getPolygonCount())
+    lurek.log.info("connected_ab = " .. tostring(ab))
+    lurek.log.info("connected_bc = " .. tostring(bc))
+    lurek.log.info("polygon_count = " .. mesh:getPolygonCount())
 end
 ```
 
@@ -6409,16 +5184,6 @@ LNavMesh:findPath(sx, sy, gx, gy)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local mesh = lurek.pathfind.newNavMesh()
     local p1 = mesh:addPolygon({
@@ -6445,11 +5210,11 @@ do
 
     local path = mesh:findPath(10, 50, 290, 50)
     if path then
-        example_print_log("waypoints = " .. #path)
-        example_print_log("first = " .. path[1].x .. "," .. path[1].y)
-        example_print_log("last = " .. path[#path].x .. "," .. path[#path].y)
+        lurek.log.info("waypoints = " .. #path)
+        lurek.log.info("first = " .. path[1].x .. "," .. path[1].y)
+        lurek.log.info("last = " .. path[#path].x .. "," .. path[#path].y)
     else
-        example_print_log("waypoints = 0")
+        lurek.log.info("waypoints = 0")
     end
 end
 ```
@@ -6474,16 +5239,6 @@ LNavMesh:getPolygonCount()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local mesh = lurek.pathfind.newNavMesh()
     local id = mesh:addPolygon({
@@ -6492,8 +5247,8 @@ do
         { x = 32, y = 48 },
     })
 
-    example_print_log("polygon_count = " .. mesh:getPolygonCount())
-    example_print_log("first_id = " .. id)
+    lurek.log.info("polygon_count = " .. mesh:getPolygonCount())
+    lurek.log.info("first_id = " .. id)
 end
 ```
 
@@ -6517,16 +5272,6 @@ LNavMesh:type()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local mesh = lurek.pathfind.newNavMesh()
     mesh:addPolygon({
@@ -6537,9 +5282,9 @@ do
     local type_name = mesh:type()
     local polygon_count = mesh:getPolygonCount()
 
-    pathfind_log("nav mesh type = " .. type_name)
-    pathfind_log("triangle count = " .. polygon_count)
-    pathfind_log("mesh ready for corridor routing = " .. tostring(polygon_count > 0))
+    lurek.log.info("nav mesh type = " .. type_name)
+    lurek.log.info("triangle count = " .. polygon_count)
+    lurek.log.info("mesh ready for corridor routing = " .. tostring(polygon_count > 0))
 end
 ```
 
@@ -6569,16 +5314,6 @@ LNavMesh:typeOf(name)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local mesh = lurek.pathfind.newNavMesh()
     mesh:addPolygon({
@@ -6590,9 +5325,9 @@ do
     local is_object = mesh:typeOf("LObject")
     local is_goal_map = mesh:typeOf("LGoalMap")
 
-    pathfind_log("matches LNavMesh = " .. tostring(is_nav_mesh))
-    pathfind_log("matches LObject = " .. tostring(is_object))
-    pathfind_log("matches LGoalMap = " .. tostring(is_goal_map))
+    lurek.log.info("matches LNavMesh = " .. tostring(is_nav_mesh))
+    lurek.log.info("matches LObject = " .. tostring(is_object))
+    lurek.log.info("matches LGoalMap = " .. tostring(is_goal_map))
 end
 ```
 
@@ -6633,19 +5368,12 @@ LORCASolver:addAgent(x, y, radius, max_speed)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local orca = lurek.pathfind.newORCASolver(2.0)
     local idx = orca:addAgent(10.0, 20.0, 0.5, 3.0)
     local count = orca:agentCount()
     local type_name = orca:type()
-    example_print_log("agent index = " .. idx)
+    lurek.log.info("agent index = " .. idx)
 end
 ```
 
@@ -6669,20 +5397,13 @@ LORCASolver:agentCount()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local orca = lurek.pathfind.newORCASolver(2.0)
     orca:addAgent(0, 0, 1.0, 2.0)
     orca:addAgent(5, 5, 1.0, 2.0)
     local type_name = orca:type()
     local is_solver = orca:typeOf("LORCASolver")
-    example_print_log("agent count = " .. orca:agentCount())
+    lurek.log.info("agent count = " .. orca:agentCount())
 end
 ```
 
@@ -6706,13 +5427,6 @@ LORCASolver:compute(dt)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local orca = lurek.pathfind.newORCASolver(1.5)
   orca:addAgent(0, 0, 0.5, 3.0)
@@ -6720,7 +5434,7 @@ do
   orca:setPreferredVelocity(0, 1.0, 0.0)
     orca:setPreferredVelocity(1, -1.0, 0.0)
     orca:compute(0.016)
-    example_print_log("collision avoidance computed")
+    lurek.log.info("collision avoidance computed")
 end
 ```
 
@@ -6751,20 +5465,13 @@ LORCASolver:getSafeVelocity(idx)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local orca = lurek.pathfind.newORCASolver(1.5)
   orca:addAgent(0, 0, 0.5, 3.0)
     orca:setPreferredVelocity(0, 2.0, 0.0)
     orca:compute(0.016)
     local vx, vy = orca:getSafeVelocity(0)
-    example_print_log("safe velocity = " .. vx .. ", " .. vy)
+    lurek.log.info("safe velocity = " .. vx .. ", " .. vy)
 end
 ```
 
@@ -6790,20 +5497,13 @@ LORCASolver:setPosition(idx, x, y)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local orca = lurek.pathfind.newORCASolver(2.0)
     orca:addAgent(0, 0, 0.5, 5.0)
     orca:setPosition(0, 5.0, 3.0)
     local count = orca:agentCount()
     local type_name = orca:type()
-    example_print_log("position updated for agent 0")
+    lurek.log.info("position updated for agent 0")
 end
 ```
 
@@ -6829,20 +5529,13 @@ LORCASolver:setPreferredVelocity(idx, pvx, pvy)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local orca = lurek.pathfind.newORCASolver(2.0)
     orca:addAgent(0, 0, 0.5, 5.0)
     orca:setPreferredVelocity(0, 2.0, 1.0)
     local count = orca:agentCount()
     local type_name = orca:type()
-    example_print_log("preferred velocity set for agent 0")
+    lurek.log.info("preferred velocity set for agent 0")
 end
 ```
 
@@ -6866,19 +5559,12 @@ LORCASolver:type()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local orca = lurek.pathfind.newORCASolver(1.0)
     orca:addAgent(0, 0, 0.5, 2.0)
     local count = orca:agentCount()
-    example_print_log("type = " .. orca:type())
-  example_print_log("matches = " .. tostring(orca:typeOf("LORCASolver")))
+    lurek.log.info("type = " .. orca:type())
+  lurek.log.info("matches = " .. tostring(orca:typeOf("LORCASolver")))
 end
 ```
 
@@ -6908,19 +5594,12 @@ LORCASolver:typeOf(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local orca = lurek.pathfind.newORCASolver(1.0)
     orca:addAgent(0, 0, 0.5, 2.0)
     local count = orca:agentCount()
     local type_name = orca:type()
-    example_print_log("is LORCASolver = " .. tostring(orca:typeOf("LORCASolver")))
+    lurek.log.info("is LORCASolver = " .. tostring(orca:typeOf("LORCASolver")))
 end
 ```
 
@@ -6961,16 +5640,6 @@ LPathGrid:findPath(sx, sy, gx, gy)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local grid = lurek.pathfind.newPathGrid(10, 10, 32)
 
@@ -6981,11 +5650,11 @@ do
 
     local path = grid:findPath(1, 1, 10, 10)
     if path then
-        example_print_log("steps = " .. #path)
-        example_print_log("first = " .. path[1].x .. "," .. path[1].y)
-        example_print_log("last = " .. path[#path].x .. "," .. path[#path].y)
+        lurek.log.info("steps = " .. #path)
+        lurek.log.info("first = " .. path[1].x .. "," .. path[1].y)
+        lurek.log.info("last = " .. path[#path].x .. "," .. path[#path].y)
     else
-        example_print_log("steps = 0")
+        lurek.log.info("steps = 0")
     end
 end
 ```
@@ -7019,16 +5688,6 @@ LPathGrid:findPathSmoothed(sx, sy, gx, gy)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local grid = lurek.pathfind.newPathGrid(20, 20, 16)
 
@@ -7038,11 +5697,11 @@ do
 
     local path = grid:findPathSmoothed(1, 5, 20, 5)
     if path then
-        example_print_log("points = " .. #path)
-        example_print_log("first = " .. path[1].x .. "," .. path[1].y)
-        example_print_log("last = " .. path[#path].x .. "," .. path[#path].y)
+        lurek.log.info("points = " .. #path)
+        lurek.log.info("first = " .. path[1].x .. "," .. path[1].y)
+        lurek.log.info("last = " .. path[#path].x .. "," .. path[#path].y)
     else
-        example_print_log("points = 0")
+        lurek.log.info("points = 0")
     end
 end
 ```
@@ -7067,16 +5726,6 @@ LPathGrid:getCellSize()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pg = lurek.pathfind.newPathGrid(10, 10, 32)
     pg:setWalkable(5, 5, false)
@@ -7084,9 +5733,9 @@ do
     local dims = pg:getWidth() .. "x" .. pg:getHeight()
     local center_open = pg:isWalkable(5, 5)
 
-    pathfind_log("cell size = " .. cell_size)
-    pathfind_log("path grid dims = " .. dims)
-    pathfind_log("center open = " .. tostring(center_open))
+    lurek.log.info("cell size = " .. cell_size)
+    lurek.log.info("path grid dims = " .. dims)
+    lurek.log.info("center open = " .. tostring(center_open))
 end
 ```
 
@@ -7117,16 +5766,6 @@ LPathGrid:getCost(x, y)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local grid = lurek.pathfind.newPathGrid(10, 10, 16)
     grid:setCost(6, 1, 1.5)
@@ -7135,9 +5774,9 @@ do
     local lane_cost = grid:getCost(6, 1)
     local base_cost = grid:getCost(1, 1)
 
-    pathfind_log("bridge tile cost = " .. bridge_cost)
-    pathfind_log("lane tile cost = " .. lane_cost)
-    pathfind_log("default tile cost = " .. base_cost)
+    lurek.log.info("bridge tile cost = " .. bridge_cost)
+    lurek.log.info("lane tile cost = " .. lane_cost)
+    lurek.log.info("default tile cost = " .. base_cost)
 end
 ```
 
@@ -7161,16 +5800,6 @@ LPathGrid:getHeight()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pg = lurek.pathfind.newPathGrid(10, 10, 32)
     pg:setCost(6, 6, 4)
@@ -7178,9 +5807,9 @@ do
     local width = pg:getWidth()
     local center_cost = pg:getCost(6, 6)
 
-    pathfind_log("height = " .. height)
-    pathfind_log("width = " .. width)
-    pathfind_log("center cost = " .. center_cost)
+    lurek.log.info("height = " .. height)
+    lurek.log.info("width = " .. width)
+    lurek.log.info("center cost = " .. center_cost)
 end
 ```
 
@@ -7204,16 +5833,6 @@ LPathGrid:getWidth()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pg = lurek.pathfind.newPathGrid(10, 10, 32)
     pg:setCost(4, 4, 3)
@@ -7221,9 +5840,9 @@ do
     local height = pg:getHeight()
     local cell_size = pg:getCellSize()
 
-    pathfind_log("width = " .. width)
-    pathfind_log("height = " .. height)
-    pathfind_log("cell size = " .. cell_size)
+    lurek.log.info("width = " .. width)
+    lurek.log.info("height = " .. height)
+    lurek.log.info("cell size = " .. cell_size)
 end
 ```
 
@@ -7254,16 +5873,6 @@ LPathGrid:isWalkable(x, y)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local grid = lurek.pathfind.newPathGrid(20, 15, 32)
     grid:setWalkable(4, 4, false)
@@ -7272,9 +5881,9 @@ do
     local stairs_cell = grid:isWalkable(4, 5)
     local courtyard_cell = grid:isWalkable(5, 5)
 
-    pathfind_log("tower cell walkable = " .. tostring(tower_cell))
-    pathfind_log("stairs cell walkable = " .. tostring(stairs_cell))
-    pathfind_log("courtyard cell walkable = " .. tostring(courtyard_cell))
+    lurek.log.info("tower cell walkable = " .. tostring(tower_cell))
+    lurek.log.info("stairs cell walkable = " .. tostring(stairs_cell))
+    lurek.log.info("courtyard cell walkable = " .. tostring(courtyard_cell))
 end
 ```
 
@@ -7300,16 +5909,6 @@ LPathGrid:setCost(x, y, cost)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local grid = lurek.pathfind.newPathGrid(10, 10, 16)
     grid:setCost(3, 2, 2)
@@ -7318,9 +5917,9 @@ do
     local road_cost = grid:getCost(3, 2)
     local plain_cost = grid:getCost(3, 4)
 
-    pathfind_log("mud tile cost = " .. mud_cost)
-    pathfind_log("road tile cost = " .. road_cost)
-    pathfind_log("plain tile cost = " .. plain_cost)
+    lurek.log.info("mud tile cost = " .. mud_cost)
+    lurek.log.info("road tile cost = " .. road_cost)
+    lurek.log.info("plain tile cost = " .. plain_cost)
 end
 ```
 
@@ -7346,16 +5945,6 @@ LPathGrid:setWalkable(x, y, w)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local grid = lurek.pathfind.newPathGrid(20, 15, 32)
     grid:setWalkable(6, 7, false)
@@ -7364,9 +5953,9 @@ do
     local flank_route = grid:isWalkable(5, 6)
     local guard_post = grid:isWalkable(6, 7)
 
-    pathfind_log("main gate open = " .. tostring(blocked_gate))
-    pathfind_log("flank route open = " .. tostring(flank_route))
-    pathfind_log("guard post open = " .. tostring(guard_post))
+    lurek.log.info("main gate open = " .. tostring(blocked_gate))
+    lurek.log.info("flank route open = " .. tostring(flank_route))
+    lurek.log.info("guard post open = " .. tostring(guard_post))
 end
 ```
 
@@ -7390,16 +5979,6 @@ LPathGrid:type()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local grid = lurek.pathfind.newPathGrid(5, 5, 32)
     grid:setWalkable(3, 3, false)
@@ -7408,9 +5987,9 @@ do
     local height = grid:getHeight()
     local blocked_center = grid:isWalkable(3, 3)
 
-    pathfind_log("path grid type = " .. type_name)
-    pathfind_log("training grid = " .. width .. "x" .. height)
-    pathfind_log("center walkable = " .. tostring(blocked_center))
+    lurek.log.info("path grid type = " .. type_name)
+    lurek.log.info("training grid = " .. width .. "x" .. height)
+    lurek.log.info("center walkable = " .. tostring(blocked_center))
 end
 ```
 
@@ -7440,16 +6019,6 @@ LPathGrid:typeOf(name)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local grid = lurek.pathfind.newPathGrid(5, 5, 32)
     grid:setCost(2, 2, 3)
@@ -7457,9 +6026,9 @@ do
     local is_object = grid:typeOf("LObject")
     local is_nav_grid = grid:typeOf("LNavGrid")
 
-    pathfind_log("matches LPathGrid = " .. tostring(is_path_grid))
-    pathfind_log("matches LObject = " .. tostring(is_object))
-    pathfind_log("matches LNavGrid = " .. tostring(is_nav_grid))
+    lurek.log.info("matches LPathGrid = " .. tostring(is_path_grid))
+    lurek.log.info("matches LObject = " .. tostring(is_object))
+    lurek.log.info("matches LNavGrid = " .. tostring(is_nav_grid))
 end
 ```
 
@@ -7494,20 +6063,13 @@ LSteeringManager:addArrive(tx, ty, slowing, weight)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local steer = lurek.pathfind.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
   steer:addArrive(300, 300, 50, 1.0)
   local fx, fy = steer:calculate(280, 290, 30, 10, 100, 200, 1 / 60)
-  example_print_log("LSteeringManager:addArrive: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
+  lurek.log.info("LSteeringManager:addArrive: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 ```
 
@@ -7532,20 +6094,13 @@ LSteeringManager:addCustomBehavior(func, weight)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local steer = lurek.pathfind.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
   steer:addCustomBehavior(function(agent, dt) return 50, 0 end, 0.8)
   local count = steer:getBehaviorCount()
-  example_print_log("LSteeringManager:addCustomBehavior: behaviors=" .. tostring(count))
+  lurek.log.info("LSteeringManager:addCustomBehavior: behaviors=" .. tostring(count))
 end
 ```
 
@@ -7570,13 +6125,6 @@ LSteeringManager:addEvade(threat_name, weight)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local steer = lurek.pathfind.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
@@ -7584,7 +6132,7 @@ do
   steer:setEntity("enemy_agent", 140, 120, -10, 0)
   steer:addEvade("enemy_agent", 1.0)
   local fx, fy = steer:calculate(100, 120, 0, 0, 120, 250, 1 / 60)
-  example_print_log("LSteeringManager:addEvade: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
+  lurek.log.info("LSteeringManager:addEvade: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 ```
 
@@ -7611,20 +6159,13 @@ LSteeringManager:addFlee(tx, ty, panic_dist, weight)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local steer = lurek.pathfind.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
   steer:addFlee(200, 200, 1.0)
   local fx, fy = steer:calculate(210, 195, 0, 0, 100, 200, 1 / 60)
-  example_print_log("LSteeringManager:addFlee: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
+  lurek.log.info("LSteeringManager:addFlee: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 ```
 
@@ -7652,13 +6193,6 @@ LSteeringManager:addFlock(neighbor_radius, sep_w, align_w, coh_w, weight)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local steer = lurek.pathfind.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
@@ -7667,7 +6201,7 @@ do
   steer:setEntity("ally_2", 95, 140, 10, 5)
   steer:addFlock(80, 1.5, 1.0, 1.0, 1.0)
   local fx, fy = steer:calculate(100, 120, 0, 0, 120, 250, 1 / 60)
-  example_print_log("LSteeringManager:addFlock: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
+  lurek.log.info("LSteeringManager:addFlock: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 ```
 
@@ -7692,13 +6226,6 @@ LSteeringManager:addPursue(target_name, weight)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local steer = lurek.pathfind.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
@@ -7706,7 +6233,7 @@ do
   steer:setEntity("target_agent", 220, 120, 20, 0)
   steer:addPursue("target_agent", 1.0)
   local fx, fy = steer:calculate(100, 120, 0, 0, 120, 250, 1 / 60)
-  example_print_log("LSteeringManager:addPursue: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
+  lurek.log.info("LSteeringManager:addPursue: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 ```
 
@@ -7732,20 +6259,13 @@ LSteeringManager:addSeek(tx, ty, weight)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local steer = lurek.pathfind.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
   steer:addSeek(400, 300, 1.0)
   local fx, fy = steer:calculate(50, 50, 0, 0, 100, 200, 1 / 60)
-  example_print_log("LSteeringManager:addSeek: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
+  lurek.log.info("LSteeringManager:addSeek: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 ```
 
@@ -7772,20 +6292,13 @@ LSteeringManager:addWander(radius, dist, jitter, weight)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local steer = lurek.pathfind.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
   steer:addWander(25, 50, 8, 0.5)
   local fx, fy = steer:calculate(100, 100, 10, 0, 80, 150, 1 / 60)
-  example_print_log("LSteeringManager:addWander: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
+  lurek.log.info("LSteeringManager:addWander: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 ```
 
@@ -7817,13 +6330,6 @@ LSteeringManager:applyCustomSteering(agent, dt)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local world = lurek.ai.newWorld()
   local world_type = world:type()
@@ -7836,7 +6342,7 @@ do
   local behavior_count = steer:getBehaviorCount()
   steer:addCustomBehavior(function(agent, dt) return 25, -10 end, 1.0)
   local fx, fy = steer:applyCustomSteering(npc, 1 / 60)
-  example_print_log("LSteeringManager:applyCustomSteering: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
+  lurek.log.info("LSteeringManager:applyCustomSteering: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 ```
 
@@ -7873,13 +6379,6 @@ LSteeringManager:calculate(px, py, vx, vy, max_speed, max_force, dt)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local steer = lurek.pathfind.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
@@ -7887,7 +6386,7 @@ do
   steer:addSeek(500, 300, 1.0)
   steer:addWander(15, 30, 4, 0.3)
   local fx, fy = steer:calculate(100, 100, 20, 5, 150, 250, 1 / 60)
-  example_print_log("LSteeringManager:calculate: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
+  lurek.log.info("LSteeringManager:calculate: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 ```
 
@@ -7905,13 +6404,6 @@ LSteeringManager:clearEntities()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local steer = lurek.pathfind.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
@@ -7919,7 +6411,7 @@ do
   steer:setEntity("a", 0, 0)
   steer:setEntity("b", 16, 0)
   steer:clearEntities()
-  example_print_log("LSteeringManager:clearEntities: count=" .. tostring(steer:entityCount()))
+  lurek.log.info("LSteeringManager:clearEntities: count=" .. tostring(steer:entityCount()))
 end
 ```
 
@@ -7937,13 +6429,6 @@ LSteeringManager:clearPath()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local steer = lurek.pathfind.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
@@ -7951,7 +6436,7 @@ do
   steer:setPath({ { x = 10, y = 10 }, { x = 100, y = 100 } }, 8.0, 1.0)
   steer:clearPath()
   local has = steer:hasPath()
-  example_print_log("LSteeringManager:clearPath: hasPath=" .. tostring(has))
+  lurek.log.info("LSteeringManager:clearPath: hasPath=" .. tostring(has))
 end
 ```
 
@@ -7975,20 +6460,13 @@ LSteeringManager:enableSpatialHash(enabled)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local steer = lurek.pathfind.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
   steer:enableSpatialHash(true)
   steer:setSpatialHashCellSize(48)
-  example_print_log("LSteeringManager:enableSpatialHash: done")
+  lurek.log.info("LSteeringManager:enableSpatialHash: done")
 end
 ```
 
@@ -8012,19 +6490,12 @@ LSteeringManager:entityCount()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local steer = lurek.pathfind.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
   steer:setEntity("a", 0, 0)
-  example_print_log("LSteeringManager:entityCount: " .. tostring(steer:entityCount()))
+  lurek.log.info("LSteeringManager:entityCount: " .. tostring(steer:entityCount()))
 end
 ```
 
@@ -8048,13 +6519,6 @@ LSteeringManager:getBehaviorCount()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local steer = lurek.pathfind.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
@@ -8062,7 +6526,7 @@ do
   steer:addSeek(100, 100, 1.0)
   steer:addWander(10, 20, 3, 0.5)
   local count = steer:getBehaviorCount()
-  example_print_log("LSteeringManager:getBehaviorCount: " .. tostring(count))
+  lurek.log.info("LSteeringManager:getBehaviorCount: " .. tostring(count))
 end
 ```
 
@@ -8086,21 +6550,14 @@ LSteeringManager:getCombineMode()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local steer = lurek.pathfind.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
   steer:setCombineMode("truncated")
   local mode = steer:getCombineMode()
-  example_print_log("LSteeringManager:getCombineMode: " .. mode)
-  example_print_log("LSteeringManager:getCombineMode: type=" .. steer:type())
+  lurek.log.info("LSteeringManager:getCombineMode: " .. mode)
+  lurek.log.info("LSteeringManager:getCombineMode: type=" .. steer:type())
 end
 ```
 
@@ -8124,20 +6581,13 @@ LSteeringManager:getLastDiagnostic()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local steer = lurek.pathfind.newSteeringManager()
   local world = lurek.ai.newWorld()
   local agent = world:addAgent("steer_probe")
   steer:addCustomBehavior(function() error("custom steering failure") end, 1.0)
   steer:applyCustomSteering(agent, 1 / 60)
-  example_print_log("LSteeringManager:getLastDiagnostic: " .. tostring(steer:getLastDiagnostic()))
+  lurek.log.info("LSteeringManager:getLastDiagnostic: " .. tostring(steer:getLastDiagnostic()))
 end
 ```
 
@@ -8162,13 +6612,6 @@ LSteeringManager:getLastSteering()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local steer = lurek.pathfind.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
@@ -8176,7 +6619,7 @@ do
   steer:addSeek(200, 200, 1.0)
   steer:calculate(50, 50, 0, 0, 100, 200, 1 / 60)
   local lx, ly = steer:getLastSteering()
-  example_print_log("LSteeringManager:getLastSteering: " .. tostring(lx) .. "," .. tostring(ly))
+  lurek.log.info("LSteeringManager:getLastSteering: " .. tostring(lx) .. "," .. tostring(ly))
 end
 ```
 
@@ -8201,20 +6644,13 @@ LSteeringManager:getPathProgress()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local steer = lurek.pathfind.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
   steer:setPath({ { x = 0, y = 0 }, { x = 100, y = 50 }, { x = 200, y = 100 } }, 10.0, 1.0)
   local idx, total = steer:getPathProgress()
-  example_print_log("LSteeringManager:getPathProgress: " .. tostring(idx) .. "/" .. tostring(total))
+  lurek.log.info("LSteeringManager:getPathProgress: " .. tostring(idx) .. "/" .. tostring(total))
 end
 ```
 
@@ -8238,13 +6674,6 @@ LSteeringManager:hasPath()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local steer = lurek.pathfind.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
@@ -8252,7 +6681,7 @@ do
   local before = steer:hasPath()
   steer:setPath({ { x = 0, y = 0 }, { x = 50, y = 50 } }, 5.0, 1.0)
   local after = steer:hasPath()
-  example_print_log("LSteeringManager:hasPath: before=" .. tostring(before) .. " after=" .. tostring(after))
+  lurek.log.info("LSteeringManager:hasPath: before=" .. tostring(before) .. " after=" .. tostring(after))
 end
 ```
 
@@ -8282,20 +6711,13 @@ LSteeringManager:removeEntity(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local steer = lurek.pathfind.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
   steer:setEntity("scout", 100, 80, 12, 0)
   local removed = steer:removeEntity("scout")
-  example_print_log("LSteeringManager:removeEntity: removed=" .. tostring(removed))
+  lurek.log.info("LSteeringManager:removeEntity: removed=" .. tostring(removed))
 end
 ```
 
@@ -8319,20 +6741,13 @@ LSteeringManager:setCombineMode(mode)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local steer = lurek.pathfind.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
   steer:setCombineMode("priority")
   local mode = steer:getCombineMode()
-  example_print_log("LSteeringManager:setCombineMode: " .. mode)
+  lurek.log.info("LSteeringManager:setCombineMode: " .. mode)
 end
 ```
 
@@ -8360,19 +6775,12 @@ LSteeringManager:setEntity(name, x, y, vx, vy)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local steer = lurek.pathfind.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
   steer:setEntity("scout", 100, 80, 12, 0)
-  example_print_log("LSteeringManager:setEntity: count=" .. tostring(steer:entityCount()))
+  lurek.log.info("LSteeringManager:setEntity: count=" .. tostring(steer:entityCount()))
 end
 ```
 
@@ -8398,13 +6806,6 @@ LSteeringManager:setPath(waypoints, reach_radius, weight)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local steer = lurek.pathfind.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
@@ -8417,7 +6818,7 @@ do
   }
   steer:setPath(waypoints, 16.0, 1.0)
   local has = steer:hasPath()
-  example_print_log("LSteeringManager:setPath: hasPath=" .. tostring(has))
+  lurek.log.info("LSteeringManager:setPath: hasPath=" .. tostring(has))
 end
 ```
 
@@ -8441,19 +6842,12 @@ LSteeringManager:setSpatialHashCellSize(size)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local steer = lurek.pathfind.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
   steer:setSpatialHashCellSize(32)
-  example_print_log("LSteeringManager:setSpatialHashCellSize: done")
+  lurek.log.info("LSteeringManager:setSpatialHashCellSize: done")
 end
 ```
 
@@ -8477,20 +6871,13 @@ LSteeringManager:type()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local steer = lurek.pathfind.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
   local t = steer:type()
-  example_print_log("LSteeringManager:type: " .. t)
-  example_print_log("LSteeringManager:type: matches=" .. tostring(steer:typeOf("LSteeringManager")))
+  lurek.log.info("LSteeringManager:type: " .. t)
+  lurek.log.info("LSteeringManager:type: matches=" .. tostring(steer:typeOf("LSteeringManager")))
 end
 ```
 
@@ -8520,20 +6907,13 @@ LSteeringManager:typeOf(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
   local steer = lurek.pathfind.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
   local is_steer = steer:typeOf("LSteeringManager")
   local is_other = steer:typeOf("LBot")
-  example_print_log("LSteeringManager:typeOf: LSteeringManager=" .. tostring(is_steer) .. " LBot=" .. tostring(is_other))
+  lurek.log.info("LSteeringManager:typeOf: LSteeringManager=" .. tostring(is_steer) .. " LBot=" .. tostring(is_other))
 end
 ```
 
@@ -10999,16 +9379,6 @@ LUnitPathfinder:clearCache()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
@@ -11018,9 +9388,9 @@ do
     pf:setCacheEnabled(true)
     pf:findPath(1, 1, 20, 20)
 
-    example_print_log("cache_before_clear = " .. pf:getCacheSize())
+    lurek.log.info("cache_before_clear = " .. pf:getCacheSize())
     pf:clearCache()
-    example_print_log("cache_after_clear = " .. pf:getCacheSize())
+    lurek.log.info("cache_after_clear = " .. pf:getCacheSize())
 end
 ```
 
@@ -11054,16 +9424,6 @@ LUnitPathfinder:findNearestWalkable(x, y, max_radius, unit_size)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
@@ -11076,7 +9436,7 @@ do
     local pf = lurek.pathfind.newPathfinder(nav)
     local nx, ny = pf:findNearestWalkable(10, 10, 5)
 
-    example_print_log("nearest = " .. nx .. "," .. ny)
+    lurek.log.info("nearest = " .. nx .. "," .. ny)
 end
 ```
 
@@ -11112,16 +9472,6 @@ LUnitPathfinder:findPartialPath(x1, y1, x2, y2, max_nodes, unit_size)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(100, 100)
 
@@ -11132,9 +9482,9 @@ do
     local pf = lurek.pathfind.newPathfinder(nav)
     local path, reached = pf:findPartialPath(1, 1, 100, 100, 50)
 
-    example_print_log("points = " .. #path)
-    example_print_log("reached = " .. tostring(reached))
-    example_print_log("last = " .. path[#path].x .. "," .. path[#path].y)
+    lurek.log.info("points = " .. #path)
+    lurek.log.info("reached = " .. tostring(reached))
+    lurek.log.info("last = " .. path[#path].x .. "," .. path[#path].y)
 end
 ```
 
@@ -11168,16 +9518,6 @@ LUnitPathfinder:findPath(x1, y1, x2, y2, unit_size)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(30, 30)
 
@@ -11190,11 +9530,11 @@ do
     local pf = lurek.pathfind.newPathfinder(nav)
     local path = pf:findPath(1, 12, 30, 12)
     if path then
-        example_print_log("steps = " .. #path)
-        example_print_log("first = " .. path[1].x .. "," .. path[1].y)
-        example_print_log("last = " .. path[#path].x .. "," .. path[#path].y)
+        lurek.log.info("steps = " .. #path)
+        lurek.log.info("first = " .. path[1].x .. "," .. path[1].y)
+        lurek.log.info("last = " .. path[#path].x .. "," .. path[#path].y)
     else
-        example_print_log("steps = 0")
+        lurek.log.info("steps = 0")
     end
 end
 ```
@@ -11231,16 +9571,6 @@ LUnitPathfinder:findPathBidirectional(x1, y1, x2, y2, unit_size, max_nodes)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(40, 40)
 
@@ -11249,11 +9579,11 @@ do
     local pf = lurek.pathfind.newPathfinder(nav)
     local path, complete = pf:findPathBidirectional(1, 1, 40, 40, 1, 500)
     if path then
-        example_print_log("points = " .. #path)
-        example_print_log("complete = " .. tostring(complete))
-        example_print_log("last = " .. path[#path].x .. "," .. path[#path].y)
+        lurek.log.info("points = " .. #path)
+        lurek.log.info("complete = " .. tostring(complete))
+        lurek.log.info("last = " .. path[#path].x .. "," .. path[#path].y)
     else
-        example_print_log("complete = " .. tostring(complete))
+        lurek.log.info("complete = " .. tostring(complete))
     end
 end
 ```
@@ -11288,16 +9618,6 @@ LUnitPathfinder:findPathSmooth(x1, y1, x2, y2, unit_size)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
@@ -11306,11 +9626,11 @@ do
     local pf = lurek.pathfind.newPathfinder(nav)
     local path = pf:findPathSmooth(1, 1, 20, 20)
     if path then
-        example_print_log("points = " .. #path)
-        example_print_log("first = " .. path[1].x .. "," .. path[1].y)
-        example_print_log("last = " .. path[#path].x .. "," .. path[#path].y)
+        lurek.log.info("points = " .. #path)
+        lurek.log.info("first = " .. path[1].x .. "," .. path[1].y)
+        lurek.log.info("last = " .. path[#path].x .. "," .. path[#path].y)
     else
-        example_print_log("points = 0")
+        lurek.log.info("points = 0")
     end
 end
 ```
@@ -11335,16 +9655,6 @@ LUnitPathfinder:getCacheSize()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
@@ -11355,7 +9665,7 @@ do
     pf:findPath(1, 1, 20, 20)
     pf:findPath(5, 5, 15, 15)
 
-    example_print_log("cache_size = " .. pf:getCacheSize())
+    lurek.log.info("cache_size = " .. pf:getCacheSize())
 end
 ```
 
@@ -11385,16 +9695,6 @@ LUnitPathfinder:getPathCost(path)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(10, 10)
 
@@ -11404,10 +9704,10 @@ do
     local pf = lurek.pathfind.newPathfinder(nav)
     local path = pf:findPath(1, 1, 10, 10)
     if path then
-        example_print_log("cost = " .. pf:getPathCost(path))
-        example_print_log("length = " .. pf:getPathLength(path))
+        lurek.log.info("cost = " .. pf:getPathCost(path))
+        lurek.log.info("length = " .. pf:getPathLength(path))
     else
-        example_print_log("cost = 0")
+        lurek.log.info("cost = 0")
     end
 end
 ```
@@ -11438,16 +9738,6 @@ LUnitPathfinder:getPathLength(path)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(10, 10)
 
@@ -11456,10 +9746,10 @@ do
     local pf = lurek.pathfind.newPathfinder(nav)
     local path = pf:findPath(1, 1, 10, 10)
     if path then
-        example_print_log("length = " .. pf:getPathLength(path))
-        example_print_log("cost = " .. pf:getPathCost(path))
+        lurek.log.info("length = " .. pf:getPathLength(path))
+        lurek.log.info("cost = " .. pf:getPathCost(path))
     else
-        example_print_log("length = 0")
+        lurek.log.info("length = 0")
     end
 end
 ```
@@ -11493,16 +9783,6 @@ LUnitPathfinder:heuristicDistance(x1, y1, x2, y2)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(20, 20)
     local pf = lurek.pathfind.newPathfinder(nav)
@@ -11511,9 +9791,9 @@ do
     local same_cell = pf:heuristicDistance(5, 5, 5, 5)
     local front_line = pf:heuristicDistance(2, 10, 18, 10)
 
-    pathfind_log("corner estimate = " .. map_corner)
-    pathfind_log("same cell estimate = " .. same_cell)
-    pathfind_log("front line estimate = " .. front_line)
+    lurek.log.info("corner estimate = " .. map_corner)
+    lurek.log.info("same cell estimate = " .. same_cell)
+    lurek.log.info("front line estimate = " .. front_line)
 end
 ```
 
@@ -11537,16 +9817,6 @@ LUnitPathfinder:isCacheEnabled()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
@@ -11557,8 +9827,8 @@ do
     local enabled = pf:isCacheEnabled()
     pf:setCacheEnabled(false)
 
-    example_print_log("enabled_before_disable = " .. tostring(enabled))
-    example_print_log("enabled_after_disable = " .. tostring(pf:isCacheEnabled()))
+    lurek.log.info("enabled_before_disable = " .. tostring(enabled))
+    lurek.log.info("enabled_after_disable = " .. tostring(pf:isCacheEnabled()))
 end
 ```
 
@@ -11592,16 +9862,6 @@ LUnitPathfinder:isReachable(x1, y1, x2, y2, unit_size)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
@@ -11610,8 +9870,8 @@ do
 
     local pf = lurek.pathfind.newPathfinder(nav)
 
-    example_print_log("reachable_left = " .. tostring(pf:isReachable(1, 1, 9, 9)))
-    example_print_log("reachable_right = " .. tostring(pf:isReachable(1, 1, 20, 20)))
+    lurek.log.info("reachable_left = " .. tostring(pf:isReachable(1, 1, 9, 9)))
+    lurek.log.info("reachable_right = " .. tostring(pf:isReachable(1, 1, 20, 20)))
 end
 ```
 
@@ -11635,16 +9895,6 @@ LUnitPathfinder:setCacheEnabled(enabled)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
@@ -11656,10 +9906,10 @@ do
     pf:findPath(1, 1, 20, 20)
     pf:findPath(5, 5, 15, 15)
 
-    example_print_log("enabled = " .. tostring(pf:isCacheEnabled()))
-    example_print_log("cache_size = " .. pf:getCacheSize())
+    lurek.log.info("enabled = " .. tostring(pf:isCacheEnabled()))
+    lurek.log.info("cache_size = " .. pf:getCacheSize())
     pf:clearCache()
-    example_print_log("cache_after_clear = " .. pf:getCacheSize())
+    lurek.log.info("cache_after_clear = " .. pf:getCacheSize())
 end
 ```
 
@@ -11683,16 +9933,6 @@ LUnitPathfinder:setCacheMaxSize(n)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
@@ -11705,7 +9945,7 @@ do
     pf:findPath(2, 2, 19, 19)
     pf:findPath(3, 3, 18, 18)
 
-    example_print_log("cache_size = " .. pf:getCacheSize())
+    lurek.log.info("cache_size = " .. pf:getCacheSize())
 end
 ```
 
@@ -11729,16 +9969,6 @@ LUnitPathfinder:type()
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(5, 5)
     local pf = lurek.pathfind.newPathfinder(nav)
@@ -11747,9 +9977,9 @@ do
     local path = pf:findPath(1, 1, 5, 5)
     local cache_enabled = pf:isCacheEnabled()
 
-    pathfind_log("pathfinder type = " .. type_name)
-    pathfind_log("route nodes = " .. tostring(path and #path or 0))
-    pathfind_log("cache enabled = " .. tostring(cache_enabled))
+    lurek.log.info("pathfinder type = " .. type_name)
+    lurek.log.info("route nodes = " .. tostring(path and #path or 0))
+    lurek.log.info("cache enabled = " .. tostring(cache_enabled))
 end
 ```
 
@@ -11779,16 +10009,6 @@ LUnitPathfinder:typeOf(name)
 
 ```lua
 do
-    local function pathfind_log(message)
-        lurek.log.info("[pathfind.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local nav = lurek.pathfind.newNavGrid(5, 5)
     local pf = lurek.pathfind.newPathfinder(nav)
@@ -11797,9 +10017,9 @@ do
     local is_object = pf:typeOf("LObject")
     local is_nav_grid = pf:typeOf("LNavGrid")
 
-    pathfind_log("matches LUnitPathfinder = " .. tostring(is_pathfinder))
-    pathfind_log("matches LObject = " .. tostring(is_object))
-    pathfind_log("matches LNavGrid = " .. tostring(is_nav_grid))
+    lurek.log.info("matches LUnitPathfinder = " .. tostring(is_pathfinder))
+    lurek.log.info("matches LObject = " .. tostring(is_object))
+    lurek.log.info("matches LNavGrid = " .. tostring(is_nav_grid))
 end
 ```
 

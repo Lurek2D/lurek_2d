@@ -119,25 +119,6 @@ This module primarily collaborates with `math`, `render`, `runtime`. Its respons
 
 - `content/examples/svg.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_svg_unit.lua` (present)
-- Rust: `src/svg/svg_image.rs`
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Evidence test | `tests/lua/evidence/test_svg_evidence.lua` |
-| Golden test | `tests/lua/golden/test_svg_golden.lua` |
-| Current artifact | `tests/artifacts/current/svg/svg_geometry_debug.png` |
-| Current artifact | `tests/artifacts/current/svg/svg_hierarchy_reset_trace.txt` |
-| Current artifact | `tests/artifacts/current/svg/svg_report.txt` |
-| Current artifact | `tests/artifacts/current/svg/svg_transform_visibility.png` |
-| Baseline artifact | `tests/artifacts/baselines/svg/svg_geometry_debug.png` |
-| Baseline artifact | `tests/artifacts/baselines/svg/svg_report.txt` |
-| Baseline artifact | `tests/artifacts/baselines/svg/svg_transform_visibility.png` |
-
 ## Architecture Links
 
 - Intentionally empty.

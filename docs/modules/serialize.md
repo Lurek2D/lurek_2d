@@ -2,40 +2,7 @@
 
 ## Purpose
 
-Translates JSON, TOML, CSV, XML, INI, and MessagePack via one intermediate tree.
-
-## When To Use
-
-- JSON, TOML, CSV, XML, INI, MessagePack, schemas, and codec entrypoints all matter here because a project often needs to move content between several representations without rewriting conversion logic each time.
-- The module is useful both for loading or saving data and for validating whether translated data actually fits an expected structure.
-- Its shared intermediate tree is the key user-facing idea: several formats can participate in the same workflows because they resolve into one normalized serial representation.
-
-## Minimal Example
-
-Example block: `lurek.serialize.fromJson`
-
-```lua
-do
-    local jsonStr = '{"name":"warrior","level":12,"alive":true,"items":["sword","shield"]}'
-    local data = lurek.serialize.fromJson(jsonStr)
-    local equipment = data.items[1] .. " + " .. data.items[2]
-    local summary = data.name .. " lvl " .. data.level
-    lurek.log.info("loaded party member: " .. summary)
-    lurek.log.info("alive = " .. tostring(data.alive) .. ", gear = " .. equipment)
-end
-```
-
-## Common Patterns
-
-- Start with `lurek.serialize.applyDefaults` when exploring this module.
-- Start with `lurek.serialize.decode` when exploring this module.
-- Start with `lurek.serialize.decodeMsgPack` when exploring this module.
-- Start with `lurek.serialize.decodeXml` when exploring this module.
-- Start with `lurek.serialize.detectFormat` when exploring this module.
-
-## API Reference
-
-- This page is the generated API reference for this module.
+Translates JSON, TOML, CSV, XML, INI, and MessagePack via one intermediate tree. - Validates data against schemas. - Enforces bounded decode, encode, and Lua-conversion limits for depth, nodes, strings, rows, and input size.
 
 ## Summary
 
@@ -49,6 +16,10 @@ end
 - Read `serialize` as the normalization layer for structured data moving between external formats and engine-facing workflows.
 
 This module primarily collaborates with `runtime`. Its responsibility should stay inside the Foundations group rather than absorb behavior owned by those neighbors.
+
+## API Reference
+
+- This page is the generated API reference for this module.
 
 ## Functions
 

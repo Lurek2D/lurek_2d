@@ -103,8 +103,6 @@ L032 = "Draw batch statistics"
 # =============================================================================
 
 [tier1.audio]
-A001 = "Failed to read MIDI file"
-A002 = "MIDI playback disabled in this build"
 A003 = "Audio output not available"
 A004 = "Audio queue entry started"
 

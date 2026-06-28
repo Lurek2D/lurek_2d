@@ -568,15 +568,6 @@ This module is mostly self-contained inside the `Feature Systems` group. Cross-m
 
 - `content/examples/learning.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_learning_unit.lua` (present)
-- Rust: `tests/rust/unit/learning_tests.rs`
-
-## Evidence / Golden
-
-- No evidence or golden artifacts registered.
-
 ## Architecture Links
 
 - Intentionally empty.

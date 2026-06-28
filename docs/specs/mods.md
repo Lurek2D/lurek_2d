@@ -322,15 +322,6 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 - `content/examples/mods.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_mods_unit.lua` (present)
-- Rust: `tests/rust/unit/mods_tests.rs`
-
-## Evidence / Golden
-
-- No evidence or golden artifacts registered.
-
 ## Architecture Links
 
 - Intentionally empty.

@@ -236,42 +236,6 @@ The broader integration map is split by role:
 
 - `content/examples/minimap.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_minimap_unit.lua` (present)
-- Rust: `tests/rust/unit/minimap_tests.rs`
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Evidence test | `tests/lua/evidence/test_minimap_evidence.lua` |
-| Golden test | `tests/lua/golden/test_minimap_golden.lua` |
-| Current artifact | `tests/artifacts/current/minimap/minimap_fog_states.png` |
-| Current artifact | `tests/artifacts/current/minimap/minimap_layer_blend_modes.png` |
-| Current artifact | `tests/artifacts/current/minimap/minimap_layer_visibility_toggle.png` |
-| Current artifact | `tests/artifacts/current/minimap/minimap_markers_objects_pings.png` |
-| Current artifact | `tests/artifacts/current/minimap/minimap_paths_and_overlay_shapes.png` |
-| Current artifact | `tests/artifacts/current/minimap/minimap_province_registry_compact.png` |
-| Current artifact | `tests/artifacts/current/minimap/minimap_shader_binding_contract.txt` |
-| Current artifact | `tests/artifacts/current/minimap/minimap_shader_visual_01_ownership_heat.png` |
-| Current artifact | `tests/artifacts/current/minimap/minimap_shader_visual_02_fog_of_war.png` |
-| Current artifact | `tests/artifacts/current/minimap/minimap_shader_visual_03_radar_scan.png` |
-| Current artifact | `tests/artifacts/current/minimap/minimap_terrain_palette_grid.png` |
-| Current artifact | `tests/artifacts/current/minimap/minimap_tilefield_layers.png` |
-| Current artifact | `tests/artifacts/current/minimap/minimap_viewport_rect.png` |
-| Current artifact | `tests/artifacts/current/minimap/minimap_visibility_fog_action.png` |
-| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_fog_states.png` |
-| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_layer_blend_modes.png` |
-| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_layer_visibility_toggle.png` |
-| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_markers_objects_pings.png` |
-| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_paths_and_overlay_shapes.png` |
-| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_province_registry_compact.png` |
-| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_terrain_palette_grid.png` |
-| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_tilefield_layers.png` |
-| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_viewport_rect.png` |
-| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_visibility_fog_action.png` |
-
 ## Architecture Links
 
 - Intentionally empty.

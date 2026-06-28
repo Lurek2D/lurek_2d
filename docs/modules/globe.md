@@ -2,62 +2,7 @@
 
 ## Purpose
 
-Manages spherical map registries, orbit projections, picking hit tests, and split views.
-
-## When To Use
-
-- It combines region topology, spherical navigation, camera movement, picking, overlays, labels, markers, fog, lighting, and style control so the globe can serve as a strategic layer, simulation view, or inspectable data surface.
-- The module owns both interaction and presentation: users can navigate the sphere, click into it, convert screen interactions into geographic meaning, and layer game-specific information on top.
-- Region adjacency and route helpers matter because many globe-driven games treat the world as a graph of territories, paths, logistics, or influence rather than as a sphere to admire.
-
-## Minimal Example
-
-Example block: `lurek.globe.MAX_PROVINCES`
-
-```lua
-do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
-
-    local g = lurek.globe.new("capacity_globe")
-    g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-    local count = g:provinceCount()
-    example_print_log("max provinces = " .. lurek.globe.MAX_PROVINCES)
-    example_print_log("capacity ok = " .. tostring(lurek.globe.MAX_PROVINCES > 0))
-end
-```
-
-## Common Patterns
-
-- Start with `lurek.globe.generateVoronoi` when exploring this module.
-- Start with `lurek.globe.get` when exploring this module.
-- Start with `lurek.globe.greatCircleDistance` when exploring this module.
-- Start with `lurek.globe.greatCirclePath` when exploring this module.
-- Start with `lurek.globe.latLonToUnit` when exploring this module.
-
-## API Reference
-
-- This page is the generated API reference for this module.
+Manages spherical map registries, orbit projections, picking hit tests, and split views. - Supports layers, day-night cycles, LOD annotations, fog-of-war masks, and region routing.
 
 ## Summary
 
@@ -75,6 +20,10 @@ end
 - Read `globe` as the owner of planetary interaction, topology, and visualization. Rendering shows the result, but this module decides how a spherical world is represented, navigated, annotated, and synchronized.
 
 This module primarily collaborates with `math`, `pathfind`, `province`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
+## API Reference
+
+- This page is the generated API reference for this module.
 
 ## Functions
 
@@ -104,34 +53,12 @@ lurek.globe.generateVoronoi(name, seeds_tbl, spec_tbl)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.generateVoronoi("voronoi_globe", { { 0, 0 }, { 30, 45 }, { -20, 90 }, { 60, -30 } }, {})
     local globe_name = g:getName()
     local province_count = g:provinceCount()
     local globe_type = g:type()
-    example_print_log("voronoi provinces = " .. g:provinceCount())
+    lurek.log.info("voronoi provinces = " .. g:provinceCount())
 end
 ```
 
@@ -161,33 +88,11 @@ lurek.globe.get(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     lurek.globe.new("my_globe")
     local g = lurek.globe.get("my_globe")
     if g then
-        example_print_log("got globe: " .. g:getName())
+        lurek.log.info("got globe: " .. g:getName())
     end
 end
 ```
@@ -221,34 +126,12 @@ lurek.globe.greatCircleDistance(la, lo, lb, lo2)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local d = lurek.globe.greatCircleDistance(0, 0, 90, 0)
     local reverse = lurek.globe.greatCircleDistance(90, 0, 0, 0)
     local quarter = lurek.globe.greatCircleDistance(0, 0, 0, 90)
     local unit = lurek.globe.latLonToUnit(0, 0)
-    example_print_log("distance 0,0 -> 90,0 = " .. d)
+    lurek.log.info("distance 0,0 -> 90,0 = " .. d)
 end
 ```
 
@@ -282,33 +165,11 @@ lurek.globe.greatCirclePath(la, lo, lb, lo2, n)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local points = lurek.globe.greatCirclePath(0, 0, 45, 90, 5)
-    example_print_log("path has " .. #points .. " points")
+    lurek.log.info("path has " .. #points .. " points")
     for _, p in ipairs(points) do
-        example_print_log("  lat=" .. p[1] .. " lon=" .. p[2])
+        lurek.log.info("  lat=" .. p[1] .. " lon=" .. p[2])
     end
 end
 ```
@@ -340,34 +201,12 @@ lurek.globe.latLonToUnit(lat, lon)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local v = lurek.globe.latLonToUnit(0, 0)
     local north = lurek.globe.latLonToUnit(90, 0)
     local east = lurek.globe.latLonToUnit(0, 90)
     local distance = lurek.globe.greatCircleDistance(0, 0, 0, 90)
-    example_print_log("unit vec = " .. v[1] .. "," .. v[2] .. "," .. v[3])
+    lurek.log.info("unit vec = " .. v[1] .. "," .. v[2] .. "," .. v[3])
 end
 ```
 
@@ -399,34 +238,12 @@ lurek.globe.loadFromPNG(name, png_path, spec_tbl)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
-    local g = lurek.globe.loadFromPNG("png_globe", "assets/textures/province_map.png")
+    local g = lurek.globe.loadFromPNG("png_globe", "content/examples/assets/textures/province_map.png")
     local globe_name = g:getName()
     local province_count = g:provinceCount()
     local globe_type = g:type()
-    example_print_log("png globe provinces = " .. g:provinceCount())
+    lurek.log.info("png globe provinces = " .. g:provinceCount())
 end
 ```
 
@@ -458,34 +275,12 @@ lurek.globe.loadFromTOML(name, toml_src, spec_tbl)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local toml = '[[province]]\nid = 1\ncentroid = [10.0, 20.0]\nvertices = [[10.0, 19.0], [11.0, 20.0], [10.0, 21.0], [9.0, 20.0]]'
     local g = lurek.globe.loadFromTOML("toml_globe", toml)
     local globe_name = g:getName()
     local province_count = g:provinceCount()
-    example_print_log("toml globe provinces = " .. g:provinceCount())
+    lurek.log.info("toml globe provinces = " .. g:provinceCount())
 end
 ```
 
@@ -517,28 +312,6 @@ lurek.globe.loadFromTOMLFile(name, path, spec_tbl)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local path = "save/globe_example.toml"
     lurek.filesystem.write(path, "[[province]]\nid = 1\ncentroid = [10.0, 20.0]\nvertices = [[10.0, 19.0], [11.0, 20.0], [10.0, 21.0], [9.0, 20.0]]\n")
@@ -546,7 +319,7 @@ do
     local g = lurek.globe.loadFromTOMLFile("toml_file_globe", path, {})
     local globe_name = g:getName()
     local province_count = g:provinceCount()
-    example_print_log("toml file globe provinces = " .. g:provinceCount())
+    lurek.log.info("toml file globe provinces = " .. g:provinceCount())
 end
 ```
 
@@ -577,34 +350,12 @@ lurek.globe.new(name, spec_tbl)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("test_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     local globe_name = g:getName()
     local province_count = g:provinceCount()
-    example_print_log("globe type = " .. g:type())
+    lurek.log.info("globe type = " .. g:type())
 end
 ```
 
@@ -628,34 +379,12 @@ lurek.globe.newRegistry()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local reg = lurek.globe.newRegistry()
     local registry_type = reg:type()
     local registry_names = reg:names()
-    example_print_log("registry created = " .. tostring(reg ~= nil))
-    example_print_log("registry type = " .. reg:type())
+    lurek.log.info("registry created = " .. tostring(reg ~= nil))
+    lurek.log.info("registry type = " .. reg:type())
 end
 ```
 
@@ -691,34 +420,12 @@ lurek.globe.raySphereIntersect(ox, oy, oz, dx, dy, dz, radius)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local t = lurek.globe.raySphereIntersect(0.0, 0.0, -2.0, 0.0, 0.0, 1.0, 1.0)
     local miss = lurek.globe.raySphereIntersect(0.0, 0.0, -2.0, 1.0, 0.0, 0.0, 1.0)
     local unit = lurek.globe.latLonToUnit(0, 0)
-    example_print_log("hit distance = " .. tostring(t))
-    example_print_log("ray hits sphere = " .. tostring(t ~= nil))
+    lurek.log.info("hit distance = " .. tostring(t))
+    lurek.log.info("ray hits sphere = " .. tostring(t ~= nil))
 end
 ```
 
@@ -748,35 +455,13 @@ lurek.globe.remove(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("tmp_remove")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     local globe_name = g:getName()
     local province_count = g:provinceCount()
     local ok = lurek.globe.remove("tmp_remove")
-    example_print_log("removed=" .. tostring(ok))
+    lurek.log.info("removed=" .. tostring(ok))
 end
 ```
 
@@ -831,35 +516,13 @@ LGlobe:addArc(lat1, lon1, lat2, lon2, steps)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("arc_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     local globe_name = g:getName()
     local province_count = g:provinceCount()
     local id = g:addArc(0, 0, 45, 90, 12)
-    example_print_log("arc id = " .. id)
+    lurek.log.info("arc id = " .. id)
 end
 ```
 
@@ -892,35 +555,13 @@ LGlobe:addLabel(ltype, lat, lon, text)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("lbl_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     local globe_name = g:getName()
     local province_count = g:provinceCount()
     local id = g:addLabel("region", 40, -74, "New York")
-    example_print_log("label id = " .. id)
+    lurek.log.info("label id = " .. id)
 end
 ```
 
@@ -945,28 +586,6 @@ LGlobe:addLayer(name, z_order)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("layer_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -974,7 +593,7 @@ do
     local province_count = g:provinceCount()
     g:addLayer("terrain", 0)
     g:addLayer("borders", 1)
-    example_print_log("layers added")
+    lurek.log.info("layers added")
 end
 ```
 
@@ -1007,35 +626,13 @@ LGlobe:addMarker(mtype, lat, lon, label)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("mark_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     local globe_name = g:getName()
     local province_count = g:provinceCount()
     local id = g:addMarker("city", 51.5, -0.12, "London")
-    example_print_log("marker id = " .. id)
+    lurek.log.info("marker id = " .. id)
 end
 ```
 
@@ -1065,35 +662,13 @@ LGlobe:addProvince(p)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("prov_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     local globe_name = g:getName()
     local province_count = g:provinceCount()
     local ok = g:addProvince({ id = 1, centroid = { 10.0, 20.0 }, vertices = { { 9, 19 }, { 11, 19 }, { 11, 21 }, { 9, 21 } } })
-    example_print_log("added = " .. tostring(ok))
+    lurek.log.info("added = " .. tostring(ok))
 end
 ```
 
@@ -1123,28 +698,6 @@ LGlobe:addRegion(p)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("region_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -1155,8 +708,8 @@ do
         centroid = { 50, 15 },
         vertices = { { 49, 14 }, { 51, 14 }, { 51, 16 }, { 49, 16 } },
     })
-    example_print_log("added region = " .. tostring(ok))
-    example_print_log("region count = " .. g:regionCount())
+    lurek.log.info("added region = " .. tostring(ok))
+    lurek.log.info("region count = " .. g:regionCount())
 end
 ```
 
@@ -1186,18 +739,13 @@ LGlobe:addTerrainPatch(p)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do parts[i] = tostring(select(i, ...)) end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local g = lurek.globe.new("example_add_terrain_patch")
     local ok = g:addTerrainPatch({ id = 1, vertices = {{-90,-180},{-90,0},{0,0},{0,-180}}, base_color = {0.1, 0.35, 0.8, 1.0} })
     local count = g:terrainPatchCount()
     local report = g:validateTerrainCoverage({ lat_step = 45, lon_step = 90 })
-    example_print_log("terrain added=" .. tostring(ok))
-    example_print_log("terrain count=" .. tostring(count) .. " covered=" .. tostring(report.covered_samples))
+    lurek.log.info("terrain added=" .. tostring(ok))
+    lurek.log.info("terrain count=" .. tostring(count) .. " covered=" .. tostring(report.covered_samples))
 end
 ```
 
@@ -1224,34 +772,20 @@ LGlobe:applyMouseDrag(start_x, start_y, end_x, end_y)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
-    local g = build_demo_globe("mouse_drag_globe")
+    local g = lurek.globe.new("mouse_drag_globe")
+    g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
+    g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
+    g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
+    g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
+    g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
+    g:addMarker("city", 0, 0, "Alpha")
+    g:addMarker("city", 0, 10, "Beta")
+    g:setCamera(0, 0, 1.2)
     g:applyMouseDrag(320, 180, 360, 210)
     local lat, lon, zoom = g:getCamera()
     local lod = g:getLod()
-    example_print_log("camera after drag = " .. lat .. "," .. lon .. "," .. zoom)
+    lurek.log.info("camera after drag = " .. lat .. "," .. lon .. "," .. zoom)
 end
 ```
 
@@ -1275,34 +809,20 @@ LGlobe:applyWheelZoom(delta)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
-    local g = build_demo_globe("wheel_zoom_globe")
+    local g = lurek.globe.new("wheel_zoom_globe")
+    g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
+    g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
+    g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
+    g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
+    g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
+    g:addMarker("city", 0, 0, "Alpha")
+    g:addMarker("city", 0, 10, "Beta")
+    g:setCamera(0, 0, 1.2)
     g:applyWheelZoom(-1.0)
     local _, _, zoom = g:getCamera()
     local lod = g:getLod()
-    example_print_log("camera zoom = " .. zoom)
+    lurek.log.info("camera zoom = " .. zoom)
 end
 ```
 
@@ -1328,28 +848,6 @@ LGlobe:cacheReachability(faction, start_id, max_cost)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("cache_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -1357,7 +855,7 @@ do
     local province_count = g:provinceCount()
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     g:cacheReachability("faction_a", 1, 5.0)
-    example_print_log("reachability cached")
+    lurek.log.info("reachability cached")
 end
 ```
 
@@ -1387,28 +885,6 @@ LGlobe:clearProvinceTexture(id)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("ctex_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -1417,7 +893,7 @@ do
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     g:setProvinceTexture(1, 42, 0, 0, 1, 1)
     g:clearProvinceTexture(1)
-    example_print_log("texture cleared")
+    lurek.log.info("texture cleared")
 end
 ```
 
@@ -1447,18 +923,13 @@ LGlobe:clearTerrainPatchTexture(id)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do parts[i] = tostring(select(i, ...)) end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local g = lurek.globe.new("example_clear_terrain_patch_texture")
     g:addTerrainPatch({ id = 7, vertices = {{-10,-10},{-10,10},{10,10},{10,-10}} })
     g:setTerrainPatchTexture(7, 0, 0.0, 0.0, 1.0, 1.0)
     local ok = g:clearTerrainPatchTexture(7)
     local raw = g:getTerrainPatchAttr(7, "__texture_raw")
-    example_print_log("terrain texture cleared=" .. tostring(ok) .. " raw=" .. tostring(raw))
+    lurek.log.info("terrain texture cleared=" .. tostring(ok) .. " raw=" .. tostring(raw))
 end
 ```
 
@@ -1489,28 +960,6 @@ LGlobe:decodeFogBase64(viewer, payload)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("dec_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -1518,7 +967,7 @@ do
     local province_count = g:provinceCount()
     local b64 = g:encodeFogBase64("p1")
     local ok = g:decodeFogBase64("p1", b64)
-    example_print_log("decoded = " .. tostring(ok))
+    lurek.log.info("decoded = " .. tostring(ok))
 end
 ```
 
@@ -1549,34 +998,20 @@ LGlobe:distanceBetweenMarkers(a, b)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
-    local g, a, b = build_demo_globe("marker_distance_globe")
+    local g = lurek.globe.new("marker_distance_globe")
+    g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
+    g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
+    g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
+    g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
+    g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
+    local a = g:addMarker("city", 0, 0, "Alpha")
+    local b = g:addMarker("city", 0, 10, "Beta")
+    g:setCamera(0, 0, 1.2)
     local d = g:distanceBetweenMarkers(a, b)
     local path = g:findPath(1, 3)
     local surface = g:pickSurface(320, 180, 24)
-    example_print_log("marker distance = " .. tostring(d))
+    lurek.log.info("marker distance = " .. tostring(d))
 end
 ```
 
@@ -1600,34 +1035,20 @@ LGlobe:draw(opts)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
-    local g = build_demo_globe("draw_globe")
+    local g = lurek.globe.new("draw_globe")
+    g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
+    g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
+    g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
+    g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
+    g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
+    g:addMarker("city", 0, 0, "Alpha")
+    g:addMarker("city", 0, 10, "Beta")
+    g:setCamera(0, 0, 1.2)
     g:draw()
     local lod = g:getLod()
-    example_print_log("draw issued")
-    example_print_log("type = " .. g:type())
+    lurek.log.info("draw issued")
+    lurek.log.info("type = " .. g:type())
 end
 ```
 
@@ -1657,35 +1078,13 @@ LGlobe:encodeFogBase64(viewer)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("enc_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     local globe_name = g:getName()
     local province_count = g:provinceCount()
     local b64 = g:encodeFogBase64("p1")
-    example_print_log("encoded fog length = " .. #b64)
+    lurek.log.info("encoded fog length = " .. #b64)
 end
 ```
 
@@ -1709,28 +1108,6 @@ LGlobe:exportProvinceMeshOBJ()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("obj_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -1738,7 +1115,7 @@ do
     local province_count = g:provinceCount()
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     local obj = g:exportProvinceMeshOBJ()
-    example_print_log("OBJ length = " .. #obj)
+    lurek.log.info("OBJ length = " .. #obj)
 end
 ```
 
@@ -1769,28 +1146,6 @@ LGlobe:findPath(from_id, to_id)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("path_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -1798,7 +1153,7 @@ do
     local province_count = g:provinceCount()
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}, neighbors = {2}})
     g:addProvince({id = 2, centroid = {5, 0}, vertices = {{4, -1}, {6, -1}, {6, 1}, {4, 1}}, neighbors = {1}})
-    example_print_log("path length = " .. #(g:findPath(1, 2) or {}))
+    lurek.log.info("path length = " .. #(g:findPath(1, 2) or {}))
 end
 ```
 
@@ -1830,34 +1185,20 @@ LGlobe:findPathWithCosts(from_id, to_id, opts)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
-    local g = build_demo_globe("find_costs_globe")
+    local g = lurek.globe.new("find_costs_globe")
+    g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
+    g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
+    g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
+    g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
+    g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
+    g:addMarker("city", 0, 0, "Alpha")
+    g:addMarker("city", 0, 10, "Beta")
+    g:setCamera(0, 0, 1.2)
     local path = g:findPathWithCosts(1, 3)
     local reachable = g:reachableWithCosts(1, 10.0)
-    example_print_log("path table = " .. type(path))
-    example_print_log("path first = " .. tostring(path and path[1]))
+    lurek.log.info("path table = " .. type(path))
+    lurek.log.info("path first = " .. tostring(path and path[1]))
 end
 ```
 
@@ -1887,28 +1228,6 @@ LGlobe:getCachedReachability(faction)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("gcache_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -1917,8 +1236,8 @@ do
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     g:cacheReachability("faction_b", 1, 5.0)
     local costs = g:getCachedReachability("faction_b")
-    example_print_log("cached costs type = " .. type(costs))
-    example_print_log("cached cost to 1 = " .. tostring(costs[1]))
+    lurek.log.info("cached costs type = " .. type(costs))
+    lurek.log.info("cached cost to 1 = " .. tostring(costs[1]))
 end
 ```
 
@@ -1944,28 +1263,6 @@ LGlobe:getCamera()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("gcam_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -1973,7 +1270,7 @@ do
     local province_count = g:provinceCount()
     g:setCamera(30, 60, 1.5)
     local lat, lon, z = g:getCamera()
-    example_print_log("camera: " .. lat .. "," .. lon .. " z=" .. z)
+    lurek.log.info("camera: " .. lat .. "," .. lon .. " z=" .. z)
 end
 ```
 
@@ -2004,34 +1301,20 @@ LGlobe:getEdgeTags(a, b)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
-    local g = build_demo_globe("get_edge_tags_globe")
+    local g = lurek.globe.new("get_edge_tags_globe")
+    g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
+    g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
+    g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
+    g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
+    g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
+    g:addMarker("city", 0, 0, "Alpha")
+    g:addMarker("city", 0, 10, "Beta")
+    g:setCamera(0, 0, 1.2)
     g:setEdgeTags(1, 2, { "road", "trade" })
     local tags = g:getEdgeTags(1, 2)
     local path = g:findPath(1, 3)
-    example_print_log("edge tags = " .. table.concat(tags, ","))
+    lurek.log.info("edge tags = " .. table.concat(tags, ","))
 end
 ```
 
@@ -2062,28 +1345,6 @@ LGlobe:getFogState(viewer, id)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("gfs_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -2092,7 +1353,7 @@ do
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     g:setFogState("p1", 1, "visible")
     local state = g:getFogState("p1", 1)
-    example_print_log("fog = " .. state)
+    lurek.log.info("fog = " .. state)
 end
 ```
 
@@ -2116,35 +1377,13 @@ LGlobe:getLod()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("lod_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     local globe_name = g:getName()
     local province_count = g:provinceCount()
     g:setCamera(0, 0, 0.5)
-    example_print_log("lod = " .. g:getLod())
+    lurek.log.info("lod = " .. g:getLod())
 end
 ```
 
@@ -2175,28 +1414,6 @@ LGlobe:getMarkerAttr(id, key)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("ga_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -2205,7 +1422,7 @@ do
     local id = g:addMarker("city", 48.8, 2.3, "Paris")
     g:setMarkerAttr(id, "country", "France")
     local val = g:getMarkerAttr(id, "country")
-    example_print_log("country = " .. tostring(val))
+    lurek.log.info("country = " .. tostring(val))
 end
 ```
 
@@ -2229,34 +1446,12 @@ LGlobe:getName()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("named_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     local globe_name = g:getName()
     local province_count = g:provinceCount()
-    example_print_log("name = " .. g:getName())
+    lurek.log.info("name = " .. g:getName())
 end
 ```
 
@@ -2286,28 +1481,6 @@ LGlobe:getNeighbors(id)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("neigh_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -2315,7 +1488,7 @@ do
     local province_count = g:provinceCount()
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}, neighbors = {2}})
     local n = g:getNeighbors(1)
-    example_print_log("neighbors of 1: " .. #n)
+    lurek.log.info("neighbors of 1: " .. #n)
 end
 ```
 
@@ -2346,28 +1519,6 @@ LGlobe:getProvinceAttr(id, key)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("rattr_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -2376,7 +1527,7 @@ do
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     g:setProvinceAttr(1, "terrain", "forest")
     local val = g:getProvinceAttr(1, "terrain")
-    example_print_log("terrain = " .. tostring(val))
+    lurek.log.info("terrain = " .. tostring(val))
 end
 ```
 
@@ -2406,28 +1557,6 @@ LGlobe:getProvinceSector(id)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("gsec_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -2436,7 +1565,7 @@ do
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     g:setProvinceSector(1, "eastern")
     local s = g:getProvinceSector(1)
-    example_print_log("sector = " .. tostring(s))
+    lurek.log.info("sector = " .. tostring(s))
 end
 ```
 
@@ -2467,34 +1596,20 @@ LGlobe:getRegionAttr(id, key)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
-    local g = build_demo_globe("get_region_attr_globe")
+    local g = lurek.globe.new("get_region_attr_globe")
+    g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
+    g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
+    g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
+    g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
+    g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
+    g:addMarker("city", 0, 0, "Alpha")
+    g:addMarker("city", 0, 10, "Beta")
+    g:setCamera(0, 0, 1.2)
     g:setRegionAttr(11, "owner", "faction_b")
     local count = g:regionCount()
     local tags = g:getEdgeTags(1, 2)
-    example_print_log("owner = " .. tostring(g:getRegionAttr(11, "owner")))
+    lurek.log.info("owner = " .. tostring(g:getRegionAttr(11, "owner")))
 end
 ```
 
@@ -2524,28 +1639,6 @@ LGlobe:getSectorProvinces(sector)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("sp_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -2554,7 +1647,7 @@ do
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     g:setProvinceSector(1, "west")
     local ids = g:getSectorProvinces("west")
-    example_print_log("west has " .. #ids .. " provinces")
+    lurek.log.info("west has " .. #ids .. " provinces")
 end
 ```
 
@@ -2619,18 +1712,13 @@ LGlobe:getTerrainPatchAttr(id, key)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do parts[i] = tostring(select(i, ...)) end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local g = lurek.globe.new("example_get_terrain_patch_attr")
     g:addTerrainPatch({ id = 5, vertices = {{-10,-10},{-10,10},{10,10},{10,-10}}, attrs = { danger = "low" } })
     local danger = g:getTerrainPatchAttr(5, "danger")
     local missing = g:getTerrainPatchAttr(5, "missing")
     local ok = danger == "low" and missing == nil
-    example_print_log("terrain danger=" .. tostring(danger) .. " ok=" .. tostring(ok))
+    lurek.log.info("terrain danger=" .. tostring(danger) .. " ok=" .. tostring(ok))
 end
 ```
 
@@ -2654,28 +1742,6 @@ LGlobe:getTimeOfDay()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("gtod_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -2683,7 +1749,7 @@ do
     local province_count = g:provinceCount()
     g:setTimeOfDay(8.0)
     local t = g:getTimeOfDay()
-    example_print_log("time of day = " .. t)
+    lurek.log.info("time of day = " .. t)
 end
 ```
 
@@ -2708,28 +1774,6 @@ LGlobe:hideProvince(viewer, id)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("hide_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -2737,7 +1781,7 @@ do
     local province_count = g:provinceCount()
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     g:hideProvince("player1", 1)
-    example_print_log("province 1 hidden")
+    lurek.log.info("province 1 hidden")
 end
 ```
 
@@ -2768,28 +1812,6 @@ LGlobe:isVisible(viewer, id)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("isv_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -2797,7 +1819,7 @@ do
     local province_count = g:provinceCount()
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     g:revealProvince("p1", 1)
-    example_print_log("visible = " .. tostring(g:isVisible("p1", 1)))
+    lurek.log.info("visible = " .. tostring(g:isVisible("p1", 1)))
 end
 ```
 
@@ -2829,28 +1851,6 @@ LGlobe:moveMarker(id, lat, lon)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("mv_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -2858,7 +1858,7 @@ do
     local province_count = g:provinceCount()
     local id = g:addMarker("pin", 0, 0)
     g:moveMarker(id, 10, 20)
-    example_print_log("marker moved")
+    lurek.log.info("marker moved")
 end
 ```
 
@@ -2883,28 +1883,6 @@ LGlobe:pan(dlat, dlon)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("pan_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -2913,7 +1891,7 @@ do
     g:setCamera(0, 0, 1.0)
     g:pan(10, 20)
     local lat, lon, z = g:getCamera()
-    example_print_log("after pan: " .. lat .. "," .. lon)
+    lurek.log.info("after pan: " .. lat .. "," .. lon)
 end
 ```
 
@@ -2944,35 +1922,13 @@ LGlobe:pick(sx, sy)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("pick_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     local globe_name = g:getName()
     local province_count = g:provinceCount()
     local id = g:pick(400, 300)
-    example_print_log("picked province = " .. tostring(id))
+    lurek.log.info("picked province = " .. tostring(id))
 end
 ```
 
@@ -3004,35 +1960,13 @@ LGlobe:pickLatLon(sx, sy)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("pll_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     local globe_name = g:getName()
     local province_count = g:provinceCount()
     local cx, cy = g:pickLatLon(400, 300)
-    example_print_log("centroid = " .. tostring(cx) .. "," .. tostring(cy))
+    lurek.log.info("centroid = " .. tostring(cx) .. "," .. tostring(cy))
 end
 ```
 
@@ -3064,34 +1998,20 @@ LGlobe:pickMarker(sx, sy, radius)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
-    local g = build_demo_globe("pick_marker_globe")
+    local g = lurek.globe.new("pick_marker_globe")
+    g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
+    g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
+    g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
+    g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
+    g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
+    g:addMarker("city", 0, 0, "Alpha")
+    g:addMarker("city", 0, 10, "Beta")
+    g:setCamera(0, 0, 1.2)
     local id = g:pickMarker(320, 180, 24)
     local lat, lon = g:screenToLatLon(320, 180)
     local surface = g:pickSurface(320, 180, 24)
-    example_print_log("picked marker = " .. tostring(id))
+    lurek.log.info("picked marker = " .. tostring(id))
 end
 ```
 
@@ -3123,35 +2043,13 @@ LGlobe:pickRaycast(sx, sy, steps)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("pray_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     local globe_name = g:getName()
     local province_count = g:provinceCount()
     local id = g:pickRaycast(400, 300, 32)
-    example_print_log("raycast pick = " .. tostring(id))
+    lurek.log.info("raycast pick = " .. tostring(id))
 end
 ```
 
@@ -3182,34 +2080,20 @@ LGlobe:pickRegions(sx, sy)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
-    local g = build_demo_globe("pick_regions_globe")
+    local g = lurek.globe.new("pick_regions_globe")
+    g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
+    g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
+    g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
+    g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
+    g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
+    g:addMarker("city", 0, 0, "Alpha")
+    g:addMarker("city", 0, 10, "Beta")
+    g:setCamera(0, 0, 1.2)
     local ids = g:pickRegions(320, 180)
     local lat, lon = g:screenToLatLon(320, 180)
     local lod = g:getLod()
-    example_print_log("picked regions = " .. #ids)
+    lurek.log.info("picked regions = " .. #ids)
 end
 ```
 
@@ -3241,34 +2125,20 @@ LGlobe:pickSurface(sx, sy, marker_radius)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
-    local g = build_demo_globe("pick_surface_globe")
+    local g = lurek.globe.new("pick_surface_globe")
+    g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
+    g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
+    g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
+    g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
+    g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
+    g:addMarker("city", 0, 0, "Alpha")
+    g:addMarker("city", 0, 10, "Beta")
+    g:setCamera(0, 0, 1.2)
     local hit = g:pickSurface(320, 180, 24)
     local lat, lon = g:screenToLatLon(320, 180)
     local ids = g:pickRegions(320, 180)
-    example_print_log("picked surface table = " .. tostring(hit ~= nil))
+    lurek.log.info("picked surface table = " .. tostring(hit ~= nil))
 end
 ```
 
@@ -3292,34 +2162,12 @@ LGlobe:provinceCount()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("count_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     local globe_name = g:getName()
     local province_count = g:provinceCount()
-    example_print_log("provinces = " .. g:provinceCount())
+    lurek.log.info("provinces = " .. g:provinceCount())
 end
 ```
 
@@ -3350,28 +2198,6 @@ LGlobe:reachable(start_id, max_cost)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("reach_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -3380,8 +2206,8 @@ do
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}, neighbors = {2}})
     g:addProvince({id = 2, centroid = {5, 0}, vertices = {{4, -1}, {6, -1}, {6, 1}, {4, 1}}, neighbors = {1}})
     local costs = g:reachable(1, 10.0)
-    example_print_log("cost to 1 = " .. tostring(costs[1]))
-    example_print_log("cost to 2 = " .. tostring(costs[2]))
+    lurek.log.info("cost to 1 = " .. tostring(costs[1]))
+    lurek.log.info("cost to 2 = " .. tostring(costs[2]))
 end
 ```
 
@@ -3413,34 +2239,20 @@ LGlobe:reachableWithCosts(start_id, max_cost, opts)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
-    local g = build_demo_globe("reachable_costs_globe")
+    local g = lurek.globe.new("reachable_costs_globe")
+    g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
+    g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
+    g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
+    g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
+    g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
+    g:addMarker("city", 0, 0, "Alpha")
+    g:addMarker("city", 0, 10, "Beta")
+    g:setCamera(0, 0, 1.2)
     local costs = g:reachableWithCosts(1, 10.0)
     local path = g:findPathWithCosts(1, 3)
-    example_print_log("cost table = " .. type(costs))
-    example_print_log("cost to 2 = " .. tostring(costs[2]))
+    lurek.log.info("cost table = " .. type(costs))
+    lurek.log.info("cost to 2 = " .. tostring(costs[2]))
 end
 ```
 
@@ -3464,28 +2276,6 @@ LGlobe:regionCount()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("count_region_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -3501,7 +2291,7 @@ do
         centroid = { -10, 20 },
         vertices = { { -11, 19 }, { -9, 19 }, { -9, 21 }, { -11, 21 } },
     })
-    example_print_log("region count = " .. g:regionCount())
+    lurek.log.info("region count = " .. g:regionCount())
 end
 ```
 
@@ -3532,34 +2322,20 @@ LGlobe:regionsAtLatLon(lat, lon)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
-    local g = build_demo_globe("regions_at_latlon_globe")
+    local g = lurek.globe.new("regions_at_latlon_globe")
+    g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
+    g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
+    g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
+    g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
+    g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
+    g:addMarker("city", 0, 0, "Alpha")
+    g:addMarker("city", 0, 10, "Beta")
+    g:setCamera(0, 0, 1.2)
     local ids = g:regionsAtLatLon(0, 0)
     local picked = g:pickRegions(320, 180)
     local lod = g:getLod()
-    example_print_log("regions at latlon = " .. #ids)
+    lurek.log.info("regions at latlon = " .. #ids)
 end
 ```
 
@@ -3589,28 +2365,6 @@ LGlobe:removeArc(id)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("rarc_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -3618,7 +2372,7 @@ do
     local province_count = g:provinceCount()
     local id = g:addArc(0, 0, 30, 60)
     local ok = g:removeArc(id)
-    example_print_log("arc removed = " .. tostring(ok))
+    lurek.log.info("arc removed = " .. tostring(ok))
 end
 ```
 
@@ -3648,28 +2402,6 @@ LGlobe:removeHeatLayer(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("rheat_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -3677,7 +2409,7 @@ do
     local province_count = g:provinceCount()
     g:setHeatLayer("income", "gdp", 0, 50000, 0.5)
     local ok = g:removeHeatLayer("income")
-    example_print_log("heat removed = " .. tostring(ok))
+    lurek.log.info("heat removed = " .. tostring(ok))
 end
 ```
 
@@ -3707,28 +2439,6 @@ LGlobe:removeLabel(id)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("rlbl_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -3736,7 +2446,7 @@ do
     local province_count = g:provinceCount()
     local id = g:addLabel("tmp", 0, 0, "temp")
     local ok = g:removeLabel(id)
-    example_print_log("label removed = " .. tostring(ok))
+    lurek.log.info("label removed = " .. tostring(ok))
 end
 ```
 
@@ -3766,28 +2476,6 @@ LGlobe:removeLayer(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("rl_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -3795,7 +2483,7 @@ do
     local province_count = g:provinceCount()
     g:addLayer("temp_layer")
     local ok = g:removeLayer("temp_layer")
-    example_print_log("layer removed = " .. tostring(ok))
+    lurek.log.info("layer removed = " .. tostring(ok))
 end
 ```
 
@@ -3825,28 +2513,6 @@ LGlobe:removeMarker(id)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("rm_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -3854,7 +2520,7 @@ do
     local province_count = g:provinceCount()
     local id = g:addMarker("pin", 0, 0)
     local ok = g:removeMarker(id)
-    example_print_log("removed marker = " .. tostring(ok))
+    lurek.log.info("removed marker = " .. tostring(ok))
 end
 ```
 
@@ -3884,28 +2550,6 @@ LGlobe:removeProvince(id)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("rem_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -3913,7 +2557,7 @@ do
     local province_count = g:provinceCount()
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     local ok = g:removeProvince(1)
-    example_print_log("removed = " .. tostring(ok))
+    lurek.log.info("removed = " .. tostring(ok))
 end
 ```
 
@@ -3943,28 +2587,6 @@ LGlobe:removeRegion(id)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("remove_region_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -3976,8 +2598,8 @@ do
         vertices = { { 39, -91 }, { 41, -91 }, { 41, -89 }, { 39, -89 } },
     })
     local ok = g:removeRegion(1)
-    example_print_log("removed region = " .. tostring(ok))
-    example_print_log("region count = " .. g:regionCount())
+    lurek.log.info("removed region = " .. tostring(ok))
+    lurek.log.info("region count = " .. g:regionCount())
 end
 ```
 
@@ -4007,18 +2629,13 @@ LGlobe:removeTerrainPatch(id)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do parts[i] = tostring(select(i, ...)) end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local g = lurek.globe.new("example_remove_terrain_patch")
     g:addTerrainPatch({ id = 2, vertices = {{0,0},{0,20},{20,20},{20,0}}, base_color = {0.2, 0.7, 0.3, 1.0} })
     local before = g:terrainPatchCount()
     local removed = g:removeTerrainPatch(2)
     local after = g:terrainPatchCount()
-    example_print_log("terrain removed=" .. tostring(removed) .. " " .. tostring(before) .. "->" .. tostring(after))
+    lurek.log.info("terrain removed=" .. tostring(removed) .. " " .. tostring(before) .. "->" .. tostring(after))
 end
 ```
 
@@ -4042,35 +2659,13 @@ LGlobe:revealAll(viewer)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("rall_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     local globe_name = g:getName()
     local province_count = g:provinceCount()
     g:revealAll("player1")
-    example_print_log("all revealed for player1")
+    lurek.log.info("all revealed for player1")
 end
 ```
 
@@ -4095,28 +2690,6 @@ LGlobe:revealProvince(viewer, id)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("rev_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -4124,7 +2697,7 @@ do
     local province_count = g:provinceCount()
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     g:revealProvince("player1", 1)
-    example_print_log("province 1 revealed")
+    lurek.log.info("province 1 revealed")
 end
 ```
 
@@ -4156,34 +2729,20 @@ LGlobe:screenDeltaToPan(dx, dy)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
-    local g = build_demo_globe("screen_delta_globe")
+    local g = lurek.globe.new("screen_delta_globe")
+    g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
+    g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
+    g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
+    g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
+    g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
+    g:addMarker("city", 0, 0, "Alpha")
+    g:addMarker("city", 0, 10, "Beta")
+    g:setCamera(0, 0, 1.2)
     local dlat, dlon = g:screenDeltaToPan(32, -16)
     local lat, lon, zoom = g:getCamera()
     local lod = g:getLod()
-    example_print_log("pan delta = " .. tostring(dlat) .. "," .. tostring(dlon))
+    lurek.log.info("pan delta = " .. tostring(dlat) .. "," .. tostring(dlon))
 end
 ```
 
@@ -4218,34 +2777,20 @@ LGlobe:screenToLatLon(sx, sy)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
-    local g = build_demo_globe("screen_latlon_globe")
+    local g = lurek.globe.new("screen_latlon_globe")
+    g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
+    g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
+    g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
+    g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
+    g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
+    g:addMarker("city", 0, 0, "Alpha")
+    g:addMarker("city", 0, 10, "Beta")
+    g:setCamera(0, 0, 1.2)
     local lat, lon = g:screenToLatLon(320, 180)
     local picked = g:pickSurface(320, 180, 24)
     local lod = g:getLod()
-    example_print_log("latlon = " .. tostring(lat) .. "," .. tostring(lon))
+    lurek.log.info("latlon = " .. tostring(lat) .. "," .. tostring(lon))
 end
 ```
 
@@ -4269,35 +2814,13 @@ LGlobe:setActiveViewer(viewer)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("fow_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     local globe_name = g:getName()
     local province_count = g:provinceCount()
     g:setActiveViewer("player1")
-    example_print_log("active viewer = player1")
+    lurek.log.info("active viewer = player1")
 end
 ```
 
@@ -4321,35 +2844,13 @@ LGlobe:setAutoRotationSpeed(dps)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("arot_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     local globe_name = g:getName()
     local province_count = g:provinceCount()
     g:setAutoRotationSpeed(10)
-    example_print_log("auto rotation = 10 dps")
+    lurek.log.info("auto rotation = 10 dps")
 end
 ```
 
@@ -4373,35 +2874,13 @@ LGlobe:setBorders(show)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("bord_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     local globe_name = g:getName()
     local province_count = g:provinceCount()
     g:setBorders(true)
-    example_print_log("borders enabled")
+    lurek.log.info("borders enabled")
 end
 ```
 
@@ -4427,35 +2906,13 @@ LGlobe:setCamera(lat, lon, z)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("cam_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     local globe_name = g:getName()
     local province_count = g:provinceCount()
     g:setCamera(45, 90, 2.0)
-    example_print_log("camera set")
+    lurek.log.info("camera set")
 end
 ```
 
@@ -4487,34 +2944,20 @@ LGlobe:setEdgeTags(a, b, tags)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
-    local g = build_demo_globe("edge_tags_globe")
+    local g = lurek.globe.new("edge_tags_globe")
+    g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
+    g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
+    g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
+    g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
+    g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
+    g:addMarker("city", 0, 0, "Alpha")
+    g:addMarker("city", 0, 10, "Beta")
+    g:setCamera(0, 0, 1.2)
     local ok = g:setEdgeTags(1, 2, { "road", "river" })
     local path = g:findPath(1, 3)
-    example_print_log("set edge tags = " .. tostring(ok))
-    example_print_log("tags count = " .. #(g:getEdgeTags(1, 2) or {}))
+    lurek.log.info("set edge tags = " .. tostring(ok))
+    lurek.log.info("tags count = " .. #(g:getEdgeTags(1, 2) or {}))
 end
 ```
 
@@ -4540,28 +2983,6 @@ LGlobe:setFogState(viewer, id, state)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("fs_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -4569,7 +2990,7 @@ do
     local province_count = g:provinceCount()
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     g:setFogState("p1", 1, "explored")
-    example_print_log("fog state set to explored")
+    lurek.log.info("fog state set to explored")
 end
 ```
 
@@ -4597,35 +3018,13 @@ LGlobe:setHeatLayer(name, attr_key, min, max, alpha)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("heat_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     local globe_name = g:getName()
     local province_count = g:provinceCount()
     g:setHeatLayer("population", "pop", 0, 1000000, 0.7)
-    example_print_log("heat layer set")
+    lurek.log.info("heat layer set")
 end
 ```
 
@@ -4656,28 +3055,6 @@ LGlobe:setLabelText(id, text)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("ltxt_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -4685,7 +3062,7 @@ do
     local province_count = g:provinceCount()
     local id = g:addLabel("city", 0, 0, "old")
     g:setLabelText(id, "new")
-    example_print_log("label updated")
+    lurek.log.info("label updated")
 end
 ```
 
@@ -4716,28 +3093,6 @@ LGlobe:setLabelVisible(id, vis)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("lvis_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -4745,7 +3100,7 @@ do
     local province_count = g:provinceCount()
     local id = g:addLabel("info", 0, 0, "text")
     g:setLabelVisible(id, false)
-    example_print_log("label hidden")
+    lurek.log.info("label hidden")
 end
 ```
 
@@ -4776,28 +3131,6 @@ LGlobe:setLayerAlpha(name, alpha)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("la_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -4805,7 +3138,7 @@ do
     local province_count = g:provinceCount()
     g:addLayer("fog_layer")
     g:setLayerAlpha("fog_layer", 0.5)
-    example_print_log("layer alpha = 0.5")
+    lurek.log.info("layer alpha = 0.5")
 end
 ```
 
@@ -4840,28 +3173,6 @@ LGlobe:setLayerColor(layer, id, r, g, b, a)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("lc_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -4870,7 +3181,7 @@ do
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     g:addLayer("highlight")
     g:setLayerColor("highlight", 1, 1.0, 0.0, 0.0, 1.0)
-    example_print_log("province 1 colored red in highlight layer")
+    lurek.log.info("province 1 colored red in highlight layer")
 end
 ```
 
@@ -4901,28 +3212,6 @@ LGlobe:setLayerVisible(name, vis)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("lv_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -4930,7 +3219,7 @@ do
     local province_count = g:provinceCount()
     g:addLayer("overlay")
     g:setLayerVisible("overlay", false)
-    example_print_log("overlay hidden")
+    lurek.log.info("overlay hidden")
 end
 ```
 
@@ -4962,28 +3251,6 @@ LGlobe:setMarkerAttr(id, key, val)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("ma_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -4991,7 +3258,7 @@ do
     local province_count = g:provinceCount()
     local id = g:addMarker("city", 48.8, 2.3, "Paris")
     g:setMarkerAttr(id, "population", "2M")
-    example_print_log("marker attr set")
+    lurek.log.info("marker attr set")
 end
 ```
 
@@ -5025,34 +3292,20 @@ LGlobe:setMarkerColor(id, r, g, b, a)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
-    local g, a = build_demo_globe("marker_color_globe")
+    local g = lurek.globe.new("marker_color_globe")
+    g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
+    g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
+    g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
+    g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
+    g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
+    local a = g:addMarker("city", 0, 0, "Alpha")
+    g:addMarker("city", 0, 10, "Beta")
+    g:setCamera(0, 0, 1.2)
     local ok = g:setMarkerColor(a, 1.0, 0.3, 0.2, 0.9)
     local id = g:pickMarker(320, 180, 24)
     local surface = g:pickSurface(320, 180, 24)
-    example_print_log("set marker color = " .. tostring(ok))
+    lurek.log.info("set marker color = " .. tostring(ok))
 end
 ```
 
@@ -5083,34 +3336,20 @@ LGlobe:setMarkerIconTexture(id, tex_raw)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
-    local g, a = build_demo_globe("marker_icon_globe")
+    local g = lurek.globe.new("marker_icon_globe")
+    g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
+    g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
+    g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
+    g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
+    g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
+    local a = g:addMarker("city", 0, 0, "Alpha")
+    g:addMarker("city", 0, 10, "Beta")
+    g:setCamera(0, 0, 1.2)
     local ok = g:setMarkerIconTexture(a, 7)
     local id = g:pickMarker(320, 180, 24)
     local surface = g:pickSurface(320, 180, 24)
-    example_print_log("set marker icon texture = " .. tostring(ok))
+    lurek.log.info("set marker icon texture = " .. tostring(ok))
 end
 ```
 
@@ -5142,28 +3381,6 @@ LGlobe:setMarkerPulse(id, hz, amp)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("pulse_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -5171,7 +3388,7 @@ do
     local province_count = g:provinceCount()
     local id = g:addMarker("alert", 0, 0, "!")
     g:setMarkerPulse(id, 2.0, 0.5)
-    example_print_log("pulse set")
+    lurek.log.info("pulse set")
 end
 ```
 
@@ -5202,28 +3419,6 @@ LGlobe:setMarkerRotation(id, dps)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("rot_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -5231,7 +3426,7 @@ do
     local province_count = g:provinceCount()
     local id = g:addMarker("spin", 0, 0)
     g:setMarkerRotation(id, 90)
-    example_print_log("rotation = 90 dps")
+    lurek.log.info("rotation = 90 dps")
 end
 ```
 
@@ -5262,34 +3457,20 @@ LGlobe:setMarkerShape(id, shape)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
-    local g, a = build_demo_globe("marker_shape_globe")
+    local g = lurek.globe.new("marker_shape_globe")
+    g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
+    g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
+    g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
+    g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
+    g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
+    local a = g:addMarker("city", 0, 0, "Alpha")
+    g:addMarker("city", 0, 10, "Beta")
+    g:setCamera(0, 0, 1.2)
     local ok = g:setMarkerShape(a, "diamond")
     local id = g:pickMarker(320, 180, 24)
     local surface = g:pickSurface(320, 180, 24)
-    example_print_log("set marker shape = " .. tostring(ok))
+    lurek.log.info("set marker shape = " .. tostring(ok))
 end
 ```
 
@@ -5320,34 +3501,20 @@ LGlobe:setMarkerSize(id, size)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
-    local g, a = build_demo_globe("marker_size_globe")
+    local g = lurek.globe.new("marker_size_globe")
+    g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
+    g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
+    g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
+    g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
+    g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
+    local a = g:addMarker("city", 0, 0, "Alpha")
+    g:addMarker("city", 0, 10, "Beta")
+    g:setCamera(0, 0, 1.2)
     local ok = g:setMarkerSize(a, 18)
     local id = g:pickMarker(320, 180, 24)
     local surface = g:pickSurface(320, 180, 24)
-    example_print_log("set marker size = " .. tostring(ok))
+    lurek.log.info("set marker size = " .. tostring(ok))
 end
 ```
 
@@ -5378,28 +3545,6 @@ LGlobe:setMarkerVisible(id, vis)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("vis_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -5407,7 +3552,7 @@ do
     local province_count = g:provinceCount()
     local id = g:addMarker("pin", 0, 0)
     g:setMarkerVisible(id, false)
-    example_print_log("marker hidden")
+    lurek.log.info("marker hidden")
 end
 ```
 
@@ -5439,28 +3584,6 @@ LGlobe:setProvinceAttr(id, key, val)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("attr_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -5468,7 +3591,7 @@ do
     local province_count = g:provinceCount()
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     g:setProvinceAttr(1, "owner", "player1")
-    example_print_log("set attr owner")
+    lurek.log.info("set attr owner")
 end
 ```
 
@@ -5499,28 +3622,6 @@ LGlobe:setProvinceSector(id, sector)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("sec_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -5528,7 +3629,7 @@ do
     local province_count = g:provinceCount()
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     g:setProvinceSector(1, "northern")
-    example_print_log("sector set")
+    lurek.log.info("sector set")
 end
 ```
 
@@ -5563,28 +3664,6 @@ LGlobe:setProvinceTexture(id, tex_raw, u0, v0, u1, v1)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("tex_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -5592,7 +3671,7 @@ do
     local province_count = g:provinceCount()
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     g:setProvinceTexture(1, 42, 0.0, 0.0, 1.0, 1.0)
-    example_print_log("province texture set")
+    lurek.log.info("province texture set")
 end
 ```
 
@@ -5624,34 +3703,20 @@ LGlobe:setRegionAttr(id, key, val)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
-    local g = build_demo_globe("region_attr_globe")
+    local g = lurek.globe.new("region_attr_globe")
+    g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
+    g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
+    g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
+    g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
+    g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
+    g:addMarker("city", 0, 0, "Alpha")
+    g:addMarker("city", 0, 10, "Beta")
+    g:setCamera(0, 0, 1.2)
     local ok = g:setRegionAttr(10, "climate", "temperate")
     local count = g:regionCount()
-    example_print_log("set region attr = " .. tostring(ok))
-    example_print_log("value = " .. tostring(g:getRegionAttr(10, "climate")))
+    lurek.log.info("set region attr = " .. tostring(ok))
+    lurek.log.info("value = " .. tostring(g:getRegionAttr(10, "climate")))
 end
 ```
 
@@ -5685,18 +3750,13 @@ LGlobe:setRegionColor(id, r, g, b, a)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do parts[i] = tostring(select(i, ...)) end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local g = lurek.globe.new("example_set_region_color")
     g:addTerrainPatch({ id = 9, vertices = {{-10,-10},{-10,10},{10,10},{10,-10}} })
     g:addRegion({ id = 90, members = {9} })
     local ok = g:setRegionColor(90, 0.9, 0.3, 0.1, 0.35)
     local hits = g:regionsAtLatLon(0, 0)
-    example_print_log("region color set=" .. tostring(ok) .. " hit=" .. tostring(hits[1]))
+    lurek.log.info("region color set=" .. tostring(ok) .. " hit=" .. tostring(hits[1]))
 end
 ```
 
@@ -5727,11 +3787,6 @@ LGlobe:setRegionVisible(id, visible)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do parts[i] = tostring(select(i, ...)) end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local g = lurek.globe.new("example_set_region_visible")
     g:addTerrainPatch({ id = 10, vertices = {{-10,-10},{-10,10},{10,10},{10,-10}} })
@@ -5739,7 +3794,7 @@ do
     local before = #g:regionsAtLatLon(0, 0)
     local ok = g:setRegionVisible(91, false)
     local after = #g:regionsAtLatLon(0, 0)
-    example_print_log("region visible set=" .. tostring(ok) .. " hits=" .. tostring(before) .. "->" .. tostring(after))
+    lurek.log.info("region visible set=" .. tostring(ok) .. " hits=" .. tostring(before) .. "->" .. tostring(after))
 end
 ```
 
@@ -5763,35 +3818,13 @@ LGlobe:setRotation(deg)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("srot_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     local globe_name = g:getName()
     local province_count = g:provinceCount()
     g:setRotation(45)
-    example_print_log("rotation = 45 deg")
+    lurek.log.info("rotation = 45 deg")
 end
 ```
 
@@ -5857,18 +3890,13 @@ LGlobe:setTerrainPatchAttr(id, key, val)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do parts[i] = tostring(select(i, ...)) end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local g = lurek.globe.new("example_set_terrain_patch_attr")
     g:addTerrainPatch({ id = 4, vertices = {{-10,-10},{-10,10},{10,10},{10,-10}} })
     local ok = g:setTerrainPatchAttr(4, "biome", "forest")
     local value = g:getTerrainPatchAttr(4, "biome")
     local count = g:terrainPatchCount()
-    example_print_log("terrain attr set=" .. tostring(ok) .. " value=" .. tostring(value) .. " count=" .. tostring(count))
+    lurek.log.info("terrain attr set=" .. tostring(ok) .. " value=" .. tostring(value) .. " count=" .. tostring(count))
 end
 ```
 
@@ -5903,18 +3931,13 @@ LGlobe:setTerrainPatchTexture(id, tex_raw, u0, v0, u1, v1)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do parts[i] = tostring(select(i, ...)) end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local g = lurek.globe.new("example_set_terrain_patch_texture")
     g:addTerrainPatch({ id = 6, vertices = {{-10,-10},{-10,10},{10,10},{10,-10}} })
     local ok = g:setTerrainPatchTexture(6, 0, 0.0, 0.0, 1.0, 1.0)
     local raw = g:getTerrainPatchAttr(6, "__texture_raw")
     local count = g:terrainPatchCount()
-    example_print_log("terrain texture set=" .. tostring(ok) .. " raw=" .. tostring(raw) .. " count=" .. tostring(count))
+    lurek.log.info("terrain texture set=" .. tostring(ok) .. " raw=" .. tostring(raw) .. " count=" .. tostring(count))
 end
 ```
 
@@ -5938,35 +3961,13 @@ LGlobe:setTimeOfDay(t)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("tod_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     local globe_name = g:getName()
     local province_count = g:provinceCount()
     g:setTimeOfDay(14.5)
-    example_print_log("time = 14:30")
+    lurek.log.info("time = 14:30")
 end
 ```
 
@@ -5990,18 +3991,13 @@ LGlobe:terrainPatchCount()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do parts[i] = tostring(select(i, ...)) end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local g = lurek.globe.new("example_terrain_patch_count")
     g:addTerrainPatch({ id = 3, vertices = {{-10,-10},{-10,10},{10,10},{10,-10}}, base_color = {0.45, 0.45, 0.45, 1.0} })
     local count = g:terrainPatchCount()
     local ok = count == 1
     local report = g:validateTerrainCoverage({ lat_step = 90, lon_step = 180 })
-    example_print_log("terrain patch count=" .. tostring(count) .. " ok=" .. tostring(ok) .. " samples=" .. tostring(report.samples))
+    lurek.log.info("terrain patch count=" .. tostring(count) .. " ok=" .. tostring(ok) .. " samples=" .. tostring(report.samples))
 end
 ```
 
@@ -6025,34 +4021,12 @@ LGlobe:type()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("type_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     local globe_name = g:getName()
     local province_count = g:provinceCount()
-    example_print_log("type = " .. g:type())
+    lurek.log.info("type = " .. g:type())
 end
 ```
 
@@ -6082,34 +4056,12 @@ LGlobe:typeOf(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("typeof_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     local globe_name = g:getName()
     local province_count = g:provinceCount()
-    example_print_log("is Globe = " .. tostring(g:typeOf("LGlobe")))
+    lurek.log.info("is Globe = " .. tostring(g:typeOf("LGlobe")))
 end
 ```
 
@@ -6133,35 +4085,13 @@ LGlobe:update(dt)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("upd_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     local globe_name = g:getName()
     local province_count = g:provinceCount()
     g:update(0.016)
-    example_print_log("globe updated")
+    lurek.log.info("globe updated")
 end
 ```
 
@@ -6191,18 +4121,13 @@ LGlobe:validateTerrainCoverage(opts)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do parts[i] = tostring(select(i, ...)) end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local g = lurek.globe.new("example_validate_terrain_coverage")
     g:addTerrainPatch({ id = 8, vertices = {{-90,-180},{-90,180},{90,180},{90,-180}}, base_color = {0.1, 0.2, 0.6, 1.0} })
     local report = g:validateTerrainCoverage({ lat_step = 45, lon_step = 90 })
     local ok = report.ok and report.samples == report.covered_samples
     local gaps = #report.gaps
-    example_print_log("terrain coverage ok=" .. tostring(ok) .. " gaps=" .. tostring(gaps))
+    lurek.log.info("terrain coverage ok=" .. tostring(ok) .. " gaps=" .. tostring(gaps))
 end
 ```
 
@@ -6226,28 +4151,6 @@ LGlobe:zoom(factor)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local g = lurek.globe.new("zoom_globe")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -6256,7 +4159,7 @@ do
     g:setCamera(0, 0, 1.0)
     g:zoom(2.0)
     local _, _, z = g:getCamera()
-    example_print_log("zoom = " .. z)
+    lurek.log.info("zoom = " .. z)
 end
 ```
 
@@ -6294,34 +4197,12 @@ LGlobeRegistry:get(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local reg = lurek.globe.newRegistry()
     local registry_type = reg:type()
     local registry_names = reg:names()
     reg:new("earth")
-    example_print_log("registry get = " .. tostring(reg:get("earth")))
+    lurek.log.info("registry get = " .. tostring(reg:get("earth")))
 end
 ```
 
@@ -6345,35 +4226,13 @@ LGlobeRegistry:names()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local reg = lurek.globe.newRegistry()
     local registry_type = reg:type()
     local registry_names = reg:names()
     reg:new("earth")
     reg:new("mars")
-    example_print_log("registry names count = " .. #reg:names())
+    lurek.log.info("registry names count = " .. #reg:names())
 end
 ```
 
@@ -6404,34 +4263,12 @@ LGlobeRegistry:new(name, spec_tbl)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local reg = lurek.globe.newRegistry()
     local registry_type = reg:type()
     local registry_names = reg:names()
     local created = reg:new("venus", { radius = 0.9 })
-    example_print_log("registry new = " .. tostring(reg:new("mars", { radius = 1.0 })))
+    lurek.log.info("registry new = " .. tostring(reg:new("mars", { radius = 1.0 })))
 end
 ```
 
@@ -6461,34 +4298,12 @@ LGlobeRegistry:remove(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local reg = lurek.globe.newRegistry()
     local registry_type = reg:type()
     local registry_names = reg:names()
     reg:new("mars")
-    example_print_log("registry remove = " .. tostring(reg:remove("mars")))
+    lurek.log.info("registry remove = " .. tostring(reg:remove("mars")))
 end
 ```
 
@@ -6512,34 +4327,12 @@ LGlobeRegistry:type()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local reg = lurek.globe.newRegistry()
     local registry_type = reg:type()
     local registry_names = reg:names()
     local created = reg:new("earth", { radius = 1.0 })
-    example_print_log("registry type = " .. tostring(reg:type()))
+    lurek.log.info("registry type = " .. tostring(reg:type()))
 end
 ```
 
@@ -6569,34 +4362,12 @@ LGlobeRegistry:typeOf(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-    local function build_demo_globe(name)
-        local g = lurek.globe.new(name)
-        g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-        local globe_name = g:getName()
-        local province_count = g:provinceCount()
-        g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-        g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-        g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-        g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-        g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-        local a = g:addMarker("city", 0, 0, "Alpha")
-        local b = g:addMarker("city", 0, 10, "Beta")
-        g:setCamera(0, 0, 1.2)
-        return g, a, b
-    end
 
     local reg = lurek.globe.newRegistry()
     local registry_type = reg:type()
     local registry_names = reg:names()
     local created = reg:new("earth", { radius = 1.0 })
-    example_print_log("registry typeOf = " .. tostring(reg:typeOf("LGlobeRegistry")))
+    lurek.log.info("registry typeOf = " .. tostring(reg:typeOf("LGlobeRegistry")))
 end
 ```
 

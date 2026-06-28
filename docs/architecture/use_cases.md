@@ -159,7 +159,7 @@ Static CRT on Windows (`-C target-feature=+crt-static`) → zero runtime DLL req
 - Roguelike: + `procgen` · `pathfind` · `ecs` · `minimap` · `patterns`
 - Deck-builder: + `cardgame` (library) · `patterns` · `tween`
 - Strategy map: + `province` · `globe` · `pathfind` · `dataframe`
-- Rhythm: + `dsp` · `midi` · `timer`
+- Rhythm: + `dsp` · `timer`
 - Idle/tycoon: + `economy` (library) · `dataframe` · `automation`
 
 ### Benefits
@@ -694,7 +694,7 @@ The `ideas/simulation/` folder already contains detailed designs for this patter
 
 ### Description
 
-Lurek2D's `audio`, `dsp`, `midi`, `compute`, and `thread` modules combine into a headless audio processing pipeline. A music tool, game replay analyser, or educational audio DSP tool is built entirely in Lua.
+Lurek2D's `audio`, `dsp`, `compute` and `thread` modules combine into a headless audio processing pipeline. A music tool, game replay analyser, or educational audio DSP tool is built entirely in Lua.
 
 Examples:
 - Generate procedural music from a Lua grammar and export WAV.
@@ -710,12 +710,11 @@ Examples:
 
 ### Module Combination
 
-`audio` · `dsp` · `midi` · `compute` · `thread` · `filesystem` · `serial` · `math` · `timer` + `render` · `charts` (for visualiser mode)
+`audio` · `dsp` · `compute` · `thread` · `filesystem` · `serial` · `math` · `timer` + `render` · `charts` (for visualiser mode)
 
 ### Benefits
 
 - `dsp` module provides DSP primitives (filters, FFT, envelope) usable from Lua.
-- `midi` module parses MIDI files for procedural music systems.
 - `rodio` backend (OGG + WAV) handles decode and playback.
 - `thread` enables parallel audio processing across worker VMs.
 - Headless mode removes the window requirement for batch jobs.
@@ -954,12 +953,11 @@ An interactive creative application built with Lurek2D: a piano roll sequencer, 
 
 ### Module Combination
 
-`audio` · `dsp` · `midi` · `render` · `input` · `tween` · `particle` · `timer` · `serial` (project save/load)
+`audio` · `dsp` · `render` · `input` · `tween` · `particle` · `timer` · `serial` (project save/load)
 
 ### Benefits
 
 - `lurek.dsp.*` provides filters, envelope generators, and FFT for visualiser mode.
-- `lurek.midi.*` parses MIDI files for import into the sequencer.
 - `rodio` backend plays notes via PCM synthesis or sample playback.
 - `tween` animates the playback cursor and note highlights.
 - `particle` adds sparkle on note placement and beat pulse.
@@ -967,7 +965,6 @@ An interactive creative application built with Lurek2D: a piano roll sequencer, 
 
 ### Constraints
 
-- No MIDI export (playback-only; export requires custom file writing via `filesystem`).
 - Sample quality depends on bundled audio files.
 - Not a DAW — no VST plugin hosting.
 

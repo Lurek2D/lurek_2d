@@ -13,8 +13,6 @@ Global `lurek.*` callbacks are documented here as a dedicated generated spec, in
 - Binding: Global engine callback registration (no dedicated `src/lua_api/<module>_api.rs` spec target)
 - Namespace: `lurek.<callback>` (global callbacks)
 - Callback surface: `29` engine callbacks
-- Rust test path(s): None found in the workspace
-- Lua test path(s): None found in the workspace
 
 ## Summary
 

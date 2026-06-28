@@ -115,28 +115,6 @@ This module is mostly self-contained inside the `Core Runtime` group. Cross-modu
 
 - `content/examples/repl.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_repl_unit.lua` (present)
-- Rust: `tests/rust/unit/repl_tests.rs`
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Evidence test | `tests/lua/evidence/test_repl_evidence.lua` |
-| Golden test | `tests/lua/golden/test_repl_golden.lua` |
-| Current artifact | `tests/artifacts/current/repl/repl_commands_ui.png` |
-| Current artifact | `tests/artifacts/current/repl/repl_completion_ui.png` |
-| Current artifact | `tests/artifacts/current/repl/repl_error_recovery_ui.png` |
-| Current artifact | `tests/artifacts/current/repl/repl_eval_session_ui.png` |
-| Current artifact | `tests/artifacts/current/repl/repl_history_ui.png` |
-| Baseline artifact | `tests/artifacts/baselines/repl/repl_commands_ui.png` |
-| Baseline artifact | `tests/artifacts/baselines/repl/repl_completion_ui.png` |
-| Baseline artifact | `tests/artifacts/baselines/repl/repl_error_recovery_ui.png` |
-| Baseline artifact | `tests/artifacts/baselines/repl/repl_eval_session_ui.png` |
-| Baseline artifact | `tests/artifacts/baselines/repl/repl_history_ui.png` |
-
 ## Architecture Links
 
 - Intentionally empty.

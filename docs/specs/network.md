@@ -429,15 +429,6 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 - `content/examples/network.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_network_unit.lua` (present)
-- Rust: `tests/rust/unit/network_tests.rs`
-
-## Evidence / Golden
-
-- No evidence or golden artifacts registered.
-
 ## Architecture Links
 
 - Intentionally empty.

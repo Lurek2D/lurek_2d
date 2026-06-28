@@ -846,15 +846,6 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 - `content/examples/patterns.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_patterns_unit.lua` (present)
-- Rust: `tests/rust/unit/patterns_tests.rs`
-
-## Evidence / Golden
-
-- No evidence or golden artifacts registered.
-
 ## Architecture Links
 
 - Intentionally empty.

@@ -2,41 +2,7 @@
 
 ## Purpose
 
-Orchestrates branching narrative graphs using conditional gates.
-
-## When To Use
-
-- Dialogue trees, speaker metadata, conditional gates, weighted branching, callbacks, waits, and jumps work together so conversations can be authored as explicit progression instead of scattered local state checks.
-- Sequencing is a core part of the value: reveal timing, advancement, and event hooks let dialogue participate in pacing, scripting, and gameplay rather than acting as a static text lookup table.
-- Variable-aware flow and state tracking make it practical to mix authored story beats with runtime-driven responses, which is important for larger RPG, strategy, and simulation interfaces.
-
-## Minimal Example
-
-Example block: `lurek.dialog.newAI`
-
-```lua
-do
-    local ai = lurek.dialog.newAI()
-    ai:addTopic("greeting", 1.0)
-    ai:addTopic("quest_offer", 0.7)
-    local type_name = ai:type()
-    local topic_count = ai:getTopicCount()
-    lurek.log.info("dialog AI ready: " .. type_name)
-    lurek.log.info("topics prepared for tavern NPC = " .. topic_count)
-end
-```
-
-## Common Patterns
-
-- Start with `lurek.dialog.call` when exploring this module.
-- Start with `lurek.dialog.choice` when exploring this module.
-- Start with `lurek.dialog.event` when exploring this module.
-- Start with `lurek.dialog.jump` when exploring this module.
-- Start with `lurek.dialog.newAI` when exploring this module.
-
-## API Reference
-
-- This page is the generated API reference for this module.
+Orchestrates branching narrative graphs using conditional gates. - Provides typewriter-style dialog sequencer for node-based playback with choices.
 
 ## Summary
 
@@ -50,6 +16,10 @@ end
 - Read `dialog` as the owner of conversation structure and progression.
 
 This module is mostly self-contained inside the `Edge/Integration` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+
+## API Reference
+
+- This page is the generated API reference for this module.
 
 ## Functions
 

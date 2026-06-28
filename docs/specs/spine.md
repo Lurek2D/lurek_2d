@@ -251,31 +251,6 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 
 - `content/examples/spine.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_spine_unit.lua` (present)
-- Rust: `tests/rust/unit/spine_tests.rs`
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Evidence test | `tests/lua/evidence/test_spine_evidence.lua` |
-| Golden test | `tests/lua/golden/test_spine_golden.lua` |
-| Current artifact | `tests/artifacts/current/spine/bone_operations.txt` |
-| Current artifact | `tests/artifacts/current/spine/skeleton_stick_figure.png` |
-| Current artifact | `tests/artifacts/current/spine/spine_ik_target_reach.gif` |
-| Current artifact | `tests/artifacts/current/spine/spine_imported_animation.gif` |
-| Current artifact | `tests/artifacts/current/spine/spine_skin_event_pose_trace.txt` |
-| Current artifact | `tests/artifacts/current/spine/spine_walk_cycle_5s.gif` |
-| Current artifact | `tests/artifacts/current/spine/spine_walk_cycle_pose_snapshots.gif` |
-| Baseline artifact | `tests/artifacts/baselines/spine/bone_operations.txt` |
-| Baseline artifact | `tests/artifacts/baselines/spine/skeleton_stick_figure.png` |
-| Baseline artifact | `tests/artifacts/baselines/spine/spine_ik_target_reach.gif` |
-| Baseline artifact | `tests/artifacts/baselines/spine/spine_imported_animation.gif` |
-| Baseline artifact | `tests/artifacts/baselines/spine/spine_walk_cycle_5s.gif` |
-| Baseline artifact | `tests/artifacts/baselines/spine/spine_walk_cycle_pose_snapshots.gif` |
-
 ## Architecture Links
 
 - Intentionally empty.

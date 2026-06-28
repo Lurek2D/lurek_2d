@@ -5,7 +5,7 @@
 - Plays static and streaming sound via voice pools and mixing buses.
 - Controls priority ducking, spatial panning, and Doppler shifts.
 - Provides beat clocks for rhythmic scheduling and timing checks.
-- Synthesizes MIDI tracks and applies lowpass/highpass filters.
+- Applies lowpass/highpass filters and manages source-level playback state.
 
 ## Summary
 
@@ -25,9 +25,9 @@
 - Listener-facing state broadens the feature from raw playback into world-aware audio behavior. Even when neighboring modules provide the scene, `audio` owns how sources and listener context become heard spatial or positional results.
 - This is why the module stays useful across both live gameplay and tool-driven verification: it keeps playback, routing, timing, and category policy visible enough to inspect instead of hiding sound behavior behind fire-and-forget calls.
 - It keeps mix policy legible as projects scale.
-- `dsp` specializes lower-level signal processing and `midi` specializes symbolic music data, but `audio` owns the user-facing contract for how sounds are loaded, instantiated, routed, timed, and heard at runtime.
+- `dsp` specializes lower-level signal processing, but `audio` owns the user-facing contract for how sounds are loaded, instantiated, routed, timed, and heard at runtime.
 
-This module primarily collaborates with `dsp`, `image`, `midi`, `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
+This module primarily collaborates with `dsp`, `image`, `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
 
 ## Notes
 

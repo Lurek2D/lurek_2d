@@ -412,41 +412,6 @@ This module primarily collaborates with `animation`, `color`, `image`, `math`, `
 
 - `content/examples/sprite.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_sprite_unit.lua` (present)
-- Rust: `src/sprite/sprite_batch.rs`
-- Rust: `src/sprite/sprite_sheet.rs`
-- Rust: `tests/rust/unit/sprite_tests.rs`
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Evidence test | `tests/lua/evidence/test_sprite_evidence.lua` |
-| Golden test | `tests/lua/golden/test_sprite_golden.lua` |
-| Current artifact | `tests/artifacts/current/image/sprite_16x16.png` |
-| Current artifact | `tests/artifacts/current/image/sprite_32x32.png` |
-| Current artifact | `tests/artifacts/current/image/sprite_64x64.png` |
-| Current artifact | `tests/artifacts/current/image/sprite_8x8.png` |
-| Current artifact | `tests/artifacts/current/sprite/sprite_animator_clip_playback.gif` |
-| Current artifact | `tests/artifacts/current/sprite/sprite_atlas_regions_flips.png` |
-| Current artifact | `tests/artifacts/current/sprite/sprite_lit_normal_state.png` |
-| Current artifact | `tests/artifacts/current/sprite/sprite_packer_nine_slice.png` |
-| Current artifact | `tests/artifacts/current/sprite/sprite_shader_visual_01_team_color.png` |
-| Current artifact | `tests/artifacts/current/sprite/sprite_shader_visual_02_palette_swap.png` |
-| Current artifact | `tests/artifacts/current/sprite/sprite_shader_visual_03_damage_flash.png` |
-| Current artifact | `tests/artifacts/current/sprite/sprite_sheet_groups.png` |
-| Baseline artifact | `tests/artifacts/baselines/image/sprite_16x16.png` |
-| Baseline artifact | `tests/artifacts/baselines/image/sprite_32x32.png` |
-| Baseline artifact | `tests/artifacts/baselines/image/sprite_64x64.png` |
-| Baseline artifact | `tests/artifacts/baselines/image/sprite_8x8.png` |
-| Baseline artifact | `tests/artifacts/baselines/sprite/sprite_animator_clip_playback.gif` |
-| Baseline artifact | `tests/artifacts/baselines/sprite/sprite_atlas_regions_flips.png` |
-| Baseline artifact | `tests/artifacts/baselines/sprite/sprite_lit_normal_state.png` |
-| Baseline artifact | `tests/artifacts/baselines/sprite/sprite_packer_nine_slice.png` |
-| Baseline artifact | `tests/artifacts/baselines/sprite/sprite_sheet_groups.png` |
-
 ## Architecture Links
 
 - Intentionally empty.

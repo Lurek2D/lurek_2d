@@ -7,7 +7,7 @@
 - Plays static and streaming sound via voice pools and mixing buses.
 - Controls priority ducking, spatial panning, and Doppler shifts.
 - Provides beat clocks for rhythmic scheduling and timing checks.
-- Synthesizes MIDI tracks and applies lowpass/highpass filters.
+- Applies lowpass/highpass filters and manages source-level playback state.
 
 ## General Info
 
@@ -15,7 +15,7 @@
 - Source path: `src/audio`
 - Binding: `src/lua_api/audio_api.rs`
 - Namespace: `lurek.audio`
-- Lua API surface: `90` functions, `7` types, `157` methods
+- Lua API surface: `90` functions, `6` types, `107` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -37,9 +37,9 @@
 - Listener-facing state broadens the feature from raw playback into world-aware audio behavior. Even when neighboring modules provide the scene, `audio` owns how sources and listener context become heard spatial or positional results.
 - This is why the module stays useful across both live gameplay and tool-driven verification: it keeps playback, routing, timing, and category policy visible enough to inspect instead of hiding sound behavior behind fire-and-forget calls.
 - It keeps mix policy legible as projects scale.
-- `dsp` specializes lower-level signal processing and `midi` specializes symbolic music data, but `audio` owns the user-facing contract for how sounds are loaded, instantiated, routed, timed, and heard at runtime.
+- `dsp` specializes lower-level signal processing, but `audio` owns the user-facing contract for how sounds are loaded, instantiated, routed, timed, and heard at runtime.
 
-This module primarily collaborates with `dsp`, `image`, `midi`, `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
+This module primarily collaborates with `dsp`, `image`, `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
 
 ## Ownership
 
@@ -237,9 +237,6 @@ This module primarily collaborates with `dsp`, `image`, `midi`, `runtime`. Its r
 - `LBeatClock:at` param `fn` (`function`): Callback receiving the scheduled beat.
 - `LBeatClock:every` param `fn` (`function`): Callback receiving `step_index`.
 - `LBeatClock:pattern` param `fn` (`function`): Callback receiving 1-based pattern step index.
-- `LMidiPlayer:setOnEnd` param `cb` (`function?`): Callback function or nil to clear.
-- `LMidiPlayer:setOnNoteOff` param `cb` (`function?`): Callback function or nil to clear.
-- `LMidiPlayer:setOnNoteOn` param `cb` (`function?`): Callback function or nil to clear.
 
 ### Enums
 
@@ -340,67 +337,6 @@ This module primarily collaborates with `dsp`, `image`, `midi`, `runtime`. Its r
 - `LDecoder:type() -> string`: Returns the type name of this object for runtime type-checking.
 - `LDecoder:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
-#### LMidiPlayer Type
-
-- Lua-side wrapper around a MIDI file player with per-channel control and tempo scaling.
-
-##### Fields
-
-- No documented fields.
-
-##### Methods
-
-- `LMidiPlayer:getBus() -> LBus`: Returns the audio bus this MIDI player is routed through.
-- `LMidiPlayer:getChannelCount() -> integer`: Returns the number of active MIDI channels in the loaded file.
-- `LMidiPlayer:getChannelInstrument(ch) -> integer`: Returns the current GM instrument program for a channel.
-- `LMidiPlayer:getChannelVolume(ch) -> number`: Returns the volume of a specific MIDI channel.
-- `LMidiPlayer:getChannels() -> integer`: Returns the number of output audio channels for MIDI synthesis.
-- `LMidiPlayer:getDuration() -> number`: Returns the total duration of the loaded MIDI file in seconds.
-- `LMidiPlayer:getFilePath() -> string`: Returns the file path of the currently loaded MIDI file.
-- `LMidiPlayer:getNoteCount() -> integer`: Returns the total number of note events in the loaded MIDI file.
-- `LMidiPlayer:getOriginalTempo() -> number`: Returns the original tempo of the MIDI file as authored.
-- `LMidiPlayer:getSampleRate() -> integer`: Returns the output sample rate used for MIDI synthesis.
-- `LMidiPlayer:getSoundFontPath() -> string`: Returns the path of the currently set SoundFont (stub, not yet implemented).
-- `LMidiPlayer:getTempo() -> number`: Returns the current effective tempo in beats per minute.
-- `LMidiPlayer:getTempoScale() -> number`: Returns the current tempo scale multiplier.
-- `LMidiPlayer:getTicksPerBeat() -> integer`: Returns the MIDI file's resolution in ticks per beat (PPQN).
-- `LMidiPlayer:getTrackCount() -> integer`: Returns the number of tracks in the loaded MIDI file.
-- `LMidiPlayer:getTrackName(idx) -> string`: Returns the name of a MIDI track by 1-based index.
-- `LMidiPlayer:getVolume() -> number`: Returns the current master volume of the MIDI player.
-- `LMidiPlayer:isChannelMuted(ch) -> boolean`: Returns whether a specific MIDI channel is muted.
-- `LMidiPlayer:isLoaded() -> boolean`: Returns whether a MIDI file is currently loaded and ready to play.
-- `LMidiPlayer:isLooping() -> boolean`: Returns whether MIDI looping is enabled.
-- `LMidiPlayer:isPaused() -> boolean`: Returns whether the MIDI player is currently paused.
-- `LMidiPlayer:isPlaying() -> boolean`: Returns whether the MIDI player is currently playing.
-- `LMidiPlayer:isTrackMuted(idx) -> boolean`: Returns whether a specific MIDI track is muted.
-- `LMidiPlayer:load(path) -> boolean`: Loads a MIDI file from the given path relative to the game directory.
-- `LMidiPlayer:loadData(data) -> boolean`: Loads MIDI data from a raw byte string in memory.
-- `LMidiPlayer:pause() -> nil`: Pauses MIDI playback at the current position.
-- `LMidiPlayer:play() -> nil`: Starts MIDI playback from the current position using the audio output stream.
-- `LMidiPlayer:seek(secs) -> nil`: Seeks to a specific position in the MIDI file.
-- `LMidiPlayer:setBus(bus?) -> nil`: Routes this MIDI player's output through the specified audio bus.
-- `LMidiPlayer:setChannelInstrument(ch, inst) -> nil`: Sets the General MIDI instrument program for a channel.
-- `LMidiPlayer:setChannelMuted(ch, muted) -> nil`: Mutes or unmutes a specific MIDI channel.
-- `LMidiPlayer:setChannelVolume(ch, vol) -> nil`: Sets the volume for a specific MIDI channel (1-16).
-- `LMidiPlayer:setChannels(channels) -> nil`: Sets the number of output audio channels for MIDI synthesis.
-- `LMidiPlayer:setLooping(looping) -> nil`: Enables or disables looping for MIDI playback.
-- `LMidiPlayer:setOnEnd(cb?) -> nil`: Registers a callback invoked when MIDI playback finishes (stub, not yet implemented).
-- `LMidiPlayer:setOnNoteOff(cb?) -> nil`: Registers a callback for MIDI note-off events (stub, not yet implemented).
-- `LMidiPlayer:setOnNoteOn(cb?) -> nil`: Registers a callback for MIDI note-on events (stub, not yet implemented).
-- `LMidiPlayer:setSampleRate(rate) -> nil`: Sets the output sample rate for MIDI synthesis.
-- `LMidiPlayer:setSoundFont(path) -> nil`: Sets a custom SoundFont file for MIDI synthesis (stub, not yet implemented).
-- `LMidiPlayer:setTempo(bpm) -> nil`: Sets the playback tempo in beats per minute.
-- `LMidiPlayer:setTempoScale(scale) -> nil`: Sets a tempo multiplier relative to the original speed.
-- `LMidiPlayer:setTrackMuted(idx, muted) -> nil`: Mutes or unmutes a specific MIDI track.
-- `LMidiPlayer:setVolume(vol) -> nil`: Sets the master volume for MIDI playback.
-- `LMidiPlayer:soloChannel(ch) -> nil`: Solos a specific MIDI channel, muting all others.
-- `LMidiPlayer:stop() -> nil`: Stops MIDI playback and resets position to the beginning.
-- `LMidiPlayer:tell() -> number`: Returns the current playback position of the MIDI player in seconds.
-- `LMidiPlayer:type() -> string`: Returns the type name of this object for runtime type-checking.
-- `LMidiPlayer:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
-- `LMidiPlayer:unsoloAll() -> nil`: Removes solo from all channels, restoring normal playback.
-- `LMidiPlayer:useDefaultSoundFont() -> nil`: Reverts to the built-in default SoundFont (stub, not yet implemented).
-
 #### LSoundData Type
 
 - Represents the Lua-visible LSoundData object exposed by this module.
@@ -484,46 +420,6 @@ This module primarily collaborates with `dsp`, `image`, `midi`, `runtime`. Its r
 ## Examples
 
 - `content/examples/audio.lua` (present)
-
-## Tests
-
-- Lua unit: `tests/lua/unit/test_audio_unit.lua` (present)
-- Rust: `tests/rust/ext/effects_audio_runtime_smoke_tests.rs`
-- Rust: `tests/rust/unit/audio_tests.rs`
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Evidence test | `tests/lua/evidence/test_audio_evidence.lua` |
-| Golden test | `tests/lua/golden/test_audio_golden.lua` |
-| Current artifact | `tests/artifacts/current/audio/audio_beat_clock_scheduler_trace.txt` |
-| Current artifact | `tests/artifacts/current/audio/audio_bus_decoder_trace.txt` |
-| Current artifact | `tests/artifacts/current/audio/audio_bus_pitch_up_150.wav` |
-| Current artifact | `tests/artifacts/current/audio/audio_bus_volume_fadeout.wav` |
-| Current artifact | `tests/artifacts/current/audio/audio_bus_volume_half_gain.wav` |
-| Current artifact | `tests/artifacts/current/audio/audio_chord_c_major.wav` |
-| Current artifact | `tests/artifacts/current/audio/audio_frequency_sweep_200_2000.wav` |
-| Current artifact | `tests/artifacts/current/audio/audio_mix_into_base.png` |
-| Current artifact | `tests/artifacts/current/audio/audio_mix_into_harmonic_layer.wav` |
-| Current artifact | `tests/artifacts/current/audio/audio_mix_into_mixed.png` |
-| Current artifact | `tests/artifacts/current/audio/audio_sine_440hz_mono.wav` |
-| Current artifact | `tests/artifacts/current/audio/audio_stereo_ping_pong.wav` |
-| Current artifact | `tests/artifacts/current/audio/audio_waveform_chord_c_major.png` |
-| Current artifact | `tests/artifacts/current/audio/audio_waveform_frequency_sweep.png` |
-| Current artifact | `tests/artifacts/current/audio/audio_waveform_sine_440hz.png` |
-| Baseline artifact | `tests/artifacts/baselines/audio/audio_bus_pitch_up_150.wav` |
-| Baseline artifact | `tests/artifacts/baselines/audio/audio_bus_volume_fadeout.wav` |
-| Baseline artifact | `tests/artifacts/baselines/audio/audio_bus_volume_half_gain.wav` |
-| Baseline artifact | `tests/artifacts/baselines/audio/audio_chord_c_major.wav` |
-| Baseline artifact | `tests/artifacts/baselines/audio/audio_frequency_sweep_200_2000.wav` |
-| Baseline artifact | `tests/artifacts/baselines/audio/audio_mix_into_base.png` |
-| Baseline artifact | `tests/artifacts/baselines/audio/audio_mix_into_mixed.png` |
-| Baseline artifact | `tests/artifacts/baselines/audio/audio_sine_440hz_mono.wav` |
-| Baseline artifact | `tests/artifacts/baselines/audio/audio_stereo_ping_pong.wav` |
-| Baseline artifact | `tests/artifacts/baselines/audio/audio_waveform_chord_c_major.png` |
-| Baseline artifact | `tests/artifacts/baselines/audio/audio_waveform_frequency_sweep.png` |
-| Baseline artifact | `tests/artifacts/baselines/audio/audio_waveform_sine_440hz.png` |
 
 ## Architecture Links
 

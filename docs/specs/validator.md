@@ -166,15 +166,6 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 - `content/examples/validator.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_validator_unit.lua` (present)
-- Rust: none detected.
-
-## Evidence / Golden
-
-- No evidence or golden artifacts registered.
-
 ## Architecture Links
 
 - Intentionally empty.

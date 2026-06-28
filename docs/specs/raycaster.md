@@ -686,40 +686,6 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 
 - `content/examples/raycaster.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_raycaster_unit.lua` (present)
-- Rust: `tests/rust/unit/raycaster_tests.rs`
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Evidence test | `tests/lua/evidence/test_raycaster_evidence.lua` |
-| Golden test | `tests/lua/golden/test_raycaster_golden.lua` |
-| Current artifact | `tests/artifacts/current/raycaster/raycaster_camera_sweep_atlas.png` |
-| Current artifact | `tests/artifacts/current/raycaster/raycaster_corridor_view_with_fov.png` |
-| Current artifact | `tests/artifacts/current/raycaster/raycaster_depth_columns_vs_view.png` |
-| Current artifact | `tests/artifacts/current/raycaster/raycaster_feature_walls_view_pick.png` |
-| Current artifact | `tests/artifacts/current/raycaster/raycaster_floor_ceiling_pick_uv.png` |
-| Current artifact | `tests/artifacts/current/raycaster/raycaster_full_scene_day_night.png` |
-| Current artifact | `tests/artifacts/current/raycaster/raycaster_multilevel_hole_pick.png` |
-| Current artifact | `tests/artifacts/current/raycaster/raycaster_shader_binding_contract.txt` |
-| Current artifact | `tests/artifacts/current/raycaster/raycaster_shader_visual_01_wall_shade.png` |
-| Current artifact | `tests/artifacts/current/raycaster/raycaster_shader_visual_02_floor_fog.png` |
-| Current artifact | `tests/artifacts/current/raycaster/raycaster_shader_visual_03_depth_tint.png` |
-| Current artifact | `tests/artifacts/current/raycaster/raycaster_topdown_cast_rays.png` |
-| Current artifact | `tests/artifacts/current/raycaster/raycaster_transparent_layered_hits.png` |
-| Baseline artifact | `tests/artifacts/baselines/raycaster/raycaster_camera_sweep_atlas.png` |
-| Baseline artifact | `tests/artifacts/baselines/raycaster/raycaster_corridor_view_with_fov.png` |
-| Baseline artifact | `tests/artifacts/baselines/raycaster/raycaster_depth_columns_vs_view.png` |
-| Baseline artifact | `tests/artifacts/baselines/raycaster/raycaster_feature_walls_view_pick.png` |
-| Baseline artifact | `tests/artifacts/baselines/raycaster/raycaster_floor_ceiling_pick_uv.png` |
-| Baseline artifact | `tests/artifacts/baselines/raycaster/raycaster_full_scene_day_night.png` |
-| Baseline artifact | `tests/artifacts/baselines/raycaster/raycaster_multilevel_hole_pick.png` |
-| Baseline artifact | `tests/artifacts/baselines/raycaster/raycaster_topdown_cast_rays.png` |
-| Baseline artifact | `tests/artifacts/baselines/raycaster/raycaster_transparent_layered_hits.png` |
-
 ## Architecture Links
 
 - Intentionally empty.

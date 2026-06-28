@@ -361,15 +361,6 @@ This module primarily collaborates with `filesystem`, `runtime`. Its responsibil
 
 - `content/examples/input.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_input_unit.lua` (present)
-- Rust: `tests/rust/unit/input_tests.rs`
-
-## Evidence / Golden
-
-- No evidence or golden artifacts registered.
-
 ## Architecture Links
 
 - Intentionally empty.

@@ -184,18 +184,6 @@ This module primarily collaborates with `math`, `runtime`, `tilefield`. Its resp
 
 - `content/examples/tileset.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_tileset_unit.lua` (present)
-- Rust: none detected.
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Current artifact | `tests/artifacts/current/image/tileset_128x128.png` |
-| Baseline artifact | `tests/artifacts/baselines/image/tileset_128x128.png` |
-
 ## Architecture Links
 
 - No module-specific architecture links registered.

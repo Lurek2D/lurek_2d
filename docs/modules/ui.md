@@ -2,48 +2,7 @@
 
 ## Purpose
 
-Centralized retained-mode UI context with arena storage, automatic layouts, and resolution scaling.
-
-## When To Use
-
-- Its core promise is continuity across frames. The UI context remembers widget identity, parent-child structure, focus, hover, active state, capture, bindings, transitions, and pending events, so a screen can evolve over time without losing the state that makes it feel interactive and stable.
-- This retained model matters because large interfaces are rarely redrawn from pure stateless logic. Text inputs need cursors and selection, lists need scroll position, windows need placement, trees need expansion state, and complex panels need to survive temporary data changes without resetting user intent.
-- Container widgets define the structural grammar of the module. Panels, windows, stacks, docks, split regions, scroll containers, frames, and nine-slice shells let projects assemble larger interface layouts from composable blocks rather than hand-managing every rectangle.
-
-## Minimal Example
-
-Example block: `lurek.ui.newButton`
-
-```lua
-do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    ---@type LButton
-    local btn = lurek.ui.newButton("Click Me")
-    example_print_log("type = " .. btn:type())
-    example_print_log("text = " .. btn:getText())
-    example_print_log("button text = " .. btn:getText())
-    example_print_log("button width = " .. select(3, btn:getRect()))
-end
-```
-
-## Common Patterns
-
-- Start with `lurek.ui.addToast` when exploring this module.
-- Start with `lurek.ui.animateColor` when exploring this module.
-- Start with `lurek.ui.animateRotation` when exploring this module.
-- Start with `lurek.ui.animateScale` when exploring this module.
-- Start with `lurek.ui.beginDrag` when exploring this module.
-
-## API Reference
-
-- This page is the generated API reference for this module.
+Centralized retained-mode UI context with arena storage, automatic layouts, and resolution scaling. - Rich control catalog featuring standard inputs, numeric steppers, combo selections, and visual containers. - Layout-manager containers cover vertical boxes, horizontal boxes, grids, margin/padding wrappers, centering, scroll regions, split regions, stacks, and tabbed page containers. - Property inspector widget for grouped name/value rows with collapsible sections and predefined value editors. - Supports resizable window shells, modal dialog triggers, and nine-slice border-stretching layouts. - Declarative TOML layouts, semantic theme tokens, alpha-aware animations, and drag-and-drop event dispatching. - Integrates retained widgets, theme/layout flows, and headless screenshot exports.
 
 ## Summary
 
@@ -80,6 +39,10 @@ end
 
 This module primarily collaborates with `dataframe`, `image`, `math`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
+## API Reference
+
+- This page is the generated API reference for this module.
+
 ## Functions
 
 ### `lurek.ui.addToast`
@@ -100,19 +63,12 @@ lurek.ui.addToast(toast_table)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.ui.addToast({ message = "File saved successfully", duration = 3.0, type = "info" })
-    example_print_log("toast added")
+    lurek.log.info(tostring("toast added"))
     local layout = lurek.ui.loadLayout({ type = "panel", children = {} })
-    example_print_log("layout id=" .. tostring(layout))
-    example_print_log("layout loaded=" .. tostring(type(layout) == "number"))
+    lurek.log.info(tostring("layout id=" .. tostring(layout)))
+    lurek.log.info(tostring("layout loaded=" .. tostring(type(layout) == "number")))
 end
 ```
 
@@ -146,19 +102,12 @@ lurek.ui.animateColor(idx, from, to, duration, easing)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local lbl = lurek.ui.newLabel("Hello")
     lurek.ui.animateColor(lbl._idx, {r=1,g=1,b=1,a=1}, {r=1,g=0.5,b=0,a=1}, 0.5)
-    example_print_log("lurek.ui.animateColor ok")
-    example_print_log("label text = " .. lbl:getText())
-    example_print_log("label width = " .. select(3, lbl:getRect()))
+    lurek.log.info(tostring("lurek.ui.animateColor ok"))
+    lurek.log.info(tostring("label text = " .. lbl:getText()))
+    lurek.log.info(tostring("label width = " .. select(3, lbl:getRect())))
 end
 ```
 
@@ -192,19 +141,12 @@ lurek.ui.animateRotation(idx, from, to, duration, easing)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local img = lurek.ui.newPanel()
     lurek.ui.animateRotation(img._idx, 0, 360, 1.0)
-    example_print_log("lurek.ui.animateRotation ok")
-    example_print_log("panel children = " .. img:getChildCount())
-    example_print_log("panel width = " .. select(3, img:getRect()))
+    lurek.log.info(tostring("lurek.ui.animateRotation ok"))
+    lurek.log.info(tostring("panel children = " .. img:getChildCount()))
+    lurek.log.info(tostring("panel width = " .. select(3, img:getRect())))
 end
 ```
 
@@ -240,19 +182,12 @@ lurek.ui.animateScale(idx, from_sx, from_sy, to_sx, to_sy, duration, easing)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local btn = lurek.ui.newButton("Scale")
     lurek.ui.animateScale(btn._idx, 1.0, 1.0, 1.2, 1.2, 0.3)
-    example_print_log("lurek.ui.animateScale ok")
-    example_print_log("button text = " .. btn:getText())
-    example_print_log("button width = " .. select(3, btn:getRect()))
+    lurek.log.info(tostring("lurek.ui.animateScale ok"))
+    lurek.log.info(tostring("button text = " .. btn:getText()))
+    lurek.log.info(tostring("button width = " .. select(3, btn:getRect())))
 end
 ```
 
@@ -282,20 +217,13 @@ lurek.ui.beginDrag(widget)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local source = lurek.ui.newPanel()
     local target = lurek.ui.newPanel()
     lurek.ui.beginDrag(source)
-    example_print_log("active drag:", lurek.ui.getActiveDrag())
+    lurek.log.info(tostring("active drag:") .. " " .. tostring(lurek.ui.getActiveDrag()))
     lurek.ui.dropOn(target)
-    example_print_log("after drop, active drag:", lurek.ui.getActiveDrag())
+    lurek.log.info(tostring("after drop, active drag:") .. " " .. tostring(lurek.ui.getActiveDrag()))
 end
 ```
 
@@ -319,19 +247,12 @@ lurek.ui.clear()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local root = lurek.ui.getRoot()
     if root then
         lurek.ui.clear()
     end
-    example_print_log("root widgets = " .. lurek.ui.getWidgetCount())
+    lurek.log.info(tostring("root widgets = " .. lurek.ui.getWidgetCount()))
 end
 ```
 
@@ -349,24 +270,17 @@ lurek.ui.clearFocus()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local btn1 = lurek.ui.newButton("First")
     local btn2 = lurek.ui.newButton("Second")
     lurek.ui.setFocus(btn1)
-    example_print_log("focused widget:", lurek.ui.getFocus())
+    lurek.log.info(tostring("focused widget:") .. " " .. tostring(lurek.ui.getFocus()))
     lurek.ui.focusNext()
-    example_print_log("after focusNext:", lurek.ui.getFocus())
+    lurek.log.info(tostring("after focusNext:") .. " " .. tostring(lurek.ui.getFocus()))
     lurek.ui.focusPrev()
-    example_print_log("after focusPrev:", lurek.ui.getFocus())
+    lurek.log.info(tostring("after focusPrev:") .. " " .. tostring(lurek.ui.getFocus()))
     lurek.ui.clearFocus()
-    example_print_log("after clear:", lurek.ui.getFocus())
+    lurek.log.info(tostring("after clear:") .. " " .. tostring(lurek.ui.getFocus()))
 end
 ```
 
@@ -384,13 +298,6 @@ lurek.ui.clearFont()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     -- Example for clearFont
     local widget = lurek.ui.newButton("Test Widget")
@@ -415,20 +322,13 @@ lurek.ui.draw()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local w = lurek.ui.newCustomWidget({width=80, height=40})
     lurek.ui.beginDrag(w)
     lurek.ui.endDrag()
     lurek.ui.clearFocus()
     lurek.ui.draw()
-    example_print_log("beginDrag/endDrag/clearFocus/draw ok")
+    lurek.log.info(tostring("beginDrag/endDrag/clearFocus/draw ok"))
 end
 ```
 
@@ -459,20 +359,13 @@ lurek.ui.drawToImage(w, h)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local img = lurek.ui.drawToImage(320, 240)
     local w = lurek.ui.newCustomWidget({width=80, height=40})
     lurek.ui.beginDrag(w)
     lurek.ui.dropOn(w)
     lurek.ui.endDrag()
-    example_print_log("drawToImage ok; dropOn/endDrag ok")
+    lurek.log.info(tostring("drawToImage ok; dropOn/endDrag ok"))
 end
 ```
 
@@ -502,20 +395,13 @@ lurek.ui.dropOn(target)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local source = lurek.ui.newPanel()
     local target = lurek.ui.newPanel()
     lurek.ui.beginDrag(source)
-    example_print_log("active drag:", lurek.ui.getActiveDrag())
+    lurek.log.info(tostring("active drag:") .. " " .. tostring(lurek.ui.getActiveDrag()))
     lurek.ui.dropOn(target)
-    example_print_log("after drop, active drag:", lurek.ui.getActiveDrag())
+    lurek.log.info(tostring("after drop, active drag:") .. " " .. tostring(lurek.ui.getActiveDrag()))
 end
 ```
 
@@ -539,20 +425,13 @@ lurek.ui.endDrag()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local img = lurek.ui.drawToImage(320, 240)
     local w = lurek.ui.newCustomWidget({width=80, height=40})
     lurek.ui.beginDrag(w)
     lurek.ui.dropOn(w)
     lurek.ui.endDrag()
-    example_print_log("drawToImage ok; dropOn/endDrag ok")
+    lurek.log.info(tostring("drawToImage ok; dropOn/endDrag ok"))
 end
 ```
 
@@ -576,20 +455,13 @@ lurek.ui.flushCache()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.ui.flushCache()
     lurek.ui.focusPrev()
     local drag = lurek.ui.getActiveDrag()
     local focus = lurek.ui.getFocus()
     lurek.ui.clearFocus()
-    example_print_log("flushCache/focusPrev ok; activeDrag:", drag, "focus:", focus)
+    lurek.log.info(tostring("flushCache/focusPrev ok; activeDrag:") .. " " .. tostring(drag) .. " " .. tostring("focus:") .. " " .. tostring(focus))
 end
 ```
 
@@ -620,20 +492,13 @@ lurek.ui.focusDirection(dx, dy)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local a = lurek.ui.newButton("A")
     local b = lurek.ui.newButton("B")
     a:setFocusNeighbor("right", b._idx)
     lurek.ui.setFocus(a)
     local moved = lurek.ui.focusDirection(1.0, 0.0)
-    example_print_log("lurek.ui.focusDirection moved=" .. tostring(moved))
+    lurek.log.info(tostring("lurek.ui.focusDirection moved=" .. tostring(moved)))
 end
 ```
 
@@ -663,20 +528,13 @@ lurek.ui.focusNeighbor(direction)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local a = lurek.ui.newButton("A")
     local b = lurek.ui.newButton("B")
     a:setFocusNeighbor("right", b._idx)
     lurek.ui.setFocus(a)
     local moved = lurek.ui.focusNeighbor("right")
-    example_print_log("focus moved=" .. tostring(moved))
+    lurek.log.info(tostring("focus moved=" .. tostring(moved)))
 end
 ```
 
@@ -694,22 +552,15 @@ lurek.ui.focusNext()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local a = lurek.ui.newTextInput()
     local b = lurek.ui.newTextInput()
     local c = lurek.ui.newTextInput()
     lurek.ui.setFocus(a)
     lurek.ui.focusNext()
-    example_print_log("moved focus forward")
+    lurek.log.info(tostring("moved focus forward"))
     lurek.ui.focusPrev()
-    example_print_log("moved focus back")
+    lurek.log.info(tostring("moved focus back"))
 end
 ```
 
@@ -727,24 +578,17 @@ lurek.ui.focusPrev()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local btn1 = lurek.ui.newButton("First")
     local btn2 = lurek.ui.newButton("Second")
     lurek.ui.setFocus(btn1)
-    example_print_log("focused widget:", lurek.ui.getFocus())
+    lurek.log.info(tostring("focused widget:") .. " " .. tostring(lurek.ui.getFocus()))
     lurek.ui.focusNext()
-    example_print_log("after focusNext:", lurek.ui.getFocus())
+    lurek.log.info(tostring("after focusNext:") .. " " .. tostring(lurek.ui.getFocus()))
     lurek.ui.focusPrev()
-    example_print_log("after focusPrev:", lurek.ui.getFocus())
+    lurek.log.info(tostring("after focusPrev:") .. " " .. tostring(lurek.ui.getFocus()))
     lurek.ui.clearFocus()
-    example_print_log("after clear:", lurek.ui.getFocus())
+    lurek.log.info(tostring("after clear:") .. " " .. tostring(lurek.ui.getFocus()))
 end
 ```
 
@@ -768,22 +612,15 @@ lurek.ui.getAccessibilityTree()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.ui.clear()
     local label = lurek.ui.newLabel("Name")
     local input = lurek.ui.newTextInput()
     label:setLabelFor(input._idx)
     local nodes = lurek.ui.getAccessibilityTree()
-    example_print_log("a11y nodes = " .. tostring(#nodes))
-    example_print_log("first node role = " .. tostring(nodes[1] and nodes[1].role))
-    example_print_log("first node name = " .. tostring(nodes[1] and nodes[1].name))
+    lurek.log.info(tostring("a11y nodes = " .. tostring(#nodes)))
+    lurek.log.info(tostring("first node role = " .. tostring(nodes[1] and nodes[1].role)))
+    lurek.log.info(tostring("first node name = " .. tostring(nodes[1] and nodes[1].name)))
 end
 ```
 
@@ -807,20 +644,13 @@ lurek.ui.getActiveDrag()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local source = lurek.ui.newPanel()
     local target = lurek.ui.newPanel()
     lurek.ui.beginDrag(source)
-    example_print_log("active drag:", lurek.ui.getActiveDrag())
+    lurek.log.info(tostring("active drag:") .. " " .. tostring(lurek.ui.getActiveDrag()))
     lurek.ui.dropOn(target)
-    example_print_log("after drop, active drag:", lurek.ui.getActiveDrag())
+    lurek.log.info(tostring("after drop, active drag:") .. " " .. tostring(lurek.ui.getActiveDrag()))
 end
 ```
 
@@ -844,24 +674,17 @@ lurek.ui.getFocus()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local btn1 = lurek.ui.newButton("First")
     local btn2 = lurek.ui.newButton("Second")
     lurek.ui.setFocus(btn1)
-    example_print_log("focused widget:", lurek.ui.getFocus())
+    lurek.log.info(tostring("focused widget:") .. " " .. tostring(lurek.ui.getFocus()))
     lurek.ui.focusNext()
-    example_print_log("after focusNext:", lurek.ui.getFocus())
+    lurek.log.info(tostring("after focusNext:") .. " " .. tostring(lurek.ui.getFocus()))
     lurek.ui.focusPrev()
-    example_print_log("after focusPrev:", lurek.ui.getFocus())
+    lurek.log.info(tostring("after focusPrev:") .. " " .. tostring(lurek.ui.getFocus()))
     lurek.ui.clearFocus()
-    example_print_log("after clear:", lurek.ui.getFocus())
+    lurek.log.info(tostring("after clear:") .. " " .. tostring(lurek.ui.getFocus()))
 end
 ```
 
@@ -885,13 +708,6 @@ lurek.ui.getFont()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     -- Example for getFont
     local widget = lurek.ui.newButton("Test Widget")
@@ -928,20 +744,13 @@ lurek.ui.getIconGlyph(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local save_glyph = lurek.ui.getIconGlyph("save") or ""
     local health_glyph = lurek.ui.getIconGlyph("health") or ""
     local missing_glyph = lurek.ui.getIconGlyph("missing-icon")
-    example_print_log("save glyph = " .. save_glyph)
-    example_print_log("health glyph = " .. health_glyph)
-    example_print_log("missing glyph = " .. tostring(missing_glyph))
+    lurek.log.info(tostring("save glyph = " .. save_glyph))
+    lurek.log.info(tostring("health glyph = " .. health_glyph))
+    lurek.log.info(tostring("missing glyph = " .. tostring(missing_glyph)))
 end
 ```
 
@@ -965,20 +774,13 @@ lurek.ui.getIconNames()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local names = lurek.ui.getIconNames()
     local first = names[1] or ""
     local last = names[#names] or ""
-    example_print_log("icon count = " .. #names)
-    example_print_log("first icon = " .. first)
-    example_print_log("last icon = " .. last)
+    lurek.log.info(tostring("icon count = " .. #names))
+    lurek.log.info(tostring("first icon = " .. first))
+    lurek.log.info(tostring("last icon = " .. last))
 end
 ```
 
@@ -1002,19 +804,12 @@ lurek.ui.getRoot()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local root = lurek.ui.getRoot()
-    example_print_log("root = " .. tostring(root))
-    example_print_log("widget count = " .. lurek.ui.getWidgetCount())
-    example_print_log("root widgets = " .. lurek.ui.getWidgetCount())
-    example_print_log("focus exists = " .. tostring(lurek.ui.getFocus() ~= nil))
+    lurek.log.info(tostring("root = " .. tostring(root)))
+    lurek.log.info(tostring("widget count = " .. lurek.ui.getWidgetCount()))
+    lurek.log.info(tostring("root widgets = " .. lurek.ui.getWidgetCount()))
+    lurek.log.info(tostring("focus exists = " .. tostring(lurek.ui.getFocus() ~= nil)))
 end
 ```
 
@@ -1038,20 +833,13 @@ lurek.ui.getScaleFactor()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.ui.setBaseResolution(1280, 720)
     local base_scale = lurek.ui.getScaleFactor()
     lurek.ui.updateResolution(1920, 1080)
     local viewport_scale = lurek.ui.getScaleFactor()
-    example_print_log("base scale=" .. base_scale)
-    example_print_log("viewport scale=" .. viewport_scale)
+    lurek.log.info(tostring("base scale=" .. base_scale))
+    lurek.log.info(tostring("viewport scale=" .. viewport_scale))
 end
 ```
 
@@ -1081,19 +869,12 @@ lurek.ui.getStyleToken(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local spacing = lurek.ui.getStyleToken("spacing_md")
     local color = lurek.ui.getStyleToken("color_primary")
-    example_print_log("spacing_md=" .. tostring(spacing))
+    lurek.log.info(tostring("spacing_md=" .. tostring(spacing)))
     if type(color) == "table" then
-        example_print_log("color_primary a=" .. tostring(color.a))
+        lurek.log.info(tostring("color_primary a=" .. tostring(color.a)))
     end
 end
 ```
@@ -1118,20 +899,13 @@ lurek.ui.getTheme()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local theme = lurek.ui.newTheme()
     theme:setStyle("button", "normal", { bg_r = 0.2, bg_g = 0.2, bg_b = 0.3, bg_a = 1.0, fg_r = 1.0, fg_g = 1.0, fg_b = 1.0, fg_a = 1.0, })
     theme:setStyle("button", "hovered", { bg_r = 0.3, bg_g = 0.3, bg_b = 0.5, bg_a = 1.0, })
     lurek.ui.setTheme(theme)
-    example_print_log("theme active:", lurek.ui.getTheme())
-    example_print_log("theme type:", theme:type())
+    lurek.log.info(tostring("theme active:") .. " " .. tostring(lurek.ui.getTheme()))
+    lurek.log.info(tostring("theme type:") .. " " .. tostring(theme:type()))
 end
 ```
 
@@ -1155,20 +929,13 @@ lurek.ui.getToastCount()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.ui.clearFocus()
     local foc = lurek.ui.getFocus()
     local theme = lurek.ui.getTheme()
     local toasts = lurek.ui.getToastCount()
     local widgets = lurek.ui.getWidgetCount()
-    example_print_log("focus:", foc, "theme:", theme, "toastCount:", toasts, "widgetCount:", widgets)
+    lurek.log.info(tostring("focus:") .. " " .. tostring(foc) .. " " .. tostring("theme:") .. " " .. tostring(theme) .. " " .. tostring("toastCount:") .. " " .. tostring(toasts) .. " " .. tostring("widgetCount:") .. " " .. tostring(widgets))
 end
 ```
 
@@ -1192,19 +959,12 @@ lurek.ui.getWidgetCount()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local cnt = lurek.ui.getWidgetCount()
     lurek.ui.keypressed("escape")
     local layout = lurek.ui.loadLayoutFile("content/examples/assets/layouts/sample_main_menu.toml")
     lurek.ui.textinput("a")
-    example_print_log("widgetCount:", cnt, "loadLayoutFile ok; textinput ok")
+    lurek.log.info(tostring("widgetCount:") .. " " .. tostring(cnt) .. " " .. tostring("loadLayoutFile ok; textinput ok"))
 end
 ```
 
@@ -1234,13 +994,6 @@ lurek.ui.getWidgetFont(widget)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     -- Example for getWidgetFont
     local widget = lurek.ui.newButton("Test Widget")
@@ -1271,20 +1024,13 @@ lurek.ui.hasAutoInput()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.ui.setAutoInput(true)
     local enabled = lurek.ui.hasAutoInput()
     lurek.ui.setAutoInput(false)
     local disabled = lurek.ui.hasAutoInput()
-    example_print_log("auto input enabled=" .. tostring(enabled))
-    example_print_log("auto input disabled=" .. tostring(disabled))
+    lurek.log.info(tostring("auto input enabled=" .. tostring(enabled)))
+    lurek.log.info(tostring("auto input disabled=" .. tostring(disabled)))
 end
 ```
 
@@ -1308,20 +1054,13 @@ lurek.ui.hasAutoUpdate()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.ui.setAutoUpdate(true)
     local enabled = lurek.ui.hasAutoUpdate()
     lurek.ui.setAutoUpdate(false)
     local disabled = lurek.ui.hasAutoUpdate()
-    example_print_log("auto update enabled=" .. tostring(enabled))
-    example_print_log("auto update disabled=" .. tostring(disabled))
+    lurek.log.info(tostring("auto update enabled=" .. tostring(enabled)))
+    lurek.log.info(tostring("auto update disabled=" .. tostring(disabled)))
 end
 ```
 
@@ -1351,20 +1090,13 @@ lurek.ui.hasIcon(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local can_save = lurek.ui.hasIcon("save")
     local can_map = lurek.ui.hasIcon("map")
     local missing = lurek.ui.hasIcon("missing-icon")
-    example_print_log("save icon = " .. tostring(can_save))
-    example_print_log("map icon = " .. tostring(can_map))
-    example_print_log("missing icon = " .. tostring(missing))
+    lurek.log.info(tostring("save icon = " .. tostring(can_save)))
+    lurek.log.info(tostring("map icon = " .. tostring(can_map)))
+    lurek.log.info(tostring("missing icon = " .. tostring(missing)))
 end
 ```
 
@@ -1394,19 +1126,12 @@ lurek.ui.keypressed(key)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local cnt = lurek.ui.getWidgetCount()
     lurek.ui.keypressed("escape")
     local layout = lurek.ui.loadLayoutFile("content/examples/assets/layouts/sample_main_menu.toml")
     lurek.ui.textinput("a")
-    example_print_log("widgetCount:", cnt, "loadLayoutFile ok; textinput ok")
+    lurek.log.info(tostring("widgetCount:") .. " " .. tostring(cnt) .. " " .. tostring("loadLayoutFile ok; textinput ok"))
 end
 ```
 
@@ -1436,16 +1161,9 @@ lurek.ui.loadLayout(def)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.ui.addToast({ message = "File saved successfully", duration = 3.0, type = "info" })
-    example_print_log("toast added")
+    lurek.log.info(tostring("toast added"))
     local layout = lurek.ui.loadLayout({
         type = "layout",
         direction = "grid",
@@ -1455,7 +1173,7 @@ do
             { type = "label", text = "HP", textAlign = "right", margin = { 2, 4, 2, 4 } },
         },
     })
-    example_print_log("layout=" .. tostring(layout ~= nil))
+    lurek.log.info(tostring("layout=" .. tostring(layout ~= nil)))
 end
 ```
 
@@ -1485,19 +1203,12 @@ lurek.ui.loadLayoutFile(path)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local cnt = lurek.ui.getWidgetCount()
     lurek.ui.keypressed("escape")
     local layout = lurek.ui.loadLayoutFile("content/examples/assets/layouts/sample_main_menu.toml")
     lurek.ui.textinput("a")
-    example_print_log("widgetCount:", cnt, "loadLayoutFile ok; textinput ok")
+    lurek.log.info(tostring("widgetCount:") .. " " .. tostring(cnt) .. " " .. tostring("loadLayoutFile ok; textinput ok"))
 end
 ```
 
@@ -1527,20 +1238,13 @@ lurek.ui.loadLayoutGameFile(path)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local ok, result = pcall(function()
         return lurek.ui.loadLayoutGameFile("content/examples/assets/layouts/sample_main_menu.toml")
     end)
-    example_print_log("loadLayoutGameFile ok:", ok, "result:", tostring(result))
-    example_print_log("result type:", type(result))
-    example_print_log("loaded layout:", tostring(ok and result ~= nil))
+    lurek.log.info(tostring("loadLayoutGameFile ok:") .. " " .. tostring(ok) .. " " .. tostring("result:") .. " " .. tostring(tostring(result)))
+    lurek.log.info(tostring("result type:") .. " " .. tostring(type(result)))
+    lurek.log.info(tostring("loaded layout:") .. " " .. tostring(tostring(ok and result ~= nil)))
 end
 ```
 
@@ -1571,13 +1275,6 @@ lurek.ui.mousemoved(x, y)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local slider = lurek.ui.newSlider(0, 100)
     slider:setPosition(20, 520)
@@ -1587,7 +1284,7 @@ do
     lurek.ui.mousemoved(180, 530)
     lurek.ui.mousereleased(180, 530, 1)
     lurek.ui.update(0)
-    example_print_log("slider value after drag:", slider:getValue())
+    lurek.log.info(tostring("slider value after drag:") .. " " .. tostring(slider:getValue()))
 end
 ```
 
@@ -1619,13 +1316,6 @@ lurek.ui.mousepressed(x, y, btn)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tabs = lurek.ui.newTabBar()
     tabs:setPosition(20, 560)
@@ -1637,7 +1327,7 @@ do
     lurek.ui.mousepressed(120, 574, 1)
     lurek.ui.mousereleased(120, 574, 1)
     lurek.ui.update(0)
-    example_print_log("active tab after click:", tabs:getActiveTab())
+    lurek.log.info(tostring("active tab after click:") .. " " .. tostring(tabs:getActiveTab()))
 end
 ```
 
@@ -1669,13 +1359,6 @@ lurek.ui.mousereleased(x, y, btn)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local combo = lurek.ui.newComboBox()
     combo:setPosition(20, 600)
@@ -1689,7 +1372,7 @@ do
     lurek.ui.mousepressed(30, 670, 1)
     lurek.ui.mousereleased(30, 670, 1)
     lurek.ui.update(0)
-    example_print_log("combo selected:", combo:getSelectedItem())
+    lurek.log.info(tostring("combo selected:") .. " " .. tostring(combo:getSelectedItem()))
 end
 ```
 
@@ -1713,20 +1396,13 @@ lurek.ui.newAccordion()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LAccordion
     local acc = lurek.ui.newAccordion()
-    example_print_log("type = " .. acc:type())
-    example_print_log("sections = " .. acc:getSectionCount())
-    example_print_log("section count = " .. acc:getSectionCount())
-    example_print_log("exclusive = " .. tostring(acc:isExclusive()))
+    lurek.log.info(tostring("type = " .. acc:type()))
+    lurek.log.info(tostring("sections = " .. acc:getSectionCount()))
+    lurek.log.info(tostring("section count = " .. acc:getSectionCount()))
+    lurek.log.info(tostring("exclusive = " .. tostring(acc:isExclusive())))
 end
 ```
 
@@ -1756,19 +1432,12 @@ lurek.ui.newBadge(count)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local badge = lurek.ui.newBadge(5)
-    example_print_log("count:", badge:getCount())
-    example_print_log("display:", badge:getDisplayText())
+    lurek.log.info(tostring("count:") .. " " .. tostring(badge:getCount()))
+    lurek.log.info(tostring("display:") .. " " .. tostring(badge:getDisplayText()))
     badge:setCount(120)
-    example_print_log("large count display:", badge:getDisplayText())
+    lurek.log.info(tostring("large count display:") .. " " .. tostring(badge:getDisplayText()))
 end
 ```
 
@@ -1798,20 +1467,13 @@ lurek.ui.newButton(text)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LButton
     local btn = lurek.ui.newButton("Click Me")
-    example_print_log("type = " .. btn:type())
-    example_print_log("text = " .. btn:getText())
-    example_print_log("button text = " .. btn:getText())
-    example_print_log("button width = " .. select(3, btn:getRect()))
+    lurek.log.info(tostring("type = " .. btn:type()))
+    lurek.log.info(tostring("text = " .. btn:getText()))
+    lurek.log.info(tostring("button text = " .. btn:getText()))
+    lurek.log.info(tostring("button width = " .. select(3, btn:getRect())))
 end
 ```
 
@@ -1835,18 +1497,12 @@ lurek.ui.newCenterContainer()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local modal_host = lurek.ui.newCenterContainer()
     modal_host:addChild(lurek.ui.newPanel())
-    example_print_log("center align = " .. modal_host:getAlign())
-    example_print_log("center justify = " .. modal_host:getJustify())
+    lurek.log.info(tostring("center align = " .. modal_host:getAlign()))
+    lurek.log.info(tostring("center justify = " .. modal_host:getJustify()))
+    lurek.log.info(tostring("center children = " .. modal_host:getChildCount()))
 end
 ```
 
@@ -1876,20 +1532,13 @@ lurek.ui.newCheckbox(text)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LCheckbox
     local cb = lurek.ui.newCheckbox("Enable Sound")
-    example_print_log("type = " .. cb:type())
-    example_print_log("text = " .. cb:getText())
-    example_print_log("checked = " .. tostring(cb:isChecked()))
-    example_print_log("checkbox text = " .. cb:getText())
+    lurek.log.info(tostring("type = " .. cb:type()))
+    lurek.log.info(tostring("text = " .. cb:getText()))
+    lurek.log.info(tostring("checked = " .. tostring(cb:isChecked())))
+    lurek.log.info(tostring("checkbox text = " .. cb:getText()))
 end
 ```
 
@@ -1913,20 +1562,13 @@ lurek.ui.newColorPicker()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local cp = lurek.ui.newColorPicker()
     cp:setColor(0.8, 0.2, 0.5, 1.0)
     local r, g, b, a = cp:getColor()
-    example_print_log("color:", r, g, b, a)
+    lurek.log.info(tostring("color:") .. " " .. tostring(r) .. " " .. tostring(g) .. " " .. tostring(b) .. " " .. tostring(a))
     cp:setColorMode("hsv")
-    example_print_log("mode:", cp:getColorMode())
+    lurek.log.info(tostring("mode:") .. " " .. tostring(cp:getColorMode()))
 end
 ```
 
@@ -1950,20 +1592,13 @@ lurek.ui.newComboBox()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LComboBox
     local combo = lurek.ui.newComboBox()
-    example_print_log("type = " .. combo:type())
-    example_print_log("items = " .. combo:getItemCount())
-    example_print_log("item count = " .. combo:getItemCount())
-    example_print_log("selected index = " .. tostring(combo:getSelectedIndex()))
+    lurek.log.info(tostring("type = " .. combo:type()))
+    lurek.log.info(tostring("items = " .. combo:getItemCount()))
+    lurek.log.info(tostring("item count = " .. combo:getItemCount()))
+    lurek.log.info(tostring("selected index = " .. tostring(combo:getSelectedIndex())))
 end
 ```
 
@@ -1993,13 +1628,6 @@ lurek.ui.newCustomWidget(config)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     local child = lurek.ui.newLabel("label")
@@ -2007,7 +1635,7 @@ do
     w:animateAlpha(0.5, 0.3, false)
     w:animatePosition(10, 20, 0.5)
     local cnt = w:getChildCount()
-    example_print_log("addChild/animateAlpha/animatePosition ok; childCount:", cnt)
+    lurek.log.info(tostring("addChild/animateAlpha/animatePosition ok; childCount:") .. " " .. tostring(cnt))
 end
 ```
 
@@ -2037,13 +1665,6 @@ lurek.ui.newDialog(title)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local modal = lurek.ui.newDialog("Quest Reward")
     modal:setPosition(120, 100)
@@ -2068,10 +1689,10 @@ do
     modal:setContent(body._idx)
     modal:setFooter(footer._idx)
     modal:addAction("Equip", function(_, action_idx)
-        example_print_log("default action fired:", action_idx)
+        lurek.log.info(tostring("default action fired:") .. " " .. tostring(action_idx))
     end, "default", true)
     modal:addAction("Back", function(_, action_idx)
-        example_print_log("cancel action fired:", action_idx)
+        lurek.log.info(tostring("cancel action fired:") .. " " .. tostring(action_idx))
     end, "cancel", true)
     modal:setDefaultAction(1)
     modal:setCancelAction(2)
@@ -2088,7 +1709,7 @@ do
     inspector:addButton("Close")
     inspector:open()
 
-    example_print_log("modal open:", modal:isOpen(), "non modal open:", inspector:isOpen())
+    lurek.log.info(tostring("modal open:") .. " " .. tostring(modal:isOpen()) .. " " .. tostring("non modal open:") .. " " .. tostring(inspector:isOpen()))
 end
 ```
 
@@ -2112,18 +1733,11 @@ lurek.ui.newDockPanel()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dock = lurek.ui.newDockPanel()
     local header = lurek.ui.newPanel()
     local sidebar = lurek.ui.newPanel()
-    example_print_log("type = " .. dock:type())
+    lurek.log.info(tostring("type = " .. dock:type()))
     header:setSize(0, 60)
     sidebar:setSize(200, 0)
     dock:addChild(header)
@@ -2132,8 +1746,8 @@ do
     dock:dock(sidebar._idx, "left")
     dock:setSplitSize("left", 200)
     dock:setSplitSize("top", 60)
-    example_print_log("docked count = " .. dock:getDockedCount())
-    example_print_log("left size = " .. dock:getSplitSize("left"))
+    lurek.log.info(tostring("docked count = " .. dock:getDockedCount()))
+    lurek.log.info(tostring("left size = " .. dock:getSplitSize("left")))
 end
 ```
 
@@ -2163,19 +1777,12 @@ lurek.ui.newGridContainer(columns)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local inventory = lurek.ui.newGridContainer(3)
     inventory:setSpacing(4)
     inventory:addChild(lurek.ui.newButton("Slot 1"))
     inventory:addChild(lurek.ui.newButton("Slot 2"))
-    example_print_log("grid direction = " .. inventory:getDirection())
+    lurek.log.info(tostring("grid direction = " .. inventory:getDirection()))
 end
 ```
 
@@ -2199,19 +1806,12 @@ lurek.ui.newHBoxContainer()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local hud = lurek.ui.newHBoxContainer()
     hud:setSpacing(6)
     hud:addChild(lurek.ui.newLabel("HP"))
     hud:addChild(lurek.ui.newProgressBar(0, 100))
-    example_print_log("hbox direction = " .. hud:getDirection())
+    lurek.log.info(tostring("hbox direction = " .. hud:getDirection()))
 end
 ```
 
@@ -2241,20 +1841,13 @@ lurek.ui.newIcon(icon)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local icon = lurek.ui.newIcon("settings")
     icon:setSize(28, 28)
     icon:setPosition(12, 12)
-    example_print_log("icon type = " .. icon:type())
-    example_print_log("icon name = " .. tostring(icon:getIcon()))
-    example_print_log("icon position = " .. icon:getIconPosition())
+    lurek.log.info(tostring("icon type = " .. icon:type()))
+    lurek.log.info(tostring("icon name = " .. tostring(icon:getIcon())))
+    lurek.log.info(tostring("icon position = " .. icon:getIconPosition()))
 end
 ```
 
@@ -2278,20 +1871,13 @@ lurek.ui.newImageWidget()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local img = lurek.ui.newImageWidget()
     img:setScaleMode("fit")
-    example_print_log("scale mode:", img:getScaleMode())
+    lurek.log.info(tostring("scale mode:") .. " " .. tostring(img:getScaleMode()))
     img:setTint(1.0, 0.8, 0.6, 0.9)
     local r, g, b, a = img:getTint()
-    example_print_log("tint:", r, g, b, a)
+    lurek.log.info(tostring("tint:") .. " " .. tostring(r) .. " " .. tostring(g) .. " " .. tostring(b) .. " " .. tostring(a))
 end
 ```
 
@@ -2321,19 +1907,12 @@ lurek.ui.newLabel(text)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local lbl = lurek.ui.newLabel("Hello, World!")
-    example_print_log("type = " .. lbl:type())
-    example_print_log("text = " .. lbl:getText())
+    lurek.log.info(tostring("type = " .. lbl:type()))
+    lurek.log.info(tostring("text = " .. lbl:getText()))
     lbl:setText("Score: 100")
-    example_print_log("updated text = " .. lbl:getText())
+    lurek.log.info(tostring("updated text = " .. lbl:getText()))
 end
 ```
 
@@ -2363,23 +1942,16 @@ lurek.ui.newLayout(direction)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local row = lurek.ui.newLayout("horizontal")
-    example_print_log("type = " .. row:type())
-    example_print_log("direction = " .. row:getDirection())
-    example_print_log("spacing = " .. row:getSpacing())
+    lurek.log.info(tostring("type = " .. row:type()))
+    lurek.log.info(tostring("direction = " .. row:getDirection()))
+    lurek.log.info(tostring("spacing = " .. row:getSpacing()))
 
     local col = lurek.ui.newLayout("vertical")
     col:setSpacing(10)
-    example_print_log("direction = " .. col:getDirection())
-    example_print_log("spacing = " .. col:getSpacing())
+    lurek.log.info(tostring("direction = " .. col:getDirection()))
+    lurek.log.info(tostring("spacing = " .. col:getSpacing()))
 end
 ```
 
@@ -2403,20 +1975,13 @@ lurek.ui.newList()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LListBox
     local list = lurek.ui.newList()
-    example_print_log("type = " .. list:type())
-    example_print_log("items = " .. list:getItemCount())
-    example_print_log("list count = " .. list:getItemCount())
-    example_print_log("list width = " .. select(3, list:getRect()))
+    lurek.log.info(tostring("type = " .. list:type()))
+    lurek.log.info(tostring("items = " .. list:getItemCount()))
+    lurek.log.info(tostring("list count = " .. list:getItemCount()))
+    lurek.log.info(tostring("list width = " .. select(3, list:getRect())))
 end
 ```
 
@@ -2449,19 +2014,12 @@ lurek.ui.newMarginContainer(top, right, bottom, left)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local safe_hud = lurek.ui.newMarginContainer(12, 16)
     local label = lurek.ui.newLabel("Quest updated")
     safe_hud:addChild(label)
     local top, right = safe_hud:getPadding()
-    example_print_log("margin padding = " .. top .. "," .. right)
+    lurek.log.info(tostring("margin padding = " .. top .. "," .. right))
 end
 ```
 
@@ -2485,20 +2043,13 @@ lurek.ui.newMenuBar()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LMenuBar
     local bar = lurek.ui.newMenuBar()
-    example_print_log("type = " .. bar:type())
-    example_print_log("menu count = " .. bar:getMenuCount())
-    example_print_log("menu count = " .. bar:getMenuCount())
-    example_print_log("menu width = " .. select(3, bar:getRect()))
+    lurek.log.info(tostring("type = " .. bar:type()))
+    lurek.log.info(tostring("menu count = " .. bar:getMenuCount()))
+    lurek.log.info(tostring("menu count = " .. bar:getMenuCount()))
+    lurek.log.info(tostring("menu width = " .. select(3, bar:getRect())))
 end
 ```
 
@@ -2528,19 +2079,12 @@ lurek.ui.newMenuItem(text)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local item = lurek.ui.newMenuItem("File")
-    example_print_log("type = " .. item:type())
-    example_print_log("text = " .. item:getText())
+    lurek.log.info(tostring("type = " .. item:type()))
+    lurek.log.info(tostring("text = " .. item:getText()))
     item:setShortcut("Ctrl+F")
-    example_print_log("shortcut = " .. item:getShortcut())
+    lurek.log.info(tostring("shortcut = " .. item:getShortcut()))
 end
 ```
 
@@ -2564,19 +2108,12 @@ lurek.ui.newNinePatch()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local np = lurek.ui.newNinePatch()
     np:setImageDimensions(128, 128)
     np:setInsets(16, 16, 16, 16)
     local w, h = np:getImageDimensions()
-    example_print_log("image size:", w, h)
+    lurek.log.info(tostring("image size:") .. " " .. tostring(w) .. " " .. tostring(h))
 end
 ```
 
@@ -2600,20 +2137,13 @@ lurek.ui.newPanel()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LPanel
     local panel = lurek.ui.newPanel()
-    example_print_log("type = " .. panel:type())
-    example_print_log("child count = " .. panel:getChildCount())
-    example_print_log("visible = " .. tostring(panel:isVisible()))
-    example_print_log("panel children = " .. panel:getChildCount())
+    lurek.log.info(tostring("type = " .. panel:type()))
+    lurek.log.info(tostring("child count = " .. panel:getChildCount()))
+    lurek.log.info(tostring("visible = " .. tostring(panel:isVisible())))
+    lurek.log.info(tostring("panel children = " .. panel:getChildCount()))
 end
 ```
 
@@ -2644,19 +2174,12 @@ lurek.ui.newProgressBar(min, max)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local bar = lurek.ui.newProgressBar(0, 100)
     bar:setValue(35)
-    example_print_log("value:", bar:getValue())
-    example_print_log("progress (normalized):", bar:getProgress())
-    example_print_log("progress value = " .. bar:getValue())
+    lurek.log.info(tostring("value:") .. " " .. tostring(bar:getValue()))
+    lurek.log.info(tostring("progress (normalized):") .. " " .. tostring(bar:getProgress()))
+    lurek.log.info(tostring("progress value = " .. bar:getValue()))
 end
 ```
 
@@ -2680,13 +2203,6 @@ lurek.ui.newPropertyWidget()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local props = lurek.ui.newPropertyWidget()
     props:setPosition(16, 16)
@@ -2694,7 +2210,7 @@ do
     props:setLabelWidth(132)
     local group = props:addGroup("Video System", false)
     props:addProperty(group, "Resolution", "UHD - 2160p", "select", { "HD", "UHD - 2160p" })
-    example_print_log("property widget type = " .. props:type())
+    lurek.log.info(tostring("property widget type = " .. props:type()))
 end
 ```
 
@@ -2725,22 +2241,15 @@ lurek.ui.newRadioButton(text, group)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local rb1 = lurek.ui.newRadioButton("Small", "size_group")
     local rb2 = lurek.ui.newRadioButton("Medium", "size_group")
     local rb3 = lurek.ui.newRadioButton("Large", "size_group")
     rb2:setSelected(true)
-    example_print_log("rb1 selected:", rb1:isSelected())
-    example_print_log("rb2 selected:", rb2:isSelected())
-    example_print_log("rb2 group:", rb2:getGroup())
-    example_print_log("rb2 text:", rb2:getText())
+    lurek.log.info(tostring("rb1 selected:") .. " " .. tostring(rb1:isSelected()))
+    lurek.log.info(tostring("rb2 selected:") .. " " .. tostring(rb2:isSelected()))
+    lurek.log.info(tostring("rb2 group:") .. " " .. tostring(rb2:getGroup()))
+    lurek.log.info(tostring("rb2 text:") .. " " .. tostring(rb2:getText()))
 end
 ```
 
@@ -2770,19 +2279,12 @@ lurek.ui.newScrollBar(vertical)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     local layout = lurek.ui.newLayout("row")
     local sb = lurek.ui.newScrollBar(true)
-    example_print_log("newCustomWidget:", w, "newLayout:", layout, "newScrollBar:", sb)
-    example_print_log("rect x = " .. select(1, w:getRect()))
+    lurek.log.info(tostring("newCustomWidget:") .. " " .. tostring(w) .. " " .. tostring("newLayout:") .. " " .. tostring(layout) .. " " .. tostring("newScrollBar:") .. " " .. tostring(sb))
+    lurek.log.info(tostring("rect x = " .. select(1, w:getRect())))
 end
 ```
 
@@ -2806,19 +2308,12 @@ lurek.ui.newScrollContainer()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local scroll = lurek.ui.newScrollContainer()
     scroll:setContentSize(640, 960)
     scroll:setScrollPosition(0, 32)
     local sx, sy = scroll:getScrollPosition()
-    example_print_log("scroll container pos = " .. sx .. ", " .. sy)
+    lurek.log.info(tostring("scroll container pos = " .. sx .. ", " .. sy))
 end
 ```
 
@@ -2842,24 +2337,17 @@ lurek.ui.newScrollPanel()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local scroll = lurek.ui.newScrollPanel()
-    example_print_log("type = " .. scroll:type())
+    lurek.log.info(tostring("type = " .. scroll:type()))
     scroll:setContentSize(1200, 2000)
     local cw, ch = scroll:getContentSize()
-    example_print_log("content size = " .. cw .. "x" .. ch)
+    lurek.log.info(tostring("content size = " .. cw .. "x" .. ch))
     scroll:setScrollPosition(0, 100)
     local sx, sy = scroll:getScrollPosition()
-    example_print_log("scroll pos = " .. sx .. ", " .. sy)
+    lurek.log.info(tostring("scroll pos = " .. sx .. ", " .. sy))
     local mx, my = scroll:getMaxScroll()
-    example_print_log("max scroll = " .. mx .. ", " .. my)
+    lurek.log.info(tostring("max scroll = " .. mx .. ", " .. my))
 end
 ```
 
@@ -2889,19 +2377,12 @@ lurek.ui.newSeparator(vertical)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sep = lurek.ui.newSeparator(false)
-    example_print_log("is vertical:", sep:isVertical())
+    lurek.log.info(tostring("is vertical:") .. " " .. tostring(sep:isVertical()))
     sep:setThickness(2)
-    example_print_log("new thickness:", sep:getThickness())
-    example_print_log("rect x = " .. select(1, sep:getRect()))
+    lurek.log.info(tostring("new thickness:") .. " " .. tostring(sep:getThickness()))
+    lurek.log.info(tostring("rect x = " .. select(1, sep:getRect())))
 end
 ```
 
@@ -2932,19 +2413,12 @@ lurek.ui.newSlider(min, max)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local slider = lurek.ui.newSlider(0, 100)
-    example_print_log("type = " .. slider:type())
-    example_print_log("min = " .. slider:getMin())
-    example_print_log("max = " .. slider:getMax())
-    example_print_log("value = " .. slider:getValue())
+    lurek.log.info(tostring("type = " .. slider:type()))
+    lurek.log.info(tostring("min = " .. slider:getMin()))
+    lurek.log.info(tostring("max = " .. slider:getMax()))
+    lurek.log.info(tostring("value = " .. slider:getValue()))
 end
 ```
 
@@ -2975,19 +2449,12 @@ lurek.ui.newSpacer(w, h)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sp = lurek.ui.newSpacer(20, 10)
     sp:setSize(40, 20)
     local w, h = sp:getSize()
-    example_print_log("spacer size:", w, h)
-    example_print_log("rect x = " .. select(1, sp:getRect()))
+    lurek.log.info(tostring("spacer size:") .. " " .. tostring(w) .. " " .. tostring(h))
+    lurek.log.info(tostring("rect x = " .. select(1, sp:getRect())))
 end
 ```
 
@@ -3018,19 +2485,12 @@ lurek.ui.newSpinBox(min, max)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local spin = lurek.ui.newSpinBox(1, 99)
-    example_print_log("type = " .. spin:type())
-    example_print_log("value = " .. spin:getValue())
+    lurek.log.info(tostring("type = " .. spin:type()))
+    lurek.log.info(tostring("value = " .. spin:getValue()))
     spin:setValue(50)
-    example_print_log("set to 50 = " .. spin:getValue())
+    lurek.log.info(tostring("set to 50 = " .. spin:getValue()))
 end
 ```
 
@@ -3060,20 +2520,13 @@ lurek.ui.newSplitContainer(orientation)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local split = lurek.ui.newSplitContainer("vertical")
     local top = lurek.ui.newPanel()
     local bottom = lurek.ui.newPanel()
     split:setFirstChild(top._idx)
     split:setSecondChild(bottom._idx)
-    example_print_log("split container = " .. split:getOrientation())
+    lurek.log.info(tostring("split container = " .. split:getOrientation()))
 end
 ```
 
@@ -3103,25 +2556,18 @@ lurek.ui.newSplitPanel(orientation)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local split = lurek.ui.newSplitPanel("horizontal")
     local left = lurek.ui.newPanel()
     local right = lurek.ui.newPanel()
-    example_print_log("type = " .. split:type())
-    example_print_log("orientation = " .. split:getOrientation())
+    lurek.log.info(tostring("type = " .. split:type()))
+    lurek.log.info(tostring("orientation = " .. split:getOrientation()))
     split:setFirstChild(left._idx)
     split:setSecondChild(right._idx)
     split:setSplitPosition(0.3)
     split:setMinPanelSize(100)
-    example_print_log("split at " .. split:getSplitPosition())
-    example_print_log("min panel = " .. split:getMinPanelSize())
+    lurek.log.info(tostring("split at " .. split:getSplitPosition()))
+    lurek.log.info(tostring("min panel = " .. split:getMinPanelSize()))
 end
 ```
 
@@ -3145,19 +2591,12 @@ lurek.ui.newStackContainer()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local stack = lurek.ui.newStackContainer()
     stack:addChild(lurek.ui.newPanel())
     stack:addChild(lurek.ui.newPanel())
     stack:setActiveIndex(2)
-    example_print_log("stack active = " .. stack:getActiveIndex())
+    lurek.log.info(tostring("stack active = " .. stack:getActiveIndex()))
 end
 ```
 
@@ -3181,19 +2620,12 @@ lurek.ui.newStatusBar()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sb = lurek.ui.newStatusBar()
     sb:addSection("Ready", 150)
-    example_print_log("section count:", sb:getSectionCount())
-    example_print_log("section 1:", sb:getSectionText(1))
-    example_print_log("rect x = " .. select(1, sb:getRect()))
+    lurek.log.info(tostring("section count:") .. " " .. tostring(sb:getSectionCount()))
+    lurek.log.info(tostring("section 1:") .. " " .. tostring(sb:getSectionText(1)))
+    lurek.log.info(tostring("rect x = " .. select(1, sb:getRect())))
 end
 ```
 
@@ -3223,20 +2655,13 @@ lurek.ui.newSwitch(on)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LSwitch
     local sw = lurek.ui.newSwitch(false)
-    example_print_log("type = " .. sw:type())
-    example_print_log("on = " .. tostring(sw:isOn()))
-    example_print_log("switch on = " .. tostring(sw:isOn()))
-    example_print_log("switch width = " .. select(3, sw:getRect()))
+    lurek.log.info(tostring("type = " .. sw:type()))
+    lurek.log.info(tostring("on = " .. tostring(sw:isOn())))
+    lurek.log.info(tostring("switch on = " .. tostring(sw:isOn())))
+    lurek.log.info(tostring("switch width = " .. select(3, sw:getRect())))
 end
 ```
 
@@ -3260,20 +2685,13 @@ lurek.ui.newTabBar()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LTabBar
     local tabs = lurek.ui.newTabBar()
-    example_print_log("type = " .. tabs:type())
-    example_print_log("tab count = " .. tabs:getTabCount())
-    example_print_log("tab count = " .. tabs:getTabCount())
-    example_print_log("active tab = " .. tostring(tabs:getActiveTab()))
+    lurek.log.info(tostring("type = " .. tabs:type()))
+    lurek.log.info(tostring("tab count = " .. tabs:getTabCount()))
+    lurek.log.info(tostring("tab count = " .. tabs:getTabCount()))
+    lurek.log.info(tostring("active tab = " .. tostring(tabs:getActiveTab())))
 end
 ```
 
@@ -3297,18 +2715,12 @@ lurek.ui.newTabContainer()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tabs = lurek.ui.newTabContainer()
     tabs:addTab("Video")
     tabs:addChild(lurek.ui.newPanel())
-    example_print_log("tab container count = " .. tabs:getTabCount())
+    lurek.log.info(tostring("tab container count = " .. tabs:getTabCount()))
+    lurek.log.info(tostring("active tab = " .. tabs:getActiveIndex()))
 end
 ```
 
@@ -3332,27 +2744,20 @@ lurek.ui.newTable()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tbl = lurek.ui.newTable()
-    example_print_log("type=" .. tbl:type())
+    lurek.log.info(tostring("type=" .. tbl:type()))
     tbl:addColumn("Name")
     tbl:addColumn("Score")
-    example_print_log("cols=" .. tbl:getColumnCount())
+    lurek.log.info(tostring("cols=" .. tbl:getColumnCount()))
     tbl:addRow({ "Alice", "100" })
     tbl:addRow({ "Bob", "80" })
-    example_print_log("rows=" .. tbl:getRowCount())
+    lurek.log.info(tostring("rows=" .. tbl:getRowCount()))
     local cell = tbl:getCell(0, 0)
-    example_print_log("cell00=" .. tostring(cell))
+    lurek.log.info(tostring("cell00=" .. tostring(cell)))
     tbl:setCell(0, 1, "999")
     tbl:setSelectedRow(1)
-    example_print_log("selected=" .. tbl:getSelectedRow())
+    lurek.log.info(tostring("selected=" .. tbl:getSelectedRow()))
 end
 ```
 
@@ -3376,19 +2781,12 @@ lurek.ui.newTextInput()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local input = lurek.ui.newTextInput()
-    example_print_log("type = " .. input:type())
-    example_print_log("text = '" .. input:getText() .. "'")
+    lurek.log.info(tostring("type = " .. input:type()))
+    lurek.log.info(tostring("text = '" .. input:getText() .. "'"))
     input:setText("Hello")
-    example_print_log("set text = " .. input:getText())
+    lurek.log.info(tostring("set text = " .. input:getText()))
 end
 ```
 
@@ -3412,20 +2810,13 @@ lurek.ui.newTheme()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local theme = lurek.ui.newTheme()
     theme:setStyle("button", "normal", { bg_r = 0.2, bg_g = 0.2, bg_b = 0.3, bg_a = 1.0, fg_r = 1.0, fg_g = 1.0, fg_b = 1.0, fg_a = 1.0, })
     theme:setStyle("button", "hovered", { bg_r = 0.3, bg_g = 0.3, bg_b = 0.5, bg_a = 1.0, })
     lurek.ui.setTheme(theme)
-    example_print_log("theme active:", lurek.ui.getTheme())
-    example_print_log("theme type:", theme:type())
+    lurek.log.info(tostring("theme active:") .. " " .. tostring(lurek.ui.getTheme()))
+    lurek.log.info(tostring("theme type:") .. " " .. tostring(theme:type()))
 end
 ```
 
@@ -3456,21 +2847,14 @@ lurek.ui.newToast(message, duration)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local toast = lurek.ui.newToast("File saved!", 2.5)
-    example_print_log("message:", toast:getMessage())
-    example_print_log("duration:", toast:getDuration())
+    lurek.log.info(tostring("message:") .. " " .. tostring(toast:getMessage()))
+    lurek.log.info(tostring("duration:") .. " " .. tostring(toast:getDuration()))
     toast:setMessage("Upload complete")
     toast:setDuration(4.0)
-    example_print_log("updated message:", toast:getMessage())
-    example_print_log("expired:", toast:isExpired())
+    lurek.log.info(tostring("updated message:") .. " " .. tostring(toast:getMessage()))
+    lurek.log.info(tostring("expired:") .. " " .. tostring(toast:isExpired()))
 end
 ```
 
@@ -3500,19 +2884,12 @@ lurek.ui.newToolbar(orientation)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tb = lurek.ui.newToolbar("horizontal")
     tb:addButton("save", "Save file")
-    example_print_log("orientation:", tb:getOrientation())
-    example_print_log("toolbar orientation = " .. tb:getOrientation())
-    example_print_log("toolbar width = " .. select(3, tb:getRect()))
+    lurek.log.info(tostring("orientation:") .. " " .. tostring(tb:getOrientation()))
+    lurek.log.info(tostring("toolbar orientation = " .. tb:getOrientation()))
+    lurek.log.info(tostring("toolbar width = " .. select(3, tb:getRect())))
 end
 ```
 
@@ -3542,23 +2919,16 @@ lurek.ui.newTooltipPanel(text)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local btn = lurek.ui.newButton("Hover me")
     local tip = lurek.ui.newTooltipPanel("Click to submit form")
     tip:setDelay(0.5)
     tip:setTarget(btn._idx)
-    example_print_log("tooltip text:", tip:getText())
-    example_print_log("delay:", tip:getDelay())
-    example_print_log("target:", tip:getTarget())
+    lurek.log.info(tostring("tooltip text:") .. " " .. tostring(tip:getText()))
+    lurek.log.info(tostring("delay:") .. " " .. tostring(tip:getDelay()))
+    lurek.log.info(tostring("target:") .. " " .. tostring(tip:getTarget()))
     tip:setText("Updated tooltip text")
-    example_print_log("new text:", tip:getText())
+    lurek.log.info(tostring("new text:") .. " " .. tostring(tip:getText()))
 end
 ```
 
@@ -3582,19 +2952,12 @@ lurek.ui.newTreeView()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tree = lurek.ui.newTreeView()
     local root = tree:addNode("Project")
     tree:addNode("main.lua", root)
-    example_print_log("total nodes:", tree:getNodeCount())
-    example_print_log("root text:", tree:getNodeText(root))
+    lurek.log.info(tostring("total nodes:") .. " " .. tostring(tree:getNodeCount()))
+    lurek.log.info(tostring("root text:") .. " " .. tostring(tree:getNodeText(root)))
 end
 ```
 
@@ -3618,19 +2981,12 @@ lurek.ui.newVBoxContainer()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local menu = lurek.ui.newVBoxContainer()
     menu:setSpacing(8)
     menu:addChild(lurek.ui.newButton("Start"))
     menu:addChild(lurek.ui.newButton("Options"))
-    example_print_log("vbox children = " .. menu:getChildCount())
+    lurek.log.info(tostring("vbox children = " .. menu:getChildCount()))
 end
 ```
 
@@ -3660,34 +3016,27 @@ lurek.ui.newWindow(title)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local win = lurek.ui.newWindow("Editor")
     win:setDraggable(true)
     win:setResizable(true)
     win:setCloseable(true)
     win:setOnClose(function(idx)
-        example_print_log("window closed, widget index:", idx)
+        lurek.log.info(tostring("window closed, widget index:") .. " " .. tostring(idx))
     end)
-    example_print_log("window title:", win:getTitle())
-    example_print_log("is draggable:", win:isDraggable())
-    example_print_log("is resizable:", win:isResizable())
-    example_print_log("is closeable:", win:isCloseable())
+    lurek.log.info(tostring("window title:") .. " " .. tostring(win:getTitle()))
+    lurek.log.info(tostring("is draggable:") .. " " .. tostring(win:isDraggable()))
+    lurek.log.info(tostring("is resizable:") .. " " .. tostring(win:isResizable()))
+    lurek.log.info(tostring("is closeable:") .. " " .. tostring(win:isCloseable()))
 
     win:setTitle("Object Inspector")
-    example_print_log("title:", win:getTitle())
+    lurek.log.info(tostring("title:") .. " " .. tostring(win:getTitle()))
     win:setDraggable(false)
-    example_print_log("draggable after disable:", win:isDraggable())
+    lurek.log.info(tostring("draggable after disable:") .. " " .. tostring(win:isDraggable()))
     win:setResizable(false)
-    example_print_log("resizable after disable:", win:isResizable())
+    lurek.log.info(tostring("resizable after disable:") .. " " .. tostring(win:isResizable()))
     win:setCloseable(false)
-    example_print_log("closeable after disable:", win:isCloseable())
+    lurek.log.info(tostring("closeable after disable:") .. " " .. tostring(win:isCloseable()))
 end
 ```
 
@@ -3717,20 +3066,13 @@ lurek.ui.parseWidgetState(state)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local th = lurek.ui.newTheme()
     local state = lurek.ui.parseWidgetState("normal")
     local result = lurek.ui.renderToImage(320, 240, "save/ui_render.png")
-    example_print_log("newTheme ok; parseWidgetState:", state, "renderToImage:", result)
+    lurek.log.info(tostring("newTheme ok; parseWidgetState:") .. " " .. tostring(state) .. " " .. tostring("renderToImage:") .. " " .. tostring(result))
     lurek.ui.setTheme(th)
-    example_print_log("theme applied = " .. tostring(lurek.ui.getTheme() ~= nil))
+    lurek.log.info(tostring("theme applied = " .. tostring(lurek.ui.getTheme() ~= nil)))
 end
 ```
 
@@ -3756,20 +3098,13 @@ lurek.ui.renderToImage(pathOrWidth, widthOrHeight, heightOrPath)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local th = lurek.ui.newTheme()
     local state = lurek.ui.parseWidgetState("normal")
     local result = lurek.ui.renderToImage(320, 240, "save/ui_render.png")
-    example_print_log("newTheme ok; parseWidgetState:", state, "renderToImage:", result)
+    lurek.log.info(tostring("newTheme ok; parseWidgetState:") .. " " .. tostring(state) .. " " .. tostring("renderToImage:") .. " " .. tostring(result))
     lurek.ui.setTheme(th)
-    example_print_log("theme applied = " .. tostring(lurek.ui.getTheme() ~= nil))
+    lurek.log.info(tostring("theme applied = " .. tostring(lurek.ui.getTheme() ~= nil)))
 end
 ```
 
@@ -3793,20 +3128,13 @@ lurek.ui.setAutoInput(enabled)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.ui.setAutoInput(true)
     local enabled = lurek.ui.hasAutoInput()
     lurek.ui.setAutoInput(false)
     local disabled = lurek.ui.hasAutoInput()
-    example_print_log("auto input enabled=" .. tostring(enabled))
-    example_print_log("auto input disabled=" .. tostring(disabled))
+    lurek.log.info(tostring("auto input enabled=" .. tostring(enabled)))
+    lurek.log.info(tostring("auto input disabled=" .. tostring(disabled)))
 end
 ```
 
@@ -3830,20 +3158,13 @@ lurek.ui.setAutoUpdate(enabled)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.ui.setAutoUpdate(true)
     local enabled = lurek.ui.hasAutoUpdate()
     lurek.ui.setAutoUpdate(false)
     local disabled = lurek.ui.hasAutoUpdate()
-    example_print_log("auto update enabled=" .. tostring(enabled))
-    example_print_log("auto update disabled=" .. tostring(disabled))
+    lurek.log.info(tostring("auto update enabled=" .. tostring(enabled)))
+    lurek.log.info(tostring("auto update disabled=" .. tostring(disabled)))
 end
 ```
 
@@ -3868,20 +3189,13 @@ lurek.ui.setBaseResolution(width, height)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.ui.setBaseResolution(1280, 720)
     local base_scale = lurek.ui.getScaleFactor()
     lurek.ui.updateResolution(1920, 1080)
     local viewport_scale = lurek.ui.getScaleFactor()
-    example_print_log("base scale=" .. base_scale)
-    example_print_log("viewport scale=" .. viewport_scale)
+    lurek.log.info(tostring("base scale=" .. base_scale))
+    lurek.log.info(tostring("viewport scale=" .. viewport_scale))
 end
 ```
 
@@ -3899,20 +3213,13 @@ lurek.ui.setDefaultTheme()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local th = lurek.ui.newTheme()
     lurek.ui.setTheme(th)
     lurek.ui.setDefaultTheme()
     lurek.ui.setViewport(1280, 720)
     local cnt = lurek.ui.getWidgetCount()
-    example_print_log("setTheme/setDefaultTheme/setViewport ok; widgets:", cnt)
+    lurek.log.info(tostring("setTheme/setDefaultTheme/setViewport ok; widgets:") .. " " .. tostring(cnt))
 end
 ```
 
@@ -3936,21 +3243,14 @@ lurek.ui.setFocus(widget)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local input = lurek.ui.newTextInput()
     lurek.ui.setFocus(input)
     local focused = lurek.ui.getFocus()
-    example_print_log("focus set, has focus = " .. tostring(focused ~= nil))
+    lurek.log.info(tostring("focus set, has focus = " .. tostring(focused ~= nil)))
     lurek.ui.clearFocus()
     focused = lurek.ui.getFocus()
-    example_print_log("after clear = " .. tostring(focused))
+    lurek.log.info(tostring("after clear = " .. tostring(focused)))
 end
 ```
 
@@ -3974,13 +3274,6 @@ lurek.ui.setFont(font)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     -- Example for setFont
     local widget = lurek.ui.newButton("Test Widget")
@@ -4011,20 +3304,13 @@ lurek.ui.setTheme(theme_ud)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local theme = lurek.ui.newTheme()
     theme:setStyle("button", "normal", { bg_r = 0.2, bg_g = 0.2, bg_b = 0.3, bg_a = 1.0, fg_r = 1.0, fg_g = 1.0, fg_b = 1.0, fg_a = 1.0, })
     theme:setStyle("button", "hovered", { bg_r = 0.3, bg_g = 0.3, bg_b = 0.5, bg_a = 1.0, })
     lurek.ui.setTheme(theme)
-    example_print_log("theme active:", lurek.ui.getTheme())
-    example_print_log("theme type:", theme:type())
+    lurek.log.info(tostring("theme active:") .. " " .. tostring(lurek.ui.getTheme()))
+    lurek.log.info(tostring("theme type:") .. " " .. tostring(theme:type()))
 end
 ```
 
@@ -4049,20 +3335,13 @@ lurek.ui.setViewport(w, h)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local th = lurek.ui.newTheme()
     lurek.ui.setTheme(th)
     lurek.ui.setDefaultTheme()
     lurek.ui.setViewport(1280, 720)
     local cnt = lurek.ui.getWidgetCount()
-    example_print_log("setTheme/setDefaultTheme/setViewport ok; widgets:", cnt)
+    lurek.log.info(tostring("setTheme/setDefaultTheme/setViewport ok; widgets:") .. " " .. tostring(cnt))
 end
 ```
 
@@ -4092,20 +3371,13 @@ lurek.ui.textinput(text)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.ui.textinput("hello")
     lurek.ui.textinput(" world")
     lurek.ui.update_bindings({dt=0.016})
     lurek.ui.wheelmoved(0, 1)
     lurek.ui.wheelmoved(1, 0)
-    example_print_log("textinput/update_bindings/wheelmoved ok")
+    lurek.log.info(tostring("textinput/update_bindings/wheelmoved ok"))
 end
 ```
 
@@ -4129,20 +3401,13 @@ lurek.ui.update(dt)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local before = lurek.ui.getWidgetCount()
     lurek.ui.update(1 / 60)
     lurek.ui.draw()
     local after = lurek.ui.getWidgetCount()
-    example_print_log("UI frame processed")
-    example_print_log("widgets before=" .. before .. " after=" .. after)
+    lurek.log.info(tostring("UI frame processed"))
+    lurek.log.info(tostring("widgets before=" .. before .. " after=" .. after))
 end
 ```
 
@@ -4172,13 +3437,6 @@ lurek.ui.updateBindings(data)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     -- Example for updateBindings
     local widget = lurek.ui.newButton("Test Widget")
@@ -4210,20 +3468,13 @@ lurek.ui.updateResolution(width, height)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.ui.setBaseResolution(1280, 720)
     local before = lurek.ui.getScaleFactor()
     lurek.ui.updateResolution(1920, 1080)
     local after = lurek.ui.getScaleFactor()
-    example_print_log("scale before=" .. before)
-    example_print_log("scale after=" .. after)
+    lurek.log.info(tostring("scale before=" .. before))
+    lurek.log.info(tostring("scale after=" .. after))
 end
 ```
 
@@ -4253,20 +3504,13 @@ lurek.ui.update_bindings(data)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.ui.textinput("hello")
     lurek.ui.textinput(" world")
     lurek.ui.update_bindings({dt=0.016})
     lurek.ui.wheelmoved(0, 1)
     lurek.ui.wheelmoved(1, 0)
-    example_print_log("textinput/update_bindings/wheelmoved ok")
+    lurek.log.info(tostring("textinput/update_bindings/wheelmoved ok"))
 end
 ```
 
@@ -4290,13 +3534,6 @@ lurek.ui.validateUx()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.ui.clear()
     lurek.ui.setViewport(100, 100)
@@ -4307,8 +3544,8 @@ do
     dialog:setPosition(-20, 10)
     dialog:setSize(120, 90)
     local diagnostics = lurek.ui.validateUx()
-    example_print_log("validateUx count = " .. tostring(#diagnostics))
-    example_print_log("validateUx first = " .. tostring(diagnostics[1] and diagnostics[1].message))
+    lurek.log.info(tostring("validateUx count = " .. tostring(#diagnostics)))
+    lurek.log.info(tostring("validateUx first = " .. tostring(diagnostics[1] and diagnostics[1].message)))
 end
 ```
 
@@ -4341,19 +3578,12 @@ lurek.ui.visibleRange(widget, item_count, item_height)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local list = lurek.ui.newList()
     local x, y = lurek.ui.visibleRange(list, 50, 20.0)
-    example_print_log("lurek.ui.visibleRange x=" .. x .. " y=" .. y)
-    example_print_log("list count = " .. list:getItemCount())
-    example_print_log("list width = " .. select(3, list:getRect()))
+    lurek.log.info(tostring("lurek.ui.visibleRange x=" .. x .. " y=" .. y))
+    lurek.log.info(tostring("list count = " .. list:getItemCount()))
+    lurek.log.info(tostring("list width = " .. select(3, list:getRect())))
 end
 ```
 
@@ -4384,13 +3614,6 @@ lurek.ui.wheelmoved(x, y)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local panel = lurek.ui.newScrollPanel()
     panel:setPosition(300, 520)
@@ -4400,7 +3623,7 @@ do
     lurek.ui.mousemoved(310, 530)
     lurek.ui.wheelmoved(0, -3)
     local _, sy = panel:getScrollPosition()
-    example_print_log("hover scroll y:", sy)
+    lurek.log.info(tostring("hover scroll y:") .. " " .. tostring(sy))
 end
 ```
 
@@ -4486,21 +3709,14 @@ LAccordion:addSection(title, content_idx)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local acc = lurek.ui.newAccordion()
     acc:addSection("Player Stats")
     acc:addSection("Inventory")
     acc:addSection("Quest Log")
-    example_print_log("sections = " .. acc:getSectionCount())
-    example_print_log("section 1 = " .. acc:getSectionTitle(1))
-    example_print_log("section 2 = " .. acc:getSectionTitle(2))
+    lurek.log.info(tostring("sections = " .. acc:getSectionCount()))
+    lurek.log.info(tostring("section 1 = " .. acc:getSectionTitle(1)))
+    lurek.log.info(tostring("section 2 = " .. acc:getSectionTitle(2)))
 end
 ```
 
@@ -4524,21 +3740,14 @@ LAccordion:getSectionCount()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local acc = lurek.ui.newAccordion()
     acc:addSection("Player Stats")
     acc:addSection("Inventory")
     acc:addSection("Quest Log")
-    example_print_log("sections = " .. acc:getSectionCount())
-    example_print_log("section 1 = " .. acc:getSectionTitle(1))
-    example_print_log("section 2 = " .. acc:getSectionTitle(2))
+    lurek.log.info(tostring("sections = " .. acc:getSectionCount()))
+    lurek.log.info(tostring("section 1 = " .. acc:getSectionTitle(1)))
+    lurek.log.info(tostring("section 2 = " .. acc:getSectionTitle(2)))
 end
 ```
 
@@ -4568,21 +3777,14 @@ LAccordion:getSectionTitle(section_idx)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local acc = lurek.ui.newAccordion()
     acc:addSection("Player Stats")
     acc:addSection("Inventory")
     acc:addSection("Quest Log")
-    example_print_log("sections = " .. acc:getSectionCount())
-    example_print_log("section 1 = " .. acc:getSectionTitle(1))
-    example_print_log("section 2 = " .. acc:getSectionTitle(2))
+    lurek.log.info(tostring("sections = " .. acc:getSectionCount()))
+    lurek.log.info(tostring("section 1 = " .. acc:getSectionTitle(1)))
+    lurek.log.info(tostring("section 2 = " .. acc:getSectionTitle(2)))
 end
 ```
 
@@ -4606,26 +3808,19 @@ LAccordion:isExclusive()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local acc = lurek.ui.newAccordion()
-    example_print_log("type=" .. acc:type())
+    lurek.log.info(tostring("type=" .. acc:type()))
     acc:addSection("Section A")
     acc:addSection("Section B")
-    example_print_log("count=" .. acc:getSectionCount())
-    example_print_log("title0=" .. acc:getSectionTitle(1))
-    example_print_log("expanded0=" .. tostring(acc:isSectionExpanded(1)))
+    lurek.log.info(tostring("count=" .. acc:getSectionCount()))
+    lurek.log.info(tostring("title0=" .. acc:getSectionTitle(1)))
+    lurek.log.info(tostring("expanded0=" .. tostring(acc:isSectionExpanded(1))))
     acc:toggleSection(1)
-    example_print_log("expanded0_after=" .. tostring(acc:isSectionExpanded(1)))
-    example_print_log("exclusive=" .. tostring(acc:isExclusive()))
+    lurek.log.info(tostring("expanded0_after=" .. tostring(acc:isSectionExpanded(1))))
+    lurek.log.info(tostring("exclusive=" .. tostring(acc:isExclusive())))
     acc:setExclusive(true)
-    example_print_log("exclusive_after=" .. tostring(acc:isExclusive()))
+    lurek.log.info(tostring("exclusive_after=" .. tostring(acc:isExclusive())))
 end
 ```
 
@@ -4655,25 +3850,18 @@ LAccordion:isSectionExpanded(section_idx)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local acc = lurek.ui.newAccordion()
     acc:addSection("A")
     acc:addSection("B")
     acc:addSection("C")
     acc:setExclusive(true)
-    example_print_log("exclusive = " .. tostring(acc:isExclusive()))
+    lurek.log.info(tostring("exclusive = " .. tostring(acc:isExclusive())))
     acc:toggleSection(1)
-    example_print_log("section 1 expanded = " .. tostring(acc:isSectionExpanded(1)))
+    lurek.log.info(tostring("section 1 expanded = " .. tostring(acc:isSectionExpanded(1))))
     acc:toggleSection(2)
-    example_print_log("section 1 after toggle 2 = " .. tostring(acc:isSectionExpanded(1)))
-    example_print_log("section 2 expanded = " .. tostring(acc:isSectionExpanded(2)))
+    lurek.log.info(tostring("section 1 after toggle 2 = " .. tostring(acc:isSectionExpanded(1))))
+    lurek.log.info(tostring("section 2 expanded = " .. tostring(acc:isSectionExpanded(2))))
 end
 ```
 
@@ -4697,25 +3885,18 @@ LAccordion:setExclusive(v)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local acc = lurek.ui.newAccordion()
     acc:addSection("A")
     acc:addSection("B")
     acc:addSection("C")
     acc:setExclusive(true)
-    example_print_log("exclusive = " .. tostring(acc:isExclusive()))
+    lurek.log.info(tostring("exclusive = " .. tostring(acc:isExclusive())))
     acc:toggleSection(1)
-    example_print_log("section 1 expanded = " .. tostring(acc:isSectionExpanded(1)))
+    lurek.log.info(tostring("section 1 expanded = " .. tostring(acc:isSectionExpanded(1))))
     acc:toggleSection(2)
-    example_print_log("section 1 after toggle 2 = " .. tostring(acc:isSectionExpanded(1)))
-    example_print_log("section 2 expanded = " .. tostring(acc:isSectionExpanded(2)))
+    lurek.log.info(tostring("section 1 after toggle 2 = " .. tostring(acc:isSectionExpanded(1))))
+    lurek.log.info(tostring("section 2 expanded = " .. tostring(acc:isSectionExpanded(2))))
 end
 ```
 
@@ -4745,25 +3926,18 @@ LAccordion:toggleSection(section_idx)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local acc = lurek.ui.newAccordion()
     acc:addSection("A")
     acc:addSection("B")
     acc:addSection("C")
     acc:setExclusive(true)
-    example_print_log("exclusive = " .. tostring(acc:isExclusive()))
+    lurek.log.info(tostring("exclusive = " .. tostring(acc:isExclusive())))
     acc:toggleSection(1)
-    example_print_log("section 1 expanded = " .. tostring(acc:isSectionExpanded(1)))
+    lurek.log.info(tostring("section 1 expanded = " .. tostring(acc:isSectionExpanded(1))))
     acc:toggleSection(2)
-    example_print_log("section 1 after toggle 2 = " .. tostring(acc:isSectionExpanded(1)))
-    example_print_log("section 2 expanded = " .. tostring(acc:isSectionExpanded(2)))
+    lurek.log.info(tostring("section 1 after toggle 2 = " .. tostring(acc:isSectionExpanded(1))))
+    lurek.log.info(tostring("section 2 expanded = " .. tostring(acc:isSectionExpanded(2))))
 end
 ```
 
@@ -4795,21 +3969,14 @@ LBadge:getCount()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local badge = lurek.ui.newBadge(3)
-    example_print_log("type=" .. badge:type())
-    example_print_log("count=" .. badge:getCount())
+    lurek.log.info(tostring("type=" .. badge:type()))
+    lurek.log.info(tostring("count=" .. badge:getCount()))
     badge:setCount(7)
-    example_print_log("count_after=" .. badge:getCount())
+    lurek.log.info(tostring("count_after=" .. badge:getCount()))
     local text = badge:getDisplayText()
-    example_print_log("text=" .. tostring(text))
+    lurek.log.info(tostring("text=" .. tostring(text)))
 end
 ```
 
@@ -4833,21 +4000,14 @@ LBadge:getDisplayText()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local badge = lurek.ui.newBadge(3)
-    example_print_log("type=" .. badge:type())
-    example_print_log("count=" .. badge:getCount())
+    lurek.log.info(tostring("type=" .. badge:type()))
+    lurek.log.info(tostring("count=" .. badge:getCount()))
     badge:setCount(7)
-    example_print_log("count_after=" .. badge:getCount())
+    lurek.log.info(tostring("count_after=" .. badge:getCount()))
     local text = badge:getDisplayText()
-    example_print_log("text=" .. tostring(text))
+    lurek.log.info(tostring("text=" .. tostring(text)))
 end
 ```
 
@@ -4871,21 +4031,14 @@ LBadge:setCount(count)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local badge = lurek.ui.newBadge(3)
-    example_print_log("type=" .. badge:type())
-    example_print_log("count=" .. badge:getCount())
+    lurek.log.info(tostring("type=" .. badge:type()))
+    lurek.log.info(tostring("count=" .. badge:getCount()))
     badge:setCount(7)
-    example_print_log("count_after=" .. badge:getCount())
+    lurek.log.info(tostring("count_after=" .. badge:getCount()))
     local text = badge:getDisplayText()
-    example_print_log("text=" .. tostring(text))
+    lurek.log.info(tostring("text=" .. tostring(text)))
 end
 ```
 
@@ -4917,20 +4070,13 @@ LButton:getText()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local badge = lurek.ui.newBadge(0)
     badge:setCount(42)
     local btn = lurek.ui.newButton("Click me")
     local t = btn:getText()
     btn:setText("OK")
-    example_print_log("badge count:", badge:getCount(), "button text:", btn:getText())
+    lurek.log.info(tostring("badge count:") .. " " .. tostring(badge:getCount()) .. " " .. tostring("button text:") .. " " .. tostring(btn:getText()))
 end
 ```
 
@@ -4954,20 +4100,13 @@ LButton:setText(text)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local badge = lurek.ui.newBadge(0)
     badge:setCount(42)
     local btn = lurek.ui.newButton("Click me")
     local t = btn:getText()
     btn:setText("OK")
-    example_print_log("badge count:", badge:getCount(), "button text:", btn:getText())
+    lurek.log.info(tostring("badge count:") .. " " .. tostring(badge:getCount()) .. " " .. tostring("button text:") .. " " .. tostring(btn:getText()))
 end
 ```
 
@@ -4999,19 +4138,12 @@ LCheckbox:getText()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local cb = lurek.ui.newCheckbox("Enable feature")
     local t = cb:getText()
     cb:setChecked(true)
     local checked = cb:isChecked()
-    example_print_log("checkbox text:", t, "checked:", checked)
+    lurek.log.info(tostring("checkbox text:") .. " " .. tostring(t) .. " " .. tostring("checked:") .. " " .. tostring(checked))
 end
 ```
 
@@ -5035,19 +4167,12 @@ LCheckbox:isChecked()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local cb = lurek.ui.newCheckbox("Enable feature")
     local t = cb:getText()
     cb:setChecked(true)
     local checked = cb:isChecked()
-    example_print_log("checkbox text:", t, "checked:", checked)
+    lurek.log.info(tostring("checkbox text:") .. " " .. tostring(t) .. " " .. tostring("checked:") .. " " .. tostring(checked))
 end
 ```
 
@@ -5071,21 +4196,14 @@ LCheckbox:setChecked(checked)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local cb = lurek.ui.newCheckbox("Option A")
     cb:setChecked(true)
-    example_print_log("checked = " .. tostring(cb:isChecked()))
+    lurek.log.info(tostring("checked = " .. tostring(cb:isChecked())))
     cb:setText("Option B")
-    example_print_log("text = " .. cb:getText())
+    lurek.log.info(tostring("text = " .. cb:getText()))
     cb:setChecked(false)
-    example_print_log("unchecked = " .. tostring(cb:isChecked()))
+    lurek.log.info(tostring("unchecked = " .. tostring(cb:isChecked())))
 end
 ```
 
@@ -5109,21 +4227,14 @@ LCheckbox:setText(text)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local cb = lurek.ui.newCheckbox("Option A")
     cb:setChecked(true)
-    example_print_log("checked = " .. tostring(cb:isChecked()))
+    lurek.log.info(tostring("checked = " .. tostring(cb:isChecked())))
     cb:setText("Option B")
-    example_print_log("text = " .. cb:getText())
+    lurek.log.info(tostring("text = " .. cb:getText()))
     cb:setChecked(false)
-    example_print_log("unchecked = " .. tostring(cb:isChecked()))
+    lurek.log.info(tostring("unchecked = " .. tostring(cb:isChecked())))
 end
 ```
 
@@ -5158,26 +4269,19 @@ LColorPicker:getColor()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local cp = lurek.ui.newColorPicker()
-    example_print_log("type=" .. cp:type())
+    lurek.log.info(tostring("type=" .. cp:type()))
     cp:setColor(1.0, 0.5, 0.0, 1.0)
     local r, g, b, a = cp:getColor()
-    example_print_log("color=" .. r .. "," .. g .. "," .. b .. "," .. a)
-    example_print_log("mode=" .. tostring(cp:getColorMode()))
+    lurek.log.info(tostring("color=" .. r .. "," .. g .. "," .. b .. "," .. a))
+    lurek.log.info(tostring("mode=" .. tostring(cp:getColorMode())))
     cp:setColorMode("hsv")
-    example_print_log("mode_after=" .. cp:getColorMode())
-    example_print_log("show_alpha=" .. tostring(cp:getShowAlpha()))
+    lurek.log.info(tostring("mode_after=" .. cp:getColorMode()))
+    lurek.log.info(tostring("show_alpha=" .. tostring(cp:getShowAlpha())))
     cp:setShowAlpha(true)
     cp:setOnChange(function(r2, g2, b2, a2)
-        example_print_log("changed", r2, g2, b2, a2)
+        lurek.log.info(tostring("changed") .. " " .. tostring(r2) .. " " .. tostring(g2) .. " " .. tostring(b2) .. " " .. tostring(a2))
     end)
 end
 ```
@@ -5202,25 +4306,18 @@ LColorPicker:getColorMode()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local cp = lurek.ui.newColorPicker()
-    example_print_log("type=" .. cp:type())
+    lurek.log.info(tostring("type=" .. cp:type()))
     cp:setColor(1.0, 0.5, 0.0, 1.0)
     local r, g, b, a = cp:getColor()
-    example_print_log("color=" .. r .. "," .. g .. "," .. b .. "," .. a)
-    example_print_log("mode=" .. tostring(cp:getColorMode()))
+    lurek.log.info(tostring("color=" .. r .. "," .. g .. "," .. b .. "," .. a))
+    lurek.log.info(tostring("mode=" .. tostring(cp:getColorMode())))
     cp:setColorMode("hsv")
-    example_print_log("mode_after=" .. cp:getColorMode())
-    example_print_log("show_alpha=" .. tostring(cp:getShowAlpha()))
+    lurek.log.info(tostring("mode_after=" .. cp:getColorMode()))
+    lurek.log.info(tostring("show_alpha=" .. tostring(cp:getShowAlpha())))
     cp:setShowAlpha(true)
-    cp:setOnChange(function(r2, g2, b2, a2) example_print_log("changed", r2, g2, b2, a2) end)
+    cp:setOnChange(function(r2, g2, b2, a2) lurek.log.info(tostring("changed") .. " " .. tostring(r2) .. " " .. tostring(g2) .. " " .. tostring(b2) .. " " .. tostring(a2)) end)
 end
 ```
 
@@ -5244,25 +4341,18 @@ LColorPicker:getShowAlpha()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local cp = lurek.ui.newColorPicker()
-    example_print_log("type=" .. cp:type())
+    lurek.log.info(tostring("type=" .. cp:type()))
     cp:setColor(1.0, 0.5, 0.0, 1.0)
     local r, g, b, a = cp:getColor()
-    example_print_log("color=" .. r .. "," .. g .. "," .. b .. "," .. a)
-    example_print_log("mode=" .. tostring(cp:getColorMode()))
+    lurek.log.info(tostring("color=" .. r .. "," .. g .. "," .. b .. "," .. a))
+    lurek.log.info(tostring("mode=" .. tostring(cp:getColorMode())))
     cp:setColorMode("hsv")
-    example_print_log("mode_after=" .. cp:getColorMode())
-    example_print_log("show_alpha=" .. tostring(cp:getShowAlpha()))
+    lurek.log.info(tostring("mode_after=" .. cp:getColorMode()))
+    lurek.log.info(tostring("show_alpha=" .. tostring(cp:getShowAlpha())))
     cp:setShowAlpha(true)
-    cp:setOnChange(function(r2, g2, b2, a2) example_print_log("changed", r2, g2, b2, a2) end)
+    cp:setOnChange(function(r2, g2, b2, a2) lurek.log.info(tostring("changed") .. " " .. tostring(r2) .. " " .. tostring(g2) .. " " .. tostring(b2) .. " " .. tostring(a2)) end)
 end
 ```
 
@@ -5289,25 +4379,18 @@ LColorPicker:setColor(r, g, b, a)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local cp = lurek.ui.newColorPicker()
-    example_print_log("type=" .. cp:type())
+    lurek.log.info(tostring("type=" .. cp:type()))
     cp:setColor(1.0, 0.5, 0.0, 1.0)
     local r, g, b, a = cp:getColor()
-    example_print_log("color=" .. r .. "," .. g .. "," .. b .. "," .. a)
-    example_print_log("mode=" .. tostring(cp:getColorMode()))
+    lurek.log.info(tostring("color=" .. r .. "," .. g .. "," .. b .. "," .. a))
+    lurek.log.info(tostring("mode=" .. tostring(cp:getColorMode())))
     cp:setColorMode("hsv")
-    example_print_log("mode_after=" .. cp:getColorMode())
-    example_print_log("show_alpha=" .. tostring(cp:getShowAlpha()))
+    lurek.log.info(tostring("mode_after=" .. cp:getColorMode()))
+    lurek.log.info(tostring("show_alpha=" .. tostring(cp:getShowAlpha())))
     cp:setShowAlpha(true)
-    cp:setOnChange(function(r2, g2, b2, a2) example_print_log("changed", r2, g2, b2, a2) end)
+    cp:setOnChange(function(r2, g2, b2, a2) lurek.log.info(tostring("changed") .. " " .. tostring(r2) .. " " .. tostring(g2) .. " " .. tostring(b2) .. " " .. tostring(a2)) end)
 end
 ```
 
@@ -5331,25 +4414,18 @@ LColorPicker:setColorMode(mode)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local cp = lurek.ui.newColorPicker()
-    example_print_log("type=" .. cp:type())
+    lurek.log.info(tostring("type=" .. cp:type()))
     cp:setColor(1.0, 0.5, 0.0, 1.0)
     local r, g, b, a = cp:getColor()
-    example_print_log("color=" .. r .. "," .. g .. "," .. b .. "," .. a)
-    example_print_log("mode=" .. tostring(cp:getColorMode()))
+    lurek.log.info(tostring("color=" .. r .. "," .. g .. "," .. b .. "," .. a))
+    lurek.log.info(tostring("mode=" .. tostring(cp:getColorMode())))
     cp:setColorMode("hsv")
-    example_print_log("mode_after=" .. cp:getColorMode())
-    example_print_log("show_alpha=" .. tostring(cp:getShowAlpha()))
+    lurek.log.info(tostring("mode_after=" .. cp:getColorMode()))
+    lurek.log.info(tostring("show_alpha=" .. tostring(cp:getShowAlpha())))
     cp:setShowAlpha(true)
-    cp:setOnChange(function(r2, g2, b2, a2) example_print_log("changed", r2, g2, b2, a2) end)
+    cp:setOnChange(function(r2, g2, b2, a2) lurek.log.info(tostring("changed") .. " " .. tostring(r2) .. " " .. tostring(g2) .. " " .. tostring(b2) .. " " .. tostring(a2)) end)
 end
 ```
 
@@ -5373,25 +4449,18 @@ LColorPicker:setOnChange(f)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local cp = lurek.ui.newColorPicker()
-    example_print_log("type=" .. cp:type())
+    lurek.log.info(tostring("type=" .. cp:type()))
     cp:setColor(1.0, 0.5, 0.0, 1.0)
     local r, g, b, a = cp:getColor()
-    example_print_log("color=" .. r .. "," .. g .. "," .. b .. "," .. a)
-    example_print_log("mode=" .. tostring(cp:getColorMode()))
+    lurek.log.info(tostring("color=" .. r .. "," .. g .. "," .. b .. "," .. a))
+    lurek.log.info(tostring("mode=" .. tostring(cp:getColorMode())))
     cp:setColorMode("hsv")
-    example_print_log("mode_after=" .. cp:getColorMode())
-    example_print_log("show_alpha=" .. tostring(cp:getShowAlpha()))
+    lurek.log.info(tostring("mode_after=" .. cp:getColorMode()))
+    lurek.log.info(tostring("show_alpha=" .. tostring(cp:getShowAlpha())))
     cp:setShowAlpha(true)
-    cp:setOnChange(function(r2, g2, b2, a2) example_print_log("changed", r2, g2, b2, a2) end)
+    cp:setOnChange(function(r2, g2, b2, a2) lurek.log.info(tostring("changed") .. " " .. tostring(r2) .. " " .. tostring(g2) .. " " .. tostring(b2) .. " " .. tostring(a2)) end)
 end
 ```
 
@@ -5415,25 +4484,18 @@ LColorPicker:setShowAlpha(v)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local cp = lurek.ui.newColorPicker()
-    example_print_log("type=" .. cp:type())
+    lurek.log.info(tostring("type=" .. cp:type()))
     cp:setColor(1.0, 0.5, 0.0, 1.0)
     local r, g, b, a = cp:getColor()
-    example_print_log("color=" .. r .. "," .. g .. "," .. b .. "," .. a)
-    example_print_log("mode=" .. tostring(cp:getColorMode()))
+    lurek.log.info(tostring("color=" .. r .. "," .. g .. "," .. b .. "," .. a))
+    lurek.log.info(tostring("mode=" .. tostring(cp:getColorMode())))
     cp:setColorMode("hsv")
-    example_print_log("mode_after=" .. cp:getColorMode())
-    example_print_log("show_alpha=" .. tostring(cp:getShowAlpha()))
+    lurek.log.info(tostring("mode_after=" .. cp:getColorMode()))
+    lurek.log.info(tostring("show_alpha=" .. tostring(cp:getShowAlpha())))
     cp:setShowAlpha(true)
-    cp:setOnChange(function(r2, g2, b2, a2) example_print_log("changed", r2, g2, b2, a2) end)
+    cp:setOnChange(function(r2, g2, b2, a2) lurek.log.info(tostring("changed") .. " " .. tostring(r2) .. " " .. tostring(g2) .. " " .. tostring(b2) .. " " .. tostring(a2)) end)
 end
 ```
 
@@ -5465,22 +4527,15 @@ LComboBox:addItem(text)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local combo = lurek.ui.newComboBox()
     combo:addItem("Easy")
     combo:addItem("Normal")
     combo:addItem("Hard")
     combo:addItem("Nightmare")
-    example_print_log("item count = " .. combo:getItemCount())
-    example_print_log("item 2 = " .. combo:getItem(2))
-    example_print_log("item 4 = " .. combo:getItem(4))
+    lurek.log.info(tostring("item count = " .. combo:getItemCount()))
+    lurek.log.info(tostring("item 2 = " .. combo:getItem(2)))
+    lurek.log.info(tostring("item 4 = " .. combo:getItem(4)))
 end
 ```
 
@@ -5498,13 +4553,6 @@ LComboBox:clearItems()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local combo = lurek.ui.newComboBox()
     combo:addItem("Red")
@@ -5513,10 +4561,10 @@ do
     combo:setSelectedIndex(2)
     local idx = combo:getSelectedIndex()
     local item = combo:getSelectedItem()
-    example_print_log("selected index = " .. idx)
-    example_print_log("selected item = " .. tostring(item))
+    lurek.log.info(tostring("selected index = " .. idx))
+    lurek.log.info(tostring("selected item = " .. tostring(item)))
     combo:clearItems()
-    example_print_log("after clear = " .. combo:getItemCount())
+    lurek.log.info(tostring("after clear = " .. combo:getItemCount()))
 end
 ```
 
@@ -5546,22 +4594,15 @@ LComboBox:getItem(index)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local combo = lurek.ui.newComboBox()
     combo:addItem("Easy")
     combo:addItem("Normal")
     combo:addItem("Hard")
     combo:addItem("Nightmare")
-    example_print_log("item count = " .. combo:getItemCount())
-    example_print_log("item 2 = " .. combo:getItem(2))
-    example_print_log("item 4 = " .. combo:getItem(4))
+    lurek.log.info(tostring("item count = " .. combo:getItemCount()))
+    lurek.log.info(tostring("item 2 = " .. combo:getItem(2)))
+    lurek.log.info(tostring("item 4 = " .. combo:getItem(4)))
 end
 ```
 
@@ -5585,22 +4626,15 @@ LComboBox:getItemCount()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local combo = lurek.ui.newComboBox()
     combo:addItem("Easy")
     combo:addItem("Normal")
     combo:addItem("Hard")
     combo:addItem("Nightmare")
-    example_print_log("item count = " .. combo:getItemCount())
-    example_print_log("item 2 = " .. combo:getItem(2))
-    example_print_log("item 4 = " .. combo:getItem(4))
+    lurek.log.info(tostring("item count = " .. combo:getItemCount()))
+    lurek.log.info(tostring("item 2 = " .. combo:getItem(2)))
+    lurek.log.info(tostring("item 4 = " .. combo:getItem(4)))
 end
 ```
 
@@ -5624,19 +4658,12 @@ LComboBox:getMaxVisibleItems()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local combo = lurek.ui.newComboBox()
     combo:setMaxVisibleItems(3)
-    example_print_log("max visible = " .. combo:getMaxVisibleItems())
-    example_print_log("selected index = " .. tostring(combo:getSelectedIndex()))
-    example_print_log("item count = " .. combo:getItemCount())
+    lurek.log.info(tostring("max visible = " .. combo:getMaxVisibleItems()))
+    lurek.log.info(tostring("selected index = " .. tostring(combo:getSelectedIndex())))
+    lurek.log.info(tostring("item count = " .. combo:getItemCount()))
 end
 ```
 
@@ -5660,13 +4687,6 @@ LComboBox:getSelectedIndex()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local combo = lurek.ui.newComboBox()
     combo:addItem("Red")
@@ -5675,10 +4695,10 @@ do
     combo:setSelectedIndex(2)
     local idx = combo:getSelectedIndex()
     local item = combo:getSelectedItem()
-    example_print_log("selected index = " .. idx)
-    example_print_log("selected item = " .. tostring(item))
+    lurek.log.info(tostring("selected index = " .. idx))
+    lurek.log.info(tostring("selected item = " .. tostring(item)))
     combo:clearItems()
-    example_print_log("after clear = " .. combo:getItemCount())
+    lurek.log.info(tostring("after clear = " .. combo:getItemCount()))
 end
 ```
 
@@ -5702,13 +4722,6 @@ LComboBox:getSelectedItem()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local combo = lurek.ui.newComboBox()
     combo:addItem("Red")
@@ -5717,10 +4730,10 @@ do
     combo:setSelectedIndex(2)
     local idx = combo:getSelectedIndex()
     local item = combo:getSelectedItem()
-    example_print_log("selected index = " .. idx)
-    example_print_log("selected item = " .. tostring(item))
+    lurek.log.info(tostring("selected index = " .. idx))
+    lurek.log.info(tostring("selected item = " .. tostring(item)))
     combo:clearItems()
-    example_print_log("after clear = " .. combo:getItemCount())
+    lurek.log.info(tostring("after clear = " .. combo:getItemCount()))
 end
 ```
 
@@ -5750,13 +4763,6 @@ LComboBox:removeItem(index)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local cb = lurek.ui.newComboBox()
     cb:addItem("Alpha")
@@ -5764,7 +4770,7 @@ do
     cb:setSelectedIndex(2)
     local selItem = cb:getSelectedItem()
     cb:removeItem(1)
-    example_print_log("getSelectedItem:", selItem, "removeItem ok")
+    lurek.log.info(tostring("getSelectedItem:") .. " " .. tostring(selItem) .. " " .. tostring("removeItem ok"))
 end
 ```
 
@@ -5788,13 +4794,6 @@ LComboBox:setMaxVisibleItems(count)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local combo = lurek.ui.newComboBox()
     combo:addItem("Easy")
@@ -5802,8 +4801,8 @@ do
     combo:addItem("Hard")
     combo:addItem("Nightmare")
     combo:setMaxVisibleItems(3)
-    example_print_log("max visible = " .. combo:getMaxVisibleItems())
-    example_print_log("item count = " .. combo:getItemCount())
+    lurek.log.info(tostring("max visible = " .. combo:getMaxVisibleItems()))
+    lurek.log.info(tostring("item count = " .. combo:getItemCount()))
 end
 ```
 
@@ -5827,13 +4826,6 @@ LComboBox:setSelectedIndex(index)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local cb = lurek.ui.newComboBox()
     cb:addItem("Alpha")
@@ -5841,7 +4833,7 @@ do
     cb:setSelectedIndex(2)
     local selItem = cb:getSelectedItem()
     cb:removeItem(1)
-    example_print_log("getSelectedItem:", selItem, "removeItem ok")
+    lurek.log.info(tostring("getSelectedItem:") .. " " .. tostring(selItem) .. " " .. tostring("removeItem ok"))
 end
 ```
 
@@ -5882,19 +4874,12 @@ LDialog:addAction(text, cb, role, close_on_activate)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dlg = lurek.ui.newDialog("Actions")
     local idx = dlg:addAction("Apply", nil, "default", true)
     dlg:setDefaultAction(idx)
-    example_print_log("addAction/default:", idx, dlg:getDefaultAction())
-    example_print_log("dialog title = " .. dlg:getTitle())
+    lurek.log.info(tostring("addAction/default:") .. " " .. tostring(idx) .. " " .. tostring(dlg:getDefaultAction()))
+    lurek.log.info(tostring("dialog title = " .. dlg:getTitle()))
 end
 ```
 
@@ -5925,20 +4910,13 @@ LDialog:addButton(text, cb)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dlg = lurek.ui.newDialog("Info")
     local btnIdx = dlg:addButton("OK")
     local content = dlg:getContent()
     dlg:open()
     dlg:close()
-    example_print_log("addButton:", btnIdx, "close ok")
+    lurek.log.info(tostring("addButton:") .. " " .. tostring(btnIdx) .. " " .. tostring("close ok"))
 end
 ```
 
@@ -5956,19 +4934,12 @@ LDialog:centerInViewport()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dlg = lurek.ui.newDialog("Center")
     dlg:setCenterOnOpen(false)
     dlg:centerInViewport()
-    example_print_log("centerInViewport ok")
-    example_print_log("dialog title = " .. dlg:getTitle())
+    lurek.log.info(tostring("centerInViewport ok"))
+    lurek.log.info(tostring("dialog title = " .. dlg:getTitle()))
 end
 ```
 
@@ -5992,20 +4963,13 @@ LDialog:close()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dlg = lurek.ui.newDialog("Info")
     local btnIdx = dlg:addButton("OK")
     local content = dlg:getContent()
     dlg:open()
     dlg:close()
-    example_print_log("addButton:", btnIdx, "close ok")
+    lurek.log.info(tostring("addButton:") .. " " .. tostring(btnIdx) .. " " .. tostring("close ok"))
 end
 ```
 
@@ -6029,19 +4993,12 @@ LDialog:getCancelAction()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dlg = lurek.ui.newDialog("Cancel")
     local idx = dlg:addAction("Cancel", nil, "cancel", true)
     dlg:setCancelAction(idx)
-    example_print_log("cancel action:", dlg:getCancelAction())
-    example_print_log("dialog title = " .. dlg:getTitle())
+    lurek.log.info(tostring("cancel action:") .. " " .. tostring(dlg:getCancelAction()))
+    lurek.log.info(tostring("dialog title = " .. dlg:getTitle()))
 end
 ```
 
@@ -6065,19 +5022,12 @@ LDialog:getCenterOnOpen()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dlg = lurek.ui.newDialog("Center Flag")
     dlg:setCenterOnOpen(false)
-    example_print_log("centerOnOpen:", dlg:getCenterOnOpen())
-    example_print_log("dialog title = " .. dlg:getTitle())
-    example_print_log("dialog open = " .. tostring(dlg:isOpen()))
+    lurek.log.info(tostring("centerOnOpen:") .. " " .. tostring(dlg:getCenterOnOpen()))
+    lurek.log.info(tostring("dialog title = " .. dlg:getTitle()))
+    lurek.log.info(tostring("dialog open = " .. tostring(dlg:isOpen())))
 end
 ```
 
@@ -6101,20 +5051,13 @@ LDialog:getContent()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dlg = lurek.ui.newDialog("Info")
     local btnIdx = dlg:addButton("OK")
     local content = dlg:getContent()
     dlg:open()
     dlg:close()
-    example_print_log("addButton:", btnIdx, "close ok")
+    lurek.log.info(tostring("addButton:") .. " " .. tostring(btnIdx) .. " " .. tostring("close ok"))
 end
 ```
 
@@ -6138,19 +5081,12 @@ LDialog:getDefaultAction()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dlg = lurek.ui.newDialog("Default")
     local idx = dlg:addAction("Confirm", nil, "default", true)
     dlg:setDefaultAction(idx)
-    example_print_log("default action:", dlg:getDefaultAction())
-    example_print_log("dialog title = " .. dlg:getTitle())
+    lurek.log.info(tostring("default action:") .. " " .. tostring(dlg:getDefaultAction()))
+    lurek.log.info(tostring("dialog title = " .. dlg:getTitle()))
 end
 ```
 
@@ -6174,19 +5110,12 @@ LDialog:getDismissOnOutsideClick()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dlg = lurek.ui.newDialog("Dismiss Flag")
     dlg:setDismissOnOutsideClick(true)
-    example_print_log("dismissOnOutsideClick:", dlg:getDismissOnOutsideClick())
-    example_print_log("dialog title = " .. dlg:getTitle())
-    example_print_log("dialog open = " .. tostring(dlg:isOpen()))
+    lurek.log.info(tostring("dismissOnOutsideClick:") .. " " .. tostring(dlg:getDismissOnOutsideClick()))
+    lurek.log.info(tostring("dialog title = " .. dlg:getTitle()))
+    lurek.log.info(tostring("dialog open = " .. tostring(dlg:isOpen())))
 end
 ```
 
@@ -6210,19 +5139,12 @@ LDialog:getFooter()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dlg = lurek.ui.newDialog("Footer")
     local footer = lurek.ui.newPanel()
     dlg:setFooter(footer._idx)
-    example_print_log("footer idx:", dlg:getFooter())
-    example_print_log("dialog title = " .. dlg:getTitle())
+    lurek.log.info(tostring("footer idx:") .. " " .. tostring(dlg:getFooter()))
+    lurek.log.info(tostring("dialog title = " .. dlg:getTitle()))
 end
 ```
 
@@ -6247,19 +5169,12 @@ LDialog:getMaxSize()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dlg = lurek.ui.newDialog("Max")
     dlg:setMaxSize(420, 260)
     local w, h = dlg:getMaxSize()
-    example_print_log("max size:", w, h)
-    example_print_log("dialog title = " .. dlg:getTitle())
+    lurek.log.info(tostring("max size:") .. " " .. tostring(w) .. " " .. tostring(h))
+    lurek.log.info(tostring("dialog title = " .. dlg:getTitle()))
 end
 ```
 
@@ -6284,19 +5199,12 @@ LDialog:getMinSize()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dlg = lurek.ui.newDialog("Min")
     dlg:setMinSize(220, 140)
     local w, h = dlg:getMinSize()
-    example_print_log("min size:", w, h)
-    example_print_log("dialog title = " .. dlg:getTitle())
+    lurek.log.info(tostring("min size:") .. " " .. tostring(w) .. " " .. tostring(h))
+    lurek.log.info(tostring("dialog title = " .. dlg:getTitle()))
 end
 ```
 
@@ -6320,20 +5228,13 @@ LDialog:getTitle()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dlg = lurek.ui.newDialog("My Dialog")
     local title = dlg:getTitle()
     dlg:setModal(true)
     local modal = dlg:isModal()
     local open = dlg:isOpen()
-    example_print_log("title:", title, "isModal:", modal, "isOpen:", open)
+    lurek.log.info(tostring("title:") .. " " .. tostring(title) .. " " .. tostring("isModal:") .. " " .. tostring(modal) .. " " .. tostring("isOpen:") .. " " .. tostring(open))
 end
 ```
 
@@ -6357,19 +5258,12 @@ LDialog:isCloseable()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dlg = lurek.ui.newDialog("Closeable")
-    example_print_log("isCloseable:", dlg:isCloseable())
-    example_print_log("dialog title = " .. dlg:getTitle())
-    example_print_log("dialog open = " .. tostring(dlg:isOpen()))
-    example_print_log("dialog modal = " .. tostring(dlg:isModal()))
+    lurek.log.info(tostring("isCloseable:") .. " " .. tostring(dlg:isCloseable()))
+    lurek.log.info(tostring("dialog title = " .. dlg:getTitle()))
+    lurek.log.info(tostring("dialog open = " .. tostring(dlg:isOpen())))
+    lurek.log.info(tostring("dialog modal = " .. tostring(dlg:isModal())))
 end
 ```
 
@@ -6393,19 +5287,12 @@ LDialog:isDraggable()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dlg = lurek.ui.newDialog("Draggable")
-    example_print_log("isDraggable:", dlg:isDraggable())
-    example_print_log("dialog title = " .. dlg:getTitle())
-    example_print_log("dialog open = " .. tostring(dlg:isOpen()))
-    example_print_log("dialog modal = " .. tostring(dlg:isModal()))
+    lurek.log.info(tostring("isDraggable:") .. " " .. tostring(dlg:isDraggable()))
+    lurek.log.info(tostring("dialog title = " .. dlg:getTitle()))
+    lurek.log.info(tostring("dialog open = " .. tostring(dlg:isOpen())))
+    lurek.log.info(tostring("dialog modal = " .. tostring(dlg:isModal())))
 end
 ```
 
@@ -6429,20 +5316,13 @@ LDialog:isModal()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dlg = lurek.ui.newDialog("My Dialog")
     local title = dlg:getTitle()
     dlg:setModal(true)
     local modal = dlg:isModal()
     local open = dlg:isOpen()
-    example_print_log("title:", title, "isModal:", modal, "isOpen:", open)
+    lurek.log.info(tostring("title:") .. " " .. tostring(title) .. " " .. tostring("isModal:") .. " " .. tostring(modal) .. " " .. tostring("isOpen:") .. " " .. tostring(open))
 end
 ```
 
@@ -6466,20 +5346,13 @@ LDialog:isOpen()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dlg = lurek.ui.newDialog("My Dialog")
     local title = dlg:getTitle()
     dlg:setModal(true)
     local modal = dlg:isModal()
     local open = dlg:isOpen()
-    example_print_log("title:", title, "isModal:", modal, "isOpen:", open)
+    lurek.log.info(tostring("title:") .. " " .. tostring(title) .. " " .. tostring("isModal:") .. " " .. tostring(modal) .. " " .. tostring("isOpen:") .. " " .. tostring(open))
 end
 ```
 
@@ -6503,19 +5376,12 @@ LDialog:isResizable()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dlg = lurek.ui.newDialog("Resizable")
-    example_print_log("isResizable:", dlg:isResizable())
-    example_print_log("dialog title = " .. dlg:getTitle())
-    example_print_log("dialog open = " .. tostring(dlg:isOpen()))
-    example_print_log("dialog modal = " .. tostring(dlg:isModal()))
+    lurek.log.info(tostring("isResizable:") .. " " .. tostring(dlg:isResizable()))
+    lurek.log.info(tostring("dialog title = " .. dlg:getTitle()))
+    lurek.log.info(tostring("dialog open = " .. tostring(dlg:isOpen())))
+    lurek.log.info(tostring("dialog modal = " .. tostring(dlg:isModal())))
 end
 ```
 
@@ -6539,20 +5405,13 @@ LDialog:open()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dlg = lurek.ui.newDialog("Setup")
     dlg:setModal(false)
     dlg:setContent(nil)
     dlg:open()
     dlg:close()
-    example_print_log("open/setContent/setModal ok")
+    lurek.log.info(tostring("open/setContent/setModal ok"))
 end
 ```
 
@@ -6576,19 +5435,12 @@ LDialog:setCancelAction(index)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dlg = lurek.ui.newDialog("Cancel Setter")
     local idx = dlg:addAction("Abort", nil, "cancel", true)
     dlg:setCancelAction(idx)
-    example_print_log("setCancelAction:", dlg:getCancelAction())
-    example_print_log("dialog title = " .. dlg:getTitle())
+    lurek.log.info(tostring("setCancelAction:") .. " " .. tostring(dlg:getCancelAction()))
+    lurek.log.info(tostring("dialog title = " .. dlg:getTitle()))
 end
 ```
 
@@ -6612,19 +5464,12 @@ LDialog:setCenterOnOpen(value)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dlg = lurek.ui.newDialog("Center Setter")
     dlg:setCenterOnOpen(false)
-    example_print_log("setCenterOnOpen ok")
-    example_print_log("dialog title = " .. dlg:getTitle())
-    example_print_log("dialog open = " .. tostring(dlg:isOpen()))
+    lurek.log.info(tostring("setCenterOnOpen ok"))
+    lurek.log.info(tostring("dialog title = " .. dlg:getTitle()))
+    lurek.log.info(tostring("dialog open = " .. tostring(dlg:isOpen())))
 end
 ```
 
@@ -6648,19 +5493,12 @@ LDialog:setCloseable(value)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dlg = lurek.ui.newDialog("Closeable Setter")
     dlg:setCloseable(false)
-    example_print_log("setCloseable:", false)
-    example_print_log("dialog title = " .. dlg:getTitle())
-    example_print_log("dialog open = " .. tostring(dlg:isOpen()))
+    lurek.log.info(tostring("setCloseable:") .. " " .. tostring(false))
+    lurek.log.info(tostring("dialog title = " .. dlg:getTitle()))
+    lurek.log.info(tostring("dialog open = " .. tostring(dlg:isOpen())))
 end
 ```
 
@@ -6690,20 +5528,13 @@ LDialog:setContent(content_idx)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dlg = lurek.ui.newDialog("Setup")
     dlg:setModal(false)
     dlg:setContent(nil)
     dlg:open()
     dlg:close()
-    example_print_log("open/setContent/setModal ok")
+    lurek.log.info(tostring("open/setContent/setModal ok"))
 end
 ```
 
@@ -6727,19 +5558,12 @@ LDialog:setDefaultAction(index)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dlg = lurek.ui.newDialog("Default Setter")
     local idx = dlg:addAction("Confirm", nil, "default", true)
     dlg:setDefaultAction(idx)
-    example_print_log("set default action:", idx)
-    example_print_log("dialog title = " .. dlg:getTitle())
+    lurek.log.info(tostring("set default action:") .. " " .. tostring(idx))
+    lurek.log.info(tostring("dialog title = " .. dlg:getTitle()))
 end
 ```
 
@@ -6763,19 +5587,12 @@ LDialog:setDismissOnOutsideClick(value)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dlg = lurek.ui.newDialog("Dismiss")
     dlg:setModal(false)
     dlg:setDismissOnOutsideClick(true)
-    example_print_log("dismiss setter ok")
-    example_print_log("dialog title = " .. dlg:getTitle())
+    lurek.log.info(tostring("dismiss setter ok"))
+    lurek.log.info(tostring("dialog title = " .. dlg:getTitle()))
 end
 ```
 
@@ -6799,19 +5616,12 @@ LDialog:setDraggable(value)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dlg = lurek.ui.newDialog("Draggable Setter")
     dlg:setDraggable(true)
-    example_print_log("setDraggable:", true)
-    example_print_log("dialog title = " .. dlg:getTitle())
-    example_print_log("dialog open = " .. tostring(dlg:isOpen()))
+    lurek.log.info(tostring("setDraggable:") .. " " .. tostring(true))
+    lurek.log.info(tostring("dialog title = " .. dlg:getTitle()))
+    lurek.log.info(tostring("dialog open = " .. tostring(dlg:isOpen())))
 end
 ```
 
@@ -6835,19 +5645,12 @@ LDialog:setFooter(footer_idx)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dlg = lurek.ui.newDialog("Footer Setter")
     local footer = lurek.ui.newLayout("horizontal")
     dlg:setFooter(footer._idx)
-    example_print_log("setFooter:", dlg:getFooter())
-    example_print_log("dialog title = " .. dlg:getTitle())
+    lurek.log.info(tostring("setFooter:") .. " " .. tostring(dlg:getFooter()))
+    lurek.log.info(tostring("dialog title = " .. dlg:getTitle()))
 end
 ```
 
@@ -6872,19 +5675,12 @@ LDialog:setMaxSize(width, height)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dlg = lurek.ui.newDialog("Max Size")
     dlg:setMaxSize(480, 320)
-    example_print_log("setMaxSize:", 480, 320)
-    example_print_log("dialog title = " .. dlg:getTitle())
-    example_print_log("dialog open = " .. tostring(dlg:isOpen()))
+    lurek.log.info(tostring("setMaxSize:") .. " " .. tostring(480) .. " " .. tostring(320))
+    lurek.log.info(tostring("dialog title = " .. dlg:getTitle()))
+    lurek.log.info(tostring("dialog open = " .. tostring(dlg:isOpen())))
 end
 ```
 
@@ -6909,19 +5705,12 @@ LDialog:setMinSize(width, height)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dlg = lurek.ui.newDialog("Min Size")
     dlg:setMinSize(200, 120)
-    example_print_log("setMinSize:", 200, 120)
-    example_print_log("dialog title = " .. dlg:getTitle())
-    example_print_log("dialog open = " .. tostring(dlg:isOpen()))
+    lurek.log.info(tostring("setMinSize:") .. " " .. tostring(200) .. " " .. tostring(120))
+    lurek.log.info(tostring("dialog title = " .. dlg:getTitle()))
+    lurek.log.info(tostring("dialog open = " .. tostring(dlg:isOpen())))
 end
 ```
 
@@ -6951,20 +5740,13 @@ LDialog:setModal(v)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dlg = lurek.ui.newDialog("Setup")
     dlg:setModal(false)
     dlg:setContent(nil)
     dlg:open()
     dlg:close()
-    example_print_log("open/setContent/setModal ok")
+    lurek.log.info(tostring("open/setContent/setModal ok"))
 end
 ```
 
@@ -6994,20 +5776,13 @@ LDialog:setOnClose(f)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dlg = lurek.ui.newDialog("Old")
     dlg:setTitle("New Title")
-    dlg:setOnClose(function(idx) example_print_log("closed", idx) end)
+    dlg:setOnClose(function(idx) lurek.log.info(tostring("closed") .. " " .. tostring(idx)) end)
     local dp = lurek.ui.newDockPanel()
     local btn = lurek.ui.newButton("Side")
-    example_print_log("setTitle/setOnClose ok; DockPanel created")
+    lurek.log.info(tostring("setTitle/setOnClose ok; DockPanel created"))
 end
 ```
 
@@ -7031,19 +5806,12 @@ LDialog:setResizable(value)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dlg = lurek.ui.newDialog("Resizable Setter")
     dlg:setResizable(true)
-    example_print_log("setResizable:", true)
-    example_print_log("dialog title = " .. dlg:getTitle())
-    example_print_log("dialog open = " .. tostring(dlg:isOpen()))
+    lurek.log.info(tostring("setResizable:") .. " " .. tostring(true))
+    lurek.log.info(tostring("dialog title = " .. dlg:getTitle()))
+    lurek.log.info(tostring("dialog open = " .. tostring(dlg:isOpen())))
 end
 ```
 
@@ -7073,20 +5841,13 @@ LDialog:setTitle(title)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dlg = lurek.ui.newDialog("Old")
     dlg:setTitle("New Title")
-    dlg:setOnClose(function(idx) example_print_log("closed", idx) end)
+    dlg:setOnClose(function(idx) lurek.log.info(tostring("closed") .. " " .. tostring(idx)) end)
     local dp = lurek.ui.newDockPanel()
     local btn = lurek.ui.newButton("Side")
-    example_print_log("setTitle/setOnClose ok; DockPanel created")
+    lurek.log.info(tostring("setTitle/setOnClose ok; DockPanel created"))
 end
 ```
 
@@ -7119,24 +5880,17 @@ LDockPanel:dock(child_idx, side)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dp = lurek.ui.newDockPanel()
     local child = lurek.ui.newPanel()
-    example_print_log("type=" .. dp:type())
+    lurek.log.info(tostring("type=" .. dp:type()))
     dp:addChild(child)
     dp:dock(child._idx, "left")
-    example_print_log("docked=" .. dp:getDockedCount())
-    example_print_log("split_size=" .. tostring(dp:getSplitSize("left")))
+    lurek.log.info(tostring("docked=" .. dp:getDockedCount()))
+    lurek.log.info(tostring("split_size=" .. tostring(dp:getSplitSize("left"))))
     dp:setSplitSize("left", 150)
     dp:undock(child._idx)
-    example_print_log("docked_after=" .. dp:getDockedCount())
+    lurek.log.info(tostring("docked_after=" .. dp:getDockedCount()))
 end
 ```
 
@@ -7160,24 +5914,17 @@ LDockPanel:getDockedCount()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dp = lurek.ui.newDockPanel()
-    example_print_log("type=" .. dp:type())
+    lurek.log.info(tostring("type=" .. dp:type()))
     local child = lurek.ui.newPanel()
     dp:dock(0, "left")
-    example_print_log("docked=" .. dp:getDockedCount())
+    lurek.log.info(tostring("docked=" .. dp:getDockedCount()))
     local sz = dp:getSplitSize("left")
-    example_print_log("split_size=" .. tostring(sz))
+    lurek.log.info(tostring("split_size=" .. tostring(sz)))
     dp:setSplitSize("left", 150)
     dp:undock(0)
-    example_print_log("docked_after=" .. dp:getDockedCount())
+    lurek.log.info(tostring("docked_after=" .. dp:getDockedCount()))
 end
 ```
 
@@ -7207,24 +5954,17 @@ LDockPanel:getSplitSize(side)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dp = lurek.ui.newDockPanel()
-    example_print_log("type=" .. dp:type())
+    lurek.log.info(tostring("type=" .. dp:type()))
     local child = lurek.ui.newPanel()
     dp:dock(0, "left")
-    example_print_log("docked=" .. dp:getDockedCount())
+    lurek.log.info(tostring("docked=" .. dp:getDockedCount()))
     local sz = dp:getSplitSize("left")
-    example_print_log("split_size=" .. tostring(sz))
+    lurek.log.info(tostring("split_size=" .. tostring(sz)))
     dp:setSplitSize("left", 150)
     dp:undock(0)
-    example_print_log("docked_after=" .. dp:getDockedCount())
+    lurek.log.info(tostring("docked_after=" .. dp:getDockedCount()))
 end
 ```
 
@@ -7249,24 +5989,17 @@ LDockPanel:setSplitSize(side, size)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dp = lurek.ui.newDockPanel()
-    example_print_log("type=" .. dp:type())
+    lurek.log.info(tostring("type=" .. dp:type()))
     local child = lurek.ui.newPanel()
     dp:dock(0, "left")
-    example_print_log("docked=" .. dp:getDockedCount())
+    lurek.log.info(tostring("docked=" .. dp:getDockedCount()))
     local sz = dp:getSplitSize("left")
-    example_print_log("split_size=" .. tostring(sz))
+    lurek.log.info(tostring("split_size=" .. tostring(sz)))
     dp:setSplitSize("left", 150)
     dp:undock(0)
-    example_print_log("docked_after=" .. dp:getDockedCount())
+    lurek.log.info(tostring("docked_after=" .. dp:getDockedCount()))
 end
 ```
 
@@ -7290,21 +6023,14 @@ LDockPanel:undock(child_idx)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local dock = lurek.ui.newDockPanel()
     local footer = lurek.ui.newPanel()
     dock:addChild(footer)
     dock:dock(footer._idx, "bottom")
-    example_print_log("docked = " .. dock:getDockedCount())
+    lurek.log.info(tostring("docked = " .. dock:getDockedCount()))
     dock:undock(footer._idx)
-    example_print_log("after undock = " .. dock:getDockedCount())
+    lurek.log.info(tostring("after undock = " .. dock:getDockedCount()))
 end
 ```
 
@@ -7675,26 +6401,19 @@ LGuiTable:addColumn(header, width)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tbl = lurek.ui.newTable()
-    example_print_log("type=" .. tbl:type())
+    lurek.log.info(tostring("type=" .. tbl:type()))
     tbl:addColumn("Name")
     tbl:addColumn("Score")
-    example_print_log("cols=" .. tbl:getColumnCount())
+    lurek.log.info(tostring("cols=" .. tbl:getColumnCount()))
     tbl:addRow({ "Alice", "100" })
     tbl:addRow({ "Bob", "80" })
-    example_print_log("rows=" .. tbl:getRowCount())
-    example_print_log("cell11=" .. tostring(tbl:getCell(1, 1)))
+    lurek.log.info(tostring("rows=" .. tbl:getRowCount()))
+    lurek.log.info(tostring("cell11=" .. tostring(tbl:getCell(1, 1))))
     tbl:setCell(1, 2, "999")
     tbl:setSelectedRow(1)
-    example_print_log("selected=" .. tostring(tbl:getSelectedRow()))
+    lurek.log.info(tostring("selected=" .. tostring(tbl:getSelectedRow())))
 end
 ```
 
@@ -7718,27 +6437,20 @@ LGuiTable:addRow(cells)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tbl = lurek.ui.newTable()
-    example_print_log("type=" .. tbl:type())
+    lurek.log.info(tostring("type=" .. tbl:type()))
     tbl:addColumn("Name")
     tbl:addColumn("Score")
-    example_print_log("cols=" .. tbl:getColumnCount())
+    lurek.log.info(tostring("cols=" .. tbl:getColumnCount()))
     tbl:addRow({ "Alice", "100" })
     tbl:addRow({ "Bob", "80" })
-    example_print_log("rows=" .. tbl:getRowCount())
+    lurek.log.info(tostring("rows=" .. tbl:getRowCount()))
     local cell = tbl:getCell(0, 0)
-    example_print_log("cell00=" .. tostring(cell))
+    lurek.log.info(tostring("cell00=" .. tostring(cell)))
     tbl:setCell(0, 1, "999")
     tbl:setSelectedRow(1)
-    example_print_log("selected=" .. tbl:getSelectedRow())
+    lurek.log.info(tostring("selected=" .. tbl:getSelectedRow()))
 end
 ```
 
@@ -7756,19 +6468,12 @@ LGuiTable:clearRows()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tbl = lurek.ui.newTable()
     tbl:setRows({ { "Food", 420 }, { "Rent", 1200 } })
     tbl:setSelectedRow(1)
     tbl:clearRows()
-    example_print_log("rows=" .. tbl:getRowCount())
+    lurek.log.info(tostring("rows=" .. tbl:getRowCount()))
 end
 ```
 
@@ -7799,27 +6504,20 @@ LGuiTable:getCell(row, col)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tbl = lurek.ui.newTable()
-    example_print_log("type=" .. tbl:type())
+    lurek.log.info(tostring("type=" .. tbl:type()))
     tbl:addColumn("Name")
     tbl:addColumn("Score")
-    example_print_log("cols=" .. tbl:getColumnCount())
+    lurek.log.info(tostring("cols=" .. tbl:getColumnCount()))
     tbl:addRow({ "Alice", "100" })
     tbl:addRow({ "Bob", "80" })
-    example_print_log("rows=" .. tbl:getRowCount())
+    lurek.log.info(tostring("rows=" .. tbl:getRowCount()))
     local cell = tbl:getCell(0, 0)
-    example_print_log("cell00=" .. tostring(cell))
+    lurek.log.info(tostring("cell00=" .. tostring(cell)))
     tbl:setCell(0, 1, "999")
     tbl:setSelectedRow(1)
-    example_print_log("selected=" .. tbl:getSelectedRow())
+    lurek.log.info(tostring("selected=" .. tbl:getSelectedRow()))
 end
 ```
 
@@ -7843,27 +6541,20 @@ LGuiTable:getColumnCount()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tbl = lurek.ui.newTable()
-    example_print_log("type=" .. tbl:type())
+    lurek.log.info(tostring("type=" .. tbl:type()))
     tbl:addColumn("Name")
     tbl:addColumn("Score")
-    example_print_log("cols=" .. tbl:getColumnCount())
+    lurek.log.info(tostring("cols=" .. tbl:getColumnCount()))
     tbl:addRow({ "Alice", "100" })
     tbl:addRow({ "Bob", "80" })
-    example_print_log("rows=" .. tbl:getRowCount())
+    lurek.log.info(tostring("rows=" .. tbl:getRowCount()))
     local cell = tbl:getCell(0, 0)
-    example_print_log("cell00=" .. tostring(cell))
+    lurek.log.info(tostring("cell00=" .. tostring(cell)))
     tbl:setCell(0, 1, "999")
     tbl:setSelectedRow(1)
-    example_print_log("selected=" .. tbl:getSelectedRow())
+    lurek.log.info(tostring("selected=" .. tbl:getSelectedRow()))
 end
 ```
 
@@ -7887,27 +6578,20 @@ LGuiTable:getRowCount()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tbl = lurek.ui.newTable()
-    example_print_log("type=" .. tbl:type())
+    lurek.log.info(tostring("type=" .. tbl:type()))
     tbl:addColumn("Name")
     tbl:addColumn("Score")
-    example_print_log("cols=" .. tbl:getColumnCount())
+    lurek.log.info(tostring("cols=" .. tbl:getColumnCount()))
     tbl:addRow({ "Alice", "100" })
     tbl:addRow({ "Bob", "80" })
-    example_print_log("rows=" .. tbl:getRowCount())
+    lurek.log.info(tostring("rows=" .. tbl:getRowCount()))
     local cell = tbl:getCell(0, 0)
-    example_print_log("cell00=" .. tostring(cell))
+    lurek.log.info(tostring("cell00=" .. tostring(cell)))
     tbl:setCell(0, 1, "999")
     tbl:setSelectedRow(1)
-    example_print_log("selected=" .. tbl:getSelectedRow())
+    lurek.log.info(tostring("selected=" .. tbl:getSelectedRow()))
 end
 ```
 
@@ -7931,27 +6615,20 @@ LGuiTable:getSelectedRow()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tbl = lurek.ui.newTable()
-    example_print_log("type=" .. tbl:type())
+    lurek.log.info(tostring("type=" .. tbl:type()))
     tbl:addColumn("Name")
     tbl:addColumn("Score")
-    example_print_log("cols=" .. tbl:getColumnCount())
+    lurek.log.info(tostring("cols=" .. tbl:getColumnCount()))
     tbl:addRow({ "Alice", "100" })
     tbl:addRow({ "Bob", "80" })
-    example_print_log("rows=" .. tbl:getRowCount())
+    lurek.log.info(tostring("rows=" .. tbl:getRowCount()))
     local cell = tbl:getCell(0, 0)
-    example_print_log("cell00=" .. tostring(cell))
+    lurek.log.info(tostring("cell00=" .. tostring(cell)))
     tbl:setCell(0, 1, "999")
     tbl:setSelectedRow(1)
-    example_print_log("selected=" .. tbl:getSelectedRow())
+    lurek.log.info(tostring("selected=" .. tbl:getSelectedRow()))
 end
 ```
 
@@ -7975,21 +6652,14 @@ LGuiTable:isSortable()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tbl = lurek.ui.newTable()
     tbl:addColumn("ID")
     tbl:addRow({"1"})
     tbl:setSortable(true)
     tbl:setCell(1, 1, "changed")
-    tbl:setOnSelect(function(idx) example_print_log("row selected", idx) end)
-    example_print_log("isSortable/setCell/setOnSelect ok")
+    tbl:setOnSelect(function(idx) lurek.log.info(tostring("row selected") .. " " .. tostring(idx)) end)
+    lurek.log.info(tostring("isSortable/setCell/setOnSelect ok"))
 end
 ```
 
@@ -8015,27 +6685,20 @@ LGuiTable:setCell(row, col, text)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tbl = lurek.ui.newTable()
-    example_print_log("type=" .. tbl:type())
+    lurek.log.info(tostring("type=" .. tbl:type()))
     tbl:addColumn("Name")
     tbl:addColumn("Score")
-    example_print_log("cols=" .. tbl:getColumnCount())
+    lurek.log.info(tostring("cols=" .. tbl:getColumnCount()))
     tbl:addRow({ "Alice", "100" })
     tbl:addRow({ "Bob", "80" })
-    example_print_log("rows=" .. tbl:getRowCount())
+    lurek.log.info(tostring("rows=" .. tbl:getRowCount()))
     local cell = tbl:getCell(0, 0)
-    example_print_log("cell00=" .. tostring(cell))
+    lurek.log.info(tostring("cell00=" .. tostring(cell)))
     tbl:setCell(0, 1, "999")
     tbl:setSelectedRow(1)
-    example_print_log("selected=" .. tbl:getSelectedRow())
+    lurek.log.info(tostring("selected=" .. tbl:getSelectedRow()))
 end
 ```
 
@@ -8066,19 +6729,12 @@ LGuiTable:setDataFrame(df, opts)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local df = lurek.dataframe.fromRows({ "category", "amount" }, { { "Food", 420 }, { "Rent", 1200 } })
     local tbl = lurek.ui.newTable()
     local count = tbl:setDataFrame(df, { columns = { "category", "amount" }, maxRows = 2 })
-    example_print_log("setDataFrame=" .. count .. ", cols=" .. tbl:getColumnCount())
-    example_print_log("rect x = " .. select(1, tbl:getRect()))
+    lurek.log.info(tostring("setDataFrame=" .. count .. ", cols=" .. tbl:getColumnCount()))
+    lurek.log.info(tostring("rect x = " .. select(1, tbl:getRect())))
 end
 ```
 
@@ -8102,21 +6758,14 @@ LGuiTable:setOnSelect(f)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tbl = lurek.ui.newTable()
     tbl:addColumn("ID")
     tbl:addRow({"1"})
     tbl:setSortable(true)
     tbl:setCell(1, 1, "changed")
-    tbl:setOnSelect(function(idx) example_print_log("row selected", idx) end)
-    example_print_log("isSortable/setCell/setOnSelect ok")
+    tbl:setOnSelect(function(idx) lurek.log.info(tostring("row selected") .. " " .. tostring(idx)) end)
+    lurek.log.info(tostring("isSortable/setCell/setOnSelect ok"))
 end
 ```
 
@@ -8146,19 +6795,12 @@ LGuiTable:setRows(rows)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tbl = lurek.ui.newTable()
     local count = tbl:setRows({ { "Income", 3200 }, { "Savings", 640 } })
-    example_print_log("setRows=" .. count .. ", first=" .. tostring(tbl:getCell(1, 1)))
-    example_print_log("rect x = " .. select(1, tbl:getRect()))
-    example_print_log("rect y = " .. select(2, tbl:getRect()))
+    lurek.log.info(tostring("setRows=" .. count .. ", first=" .. tostring(tbl:getCell(1, 1))))
+    lurek.log.info(tostring("rect x = " .. select(1, tbl:getRect())))
+    lurek.log.info(tostring("rect y = " .. select(2, tbl:getRect())))
 end
 ```
 
@@ -8182,27 +6824,20 @@ LGuiTable:setSelectedRow(row)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tbl = lurek.ui.newTable()
-    example_print_log("type=" .. tbl:type())
+    lurek.log.info(tostring("type=" .. tbl:type()))
     tbl:addColumn("Name")
     tbl:addColumn("Score")
-    example_print_log("cols=" .. tbl:getColumnCount())
+    lurek.log.info(tostring("cols=" .. tbl:getColumnCount()))
     tbl:addRow({ "Alice", "100" })
     tbl:addRow({ "Bob", "80" })
-    example_print_log("rows=" .. tbl:getRowCount())
+    lurek.log.info(tostring("rows=" .. tbl:getRowCount()))
     local cell = tbl:getCell(0, 0)
-    example_print_log("cell00=" .. tostring(cell))
+    lurek.log.info(tostring("cell00=" .. tostring(cell)))
     tbl:setCell(0, 1, "999")
     tbl:setSelectedRow(1)
-    example_print_log("selected=" .. tbl:getSelectedRow())
+    lurek.log.info(tostring("selected=" .. tbl:getSelectedRow()))
 end
 ```
 
@@ -8226,13 +6861,6 @@ LGuiTable:setSortable(v)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tbl = lurek.ui.newTable()
     tbl:setPosition(20, 420)
@@ -8246,7 +6874,7 @@ do
     lurek.ui.mousepressed(25, 430, 1)
     lurek.ui.mousereleased(25, 430, 1)
     lurek.ui.update(0)
-    example_print_log("sorted first row:", tbl:getCell(1, 1))
+    lurek.log.info(tostring("sorted first row:") .. " " .. tostring(tbl:getCell(1, 1)))
 end
 ```
 
@@ -8278,13 +6906,6 @@ LGuiWindow:getTitle()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tbl = lurek.ui.newTable()
     tbl:addColumn("X")
@@ -8294,7 +6915,7 @@ do
     tbl:setSortable(false)
     local win = lurek.ui.newWindow("My Window")
     local title = win:getTitle()
-    example_print_log("setSelectedRow:", sel, "setSortable ok, win title:", title)
+    lurek.log.info(tostring("setSelectedRow:") .. " " .. tostring(sel) .. " " .. tostring("setSortable ok, win title:") .. " " .. tostring(title))
 end
 ```
 
@@ -8318,19 +6939,12 @@ LGuiWindow:isCloseable()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local win = lurek.ui.newWindow("Test Win")
     local closeable = win:isCloseable()
     local draggable = win:isDraggable()
     local resizable = win:isResizable()
-    example_print_log("isCloseable:", closeable, "isDraggable:", draggable, "isResizable:", resizable)
+    lurek.log.info(tostring("isCloseable:") .. " " .. tostring(closeable) .. " " .. tostring("isDraggable:") .. " " .. tostring(draggable) .. " " .. tostring("isResizable:") .. " " .. tostring(resizable))
 end
 ```
 
@@ -8354,19 +6968,12 @@ LGuiWindow:isDraggable()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local win = lurek.ui.newWindow("Test Win")
     local closeable = win:isCloseable()
     local draggable = win:isDraggable()
     local resizable = win:isResizable()
-    example_print_log("isCloseable:", closeable, "isDraggable:", draggable, "isResizable:", resizable)
+    lurek.log.info(tostring("isCloseable:") .. " " .. tostring(closeable) .. " " .. tostring("isDraggable:") .. " " .. tostring(draggable) .. " " .. tostring("isResizable:") .. " " .. tostring(resizable))
 end
 ```
 
@@ -8390,19 +6997,12 @@ LGuiWindow:isResizable()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local win = lurek.ui.newWindow("Test Win")
     local closeable = win:isCloseable()
     local draggable = win:isDraggable()
     local resizable = win:isResizable()
-    example_print_log("isCloseable:", closeable, "isDraggable:", draggable, "isResizable:", resizable)
+    lurek.log.info(tostring("isCloseable:") .. " " .. tostring(closeable) .. " " .. tostring("isDraggable:") .. " " .. tostring(draggable) .. " " .. tostring("isResizable:") .. " " .. tostring(resizable))
 end
 ```
 
@@ -8426,19 +7026,12 @@ LGuiWindow:setCloseable(v)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local win = lurek.ui.newWindow("Config")
     win:setCloseable(true)
     win:setDraggable(true)
-    win:setOnClose(function(idx) example_print_log("window closed", idx) end)
-    example_print_log("setCloseable/setDraggable/setOnClose ok")
+    win:setOnClose(function(idx) lurek.log.info(tostring("window closed") .. " " .. tostring(idx)) end)
+    lurek.log.info(tostring("setCloseable/setDraggable/setOnClose ok"))
 end
 ```
 
@@ -8462,19 +7055,12 @@ LGuiWindow:setDraggable(v)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local win = lurek.ui.newWindow("Config")
     win:setCloseable(true)
     win:setDraggable(true)
-    win:setOnClose(function(idx) example_print_log("window closed", idx) end)
-    example_print_log("setCloseable/setDraggable/setOnClose ok")
+    win:setOnClose(function(idx) lurek.log.info(tostring("window closed") .. " " .. tostring(idx)) end)
+    lurek.log.info(tostring("setCloseable/setDraggable/setOnClose ok"))
 end
 ```
 
@@ -8498,19 +7084,12 @@ LGuiWindow:setOnClose(f)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local win = lurek.ui.newWindow("Config")
     win:setCloseable(true)
     win:setDraggable(true)
-    win:setOnClose(function(idx) example_print_log("window closed", idx) end)
-    example_print_log("setCloseable/setDraggable/setOnClose ok")
+    win:setOnClose(function(idx) lurek.log.info(tostring("window closed") .. " " .. tostring(idx)) end)
+    lurek.log.info(tostring("setCloseable/setDraggable/setOnClose ok"))
 end
 ```
 
@@ -8534,20 +7113,13 @@ LGuiWindow:setResizable(v)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local win = lurek.ui.newWindow("Old")
     win:setResizable(false)
     win:setTitle("New Title")
     local iw = lurek.ui.newImageWidget()
     local mode = iw:getScaleMode()
-    example_print_log("setResizable/setTitle ok; scaleMode:", mode)
+    lurek.log.info(tostring("setResizable/setTitle ok; scaleMode:") .. " " .. tostring(mode))
 end
 ```
 
@@ -8571,20 +7143,13 @@ LGuiWindow:setTitle(title)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local win = lurek.ui.newWindow("Old")
     win:setResizable(false)
     win:setTitle("New Title")
     local iw = lurek.ui.newImageWidget()
     local mode = iw:getScaleMode()
-    example_print_log("setResizable/setTitle ok; scaleMode:", mode)
+    lurek.log.info(tostring("setResizable/setTitle ok; scaleMode:") .. " " .. tostring(mode))
 end
 ```
 
@@ -9540,22 +8105,15 @@ LImageWidget:getScaleMode()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local iw = lurek.ui.newImageWidget()
-    example_print_log("type=" .. iw:type())
-    example_print_log("scale_mode=" .. tostring(iw:getScaleMode()))
+    lurek.log.info(tostring("type=" .. iw:type()))
+    lurek.log.info(tostring("scale_mode=" .. tostring(iw:getScaleMode())))
     iw:setScaleMode("stretch")
-    example_print_log("scale_mode_after=" .. iw:getScaleMode())
+    lurek.log.info(tostring("scale_mode_after=" .. iw:getScaleMode()))
     iw:setTint(1.0, 0.78, 0.5, 1.0)
     local r, g, b, a = iw:getTint()
-    example_print_log("tint=" .. r .. "," .. g .. "," .. b .. "," .. a)
+    lurek.log.info(tostring("tint=" .. r .. "," .. g .. "," .. b .. "," .. a))
 end
 ```
 
@@ -9582,22 +8140,15 @@ LImageWidget:getTint()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local iw = lurek.ui.newImageWidget()
-    example_print_log("type=" .. iw:type())
-    example_print_log("scale_mode=" .. tostring(iw:getScaleMode()))
+    lurek.log.info(tostring("type=" .. iw:type()))
+    lurek.log.info(tostring("scale_mode=" .. tostring(iw:getScaleMode())))
     iw:setScaleMode("stretch")
-    example_print_log("scale_mode_after=" .. iw:getScaleMode())
+    lurek.log.info(tostring("scale_mode_after=" .. iw:getScaleMode()))
     iw:setTint(1.0, 0.78, 0.5, 1.0)
     local r, g, b, a = iw:getTint()
-    example_print_log("tint=" .. r .. "," .. g .. "," .. b .. "," .. a)
+    lurek.log.info(tostring("tint=" .. r .. "," .. g .. "," .. b .. "," .. a))
 end
 ```
 
@@ -9621,22 +8172,15 @@ LImageWidget:setScaleMode(mode)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local iw = lurek.ui.newImageWidget()
-    example_print_log("type=" .. iw:type())
-    example_print_log("scale_mode=" .. tostring(iw:getScaleMode()))
+    lurek.log.info(tostring("type=" .. iw:type()))
+    lurek.log.info(tostring("scale_mode=" .. tostring(iw:getScaleMode())))
     iw:setScaleMode("stretch")
-    example_print_log("scale_mode_after=" .. iw:getScaleMode())
+    lurek.log.info(tostring("scale_mode_after=" .. iw:getScaleMode()))
     iw:setTint(1.0, 0.78, 0.5, 1.0)
     local r, g, b, a = iw:getTint()
-    example_print_log("tint=" .. r .. "," .. g .. "," .. b .. "," .. a)
+    lurek.log.info(tostring("tint=" .. r .. "," .. g .. "," .. b .. "," .. a))
 end
 ```
 
@@ -9663,22 +8207,15 @@ LImageWidget:setTint(r, g, b, a)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local iw = lurek.ui.newImageWidget()
-    example_print_log("type=" .. iw:type())
-    example_print_log("scale_mode=" .. tostring(iw:getScaleMode()))
+    lurek.log.info(tostring("type=" .. iw:type()))
+    lurek.log.info(tostring("scale_mode=" .. tostring(iw:getScaleMode())))
     iw:setScaleMode("stretch")
-    example_print_log("scale_mode_after=" .. iw:getScaleMode())
+    lurek.log.info(tostring("scale_mode_after=" .. iw:getScaleMode()))
     iw:setTint(1.0, 0.78, 0.5, 1.0)
     local r, g, b, a = iw:getTint()
-    example_print_log("tint=" .. r .. "," .. g .. "," .. b .. "," .. a)
+    lurek.log.info(tostring("tint=" .. r .. "," .. g .. "," .. b .. "," .. a))
 end
 ```
 
@@ -9710,19 +8247,12 @@ LLabel:getText()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local lbl = lurek.ui.newLabel("Hello")
     lbl:setText("World")
     local layout = lurek.ui.newLayout("horizontal")
     local align = layout:getAlign()
-    example_print_log("label text:", lbl:getText(), "layout align:", align)
+    lurek.log.info(tostring("label text:") .. " " .. tostring(lbl:getText()) .. " " .. tostring("layout align:") .. " " .. tostring(align))
 end
 ```
 
@@ -9746,19 +8276,12 @@ LLabel:setText(text)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local lbl = lurek.ui.newLabel("Hello")
     lbl:setText("World")
     local layout = lurek.ui.newLayout("horizontal")
     local align = layout:getAlign()
-    example_print_log("label text:", lbl:getText(), "layout align:", align)
+    lurek.log.info(tostring("label text:") .. " " .. tostring(lbl:getText()) .. " " .. tostring("layout align:") .. " " .. tostring(align))
 end
 ```
 
@@ -9790,19 +8313,12 @@ LLayout:getAlign()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local layout = lurek.ui.newLayout("horizontal")
     layout:setAlign("center")
-    example_print_log("align = " .. layout:getAlign())
+    lurek.log.info(tostring("align = " .. layout:getAlign()))
     layout:setAlign("stretch")
-    example_print_log("align = " .. layout:getAlign())
+    lurek.log.info(tostring("align = " .. layout:getAlign()))
 end
 ```
 
@@ -9826,19 +8342,12 @@ LLayout:getDirection()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local layout = lurek.ui.newLayout("vertical")
     local dir = layout:getDirection()
     local justify = layout:getJustify()
     local spacing = layout:getSpacing()
-    example_print_log("direction:", dir, "justify:", justify, "spacing:", spacing)
+    lurek.log.info(tostring("direction:") .. " " .. tostring(dir) .. " " .. tostring("justify:") .. " " .. tostring(justify) .. " " .. tostring("spacing:") .. " " .. tostring(spacing))
 end
 ```
 
@@ -9862,19 +8371,12 @@ LLayout:getJustify()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local layout = lurek.ui.newLayout("horizontal")
     layout:setJustify("space-between")
-    example_print_log("justify = " .. layout:getJustify())
+    lurek.log.info(tostring("justify = " .. layout:getJustify()))
     layout:setJustify("center")
-    example_print_log("justify = " .. layout:getJustify())
+    lurek.log.info(tostring("justify = " .. layout:getJustify()))
 end
 ```
 
@@ -9898,19 +8400,12 @@ LLayout:getSpacing()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local layout = lurek.ui.newLayout("vertical")
     local dir = layout:getDirection()
     local justify = layout:getJustify()
     local spacing = layout:getSpacing()
-    example_print_log("direction:", dir, "justify:", justify, "spacing:", spacing)
+    lurek.log.info(tostring("direction:") .. " " .. tostring(dir) .. " " .. tostring("justify:") .. " " .. tostring(justify) .. " " .. tostring("spacing:") .. " " .. tostring(spacing))
 end
 ```
 
@@ -9934,20 +8429,13 @@ LLayout:getWrap()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LLayout
     local layout = lurek.ui.newLayout("horizontal")
-    example_print_log("wrap = " .. tostring(layout:getWrap()))
+    lurek.log.info(tostring("wrap = " .. tostring(layout:getWrap())))
     layout:setWrap(true)
-    example_print_log("wrap enabled = " .. tostring(layout:getWrap()))
-    example_print_log("layout direction = " .. layout:getDirection())
+    lurek.log.info(tostring("wrap enabled = " .. tostring(layout:getWrap())))
+    lurek.log.info(tostring("layout direction = " .. layout:getDirection()))
 end
 ```
 
@@ -9977,19 +8465,12 @@ LLayout:setAlign(align)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local layout = lurek.ui.newLayout("horizontal")
     layout:setAlign("center")
-    example_print_log("align = " .. layout:getAlign())
+    lurek.log.info(tostring("align = " .. layout:getAlign()))
     layout:setAlign("stretch")
-    example_print_log("align = " .. layout:getAlign())
+    lurek.log.info(tostring("align = " .. layout:getAlign()))
 end
 ```
 
@@ -10013,20 +8494,13 @@ LLayout:setColumns(n)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LLayout
     local grid = lurek.ui.newLayout("grid")
     grid:setColumns(3)
     grid:setSpacing(5)
-    example_print_log("direction = " .. grid:getDirection())
-    example_print_log("layout direction = " .. grid:getDirection())
+    lurek.log.info(tostring("direction = " .. grid:getDirection()))
+    lurek.log.info(tostring("layout direction = " .. grid:getDirection()))
 end
 ```
 
@@ -10050,20 +8524,13 @@ LLayout:setDirection(dir)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LLayout
     local grid = lurek.ui.newLayout("grid")
     grid:setDirection("vertical")
     grid:setColumns(3)
     grid:setSpacing(5)
-    example_print_log("direction = " .. grid:getDirection())
+    lurek.log.info(tostring("direction = " .. grid:getDirection()))
 end
 ```
 
@@ -10093,19 +8560,12 @@ LLayout:setJustify(justify)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local layout = lurek.ui.newLayout("horizontal")
     layout:setJustify("space-between")
-    example_print_log("justify = " .. layout:getJustify())
+    lurek.log.info(tostring("justify = " .. layout:getJustify()))
     layout:setJustify("center")
-    example_print_log("justify = " .. layout:getJustify())
+    lurek.log.info(tostring("justify = " .. layout:getJustify()))
 end
 ```
 
@@ -10129,19 +8589,12 @@ LLayout:setSpacing(spacing)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local layout = lurek.ui.newLayout("horizontal")
     layout:setDirection("vertical")
     layout:setJustify("center")
     layout:setSpacing(8)
-    example_print_log("setDirection/setJustify/setSpacing ok")
+    lurek.log.info(tostring("setDirection/setJustify/setSpacing ok"))
 end
 ```
 
@@ -10165,20 +8618,13 @@ LLayout:setWrap(wrap)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LLayout
     local layout = lurek.ui.newLayout("horizontal")
-    example_print_log("wrap = " .. tostring(layout:getWrap()))
+    lurek.log.info(tostring("wrap = " .. tostring(layout:getWrap())))
     layout:setWrap(true)
-    example_print_log("wrap enabled = " .. tostring(layout:getWrap()))
-    example_print_log("layout direction = " .. layout:getDirection())
+    lurek.log.info(tostring("wrap enabled = " .. tostring(layout:getWrap())))
+    lurek.log.info(tostring("layout direction = " .. layout:getDirection()))
 end
 ```
 
@@ -10492,22 +8938,15 @@ LListBox:addItem(text)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local list = lurek.ui.newList()
     list:addItem("Sword")
     list:addItem("Shield")
     list:addItem("Potion")
     list:addItem("Scroll")
-    example_print_log("count = " .. list:getItemCount())
-    example_print_log("item 1 = " .. list:getItem(1))
-    example_print_log("item 3 = " .. list:getItem(3))
+    lurek.log.info(tostring("count = " .. list:getItemCount()))
+    lurek.log.info(tostring("item 1 = " .. list:getItem(1)))
+    lurek.log.info(tostring("item 3 = " .. list:getItem(3)))
 end
 ```
 
@@ -10525,13 +8964,6 @@ LListBox:clearItems()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local list = lurek.ui.newList()
     list:addItem("First")
@@ -10539,10 +8971,10 @@ do
     list:addItem("Third")
     list:setItemHeight(30)
     list:removeItem(2)
-    example_print_log("after remove: count=" .. list:getItemCount())
-    example_print_log("item 2 now = " .. tostring(list:getItem(2)))
+    lurek.log.info(tostring("after remove: count=" .. list:getItemCount()))
+    lurek.log.info(tostring("item 2 now = " .. tostring(list:getItem(2))))
     list:clearItems()
-    example_print_log("after clear = " .. list:getItemCount())
+    lurek.log.info(tostring("after clear = " .. list:getItemCount()))
 end
 ```
 
@@ -10572,22 +9004,15 @@ LListBox:getItem(index)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local list = lurek.ui.newList()
     list:addItem("Sword")
     list:addItem("Shield")
     list:addItem("Potion")
     list:addItem("Scroll")
-    example_print_log("count = " .. list:getItemCount())
-    example_print_log("item 1 = " .. list:getItem(1))
-    example_print_log("item 3 = " .. list:getItem(3))
+    lurek.log.info(tostring("count = " .. list:getItemCount()))
+    lurek.log.info(tostring("item 1 = " .. list:getItem(1)))
+    lurek.log.info(tostring("item 3 = " .. list:getItem(3)))
 end
 ```
 
@@ -10611,22 +9036,15 @@ LListBox:getItemCount()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local list = lurek.ui.newList()
     list:addItem("Sword")
     list:addItem("Shield")
     list:addItem("Potion")
     list:addItem("Scroll")
-    example_print_log("count = " .. list:getItemCount())
-    example_print_log("item 1 = " .. list:getItem(1))
-    example_print_log("item 3 = " .. list:getItem(3))
+    lurek.log.info(tostring("count = " .. list:getItemCount()))
+    lurek.log.info(tostring("item 1 = " .. list:getItem(1)))
+    lurek.log.info(tostring("item 3 = " .. list:getItem(3)))
 end
 ```
 
@@ -10650,22 +9068,15 @@ LListBox:getSelectedIndex()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local list = lurek.ui.newList()
     list:addItem("Option A")
     list:addItem("Option B")
     list:addItem("Option C")
     list:setSelectedIndex(2)
-    example_print_log("selected = " .. list:getSelectedIndex())
+    lurek.log.info(tostring("selected = " .. list:getSelectedIndex()))
     list:setSelectedIndex(3)
-    example_print_log("changed to = " .. list:getSelectedIndex())
+    lurek.log.info(tostring("changed to = " .. list:getSelectedIndex()))
 end
 ```
 
@@ -10689,13 +9100,6 @@ LListBox:removeItem(index)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local list = lurek.ui.newList()
     list:addItem("First")
@@ -10703,10 +9107,10 @@ do
     list:addItem("Third")
     list:setItemHeight(30)
     list:removeItem(2)
-    example_print_log("after remove: count=" .. list:getItemCount())
-    example_print_log("item 2 now = " .. tostring(list:getItem(2)))
+    lurek.log.info(tostring("after remove: count=" .. list:getItemCount()))
+    lurek.log.info(tostring("item 2 now = " .. tostring(list:getItem(2))))
     list:clearItems()
-    example_print_log("after clear = " .. list:getItemCount())
+    lurek.log.info(tostring("after clear = " .. list:getItemCount()))
 end
 ```
 
@@ -10730,13 +9134,6 @@ LListBox:setItemHeight(h)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local list = lurek.ui.newList()
     list:addItem("First")
@@ -10744,10 +9141,10 @@ do
     list:addItem("Third")
     list:setItemHeight(30)
     list:removeItem(2)
-    example_print_log("after remove: count=" .. list:getItemCount())
-    example_print_log("item 2 now = " .. tostring(list:getItem(2)))
+    lurek.log.info(tostring("after remove: count=" .. list:getItemCount()))
+    lurek.log.info(tostring("item 2 now = " .. tostring(list:getItem(2))))
     list:clearItems()
-    example_print_log("after clear = " .. list:getItemCount())
+    lurek.log.info(tostring("after clear = " .. list:getItemCount()))
 end
 ```
 
@@ -10771,22 +9168,15 @@ LListBox:setSelectedIndex(index)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local list = lurek.ui.newList()
     list:addItem("Option A")
     list:addItem("Option B")
     list:addItem("Option C")
     list:setSelectedIndex(2)
-    example_print_log("selected = " .. list:getSelectedIndex())
+    lurek.log.info(tostring("selected = " .. list:getSelectedIndex()))
     list:setSelectedIndex(3)
-    example_print_log("changed to = " .. list:getSelectedIndex())
+    lurek.log.info(tostring("changed to = " .. list:getSelectedIndex()))
 end
 ```
 
@@ -10818,13 +9208,6 @@ LMenuBar:addMenu(menu_idx)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local bar = lurek.ui.newMenuBar()
     local fileMenu = lurek.ui.newMenuItem("File")
@@ -10833,9 +9216,9 @@ do
     bar:addMenu(fileMenu._idx)
     bar:addMenu(editMenu._idx)
     bar:addMenu(viewMenu._idx)
-    example_print_log("menus = " .. bar:getMenuCount())
+    lurek.log.info(tostring("menus = " .. bar:getMenuCount()))
     local menus = bar:getMenus()
-    example_print_log("menu indices: " .. #menus .. " entries")
+    lurek.log.info(tostring("menu indices: " .. #menus .. " entries"))
 end
 ```
 
@@ -10859,13 +9242,6 @@ LMenuBar:getMenuCount()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local bar = lurek.ui.newMenuBar()
     local fileMenu = lurek.ui.newMenuItem("File")
@@ -10874,9 +9250,9 @@ do
     bar:addMenu(fileMenu._idx)
     bar:addMenu(editMenu._idx)
     bar:addMenu(viewMenu._idx)
-    example_print_log("menus = " .. bar:getMenuCount())
+    lurek.log.info(tostring("menus = " .. bar:getMenuCount()))
     local menus = bar:getMenus()
-    example_print_log("menu indices: " .. #menus .. " entries")
+    lurek.log.info(tostring("menu indices: " .. #menus .. " entries"))
 end
 ```
 
@@ -10900,13 +9276,6 @@ LMenuBar:getMenus()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local bar = lurek.ui.newMenuBar()
     local fileMenu = lurek.ui.newMenuItem("File")
@@ -10915,9 +9284,9 @@ do
     bar:addMenu(fileMenu._idx)
     bar:addMenu(editMenu._idx)
     bar:addMenu(viewMenu._idx)
-    example_print_log("menus = " .. bar:getMenuCount())
+    lurek.log.info(tostring("menus = " .. bar:getMenuCount()))
     local menus = bar:getMenus()
-    example_print_log("menu indices: " .. #menus .. " entries")
+    lurek.log.info(tostring("menu indices: " .. #menus .. " entries"))
 end
 ```
 
@@ -10947,21 +9316,14 @@ LMenuBar:removeMenu(menu_idx)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local bar = lurek.ui.newMenuBar()
     local m = lurek.ui.newMenuItem("Tools")
     bar:addMenu(m._idx)
-    example_print_log("before remove = " .. bar:getMenuCount())
+    lurek.log.info(tostring("before remove = " .. bar:getMenuCount()))
     local ok = bar:removeMenu(m._idx)
-    example_print_log("removed = " .. tostring(ok))
-    example_print_log("after remove = " .. bar:getMenuCount())
+    lurek.log.info(tostring("removed = " .. tostring(ok)))
+    lurek.log.info(tostring("after remove = " .. bar:getMenuCount()))
 end
 ```
 
@@ -10993,13 +9355,6 @@ LMenuItem:addSubItem(child_idx)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local fileMenu = lurek.ui.newMenuItem("File")
     local openItem = lurek.ui.newMenuItem("Open")
@@ -11011,7 +9366,7 @@ do
     fileMenu:addSubItem(saveItem._idx)
     fileMenu:addSubItem(exitItem._idx)
     local subs = fileMenu:getSubItems()
-    example_print_log("File has " .. #subs .. " sub-items")
+    lurek.log.info(tostring("File has " .. #subs .. " sub-items"))
 end
 ```
 
@@ -11035,13 +9390,6 @@ LMenuItem:getShortcut()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local mi = lurek.ui.newMenuItem("Tools")
     local sub1 = lurek.ui.newMenuItem("Options")
@@ -11049,7 +9397,7 @@ do
     local subs = mi:getSubItems()
     mi:setShortcut("Ctrl+T")
     local sc = mi:getShortcut()
-    example_print_log("addSubItem ok; getSubItems:", type(subs), "shortcut:", sc)
+    lurek.log.info(tostring("addSubItem ok; getSubItems:") .. " " .. tostring(type(subs)) .. " " .. tostring("shortcut:") .. " " .. tostring(sc))
 end
 ```
 
@@ -11073,13 +9421,6 @@ LMenuItem:getSubItems()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local fileMenu = lurek.ui.newMenuItem("File")
     local openItem = lurek.ui.newMenuItem("Open")
@@ -11091,7 +9432,7 @@ do
     fileMenu:addSubItem(saveItem._idx)
     fileMenu:addSubItem(exitItem._idx)
     local subs = fileMenu:getSubItems()
-    example_print_log("File has " .. #subs .. " sub-items")
+    lurek.log.info(tostring("File has " .. #subs .. " sub-items"))
 end
 ```
 
@@ -11115,20 +9456,13 @@ LMenuItem:getText()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local mi = lurek.ui.newMenuItem("Enable")
     local t = mi:getText()
     mi:setChecked(true)
     local checked = mi:isChecked()
     mi:setChecked(false)
-    example_print_log("getText:", t, "isChecked:", mi:isChecked(), "setChecked ok")
+    lurek.log.info(tostring("getText:") .. " " .. tostring(t) .. " " .. tostring("isChecked:") .. " " .. tostring(mi:isChecked()) .. " " .. tostring("setChecked ok"))
 end
 ```
 
@@ -11152,23 +9486,16 @@ LMenuItem:isChecked()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LMenuItem
     local item = lurek.ui.newMenuItem("Toggle Grid")
     item:setOnClick(function()
-        example_print_log("  grid toggle clicked")
+        lurek.log.info(tostring("  grid toggle clicked"))
     end)
     item:setChecked(true)
-    example_print_log("checked = " .. tostring(item:isChecked()))
+    lurek.log.info(tostring("checked = " .. tostring(item:isChecked())))
     item:setText("Show Grid")
-    example_print_log("renamed = " .. item:getText())
+    lurek.log.info(tostring("renamed = " .. item:getText()))
 end
 ```
 
@@ -11192,23 +9519,16 @@ LMenuItem:setChecked(v)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LMenuItem
     local item = lurek.ui.newMenuItem("Toggle Grid")
     item:setOnClick(function()
-        example_print_log("  grid toggle clicked")
+        lurek.log.info(tostring("  grid toggle clicked"))
     end)
     item:setChecked(true)
-    example_print_log("checked = " .. tostring(item:isChecked()))
+    lurek.log.info(tostring("checked = " .. tostring(item:isChecked())))
     item:setText("Show Grid")
-    example_print_log("renamed = " .. item:getText())
+    lurek.log.info(tostring("renamed = " .. item:getText()))
 end
 ```
 
@@ -11232,23 +9552,16 @@ LMenuItem:setOnClick(f)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LMenuItem
     local item = lurek.ui.newMenuItem("Toggle Grid")
     item:setOnClick(function()
-        example_print_log("  grid toggle clicked")
+        lurek.log.info(tostring("  grid toggle clicked"))
     end)
     item:setChecked(true)
-    example_print_log("checked = " .. tostring(item:isChecked()))
+    lurek.log.info(tostring("checked = " .. tostring(item:isChecked())))
     item:setText("Show Grid")
-    example_print_log("renamed = " .. item:getText())
+    lurek.log.info(tostring("renamed = " .. item:getText()))
 end
 ```
 
@@ -11272,19 +9585,12 @@ LMenuItem:setShortcut(shortcut)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local mi = lurek.ui.newMenuItem("Old")
-    mi:setOnClick(function(idx) example_print_log("menu clicked", idx) end)
+    mi:setOnClick(function(idx) lurek.log.info(tostring("menu clicked") .. " " .. tostring(idx)) end)
     mi:setShortcut("Alt+F4")
     mi:setText("New Name")
-    example_print_log("setOnClick/setShortcut/setText ok")
+    lurek.log.info(tostring("setOnClick/setShortcut/setText ok"))
 end
 ```
 
@@ -11308,23 +9614,16 @@ LMenuItem:setText(text)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LMenuItem
     local item = lurek.ui.newMenuItem("Toggle Grid")
     item:setOnClick(function()
-        example_print_log("  grid toggle clicked")
+        lurek.log.info(tostring("  grid toggle clicked"))
     end)
     item:setChecked(true)
-    example_print_log("checked = " .. tostring(item:isChecked()))
+    lurek.log.info(tostring("checked = " .. tostring(item:isChecked())))
     item:setText("Show Grid")
-    example_print_log("renamed = " .. item:getText())
+    lurek.log.info(tostring("renamed = " .. item:getText()))
 end
 ```
 
@@ -11357,24 +9656,17 @@ LNinePatch:getImageDimensions()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local np = lurek.ui.newNinePatch()
-    example_print_log("type=" .. np:type())
+    lurek.log.info(tostring("type=" .. np:type()))
     np:setImageDimensions(64, 64)
     local w, h = np:getImageDimensions()
-    example_print_log("img_dim=" .. w .. "x" .. h)
+    lurek.log.info(tostring("img_dim=" .. w .. "x" .. h))
     np:setInsets(8, 8, 8, 8)
     local l, t, r, b = np:getInsets()
-    example_print_log("insets=" .. l .. "," .. t .. "," .. r .. "," .. b)
+    lurek.log.info(tostring("insets=" .. l .. "," .. t .. "," .. r .. "," .. b))
     local slices = np:getSlices()
-    example_print_log("slices=" .. tostring(slices ~= nil))
+    lurek.log.info(tostring("slices=" .. tostring(slices ~= nil)))
 end
 ```
 
@@ -11401,24 +9693,17 @@ LNinePatch:getInsets()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local np = lurek.ui.newNinePatch()
-    example_print_log("type=" .. np:type())
+    lurek.log.info(tostring("type=" .. np:type()))
     np:setImageDimensions(64, 64)
     local w, h = np:getImageDimensions()
-    example_print_log("img_dim=" .. w .. "x" .. h)
+    lurek.log.info(tostring("img_dim=" .. w .. "x" .. h))
     np:setInsets(8, 8, 8, 8)
     local l, t, r, b = np:getInsets()
-    example_print_log("insets=" .. l .. "," .. t .. "," .. r .. "," .. b)
+    lurek.log.info(tostring("insets=" .. l .. "," .. t .. "," .. r .. "," .. b))
     local slices = np:getSlices()
-    example_print_log("slices=" .. tostring(slices ~= nil))
+    lurek.log.info(tostring("slices=" .. tostring(slices ~= nil)))
 end
 ```
 
@@ -11442,24 +9727,17 @@ LNinePatch:getSlices()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local np = lurek.ui.newNinePatch()
-    example_print_log("type=" .. np:type())
+    lurek.log.info(tostring("type=" .. np:type()))
     np:setImageDimensions(64, 64)
     local w, h = np:getImageDimensions()
-    example_print_log("img_dim=" .. w .. "x" .. h)
+    lurek.log.info(tostring("img_dim=" .. w .. "x" .. h))
     np:setInsets(8, 8, 8, 8)
     local l, t, r, b = np:getInsets()
-    example_print_log("insets=" .. l .. "," .. t .. "," .. r .. "," .. b)
+    lurek.log.info(tostring("insets=" .. l .. "," .. t .. "," .. r .. "," .. b))
     local slices = np:getSlices()
-    example_print_log("slices=" .. tostring(slices ~= nil))
+    lurek.log.info(tostring("slices=" .. tostring(slices ~= nil)))
 end
 ```
 
@@ -11484,24 +9762,17 @@ LNinePatch:setImageDimensions(w, h)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local np = lurek.ui.newNinePatch()
-    example_print_log("type=" .. np:type())
+    lurek.log.info(tostring("type=" .. np:type()))
     np:setImageDimensions(64, 64)
     local w, h = np:getImageDimensions()
-    example_print_log("img_dim=" .. w .. "x" .. h)
+    lurek.log.info(tostring("img_dim=" .. w .. "x" .. h))
     np:setInsets(8, 8, 8, 8)
     local l, t, r, b = np:getInsets()
-    example_print_log("insets=" .. l .. "," .. t .. "," .. r .. "," .. b)
+    lurek.log.info(tostring("insets=" .. l .. "," .. t .. "," .. r .. "," .. b))
     local slices = np:getSlices()
-    example_print_log("slices=" .. tostring(slices ~= nil))
+    lurek.log.info(tostring("slices=" .. tostring(slices ~= nil)))
 end
 ```
 
@@ -11528,24 +9799,17 @@ LNinePatch:setInsets(left, top, right, bottom)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local np = lurek.ui.newNinePatch()
-    example_print_log("type=" .. np:type())
+    lurek.log.info(tostring("type=" .. np:type()))
     np:setImageDimensions(64, 64)
     local w, h = np:getImageDimensions()
-    example_print_log("img_dim=" .. w .. "x" .. h)
+    lurek.log.info(tostring("img_dim=" .. w .. "x" .. h))
     np:setInsets(8, 8, 8, 8)
     local l, t, r, b = np:getInsets()
-    example_print_log("insets=" .. l .. "," .. t .. "," .. r .. "," .. b)
+    lurek.log.info(tostring("insets=" .. l .. "," .. t .. "," .. r .. "," .. b))
     local slices = np:getSlices()
-    example_print_log("slices=" .. tostring(slices ~= nil))
+    lurek.log.info(tostring("slices=" .. tostring(slices ~= nil)))
 end
 ```
 
@@ -11577,13 +9841,6 @@ LPanel:getTitle()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local np = lurek.ui.newNinePatch()
     np:setImageDimensions(32, 32)
@@ -11592,7 +9849,7 @@ do
     local panel = lurek.ui.newPanel()
     panel:setTitle("My Panel")
     local title = panel:getTitle()
-    example_print_log("setInsets ok; panel title:", title)
+    lurek.log.info(tostring("setInsets ok; panel title:") .. " " .. tostring(title))
 end
 ```
 
@@ -11616,19 +9873,12 @@ LPanel:setScrollable(scrollable)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local panel = lurek.ui.newPanel()
     panel:setScrollable(true)
     panel:setTitle("Data")
-    example_print_log("panel scrollable ok")
-    example_print_log("panel children = " .. panel:getChildCount())
+    lurek.log.info(tostring("panel scrollable ok"))
+    lurek.log.info(tostring("panel children = " .. panel:getChildCount()))
 end
 ```
 
@@ -11652,19 +9902,12 @@ LPanel:setTitle(title)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local panel = lurek.ui.newPanel()
     panel:setScrollable(true)
     panel:setTitle("Data")
-    example_print_log("panel scrollable ok")
-    example_print_log("panel children = " .. panel:getChildCount())
+    lurek.log.info(tostring("panel scrollable ok"))
+    lurek.log.info(tostring("panel children = " .. panel:getChildCount()))
 end
 ```
 
@@ -11696,23 +9939,16 @@ LProgressBar:getMax()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pb = lurek.ui.newProgressBar(0, 100)
-    example_print_log("type=" .. pb:type())
-    example_print_log("min=" .. pb:getMin())
-    example_print_log("max=" .. pb:getMax())
+    lurek.log.info(tostring("type=" .. pb:type()))
+    lurek.log.info(tostring("min=" .. pb:getMin()))
+    lurek.log.info(tostring("max=" .. pb:getMax()))
     pb:setValue(75)
-    example_print_log("value=" .. pb:getValue())
-    example_print_log("progress=" .. pb:getProgress())
+    lurek.log.info(tostring("value=" .. pb:getValue()))
+    lurek.log.info(tostring("progress=" .. pb:getProgress()))
     pb:setRange(0, 200)
-    example_print_log("max_after=" .. pb:getMax())
+    lurek.log.info(tostring("max_after=" .. pb:getMax()))
 end
 ```
 
@@ -11736,23 +9972,16 @@ LProgressBar:getMin()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pb = lurek.ui.newProgressBar(0, 100)
-    example_print_log("type=" .. pb:type())
-    example_print_log("min=" .. pb:getMin())
-    example_print_log("max=" .. pb:getMax())
+    lurek.log.info(tostring("type=" .. pb:type()))
+    lurek.log.info(tostring("min=" .. pb:getMin()))
+    lurek.log.info(tostring("max=" .. pb:getMax()))
     pb:setValue(75)
-    example_print_log("value=" .. pb:getValue())
-    example_print_log("progress=" .. pb:getProgress())
+    lurek.log.info(tostring("value=" .. pb:getValue()))
+    lurek.log.info(tostring("progress=" .. pb:getProgress()))
     pb:setRange(0, 200)
-    example_print_log("max_after=" .. pb:getMax())
+    lurek.log.info(tostring("max_after=" .. pb:getMax()))
 end
 ```
 
@@ -11776,23 +10005,16 @@ LProgressBar:getProgress()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pb = lurek.ui.newProgressBar(0, 100)
-    example_print_log("type=" .. pb:type())
-    example_print_log("min=" .. pb:getMin())
-    example_print_log("max=" .. pb:getMax())
+    lurek.log.info(tostring("type=" .. pb:type()))
+    lurek.log.info(tostring("min=" .. pb:getMin()))
+    lurek.log.info(tostring("max=" .. pb:getMax()))
     pb:setValue(75)
-    example_print_log("value=" .. pb:getValue())
-    example_print_log("progress=" .. pb:getProgress())
+    lurek.log.info(tostring("value=" .. pb:getValue()))
+    lurek.log.info(tostring("progress=" .. pb:getProgress()))
     pb:setRange(0, 200)
-    example_print_log("max_after=" .. pb:getMax())
+    lurek.log.info(tostring("max_after=" .. pb:getMax()))
 end
 ```
 
@@ -11816,23 +10038,16 @@ LProgressBar:getValue()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pb = lurek.ui.newProgressBar(0, 100)
-    example_print_log("type=" .. pb:type())
-    example_print_log("min=" .. pb:getMin())
-    example_print_log("max=" .. pb:getMax())
+    lurek.log.info(tostring("type=" .. pb:type()))
+    lurek.log.info(tostring("min=" .. pb:getMin()))
+    lurek.log.info(tostring("max=" .. pb:getMax()))
     pb:setValue(75)
-    example_print_log("value=" .. pb:getValue())
-    example_print_log("progress=" .. pb:getProgress())
+    lurek.log.info(tostring("value=" .. pb:getValue()))
+    lurek.log.info(tostring("progress=" .. pb:getProgress()))
     pb:setRange(0, 200)
-    example_print_log("max_after=" .. pb:getMax())
+    lurek.log.info(tostring("max_after=" .. pb:getMax()))
 end
 ```
 
@@ -11857,23 +10072,16 @@ LProgressBar:setRange(min, max)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pb = lurek.ui.newProgressBar(0, 100)
-    example_print_log("type=" .. pb:type())
-    example_print_log("min=" .. pb:getMin())
-    example_print_log("max=" .. pb:getMax())
+    lurek.log.info(tostring("type=" .. pb:type()))
+    lurek.log.info(tostring("min=" .. pb:getMin()))
+    lurek.log.info(tostring("max=" .. pb:getMax()))
     pb:setValue(75)
-    example_print_log("value=" .. pb:getValue())
-    example_print_log("progress=" .. pb:getProgress())
+    lurek.log.info(tostring("value=" .. pb:getValue()))
+    lurek.log.info(tostring("progress=" .. pb:getProgress()))
     pb:setRange(0, 200)
-    example_print_log("max_after=" .. pb:getMax())
+    lurek.log.info(tostring("max_after=" .. pb:getMax()))
 end
 ```
 
@@ -11897,23 +10105,16 @@ LProgressBar:setValue(v)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pb = lurek.ui.newProgressBar(0, 100)
-    example_print_log("type=" .. pb:type())
-    example_print_log("min=" .. pb:getMin())
-    example_print_log("max=" .. pb:getMax())
+    lurek.log.info(tostring("type=" .. pb:type()))
+    lurek.log.info(tostring("min=" .. pb:getMin()))
+    lurek.log.info(tostring("max=" .. pb:getMax()))
     pb:setValue(75)
-    example_print_log("value=" .. pb:getValue())
-    example_print_log("progress=" .. pb:getProgress())
+    lurek.log.info(tostring("value=" .. pb:getValue()))
+    lurek.log.info(tostring("progress=" .. pb:getProgress()))
     pb:setRange(0, 200)
-    example_print_log("max_after=" .. pb:getMax())
+    lurek.log.info(tostring("max_after=" .. pb:getMax()))
 end
 ```
 
@@ -11952,13 +10153,6 @@ LPropertyWidget:addGroup(title, collapsed)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local props = lurek.ui.newPropertyWidget()
     props:setSize(280, 180)
@@ -11966,7 +10160,7 @@ do
     local audio = props:addGroup("Audio", true)
     props:addProperty(video, "Bits", 10, "number")
     props:addProperty(audio, "Enable Audio", true, "bool")
-    example_print_log("groups = " .. video .. "," .. audio)
+    lurek.log.info(tostring("groups = " .. video .. "," .. audio))
 end
 ```
 
@@ -12001,20 +10195,13 @@ LPropertyWidget:addProperty(group, name, value, valueType, options, readOnly)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local props = lurek.ui.newPropertyWidget()
     local group = props:addGroup("Audio Settings", false)
     local row = props:addProperty(group, "Audio Channels", "2 Channels", "select", { "2 Channels", "8 Channels" })
     props:addProperty(group, "Delay DVE", 4, "number")
     props:addProperty(group, "Enable Audio", true, "bool")
-    example_print_log("added row = " .. row)
+    lurek.log.info(tostring("added row = " .. row))
 end
 ```
 
@@ -12038,13 +10225,6 @@ LPropertyWidget:getGroupCount()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local props = lurek.ui.newPropertyWidget()
     props:addGroup("Video", false)
@@ -12052,7 +10232,7 @@ do
     props:addGroup("Control", true)
     local count = props:getGroupCount()
     props:setSize(300, 160)
-    example_print_log("property groups = " .. count)
+    lurek.log.info(tostring("property groups = " .. count))
 end
 ```
 
@@ -12076,20 +10256,13 @@ LPropertyWidget:getLabelWidth()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local props = lurek.ui.newPropertyWidget()
     local before = props:getLabelWidth()
     props:setLabelWidth(120)
     local after = props:getLabelWidth()
     props:addGroup("Columns", false)
-    example_print_log("label width before=" .. before .. " after=" .. after)
+    lurek.log.info(tostring("label width before=" .. before .. " after=" .. after))
 end
 ```
 
@@ -12119,20 +10292,13 @@ LPropertyWidget:getPropertyCount(group)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local props = lurek.ui.newPropertyWidget()
     local group = props:addGroup("Video", false)
     props:addProperty(group, "Contains Alpha", false, "bool")
     props:addProperty(group, "Delay DVE", 1, "number")
     local count = props:getPropertyCount(group)
-    example_print_log("property rows = " .. count)
+    lurek.log.info(tostring("property rows = " .. count))
 end
 ```
 
@@ -12162,20 +10328,13 @@ LPropertyWidget:getPropertyOptions(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local props = lurek.ui.newPropertyWidget()
     local group = props:addGroup("Video System", false)
     props:addProperty(group, "Resolution", "UHD - 2160p", "select", { "HD - 1080p", "UHD - 2160p" })
     local options = props:getPropertyOptions("Resolution")
     local first = options[1] or ""
-    example_print_log("first option = " .. first)
+    lurek.log.info(tostring("first option = " .. first))
 end
 ```
 
@@ -12205,20 +10364,13 @@ LPropertyWidget:getPropertyType(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local props = lurek.ui.newPropertyWidget()
     local group = props:addGroup("Output", false)
     props:addProperty(group, "Enable Audio", true, "boolean")
     props:addProperty(group, "Source Connector", "SDI IN A", "select", { "SDI IN A", "HDMI" })
     local value_type = props:getPropertyType("Enable Audio")
-    example_print_log("type = " .. tostring(value_type))
+    lurek.log.info(tostring("type = " .. tostring(value_type)))
 end
 ```
 
@@ -12248,20 +10400,13 @@ LPropertyWidget:getPropertyValue(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local props = lurek.ui.newPropertyWidget()
     local group = props:addGroup("Colorimetry", false)
     props:addProperty(group, "Colorimetry", "Rec. 709", "select", { "Rec. 709", "P3" })
     props:addProperty(group, "Tint", "#55AAFF", "color")
     local value = props:getPropertyValue("Colorimetry")
-    example_print_log("colorimetry = " .. tostring(value))
+    lurek.log.info(tostring("colorimetry = " .. tostring(value)))
 end
 ```
 
@@ -12291,20 +10436,13 @@ LPropertyWidget:isGroupCollapsed(group)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local props = lurek.ui.newPropertyWidget()
     local group = props:addGroup("Key Settings", true)
     props:addProperty(group, "Invert Luma", false, "bool")
     local collapsed = props:isGroupCollapsed(group)
     props:setSize(260, 120)
-    example_print_log("key collapsed = " .. tostring(collapsed))
+    lurek.log.info(tostring("key collapsed = " .. tostring(collapsed)))
 end
 ```
 
@@ -12328,20 +10466,13 @@ LPropertyWidget:setLabelWidth(width)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local props = lurek.ui.newPropertyWidget()
     props:setLabelWidth(150)
     props:setSize(340, 180)
     local group = props:addGroup("Inspector", false)
     props:addProperty(group, "Name Column", "150 px", "text")
-    example_print_log("label width = " .. props:getLabelWidth())
+    lurek.log.info(tostring("label width = " .. props:getLabelWidth()))
 end
 ```
 
@@ -12372,20 +10503,13 @@ LPropertyWidget:setPropertyValue(name, value)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local props = lurek.ui.newPropertyWidget()
     local group = props:addGroup("VBI Settings", false)
     props:addProperty(group, "Delay VBI", 4, "number")
     local changed = props:setPropertyValue("Delay VBI", 14)
     local value = props:getPropertyValue("Delay VBI")
-    example_print_log("vbi changed=" .. tostring(changed) .. " value=" .. tostring(value))
+    lurek.log.info(tostring("vbi changed=" .. tostring(changed) .. " value=" .. tostring(value)))
 end
 ```
 
@@ -12415,20 +10539,13 @@ LPropertyWidget:toggleGroup(group)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local props = lurek.ui.newPropertyWidget()
     local group = props:addGroup("Output Settings", false)
     props:addProperty(group, "Source Connector", "SDI IN A", "select", { "SDI IN A", "HDMI" })
     local collapsed = props:toggleGroup(group)
     props:setSize(320, 120)
-    example_print_log("collapsed = " .. tostring(collapsed))
+    lurek.log.info(tostring("collapsed = " .. tostring(collapsed)))
 end
 ```
 
@@ -12460,22 +10577,15 @@ LRadioButton:getGroup()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local rb1 = lurek.ui.newRadioButton("Option A", "opt_group")
     local rb2 = lurek.ui.newRadioButton("Option B", "opt_group")
-    example_print_log("type=" .. rb1:type())
-    example_print_log("text=" .. rb1:getText())
-    example_print_log("group=" .. rb1:getGroup())
-    example_print_log("selected=" .. tostring(rb1:isSelected()))
+    lurek.log.info(tostring("type=" .. rb1:type()))
+    lurek.log.info(tostring("text=" .. rb1:getText()))
+    lurek.log.info(tostring("group=" .. rb1:getGroup()))
+    lurek.log.info(tostring("selected=" .. tostring(rb1:isSelected())))
     rb1:setGroup("new_group")
-    example_print_log("group_after=" .. rb1:getGroup())
+    lurek.log.info(tostring("group_after=" .. rb1:getGroup()))
 end
 ```
 
@@ -12499,22 +10609,15 @@ LRadioButton:getText()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local rb1 = lurek.ui.newRadioButton("Option A", "opt_group")
     local rb2 = lurek.ui.newRadioButton("Option B", "opt_group")
-    example_print_log("type=" .. rb1:type())
-    example_print_log("text=" .. rb1:getText())
-    example_print_log("group=" .. rb1:getGroup())
-    example_print_log("selected=" .. tostring(rb1:isSelected()))
+    lurek.log.info(tostring("type=" .. rb1:type()))
+    lurek.log.info(tostring("text=" .. rb1:getText()))
+    lurek.log.info(tostring("group=" .. rb1:getGroup()))
+    lurek.log.info(tostring("selected=" .. tostring(rb1:isSelected())))
     rb1:setGroup("new_group")
-    example_print_log("group_after=" .. rb1:getGroup())
+    lurek.log.info(tostring("group_after=" .. rb1:getGroup()))
 end
 ```
 
@@ -12538,22 +10641,15 @@ LRadioButton:isSelected()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local rb1 = lurek.ui.newRadioButton("Option A", "opt_group")
     local rb2 = lurek.ui.newRadioButton("Option B", "opt_group")
-    example_print_log("type=" .. rb1:type())
-    example_print_log("text=" .. rb1:getText())
-    example_print_log("group=" .. rb1:getGroup())
-    example_print_log("selected=" .. tostring(rb1:isSelected()))
+    lurek.log.info(tostring("type=" .. rb1:type()))
+    lurek.log.info(tostring("text=" .. rb1:getText()))
+    lurek.log.info(tostring("group=" .. rb1:getGroup()))
+    lurek.log.info(tostring("selected=" .. tostring(rb1:isSelected())))
     rb1:setGroup("new_group")
-    example_print_log("group_after=" .. rb1:getGroup())
+    lurek.log.info(tostring("group_after=" .. rb1:getGroup()))
 end
 ```
 
@@ -12577,22 +10673,15 @@ LRadioButton:setGroup(group)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local rb1 = lurek.ui.newRadioButton("Option A", "opt_group")
     local rb2 = lurek.ui.newRadioButton("Option B", "opt_group")
-    example_print_log("type=" .. rb1:type())
-    example_print_log("text=" .. rb1:getText())
-    example_print_log("group=" .. rb1:getGroup())
-    example_print_log("selected=" .. tostring(rb1:isSelected()))
+    lurek.log.info(tostring("type=" .. rb1:type()))
+    lurek.log.info(tostring("text=" .. rb1:getText()))
+    lurek.log.info(tostring("group=" .. rb1:getGroup()))
+    lurek.log.info(tostring("selected=" .. tostring(rb1:isSelected())))
     rb1:setGroup("new_group")
-    example_print_log("group_after=" .. rb1:getGroup())
+    lurek.log.info(tostring("group_after=" .. rb1:getGroup()))
 end
 ```
 
@@ -12616,20 +10705,13 @@ LRadioButton:setOnChange(f)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local rb = lurek.ui.newRadioButton("B", "g1")
     rb:setGroup("g2")
     rb:setSelected(true)
-    rb:setOnChange(function(idx) example_print_log("radio changed", idx) end)
+    rb:setOnChange(function(idx) lurek.log.info(tostring("radio changed") .. " " .. tostring(idx)) end)
     rb:setText("New B")
-    example_print_log("setGroup/setSelected/setOnChange/setText ok")
+    lurek.log.info(tostring("setGroup/setSelected/setOnChange/setText ok"))
 end
 ```
 
@@ -12653,20 +10735,13 @@ LRadioButton:setSelected(v)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local rb = lurek.ui.newRadioButton("B", "g1")
     rb:setGroup("g2")
     rb:setSelected(true)
-    rb:setOnChange(function(idx) example_print_log("radio changed", idx) end)
+    rb:setOnChange(function(idx) lurek.log.info(tostring("radio changed") .. " " .. tostring(idx)) end)
     rb:setText("New B")
-    example_print_log("setGroup/setSelected/setOnChange/setText ok")
+    lurek.log.info(tostring("setGroup/setSelected/setOnChange/setText ok"))
 end
 ```
 
@@ -12690,19 +10765,12 @@ LRadioButton:setText(text)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local rb = lurek.ui.newRadioButton("original", "group_test")
     rb:setText("updated")
-    example_print_log("LRadioButton setText:", rb:getText())
-    example_print_log("rect x = " .. select(1, rb:getRect()))
-    example_print_log("rect y = " .. select(2, rb:getRect()))
+    lurek.log.info(tostring("LRadioButton setText:") .. " " .. tostring(rb:getText()))
+    lurek.log.info(tostring("rect x = " .. select(1, rb:getRect())))
+    lurek.log.info(tostring("rect y = " .. select(2, rb:getRect())))
 end
 ```
 
@@ -12734,19 +10802,12 @@ LScrollBar:getContentSize()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sb = lurek.ui.newScrollBar(true)
     local cs = sb:getContentSize()
     local pos = sb:getScrollPosition()
     local vs = sb:getViewSize()
-    example_print_log("contentSize:", cs, "scrollPos:", pos, "viewSize:", vs)
+    lurek.log.info(tostring("contentSize:") .. " " .. tostring(cs) .. " " .. tostring("scrollPos:") .. " " .. tostring(pos) .. " " .. tostring("viewSize:") .. " " .. tostring(vs))
 end
 ```
 
@@ -12770,19 +10831,12 @@ LScrollBar:getScrollPosition()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sb = lurek.ui.newScrollBar(true)
     local cs = sb:getContentSize()
     local pos = sb:getScrollPosition()
     local vs = sb:getViewSize()
-    example_print_log("contentSize:", cs, "scrollPos:", pos, "viewSize:", vs)
+    lurek.log.info(tostring("contentSize:") .. " " .. tostring(cs) .. " " .. tostring("scrollPos:") .. " " .. tostring(pos) .. " " .. tostring("viewSize:") .. " " .. tostring(vs))
 end
 ```
 
@@ -12806,19 +10860,12 @@ LScrollBar:getViewSize()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sb = lurek.ui.newScrollBar(true)
     local cs = sb:getContentSize()
     local pos = sb:getScrollPosition()
     local vs = sb:getViewSize()
-    example_print_log("contentSize:", cs, "scrollPos:", pos, "viewSize:", vs)
+    lurek.log.info(tostring("contentSize:") .. " " .. tostring(cs) .. " " .. tostring("scrollPos:") .. " " .. tostring(pos) .. " " .. tostring("viewSize:") .. " " .. tostring(vs))
 end
 ```
 
@@ -12842,20 +10889,13 @@ LScrollBar:isVertical()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sb = lurek.ui.newScrollBar(false)
     local vert = sb:isVertical()
     sb:setContentSize(500)
-    sb:setOnChange(function(val) example_print_log("scroll:", val) end)
+    sb:setOnChange(function(val) lurek.log.info(tostring("scroll:") .. " " .. tostring(val)) end)
     local cs = sb:getContentSize()
-    example_print_log("isVertical:", vert, "contentSize after set:", cs)
+    lurek.log.info(tostring("isVertical:") .. " " .. tostring(vert) .. " " .. tostring("contentSize after set:") .. " " .. tostring(cs))
 end
 ```
 
@@ -12879,20 +10919,13 @@ LScrollBar:setContentSize(v)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sb = lurek.ui.newScrollBar(false)
     local vert = sb:isVertical()
     sb:setContentSize(500)
-    sb:setOnChange(function(val) example_print_log("scroll:", val) end)
+    sb:setOnChange(function(val) lurek.log.info(tostring("scroll:") .. " " .. tostring(val)) end)
     local cs = sb:getContentSize()
-    example_print_log("isVertical:", vert, "contentSize after set:", cs)
+    lurek.log.info(tostring("isVertical:") .. " " .. tostring(vert) .. " " .. tostring("contentSize after set:") .. " " .. tostring(cs))
 end
 ```
 
@@ -12916,20 +10949,13 @@ LScrollBar:setOnChange(f)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sb = lurek.ui.newScrollBar(false)
     local vert = sb:isVertical()
     sb:setContentSize(500)
-    sb:setOnChange(function(val) example_print_log("scroll:", val) end)
+    sb:setOnChange(function(val) lurek.log.info(tostring("scroll:") .. " " .. tostring(val)) end)
     local cs = sb:getContentSize()
-    example_print_log("isVertical:", vert, "contentSize after set:", cs)
+    lurek.log.info(tostring("isVertical:") .. " " .. tostring(vert) .. " " .. tostring("contentSize after set:") .. " " .. tostring(cs))
 end
 ```
 
@@ -12953,13 +10979,6 @@ LScrollBar:setScrollPosition(v)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sb = lurek.ui.newScrollBar(true)
     sb:setContentSize(800)
@@ -12968,7 +10987,7 @@ do
     local pos = sb:getScrollPosition()
     local sp = lurek.ui.newScrollPanel()
     local cw, ch = sp:getContentSize()
-    example_print_log("scrollPos:", pos, "panel contentSize:", cw, ch)
+    lurek.log.info(tostring("scrollPos:") .. " " .. tostring(pos) .. " " .. tostring("panel contentSize:") .. " " .. tostring(cw) .. " " .. tostring(ch))
 end
 ```
 
@@ -12992,13 +11011,6 @@ LScrollBar:setViewSize(v)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sb = lurek.ui.newScrollBar(true)
     sb:setContentSize(800)
@@ -13007,7 +11019,7 @@ do
     local pos = sb:getScrollPosition()
     local sp = lurek.ui.newScrollPanel()
     local cw, ch = sp:getContentSize()
-    example_print_log("scrollPos:", pos, "panel contentSize:", cw, ch)
+    lurek.log.info(tostring("scrollPos:") .. " " .. tostring(pos) .. " " .. tostring("panel contentSize:") .. " " .. tostring(cw) .. " " .. tostring(ch))
 end
 ```
 
@@ -13040,13 +11052,6 @@ LScrollPanel:getContentSize()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sb = lurek.ui.newScrollBar(true)
     sb:setContentSize(800)
@@ -13055,7 +11060,7 @@ do
     local pos = sb:getScrollPosition()
     local sp = lurek.ui.newScrollPanel()
     local cw, ch = sp:getContentSize()
-    example_print_log("scrollPos:", pos, "panel contentSize:", cw, ch)
+    lurek.log.info(tostring("scrollPos:") .. " " .. tostring(pos) .. " " .. tostring("panel contentSize:") .. " " .. tostring(cw) .. " " .. tostring(ch))
 end
 ```
 
@@ -13080,19 +11085,12 @@ LScrollPanel:getMaxScroll()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sp = lurek.ui.newScrollPanel()
     local mx, my = sp:getMaxScroll()
     local px, py = sp:getScrollPosition()
     local speed = sp:getScrollSpeed()
-    example_print_log("maxScroll:", mx, my, "scrollPos:", px, py, "speed:", speed)
+    lurek.log.info(tostring("maxScroll:") .. " " .. tostring(mx) .. " " .. tostring(my) .. " " .. tostring("scrollPos:") .. " " .. tostring(px) .. " " .. tostring(py) .. " " .. tostring("speed:") .. " " .. tostring(speed))
 end
 ```
 
@@ -13117,19 +11115,12 @@ LScrollPanel:getScrollPosition()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sp = lurek.ui.newScrollPanel()
     local mx, my = sp:getMaxScroll()
     local px, py = sp:getScrollPosition()
     local speed = sp:getScrollSpeed()
-    example_print_log("maxScroll:", mx, my, "scrollPos:", px, py, "speed:", speed)
+    lurek.log.info(tostring("maxScroll:") .. " " .. tostring(mx) .. " " .. tostring(my) .. " " .. tostring("scrollPos:") .. " " .. tostring(px) .. " " .. tostring(py) .. " " .. tostring("speed:") .. " " .. tostring(speed))
 end
 ```
 
@@ -13153,20 +11144,13 @@ LScrollPanel:getScrollSpeed()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LScrollPanel
     local scroll = lurek.ui.newScrollPanel()
     scroll:setScrollSpeed(30)
-    example_print_log("scroll speed = " .. scroll:getScrollSpeed())
-    example_print_log("scroll x = " .. select(1, scroll:getScrollPosition()))
-    example_print_log("scroll y = " .. select(2, scroll:getScrollPosition()))
+    lurek.log.info(tostring("scroll speed = " .. scroll:getScrollSpeed()))
+    lurek.log.info(tostring("scroll x = " .. select(1, scroll:getScrollPosition())))
+    lurek.log.info(tostring("scroll y = " .. select(2, scroll:getScrollPosition())))
 end
 ```
 
@@ -13191,13 +11175,6 @@ LScrollPanel:setContentSize(w, h)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sp = lurek.ui.newScrollPanel()
     sp:setContentSize(800, 600)
@@ -13206,7 +11183,7 @@ do
     local px, py = sp:getScrollPosition()
     sp:setScrollSpeed(3.0)
     local speed = sp:getScrollSpeed()
-    example_print_log("contentSize:", cw, ch, "scrollPos:", px, py, "speed:", speed)
+    lurek.log.info(tostring("contentSize:") .. " " .. tostring(cw) .. " " .. tostring(ch) .. " " .. tostring("scrollPos:") .. " " .. tostring(px) .. " " .. tostring(py) .. " " .. tostring("speed:") .. " " .. tostring(speed))
 end
 ```
 
@@ -13231,13 +11208,6 @@ LScrollPanel:setScrollPosition(x, y)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sp = lurek.ui.newScrollPanel()
     sp:setContentSize(800, 600)
@@ -13246,7 +11216,7 @@ do
     local px, py = sp:getScrollPosition()
     sp:setScrollSpeed(3.0)
     local speed = sp:getScrollSpeed()
-    example_print_log("contentSize:", cw, ch, "scrollPos:", px, py, "speed:", speed)
+    lurek.log.info(tostring("contentSize:") .. " " .. tostring(cw) .. " " .. tostring(ch) .. " " .. tostring("scrollPos:") .. " " .. tostring(px) .. " " .. tostring(py) .. " " .. tostring("speed:") .. " " .. tostring(speed))
 end
 ```
 
@@ -13270,20 +11240,13 @@ LScrollPanel:setScrollSpeed(speed)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LScrollPanel
     local scroll = lurek.ui.newScrollPanel()
     scroll:setScrollSpeed(30)
-    example_print_log("scroll speed = " .. scroll:getScrollSpeed())
-    example_print_log("scroll x = " .. select(1, scroll:getScrollPosition()))
-    example_print_log("scroll y = " .. select(2, scroll:getScrollPosition()))
+    lurek.log.info(tostring("scroll speed = " .. scroll:getScrollSpeed()))
+    lurek.log.info(tostring("scroll x = " .. select(1, scroll:getScrollPosition())))
+    lurek.log.info(tostring("scroll y = " .. select(2, scroll:getScrollPosition())))
 end
 ```
 
@@ -13315,20 +11278,13 @@ LSeparator:getThickness()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sep = lurek.ui.newSeparator(true)
     local vert = sep:isVertical()
     local thick = sep:getThickness()
     sep:setThickness(4)
     local t2 = sep:getThickness()
-    example_print_log("isVertical:", vert, "thickness:", thick, "->", t2)
+    lurek.log.info(tostring("isVertical:") .. " " .. tostring(vert) .. " " .. tostring("thickness:") .. " " .. tostring(thick) .. " " .. tostring("->") .. " " .. tostring(t2))
 end
 ```
 
@@ -13352,20 +11308,13 @@ LSeparator:isVertical()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sep = lurek.ui.newSeparator(true)
     local vert = sep:isVertical()
     local thick = sep:getThickness()
     sep:setThickness(4)
     local t2 = sep:getThickness()
-    example_print_log("isVertical:", vert, "thickness:", thick, "->", t2)
+    lurek.log.info(tostring("isVertical:") .. " " .. tostring(vert) .. " " .. tostring("thickness:") .. " " .. tostring(thick) .. " " .. tostring("->") .. " " .. tostring(t2))
 end
 ```
 
@@ -13389,20 +11338,13 @@ LSeparator:setThickness(thickness)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sep = lurek.ui.newSeparator(true)
     local vert = sep:isVertical()
     local thick = sep:getThickness()
     sep:setThickness(4)
     local t2 = sep:getThickness()
-    example_print_log("isVertical:", vert, "thickness:", thick, "->", t2)
+    lurek.log.info(tostring("isVertical:") .. " " .. tostring(vert) .. " " .. tostring("thickness:") .. " " .. tostring(thick) .. " " .. tostring("->") .. " " .. tostring(t2))
 end
 ```
 
@@ -13426,20 +11368,13 @@ LSeparator:setVertical(v)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sep = lurek.ui.newSeparator(false)
     sep:setVertical(true)
     local sl = lurek.ui.newSlider(0, 100)
     local mn = sl:getMin()
     local mx = sl:getMax()
-    example_print_log("separator setVertical ok; slider min:", mn, "max:", mx)
+    lurek.log.info(tostring("separator setVertical ok; slider min:") .. " " .. tostring(mn) .. " " .. tostring("max:") .. " " .. tostring(mx))
 end
 ```
 
@@ -13471,20 +11406,13 @@ LSlider:getMax()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sep = lurek.ui.newSeparator(false)
     sep:setVertical(true)
     local sl = lurek.ui.newSlider(0, 100)
     local mn = sl:getMin()
     local mx = sl:getMax()
-    example_print_log("separator setVertical ok; slider min:", mn, "max:", mx)
+    lurek.log.info(tostring("separator setVertical ok; slider min:") .. " " .. tostring(mn) .. " " .. tostring("max:") .. " " .. tostring(mx))
 end
 ```
 
@@ -13508,20 +11436,13 @@ LSlider:getMin()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sep = lurek.ui.newSeparator(false)
     sep:setVertical(true)
     local sl = lurek.ui.newSlider(0, 100)
     local mn = sl:getMin()
     local mx = sl:getMax()
-    example_print_log("separator setVertical ok; slider min:", mn, "max:", mx)
+    lurek.log.info(tostring("separator setVertical ok; slider min:") .. " " .. tostring(mn) .. " " .. tostring("max:") .. " " .. tostring(mx))
 end
 ```
 
@@ -13545,13 +11466,6 @@ LSlider:getValue()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sl = lurek.ui.newSlider(0, 50)
     sl:setRange(0, 100)
@@ -13559,7 +11473,7 @@ do
     sl:setStep(5)
     sl:setValue(75)
     local v = sl:getValue()
-    example_print_log("setRange max:", mx, "getValue:", v)
+    lurek.log.info(tostring("setRange max:") .. " " .. tostring(mx) .. " " .. tostring("getValue:") .. " " .. tostring(v))
 end
 ```
 
@@ -13584,19 +11498,12 @@ LSlider:setRange(min, max)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local slider = lurek.ui.newSlider(0, 10)
     slider:setValue(5)
-    example_print_log("before: " .. slider:getMin() .. " to " .. slider:getMax() .. " val=" .. slider:getValue())
+    lurek.log.info(tostring("before: " .. slider:getMin() .. " to " .. slider:getMax() .. " val=" .. slider:getValue()))
     slider:setRange(0, 100)
-    example_print_log("after: " .. slider:getMin() .. " to " .. slider:getMax() .. " val=" .. slider:getValue())
+    lurek.log.info(tostring("after: " .. slider:getMin() .. " to " .. slider:getMax() .. " val=" .. slider:getValue()))
 end
 ```
 
@@ -13620,20 +11527,13 @@ LSlider:setStep(step)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local slider = lurek.ui.newSlider(0, 1)
     slider:setStep(0.1)
     slider:setValue(0.5)
-    example_print_log("value = " .. slider:getValue())
+    lurek.log.info(tostring("value = " .. slider:getValue()))
     slider:setValue(1.5)
-    example_print_log("clamped = " .. slider:getValue())
+    lurek.log.info(tostring("clamped = " .. slider:getValue()))
 end
 ```
 
@@ -13657,20 +11557,13 @@ LSlider:setValue(v)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local slider = lurek.ui.newSlider(0, 1)
     slider:setStep(0.1)
     slider:setValue(0.5)
-    example_print_log("value = " .. slider:getValue())
+    lurek.log.info(tostring("value = " .. slider:getValue()))
     slider:setValue(1.5)
-    example_print_log("clamped = " .. slider:getValue())
+    lurek.log.info(tostring("clamped = " .. slider:getValue()))
 end
 ```
 
@@ -13696,22 +11589,15 @@ LSpinBox:decrement()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local spin = lurek.ui.newSpinBox(0, 100)
     spin:setValue(10)
     spin:setStep(5)
     spin:increment()
-    example_print_log("after increment = " .. spin:getValue())
+    lurek.log.info(tostring("after increment = " .. spin:getValue()))
     spin:decrement()
     spin:decrement()
-    example_print_log("after 2 decrements = " .. spin:getValue())
+    lurek.log.info(tostring("after 2 decrements = " .. spin:getValue()))
 end
 ```
 
@@ -13735,24 +11621,17 @@ LSpinBox:getValue()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sb = lurek.ui.newSpinBox(1, 10)
-    example_print_log("type=" .. sb:type())
+    lurek.log.info(tostring("type=" .. sb:type()))
     sb:setValue(5)
-    example_print_log("value=" .. sb:getValue())
+    lurek.log.info(tostring("value=" .. sb:getValue()))
     sb:setStep(2)
     sb:setRange(0, 100)
     sb:increment()
-    example_print_log("value_after_inc=" .. sb:getValue())
+    lurek.log.info(tostring("value_after_inc=" .. sb:getValue()))
     sb:decrement()
-    example_print_log("value_after_dec=" .. sb:getValue())
+    lurek.log.info(tostring("value_after_dec=" .. sb:getValue()))
 end
 ```
 
@@ -13770,22 +11649,15 @@ LSpinBox:increment()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local spin = lurek.ui.newSpinBox(0, 100)
     spin:setValue(10)
     spin:setStep(5)
     spin:increment()
-    example_print_log("after increment = " .. spin:getValue())
+    lurek.log.info(tostring("after increment = " .. spin:getValue()))
     spin:decrement()
     spin:decrement()
-    example_print_log("after 2 decrements = " .. spin:getValue())
+    lurek.log.info(tostring("after 2 decrements = " .. spin:getValue()))
 end
 ```
 
@@ -13810,20 +11682,13 @@ LSpinBox:setRange(min, max)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LSpinBox
     local spin = lurek.ui.newSpinBox(0, 10)
     spin:setValue(8)
     spin:setRange(0, 5)
-    example_print_log("clamped to range = " .. spin:getValue())
-    example_print_log("rect x = " .. select(1, spin:getRect()))
+    lurek.log.info(tostring("clamped to range = " .. spin:getValue()))
+    lurek.log.info(tostring("rect x = " .. select(1, spin:getRect())))
 end
 ```
 
@@ -13847,22 +11712,15 @@ LSpinBox:setStep(step)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local spin = lurek.ui.newSpinBox(0, 100)
     spin:setValue(10)
     spin:setStep(5)
     spin:increment()
-    example_print_log("after increment = " .. spin:getValue())
+    lurek.log.info(tostring("after increment = " .. spin:getValue()))
     spin:decrement()
     spin:decrement()
-    example_print_log("after 2 decrements = " .. spin:getValue())
+    lurek.log.info(tostring("after 2 decrements = " .. spin:getValue()))
 end
 ```
 
@@ -13886,24 +11744,17 @@ LSpinBox:setValue(v)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sb = lurek.ui.newSpinBox(1, 10)
-    example_print_log("type=" .. sb:type())
+    lurek.log.info(tostring("type=" .. sb:type()))
     sb:setValue(5)
-    example_print_log("value=" .. sb:getValue())
+    lurek.log.info(tostring("value=" .. sb:getValue()))
     sb:setStep(2)
     sb:setRange(0, 100)
     sb:increment()
-    example_print_log("value_after_inc=" .. sb:getValue())
+    lurek.log.info(tostring("value_after_inc=" .. sb:getValue()))
     sb:decrement()
-    example_print_log("value_after_dec=" .. sb:getValue())
+    lurek.log.info(tostring("value_after_dec=" .. sb:getValue()))
 end
 ```
 
@@ -13935,31 +11786,24 @@ LSplitPanel:getFirstChild()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sp = lurek.ui.newSplitPanel("horizontal")
     local first = lurek.ui.newPanel()
     local second = lurek.ui.newPanel()
-    example_print_log("type=" .. sp:type())
-    example_print_log("orientation=" .. sp:getOrientation())
+    lurek.log.info(tostring("type=" .. sp:type()))
+    lurek.log.info(tostring("orientation=" .. sp:getOrientation()))
     sp:setFirstChild(first._idx)
     sp:setSecondChild(second._idx)
     local fc = sp:getFirstChild()
     local sc = sp:getSecondChild()
-    example_print_log("fc=" .. tostring(fc))
-    example_print_log("sc=" .. tostring(sc))
+    lurek.log.info(tostring("fc=" .. tostring(fc)))
+    lurek.log.info(tostring("sc=" .. tostring(sc)))
     sp:setSplitPosition(0.4)
-    example_print_log("split_pos=" .. sp:getSplitPosition())
+    lurek.log.info(tostring("split_pos=" .. sp:getSplitPosition()))
     sp:setMinPanelSize(80)
-    example_print_log("min_panel=" .. sp:getMinPanelSize())
+    lurek.log.info(tostring("min_panel=" .. sp:getMinPanelSize()))
     sp:setOrientation("vertical")
-    example_print_log("orientation_after=" .. sp:getOrientation())
+    lurek.log.info(tostring("orientation_after=" .. sp:getOrientation()))
 end
 ```
 
@@ -13983,29 +11827,22 @@ LSplitPanel:getMinPanelSize()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sp = lurek.ui.newSplitPanel("horizontal")
-    example_print_log("type=" .. sp:type())
-    example_print_log("orientation=" .. sp:getOrientation())
+    lurek.log.info(tostring("type=" .. sp:type()))
+    lurek.log.info(tostring("orientation=" .. sp:getOrientation()))
     sp:setFirstChild(0)
     sp:setSecondChild(1)
     local fc = sp:getFirstChild()
-    example_print_log("fc=" .. tostring(fc))
+    lurek.log.info(tostring("fc=" .. tostring(fc)))
     local sc = sp:getSecondChild()
-    example_print_log("sc=" .. tostring(sc))
+    lurek.log.info(tostring("sc=" .. tostring(sc)))
     sp:setSplitPosition(200)
-    example_print_log("split_pos=" .. sp:getSplitPosition())
+    lurek.log.info(tostring("split_pos=" .. sp:getSplitPosition()))
     sp:setMinPanelSize(80)
-    example_print_log("min_panel=" .. sp:getMinPanelSize())
+    lurek.log.info(tostring("min_panel=" .. sp:getMinPanelSize()))
     sp:setOrientation("vertical")
-    example_print_log("orientation_after=" .. sp:getOrientation())
+    lurek.log.info(tostring("orientation_after=" .. sp:getOrientation()))
 end
 ```
 
@@ -14029,29 +11866,22 @@ LSplitPanel:getOrientation()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sp = lurek.ui.newSplitPanel("horizontal")
-    example_print_log("type=" .. sp:type())
-    example_print_log("orientation=" .. sp:getOrientation())
+    lurek.log.info(tostring("type=" .. sp:type()))
+    lurek.log.info(tostring("orientation=" .. sp:getOrientation()))
     sp:setFirstChild(0)
     sp:setSecondChild(1)
     local fc = sp:getFirstChild()
-    example_print_log("fc=" .. tostring(fc))
+    lurek.log.info(tostring("fc=" .. tostring(fc)))
     local sc = sp:getSecondChild()
-    example_print_log("sc=" .. tostring(sc))
+    lurek.log.info(tostring("sc=" .. tostring(sc)))
     sp:setSplitPosition(200)
-    example_print_log("split_pos=" .. sp:getSplitPosition())
+    lurek.log.info(tostring("split_pos=" .. sp:getSplitPosition()))
     sp:setMinPanelSize(80)
-    example_print_log("min_panel=" .. sp:getMinPanelSize())
+    lurek.log.info(tostring("min_panel=" .. sp:getMinPanelSize()))
     sp:setOrientation("vertical")
-    example_print_log("orientation_after=" .. sp:getOrientation())
+    lurek.log.info(tostring("orientation_after=" .. sp:getOrientation()))
 end
 ```
 
@@ -14075,29 +11905,22 @@ LSplitPanel:getSecondChild()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sp = lurek.ui.newSplitPanel("horizontal")
-    example_print_log("type=" .. sp:type())
-    example_print_log("orientation=" .. sp:getOrientation())
+    lurek.log.info(tostring("type=" .. sp:type()))
+    lurek.log.info(tostring("orientation=" .. sp:getOrientation()))
     sp:setFirstChild(0)
     sp:setSecondChild(1)
     local fc = sp:getFirstChild()
-    example_print_log("fc=" .. tostring(fc))
+    lurek.log.info(tostring("fc=" .. tostring(fc)))
     local sc = sp:getSecondChild()
-    example_print_log("sc=" .. tostring(sc))
+    lurek.log.info(tostring("sc=" .. tostring(sc)))
     sp:setSplitPosition(200)
-    example_print_log("split_pos=" .. sp:getSplitPosition())
+    lurek.log.info(tostring("split_pos=" .. sp:getSplitPosition()))
     sp:setMinPanelSize(80)
-    example_print_log("min_panel=" .. sp:getMinPanelSize())
+    lurek.log.info(tostring("min_panel=" .. sp:getMinPanelSize()))
     sp:setOrientation("vertical")
-    example_print_log("orientation_after=" .. sp:getOrientation())
+    lurek.log.info(tostring("orientation_after=" .. sp:getOrientation()))
 end
 ```
 
@@ -14121,29 +11944,22 @@ LSplitPanel:getSplitPosition()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sp = lurek.ui.newSplitPanel("horizontal")
-    example_print_log("type=" .. sp:type())
-    example_print_log("orientation=" .. sp:getOrientation())
+    lurek.log.info(tostring("type=" .. sp:type()))
+    lurek.log.info(tostring("orientation=" .. sp:getOrientation()))
     sp:setFirstChild(0)
     sp:setSecondChild(1)
     local fc = sp:getFirstChild()
-    example_print_log("fc=" .. tostring(fc))
+    lurek.log.info(tostring("fc=" .. tostring(fc)))
     local sc = sp:getSecondChild()
-    example_print_log("sc=" .. tostring(sc))
+    lurek.log.info(tostring("sc=" .. tostring(sc)))
     sp:setSplitPosition(200)
-    example_print_log("split_pos=" .. sp:getSplitPosition())
+    lurek.log.info(tostring("split_pos=" .. sp:getSplitPosition()))
     sp:setMinPanelSize(80)
-    example_print_log("min_panel=" .. sp:getMinPanelSize())
+    lurek.log.info(tostring("min_panel=" .. sp:getMinPanelSize()))
     sp:setOrientation("vertical")
-    example_print_log("orientation_after=" .. sp:getOrientation())
+    lurek.log.info(tostring("orientation_after=" .. sp:getOrientation()))
 end
 ```
 
@@ -14167,29 +11983,22 @@ LSplitPanel:setFirstChild(child_idx)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sp = lurek.ui.newSplitPanel("horizontal")
-    example_print_log("type=" .. sp:type())
-    example_print_log("orientation=" .. sp:getOrientation())
+    lurek.log.info(tostring("type=" .. sp:type()))
+    lurek.log.info(tostring("orientation=" .. sp:getOrientation()))
     sp:setFirstChild(0)
     sp:setSecondChild(1)
     local fc = sp:getFirstChild()
-    example_print_log("fc=" .. tostring(fc))
+    lurek.log.info(tostring("fc=" .. tostring(fc)))
     local sc = sp:getSecondChild()
-    example_print_log("sc=" .. tostring(sc))
+    lurek.log.info(tostring("sc=" .. tostring(sc)))
     sp:setSplitPosition(200)
-    example_print_log("split_pos=" .. sp:getSplitPosition())
+    lurek.log.info(tostring("split_pos=" .. sp:getSplitPosition()))
     sp:setMinPanelSize(80)
-    example_print_log("min_panel=" .. sp:getMinPanelSize())
+    lurek.log.info(tostring("min_panel=" .. sp:getMinPanelSize()))
     sp:setOrientation("vertical")
-    example_print_log("orientation_after=" .. sp:getOrientation())
+    lurek.log.info(tostring("orientation_after=" .. sp:getOrientation()))
 end
 ```
 
@@ -14213,29 +12022,22 @@ LSplitPanel:setMinPanelSize(v)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sp = lurek.ui.newSplitPanel("horizontal")
-    example_print_log("type=" .. sp:type())
-    example_print_log("orientation=" .. sp:getOrientation())
+    lurek.log.info(tostring("type=" .. sp:type()))
+    lurek.log.info(tostring("orientation=" .. sp:getOrientation()))
     sp:setFirstChild(0)
     sp:setSecondChild(1)
     local fc = sp:getFirstChild()
-    example_print_log("fc=" .. tostring(fc))
+    lurek.log.info(tostring("fc=" .. tostring(fc)))
     local sc = sp:getSecondChild()
-    example_print_log("sc=" .. tostring(sc))
+    lurek.log.info(tostring("sc=" .. tostring(sc)))
     sp:setSplitPosition(200)
-    example_print_log("split_pos=" .. sp:getSplitPosition())
+    lurek.log.info(tostring("split_pos=" .. sp:getSplitPosition()))
     sp:setMinPanelSize(80)
-    example_print_log("min_panel=" .. sp:getMinPanelSize())
+    lurek.log.info(tostring("min_panel=" .. sp:getMinPanelSize()))
     sp:setOrientation("vertical")
-    example_print_log("orientation_after=" .. sp:getOrientation())
+    lurek.log.info(tostring("orientation_after=" .. sp:getOrientation()))
 end
 ```
 
@@ -14259,29 +12061,22 @@ LSplitPanel:setOrientation(v)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sp = lurek.ui.newSplitPanel("horizontal")
-    example_print_log("type=" .. sp:type())
-    example_print_log("orientation=" .. sp:getOrientation())
+    lurek.log.info(tostring("type=" .. sp:type()))
+    lurek.log.info(tostring("orientation=" .. sp:getOrientation()))
     sp:setFirstChild(0)
     sp:setSecondChild(1)
     local fc = sp:getFirstChild()
-    example_print_log("fc=" .. tostring(fc))
+    lurek.log.info(tostring("fc=" .. tostring(fc)))
     local sc = sp:getSecondChild()
-    example_print_log("sc=" .. tostring(sc))
+    lurek.log.info(tostring("sc=" .. tostring(sc)))
     sp:setSplitPosition(200)
-    example_print_log("split_pos=" .. sp:getSplitPosition())
+    lurek.log.info(tostring("split_pos=" .. sp:getSplitPosition()))
     sp:setMinPanelSize(80)
-    example_print_log("min_panel=" .. sp:getMinPanelSize())
+    lurek.log.info(tostring("min_panel=" .. sp:getMinPanelSize()))
     sp:setOrientation("vertical")
-    example_print_log("orientation_after=" .. sp:getOrientation())
+    lurek.log.info(tostring("orientation_after=" .. sp:getOrientation()))
 end
 ```
 
@@ -14305,29 +12100,22 @@ LSplitPanel:setSecondChild(child_idx)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sp = lurek.ui.newSplitPanel("horizontal")
-    example_print_log("type=" .. sp:type())
-    example_print_log("orientation=" .. sp:getOrientation())
+    lurek.log.info(tostring("type=" .. sp:type()))
+    lurek.log.info(tostring("orientation=" .. sp:getOrientation()))
     sp:setFirstChild(0)
     sp:setSecondChild(1)
     local fc = sp:getFirstChild()
-    example_print_log("fc=" .. tostring(fc))
+    lurek.log.info(tostring("fc=" .. tostring(fc)))
     local sc = sp:getSecondChild()
-    example_print_log("sc=" .. tostring(sc))
+    lurek.log.info(tostring("sc=" .. tostring(sc)))
     sp:setSplitPosition(200)
-    example_print_log("split_pos=" .. sp:getSplitPosition())
+    lurek.log.info(tostring("split_pos=" .. sp:getSplitPosition()))
     sp:setMinPanelSize(80)
-    example_print_log("min_panel=" .. sp:getMinPanelSize())
+    lurek.log.info(tostring("min_panel=" .. sp:getMinPanelSize()))
     sp:setOrientation("vertical")
-    example_print_log("orientation_after=" .. sp:getOrientation())
+    lurek.log.info(tostring("orientation_after=" .. sp:getOrientation()))
 end
 ```
 
@@ -14351,29 +12139,22 @@ LSplitPanel:setSplitPosition(v)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sp = lurek.ui.newSplitPanel("horizontal")
-    example_print_log("type=" .. sp:type())
-    example_print_log("orientation=" .. sp:getOrientation())
+    lurek.log.info(tostring("type=" .. sp:type()))
+    lurek.log.info(tostring("orientation=" .. sp:getOrientation()))
     sp:setFirstChild(0)
     sp:setSecondChild(1)
     local fc = sp:getFirstChild()
-    example_print_log("fc=" .. tostring(fc))
+    lurek.log.info(tostring("fc=" .. tostring(fc)))
     local sc = sp:getSecondChild()
-    example_print_log("sc=" .. tostring(sc))
+    lurek.log.info(tostring("sc=" .. tostring(sc)))
     sp:setSplitPosition(200)
-    example_print_log("split_pos=" .. sp:getSplitPosition())
+    lurek.log.info(tostring("split_pos=" .. sp:getSplitPosition()))
     sp:setMinPanelSize(80)
-    example_print_log("min_panel=" .. sp:getMinPanelSize())
+    lurek.log.info(tostring("min_panel=" .. sp:getMinPanelSize()))
     sp:setOrientation("vertical")
-    example_print_log("orientation_after=" .. sp:getOrientation())
+    lurek.log.info(tostring("orientation_after=" .. sp:getOrientation()))
 end
 ```
 
@@ -14405,18 +12186,12 @@ LStackContainer:addTab(label)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local stack = lurek.ui.newStackContainer()
     stack:addTab("Inventory")
     stack:addTab("Map")
-    example_print_log("stack labels = " .. stack:getTabCount())
+    lurek.log.info(tostring("stack labels = " .. stack:getTabCount()))
+    lurek.log.info(tostring("first label = " .. tostring(stack:getTab(1))))
 end
 ```
 
@@ -14440,18 +12215,12 @@ LStackContainer:getActiveChild()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local stack = lurek.ui.newStackContainer()
     local page = lurek.ui.newPanel()
     stack:addChild(page)
-    example_print_log("active child = " .. tostring(stack:getActiveChild()))
+    lurek.log.info(tostring("active child = " .. tostring(stack:getActiveChild())))
+    lurek.log.info(tostring("active index = " .. stack:getActiveIndex()))
 end
 ```
 
@@ -14475,18 +12244,12 @@ LStackContainer:getActiveIndex()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local stack = lurek.ui.newStackContainer()
     stack:addChild(lurek.ui.newPanel())
     stack:setActiveIndex(1)
-    example_print_log("active index = " .. stack:getActiveIndex())
+    lurek.log.info(tostring("active index = " .. stack:getActiveIndex()))
+    lurek.log.info(tostring("stack children = " .. stack:getChildCount()))
 end
 ```
 
@@ -14516,18 +12279,12 @@ LStackContainer:getTab(index)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local stack = lurek.ui.newStackContainer()
     stack:addTab("Journal")
     local label = stack:getTab(1)
-    example_print_log("stack label = " .. tostring(label))
+    lurek.log.info(tostring("stack label = " .. tostring(label)))
+    lurek.log.info(tostring("stack labels = " .. stack:getTabCount()))
 end
 ```
 
@@ -14551,18 +12308,12 @@ LStackContainer:getTabCount()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local stack = lurek.ui.newStackContainer()
     stack:addTab("Stats")
     stack:addTab("Equipment")
-    example_print_log("stack label count = " .. stack:getTabCount())
+    lurek.log.info(tostring("stack label count = " .. stack:getTabCount()))
+    lurek.log.info(tostring("first label = " .. tostring(stack:getTab(1))))
 end
 ```
 
@@ -14592,19 +12343,12 @@ LStackContainer:setActiveIndex(index)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local stack = lurek.ui.newStackContainer()
     stack:addChild(lurek.ui.newPanel())
     stack:addChild(lurek.ui.newPanel())
     local changed = stack:setActiveIndex(2)
-    example_print_log("active changed = " .. tostring(changed))
+    lurek.log.info(tostring("active changed = " .. tostring(changed)))
 end
 ```
 
@@ -14637,22 +12381,15 @@ LStatusBar:addSection(text, width)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sb = lurek.ui.newStatusBar()
-    example_print_log("type=" .. sb:type())
+    lurek.log.info(tostring("type=" .. sb:type()))
     sb:addSection("Ready", 120)
     sb:addSection("Line 1", 80)
-    example_print_log("sections=" .. sb:getSectionCount())
-    example_print_log("text1=" .. sb:getSectionText(1))
+    lurek.log.info(tostring("sections=" .. sb:getSectionCount()))
+    lurek.log.info(tostring("text1=" .. sb:getSectionText(1)))
     sb:setSectionText(1, "Loading...")
-    example_print_log("text1_after=" .. sb:getSectionText(1))
+    lurek.log.info(tostring("text1_after=" .. sb:getSectionText(1)))
 end
 ```
 
@@ -14676,22 +12413,15 @@ LStatusBar:getSectionCount()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sb = lurek.ui.newStatusBar()
-    example_print_log("type=" .. sb:type())
+    lurek.log.info(tostring("type=" .. sb:type()))
     sb:addSection("Ready", 120)
     sb:addSection("Line 1", 80)
-    example_print_log("sections=" .. sb:getSectionCount())
-    example_print_log("text1=" .. sb:getSectionText(1))
+    lurek.log.info(tostring("sections=" .. sb:getSectionCount()))
+    lurek.log.info(tostring("text1=" .. sb:getSectionText(1)))
     sb:setSectionText(1, "Loading...")
-    example_print_log("text1_after=" .. sb:getSectionText(1))
+    lurek.log.info(tostring("text1_after=" .. sb:getSectionText(1)))
 end
 ```
 
@@ -14721,22 +12451,15 @@ LStatusBar:getSectionText(section_idx)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sb = lurek.ui.newStatusBar()
-    example_print_log("type=" .. sb:type())
+    lurek.log.info(tostring("type=" .. sb:type()))
     sb:addSection("Ready", 120)
     sb:addSection("Line 1", 80)
-    example_print_log("sections=" .. sb:getSectionCount())
-    example_print_log("text1=" .. sb:getSectionText(1))
+    lurek.log.info(tostring("sections=" .. sb:getSectionCount()))
+    lurek.log.info(tostring("text1=" .. sb:getSectionText(1)))
     sb:setSectionText(1, "Loading...")
-    example_print_log("text1_after=" .. sb:getSectionText(1))
+    lurek.log.info(tostring("text1_after=" .. sb:getSectionText(1)))
 end
 ```
 
@@ -14760,13 +12483,6 @@ LStatusBar:setSectionCount(count)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sb = lurek.ui.newStatusBar()
     sb:setSectionCount(3)
@@ -14774,7 +12490,7 @@ do
     sb:setSectionText(1, "Line 1")
     local txt = sb:getSectionText(1)
     sb:setSectionText(2, "Col 5")
-    example_print_log("sectionCount:", cnt, "section1:", txt)
+    lurek.log.info(tostring("sectionCount:") .. " " .. tostring(cnt) .. " " .. tostring("section1:") .. " " .. tostring(txt))
 end
 ```
 
@@ -14799,22 +12515,15 @@ LStatusBar:setSectionText(section_idx, text)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sb = lurek.ui.newStatusBar()
-    example_print_log("type=" .. sb:type())
+    lurek.log.info(tostring("type=" .. sb:type()))
     sb:addSection("Ready", 120)
     sb:addSection("Line 1", 80)
-    example_print_log("sections=" .. sb:getSectionCount())
-    example_print_log("text1=" .. sb:getSectionText(1))
+    lurek.log.info(tostring("sections=" .. sb:getSectionCount()))
+    lurek.log.info(tostring("text1=" .. sb:getSectionText(1)))
     sb:setSectionText(1, "Loading...")
-    example_print_log("text1_after=" .. sb:getSectionText(1))
+    lurek.log.info(tostring("text1_after=" .. sb:getSectionText(1)))
 end
 ```
 
@@ -14839,13 +12548,6 @@ LStatusBar:setSectionWidget(section_idx, widget)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sb = lurek.ui.newStatusBar()
     sb:setSectionCount(2)
@@ -14854,7 +12556,7 @@ do
     local sw = lurek.ui.newSwitch(false)
     local on = sw:isOn()
     sw:setOn(true)
-    example_print_log("sectionWidget set ok; switch isOn:", sw:isOn())
+    lurek.log.info(tostring("sectionWidget set ok; switch isOn:") .. " " .. tostring(sw:isOn()))
 end
 ```
 
@@ -14886,20 +12588,13 @@ LSwitch:isOn()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sw = lurek.ui.newSwitch(false)
-    example_print_log("type=" .. sw:type())
-    example_print_log("is_on=" .. tostring(sw:isOn()))
+    lurek.log.info(tostring("type=" .. sw:type()))
+    lurek.log.info(tostring("is_on=" .. tostring(sw:isOn())))
     sw:setOn(true)
-    example_print_log("is_on_after=" .. tostring(sw:isOn()))
-    sw:setOnChange(function(v) example_print_log("switch_changed=" .. tostring(v)) end)
+    lurek.log.info(tostring("is_on_after=" .. tostring(sw:isOn())))
+    sw:setOnChange(function(v) lurek.log.info(tostring("switch_changed=" .. tostring(v))) end)
 end
 ```
 
@@ -14923,20 +12618,13 @@ LSwitch:setOn(on)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sw = lurek.ui.newSwitch(true)
-    example_print_log("initial = " .. tostring(sw:isOn()))
+    lurek.log.info(tostring("initial = " .. tostring(sw:isOn())))
     sw:toggle()
-    example_print_log("toggled = " .. tostring(sw:isOn()))
+    lurek.log.info(tostring("toggled = " .. tostring(sw:isOn())))
     sw:setOn(true)
-    example_print_log("forced on = " .. tostring(sw:isOn()))
+    lurek.log.info(tostring("forced on = " .. tostring(sw:isOn())))
 end
 ```
 
@@ -14954,20 +12642,13 @@ LSwitch:toggle()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sw = lurek.ui.newSwitch(true)
-    example_print_log("initial = " .. tostring(sw:isOn()))
+    lurek.log.info(tostring("initial = " .. tostring(sw:isOn())))
     sw:toggle()
-    example_print_log("toggled = " .. tostring(sw:isOn()))
+    lurek.log.info(tostring("toggled = " .. tostring(sw:isOn())))
     sw:setOn(true)
-    example_print_log("forced on = " .. tostring(sw:isOn()))
+    lurek.log.info(tostring("forced on = " .. tostring(sw:isOn())))
 end
 ```
 
@@ -14999,22 +12680,15 @@ LTabBar:addTab(label)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tabs = lurek.ui.newTabBar()
     tabs:addTab("General")
     tabs:addTab("Graphics")
     tabs:addTab("Audio")
     tabs:addTab("Controls")
-    example_print_log("count = " .. tabs:getTabCount())
-    example_print_log("tab 1 = " .. tabs:getTab(1))
-    example_print_log("tab 3 = " .. tabs:getTab(3))
+    lurek.log.info(tostring("count = " .. tabs:getTabCount()))
+    lurek.log.info(tostring("tab 1 = " .. tabs:getTab(1)))
+    lurek.log.info(tostring("tab 3 = " .. tabs:getTab(3)))
 end
 ```
 
@@ -15038,23 +12712,16 @@ LTabBar:getActiveTab()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tabs = lurek.ui.newTabBar()
     tabs:addTab("Home")
     tabs:addTab("Settings")
     tabs:addTab("Help")
     tabs:setActiveTab(2)
-    example_print_log("active = " .. tabs:getActiveTab())
+    lurek.log.info(tostring("active = " .. tabs:getActiveTab()))
     local ok = tabs:removeTab(3)
-    example_print_log("removed Help = " .. tostring(ok))
-    example_print_log("remaining = " .. tabs:getTabCount())
+    lurek.log.info(tostring("removed Help = " .. tostring(ok)))
+    lurek.log.info(tostring("remaining = " .. tabs:getTabCount()))
 end
 ```
 
@@ -15084,22 +12751,15 @@ LTabBar:getTab(index)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tabs = lurek.ui.newTabBar()
     tabs:addTab("General")
     tabs:addTab("Graphics")
     tabs:addTab("Audio")
     tabs:addTab("Controls")
-    example_print_log("count = " .. tabs:getTabCount())
-    example_print_log("tab 1 = " .. tabs:getTab(1))
-    example_print_log("tab 3 = " .. tabs:getTab(3))
+    lurek.log.info(tostring("count = " .. tabs:getTabCount()))
+    lurek.log.info(tostring("tab 1 = " .. tabs:getTab(1)))
+    lurek.log.info(tostring("tab 3 = " .. tabs:getTab(3)))
 end
 ```
 
@@ -15123,22 +12783,15 @@ LTabBar:getTabCount()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tabs = lurek.ui.newTabBar()
     tabs:addTab("General")
     tabs:addTab("Graphics")
     tabs:addTab("Audio")
     tabs:addTab("Controls")
-    example_print_log("count = " .. tabs:getTabCount())
-    example_print_log("tab 1 = " .. tabs:getTab(1))
-    example_print_log("tab 3 = " .. tabs:getTab(3))
+    lurek.log.info(tostring("count = " .. tabs:getTabCount()))
+    lurek.log.info(tostring("tab 1 = " .. tabs:getTab(1)))
+    lurek.log.info(tostring("tab 3 = " .. tabs:getTab(3)))
 end
 ```
 
@@ -15168,23 +12821,16 @@ LTabBar:removeTab(index)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tabs = lurek.ui.newTabBar()
     tabs:addTab("Home")
     tabs:addTab("Settings")
     tabs:addTab("Help")
     tabs:setActiveTab(2)
-    example_print_log("active = " .. tabs:getActiveTab())
+    lurek.log.info(tostring("active = " .. tabs:getActiveTab()))
     local ok = tabs:removeTab(3)
-    example_print_log("removed Help = " .. tostring(ok))
-    example_print_log("remaining = " .. tabs:getTabCount())
+    lurek.log.info(tostring("removed Help = " .. tostring(ok)))
+    lurek.log.info(tostring("remaining = " .. tabs:getTabCount()))
 end
 ```
 
@@ -15208,23 +12854,16 @@ LTabBar:setActiveTab(index)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tabs = lurek.ui.newTabBar()
     tabs:addTab("Home")
     tabs:addTab("Settings")
     tabs:addTab("Help")
     tabs:setActiveTab(2)
-    example_print_log("active = " .. tabs:getActiveTab())
+    lurek.log.info(tostring("active = " .. tabs:getActiveTab()))
     local ok = tabs:removeTab(3)
-    example_print_log("removed Help = " .. tostring(ok))
-    example_print_log("remaining = " .. tabs:getTabCount())
+    lurek.log.info(tostring("removed Help = " .. tostring(ok)))
+    lurek.log.info(tostring("remaining = " .. tabs:getTabCount()))
 end
 ```
 
@@ -15256,18 +12895,12 @@ LTabContainer:addTab(label)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tabs = lurek.ui.newTabContainer()
     tabs:addTab("Audio")
     tabs:addTab("Controls")
-    example_print_log("tab labels = " .. tabs:getTabCount())
+    lurek.log.info(tostring("tab labels = " .. tabs:getTabCount()))
+    lurek.log.info(tostring("first tab = " .. tostring(tabs:getTab(1))))
 end
 ```
 
@@ -15291,18 +12924,12 @@ LTabContainer:getActiveChild()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tabs = lurek.ui.newTabContainer()
     local page = lurek.ui.newPanel()
     tabs:addChild(page)
-    example_print_log("tab active child = " .. tostring(tabs:getActiveChild()))
+    lurek.log.info(tostring("tab active child = " .. tostring(tabs:getActiveChild())))
+    lurek.log.info(tostring("tab active index = " .. tabs:getActiveIndex()))
 end
 ```
 
@@ -15326,18 +12953,12 @@ LTabContainer:getActiveIndex()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tabs = lurek.ui.newTabContainer()
     tabs:addChild(lurek.ui.newPanel())
     tabs:setActiveIndex(1)
-    example_print_log("tab active index = " .. tabs:getActiveIndex())
+    lurek.log.info(tostring("tab active index = " .. tabs:getActiveIndex()))
+    lurek.log.info(tostring("tab children = " .. tabs:getChildCount()))
 end
 ```
 
@@ -15367,18 +12988,12 @@ LTabContainer:getTab(index)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tabs = lurek.ui.newTabContainer()
     tabs:addTab("Gameplay")
     local label = tabs:getTab(1)
-    example_print_log("first tab = " .. tostring(label))
+    lurek.log.info(tostring("first tab = " .. tostring(label)))
+    lurek.log.info(tostring("tab labels = " .. tabs:getTabCount()))
 end
 ```
 
@@ -15402,18 +13017,12 @@ LTabContainer:getTabCount()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tabs = lurek.ui.newTabContainer()
     tabs:addTab("Video")
     tabs:addTab("Audio")
-    example_print_log("tab count = " .. tabs:getTabCount())
+    lurek.log.info(tostring("tab count = " .. tabs:getTabCount()))
+    lurek.log.info(tostring("first tab = " .. tostring(tabs:getTab(1))))
 end
 ```
 
@@ -15443,19 +13052,12 @@ LTabContainer:setActiveIndex(index)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tabs = lurek.ui.newTabContainer()
     tabs:addChild(lurek.ui.newPanel())
     tabs:addChild(lurek.ui.newPanel())
     local changed = tabs:setActiveIndex(2)
-    example_print_log("tab active changed = " .. tostring(changed))
+    lurek.log.info(tostring("tab active changed = " .. tostring(changed)))
 end
 ```
 
@@ -15487,20 +13089,13 @@ LTextInput:getCursorPosition()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local input = lurek.ui.newTextInput()
     input:setMaxLength(50)
     input:setText("Short text")
     local pos = input:getCursorPosition()
-    example_print_log("cursor at = " .. pos)
-    example_print_log("focused = " .. tostring(input:isFocused()))
+    lurek.log.info(tostring("cursor at = " .. pos))
+    lurek.log.info(tostring("focused = " .. tostring(input:isFocused())))
 end
 ```
 
@@ -15524,20 +13119,13 @@ LTextInput:getPlaceholder()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LTextInput
     local input = lurek.ui.newTextInput()
     input:setPlaceholder("Enter your name...")
-    example_print_log("placeholder = " .. input:getPlaceholder())
-    example_print_log("text value = " .. input:getText())
-    example_print_log("placeholder = " .. input:getPlaceholder())
+    lurek.log.info(tostring("placeholder = " .. input:getPlaceholder()))
+    lurek.log.info(tostring("text value = " .. input:getText()))
+    lurek.log.info(tostring("placeholder = " .. input:getPlaceholder()))
 end
 ```
 
@@ -15561,19 +13149,12 @@ LTextInput:getSubmitOnEnter()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local input = lurek.ui.newTextInput()
     input:setSubmitOnEnter(false)
-    example_print_log("submit_on_enter = " .. tostring(input:getSubmitOnEnter()))
-    example_print_log("focused = " .. tostring(input:isFocused()))
-    example_print_log("text = " .. input:getText())
+    lurek.log.info(tostring("submit_on_enter = " .. tostring(input:getSubmitOnEnter())))
+    lurek.log.info(tostring("focused = " .. tostring(input:isFocused())))
+    lurek.log.info(tostring("text = " .. input:getText()))
 end
 ```
 
@@ -15597,13 +13178,6 @@ LTextInput:getText()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local ti = lurek.ui.newTextInput()
     ti:setText("hello")
@@ -15611,7 +13185,7 @@ do
     ti:setPlaceholder("type here")
     local ph = ti:getPlaceholder()
     local cur = ti:getCursorPosition()
-    example_print_log("text:", txt, "placeholder:", ph, "cursor:", cur)
+    lurek.log.info(tostring("text:") .. " " .. tostring(txt) .. " " .. tostring("placeholder:") .. " " .. tostring(ph) .. " " .. tostring("cursor:") .. " " .. tostring(cur))
 end
 ```
 
@@ -15635,20 +13209,13 @@ LTextInput:isFocused()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local ti = lurek.ui.newTextInput()
     ti:setPlaceholder("Search...")
     local ph = ti:getPlaceholder()
     ti:setMaxLength(50)
     local focused = ti:isFocused()
-    example_print_log("placeholder:", ph, "isFocused:", focused)
+    lurek.log.info(tostring("placeholder:") .. " " .. tostring(ph) .. " " .. tostring("isFocused:") .. " " .. tostring(focused))
 end
 ```
 
@@ -15672,20 +13239,13 @@ LTextInput:setMaxLength(n)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local input = lurek.ui.newTextInput()
     input:setMaxLength(50)
     input:setText("Short text")
     local pos = input:getCursorPosition()
-    example_print_log("cursor at = " .. pos)
-    example_print_log("focused = " .. tostring(input:isFocused()))
+    lurek.log.info(tostring("cursor at = " .. pos))
+    lurek.log.info(tostring("focused = " .. tostring(input:isFocused())))
 end
 ```
 
@@ -15709,20 +13269,13 @@ LTextInput:setPlaceholder(text)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LTextInput
     local input = lurek.ui.newTextInput()
     input:setPlaceholder("Enter your name...")
-    example_print_log("placeholder = " .. input:getPlaceholder())
-    example_print_log("text value = " .. input:getText())
-    example_print_log("placeholder = " .. input:getPlaceholder())
+    lurek.log.info(tostring("placeholder = " .. input:getPlaceholder()))
+    lurek.log.info(tostring("text value = " .. input:getText()))
+    lurek.log.info(tostring("placeholder = " .. input:getPlaceholder()))
 end
 ```
 
@@ -15746,19 +13299,12 @@ LTextInput:setSubmitOnEnter(value)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local input = lurek.ui.newTextInput()
     input:setSubmitOnEnter(false)
     input:setText("Confirm name")
-    example_print_log("submit_on_enter = " .. tostring(input:getSubmitOnEnter()))
-    example_print_log("text = " .. input:getText())
+    lurek.log.info(tostring("submit_on_enter = " .. tostring(input:getSubmitOnEnter())))
+    lurek.log.info(tostring("text = " .. input:getText()))
 end
 ```
 
@@ -15782,13 +13328,6 @@ LTextInput:setText(text)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local ti = lurek.ui.newTextInput()
     ti:setText("hello")
@@ -15796,7 +13335,7 @@ do
     ti:setPlaceholder("type here")
     local ph = ti:getPlaceholder()
     local cur = ti:getCursorPosition()
-    example_print_log("text:", txt, "placeholder:", ph, "cursor:", cur)
+    lurek.log.info(tostring("text:") .. " " .. tostring(txt) .. " " .. tostring("placeholder:") .. " " .. tostring(ph) .. " " .. tostring("cursor:") .. " " .. tostring(cur))
 end
 ```
 
@@ -15837,13 +13376,6 @@ LTheme:setStyle(widget_type, state, styleOrClass, styleTable)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local ti = lurek.ui.newTextInput()
     ti:setText("sample input")
@@ -15851,7 +13383,7 @@ do
     local th = lurek.ui.newTheme()
     th:setStyle("button", "normal", {bg_color = {0.2, 0.3, 0.8}})
     local t = th:type()
-    example_print_log("text:", txt, "theme type:", t)
+    lurek.log.info(tostring("text:") .. " " .. tostring(txt) .. " " .. tostring("theme type:") .. " " .. tostring(t))
 end
 ```
 
@@ -15875,13 +13407,6 @@ LTheme:type()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local ti = lurek.ui.newTextInput()
     ti:setText("sample input")
@@ -15889,7 +13414,7 @@ do
     local th = lurek.ui.newTheme()
     th:setStyle("button", "normal", {bg_color = {0.2, 0.3, 0.8}})
     local t = th:type()
-    example_print_log("text:", txt, "theme type:", t)
+    lurek.log.info(tostring("text:") .. " " .. tostring(txt) .. " " .. tostring("theme type:") .. " " .. tostring(t))
 end
 ```
 
@@ -15919,20 +13444,13 @@ LTheme:typeOf(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local th = lurek.ui.newTheme()
     local ok = th:typeOf("LTheme")
     local toast = lurek.ui.newToast("Level up!", 3.0)
     local dur = toast:getDuration()
     local msg = toast:getMessage()
-    example_print_log("theme typeOf:", ok, "duration:", dur, "message:", msg)
+    lurek.log.info(tostring("theme typeOf:") .. " " .. tostring(ok) .. " " .. tostring("duration:") .. " " .. tostring(dur) .. " " .. tostring("message:") .. " " .. tostring(msg))
 end
 ```
 
@@ -15964,24 +13482,17 @@ LToast:getDuration()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local toast = lurek.ui.newToast("File saved", 3.0)
-    example_print_log("type=" .. toast:type())
-    example_print_log("msg=" .. toast:getMessage())
-    example_print_log("dur=" .. toast:getDuration())
-    example_print_log("progress=" .. toast:getProgress())
-    example_print_log("expired=" .. tostring(toast:isExpired()))
+    lurek.log.info(tostring("type=" .. toast:type()))
+    lurek.log.info(tostring("msg=" .. toast:getMessage()))
+    lurek.log.info(tostring("dur=" .. toast:getDuration()))
+    lurek.log.info(tostring("progress=" .. toast:getProgress()))
+    lurek.log.info(tostring("expired=" .. tostring(toast:isExpired())))
     toast:setMessage("Updated message")
     toast:setDuration(5.0)
-    example_print_log("msg_after=" .. toast:getMessage())
-    example_print_log("dur_after=" .. toast:getDuration())
+    lurek.log.info(tostring("msg_after=" .. toast:getMessage()))
+    lurek.log.info(tostring("dur_after=" .. toast:getDuration()))
 end
 ```
 
@@ -16005,24 +13516,17 @@ LToast:getMessage()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local toast = lurek.ui.newToast("File saved", 3.0)
-    example_print_log("type=" .. toast:type())
-    example_print_log("msg=" .. toast:getMessage())
-    example_print_log("dur=" .. toast:getDuration())
-    example_print_log("progress=" .. toast:getProgress())
-    example_print_log("expired=" .. tostring(toast:isExpired()))
+    lurek.log.info(tostring("type=" .. toast:type()))
+    lurek.log.info(tostring("msg=" .. toast:getMessage()))
+    lurek.log.info(tostring("dur=" .. toast:getDuration()))
+    lurek.log.info(tostring("progress=" .. toast:getProgress()))
+    lurek.log.info(tostring("expired=" .. tostring(toast:isExpired())))
     toast:setMessage("Updated message")
     toast:setDuration(5.0)
-    example_print_log("msg_after=" .. toast:getMessage())
-    example_print_log("dur_after=" .. toast:getDuration())
+    lurek.log.info(tostring("msg_after=" .. toast:getMessage()))
+    lurek.log.info(tostring("dur_after=" .. toast:getDuration()))
 end
 ```
 
@@ -16046,24 +13550,17 @@ LToast:getProgress()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local toast = lurek.ui.newToast("File saved", 3.0)
-    example_print_log("type=" .. toast:type())
-    example_print_log("msg=" .. toast:getMessage())
-    example_print_log("dur=" .. toast:getDuration())
-    example_print_log("progress=" .. toast:getProgress())
-    example_print_log("expired=" .. tostring(toast:isExpired()))
+    lurek.log.info(tostring("type=" .. toast:type()))
+    lurek.log.info(tostring("msg=" .. toast:getMessage()))
+    lurek.log.info(tostring("dur=" .. toast:getDuration()))
+    lurek.log.info(tostring("progress=" .. toast:getProgress()))
+    lurek.log.info(tostring("expired=" .. tostring(toast:isExpired())))
     toast:setMessage("Updated message")
     toast:setDuration(5.0)
-    example_print_log("msg_after=" .. toast:getMessage())
-    example_print_log("dur_after=" .. toast:getDuration())
+    lurek.log.info(tostring("msg_after=" .. toast:getMessage()))
+    lurek.log.info(tostring("dur_after=" .. toast:getDuration()))
 end
 ```
 
@@ -16087,24 +13584,17 @@ LToast:isExpired()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local toast = lurek.ui.newToast("File saved", 3.0)
-    example_print_log("type=" .. toast:type())
-    example_print_log("msg=" .. toast:getMessage())
-    example_print_log("dur=" .. toast:getDuration())
-    example_print_log("progress=" .. toast:getProgress())
-    example_print_log("expired=" .. tostring(toast:isExpired()))
+    lurek.log.info(tostring("type=" .. toast:type()))
+    lurek.log.info(tostring("msg=" .. toast:getMessage()))
+    lurek.log.info(tostring("dur=" .. toast:getDuration()))
+    lurek.log.info(tostring("progress=" .. toast:getProgress()))
+    lurek.log.info(tostring("expired=" .. tostring(toast:isExpired())))
     toast:setMessage("Updated message")
     toast:setDuration(5.0)
-    example_print_log("msg_after=" .. toast:getMessage())
-    example_print_log("dur_after=" .. toast:getDuration())
+    lurek.log.info(tostring("msg_after=" .. toast:getMessage()))
+    lurek.log.info(tostring("dur_after=" .. toast:getDuration()))
 end
 ```
 
@@ -16128,24 +13618,17 @@ LToast:setDuration(d)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local toast = lurek.ui.newToast("File saved", 3.0)
-    example_print_log("type=" .. toast:type())
-    example_print_log("msg=" .. toast:getMessage())
-    example_print_log("dur=" .. toast:getDuration())
-    example_print_log("progress=" .. toast:getProgress())
-    example_print_log("expired=" .. tostring(toast:isExpired()))
+    lurek.log.info(tostring("type=" .. toast:type()))
+    lurek.log.info(tostring("msg=" .. toast:getMessage()))
+    lurek.log.info(tostring("dur=" .. toast:getDuration()))
+    lurek.log.info(tostring("progress=" .. toast:getProgress()))
+    lurek.log.info(tostring("expired=" .. tostring(toast:isExpired())))
     toast:setMessage("Updated message")
     toast:setDuration(5.0)
-    example_print_log("msg_after=" .. toast:getMessage())
-    example_print_log("dur_after=" .. toast:getDuration())
+    lurek.log.info(tostring("msg_after=" .. toast:getMessage()))
+    lurek.log.info(tostring("dur_after=" .. toast:getDuration()))
 end
 ```
 
@@ -16169,24 +13652,17 @@ LToast:setMessage(msg)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local toast = lurek.ui.newToast("File saved", 3.0)
-    example_print_log("type=" .. toast:type())
-    example_print_log("msg=" .. toast:getMessage())
-    example_print_log("dur=" .. toast:getDuration())
-    example_print_log("progress=" .. toast:getProgress())
-    example_print_log("expired=" .. tostring(toast:isExpired()))
+    lurek.log.info(tostring("type=" .. toast:type()))
+    lurek.log.info(tostring("msg=" .. toast:getMessage()))
+    lurek.log.info(tostring("dur=" .. toast:getDuration()))
+    lurek.log.info(tostring("progress=" .. toast:getProgress()))
+    lurek.log.info(tostring("expired=" .. tostring(toast:isExpired())))
     toast:setMessage("Updated message")
     toast:setDuration(5.0)
-    example_print_log("msg_after=" .. toast:getMessage())
-    example_print_log("dur_after=" .. toast:getDuration())
+    lurek.log.info(tostring("msg_after=" .. toast:getMessage()))
+    lurek.log.info(tostring("dur_after=" .. toast:getDuration()))
 end
 ```
 
@@ -16225,19 +13701,12 @@ LToolbar:addButton(id, tooltip)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local bar = lurek.ui.newToolbar("horizontal")
     bar:addButton("btn_save", "Save file")
-    example_print_log("btn=" .. tostring(bar:getButton("btn_save") ~= nil))
-    example_print_log("toolbar orientation = " .. bar:getOrientation())
-    example_print_log("toolbar width = " .. select(3, bar:getRect()))
+    lurek.log.info(tostring("btn=" .. tostring(bar:getButton("btn_save") ~= nil)))
+    lurek.log.info(tostring("toolbar orientation = " .. bar:getOrientation()))
+    lurek.log.info(tostring("toolbar width = " .. select(3, bar:getRect())))
 end
 ```
 
@@ -16255,19 +13724,12 @@ LToolbar:addSeparator()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local bar = lurek.ui.newToolbar("horizontal")
     bar:addButton("btn_save", "Save file")
     bar:addSeparator()
-    example_print_log("separator added")
-    example_print_log("toolbar orientation = " .. bar:getOrientation())
+    lurek.log.info(tostring("separator added"))
+    lurek.log.info(tostring("toolbar orientation = " .. bar:getOrientation()))
 end
 ```
 
@@ -16291,13 +13753,6 @@ LToolbar:addSpacer(_size)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tb = lurek.ui.newToolbar("horizontal")
     tb:addButton("cut", "Cut")
@@ -16305,7 +13760,7 @@ do
     tb:addButton("paste", "Paste")
     local ori = tb:getOrientation()
     local btn = tb:getButton("cut")
-    example_print_log("orientation:", ori, "button:", btn)
+    lurek.log.info(tostring("orientation:") .. " " .. tostring(ori) .. " " .. tostring("button:") .. " " .. tostring(btn))
 end
 ```
 
@@ -16335,19 +13790,12 @@ LToolbar:getButton(id)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local bar = lurek.ui.newToolbar("horizontal")
     bar:addButton("btn_save", "Save file")
     local btn = bar:getButton("btn_save")
-    example_print_log("btn=" .. tostring(btn ~= nil))
-    example_print_log("toolbar type=" .. tostring(bar:type()))
+    lurek.log.info(tostring("btn=" .. tostring(btn ~= nil)))
+    lurek.log.info(tostring("toolbar type=" .. tostring(bar:type())))
 end
 ```
 
@@ -16371,19 +13819,12 @@ LToolbar:getOrientation()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local bar = lurek.ui.newToolbar("horizontal")
-    example_print_log("orientation=" .. bar:getOrientation())
-    example_print_log("toolbar orientation = " .. bar:getOrientation())
-    example_print_log("toolbar width = " .. select(3, bar:getRect()))
-    example_print_log("toolbar visible = " .. tostring(bar:isVisible()))
+    lurek.log.info(tostring("orientation=" .. bar:getOrientation()))
+    lurek.log.info(tostring("toolbar orientation = " .. bar:getOrientation()))
+    lurek.log.info(tostring("toolbar width = " .. select(3, bar:getRect())))
+    lurek.log.info(tostring("toolbar visible = " .. tostring(bar:isVisible())))
 end
 ```
 
@@ -16413,19 +13854,12 @@ LToolbar:isButtonToggled(id)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local bar = lurek.ui.newToolbar("horizontal")
     bar:addButton("btn_save", "Save file")
-    example_print_log("toggled=" .. tostring(bar:isButtonToggled("btn_save")))
-    example_print_log("toolbar orientation = " .. bar:getOrientation())
-    example_print_log("toolbar width = " .. select(3, bar:getRect()))
+    lurek.log.info(tostring("toggled=" .. tostring(bar:isButtonToggled("btn_save"))))
+    lurek.log.info(tostring("toolbar orientation = " .. bar:getOrientation()))
+    lurek.log.info(tostring("toolbar width = " .. select(3, bar:getRect())))
 end
 ```
 
@@ -16456,19 +13890,12 @@ LToolbar:setButtonEnabled(id, enabled)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local bar = lurek.ui.newToolbar("horizontal")
     bar:addButton("btn_open", "Open file")
     bar:setButtonEnabled("btn_open", false)
-    example_print_log("btn_open disabled")
-    example_print_log("toolbar orientation = " .. bar:getOrientation())
+    lurek.log.info(tostring("btn_open disabled"))
+    lurek.log.info(tostring("toolbar orientation = " .. bar:getOrientation()))
 end
 ```
 
@@ -16499,19 +13926,12 @@ LToolbar:setButtonToggled(id, toggled)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local bar = lurek.ui.newToolbar("horizontal")
     bar:addButton("btn_save", "Save file")
     bar:setButtonToggled("btn_save", true)
-    example_print_log("toggled_after=" .. tostring(bar:isButtonToggled("btn_save")))
-    example_print_log("toolbar orientation = " .. bar:getOrientation())
+    lurek.log.info(tostring("toggled_after=" .. tostring(bar:isButtonToggled("btn_save"))))
+    lurek.log.info(tostring("toolbar orientation = " .. bar:getOrientation()))
 end
 ```
 
@@ -16535,19 +13955,12 @@ LToolbar:setOrientation(v)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local bar = lurek.ui.newToolbar("horizontal")
     bar:setOrientation("vertical")
-    example_print_log("orientation_after=" .. bar:getOrientation())
-    example_print_log("toolbar orientation = " .. bar:getOrientation())
-    example_print_log("toolbar width = " .. select(3, bar:getRect()))
+    lurek.log.info(tostring("orientation_after=" .. bar:getOrientation()))
+    lurek.log.info(tostring("toolbar orientation = " .. bar:getOrientation()))
+    lurek.log.info(tostring("toolbar width = " .. select(3, bar:getRect())))
 end
 ```
 
@@ -16579,21 +13992,14 @@ LTooltipPanel:getDelay()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local ttp = lurek.ui.newTooltipPanel("Hover info")
-    example_print_log("type=" .. ttp:type())
-    example_print_log("text=" .. ttp:getText())
+    lurek.log.info(tostring("type=" .. ttp:type()))
+    lurek.log.info(tostring("text=" .. ttp:getText()))
     ttp:setText("Updated tooltip")
-    example_print_log("text_after=" .. ttp:getText())
+    lurek.log.info(tostring("text_after=" .. ttp:getText()))
     ttp:setDelay(0.5)
-    example_print_log("delay=" .. ttp:getDelay())
+    lurek.log.info(tostring("delay=" .. ttp:getDelay()))
 end
 ```
 
@@ -16617,13 +14023,6 @@ LTooltipPanel:getTarget()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tb = lurek.ui.newToolbar("horizontal")
     tb:setOrientation("vertical")
@@ -16631,7 +14030,7 @@ do
     local tp = lurek.ui.newTooltipPanel("Hover help")
     local delay = tp:getDelay()
     local target = tp:getTarget()
-    example_print_log("orientation:", ori, "delay:", delay, "target:", target)
+    lurek.log.info(tostring("orientation:") .. " " .. tostring(ori) .. " " .. tostring("delay:") .. " " .. tostring(delay) .. " " .. tostring("target:") .. " " .. tostring(target))
 end
 ```
 
@@ -16655,21 +14054,14 @@ LTooltipPanel:getText()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local ttp = lurek.ui.newTooltipPanel("Hover info")
-    example_print_log("type=" .. ttp:type())
-    example_print_log("text=" .. ttp:getText())
+    lurek.log.info(tostring("type=" .. ttp:type()))
+    lurek.log.info(tostring("text=" .. ttp:getText()))
     ttp:setText("Updated tooltip")
-    example_print_log("text_after=" .. ttp:getText())
+    lurek.log.info(tostring("text_after=" .. ttp:getText()))
     ttp:setDelay(0.5)
-    example_print_log("delay=" .. ttp:getDelay())
+    lurek.log.info(tostring("delay=" .. ttp:getDelay()))
 end
 ```
 
@@ -16693,21 +14085,14 @@ LTooltipPanel:setDelay(v)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local ttp = lurek.ui.newTooltipPanel("Hover info")
-    example_print_log("type=" .. ttp:type())
-    example_print_log("text=" .. ttp:getText())
+    lurek.log.info(tostring("type=" .. ttp:type()))
+    lurek.log.info(tostring("text=" .. ttp:getText()))
     ttp:setText("Updated tooltip")
-    example_print_log("text_after=" .. ttp:getText())
+    lurek.log.info(tostring("text_after=" .. ttp:getText()))
     ttp:setDelay(0.5)
-    example_print_log("delay=" .. ttp:getDelay())
+    lurek.log.info(tostring("delay=" .. ttp:getDelay()))
 end
 ```
 
@@ -16731,13 +14116,6 @@ LTooltipPanel:setTarget(target)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tp = lurek.ui.newTooltipPanel("initial tip")
     local txt = tp:getText()
@@ -16745,7 +14123,7 @@ do
     local d = tp:getDelay()
     local btn = lurek.ui.newButton("hover me")
     tp:setTarget(btn:getId() and 1 or 1)
-    example_print_log("text:", txt, "delay:", d)
+    lurek.log.info(tostring("text:") .. " " .. tostring(txt) .. " " .. tostring("delay:") .. " " .. tostring(d))
 end
 ```
 
@@ -16769,21 +14147,14 @@ LTooltipPanel:setText(text)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local ttp = lurek.ui.newTooltipPanel("Hover info")
-    example_print_log("type=" .. ttp:type())
-    example_print_log("text=" .. ttp:getText())
+    lurek.log.info(tostring("type=" .. ttp:type()))
+    lurek.log.info(tostring("text=" .. ttp:getText()))
     ttp:setText("Updated tooltip")
-    example_print_log("text_after=" .. ttp:getText())
+    lurek.log.info(tostring("text_after=" .. ttp:getText()))
     ttp:setDelay(0.5)
-    example_print_log("delay=" .. ttp:getDelay())
+    lurek.log.info(tostring("delay=" .. ttp:getDelay()))
 end
 ```
 
@@ -16822,19 +14193,12 @@ LTreeView:addNode(text, parent_index)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     local child = tv:addNode("Child C", root)
-    example_print_log("child added = " .. tostring(child ~= nil))
-    example_print_log("node count = " .. tv:getNodeCount())
+    lurek.log.info(tostring("child added = " .. tostring(child ~= nil)))
+    lurek.log.info(tostring("node count = " .. tv:getNodeCount()))
 end
 ```
 
@@ -16852,19 +14216,12 @@ LTreeView:clearNodes()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     tv:addNode("Child A", root)
     tv:clearNodes()
-    example_print_log("nodes = " .. tv:getNodeCount())
+    lurek.log.info(tostring("nodes = " .. tv:getNodeCount()))
 end
 ```
 
@@ -16882,20 +14239,13 @@ LTreeView:collapseAll()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     tv:addNode("Child A", root)
     tv:expandAll()
     tv:collapseAll()
-    example_print_log("root expanded = " .. tostring(tv:isExpanded(root)))
+    lurek.log.info(tostring("root expanded = " .. tostring(tv:isExpanded(root))))
 end
 ```
 
@@ -16925,19 +14275,12 @@ LTreeView:collapseNode(index)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     tv:expandNode(root)
     tv:collapseNode(root)
-    example_print_log("root expanded = " .. tostring(tv:isNodeExpanded(root)))
+    lurek.log.info(tostring("root expanded = " .. tostring(tv:isNodeExpanded(root))))
 end
 ```
 
@@ -16955,19 +14298,12 @@ LTreeView:expandAll()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     tv:addNode("Child A", root)
     tv:expandAll()
-    example_print_log("root expanded = " .. tostring(tv:isExpanded(root)))
+    lurek.log.info(tostring("root expanded = " .. tostring(tv:isExpanded(root))))
 end
 ```
 
@@ -16997,19 +14333,12 @@ LTreeView:expandNode(index)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     tv:expandNode(root)
-    example_print_log("root expanded = " .. tostring(tv:isNodeExpanded(root)))
-    example_print_log("node count = " .. tv:getNodeCount())
+    lurek.log.info(tostring("root expanded = " .. tostring(tv:isNodeExpanded(root))))
+    lurek.log.info(tostring("node count = " .. tv:getNodeCount()))
 end
 ```
 
@@ -17039,20 +14368,13 @@ LTreeView:getChildNodes(index)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     tv:addNode("Child A", root)
     tv:addNode("Child B", root)
     local children = tv:getChildNodes(root)
-    example_print_log("child count = " .. #children)
+    lurek.log.info(tostring("child count = " .. #children))
 end
 ```
 
@@ -17076,19 +14398,12 @@ LTreeView:getNodeCount()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     tv:addNode("Child A", root)
-    example_print_log("nodes = " .. tv:getNodeCount())
-    example_print_log("node count = " .. tv:getNodeCount())
+    lurek.log.info(tostring("nodes = " .. tv:getNodeCount()))
+    lurek.log.info(tostring("node count = " .. tv:getNodeCount()))
 end
 ```
 
@@ -17118,19 +14433,12 @@ LTreeView:getNodeDepth(index)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     local child1 = tv:addNode("Child A", root)
-    example_print_log("depth = " .. tv:getNodeDepth(child1))
-    example_print_log("node count = " .. tv:getNodeCount())
+    lurek.log.info(tostring("depth = " .. tv:getNodeDepth(child1)))
+    lurek.log.info(tostring("node count = " .. tv:getNodeCount()))
 end
 ```
 
@@ -17160,19 +14468,12 @@ LTreeView:getNodeText(index)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     local child1 = tv:addNode("Child A", root)
-    example_print_log("text = " .. tv:getNodeText(child1))
-    example_print_log("node count = " .. tv:getNodeCount())
+    lurek.log.info(tostring("text = " .. tv:getNodeText(child1)))
+    lurek.log.info(tostring("node count = " .. tv:getNodeCount()))
 end
 ```
 
@@ -17202,19 +14503,12 @@ LTreeView:getParentNode(index)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     local child1 = tv:addNode("Child A", root)
-    example_print_log("parent = " .. tostring(tv:getParentNode(child1) == root))
-    example_print_log("node count = " .. tv:getNodeCount())
+    lurek.log.info(tostring("parent = " .. tostring(tv:getParentNode(child1) == root)))
+    lurek.log.info(tostring("node count = " .. tv:getNodeCount()))
 end
 ```
 
@@ -17238,19 +14532,12 @@ LTreeView:getSelectedNode()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     local child1 = tv:addNode("Child A", root)
     tv:setSelectedNode(child1)
-    example_print_log("selected = " .. tostring(tv:getSelectedNode()))
+    lurek.log.info(tostring("selected = " .. tostring(tv:getSelectedNode())))
 end
 ```
 
@@ -17280,19 +14567,12 @@ LTreeView:isExpanded(index)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     tv:expandAll()
-    example_print_log("expanded = " .. tostring(tv:isExpanded(root)))
-    example_print_log("node count = " .. tv:getNodeCount())
+    lurek.log.info(tostring("expanded = " .. tostring(tv:isExpanded(root))))
+    lurek.log.info(tostring("node count = " .. tv:getNodeCount()))
 end
 ```
 
@@ -17322,19 +14602,12 @@ LTreeView:isNodeExpanded(index)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     tv:expandNode(root)
-    example_print_log("node expanded = " .. tostring(tv:isNodeExpanded(root)))
-    example_print_log("node count = " .. tv:getNodeCount())
+    lurek.log.info(tostring("node expanded = " .. tostring(tv:isNodeExpanded(root))))
+    lurek.log.info(tostring("node count = " .. tv:getNodeCount()))
 end
 ```
 
@@ -17364,20 +14637,13 @@ LTreeView:removeNode(index)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     tv:addNode("Child A", root)
     local child2 = tv:addNode("Child B", root)
     tv:removeNode(child2)
-    example_print_log("nodes = " .. tv:getNodeCount())
+    lurek.log.info(tostring("nodes = " .. tv:getNodeCount()))
 end
 ```
 
@@ -17408,19 +14674,12 @@ LTreeView:setNodeIcon(index, icon)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     local child1 = tv:addNode("Child A", root)
     tv:setNodeIcon(child1, "folder")
-    example_print_log("icon set on child")
+    lurek.log.info(tostring("icon set on child"))
 end
 ```
 
@@ -17451,19 +14710,12 @@ LTreeView:setNodeText(index, text)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     local child1 = tv:addNode("Child A", root)
     tv:setNodeText(child1, "Renamed A")
-    example_print_log("text = " .. tv:getNodeText(child1))
+    lurek.log.info(tostring("text = " .. tv:getNodeText(child1)))
 end
 ```
 
@@ -17493,19 +14745,12 @@ LTreeView:setSelectedNode(index)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     local child1 = tv:addNode("Child A", root)
     tv:setSelectedNode(child1)
-    example_print_log("selected = " .. tostring(tv:getSelectedNode()))
+    lurek.log.info(tostring("selected = " .. tostring(tv:getSelectedNode())))
 end
 ```
 
@@ -17535,20 +14780,13 @@ LTreeView:toggleNode(index)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     tv:addNode("Child A", root)
     local child2 = tv:addNode("Child B", root)
     tv:toggleNode(child2)
-    example_print_log("child toggled")
+    lurek.log.info(tostring("child toggled"))
 end
 ```
 
@@ -17580,13 +14818,6 @@ LUiWidget:addChild(child)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local layout = lurek.ui.newLayout("vertical")
     local btn1 = lurek.ui.newButton("First")
@@ -17595,9 +14826,9 @@ do
     layout:addChild(btn1)
     layout:addChild(btn2)
     layout:addChild(btn3)
-    example_print_log("children = " .. layout:getChildCount())
+    lurek.log.info(tostring("children = " .. layout:getChildCount()))
     layout:removeChild(btn2)
-    example_print_log("after remove = " .. layout:getChildCount())
+    lurek.log.info(tostring("after remove = " .. layout:getChildCount()))
 end
 ```
 
@@ -17629,21 +14860,14 @@ LUiWidget:animateAlpha(target, duration, hide_on_complete)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local btn = lurek.ui.newButton("Fade")
     btn:setAlpha(1.0)
     btn:animateAlpha(0.0, 0.5)
-    example_print_log("animating = " .. tostring(btn:isAnimating()))
+    lurek.log.info(tostring("animating = " .. tostring(btn:isAnimating())))
     btn:cancelAnimations()
     btn:animateAlpha(0.0, 0.3, true)
-    example_print_log("fade-out with hide_on_complete started")
+    lurek.log.info(tostring("fade-out with hide_on_complete started"))
 end
 ```
 
@@ -17675,19 +14899,12 @@ LUiWidget:animatePosition(x, y, duration)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local panel = lurek.ui.newPanel()
     panel:setPosition(0, 0)
     panel:animatePosition(200, 100, 0.5)
-    example_print_log("animating = " .. tostring(panel:isAnimating()))
-    example_print_log("target = 200, 100")
+    lurek.log.info(tostring("animating = " .. tostring(panel:isAnimating())))
+    lurek.log.info(tostring("target = 200, 100"))
 end
 ```
 
@@ -17711,13 +14928,6 @@ LUiWidget:attachToEntity(entity_id)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local w = lurek.ui.newCustomWidget({width=80, height=40})
     w:attachToEntity(1)
@@ -17726,7 +14936,7 @@ do
     w:cancelAnimations()
     w:bind("click")
     w:detachFromEntity()
-    example_print_log("attachToEntity/bind/cancelAnimations ok")
+    lurek.log.info(tostring("attachToEntity/bind/cancelAnimations ok"))
 end
 ```
 
@@ -17750,13 +14960,6 @@ LUiWidget:bind(key)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local w = lurek.ui.newCustomWidget({width=80, height=40})
     w:attachToEntity(1)
@@ -17765,7 +14968,7 @@ do
     w:cancelAnimations()
     w:bind("click")
     w:detachFromEntity()
-    example_print_log("attachToEntity/bind/cancelAnimations ok")
+    lurek.log.info(tostring("attachToEntity/bind/cancelAnimations ok"))
 end
 ```
 
@@ -17789,13 +14992,6 @@ LUiWidget:cancelAnimations()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local w = lurek.ui.newCustomWidget({width=80, height=40})
     w:attachToEntity(1)
@@ -17804,7 +15000,7 @@ do
     w:cancelAnimations()
     w:bind("click")
     w:detachFromEntity()
-    example_print_log("attachToEntity/bind/cancelAnimations ok")
+    lurek.log.info(tostring("attachToEntity/bind/cancelAnimations ok"))
 end
 ```
 
@@ -17822,20 +15018,13 @@ LUiWidget:clearAnchor()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local btn = lurek.ui.newButton("Anchored")
     btn:setAnchor(10, 10, 10, nil)
-    example_print_log("anchors applied")
+    lurek.log.info(tostring("anchors applied"))
     btn:clearAnchor()
     btn:setAnchorCenter(0.5, 0.5)
-    example_print_log("center anchor applied")
+    lurek.log.info(tostring("center anchor applied"))
 end
 ```
 
@@ -17853,13 +15042,6 @@ LUiWidget:clearFont()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     -- Example for clearFont
     local widget = lurek.ui.newButton("Test Widget")
@@ -17884,21 +15066,14 @@ LUiWidget:clearIcon()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local button = lurek.ui.newButton("Map")
     button:setIcon("map")
     local before = button:getIcon()
     button:clearIcon()
-    example_print_log("icon before clear = " .. tostring(before))
-    example_print_log("icon after clear = " .. tostring(button:getIcon()))
-    example_print_log("button text = " .. button:getText())
+    lurek.log.info(tostring("icon before clear = " .. tostring(before)))
+    lurek.log.info(tostring("icon after clear = " .. tostring(button:getIcon())))
+    lurek.log.info(tostring("button text = " .. button:getText()))
 end
 ```
 
@@ -17929,19 +15104,12 @@ LUiWidget:containsPoint(x, y)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local btn = lurek.ui.newButton("Hit Test")
     btn:setPosition(50, 50)
     btn:setSize(100, 40)
-    example_print_log("(75,60) inside = " .. tostring(btn:containsPoint(75, 60)))
-    example_print_log("(200,200) inside = " .. tostring(btn:containsPoint(200, 200)))
+    lurek.log.info(tostring("(75,60) inside = " .. tostring(btn:containsPoint(75, 60))))
+    lurek.log.info(tostring("(200,200) inside = " .. tostring(btn:containsPoint(200, 200))))
 end
 ```
 
@@ -17959,13 +15127,6 @@ LUiWidget:detachFromEntity()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setAnchor(0, 0, 1, 0)
@@ -17974,7 +15135,7 @@ do
     local hit = w:containsPoint(15, 15)
     w:attachToEntity(2)
     w:detachFromEntity()
-    example_print_log("clearAnchor/containsPoint:", hit, "detachFromEntity ok")
+    lurek.log.info(tostring("clearAnchor/containsPoint:") .. " " .. tostring(hit) .. " " .. tostring("detachFromEntity ok"))
 end
 ```
 
@@ -17992,20 +15153,13 @@ LUiWidget:fadeIn()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LLabel
     local lbl = lurek.ui.newLabel("Fading")
     lbl:setAlpha(0)
     lbl:fadeIn()
-    example_print_log("fading in, animating = " .. tostring(lbl:isAnimating()))
-    example_print_log("label text = " .. lbl:getText())
+    lurek.log.info(tostring("fading in, animating = " .. tostring(lbl:isAnimating())))
+    lurek.log.info(tostring("label text = " .. lbl:getText()))
 end
 ```
 
@@ -18023,20 +15177,13 @@ LUiWidget:fadeOut()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LLabel
     local lbl = lurek.ui.newLabel("Fading")
     lbl:fadeOut()
-    example_print_log("fading out")
-    example_print_log("label text = " .. lbl:getText())
-    example_print_log("label width = " .. select(3, lbl:getRect()))
+    lurek.log.info(tostring("fading out"))
+    lurek.log.info(tostring("label text = " .. lbl:getText()))
+    lurek.log.info(tostring("label width = " .. select(3, lbl:getRect())))
 end
 ```
 
@@ -18066,20 +15213,13 @@ LUiWidget:findById(id)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local root = lurek.ui.newLayout("vertical")
     local btn = lurek.ui.newButton("Find Me")
     btn:setId("target_btn")
     root:addChild(btn)
     local found = root:findById("target_btn")
-    example_print_log("found = " .. tostring(found ~= nil))
+    lurek.log.info(tostring("found = " .. tostring(found ~= nil)))
 end
 ```
 
@@ -18103,18 +15243,11 @@ LUiWidget:getAlpha()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local panel = lurek.ui.newPanel()
-    example_print_log("alpha = " .. panel:getAlpha())
+    lurek.log.info(tostring("alpha = " .. panel:getAlpha()))
     panel:setAlpha(0.5)
-    example_print_log("set to 50% = " .. panel:getAlpha())
+    lurek.log.info(tostring("set to 50% = " .. panel:getAlpha()))
     panel:setAlpha(1.0)
 end
 ```
@@ -18139,19 +15272,12 @@ LUiWidget:getAriaName()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local btn = lurek.ui.newButton("Save")
     btn:setAriaName("Save game")
-    example_print_log("aria name = " .. btn:getAriaName())
-    example_print_log("button text = " .. btn:getText())
-    example_print_log("button visible = " .. tostring(btn:isVisible()))
+    lurek.log.info(tostring("aria name = " .. btn:getAriaName()))
+    lurek.log.info(tostring("button text = " .. btn:getText()))
+    lurek.log.info(tostring("button visible = " .. tostring(btn:isVisible())))
 end
 ```
 
@@ -18175,13 +15301,6 @@ LUiWidget:getChildCount()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local layout = lurek.ui.newLayout("vertical")
     local btn1 = lurek.ui.newButton("First")
@@ -18190,9 +15309,9 @@ do
     layout:addChild(btn1)
     layout:addChild(btn2)
     layout:addChild(btn3)
-    example_print_log("children = " .. layout:getChildCount())
+    lurek.log.info(tostring("children = " .. layout:getChildCount()))
     layout:removeChild(btn2)
-    example_print_log("after remove = " .. layout:getChildCount())
+    lurek.log.info(tostring("after remove = " .. layout:getChildCount()))
 end
 ```
 
@@ -18216,20 +15335,13 @@ LUiWidget:getChildren()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local panel = lurek.ui.newPanel()
     panel:addChild(lurek.ui.newLabel("A"))
     panel:addChild(lurek.ui.newLabel("B"))
     panel:addChild(lurek.ui.newLabel("C"))
     local children = panel:getChildren()
-    example_print_log("child list length = " .. #children)
+    lurek.log.info(tostring("child list length = " .. #children))
 end
 ```
 
@@ -18253,13 +15365,6 @@ LUiWidget:getFlexGrow()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local row = lurek.ui.newLayout("horizontal")
     local left = lurek.ui.newPanel()
@@ -18268,8 +15373,8 @@ do
     right:setFlexGrow(2)
     row:addChild(left)
     row:addChild(right)
-    example_print_log("left grow = " .. left:getFlexGrow())
-    example_print_log("right grow = " .. right:getFlexGrow())
+    lurek.log.info(tostring("left grow = " .. left:getFlexGrow()))
+    lurek.log.info(tostring("right grow = " .. right:getFlexGrow()))
 end
 ```
 
@@ -18293,19 +15398,12 @@ LUiWidget:getFlexShrink()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local btn = lurek.ui.newButton("Shrinkable")
     btn:setFlexShrink(0)
-    example_print_log("shrink = " .. btn:getFlexShrink())
+    lurek.log.info(tostring("shrink = " .. btn:getFlexShrink()))
     btn:setFlexShrink(1)
-    example_print_log("shrink = " .. btn:getFlexShrink())
+    lurek.log.info(tostring("shrink = " .. btn:getFlexShrink()))
 end
 ```
 
@@ -18329,21 +15427,14 @@ LUiWidget:getIcon()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local button = lurek.ui.newButton("Inventory")
     local before = button:getIcon()
     button:setIcon("inventory")
     local after = button:getIcon()
-    example_print_log("icon before = " .. tostring(before))
-    example_print_log("icon after = " .. tostring(after))
-    example_print_log("button text = " .. button:getText())
+    lurek.log.info(tostring("icon before = " .. tostring(before)))
+    lurek.log.info(tostring("icon after = " .. tostring(after)))
+    lurek.log.info(tostring("button text = " .. button:getText()))
 end
 ```
 
@@ -18367,21 +15458,14 @@ LUiWidget:getIconPosition()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local button = lurek.ui.newButton("Play")
     local before = button:getIconPosition()
     button:setIcon("play")
     button:setIconPosition("only")
-    example_print_log("position before = " .. before)
-    example_print_log("position after = " .. button:getIconPosition())
-    example_print_log("icon = " .. tostring(button:getIcon()))
+    lurek.log.info(tostring("position before = " .. before))
+    lurek.log.info(tostring("position after = " .. button:getIconPosition()))
+    lurek.log.info(tostring("icon = " .. tostring(button:getIcon())))
 end
 ```
 
@@ -18405,21 +15489,14 @@ LUiWidget:getIconSize()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local button = lurek.ui.newButton("Health")
     local default_size = button:getIconSize()
     button:setIcon("health")
     button:setIconSize(20)
-    example_print_log("default size = " .. default_size)
-    example_print_log("updated size = " .. button:getIconSize())
-    example_print_log("icon = " .. tostring(button:getIcon()))
+    lurek.log.info(tostring("default size = " .. default_size))
+    lurek.log.info(tostring("updated size = " .. button:getIconSize()))
+    lurek.log.info(tostring("icon = " .. tostring(button:getIcon())))
 end
 ```
 
@@ -18443,19 +15520,12 @@ LUiWidget:getId()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local btn = lurek.ui.newButton("Info")
     btn:setId("info_button")
     btn:setTooltip("Click for more information")
-    example_print_log("id = " .. btn:getId())
-    example_print_log("tooltip = " .. btn:getTooltip())
+    lurek.log.info(tostring("id = " .. btn:getId()))
+    lurek.log.info(tostring("tooltip = " .. btn:getTooltip()))
 end
 ```
 
@@ -18479,19 +15549,12 @@ LUiWidget:getLabelFor()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local label = lurek.ui.newLabel("Email")
     local input = lurek.ui.newTextInput()
     label:setLabelFor(input._idx)
-    example_print_log("label for = " .. tostring(label:getLabelFor()))
-    example_print_log("label text = " .. label:getText())
+    lurek.log.info(tostring("label for = " .. tostring(label:getLabelFor())))
+    lurek.log.info(tostring("label text = " .. label:getText()))
 end
 ```
 
@@ -18518,21 +15581,14 @@ LUiWidget:getMargin()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local btn = lurek.ui.newButton("Margin")
     btn:setMargin(10, 20, 10, 20)
     local top, right, bottom, left = btn:getMargin()
-    example_print_log("margin = " .. top .. " " .. right .. " " .. bottom .. " " .. left)
+    lurek.log.info(tostring("margin = " .. top .. " " .. right .. " " .. bottom .. " " .. left))
     btn:setMargin(5)
     top, right, bottom, left = btn:getMargin()
-    example_print_log("uniform = " .. top .. " " .. right .. " " .. bottom .. " " .. left)
+    lurek.log.info(tostring("uniform = " .. top .. " " .. right .. " " .. bottom .. " " .. left))
 end
 ```
 
@@ -18557,21 +15613,14 @@ LUiWidget:getMaxSize()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local panel = lurek.ui.newPanel()
     panel:setMinSize(100, 50)
     local minW, minH = panel:getMinSize()
-    example_print_log("min = " .. minW .. "x" .. minH)
+    lurek.log.info(tostring("min = " .. minW .. "x" .. minH))
     panel:setMaxSize(400, 300)
     local maxW, maxH = panel:getMaxSize()
-    example_print_log("max = " .. maxW .. "x" .. maxH)
+    lurek.log.info(tostring("max = " .. maxW .. "x" .. maxH))
 end
 ```
 
@@ -18596,21 +15645,14 @@ LUiWidget:getMinSize()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local panel = lurek.ui.newPanel()
     panel:setMinSize(100, 50)
     local minW, minH = panel:getMinSize()
-    example_print_log("min = " .. minW .. "x" .. minH)
+    lurek.log.info(tostring("min = " .. minW .. "x" .. minH))
     panel:setMaxSize(400, 300)
     local maxW, maxH = panel:getMaxSize()
-    example_print_log("max = " .. maxW .. "x" .. maxH)
+    lurek.log.info(tostring("max = " .. maxW .. "x" .. maxH))
 end
 ```
 
@@ -18634,20 +15676,13 @@ LUiWidget:getMouseFilter()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     -- Retrieves the current mouse filter behavior of a widget.
     local panel = lurek.ui.newPanel()
     panel:setMouseFilter("pass")
     local filter = panel:getMouseFilter()
-    example_print_log("mouse filter: " .. filter)
-    example_print_log("panel children = " .. panel:getChildCount())
+    lurek.log.info(tostring("mouse filter: " .. filter))
+    lurek.log.info(tostring("panel children = " .. panel:getChildCount()))
 end
 ```
 
@@ -18674,20 +15709,13 @@ LUiWidget:getPadding()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LPanel
     local panel = lurek.ui.newPanel()
     panel:setPadding(8, 16, 8, 16)
     local top, right, bottom, left = panel:getPadding()
-    example_print_log("padding = " .. top .. " " .. right .. " " .. bottom .. " " .. left)
-    example_print_log("panel children = " .. panel:getChildCount())
+    lurek.log.info(tostring("padding = " .. top .. " " .. right .. " " .. bottom .. " " .. left))
+    lurek.log.info(tostring("panel children = " .. panel:getChildCount()))
 end
 ```
 
@@ -18712,20 +15740,13 @@ LUiWidget:getPosition()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LButton
     local btn = lurek.ui.newButton("Pos Test")
     btn:setPosition(100, 50)
     local x, y = btn:getPosition()
-    example_print_log("position = " .. x .. ", " .. y)
-    example_print_log("button text = " .. btn:getText())
+    lurek.log.info(tostring("position = " .. x .. ", " .. y))
+    lurek.log.info(tostring("button text = " .. btn:getText()))
 end
 ```
 
@@ -18752,19 +15773,12 @@ LUiWidget:getRect()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local btn = lurek.ui.newButton("Bounds")
     btn:setPosition(50, 30)
     btn:setSize(120, 40)
     local x, y, w, h = btn:getRect()
-    example_print_log("rect = " .. x .. "," .. y .. " " .. w .. "x" .. h)
+    lurek.log.info(tostring("rect = " .. x .. "," .. y .. " " .. w .. "x" .. h))
 end
 ```
 
@@ -18788,19 +15802,12 @@ LUiWidget:getRole()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local btn = lurek.ui.newButton("Save")
     btn:setRole("button")
-    example_print_log("button role = " .. btn:getRole())
-    example_print_log("button text = " .. btn:getText())
-    example_print_log("button visible = " .. tostring(btn:isVisible()))
+    lurek.log.info(tostring("button role = " .. btn:getRole()))
+    lurek.log.info(tostring("button text = " .. btn:getText()))
+    lurek.log.info(tostring("button visible = " .. tostring(btn:isVisible())))
 end
 ```
 
@@ -18825,20 +15832,13 @@ LUiWidget:getSize()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LPanel
     local panel = lurek.ui.newPanel()
     panel:setSize(300, 200)
     local w, h = panel:getSize()
-    example_print_log("size = " .. w .. "x" .. h)
-    example_print_log("panel children = " .. panel:getChildCount())
+    lurek.log.info(tostring("size = " .. w .. "x" .. h))
+    lurek.log.info(tostring("panel children = " .. panel:getChildCount()))
 end
 ```
 
@@ -18862,20 +15862,13 @@ LUiWidget:getState()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LButton
     local btn = lurek.ui.newButton("State")
     local state = btn:getState()
-    example_print_log("state = " .. state)
-    example_print_log("button text = " .. btn:getText())
-    example_print_log("button width = " .. select(3, btn:getRect()))
+    lurek.log.info(tostring("state = " .. state))
+    lurek.log.info(tostring("button text = " .. btn:getText()))
+    lurek.log.info(tostring("button width = " .. select(3, btn:getRect())))
 end
 ```
 
@@ -18899,20 +15892,13 @@ LUiWidget:getStyleClass()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     -- Retrieves the currently assigned style class of a widget, or an empty string if none.
     local btn = lurek.ui.newButton("Cancel")
     btn:setStyleClass("danger")
     local class = btn:getStyleClass()
-    example_print_log("style class: " .. class)
-    example_print_log("button text = " .. btn:getText())
+    lurek.log.info(tostring("style class: " .. class))
+    lurek.log.info(tostring("button text = " .. btn:getText()))
 end
 ```
 
@@ -18936,19 +15922,12 @@ LUiWidget:getTextAlign()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local lbl = lurek.ui.newLabel("Aligned")
     lbl:setTextAlign("center")
-    example_print_log("textAlign=" .. lbl:getTextAlign())
-    example_print_log("label text = " .. lbl:getText())
-    example_print_log("label width = " .. select(3, lbl:getRect()))
+    lurek.log.info(tostring("textAlign=" .. lbl:getTextAlign()))
+    lurek.log.info(tostring("label text = " .. lbl:getText()))
+    lurek.log.info(tostring("label width = " .. select(3, lbl:getRect())))
 end
 ```
 
@@ -18972,19 +15951,12 @@ LUiWidget:getTooltip()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local btn = lurek.ui.newButton("Info")
     btn:setId("info_button")
     btn:setTooltip("Click for more information")
-    example_print_log("id = " .. btn:getId())
-    example_print_log("tooltip = " .. btn:getTooltip())
+    lurek.log.info(tostring("id = " .. btn:getId()))
+    lurek.log.info(tostring("tooltip = " .. btn:getTooltip()))
 end
 ```
 
@@ -19008,20 +15980,13 @@ LUiWidget:getZOrder()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local front = lurek.ui.newPanel()
     local back = lurek.ui.newPanel()
     front:setZOrder(10)
     back:setZOrder(1)
-    example_print_log("front z = " .. front:getZOrder())
-    example_print_log("back z = " .. back:getZOrder())
+    lurek.log.info(tostring("front z = " .. front:getZOrder()))
+    lurek.log.info(tostring("back z = " .. back:getZOrder()))
 end
 ```
 
@@ -19045,13 +16010,6 @@ LUiWidget:isAnimating()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setZOrder(5)
@@ -19059,7 +16017,7 @@ do
     local animating = w:isAnimating()
     local enabled = w:isEnabled()
     w:setEnabled(false)
-    example_print_log("zOrder:", z, "isAnimating:", animating, "isEnabled:", enabled)
+    lurek.log.info(tostring("zOrder:") .. " " .. tostring(z) .. " " .. tostring("isAnimating:") .. " " .. tostring(animating) .. " " .. tostring("isEnabled:") .. " " .. tostring(enabled))
 end
 ```
 
@@ -19083,20 +16041,13 @@ LUiWidget:isEnabled()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LButton
     local btn = lurek.ui.newButton("Action")
-    example_print_log("enabled = " .. tostring(btn:isEnabled()))
+    lurek.log.info(tostring("enabled = " .. tostring(btn:isEnabled())))
     btn:setEnabled(false)
-    example_print_log("disabled = " .. tostring(btn:isEnabled()))
-    example_print_log("button text = " .. btn:getText())
+    lurek.log.info(tostring("disabled = " .. tostring(btn:isEnabled())))
+    lurek.log.info(tostring("button text = " .. btn:getText()))
 end
 ```
 
@@ -19120,20 +16071,13 @@ LUiWidget:isVisible()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LLabel
     local lbl = lurek.ui.newLabel("Toggle Me")
-    example_print_log("visible = " .. tostring(lbl:isVisible()))
+    lurek.log.info(tostring("visible = " .. tostring(lbl:isVisible())))
     lbl:setVisible(false)
-    example_print_log("hidden = " .. tostring(lbl:isVisible()))
-    example_print_log("label text = " .. lbl:getText())
+    lurek.log.info(tostring("hidden = " .. tostring(lbl:isVisible())))
+    lurek.log.info(tostring("label text = " .. lbl:getText()))
 end
 ```
 
@@ -19157,13 +16101,6 @@ LUiWidget:removeChild(child)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local layout = lurek.ui.newLayout("vertical")
     local btn1 = lurek.ui.newButton("First")
@@ -19172,9 +16109,9 @@ do
     layout:addChild(btn1)
     layout:addChild(btn2)
     layout:addChild(btn3)
-    example_print_log("children = " .. layout:getChildCount())
+    lurek.log.info(tostring("children = " .. layout:getChildCount()))
     layout:removeChild(btn2)
-    example_print_log("after remove = " .. layout:getChildCount())
+    lurek.log.info(tostring("after remove = " .. layout:getChildCount()))
 end
 ```
 
@@ -19198,18 +16135,11 @@ LUiWidget:setAlpha(alpha)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local panel = lurek.ui.newPanel()
-    example_print_log("alpha = " .. panel:getAlpha())
+    lurek.log.info(tostring("alpha = " .. panel:getAlpha()))
     panel:setAlpha(0.5)
-    example_print_log("set to 50% = " .. panel:getAlpha())
+    lurek.log.info(tostring("set to 50% = " .. panel:getAlpha()))
     panel:setAlpha(1.0)
 end
 ```
@@ -19237,20 +16167,13 @@ LUiWidget:setAnchor(left, top, right, bottom)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local btn = lurek.ui.newButton("Anchored")
     btn:setAnchor(10, 10, 10, nil)
-    example_print_log("anchors applied")
+    lurek.log.info(tostring("anchors applied"))
     btn:clearAnchor()
     btn:setAnchorCenter(0.5, 0.5)
-    example_print_log("center anchor applied")
+    lurek.log.info(tostring("center anchor applied"))
 end
 ```
 
@@ -19275,20 +16198,13 @@ LUiWidget:setAnchorCenter(cx, cy)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local btn = lurek.ui.newButton("Anchored")
     btn:setAnchor(10, 10, 10, nil)
-    example_print_log("anchors applied")
+    lurek.log.info(tostring("anchors applied"))
     btn:clearAnchor()
     btn:setAnchorCenter(0.5, 0.5)
-    example_print_log("center anchor applied")
+    lurek.log.info(tostring("center anchor applied"))
 end
 ```
 
@@ -19312,19 +16228,12 @@ LUiWidget:setAriaName(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local btn = lurek.ui.newButton("Save")
     btn:setAriaName("Save game")
-    example_print_log("button text = " .. btn:getText())
-    example_print_log("button width = " .. select(3, btn:getRect()))
-    example_print_log("button enabled = " .. tostring(btn:isEnabled()))
+    lurek.log.info(tostring("button text = " .. btn:getText()))
+    lurek.log.info(tostring("button width = " .. select(3, btn:getRect())))
+    lurek.log.info(tostring("button enabled = " .. tostring(btn:isEnabled())))
 end
 ```
 
@@ -19354,13 +16263,6 @@ LUiWidget:setBindKey(key)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     -- Example for setBindKey
     local widget = lurek.ui.newButton("Test Widget")
@@ -19391,20 +16293,13 @@ LUiWidget:setEnabled(v)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LButton
     local btn = lurek.ui.newButton("Action")
     btn:setEnabled(false)
-    example_print_log("disabled = " .. tostring(btn:isEnabled()))
-    example_print_log("button text = " .. btn:getText())
-    example_print_log("button width = " .. select(3, btn:getRect()))
+    lurek.log.info(tostring("disabled = " .. tostring(btn:isEnabled())))
+    lurek.log.info(tostring("button text = " .. btn:getText()))
+    lurek.log.info(tostring("button width = " .. select(3, btn:getRect())))
 end
 ```
 
@@ -19428,13 +16323,6 @@ LUiWidget:setFlexGrow(grow)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local row = lurek.ui.newLayout("horizontal")
     local left = lurek.ui.newPanel()
@@ -19443,8 +16331,8 @@ do
     right:setFlexGrow(2)
     row:addChild(left)
     row:addChild(right)
-    example_print_log("left grow = " .. left:getFlexGrow())
-    example_print_log("right grow = " .. right:getFlexGrow())
+    lurek.log.info(tostring("left grow = " .. left:getFlexGrow()))
+    lurek.log.info(tostring("right grow = " .. right:getFlexGrow()))
 end
 ```
 
@@ -19468,19 +16356,12 @@ LUiWidget:setFlexShrink(shrink)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local btn = lurek.ui.newButton("Shrinkable")
     btn:setFlexShrink(0)
-    example_print_log("shrink = " .. btn:getFlexShrink())
+    lurek.log.info(tostring("shrink = " .. btn:getFlexShrink()))
     btn:setFlexShrink(1)
-    example_print_log("shrink = " .. btn:getFlexShrink())
+    lurek.log.info(tostring("shrink = " .. btn:getFlexShrink()))
 end
 ```
 
@@ -19504,19 +16385,12 @@ LUiWidget:setFocusGroup(group)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local btn = lurek.ui.newButton("Group")
     btn:setFocusGroup("menu")
-    example_print_log("button text = " .. btn:getText())
-    example_print_log("button width = " .. select(3, btn:getRect()))
-    example_print_log("button enabled = " .. tostring(btn:isEnabled()))
+    lurek.log.info(tostring("button text = " .. btn:getText()))
+    lurek.log.info(tostring("button width = " .. select(3, btn:getRect())))
+    lurek.log.info(tostring("button enabled = " .. tostring(btn:isEnabled())))
 end
 ```
 
@@ -19547,19 +16421,12 @@ LUiWidget:setFocusNeighbor(direction, target)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local a = lurek.ui.newButton("A")
     local b = lurek.ui.newButton("B")
     a:setFocusNeighbor("right", b._idx)
-    example_print_log("button text = " .. a:getText())
-    example_print_log("button width = " .. select(3, a:getRect()))
+    lurek.log.info(tostring("button text = " .. a:getText()))
+    lurek.log.info(tostring("button width = " .. select(3, a:getRect())))
 end
 ```
 
@@ -19583,19 +16450,12 @@ LUiWidget:setFocusable(value)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local btn = lurek.ui.newButton("Focusable")
     btn:setFocusable(true)
-    example_print_log("button text = " .. btn:getText())
-    example_print_log("button width = " .. select(3, btn:getRect()))
-    example_print_log("button enabled = " .. tostring(btn:isEnabled()))
+    lurek.log.info(tostring("button text = " .. btn:getText()))
+    lurek.log.info(tostring("button width = " .. select(3, btn:getRect())))
+    lurek.log.info(tostring("button enabled = " .. tostring(btn:isEnabled())))
 end
 ```
 
@@ -19619,13 +16479,6 @@ LUiWidget:setFont(font)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     -- Example for setFont
     local widget = lurek.ui.newButton("Test Widget")
@@ -19662,20 +16515,13 @@ LUiWidget:setIcon(icon)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local button = lurek.ui.newButton("Save")
     local ok = button:setIcon("save")
     local bad = button:setIcon("missing-icon")
-    example_print_log("set icon ok = " .. tostring(ok))
-    example_print_log("set icon bad = " .. tostring(bad))
-    example_print_log("button icon = " .. tostring(button:getIcon()))
+    lurek.log.info(tostring("set icon ok = " .. tostring(ok)))
+    lurek.log.info(tostring("set icon bad = " .. tostring(bad)))
+    lurek.log.info(tostring("button icon = " .. tostring(button:getIcon())))
 end
 ```
 
@@ -19705,21 +16551,14 @@ LUiWidget:setIconPosition(position)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local button = lurek.ui.newButton("Settings")
     button:setIcon("settings")
     local ok = button:setIconPosition("right")
     local bad = button:setIconPosition("diagonal")
-    example_print_log("position ok = " .. tostring(ok))
-    example_print_log("position bad = " .. tostring(bad))
-    example_print_log("position = " .. button:getIconPosition())
+    lurek.log.info(tostring("position ok = " .. tostring(ok)))
+    lurek.log.info(tostring("position bad = " .. tostring(bad)))
+    lurek.log.info(tostring("position = " .. button:getIconPosition()))
 end
 ```
 
@@ -19749,21 +16588,14 @@ LUiWidget:setIconSize(size)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local button = lurek.ui.newButton("Zoom")
     button:setIcon("zoom-in")
     local ok = button:setIconSize(18)
     local bad = button:setIconSize(-1)
-    example_print_log("size ok = " .. tostring(ok))
-    example_print_log("size bad = " .. tostring(bad))
-    example_print_log("size = " .. button:getIconSize())
+    lurek.log.info(tostring("size ok = " .. tostring(ok)))
+    lurek.log.info(tostring("size bad = " .. tostring(bad)))
+    lurek.log.info(tostring("size = " .. button:getIconSize()))
 end
 ```
 
@@ -19787,19 +16619,12 @@ LUiWidget:setId(id)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local btn = lurek.ui.newButton("Info")
     btn:setId("info_button")
     btn:setTooltip("Click for more information")
-    example_print_log("id = " .. btn:getId())
-    example_print_log("tooltip = " .. btn:getTooltip())
+    lurek.log.info(tostring("id = " .. btn:getId()))
+    lurek.log.info(tostring("tooltip = " .. btn:getTooltip()))
 end
 ```
 
@@ -19823,19 +16648,12 @@ LUiWidget:setLabelFor(target)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local label = lurek.ui.newLabel("Name")
     local input = lurek.ui.newTextInput()
     label:setLabelFor(input._idx)
-    example_print_log("label target = " .. tostring(label:getLabelFor()))
-    example_print_log("input idx = " .. tostring(input._idx))
+    lurek.log.info(tostring("label target = " .. tostring(label:getLabelFor())))
+    lurek.log.info(tostring("input idx = " .. tostring(input._idx)))
 end
 ```
 
@@ -19862,21 +16680,14 @@ LUiWidget:setMargin(top, right, bottom, left)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local btn = lurek.ui.newButton("Margin")
     btn:setMargin(10, 20, 10, 20)
     local top, right, bottom, left = btn:getMargin()
-    example_print_log("margin = " .. top .. " " .. right .. " " .. bottom .. " " .. left)
+    lurek.log.info(tostring("margin = " .. top .. " " .. right .. " " .. bottom .. " " .. left))
     btn:setMargin(5)
     top, right, bottom, left = btn:getMargin()
-    example_print_log("uniform = " .. top .. " " .. right .. " " .. bottom .. " " .. left)
+    lurek.log.info(tostring("uniform = " .. top .. " " .. right .. " " .. bottom .. " " .. left))
 end
 ```
 
@@ -19901,21 +16712,14 @@ LUiWidget:setMaxSize(w, h)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local panel = lurek.ui.newPanel()
     panel:setMinSize(100, 50)
     local minW, minH = panel:getMinSize()
-    example_print_log("min = " .. minW .. "x" .. minH)
+    lurek.log.info(tostring("min = " .. minW .. "x" .. minH))
     panel:setMaxSize(400, 300)
     local maxW, maxH = panel:getMaxSize()
-    example_print_log("max = " .. maxW .. "x" .. maxH)
+    lurek.log.info(tostring("max = " .. maxW .. "x" .. maxH))
 end
 ```
 
@@ -19940,21 +16744,14 @@ LUiWidget:setMinSize(w, h)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local panel = lurek.ui.newPanel()
     panel:setMinSize(100, 50)
     local minW, minH = panel:getMinSize()
-    example_print_log("min = " .. minW .. "x" .. minH)
+    lurek.log.info(tostring("min = " .. minW .. "x" .. minH))
     panel:setMaxSize(400, 300)
     local maxW, maxH = panel:getMaxSize()
-    example_print_log("max = " .. maxW .. "x" .. maxH)
+    lurek.log.info(tostring("max = " .. maxW .. "x" .. maxH))
 end
 ```
 
@@ -19984,21 +16781,14 @@ LUiWidget:setMouseFilter(filter)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     -- Sets the mouse filter mode on a panel. "ignore" passes events to underlying widgets,
     -- useful for decorative overlays or transparent layout containers.
     local panel = lurek.ui.newPanel()
     panel:setMouseFilter("ignore")
-    example_print_log("mouse filter set to ignore")
-    example_print_log("panel children = " .. panel:getChildCount())
-    example_print_log("panel width = " .. select(3, panel:getRect()))
+    lurek.log.info(tostring("mouse filter set to ignore"))
+    lurek.log.info(tostring("panel children = " .. panel:getChildCount()))
+    lurek.log.info(tostring("panel width = " .. select(3, panel:getRect())))
 end
 ```
 
@@ -20022,21 +16812,14 @@ LUiWidget:setOnChange(f)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setOnChange(function() example_print_log("changed") end)
-    w:setOnClick(function() example_print_log("clicked") end)
-    w:setOnDraw(function() example_print_log("drawing") end)
+    w:setOnChange(function() lurek.log.info(tostring("changed")) end)
+    w:setOnClick(function() lurek.log.info(tostring("clicked")) end)
+    w:setOnDraw(function() lurek.log.info(tostring("drawing")) end)
     local id = w:getId()
     local vis = w:isVisible()
-    example_print_log("setOnChange/setOnClick/setOnDraw ok; id:", id, "vis:", vis)
+    lurek.log.info(tostring("setOnChange/setOnClick/setOnDraw ok; id:") .. " " .. tostring(id) .. " " .. tostring("vis:") .. " " .. tostring(vis))
 end
 ```
 
@@ -20060,21 +16843,14 @@ LUiWidget:setOnClick(f)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setOnChange(function() example_print_log("changed") end)
-    w:setOnClick(function() example_print_log("clicked") end)
-    w:setOnDraw(function() example_print_log("drawing") end)
+    w:setOnChange(function() lurek.log.info(tostring("changed")) end)
+    w:setOnClick(function() lurek.log.info(tostring("clicked")) end)
+    w:setOnDraw(function() lurek.log.info(tostring("drawing")) end)
     local id = w:getId()
     local vis = w:isVisible()
-    example_print_log("setOnChange/setOnClick/setOnDraw ok; id:", id, "vis:", vis)
+    lurek.log.info(tostring("setOnChange/setOnClick/setOnDraw ok; id:") .. " " .. tostring(id) .. " " .. tostring("vis:") .. " " .. tostring(vis))
 end
 ```
 
@@ -20098,21 +16874,14 @@ LUiWidget:setOnDraw(f)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setOnChange(function() example_print_log("changed") end)
-    w:setOnClick(function() example_print_log("clicked") end)
-    w:setOnDraw(function() example_print_log("drawing") end)
+    w:setOnChange(function() lurek.log.info(tostring("changed")) end)
+    w:setOnClick(function() lurek.log.info(tostring("clicked")) end)
+    w:setOnDraw(function() lurek.log.info(tostring("drawing")) end)
     local id = w:getId()
     local vis = w:isVisible()
-    example_print_log("setOnChange/setOnClick/setOnDraw ok; id:", id, "vis:", vis)
+    lurek.log.info(tostring("setOnChange/setOnClick/setOnDraw ok; id:") .. " " .. tostring(id) .. " " .. tostring("vis:") .. " " .. tostring(vis))
 end
 ```
 
@@ -20139,20 +16908,13 @@ LUiWidget:setPadding(top, right, bottom, left)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LPanel
     local panel = lurek.ui.newPanel()
     panel:setPadding(8, 16, 8, 16)
     local top, right, bottom, left = panel:getPadding()
-    example_print_log("padding = " .. top .. " " .. right .. " " .. bottom .. " " .. left)
-    example_print_log("panel children = " .. panel:getChildCount())
+    lurek.log.info(tostring("padding = " .. top .. " " .. right .. " " .. bottom .. " " .. left))
+    lurek.log.info(tostring("panel children = " .. panel:getChildCount()))
 end
 ```
 
@@ -20177,20 +16939,13 @@ LUiWidget:setPosition(x, y)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LButton
     local btn = lurek.ui.newButton("Pos Test")
     btn:setPosition(100, 50)
     local x, y = btn:getPosition()
-    example_print_log("position = " .. x .. ", " .. y)
-    example_print_log("button text = " .. btn:getText())
+    lurek.log.info(tostring("position = " .. x .. ", " .. y))
+    lurek.log.info(tostring("button text = " .. btn:getText()))
 end
 ```
 
@@ -20214,19 +16969,12 @@ LUiWidget:setRole(role)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local btn = lurek.ui.newButton("Save")
     btn:setRole("button")
-    example_print_log("button text = " .. btn:getText())
-    example_print_log("button width = " .. select(3, btn:getRect()))
-    example_print_log("button enabled = " .. tostring(btn:isEnabled()))
+    lurek.log.info(tostring("button text = " .. btn:getText()))
+    lurek.log.info(tostring("button width = " .. select(3, btn:getRect())))
+    lurek.log.info(tostring("button enabled = " .. tostring(btn:isEnabled())))
 end
 ```
 
@@ -20251,13 +16999,6 @@ LUiWidget:setShader(shader, opts)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local shader = lurek.render.newShader([[
 @fragment
@@ -20271,7 +17012,7 @@ fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>, @location(2) pi
     button:setSize(160, 36)
     button:setShader(shader)
     lurek.ui.draw()
-    example_print_log("ui widget shader = " .. shader:getTarget())
+    lurek.log.info(tostring("ui widget shader = " .. shader:getTarget()))
 end
 ```
 
@@ -20297,13 +17038,6 @@ LUiWidget:setShaderLayer(name, shader, opts)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local shader = lurek.render.newShader([[
 @fragment
@@ -20318,7 +17052,7 @@ fn fs(@location(0) color: vec4<f32>, @location(3) resolution: vec2<f32>) -> @loc
     panel:setShaderLayer("panel_tint", shader)
     lurek.ui.draw()
     panel:setShaderLayer("panel_tint", nil)
-    example_print_log("ui shader layer cleared")
+    lurek.log.info(tostring("ui shader layer cleared"))
 end
 ```
 
@@ -20343,20 +17077,13 @@ LUiWidget:setSize(w, h)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LPanel
     local panel = lurek.ui.newPanel()
     panel:setSize(300, 200)
     local w, h = panel:getSize()
-    example_print_log("size = " .. w .. "x" .. h)
-    example_print_log("panel children = " .. panel:getChildCount())
+    lurek.log.info(tostring("size = " .. w .. "x" .. h))
+    lurek.log.info(tostring("panel children = " .. panel:getChildCount()))
 end
 ```
 
@@ -20386,21 +17113,14 @@ LUiWidget:setStyleClass(class)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     -- Assigns a custom style class to a widget. If defined in the active theme,
     -- the button will use "primary" colors and metrics instead of default ones.
     local btn = lurek.ui.newButton("Submit")
     btn:setStyleClass("primary")
-    example_print_log("style class set to primary")
-    example_print_log("button text = " .. btn:getText())
-    example_print_log("button width = " .. select(3, btn:getRect()))
+    lurek.log.info(tostring("style class set to primary"))
+    lurek.log.info(tostring("button text = " .. btn:getText()))
+    lurek.log.info(tostring("button width = " .. select(3, btn:getRect())))
 end
 ```
 
@@ -20424,19 +17144,12 @@ LUiWidget:setTabIndex(value)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local btn = lurek.ui.newButton("Tab")
     btn:setTabIndex(10)
-    example_print_log("button text = " .. btn:getText())
-    example_print_log("button width = " .. select(3, btn:getRect()))
-    example_print_log("button enabled = " .. tostring(btn:isEnabled()))
+    lurek.log.info(tostring("button text = " .. btn:getText()))
+    lurek.log.info(tostring("button width = " .. select(3, btn:getRect())))
+    lurek.log.info(tostring("button enabled = " .. tostring(btn:isEnabled())))
 end
 ```
 
@@ -20466,19 +17179,12 @@ LUiWidget:setTextAlign(align)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local lbl = lurek.ui.newLabel("Right aligned")
     lbl:setTextAlign("right")
-    example_print_log("label text = " .. lbl:getText())
-    example_print_log("label width = " .. select(3, lbl:getRect()))
-    example_print_log("label visible = " .. tostring(lbl:isVisible()))
+    lurek.log.info(tostring("label text = " .. lbl:getText()))
+    lurek.log.info(tostring("label width = " .. select(3, lbl:getRect())))
+    lurek.log.info(tostring("label visible = " .. tostring(lbl:isVisible())))
 end
 ```
 
@@ -20502,19 +17208,12 @@ LUiWidget:setTextEllipsis(ellipsis)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local lbl = lurek.ui.newLabel("This is a very long one-line text")
     lbl:setTextEllipsis(true)
-    example_print_log("label text = " .. lbl:getText())
-    example_print_log("label width = " .. select(3, lbl:getRect()))
-    example_print_log("label visible = " .. tostring(lbl:isVisible()))
+    lurek.log.info(tostring("label text = " .. lbl:getText()))
+    lurek.log.info(tostring("label width = " .. select(3, lbl:getRect())))
+    lurek.log.info(tostring("label visible = " .. tostring(lbl:isVisible())))
 end
 ```
 
@@ -20544,19 +17243,12 @@ LUiWidget:setTextVAlign(align)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local lbl = lurek.ui.newLabel("Centered")
     lbl:setTextVAlign("middle")
-    example_print_log("label text = " .. lbl:getText())
-    example_print_log("label width = " .. select(3, lbl:getRect()))
-    example_print_log("label visible = " .. tostring(lbl:isVisible()))
+    lurek.log.info(tostring("label text = " .. lbl:getText()))
+    lurek.log.info(tostring("label width = " .. select(3, lbl:getRect())))
+    lurek.log.info(tostring("label visible = " .. tostring(lbl:isVisible())))
 end
 ```
 
@@ -20580,19 +17272,12 @@ LUiWidget:setTextWrap(wrap)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local lbl = lurek.ui.newLabel("This is a long text that can wrap")
     lbl:setTextWrap(true)
-    example_print_log("label text = " .. lbl:getText())
-    example_print_log("label width = " .. select(3, lbl:getRect()))
-    example_print_log("label visible = " .. tostring(lbl:isVisible()))
+    lurek.log.info(tostring("label text = " .. lbl:getText()))
+    lurek.log.info(tostring("label width = " .. select(3, lbl:getRect())))
+    lurek.log.info(tostring("label visible = " .. tostring(lbl:isVisible())))
 end
 ```
 
@@ -20616,19 +17301,12 @@ LUiWidget:setTooltip(text)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local btn = lurek.ui.newButton("Info")
     btn:setId("info_button")
     btn:setTooltip("Click for more information")
-    example_print_log("id = " .. btn:getId())
-    example_print_log("tooltip = " .. btn:getTooltip())
+    lurek.log.info(tostring("id = " .. btn:getId()))
+    lurek.log.info(tostring("tooltip = " .. btn:getTooltip()))
 end
 ```
 
@@ -20652,20 +17330,13 @@ LUiWidget:setVisible(v)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LLabel
     local lbl = lurek.ui.newLabel("Toggle Me")
     lbl:setVisible(false)
-    example_print_log("hidden = " .. tostring(lbl:isVisible()))
-    example_print_log("label text = " .. lbl:getText())
-    example_print_log("label width = " .. select(3, lbl:getRect()))
+    lurek.log.info(tostring("hidden = " .. tostring(lbl:isVisible())))
+    lurek.log.info(tostring("label text = " .. lbl:getText()))
+    lurek.log.info(tostring("label width = " .. select(3, lbl:getRect())))
 end
 ```
 
@@ -20689,20 +17360,13 @@ LUiWidget:setZOrder(z)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local front = lurek.ui.newPanel()
     local back = lurek.ui.newPanel()
     front:setZOrder(10)
     back:setZOrder(1)
-    example_print_log("front z = " .. front:getZOrder())
-    example_print_log("back z = " .. back:getZOrder())
+    lurek.log.info(tostring("front z = " .. front:getZOrder()))
+    lurek.log.info(tostring("back z = " .. back:getZOrder()))
 end
 ```
 
@@ -20727,20 +17391,13 @@ LUiWidget:slideIn(x, y)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local panel = lurek.ui.newPanel()
     panel:cancelAnimations()
     panel:slideIn(300, 0)
     local x, y = panel:getPosition()
-    example_print_log("visible = " .. tostring(panel:isVisible()))
-    example_print_log("position = " .. x .. ", " .. y)
+    lurek.log.info(tostring("visible = " .. tostring(panel:isVisible())))
+    lurek.log.info(tostring("position = " .. x .. ", " .. y))
 end
 ```
 
@@ -20765,21 +17422,14 @@ LUiWidget:slideOut(x, y)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local panel = lurek.ui.newPanel()
     panel:setVisible(true)
     panel:setPosition(40, 20)
     panel:slideOut(320, 20)
     local x, y = panel:getPosition()
-    example_print_log("visible = " .. tostring(panel:isVisible()))
-    example_print_log("position = " .. x .. ", " .. y)
+    lurek.log.info(tostring("visible = " .. tostring(panel:isVisible())))
+    lurek.log.info(tostring("position = " .. x .. ", " .. y))
 end
 ```
 
@@ -20803,13 +17453,6 @@ LUiWidget:type()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:slideIn(0, -50)
@@ -20817,7 +17460,7 @@ do
     local t = w:type()
     local ok = w:typeOf("LUiWidget")
     w:unbind()
-    example_print_log("slideIn/slideOut ok; type:", t, "typeOf:", ok)
+    lurek.log.info(tostring("slideIn/slideOut ok; type:") .. " " .. tostring(t) .. " " .. tostring("typeOf:") .. " " .. tostring(ok))
 end
 ```
 
@@ -20847,13 +17490,6 @@ LUiWidget:typeOf(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local w = lurek.ui.newCustomWidget({width=80, height=40})
     w:bind("click")
@@ -20861,7 +17497,7 @@ do
     local ok1 = w:typeOf("LUiWidget")
     local ok2 = w:typeOf("LButton")
     local t = w:type()
-    example_print_log("typeOf LUiWidget:", ok1, "typeOf LButton:", ok2, "type:", t)
+    lurek.log.info(tostring("typeOf LUiWidget:") .. " " .. tostring(ok1) .. " " .. tostring("typeOf LButton:") .. " " .. tostring(ok2) .. " " .. tostring("type:") .. " " .. tostring(t))
 end
 ```
 
@@ -20879,13 +17515,6 @@ LUiWidget:unbind()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local w = lurek.ui.newCustomWidget({width=80, height=40})
     w:bind("click")
@@ -20893,7 +17522,7 @@ do
     local ok1 = w:typeOf("LUiWidget")
     local ok2 = w:typeOf("LButton")
     local t = w:type()
-    example_print_log("typeOf LUiWidget:", ok1, "typeOf LButton:", ok2, "type:", t)
+    lurek.log.info(tostring("typeOf LUiWidget:") .. " " .. tostring(ok1) .. " " .. tostring("typeOf LButton:") .. " " .. tostring(ok2) .. " " .. tostring("type:") .. " " .. tostring(t))
 end
 ```
 

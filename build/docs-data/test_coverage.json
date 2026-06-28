@@ -10503,7 +10503,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1345
+        "line": 918
       },
       {
         "module": "lua_api",
@@ -40888,8 +40888,8 @@
     ]
   },
   "lua": {
-    "total": 6431,
-    "covered": 6431,
+    "total": 6381,
+    "covered": 6381,
     "uncovered": 0,
     "coverage_pct": 100.0,
     "covered_items": [
@@ -44062,1729 +44062,1379 @@
         "lua_name": "LSource:play",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 425
+        "line": 399
       },
       {
         "module": "audio",
         "lua_name": "LSource:stop",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 434
+        "line": 408
       },
       {
         "module": "audio",
         "lua_name": "LSource:pause",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 442
+        "line": 416
       },
       {
         "module": "audio",
         "lua_name": "LSource:resume",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 450
+        "line": 424
       },
       {
         "module": "audio",
         "lua_name": "LSource:setVolume",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 459
+        "line": 433
       },
       {
         "module": "audio",
         "lua_name": "LSource:getVolume",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 468
+        "line": 442
       },
       {
         "module": "audio",
         "lua_name": "LSource:setPitch",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 476
+        "line": 450
       },
       {
         "module": "audio",
         "lua_name": "LSource:getPitch",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 485
+        "line": 459
       },
       {
         "module": "audio",
         "lua_name": "LSource:setLooping",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 493
+        "line": 467
       },
       {
         "module": "audio",
         "lua_name": "LSource:isLooping",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 502
+        "line": 476
       },
       {
         "module": "audio",
         "lua_name": "LSource:isPlaying",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 510
+        "line": 484
       },
       {
         "module": "audio",
         "lua_name": "LSource:isPaused",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 518
+        "line": 492
       },
       {
         "module": "audio",
         "lua_name": "LSource:isStopped",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 526
+        "line": 500
       },
       {
         "module": "audio",
         "lua_name": "LSource:setPan",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 534
+        "line": 508
       },
       {
         "module": "audio",
         "lua_name": "LSource:getPan",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 543
+        "line": 517
       },
       {
         "module": "audio",
         "lua_name": "LSource:clone",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 551
+        "line": 525
       },
       {
         "module": "audio",
         "lua_name": "LSource:getType",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 564
+        "line": 538
       },
       {
         "module": "audio",
         "lua_name": "LSource:getDuration",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 575
+        "line": 549
       },
       {
         "module": "audio",
         "lua_name": "LSource:tell",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 583
+        "line": 557
       },
       {
         "module": "audio",
         "lua_name": "LSource:seek",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 591
+        "line": 565
       },
       {
         "module": "audio",
         "lua_name": "LSource:setLowpass",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 601
+        "line": 575
       },
       {
         "module": "audio",
         "lua_name": "LSource:setHighpass",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 610
+        "line": 584
       },
       {
         "module": "audio",
         "lua_name": "LSource:getLowpass",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 619
+        "line": 593
       },
       {
         "module": "audio",
         "lua_name": "LSource:getHighpass",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 627
+        "line": 601
       },
       {
         "module": "audio",
         "lua_name": "LSource:clearFilter",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 634
+        "line": 608
       },
       {
         "module": "audio",
         "lua_name": "LSource:fadeIn",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 643
+        "line": 617
       },
       {
         "module": "audio",
         "lua_name": "LSource:getFadeIn",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 652
+        "line": 626
       },
       {
         "module": "audio",
         "lua_name": "LSource:type",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 660
+        "line": 634
       },
       {
         "module": "audio",
         "lua_name": "LSource:typeOf",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 665
+        "line": 639
       },
       {
         "module": "audio",
         "lua_name": "LBus:getName",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 681
+        "line": 655
       },
       {
         "module": "audio",
         "lua_name": "LBus:setVolume",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 693
+        "line": 667
       },
       {
         "module": "audio",
         "lua_name": "LBus:getVolume",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 703
+        "line": 677
       },
       {
         "module": "audio",
         "lua_name": "LBus:setPitch",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 710
+        "line": 684
       },
       {
         "module": "audio",
         "lua_name": "LBus:getPitch",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 720
+        "line": 694
       },
       {
         "module": "audio",
         "lua_name": "LBus:pause",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 726
+        "line": 700
       },
       {
         "module": "audio",
         "lua_name": "LBus:resume",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 735
+        "line": 709
       },
       {
         "module": "audio",
         "lua_name": "LBus:isPaused",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 745
+        "line": 719
       },
       {
         "module": "audio",
         "lua_name": "LBus:type",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 752
+        "line": 726
       },
       {
         "module": "audio",
         "lua_name": "LBus:typeOf",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 757
+        "line": 731
       },
       {
         "module": "audio",
         "lua_name": "LBus:setDuckTarget",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 764
+        "line": 738
       },
       {
         "module": "audio",
         "lua_name": "LBus:clearDuck",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 776
+        "line": 750
       },
       {
         "module": "audio",
         "lua_name": "LBus:getPeak",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 786
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:load",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 806
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:loadData",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 815
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:isLoaded",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 822
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:getFilePath",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 828
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:setSoundFont",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 834
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:getSoundFontPath",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 841
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:useDefaultSoundFont",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 847
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:play",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 853
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:pause",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 862
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:stop",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 868
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:isPlaying",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 875
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:isPaused",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 881
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:seek",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 887
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:tell",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 894
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:getDuration",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 898
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:setLooping",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 904
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:isLooping",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 911
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:setVolume",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 917
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:getVolume",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 924
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:setBus",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 928
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:getBus",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 945
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:setTempo",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 957
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:getTempo",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 969
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:getOriginalTempo",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 976
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:setTempoScale",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 982
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:getTempoScale",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 989
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:getTicksPerBeat",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 995
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:setChannelVolume",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 1002
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:getChannelVolume",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 1012
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:setChannelMuted",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 1023
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:isChannelMuted",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 1033
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:setChannelInstrument",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 1044
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:getChannelInstrument",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 1057
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:getChannelCount",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 1067
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:soloChannel",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 1073
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:unsoloAll",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 1081
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:getTrackCount",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 1088
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:getTrackName",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 1095
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:setTrackMuted",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 1110
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:isTrackMuted",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 1120
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:getNoteCount",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 1130
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:setOnNoteOn",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 1136
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:setOnNoteOff",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 1143
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:setOnEnd",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 1150
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:getSampleRate",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 1157
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:setSampleRate",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 1163
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:getChannels",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 1170
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:setChannels",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 1176
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:type",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 1183
-      },
-      {
-        "module": "audio",
-        "lua_name": "LMidiPlayer:typeOf",
-        "kind": "method",
-        "file": "src/lua_api/audio_api.rs",
-        "line": 1188
+        "line": 760
       },
       {
         "module": "audio",
         "lua_name": "LSoundPool:play",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1203
+        "line": 776
       },
       {
         "module": "audio",
         "lua_name": "LSoundPool:stopAll",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1211
+        "line": 784
       },
       {
         "module": "audio",
         "lua_name": "LSoundPool:setVolume",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1222
+        "line": 795
       },
       {
         "module": "audio",
         "lua_name": "LSoundPool:setBus",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1234
+        "line": 807
       },
       {
         "module": "audio",
         "lua_name": "LSoundPool:release",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1246
+        "line": 819
       },
       {
         "module": "audio",
         "lua_name": "LSoundPool:getVoiceCount",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1257
+        "line": 830
       },
       {
         "module": "audio",
         "lua_name": "LSoundPool:type",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1261
+        "line": 834
       },
       {
         "module": "audio",
         "lua_name": "LSoundPool:typeOf",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1266
+        "line": 839
       },
       {
         "module": "audio",
         "lua_name": "LDecoder:decode",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1280
+        "line": 853
       },
       {
         "module": "audio",
         "lua_name": "LDecoder:getChannelCount",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1292
+        "line": 865
       },
       {
         "module": "audio",
         "lua_name": "LDecoder:getBitDepth",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1298
+        "line": 871
       },
       {
         "module": "audio",
         "lua_name": "LDecoder:getSampleRate",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1302
+        "line": 875
       },
       {
         "module": "audio",
         "lua_name": "LDecoder:getDuration",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1306
+        "line": 879
       },
       {
         "module": "audio",
         "lua_name": "LDecoder:seek",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1310
+        "line": 883
       },
       {
         "module": "audio",
         "lua_name": "LDecoder:rewind",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1316
+        "line": 889
       },
       {
         "module": "audio",
         "lua_name": "LDecoder:tell",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1323
+        "line": 896
       },
       {
         "module": "audio",
         "lua_name": "LDecoder:isSeekable",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1327
+        "line": 900
       },
       {
         "module": "audio",
         "lua_name": "LDecoder:release",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1330
+        "line": 903
       },
       {
         "module": "audio",
         "lua_name": "LDecoder:type",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1334
+        "line": 907
       },
       {
         "module": "audio",
         "lua_name": "LDecoder:typeOf",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1339
+        "line": 912
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.newSource",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1354
+        "line": 927
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.play",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1364
+        "line": 937
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.stop",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1372
+        "line": 945
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.setVolume",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1386
+        "line": 959
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.getVolume",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1400
+        "line": 973
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.pause",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1412
+        "line": 985
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.resume",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1425
+        "line": 998
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.setPitch",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1439
+        "line": 1012
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.getPitch",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1453
+        "line": 1026
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.isPlaying",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1466
+        "line": 1039
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.isPaused",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1479
+        "line": 1052
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.isStopped",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1492
+        "line": 1065
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.setLooping",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1505
+        "line": 1078
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.isLooping",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1519
+        "line": 1092
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.playLooping",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1531
+        "line": 1104
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.setPan",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1546
+        "line": 1119
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.getPan",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1560
+        "line": 1133
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.setMasterVolume",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1572
+        "line": 1145
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.getMasterVolume",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1583
+        "line": 1156
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.getActiveSourceCount",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1591
+        "line": 1164
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.getSourceCount",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1599
+        "line": 1172
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.getSourceType",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1608
+        "line": 1181
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.clone",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1617
+        "line": 1190
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.pauseAll",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1624
+        "line": 1197
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.stopAll",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1634
+        "line": 1207
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.resumeAll",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1644
+        "line": 1217
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.release",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1656
+        "line": 1229
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.newBus",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1665
+        "line": 1238
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.setSourceBus",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1681
+        "line": 1254
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.getSourceBus",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1692
+        "line": 1265
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.getMaxSources",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1699
+        "line": 1272
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.getDuration",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1705
+        "line": 1278
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.tell",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1718
+        "line": 1291
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.seek",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1731
+        "line": 1304
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.setLowpass",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1746
+        "line": 1319
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.setHighpass",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1760
+        "line": 1333
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.getLowpass",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1774
+        "line": 1347
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.getHighpass",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1787
+        "line": 1360
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.clearFilter",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1799
+        "line": 1372
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.fadeIn",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1813
+        "line": 1386
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.getFadeIn",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1827
+        "line": 1400
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.setListener2D",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1840
+        "line": 1413
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.getListener2D",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1851
+        "line": 1424
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.setListener",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1864
+        "line": 1437
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.getListener",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1877
+        "line": 1450
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.setPosition",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1891
+        "line": 1464
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.getPosition",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1908
+        "line": 1481
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.setVelocity",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1923
+        "line": 1496
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.getVelocity",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1940
+        "line": 1513
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.setOrientation",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1958
+        "line": 1531
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.getOrientation",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1975
+        "line": 1548
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.setDopplerScale",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1987
+        "line": 1560
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.getDopplerScale",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 1998
+        "line": 1571
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.setDistanceModel",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2006
+        "line": 1579
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.getDistanceModel",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2017
+        "line": 1590
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.setMeter",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2025
+        "line": 1598
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.getMeter",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2036
+        "line": 1609
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.newSoundData",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2047
+        "line": 1620
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.newDecoder",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2063
+        "line": 1636
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.newQueueableSource",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2084
+        "line": 1657
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.queueSource",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2107
+        "line": 1680
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.getFreeBufferCount",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2122
+        "line": 1695
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.playQueueable",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2132
+        "line": 1705
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.stopQueueable",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2143
+        "line": 1716
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.getPlaybackDevices",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2153
+        "line": 1726
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.getPlaybackDevice",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2159
+        "line": 1732
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.setPlaybackDevice",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2165
+        "line": 1738
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.create_bus",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2176
+        "line": 1749
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.set_bus_volume",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2185
+        "line": 1758
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.mixInto",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2192
+        "line": 1765
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.saveWAV",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2200
+        "line": 1773
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.setStereoWidth",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2208
+        "line": 1781
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.getStereoWidth",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2225
+        "line": 1798
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.setRandomPitch",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2243
+        "line": 1816
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.clearRandomPitch",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2259
+        "line": 1832
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.crossfade",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2275
+        "line": 1848
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.getBusPeak",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2283
+        "line": 1856
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.getBusRms",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2296
+        "line": 1869
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.newPool",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2310
+        "line": 1883
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.newBeatClock",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2331
+        "line": 1904
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.beatClockFromSource",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2354
+        "line": 1927
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.setJudgementWindows",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2381
+        "line": 1954
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.getJudgementWindows",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2402
+        "line": 1975
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.judgeBeat",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2422
+        "line": 1995
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.setMuted",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2444
+        "line": 2017
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.isMuted",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2460
+        "line": 2033
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.stopMusic",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2473
+        "line": 2046
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.playSfx",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2489
+        "line": 2062
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.manager.pauseAll",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2549
+        "line": 2122
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.manager.resumeAll",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2559
+        "line": 2132
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:start",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2770
+        "line": 2343
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:stop",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2776
+        "line": 2349
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:reset",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2782
+        "line": 2355
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:tick",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2790
+        "line": 2363
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:update",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2802
+        "line": 2375
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:position",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2860
+        "line": 2433
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:bpm",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2872
+        "line": 2445
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:getBpm",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2876
+        "line": 2449
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:setBpm",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2880
+        "line": 2453
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:rampBpm",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2888
+        "line": 2461
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:setSwing",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2895
+        "line": 2468
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:beatsPerBar",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2902
+        "line": 2475
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:setBeatsPerBar",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2908
+        "line": 2481
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:getBeat",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2915
+        "line": 2488
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:getBar",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2919
+        "line": 2492
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:getPhase",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2924
+        "line": 2497
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:beatTimeRemaining",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2932
+        "line": 2505
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:isOnBeat",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2941
+        "line": 2514
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:nearestBeat",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2955
+        "line": 2528
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:tap",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2963
+        "line": 2536
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:every",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2969
+        "line": 2542
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:at",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2982
+        "line": 2555
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:pattern",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2992
+        "line": 2565
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:cancel",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 3005
+        "line": 2578
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:cancelAll",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 3012
+        "line": 2585
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:scheduleAt",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 3020
+        "line": 2593
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:drainFired",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 3026
+        "line": 2599
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:secondsPerBeat",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 3037
+        "line": 2610
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:secondsToNextBeat",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 3043
+        "line": 2616
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:isRunning",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 3049
+        "line": 2622
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:syncToSource",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 3055
+        "line": 2628
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:dump",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 3065
+        "line": 2638
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:quantise",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 3080
+        "line": 2653
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:type",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 3086
+        "line": 2659
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:typeOf",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 3091
+        "line": 2664
       },
       {
         "module": "audio",
         "lua_name": "LSoundData:getSampleCount",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 3102
+        "line": 2675
       },
       {
         "module": "audio",
         "lua_name": "LSoundData:getSampleRate",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 3106
+        "line": 2679
       },
       {
         "module": "audio",
         "lua_name": "LSoundData:getChannelCount",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 3110
+        "line": 2683
       },
       {
         "module": "audio",
         "lua_name": "LSoundData:getDuration",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 3114
+        "line": 2687
       },
       {
         "module": "audio",
         "lua_name": "LSoundData:getBitDepth",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 3118
+        "line": 2691
       },
       {
         "module": "audio",
         "lua_name": "LSoundData:getSample",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 3123
+        "line": 2696
       },
       {
         "module": "audio",
         "lua_name": "LSoundData:drawWaveform",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 3140
+        "line": 2713
       },
       {
         "module": "audio",
         "lua_name": "LSoundData:setSample",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 3164
+        "line": 2737
       },
       {
         "module": "audio",
         "lua_name": "LSoundData:type",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 3177
+        "line": 2750
       },
       {
         "module": "audio",
         "lua_name": "LSoundData:typeOf",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 3182
+        "line": 2755
       },
       {
         "module": "automation",

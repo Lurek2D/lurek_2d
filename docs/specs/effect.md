@@ -253,47 +253,6 @@ This module primarily collaborates with `image`, `overlay`, `render`, `runtime`.
 
 - `content/examples/effect.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_effect_unit.lua` (present)
-- Rust: `src/effect/effect_type.rs`
-- Rust: `tests/rust/ext/effects_audio_runtime_smoke_tests.rs`
-- Rust: `tests/rust/unit/effect_contract_tests.rs`
-- Rust: `tests/rust/unit/effect_render_tests.rs`
-- Rust: `tests/rust/unit/effect_tests.rs`
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Evidence test | `tests/lua/evidence/test_effect_evidence.lua` |
-| Golden test | `tests/lua/golden/test_effect_golden.lua` |
-| Current artifact | `tests/artifacts/current/effect/effect_capture_preset_state.json` |
-| Current artifact | `tests/artifacts/current/effect/effect_custom_shader_pass_map.png` |
-| Current artifact | `tests/artifacts/current/effect/effect_enable_dedup_matrix.png` |
-| Current artifact | `tests/artifacts/current/effect/effect_image_chain_parameters.png` |
-| Current artifact | `tests/artifacts/current/effect/effect_image_chain_state.json` |
-| Current artifact | `tests/artifacts/current/effect/effect_parameter_response_curves.png` |
-| Current artifact | `tests/artifacts/current/effect/effect_preset_stack_contact_sheet.png` |
-| Current artifact | `tests/artifacts/current/effect/effect_shader_visual_01_custom_pass.png` |
-| Current artifact | `tests/artifacts/current/effect/effect_shader_visual_02_auto_uniforms.png` |
-| Current artifact | `tests/artifacts/current/effect/effect_shader_visual_03_screen_transition.png` |
-| Current artifact | `tests/artifacts/current/effect/effect_stack_order_lookbook.gif` |
-| Current artifact | `tests/artifacts/current/effect/effect_stack_pipeline.gif` |
-| Current artifact | `tests/artifacts/current/effect/effect_stack_state.json` |
-| Current artifact | `tests/artifacts/current/effect/effect_type_catalog.png` |
-| Baseline artifact | `tests/artifacts/baselines/effect/effect_capture_preset_state.json` |
-| Baseline artifact | `tests/artifacts/baselines/effect/effect_custom_shader_pass_map.png` |
-| Baseline artifact | `tests/artifacts/baselines/effect/effect_enable_dedup_matrix.png` |
-| Baseline artifact | `tests/artifacts/baselines/effect/effect_image_chain_parameters.png` |
-| Baseline artifact | `tests/artifacts/baselines/effect/effect_image_chain_state.json` |
-| Baseline artifact | `tests/artifacts/baselines/effect/effect_parameter_response_curves.png` |
-| Baseline artifact | `tests/artifacts/baselines/effect/effect_preset_stack_contact_sheet.png` |
-| Baseline artifact | `tests/artifacts/baselines/effect/effect_stack_order_lookbook.gif` |
-| Baseline artifact | `tests/artifacts/baselines/effect/effect_stack_pipeline.gif` |
-| Baseline artifact | `tests/artifacts/baselines/effect/effect_stack_state.json` |
-| Baseline artifact | `tests/artifacts/baselines/effect/effect_type_catalog.png` |
-
 ## Architecture Links
 
 - `docs/architecture/module-scope-boundaries.md`

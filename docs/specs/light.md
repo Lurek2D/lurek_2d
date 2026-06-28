@@ -313,39 +313,6 @@ This module primarily collaborates with `color`, `image`, `math`, `runtime`. Its
 
 - `content/examples/light.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_light_unit.lua` (present)
-- Rust: `src/light/light_type.rs`
-- Rust: `src/light/light_world.rs`
-- Rust: `tests/rust/unit/light_tests.rs`
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Evidence test | `tests/lua/evidence/test_light_evidence.lua` |
-| Golden test | `tests/lua/golden/test_light_golden.lua` |
-| Current artifact | `tests/artifacts/current/light/light_color_mix.png` |
-| Current artifact | `tests/artifacts/current/light/light_cone_spotlight.png` |
-| Current artifact | `tests/artifacts/current/light/light_falloff.png` |
-| Current artifact | `tests/artifacts/current/light/light_group_transition_flicker_trace.txt` |
-| Current artifact | `tests/artifacts/current/light/light_normal_map.png` |
-| Current artifact | `tests/artifacts/current/light/light_occluder_left.png` |
-| Current artifact | `tests/artifacts/current/light/light_occluder_right.png` |
-| Current artifact | `tests/artifacts/current/light/light_shader_visual_01_world_light.png` |
-| Current artifact | `tests/artifacts/current/light/light_shader_visual_02_instance_light.png` |
-| Current artifact | `tests/artifacts/current/light/light_shader_visual_03_rim_falloff.png` |
-| Current artifact | `tests/artifacts/current/light/light_shadow_occlusion.png` |
-| Current artifact | `tests/artifacts/current/light/light_spotlight_sweep.gif` |
-| Current artifact | `tests/artifacts/current/light/light_vending_machine_occlusion.png` |
-| Baseline artifact | `tests/artifacts/baselines/light/light_color_mix.png` |
-| Baseline artifact | `tests/artifacts/baselines/light/light_cone_spotlight.png` |
-| Baseline artifact | `tests/artifacts/baselines/light/light_falloff.png` |
-| Baseline artifact | `tests/artifacts/baselines/light/light_normal_map.png` |
-| Baseline artifact | `tests/artifacts/baselines/light/light_shadow_occlusion.png` |
-| Baseline artifact | `tests/artifacts/baselines/light/light_spotlight_sweep.gif` |
-
 ## Architecture Links
 
 - Intentionally empty.

@@ -171,17 +171,6 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 - `content/examples/serialize.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_serialize_unit.lua` (present)
-- Rust: `tests/rust/unit/serialize_tests.rs`
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Golden test | `tests/lua/golden/test_serialize_golden.lua` |
-
 ## Architecture Links
 
 - Intentionally empty.

@@ -230,15 +230,6 @@ This module primarily collaborates with `dataframe`, `runtime`. Its responsibili
 
 - `content/examples/filesystem.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_filesystem_unit.lua` (present)
-- Rust: `tests/rust/unit/filesystem_tests.rs`
-
-## Evidence / Golden
-
-- No evidence or golden artifacts registered.
-
 ## Architecture Links
 
 - Intentionally empty.

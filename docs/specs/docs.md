@@ -431,15 +431,6 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 
 - `content/examples/docs.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_docs_unit.lua` (present)
-- Rust: `tests/rust/unit/docs_tests.rs`
-
-## Evidence / Golden
-
-- No evidence or golden artifacts registered.
-
 ## Architecture Links
 
 - Intentionally empty.

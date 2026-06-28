@@ -4,39 +4,6 @@
 
 Rasterizes line, bar, area, scatter, pie, histogram, and heatmap charts into RGBA buffers and drawable runtime textures.
 
-## When To Use
-
-- It supports line, bar, area, scatter, pie, histogram, and heatmap views so different kinds of telemetry and balancing data can share one visualization system.
-- That range matters because frame-time traces, economy curves, loot distributions, progression trends, and density-style data do not all want the same display form.
-- Live projects often need to inspect those measurements without exporting them into external plotting tools first, and this module keeps that workflow inside the runtime.
-
-## Minimal Example
-
-Example block: `lurek.charts.newLine`
-
-```lua
-do
-    local chart = lurek.charts.newLine({ width = 160, height = 120, title = "Line" })
-    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
-    local width = chart:getWidth()
-    local height = chart:getHeight()
-    lurek.log.info("line width=" .. tostring(width))
-    lurek.log.info("line height=" .. tostring(height))
-end
-```
-
-## Common Patterns
-
-- Start with `lurek.charts.defaultPalette` when exploring this module.
-- Start with `lurek.charts.newArea` when exploring this module.
-- Start with `lurek.charts.newBar` when exploring this module.
-- Start with `lurek.charts.newBoxPlot` when exploring this module.
-- Start with `lurek.charts.newBubble` when exploring this module.
-
-## API Reference
-
-- This page is the generated API reference for this module.
-
 ## Summary
 
 - The `charts` module is the engine's in-runtime data-visualization surface for users who want tables, counters, time series, and distributions to become readable graphics.
@@ -53,6 +20,10 @@ end
 - Read `charts` as the place where engine-side measurements become inspectable visual explanations.
 
 This module primarily collaborates with `color`, `dataframe`, `image`. Its responsibility should stay inside the `Feature Systems` group rather than absorb behavior owned by those neighbors.
+
+## API Reference
+
+- This page is the generated API reference for this module.
 
 ## Functions
 

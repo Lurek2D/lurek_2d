@@ -14,7 +14,7 @@ Ten dokument zastępuje mapę `docs -> src/engine.py`. W Lurek nie ma Pythonoweg
 | Serializacja | jest `lurek.serial` | używać JSON/TOML, bez YAML |
 | Logi i pliki | jest `lurek.filesystem`, `lurek.log` | używać do JSONL/structured logs |
 | DataFrame/statystyka | jest `lurek.dataframe` | używać do monitorów i analytics |
-| UI dashboard | jest `lurek.render`, `lurek.ui`, `lurek.html` | zrobić w grze, plus VS Code view opcjonalnie |
+| UI dashboard | jest `lurek.render`, `lurek.ui`, `lurek.ui` | zrobić w grze, plus VS Code view opcjonalnie |
 | Debug bridge | jest `lurek.debugbridge` | użyć do live tools |
 | Worker threads | jest `lurek.thread` | użyć dla ciężkiej analityki, nie dla współdzielonego Lua state |
 
@@ -58,7 +58,7 @@ Ten dokument zastępuje mapę `docs -> src/engine.py`. W Lurek nie ma Pythonoweg
 | s13.24 DLQ/replay | brak dedykowanego | Lua list/table |
 | s13.25 tap | częściowe | clone item in Lua; `lurek.graph` item clone nie ma pełnego payloadu |
 | s13.26 schema version | Lua | field na itemie |
-| s13.27 human approval | UI/game logic | `lurek.ui`/`lurek.html` formularze, `debugbridge` dla VS Code |
+| s13.27 human approval | UI/game logic | `lurek.ui`/`lurek.ui` formularze, `debugbridge` dla VS Code |
 | s13.28 clock/fast-forward | Lua | logical ticks w `world:stepTicks(n)` |
 | s13.29 warmup | Lua | state counter |
 | s13.30 yield rate | Lua | RNG per item |

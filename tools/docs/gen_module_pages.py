@@ -545,56 +545,13 @@ def build_page(
     out.append(f"# {api_module.title()}")
     out.append("")
 
-    purpose_text = ""
-    tldr_bullets = first_bullets(spec.get("tldr", ""), 1)
-    summary_bullets = first_bullets(summary_text, 4)
-    if tldr_bullets:
-        purpose_text = tldr_bullets[0]
-    elif summary_bullets:
-        purpose_text = summary_bullets[0]
+    tldr_text = clean_markdown_text(spec.get("tldr", ""))
+    summary_bullets = first_bullets(summary_text, 1)
+    purpose_text = tldr_text or (summary_bullets[0] if summary_bullets else "")
 
     out.append("## Purpose")
     out.append("")
     out.append(publicize_module_text(purpose_text, module) or f"`lurek.{api_module}` exposes the public Lua API for the {api_module} module.")
-    out.append("")
-
-    out.append("## When To Use")
-    out.append("")
-    when_bullets = summary_bullets[1:4] if len(summary_bullets) > 1 else summary_bullets
-    if when_bullets:
-        for bullet in when_bullets:
-            out.append(f"- {publicize_module_text(bullet, module)}")
-    else:
-        out.append(f"- Use this module when a script needs the `{api_module}` runtime capability through `lurek.*`.")
-    out.append("")
-
-    out.append("## Minimal Example")
-    out.append("")
-    example = first_example_block(examples)
-    if example:
-        key, code = example
-        out.append(f"Example block: `{key}`")
-        out.append("")
-        out.append("```lua")
-        out.append(code)
-        out.append("```")
-    else:
-        out.append("*No minimal example is documented for this module yet.*")
-    out.append("")
-
-    out.append("## Common Patterns")
-    out.append("")
-    pattern_names = [entry["full_name"] for entry in sorted(module_fns.get(api_module, []), key=lambda e: e["name"])[:5]]
-    if pattern_names:
-        for name in pattern_names:
-            out.append(f"- Start with `{name}` when exploring this module.")
-    else:
-        out.append("- Check the module summary and related examples before using lower-level details.")
-    out.append("")
-
-    out.append("## API Reference")
-    out.append("")
-    out.append("- This page is the generated API reference for this module.")
     out.append("")
 
     if summary_text:
@@ -602,6 +559,11 @@ def build_page(
         out.append("")
         out.append(summary_text)
         out.append("")
+
+    out.append("## API Reference")
+    out.append("")
+    out.append("- This page is the generated API reference for this module.")
+    out.append("")
 
     if not unique_fns and not relevant_classes and not module_enums.get(api_module):
         out.append("*No public API documented yet.*")

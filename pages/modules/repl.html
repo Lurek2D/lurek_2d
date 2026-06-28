@@ -2072,32 +2072,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#when-to-use" class="md-nav__link">
+  <a href="#summary" class="md-nav__link">
     <span class="md-ellipsis">
       
-        When To Use
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#minimal-example" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Minimal Example
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#common-patterns" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Common Patterns
+        Summary
       
     </span>
   </a>
@@ -2109,17 +2087,6 @@
     <span class="md-ellipsis">
       
         API Reference
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#summary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Summary
       
     </span>
   </a>
@@ -2894,32 +2861,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#when-to-use" class="md-nav__link">
+  <a href="#summary" class="md-nav__link">
     <span class="md-ellipsis">
       
-        When To Use
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#minimal-example" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Minimal Example
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#common-patterns" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Common Patterns
+        Summary
       
     </span>
   </a>
@@ -2931,17 +2876,6 @@
     <span class="md-ellipsis">
       
         API Reference
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#summary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Summary
       
     </span>
   </a>
@@ -3151,39 +3085,6 @@
 <h1 id="repl">Repl<a class="headerlink" href="#repl" title="Permanent link">&para;</a></h1>
 <h2 id="purpose">Purpose<a class="headerlink" href="#purpose" title="Permanent link">&para;</a></h2>
 <p>Evaluates Lua inputs with tab completion.</p>
-<h2 id="when-to-use">When To Use<a class="headerlink" href="#when-to-use" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Session state, commands, completion, and value rendering work together so ad hoc evaluation feels like a usable runtime console instead of a raw eval hook.</li>
-<li>Read it as the runtime console boundary. repl owns how state is queried, evaluated, formatted, and returned.</li>
-</ul>
-<h2 id="minimal-example">Minimal Example<a class="headerlink" href="#minimal-example" title="Permanent link">&para;</a></h2>
-<p>Example block: <code>lurek.repl.new</code></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kr">do</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="kr">function</span><span class="w"> </span><span class="nf">example_print_log</span><span class="p">(...)</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">        </span><span class="kd">local</span><span class="w"> </span><span class="nv">parts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">        </span><span class="kr">for</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nb">select</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">...)</span><span class="w"> </span><span class="kr">do</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">            </span><span class="nv">parts</span><span class="p">[</span><span class="nv">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nb">select</span><span class="p">(</span><span class="nv">i</span><span class="p">,</span><span class="w"> </span><span class="p">...))</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">        </span><span class="kr">end</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">        </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="nb">table.concat</span><span class="p">(</span><span class="nv">parts</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot; &quot;</span><span class="p">))</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">    </span><span class="kr">end</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">    </span><span class="c1">---@type LReplSession</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">repl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">repl</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">initial_len</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">repl</span><span class="p">:</span><span class="nf">len</span><span class="p">()</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">is_session</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">repl</span><span class="p">:</span><span class="nf">typeOf</span><span class="p">(</span><span class="s2">&quot;LReplSession&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="s2">&quot;repl type = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">repl</span><span class="p">:</span><span class="nf">type</span><span class="p">())</span>
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="s2">&quot;initial len = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">initial_len</span><span class="p">)</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="w">    </span><span class="nb">assert</span><span class="p">(</span><span class="nv">is_session</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">initial_len</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;new REPL session starts empty&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="kr">end</span>
-</code></pre></div>
-<h2 id="common-patterns">Common Patterns<a class="headerlink" href="#common-patterns" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Start with <code>lurek.repl.new</code> when exploring this module.</li>
-</ul>
-<h2 id="api-reference">API Reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h2>
-<ul>
-<li>This page is the generated API reference for this module.</li>
-</ul>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
 <ul>
 <li>The <code>repl</code> module is the interactive evaluation surface for users who want to inspect or execute Lua code live inside a running engine context.</li>
@@ -3191,10 +3092,14 @@
 <li>Read it as the runtime console boundary. <code>repl</code> owns how state is queried, evaluated, formatted, and returned.</li>
 </ul>
 <p>This module is mostly self-contained inside the <code>Core Runtime</code> group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.</p>
+<h2 id="api-reference">API Reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h2>
+<ul>
+<li>This page is the generated API reference for this module.</li>
+</ul>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lurekreplnew"><code>lurek.repl.new</code><a class="headerlink" href="#lurekreplnew" title="Permanent link">&para;</a></h3>
 <p>Creates a release-safe REPL session with bounded command history.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nv">lurek</span><span class="p">.</span><span class="py">repl</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="nv">max_history</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nv">lurek</span><span class="p">.</span><span class="py">repl</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="nv">max_history</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -3229,23 +3134,16 @@
 </tbody>
 </table>
 <p><strong>Example</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kr">do</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="kr">function</span><span class="w"> </span><span class="nf">example_print_log</span><span class="p">(...)</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">        </span><span class="kd">local</span><span class="w"> </span><span class="nv">parts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">        </span><span class="kr">for</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nb">select</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">...)</span><span class="w"> </span><span class="kr">do</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">            </span><span class="nv">parts</span><span class="p">[</span><span class="nv">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nb">select</span><span class="p">(</span><span class="nv">i</span><span class="p">,</span><span class="w"> </span><span class="p">...))</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">        </span><span class="kr">end</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">        </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="nb">table.concat</span><span class="p">(</span><span class="nv">parts</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot; &quot;</span><span class="p">))</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span><span class="kr">end</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">    </span><span class="c1">---@type LReplSession</span>
-<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">repl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">repl</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
-<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">initial_len</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">repl</span><span class="p">:</span><span class="nf">len</span><span class="p">()</span>
-<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">is_session</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">repl</span><span class="p">:</span><span class="nf">typeOf</span><span class="p">(</span><span class="s2">&quot;LReplSession&quot;</span><span class="p">)</span>
-<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="s2">&quot;repl type = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">repl</span><span class="p">:</span><span class="nf">type</span><span class="p">())</span>
-<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="s2">&quot;initial len = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">initial_len</span><span class="p">)</span>
-<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">    </span><span class="nb">assert</span><span class="p">(</span><span class="nv">is_session</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">initial_len</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;new REPL session starts empty&quot;</span><span class="p">)</span>
-<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="kr">end</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kr">do</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="c1">---@type LReplSession</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">repl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">repl</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">initial_len</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">repl</span><span class="p">:</span><span class="nf">len</span><span class="p">()</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">is_session</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">repl</span><span class="p">:</span><span class="nf">typeOf</span><span class="p">(</span><span class="s2">&quot;LReplSession&quot;</span><span class="p">)</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="s2">&quot;repl type = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">repl</span><span class="p">:</span><span class="nf">type</span><span class="p">())</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="s2">&quot;initial len = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">initial_len</span><span class="p">)</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="nb">assert</span><span class="p">(</span><span class="nv">is_session</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">initial_len</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;new REPL session starts empty&quot;</span><span class="p">)</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="kr">end</span>
 </code></pre></div>
 <hr />
 <h2 id="module-fields">Module Fields<a class="headerlink" href="#module-fields" title="Permanent link">&para;</a></h2>
@@ -3262,29 +3160,22 @@
 <h3 id="type-methods">Type Methods<a class="headerlink" href="#type-methods" title="Permanent link">&para;</a></h3>
 <h4 id="lreplsessionclear"><code>LReplSession:clear</code><a class="headerlink" href="#lreplsessionclear" title="Permanent link">&para;</a></h4>
 <p>Clears all entries from this REPL session history.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nv">LReplSession</span><span class="p">:</span><span class="nf">clear</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nv">LReplSession</span><span class="p">:</span><span class="nf">clear</span><span class="p">()</span>
 </code></pre></div>
 <p><strong>Example</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kr">do</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="kr">function</span><span class="w"> </span><span class="nf">example_print_log</span><span class="p">(...)</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">        </span><span class="kd">local</span><span class="w"> </span><span class="nv">parts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">        </span><span class="kr">for</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nb">select</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">...)</span><span class="w"> </span><span class="kr">do</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">            </span><span class="nv">parts</span><span class="p">[</span><span class="nv">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nb">select</span><span class="p">(</span><span class="nv">i</span><span class="p">,</span><span class="w"> </span><span class="p">...))</span>
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">        </span><span class="kr">end</span>
-<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">        </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="nb">table.concat</span><span class="p">(</span><span class="nv">parts</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot; &quot;</span><span class="p">))</span>
-<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">    </span><span class="kr">end</span>
-<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>
-<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">repl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">repl</span><span class="p">.</span><span class="nf">new</span><span class="p">()</span>
-<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">    </span><span class="nv">repl</span><span class="p">:</span><span class="nf">eval</span><span class="p">(</span><span class="s2">&quot;return 1&quot;</span><span class="p">)</span>
-<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">    </span><span class="nv">repl</span><span class="p">:</span><span class="nf">eval</span><span class="p">(</span><span class="s2">&quot;return 2&quot;</span><span class="p">)</span>
-<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">    </span><span class="nv">repl</span><span class="p">:</span><span class="nf">clear</span><span class="p">()</span>
-<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="w">    </span><span class="nf">example_print_log</span><span class="p">(</span><span class="s2">&quot;after clear = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">repl</span><span class="p">:</span><span class="nf">len</span><span class="p">()</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot; history=&quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="o">#</span><span class="nv">repl</span><span class="p">:</span><span class="nf">history</span><span class="p">())</span>
-<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="kr">end</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kr">do</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">repl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">repl</span><span class="p">.</span><span class="nf">new</span><span class="p">()</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span><span class="nv">repl</span><span class="p">:</span><span class="nf">eval</span><span class="p">(</span><span class="s2">&quot;return 1&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="nv">repl</span><span class="p">:</span><span class="nf">eval</span><span class="p">(</span><span class="s2">&quot;return 2&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span><span class="nv">repl</span><span class="p">:</span><span class="nf">clear</span><span class="p">()</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="nb">tostring</span><span class="p">(</span><span class="s2">&quot;after clear = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">repl</span><span class="p">:</span><span class="nf">len</span><span class="p">()</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot; history=&quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="o">#</span><span class="nv">repl</span><span class="p">:</span><span class="nf">history</span><span class="p">()))</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="kr">end</span>
 </code></pre></div>
 <hr />
 <h4 id="lreplsessioncomplete"><code>LReplSession:complete</code><a class="headerlink" href="#lreplsessioncomplete" title="Permanent link">&para;</a></h4>
 <p>Returns completion candidates that begin with the supplied prefix.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nv">LReplSession</span><span class="p">:</span><span class="nf">complete</span><span class="p">(</span><span class="nv">prefix</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nv">LReplSession</span><span class="p">:</span><span class="nf">complete</span><span class="p">(</span><span class="nv">prefix</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -3319,28 +3210,21 @@
 </tbody>
 </table>
 <p><strong>Example</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kr">do</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="kr">function</span><span class="w"> </span><span class="nf">example_print_log</span><span class="p">(...)</span>
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">        </span><span class="kd">local</span><span class="w"> </span><span class="nv">parts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">        </span><span class="kr">for</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nb">select</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">...)</span><span class="w"> </span><span class="kr">do</span>
-<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">            </span><span class="nv">parts</span><span class="p">[</span><span class="nv">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nb">select</span><span class="p">(</span><span class="nv">i</span><span class="p">,</span><span class="w"> </span><span class="p">...))</span>
-<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">        </span><span class="kr">end</span>
-<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">        </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="nb">table.concat</span><span class="p">(</span><span class="nv">parts</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot; &quot;</span><span class="p">))</span>
-<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">    </span><span class="kr">end</span>
-<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>
-<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="w">    </span><span class="c1">---@type LReplSession</span>
-<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">repl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">repl</span><span class="p">.</span><span class="nf">new</span><span class="p">()</span>
-<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">completions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">repl</span><span class="p">:</span><span class="nf">complete</span><span class="p">(</span><span class="s2">&quot;lurek.re&quot;</span><span class="p">)</span>
-<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">first</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">completions</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">#</span><span class="nv">completions</span>
-<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="s2">&quot;completions for lurek.re = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">count</span><span class="p">)</span>
-<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="s2">&quot;first match = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">first</span><span class="p">)</span>
-<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a><span class="kr">end</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kr">do</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="c1">---@type LReplSession</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">repl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">repl</span><span class="p">.</span><span class="nf">new</span><span class="p">()</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">completions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">repl</span><span class="p">:</span><span class="nf">complete</span><span class="p">(</span><span class="s2">&quot;lurek.re&quot;</span><span class="p">)</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">first</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">completions</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">#</span><span class="nv">completions</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="s2">&quot;completions for lurek.re = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">count</span><span class="p">)</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="s2">&quot;first match = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">first</span><span class="p">)</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="kr">end</span>
 </code></pre></div>
 <hr />
 <h4 id="lreplsessioneval"><code>LReplSession:eval</code><a class="headerlink" href="#lreplsessioneval" title="Permanent link">&para;</a></h4>
 <p>Evaluates Lua code and records the input in this REPL history.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nv">LReplSession</span><span class="p">:</span><span class="nf">eval</span><span class="p">(</span><span class="nv">code</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nv">LReplSession</span><span class="p">:</span><span class="nf">eval</span><span class="p">(</span><span class="nv">code</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -3375,27 +3259,20 @@
 </tbody>
 </table>
 <p><strong>Example</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kr">do</span>
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="kr">function</span><span class="w"> </span><span class="nf">example_print_log</span><span class="p">(...)</span>
-<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">        </span><span class="kd">local</span><span class="w"> </span><span class="nv">parts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
-<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">        </span><span class="kr">for</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nb">select</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">...)</span><span class="w"> </span><span class="kr">do</span>
-<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">            </span><span class="nv">parts</span><span class="p">[</span><span class="nv">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nb">select</span><span class="p">(</span><span class="nv">i</span><span class="p">,</span><span class="w"> </span><span class="p">...))</span>
-<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">        </span><span class="kr">end</span>
-<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">        </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="nb">table.concat</span><span class="p">(</span><span class="nv">parts</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot; &quot;</span><span class="p">))</span>
-<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">    </span><span class="kr">end</span>
-<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>
-<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">    </span><span class="c1">---@type LReplSession</span>
-<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">repl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">repl</span><span class="p">.</span><span class="nf">new</span><span class="p">()</span>
-<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="w">    </span><span class="nv">repl</span><span class="p">:</span><span class="nf">eval</span><span class="p">(</span><span class="s2">&quot;local total = 2 + 2&quot;</span><span class="p">)</span>
-<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">repl</span><span class="p">:</span><span class="nf">eval</span><span class="p">(</span><span class="s2">&quot;return total * 3&quot;</span><span class="p">)</span>
-<a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a><span class="w">    </span><span class="nf">example_print_log</span><span class="p">(</span><span class="s2">&quot;eval result = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">result</span><span class="p">)</span>
-<a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a><span class="w">    </span><span class="nf">example_print_log</span><span class="p">(</span><span class="s2">&quot;history len = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">repl</span><span class="p">:</span><span class="nf">len</span><span class="p">())</span>
-<a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a><span class="kr">end</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kr">do</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="c1">---@type LReplSession</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">repl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">repl</span><span class="p">.</span><span class="nf">new</span><span class="p">()</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">    </span><span class="nv">repl</span><span class="p">:</span><span class="nf">eval</span><span class="p">(</span><span class="s2">&quot;local total = 2 + 2&quot;</span><span class="p">)</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">repl</span><span class="p">:</span><span class="nf">eval</span><span class="p">(</span><span class="s2">&quot;return total * 3&quot;</span><span class="p">)</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="nb">tostring</span><span class="p">(</span><span class="s2">&quot;eval result = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">result</span><span class="p">))</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="nb">tostring</span><span class="p">(</span><span class="s2">&quot;history len = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">repl</span><span class="p">:</span><span class="nf">len</span><span class="p">()))</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="kr">end</span>
 </code></pre></div>
 <hr />
 <h4 id="lreplsessionhistory"><code>LReplSession:history</code><a class="headerlink" href="#lreplsessionhistory" title="Permanent link">&para;</a></h4>
 <p>Returns the recorded REPL input history in oldest-first order.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nv">LReplSession</span><span class="p">:</span><span class="nf">history</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nv">LReplSession</span><span class="p">:</span><span class="nf">history</span><span class="p">()</span>
 </code></pre></div>
 <p><strong>Returns</strong></p>
 <table>
@@ -3413,27 +3290,20 @@
 </tbody>
 </table>
 <p><strong>Example</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kr">do</span>
-<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="kr">function</span><span class="w"> </span><span class="nf">example_print_log</span><span class="p">(...)</span>
-<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">        </span><span class="kd">local</span><span class="w"> </span><span class="nv">parts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
-<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">        </span><span class="kr">for</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nb">select</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">...)</span><span class="w"> </span><span class="kr">do</span>
-<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">            </span><span class="nv">parts</span><span class="p">[</span><span class="nv">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nb">select</span><span class="p">(</span><span class="nv">i</span><span class="p">,</span><span class="w"> </span><span class="p">...))</span>
-<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">        </span><span class="kr">end</span>
-<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">        </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="nb">table.concat</span><span class="p">(</span><span class="nv">parts</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot; &quot;</span><span class="p">))</span>
-<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="w">    </span><span class="kr">end</span>
-<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>
-<a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">repl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">repl</span><span class="p">.</span><span class="nf">new</span><span class="p">()</span>
-<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="w">    </span><span class="nv">repl</span><span class="p">:</span><span class="nf">eval</span><span class="p">(</span><span class="s2">&quot;return &#39;first&#39;&quot;</span><span class="p">)</span>
-<a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a><span class="w">    </span><span class="nv">repl</span><span class="p">:</span><span class="nf">eval</span><span class="p">(</span><span class="s2">&quot;return &#39;second&#39;&quot;</span><span class="p">)</span>
-<a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">hist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">repl</span><span class="p">:</span><span class="nf">history</span><span class="p">()</span>
-<a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a><span class="w">    </span><span class="nf">example_print_log</span><span class="p">(</span><span class="s2">&quot;history entries = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="o">#</span><span class="nv">hist</span><span class="p">)</span>
-<a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a><span class="w">    </span><span class="nf">example_print_log</span><span class="p">(</span><span class="s2">&quot;last entry = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">hist</span><span class="p">[</span><span class="o">#</span><span class="nv">hist</span><span class="p">])</span>
-<a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a><span class="kr">end</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kr">do</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">repl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">repl</span><span class="p">.</span><span class="nf">new</span><span class="p">()</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">    </span><span class="nv">repl</span><span class="p">:</span><span class="nf">eval</span><span class="p">(</span><span class="s2">&quot;return &#39;first&#39;&quot;</span><span class="p">)</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">    </span><span class="nv">repl</span><span class="p">:</span><span class="nf">eval</span><span class="p">(</span><span class="s2">&quot;return &#39;second&#39;&quot;</span><span class="p">)</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">hist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">repl</span><span class="p">:</span><span class="nf">history</span><span class="p">()</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="nb">tostring</span><span class="p">(</span><span class="s2">&quot;history entries = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="o">#</span><span class="nv">hist</span><span class="p">))</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="nb">tostring</span><span class="p">(</span><span class="s2">&quot;last entry = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">hist</span><span class="p">[</span><span class="o">#</span><span class="nv">hist</span><span class="p">]))</span>
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="kr">end</span>
 </code></pre></div>
 <hr />
 <h4 id="lreplsessionlen"><code>LReplSession:len</code><a class="headerlink" href="#lreplsessionlen" title="Permanent link">&para;</a></h4>
 <p>Returns the number of entries stored in this REPL history.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nv">LReplSession</span><span class="p">:</span><span class="nf">len</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nv">LReplSession</span><span class="p">:</span><span class="nf">len</span><span class="p">()</span>
 </code></pre></div>
 <p><strong>Returns</strong></p>
 <table>
@@ -3451,27 +3321,20 @@
 </tbody>
 </table>
 <p><strong>Example</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="kr">do</span>
-<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="kr">function</span><span class="w"> </span><span class="nf">example_print_log</span><span class="p">(...)</span>
-<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">        </span><span class="kd">local</span><span class="w"> </span><span class="nv">parts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
-<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">        </span><span class="kr">for</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nb">select</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">...)</span><span class="w"> </span><span class="kr">do</span>
-<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">            </span><span class="nv">parts</span><span class="p">[</span><span class="nv">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nb">select</span><span class="p">(</span><span class="nv">i</span><span class="p">,</span><span class="w"> </span><span class="p">...))</span>
-<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">        </span><span class="kr">end</span>
-<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="w">        </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="nb">table.concat</span><span class="p">(</span><span class="nv">parts</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot; &quot;</span><span class="p">))</span>
-<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="w">    </span><span class="kr">end</span>
-<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>
-<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">repl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">repl</span><span class="p">.</span><span class="nf">new</span><span class="p">()</span>
-<a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="w">    </span><span class="nv">repl</span><span class="p">:</span><span class="nf">eval</span><span class="p">(</span><span class="s2">&quot;return &#39;a&#39;&quot;</span><span class="p">)</span>
-<a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a><span class="w">    </span><span class="nv">repl</span><span class="p">:</span><span class="nf">eval</span><span class="p">(</span><span class="s2">&quot;return &#39;b&#39;&quot;</span><span class="p">)</span>
-<a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a><span class="w">    </span><span class="nf">example_print_log</span><span class="p">(</span><span class="s2">&quot;len = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">repl</span><span class="p">:</span><span class="nf">len</span><span class="p">())</span>
-<a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a><span class="w">    </span><span class="nv">repl</span><span class="p">:</span><span class="nf">clear</span><span class="p">()</span>
-<a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a><span class="w">    </span><span class="nf">example_print_log</span><span class="p">(</span><span class="s2">&quot;after clear = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">repl</span><span class="p">:</span><span class="nf">len</span><span class="p">())</span>
-<a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a><span class="kr">end</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="kr">do</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">repl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">repl</span><span class="p">.</span><span class="nf">new</span><span class="p">()</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">    </span><span class="nv">repl</span><span class="p">:</span><span class="nf">eval</span><span class="p">(</span><span class="s2">&quot;return &#39;a&#39;&quot;</span><span class="p">)</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">    </span><span class="nv">repl</span><span class="p">:</span><span class="nf">eval</span><span class="p">(</span><span class="s2">&quot;return &#39;b&#39;&quot;</span><span class="p">)</span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="nb">tostring</span><span class="p">(</span><span class="s2">&quot;len = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">repl</span><span class="p">:</span><span class="nf">len</span><span class="p">()))</span>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">    </span><span class="nv">repl</span><span class="p">:</span><span class="nf">clear</span><span class="p">()</span>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="nb">tostring</span><span class="p">(</span><span class="s2">&quot;after clear = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">repl</span><span class="p">:</span><span class="nf">len</span><span class="p">()))</span>
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="kr">end</span>
 </code></pre></div>
 <hr />
 <h4 id="lreplsessiontype"><code>LReplSession:type</code><a class="headerlink" href="#lreplsessiontype" title="Permanent link">&para;</a></h4>
 <p>Returns the Lua-visible type name for this REPL session handle.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nv">LReplSession</span><span class="p">:</span><span class="nf">type</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nv">LReplSession</span><span class="p">:</span><span class="nf">type</span><span class="p">()</span>
 </code></pre></div>
 <p><strong>Returns</strong></p>
 <table>
@@ -3489,28 +3352,21 @@
 </tbody>
 </table>
 <p><strong>Example</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="kr">do</span>
-<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="kr">function</span><span class="w"> </span><span class="nf">example_print_log</span><span class="p">(...)</span>
-<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">        </span><span class="kd">local</span><span class="w"> </span><span class="nv">parts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
-<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">        </span><span class="kr">for</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nb">select</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">...)</span><span class="w"> </span><span class="kr">do</span>
-<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w">            </span><span class="nv">parts</span><span class="p">[</span><span class="nv">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nb">select</span><span class="p">(</span><span class="nv">i</span><span class="p">,</span><span class="w"> </span><span class="p">...))</span>
-<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w">        </span><span class="kr">end</span>
-<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="w">        </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="nb">table.concat</span><span class="p">(</span><span class="nv">parts</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot; &quot;</span><span class="p">))</span>
-<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="w">    </span><span class="kr">end</span>
-<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>
-<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="w">    </span><span class="c1">---@type LReplSession</span>
-<a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">sess</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">repl</span><span class="p">.</span><span class="nf">new</span><span class="p">()</span>
-<a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">type_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">sess</span><span class="p">:</span><span class="nf">type</span><span class="p">()</span>
-<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">matches</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">sess</span><span class="p">:</span><span class="nf">typeOf</span><span class="p">(</span><span class="nv">type_name</span><span class="p">)</span>
-<a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="s2">&quot;repl session type = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">type_name</span><span class="p">)</span>
-<a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="s2">&quot;type check = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">matches</span><span class="p">))</span>
-<a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a><span class="w">    </span><span class="nb">assert</span><span class="p">(</span><span class="nv">matches</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;session reports its own type&quot;</span><span class="p">)</span>
-<a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a><span class="kr">end</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="kr">do</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">    </span><span class="c1">---@type LReplSession</span>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">sess</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">repl</span><span class="p">.</span><span class="nf">new</span><span class="p">()</span>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">type_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">sess</span><span class="p">:</span><span class="nf">type</span><span class="p">()</span>
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">matches</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">sess</span><span class="p">:</span><span class="nf">typeOf</span><span class="p">(</span><span class="nv">type_name</span><span class="p">)</span>
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="s2">&quot;repl session type = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">type_name</span><span class="p">)</span>
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="s2">&quot;type check = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">matches</span><span class="p">))</span>
+<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="w">    </span><span class="nb">assert</span><span class="p">(</span><span class="nv">matches</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;session reports its own type&quot;</span><span class="p">)</span>
+<a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="kr">end</span>
 </code></pre></div>
 <hr />
 <h4 id="lreplsessiontypeof"><code>LReplSession:typeOf</code><a class="headerlink" href="#lreplsessiontypeof" title="Permanent link">&para;</a></h4>
 <p>Returns whether this REPL session handle matches a supported type name.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="nv">LReplSession</span><span class="p">:</span><span class="nf">typeOf</span><span class="p">(</span><span class="nv">name</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="nv">LReplSession</span><span class="p">:</span><span class="nf">typeOf</span><span class="p">(</span><span class="nv">name</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -3545,23 +3401,16 @@
 </tbody>
 </table>
 <p><strong>Example</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="kr">do</span>
-<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="kr">function</span><span class="w"> </span><span class="nf">example_print_log</span><span class="p">(...)</span>
-<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="w">        </span><span class="kd">local</span><span class="w"> </span><span class="nv">parts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
-<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="w">        </span><span class="kr">for</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nb">select</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">...)</span><span class="w"> </span><span class="kr">do</span>
-<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="w">            </span><span class="nv">parts</span><span class="p">[</span><span class="nv">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nb">select</span><span class="p">(</span><span class="nv">i</span><span class="p">,</span><span class="w"> </span><span class="p">...))</span>
-<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="w">        </span><span class="kr">end</span>
-<a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="w">        </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="nb">table.concat</span><span class="p">(</span><span class="nv">parts</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot; &quot;</span><span class="p">))</span>
-<a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a><span class="w">    </span><span class="kr">end</span>
-<a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a>
-<a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a><span class="w">    </span><span class="c1">---@type LReplSession</span>
-<a id="__codelineno-16-11" name="__codelineno-16-11" href="#__codelineno-16-11"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">sess</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">repl</span><span class="p">.</span><span class="nf">new</span><span class="p">()</span>
-<a id="__codelineno-16-12" name="__codelineno-16-12" href="#__codelineno-16-12"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">is_session</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">sess</span><span class="p">:</span><span class="nf">typeOf</span><span class="p">(</span><span class="s2">&quot;LReplSession&quot;</span><span class="p">)</span>
-<a id="__codelineno-16-13" name="__codelineno-16-13" href="#__codelineno-16-13"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">is_object</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">sess</span><span class="p">:</span><span class="nf">typeOf</span><span class="p">(</span><span class="s2">&quot;LObject&quot;</span><span class="p">)</span>
-<a id="__codelineno-16-14" name="__codelineno-16-14" href="#__codelineno-16-14"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="s2">&quot;is session = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">is_session</span><span class="p">))</span>
-<a id="__codelineno-16-15" name="__codelineno-16-15" href="#__codelineno-16-15"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="s2">&quot;history entries = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">sess</span><span class="p">:</span><span class="nf">len</span><span class="p">()))</span>
-<a id="__codelineno-16-16" name="__codelineno-16-16" href="#__codelineno-16-16"></a><span class="w">    </span><span class="nb">assert</span><span class="p">(</span><span class="nv">is_session</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">is_object</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;REPL session exposes expected type hierarchy&quot;</span><span class="p">)</span>
-<a id="__codelineno-16-17" name="__codelineno-16-17" href="#__codelineno-16-17"></a><span class="kr">end</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="kr">do</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="w">    </span><span class="c1">---@type LReplSession</span>
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">sess</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">repl</span><span class="p">.</span><span class="nf">new</span><span class="p">()</span>
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">is_session</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">sess</span><span class="p">:</span><span class="nf">typeOf</span><span class="p">(</span><span class="s2">&quot;LReplSession&quot;</span><span class="p">)</span>
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">is_object</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">sess</span><span class="p">:</span><span class="nf">typeOf</span><span class="p">(</span><span class="s2">&quot;LObject&quot;</span><span class="p">)</span>
+<a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="s2">&quot;is session = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">is_session</span><span class="p">))</span>
+<a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="s2">&quot;history entries = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">sess</span><span class="p">:</span><span class="nf">len</span><span class="p">()))</span>
+<a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a><span class="w">    </span><span class="nb">assert</span><span class="p">(</span><span class="nv">is_session</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">is_object</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;REPL session exposes expected type hierarchy&quot;</span><span class="p">)</span>
+<a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a><span class="kr">end</span>
 </code></pre></div>
 <hr />
 

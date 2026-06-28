@@ -929,7 +929,7 @@ do
     lurek.log.info(tostring("up = " .. ux .. ", " .. uy .. ", " .. uz))
 end
 
---- Audio Examples Part 2: Orientation, distance models, MIDI, synthesis, DSP, bus effects, pool, offline
+--- Audio Examples Part 2: Orientation, distance models, synthesis, DSP, bus effects, pool, offline
 
 --@api: lurek.audio.getOrientation
 do
@@ -1003,19 +1003,6 @@ do
     lurek.log.info("configured meter idle=" .. tostring(idle))
 end
 
---@api: lurek.audio.newMidiPlayer
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping lurek.audio.newMidiPlayer")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        local loaded = player:isLoaded()
-        local playing = player:isPlaying()
-        lurek.log.info("midi player created=" .. tostring(player ~= nil))
-        lurek.log.info("player type=" .. player:type() .. " loaded=" .. tostring(loaded) .. " playing=" .. tostring(playing))
-    end
-end
 
 --@api: lurek.audio.newSoundData
 do
@@ -1027,48 +1014,8 @@ do
     lurek.log.info("channels=" .. tostring(channels) .. " duration=" .. tostring(duration))
 end
 
---@api: lurek.audio.setMidiSoundFont
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping lurek.audio.setMidiSoundFont")
-    else
-        local path = "content/examples/assets/audio/sample_soundfont.sf2"
-        local ok = pcall(function()
-            lurek.audio.setMidiSoundFont(path)
-        end)
-        lurek.log.info(tostring("soundfont set = " .. tostring(ok and lurek.audio.hasMidiSoundFont())))
-    end
-end
 
---@api: lurek.audio.hasMidiSoundFont
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping lurek.audio.hasMidiSoundFont")
-    else
-        local has = lurek.audio.hasMidiSoundFont()
-        local player = lurek.audio.newMidiPlayer()
-        local loaded = player:isLoaded()
-        lurek.log.info("has soundfont=" .. tostring(has))
-        lurek.log.info("midi player loaded=" .. tostring(loaded) .. " type=" .. tostring(player:type()))
-    end
-end
 
---@api: lurek.audio.clearMidiSoundFont
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping lurek.audio.clearMidiSoundFont")
-    else
-        local before = lurek.audio.hasMidiSoundFont()
-        lurek.audio.clearMidiSoundFont()
-        local after = lurek.audio.hasMidiSoundFont()
-        local player = lurek.audio.newMidiPlayer()
-        lurek.log.info("soundfont before clear=" .. tostring(before))
-        lurek.log.info("soundfont after clear=" .. tostring(after) .. " player type=" .. player:type() .. " loaded=" .. tostring(player:isLoaded()))
-    end
-end
 
 --@api: lurek.audio.newDecoder
 do
@@ -1275,8 +1222,8 @@ do
     end
     lurek.log.info(tostring("lowpass available = " .. tostring(has_fn)))
     lurek.log.info(tostring("lowpass applied at 500 Hz"))
-end
 
+end
 --@api: lurek.audio.applyHighpass
 do
     local has_noise = type(lurek.audio.newWhiteNoise) == "function"
@@ -1287,8 +1234,8 @@ do
     end
     lurek.log.info(tostring("highpass available = " .. tostring(has_fn)))
     lurek.log.info(tostring("highpass applied at 2000 Hz"))
-end
 
+end
 --@api: lurek.audio.applyBandpass
 do
     local has_noise = type(lurek.audio.newWhiteNoise) == "function"
@@ -1299,8 +1246,8 @@ do
     end
     lurek.log.info(tostring("bandpass available = " .. tostring(has_fn)))
     lurek.log.info(tostring("bandpass 300-3000 Hz applied"))
-end
 
+end
 --@api: lurek.audio.applyGain
 do
     local has_wave = type(lurek.audio.newSineWave) == "function"
@@ -1311,8 +1258,8 @@ do
     end
     lurek.log.info(tostring("gain available = " .. tostring(has_fn)))
     lurek.log.info(tostring("gain x2 applied"))
-end
 
+end
 --@api: lurek.audio.mixInto
 do
     local has_wave = type(lurek.audio.newSineWave) == "function"
@@ -1324,8 +1271,8 @@ do
     end
     lurek.log.info(tostring("mixInto available = " .. tostring(has_fn)))
     lurek.log.info(tostring("mixed 880 Hz into 440 Hz"))
-end
 
+end
 --@api: lurek.audio.saveWAV
 do
     local has_wave = type(lurek.audio.newSineWave) == "function"
@@ -1336,8 +1283,8 @@ do
     end
     lurek.log.info(tostring("saveWAV available = " .. tostring(has_fn)))
     lurek.log.info(tostring("saved WAV file"))
-end
 
+end
 --@api: lurek.audio.setStereoWidth
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
@@ -1431,8 +1378,8 @@ do
     lurek.log.info(tostring("input file = " .. path_in))
     lurek.log.info(tostring("output file = " .. path_out))
     lurek.log.info(tostring("offline processing done"))
-end
 
+end
 --@api: lurek.audio.normalizeFile
 do
     local path_in = "content/examples/assets/audio/sample_tone.wav"
@@ -1445,8 +1392,8 @@ do
     lurek.log.info(tostring("input file = " .. path_in))
     lurek.log.info(tostring("output file = " .. path_out))
     lurek.log.info(tostring("normalized to 0.9 peak"))
-end
 
+end
 --@api: lurek.audio.waveformToPng
 do
     local path_in = "content/examples/assets/audio/sample_tone.wav"
@@ -1459,8 +1406,8 @@ do
     lurek.log.info(tostring("input file = " .. path_in))
     lurek.log.info(tostring("output file = " .. path_out))
     lurek.log.info(tostring("waveform image saved"))
-end
 
+end
 --@api: lurek.audio.spectrogramToPng
 do
     local path_in = "content/examples/assets/audio/sample_tone.wav"
@@ -1473,8 +1420,8 @@ do
     lurek.log.info(tostring("input file = " .. path_in))
     lurek.log.info(tostring("output file = " .. path_out))
     lurek.log.info(tostring("spectrogram image saved"))
-end
 
+end
 --@api: LSource:play
 do
     local path = "content/examples/assets/audio/sample_click.wav"
@@ -1486,7 +1433,7 @@ do
     lurek.log.info("source stopped after play=" .. tostring(stopped))
 end
 
---- Audio Examples Part 3: LSource methods, LBus methods, LMidiPlayer methods
+--- Audio Examples Part 3: LSource methods and LBus methods
 
 --@api: LSource:stop
 do
@@ -1899,815 +1846,57 @@ do
     lurek.log.info("peak=" .. tostring(peak) .. " volume=" .. tostring(bus:getVolume()))
 end
 
---@api: LMidiPlayer:load
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:load")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        local path = "content/examples/assets/audio/sample_midi.mid"
-        local loaded = player:load(path)
-        local ready = player:isLoaded()
-        local tempo = player:getTempo()
-        lurek.log.info("boss music load requested=" .. tostring(loaded))
-        lurek.log.info("boss music ready=" .. tostring(ready) .. " tempo=" .. tostring(tempo))
-    end
-end
 
---@api: LMidiPlayer:loadData
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:loadData")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        local data = string.char(77,84,104,100,0,0,0,6,0,0,0,1,0,96,77,84,114,107,0,0,0,4,0,255,47,0)
-        local loaded = player:loadData(data)
-        local ready = player:isLoaded()
-        local ticksPerBeat = player:getTicksPerBeat()
-        lurek.log.info("cutscene midi bytes accepted=" .. tostring(loaded))
-        lurek.log.info("cutscene midi ready=" .. tostring(ready) .. " ppqn=" .. tostring(ticksPerBeat))
-    end
-end
 
---@api: LMidiPlayer:isLoaded
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:isLoaded")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        local path = "content/examples/assets/audio/sample_midi.mid"
-        local beforeLoad = player:isLoaded()
-        local requested = player:load(path)
-        local afterLoad = player:isLoaded()
-        lurek.log.info("midi loaded before request=" .. tostring(beforeLoad))
-        lurek.log.info("midi load requested=" .. tostring(requested) .. " loaded now=" .. tostring(afterLoad))
-    end
-end
 
---@api: LMidiPlayer:getFilePath
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:getFilePath")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        local path = "content/examples/assets/audio/sample_midi.mid"
-        local loaded = player:load(path)
-        local filePath = player:getFilePath()
-        local ready = player:isLoaded()
-        lurek.log.info("setlist entry loaded=" .. tostring(loaded))
-        lurek.log.info("active midi path=" .. tostring(filePath) .. " ready=" .. tostring(ready))
-    end
-end
 
---@api: LMidiPlayer:setSoundFont
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:setSoundFont")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        local sf_path = "content/examples/assets/audio/sample_soundfont.sf2"
-        local applied = pcall(function() player:setSoundFont(sf_path) end)
-        local soundFont = player:getSoundFontPath()
-        local playerType = player:type()
-        lurek.log.info("custom soundfont applied=" .. tostring(applied))
-        lurek.log.info("midi player type=" .. tostring(playerType) .. " soundfont=" .. tostring(soundFont))
-    end
-end
 
---@api: LMidiPlayer:getSoundFontPath
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:getSoundFontPath")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        local sf_path = "content/examples/assets/audio/sample_soundfont.sf2"
-        local ok = pcall(function() player:setSoundFont(sf_path) end)
-        local p = ok and player:getSoundFontPath() or nil
-        lurek.log.info(tostring("soundfont = " .. tostring(p)))
-    end
-end
 
---@api: LMidiPlayer:useDefaultSoundFont
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:useDefaultSoundFont")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        local before = player:getSoundFontPath()
-        player:useDefaultSoundFont()
-        local after = player:getSoundFontPath()
-        local typeName = player:type()
-        lurek.log.info("soundfont before reset=" .. tostring(before))
-        lurek.log.info("soundfont after reset=" .. tostring(after) .. " type=" .. tostring(typeName))
-    end
-end
 
---@api: LMidiPlayer:play
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:play")
-    else
-        local path = "content/examples/assets/audio/sample_midi.mid"
-        local player = lurek.audio.newMidiPlayer()
-        local loaded = player:load(path)
-        player:play()
-        local playing = player:isPlaying()
-        local paused = player:isPaused()
-        lurek.log.info("combat cue loaded=" .. tostring(loaded))
-        lurek.log.info("combat cue playing=" .. tostring(playing) .. " paused=" .. tostring(paused))
-    end
-end
 
---@api: LMidiPlayer:pause
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:pause")
-    else
-        local path = "content/examples/assets/audio/sample_midi.mid"
-        local player = lurek.audio.newMidiPlayer(path)
-        player:play()
-        player:pause()
-        lurek.log.info(tostring("midi paused = " .. tostring(player:isPaused())))
-    end
-end
 
---- Audio Examples Part 4: LMidiPlayer (cont.), LSoundPool, LDecoder methods
+--- Audio Examples Part 4: LSoundPool and LDecoder methods
 
---@api: LMidiPlayer:stop
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:stop")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        local path = "content/examples/assets/audio/sample_midi.mid"
-        player:load(path)
-        player:play()
-        player:seek(4.0)
-        player:stop()
-        local playing = player:isPlaying()
-        local position = player:tell()
-        lurek.log.info("combat cue stopped=" .. tostring(not playing))
-        lurek.log.info("combat cue reset to=" .. tostring(position))
-    end
-end
 
---@api: LMidiPlayer:isPlaying
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:isPlaying")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        local path = "content/examples/assets/audio/sample_midi.mid"
-        player:load(path)
-        local beforePlay = player:isPlaying()
-        player:play()
-        local afterPlay = player:isPlaying()
-        lurek.log.info("midi playing before start=" .. tostring(beforePlay))
-        lurek.log.info("midi playing after start=" .. tostring(afterPlay))
-    end
-end
 
---@api: LMidiPlayer:isPaused
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:isPaused")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        local path = "content/examples/assets/audio/sample_midi.mid"
-        player:load(path)
-        local beforePause = player:isPaused()
-        player:play()
-        player:pause()
-        local afterPause = player:isPaused()
-        lurek.log.info("midi paused before request=" .. tostring(beforePause))
-        lurek.log.info("midi paused after request=" .. tostring(afterPause))
-    end
-end
 
---@api: LMidiPlayer:seek
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:seek")
-    else
-        local path = "content/examples/assets/audio/sample_midi.mid"
-        local player = lurek.audio.newMidiPlayer(path)
-        player:play()
-        player:seek(5.0)
-        lurek.log.info(tostring("seeked to " .. player:tell()))
-    end
-end
 
---@api: LMidiPlayer:tell
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:tell")
-    else
-        local path = "content/examples/assets/audio/sample_midi.mid"
-        local player = lurek.audio.newMidiPlayer(path)
-        player:play()
-        local pos = player:tell()
-        lurek.log.info(tostring("position = " .. pos))
-    end
-end
 
---@api: LMidiPlayer:getDuration
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:getDuration")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        local path = "content/examples/assets/audio/sample_midi.mid"
-        local loaded = player:load(path)
-        local duration = player:getDuration()
-        local noteCount = player:getNoteCount()
-        lurek.log.info("level midi loaded=" .. tostring(loaded))
-        lurek.log.info("level midi duration=" .. tostring(duration) .. " notes=" .. tostring(noteCount))
-    end
-end
 
---@api: LMidiPlayer:setLooping
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:setLooping")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        local path = "content/examples/assets/audio/sample_midi.mid"
-        player:load(path)
-        player:setLooping(true)
-        local looped = player:isLooping()
-        player:setLooping(false)
-        lurek.log.info("menu theme looping on=" .. tostring(looped))
-        lurek.log.info("menu theme looping off=" .. tostring(player:isLooping()))
-    end
-end
 
---@api: LMidiPlayer:isLooping
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:isLooping")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        local path = "content/examples/assets/audio/sample_midi.mid"
-        player:load(path)
-        local before = player:isLooping()
-        player:setLooping(true)
-        local after = player:isLooping()
-        lurek.log.info("looping before toggle=" .. tostring(before))
-        lurek.log.info("looping after toggle=" .. tostring(after))
-    end
-end
 
---@api: LMidiPlayer:setVolume
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:setVolume")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        player:setVolume(0.7)
-        local baseVolume = player:getVolume()
-        player:setVolume(0.35)
-        local quietVolume = player:getVolume()
-        lurek.log.info("midi mix base volume=" .. tostring(baseVolume))
-        lurek.log.info("midi mix quiet volume=" .. tostring(quietVolume))
-    end
-end
 
---@api: LMidiPlayer:getVolume
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:getVolume")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        player:setVolume(0.5)
-        local introVolume = player:getVolume()
-        player:setVolume(0.8)
-        local bossVolume = player:getVolume()
-        lurek.log.info("intro cue volume=" .. tostring(introVolume))
-        lurek.log.info("boss cue volume=" .. tostring(bossVolume))
-    end
-end
 
---@api: LMidiPlayer:setBus
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:setBus")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        local bus = lurek.audio.newBus("midi_bus")
-        player:setBus(bus)
-        local assigned = player:getBus()
-        local typeName = bus:type()
-        lurek.log.info("midi bus assigned=" .. tostring(assigned and assigned:getName() or nil))
-        lurek.log.info("assigned bus type=" .. tostring(typeName))
-    end
-end
 
---@api: LMidiPlayer:getBus
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:getBus")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        local bus = lurek.audio.newBus("midi_out")
-        player:setBus(bus)
-        local b = player:getBus()
-        lurek.log.info(tostring("bus = " .. b:getName()))
-    end
-end
 
---@api: LMidiPlayer:setTempo
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:setTempo")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        player:setTempo(140)
-        local combatTempo = player:getTempo()
-        player:setTempo(90)
-        local stealthTempo = player:getTempo()
-        lurek.log.info("combat tempo=" .. tostring(combatTempo))
-        lurek.log.info("stealth tempo=" .. tostring(stealthTempo))
-    end
-end
 
---@api: LMidiPlayer:getTempo
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:getTempo")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        player:setTempo(120)
-        local normalTempo = player:getTempo()
-        player:setTempo(150)
-        local alertTempo = player:getTempo()
-        lurek.log.info("normal exploration tempo=" .. tostring(normalTempo))
-        lurek.log.info("alert tempo=" .. tostring(alertTempo))
-    end
-end
 
---@api: LMidiPlayer:getOriginalTempo
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:getOriginalTempo")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        local path = "content/examples/assets/audio/sample_midi.mid"
-        local loaded = player:load(path)
-        local originalTempo = player:getOriginalTempo()
-        local currentTempo = player:getTempo()
-        lurek.log.info("score loaded=" .. tostring(loaded))
-        lurek.log.info("original tempo=" .. tostring(originalTempo) .. " current tempo=" .. tostring(currentTempo))
-    end
-end
 
---@api: LMidiPlayer:setTempoScale
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:setTempoScale")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        player:setTempoScale(1.5)
-        local fastScale = player:getTempoScale()
-        player:setTempoScale(0.75)
-        local slowScale = player:getTempoScale()
-        lurek.log.info("chase scale=" .. tostring(fastScale))
-        lurek.log.info("dialogue scale=" .. tostring(slowScale))
-    end
-end
 
---@api: LMidiPlayer:getTempoScale
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:getTempoScale")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        player:setTempoScale(0.8)
-        local dampedScale = player:getTempoScale()
-        player:setTempoScale(1.2)
-        local boostedScale = player:getTempoScale()
-        lurek.log.info("damped scale=" .. tostring(dampedScale))
-        lurek.log.info("boosted scale=" .. tostring(boostedScale))
-    end
-end
 
---@api: LMidiPlayer:getTicksPerBeat
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:getTicksPerBeat")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        local path = "content/examples/assets/audio/sample_midi.mid"
-        local loaded = player:load(path)
-        local ticksPerBeat = player:getTicksPerBeat()
-        local trackCount = player:getTrackCount()
-        lurek.log.info("timing map loaded=" .. tostring(loaded))
-        lurek.log.info("ticks per beat=" .. tostring(ticksPerBeat) .. " tracks=" .. tostring(trackCount))
-    end
-end
 
---@api: LMidiPlayer:setChannelVolume
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:setChannelVolume")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        player:setChannelVolume(1, 0.8)
-        local melodyVolume = player:getChannelVolume(1)
-        player:setChannelVolume(10, 0.35)
-        local drumsVolume = player:getChannelVolume(10)
-        lurek.log.info("melody channel volume=" .. tostring(melodyVolume))
-        lurek.log.info("drums channel volume=" .. tostring(drumsVolume))
-    end
-end
 
---@api: LMidiPlayer:getChannelVolume
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:getChannelVolume")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        player:setChannelVolume(2, 0.6)
-        local bassVolume = player:getChannelVolume(2)
-        player:setChannelVolume(4, 0.25)
-        local padVolume = player:getChannelVolume(4)
-        lurek.log.info("bass channel volume=" .. tostring(bassVolume))
-        lurek.log.info("pad channel volume=" .. tostring(padVolume))
-    end
-end
 
---@api: LMidiPlayer:setChannelMuted
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:setChannelMuted")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        player:setChannelMuted(10, true)
-        local drumsMuted = player:isChannelMuted(10)
-        player:setChannelMuted(10, false)
-        local drumsRestored = player:isChannelMuted(10)
-        lurek.log.info("drums muted for pause menu=" .. tostring(drumsMuted))
-        lurek.log.info("drums restored after menu=" .. tostring(not drumsRestored))
-    end
-end
 
---@api: LMidiPlayer:isChannelMuted
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:isChannelMuted")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        player:setChannelMuted(3, true)
-        local stringsMuted = player:isChannelMuted(3)
-        player:setChannelMuted(3, false)
-        local stringsRestored = player:isChannelMuted(3)
-        lurek.log.info("strings muted=" .. tostring(stringsMuted))
-        lurek.log.info("strings muted after restore=" .. tostring(stringsRestored))
-    end
-end
 
---@api: LMidiPlayer:setChannelInstrument
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:setChannelInstrument")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        player:setChannelInstrument(1, 25)
-        local guitarProgram = player:getChannelInstrument(1)
-        player:setChannelInstrument(2, 48)
-        local stringsProgram = player:getChannelInstrument(2)
-        lurek.log.info("melody program=" .. tostring(guitarProgram))
-        lurek.log.info("support program=" .. tostring(stringsProgram))
-    end
-end
 
---@api: LMidiPlayer:getChannelInstrument
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:getChannelInstrument")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        player:setChannelInstrument(2, 48)
-        local stringsProgram = player:getChannelInstrument(2)
-        player:setChannelInstrument(10, 0)
-        local drumsProgram = player:getChannelInstrument(10)
-        lurek.log.info("strings program=" .. tostring(stringsProgram))
-        lurek.log.info("drums program=" .. tostring(drumsProgram))
-    end
-end
 
---@api: LMidiPlayer:getChannelCount
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:getChannelCount")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        local path = "content/examples/assets/audio/sample_midi.mid"
-        local loaded = player:load(path)
-        local channelCount = player:getChannelCount()
-        local noteCount = player:getNoteCount()
-        lurek.log.info("arrangement loaded=" .. tostring(loaded))
-        lurek.log.info("channel count=" .. tostring(channelCount) .. " note count=" .. tostring(noteCount))
-    end
-end
 
---@api: LMidiPlayer:soloChannel
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:soloChannel")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        player:soloChannel(1)
-        local leadMuted = player:isChannelMuted(1)
-        local supportMuted = player:isChannelMuted(2)
-        local drumsMuted = player:isChannelMuted(10)
-        lurek.log.info("lead muted while soloed=" .. tostring(leadMuted))
-        lurek.log.info("support muted=" .. tostring(supportMuted) .. " drums muted=" .. tostring(drumsMuted))
-    end
-end
 
---@api: LMidiPlayer:unsoloAll
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:unsoloAll")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        player:soloChannel(1)
-        player:unsoloAll()
-        local leadMuted = player:isChannelMuted(1)
-        local supportMuted = player:isChannelMuted(2)
-        lurek.log.info("lead muted after unsolo=" .. tostring(leadMuted))
-        lurek.log.info("support muted after unsolo=" .. tostring(supportMuted))
-    end
-end
 
---@api: LMidiPlayer:getTrackCount
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:getTrackCount")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        local path = "content/examples/assets/audio/sample_midi.mid"
-        local loaded = player:load(path)
-        local trackCount = player:getTrackCount()
-        local filePath = player:getFilePath()
-        lurek.log.info("track metadata loaded=" .. tostring(loaded))
-        lurek.log.info("track count=" .. tostring(trackCount) .. " file=" .. tostring(filePath))
-    end
-end
 
---@api: LMidiPlayer:getTrackName
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:getTrackName")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        local path = "content/examples/assets/audio/sample_midi.mid"
-        player:load(path)
-        local firstTrack = player:getTrackName(1)
-        local secondTrack = player:getTrackName(2)
-        lurek.log.info("track 1 name=" .. tostring(firstTrack))
-        lurek.log.info("track 2 name=" .. tostring(secondTrack))
-    end
-end
 
---@api: LMidiPlayer:setTrackMuted
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:setTrackMuted")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        local path = "content/examples/assets/audio/sample_midi.mid"
-        player:load(path)
-        player:setTrackMuted(1, true)
-        local introMuted = player:isTrackMuted(1)
-        player:setTrackMuted(1, false)
-        local introRestored = player:isTrackMuted(1)
-        lurek.log.info("intro track muted=" .. tostring(introMuted))
-        lurek.log.info("intro track muted after restore=" .. tostring(introRestored))
-    end
-end
 
---@api: LMidiPlayer:isTrackMuted
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:isTrackMuted")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        local path = "content/examples/assets/audio/sample_midi.mid"
-        player:load(path)
-        player:setTrackMuted(2, true)
-        local percussionMuted = player:isTrackMuted(2)
-        player:setTrackMuted(2, false)
-        local percussionRestored = player:isTrackMuted(2)
-        lurek.log.info("percussion track muted=" .. tostring(percussionMuted))
-        lurek.log.info("percussion track muted after restore=" .. tostring(percussionRestored))
-    end
-end
 
---@api: LMidiPlayer:getNoteCount
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:getNoteCount")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        local path = "content/examples/assets/audio/sample_midi.mid"
-        local loaded = player:load(path)
-        local noteCount = player:getNoteCount()
-        local duration = player:getDuration()
-        lurek.log.info("chart loaded=" .. tostring(loaded))
-        lurek.log.info("note count=" .. tostring(noteCount) .. " duration=" .. tostring(duration))
-    end
-end
 
---@api: LMidiPlayer:setOnNoteOn
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:setOnNoteOn")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        local previewNotes = 0
-        player:setOnNoteOn(function(ch, note, vel)
-            previewNotes = previewNotes + 1
-            lurek.log.info("preview note on ch=" .. tostring(ch) .. " note=" .. tostring(note) .. " vel=" .. tostring(vel))
-        end)
-        local typeName = player:type()
-        player:setOnNoteOn(nil)
-        lurek.log.info("preview note callback count=" .. tostring(previewNotes))
-        lurek.log.info("midi player type=" .. tostring(typeName))
-    end
-end
 
---@api: LMidiPlayer:setOnNoteOff
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:setOnNoteOff")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        local releasedNotes = 0
-        player:setOnNoteOff(function(ch, note)
-            releasedNotes = releasedNotes + 1
-            lurek.log.info("preview note off ch=" .. tostring(ch) .. " note=" .. tostring(note))
-        end)
-        local isMidiPlayer = player:typeOf("LMidiPlayer")
-        player:setOnNoteOff(nil)
-        lurek.log.info("released preview notes=" .. tostring(releasedNotes))
-        lurek.log.info("callback owner is midi player=" .. tostring(isMidiPlayer))
-    end
-end
 
---@api: LMidiPlayer:setOnEnd
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:setOnEnd")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        local completed = false
-        player:setOnEnd(function()
-            completed = true
-            lurek.log.info("midi playback ended")
-        end)
-        local startPosition = player:tell()
-        player:setOnEnd(nil)
-        lurek.log.info("ending callback armed at position=" .. tostring(startPosition))
-        lurek.log.info("ending callback fired=" .. tostring(completed))
-    end
-end
 
---@api: LMidiPlayer:getSampleRate
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:getSampleRate")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        local defaultRate = player:getSampleRate()
-        player:setSampleRate(48000)
-        local upgradedRate = player:getSampleRate()
-        lurek.log.info("default midi render rate=" .. tostring(defaultRate))
-        lurek.log.info("upgraded midi render rate=" .. tostring(upgradedRate))
-    end
-end
 
---@api: LMidiPlayer:setSampleRate
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:setSampleRate")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        player:setSampleRate(48000)
-        local hdRate = player:getSampleRate()
-        player:setSampleRate(22050)
-        local fallbackRate = player:getSampleRate()
-        lurek.log.info("hd render rate=" .. tostring(hdRate))
-        lurek.log.info("fallback render rate=" .. tostring(fallbackRate))
-    end
-end
 
---@api: LMidiPlayer:getChannels
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:getChannels")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        local defaultChannels = player:getChannels()
-        player:setChannels(1)
-        local monoChannels = player:getChannels()
-        lurek.log.info("default output channels=" .. tostring(defaultChannels))
-        lurek.log.info("preview mono channels=" .. tostring(monoChannels))
-    end
-end
 
---@api: LMidiPlayer:setChannels
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:setChannels")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        player:setChannels(2)
-        local stereoChannels = player:getChannels()
-        player:setChannels(1)
-        local monoChannels = player:getChannels()
-        lurek.log.info("stereo output channels=" .. tostring(stereoChannels))
-        lurek.log.info("mono output channels=" .. tostring(monoChannels))
-    end
-end
 
---@api: LMidiPlayer:type
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:type")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        local typeName = player:type()
-        local isMidiPlayer = player:typeOf("LMidiPlayer")
-        local isObject = player:typeOf("LObject")
-        lurek.log.info("midi player type=" .. tostring(typeName))
-        lurek.log.info("is midi player=" .. tostring(isMidiPlayer) .. " is object=" .. tostring(isObject))
-    end
-end
 
---@api: LMidiPlayer:typeOf
-do
-    if type(lurek.audio.newMidiPlayer) ~= "function" then
-        lurek.log.info("midi API unavailable in this runtime")
-        lurek.log.info("skipping LMidiPlayer:typeOf")
-    else
-        local player = lurek.audio.newMidiPlayer()
-        local isMidiPlayer = player:typeOf("LMidiPlayer")
-        local isBus = player:typeOf("LBus")
-        local typeName = player:type()
-        lurek.log.info("is LMidiPlayer=" .. tostring(isMidiPlayer))
-        lurek.log.info("is LBus=" .. tostring(isBus) .. " type=" .. tostring(typeName))
-    end
-end
 
 --@api: LSoundPool:play
 do
@@ -2999,8 +2188,8 @@ do
     local img = lurek.image.newImageData(400, 100)
     sd:drawWaveform(img, 0, 0, 400, 100, 0, 255, 0, 255)
     lurek.log.info(tostring("waveform drawn to image"))
-end
 
+end
 --@api: LSoundData:setSample
 do
     local sd = lurek.audio.newSoundData(100, 44100, 1)
@@ -3061,8 +2250,8 @@ do
         lurek.audio.setMuted(true)
         lurek.log.info(tostring("now muted = " .. tostring(lurek.audio.isMuted())))
     end
-end
 
+end
 --@api: lurek.audio.stopMusic
 do
     local src = lurek.audio.newSource("content/examples/assets/audio/sample_loop.wav", "stream")

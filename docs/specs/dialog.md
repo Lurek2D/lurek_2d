@@ -222,15 +222,6 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 - `content/examples/dialog.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_dialog_unit.lua` (present)
-- Rust: none detected.
-
-## Evidence / Golden
-
-- No evidence or golden artifacts registered.
-
 ## Architecture Links
 
 - Intentionally empty.

@@ -137,24 +137,6 @@ This module primarily collaborates with `event`, `input`, `runtime`, `timer`. It
 
 - `content/examples/automation.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_automation_unit.lua` (present)
-- Rust: `tests/rust/unit/automation_tests.rs`
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Evidence test | `tests/lua/evidence/test_automation_evidence.lua` |
-| Golden test | `tests/lua/golden/test_automation_golden.lua` |
-| Current artifact | `tests/artifacts/current/automation/automation_condition_gate_trace.txt` |
-| Current artifact | `tests/artifacts/current/automation/automation_macro_control_trace.txt` |
-| Current artifact | `tests/artifacts/current/automation/automation_timeline_trace.txt` |
-| Baseline artifact | `tests/artifacts/baselines/automation/automation_condition_gate_trace.txt` |
-| Baseline artifact | `tests/artifacts/baselines/automation/automation_macro_control_trace.txt` |
-| Baseline artifact | `tests/artifacts/baselines/automation/automation_timeline_trace.txt` |
-
 ## Architecture Links
 
 - Intentionally empty.

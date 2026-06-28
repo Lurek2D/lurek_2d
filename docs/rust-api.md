@@ -42,7 +42,6 @@ Krótki indeks modułów Rust generowany ze specek.
 | [`log`](rust_modules/log.md) | `src/log/` | 3 |
 | [`mapblock`](rust_modules/mapblock.md) | `src/mapblock/` | 14 |
 | [`math`](rust_modules/math.md) | `src/math/` | 18 |
-| [`midi`](rust_modules/midi.md) | `src/midi/` | 3 |
 | [`minimap`](rust_modules/minimap.md) | `src/minimap/` | 6 |
 | [`mods`](rust_modules/mods.md) | `src/mods/` | 6 |
 | [`network`](rust_modules/network.md) | `src/network/` | 13 |
@@ -182,9 +181,6 @@ Każdy moduł ma osobną stronę z `General Info`, `Summary` i `Files`.
 
 - [`math`](rust_modules/math.md)
   - This module represents the core numeric and geometric foundation of the engine, supplying a comprehensive suite of mathematical types, algorithms, and spatial data structures. It provides basic vectors and row-major matrices to manage positions, velocities, and affine transformations. Chained operations like translation, rotation, scale, and shear are packaged in memory-efficient structures, serving as the mathematical backbone for motion and collision across the entire engine.
-
-- [`midi`](rust_modules/midi.md)
-  - This module handles MIDI playback and software synthesis by managing SoundFont resources. It implements a stateful transport player to control files, seeking, and loops. Additionally, it exposes per-channel mix properties like instrument selection, volume, mute, and solo controls, routing audio to the mixer.
 
 - [`minimap`](rust_modules/minimap.md)
   - This module provides a grid-based tactical minimap subsystem for HUD views. It maintains a map model tracking cells, terrain types, and display layers. These layers can be stacked to combine different map representations (like terrain and political views) or show varied vertical elevations, offering highly customizable tactical HUD feedback.

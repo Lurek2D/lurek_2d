@@ -384,20 +384,6 @@ This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`
 
 - `content/examples/runtime.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_runtime_unit.lua` (present)
-- Rust: `tests/rust/ext/effects_audio_runtime_smoke_tests.rs`
-- Rust: `tests/rust/ext/graphics_runtime_smoke_tests.rs`
-- Rust: `tests/rust/unit/runtime_tests.rs`
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Current artifact | `tests/artifacts/current/ui/runtime_input_binding_layout_trace.txt` |
-| Baseline artifact | `tests/artifacts/baselines/ui/runtime_input_binding_layout_trace.txt` |
-
 ## Architecture Links
 
 - Intentionally empty.

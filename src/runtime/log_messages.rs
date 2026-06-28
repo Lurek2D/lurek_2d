@@ -154,11 +154,6 @@ macro_rules! log_msg {
         ::log::trace!("[{}] {}: {}", $id, $crate::runtime::messages::get_message($id), format_args!($($arg)+))
     };
 }
-/// Stable log message identifier.
-pub const A001_MIDI_READ_FAIL: &str = "A001";
-/// Stable log message identifier.
-pub const A002_MIDI_DISABLED: &str = "A002";
-/// Stable log message identifier.
 pub const A003_AUDIO_OUTPUT_UNAVAIL: &str = "A003";
 /// Stable log message identifier.
 pub const A004_AUDIO_PLAY_QUEUED: &str = "A004";

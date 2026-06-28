@@ -161,16 +161,6 @@ This module primarily collaborates with `binary`, `runtime`. Its responsibility 
 
 - `content/examples/save.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_save_unit.lua` (present)
-- Rust: `src/save/save_manager.rs`
-- Rust: `tests/rust/unit/save_tests.rs`
-
-## Evidence / Golden
-
-- No evidence or golden artifacts registered.
-
 ## Architecture Links
 
 - Intentionally empty.

@@ -570,47 +570,6 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 
 - `content/examples/charts.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_charts_unit.lua` (present)
-- Rust: none detected.
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Evidence test | `tests/lua/evidence/test_charts_evidence.lua` |
-| Golden test | `tests/lua/golden/test_charts_golden.lua` |
-| Current artifact | `tests/artifacts/current/charts/charts_area_layered_usage.png` |
-| Current artifact | `tests/artifacts/current/charts/charts_bar_category_revenue.png` |
-| Current artifact | `tests/artifacts/current/charts/charts_boxplot_latency_spread.png` |
-| Current artifact | `tests/artifacts/current/charts/charts_bubble_market_risk.png` |
-| Current artifact | `tests/artifacts/current/charts/charts_candlestick_volatile_ohlc.png` |
-| Current artifact | `tests/artifacts/current/charts/charts_dataframe_heatmap.png` |
-| Current artifact | `tests/artifacts/current/charts/charts_dataframe_histogram.png` |
-| Current artifact | `tests/artifacts/current/charts/charts_dataframe_line.png` |
-| Current artifact | `tests/artifacts/current/charts/charts_dataframe_pie.png` |
-| Current artifact | `tests/artifacts/current/charts/charts_heatmap_region_load.png` |
-| Current artifact | `tests/artifacts/current/charts/charts_histogram_latency_distribution.png` |
-| Current artifact | `tests/artifacts/current/charts/charts_line_revenue_trend.png` |
-| Current artifact | `tests/artifacts/current/charts/charts_nearest_trace.json` |
-| Current artifact | `tests/artifacts/current/charts/charts_pie_market_share.png` |
-| Current artifact | `tests/artifacts/current/charts/charts_radar_unit_comparison.png` |
-| Current artifact | `tests/artifacts/current/charts/charts_scatter_player_scores.png` |
-| Current artifact | `tests/artifacts/current/charts/charts_treemap_budget_breakdown.png` |
-| Baseline artifact | `tests/artifacts/baselines/charts/charts_area_layered_usage.png` |
-| Baseline artifact | `tests/artifacts/baselines/charts/charts_bar_category_revenue.png` |
-| Baseline artifact | `tests/artifacts/baselines/charts/charts_dataframe_heatmap.png` |
-| Baseline artifact | `tests/artifacts/baselines/charts/charts_dataframe_histogram.png` |
-| Baseline artifact | `tests/artifacts/baselines/charts/charts_dataframe_line.png` |
-| Baseline artifact | `tests/artifacts/baselines/charts/charts_dataframe_pie.png` |
-| Baseline artifact | `tests/artifacts/baselines/charts/charts_heatmap_region_load.png` |
-| Baseline artifact | `tests/artifacts/baselines/charts/charts_histogram_latency_distribution.png` |
-| Baseline artifact | `tests/artifacts/baselines/charts/charts_line_revenue_trend.png` |
-| Baseline artifact | `tests/artifacts/baselines/charts/charts_nearest_trace.json` |
-| Baseline artifact | `tests/artifacts/baselines/charts/charts_pie_market_share.png` |
-| Baseline artifact | `tests/artifacts/baselines/charts/charts_scatter_player_scores.png` |
-
 ## Architecture Links
 
 - Intentionally empty.

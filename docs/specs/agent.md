@@ -386,22 +386,6 @@ This module owns its small local Ollama HTTP client rather than depending on `ne
 
 - `content/examples/agent.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_agent_unit.lua` (present)
-- Rust: `tests/rust/unit/agent_tests.rs`
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Evidence test | `tests/lua/evidence/test_agent_evidence.lua` |
-| Golden test | `tests/lua/golden/test_agent_golden.lua` |
-| Current artifact | `tests/artifacts/current/agent/agent_context_memory_report.txt` |
-| Current artifact | `tests/artifacts/current/agent/agent_memory_bundle.json` |
-| Baseline artifact | `tests/artifacts/baselines/agent/agent_context_memory_report.txt` |
-| Baseline artifact | `tests/artifacts/baselines/agent/agent_memory_bundle.json` |
-
 ## Architecture Links
 
 - Intentionally empty.

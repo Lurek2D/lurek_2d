@@ -1,18 +1,18 @@
 {
   "meta": {
-    "generated": "2026-06-28T12:40:41.823877+00:00",
+    "generated": "2026-06-28T18:53:44.040652+00:00",
     "generator": "tools/gen_lua_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "lua_functions": 6431,
+      "lua_functions": 6381,
       "lua_modules": 71,
       "engine_callbacks": 29
     }
   },
   "lua_api": {
     "summary": {
-      "total_functions": 6431,
-      "documented": 6426,
+      "total_functions": 6381,
+      "documented": 6376,
       "coverage_pct": 99.9,
       "modules": 71
     },
@@ -10353,7 +10353,7 @@
             ],
             "inferred_return": "LSource",
             "return_description": "A new audio source ready for playback.",
-            "line": 1354,
+            "line": 927,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -10382,7 +10382,7 @@
             ],
             "inferred_return": "integer",
             "return_description": "Numeric source ID of the playing source.",
-            "line": 1364,
+            "line": 937,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -10405,7 +10405,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1372,
+            "line": 945,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -10434,7 +10434,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1386,
+            "line": 959,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -10457,7 +10457,7 @@
             ],
             "inferred_return": "number",
             "return_description": "Current volume multiplier.",
-            "line": 1400,
+            "line": 973,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -10480,7 +10480,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1412,
+            "line": 985,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -10503,7 +10503,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1425,
+            "line": 998,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -10532,7 +10532,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1439,
+            "line": 1012,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -10555,7 +10555,7 @@
             ],
             "inferred_return": "number",
             "return_description": "Current pitch multiplier.",
-            "line": 1453,
+            "line": 1026,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -10578,7 +10578,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the source is playing.",
-            "line": 1466,
+            "line": 1039,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -10601,7 +10601,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the source is paused.",
-            "line": 1479,
+            "line": 1052,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -10624,7 +10624,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the source is stopped.",
-            "line": 1492,
+            "line": 1065,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -10653,7 +10653,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1505,
+            "line": 1078,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -10676,7 +10676,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if looping is enabled.",
-            "line": 1519,
+            "line": 1092,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -10699,7 +10699,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1531,
+            "line": 1104,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -10728,7 +10728,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1546,
+            "line": 1119,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -10751,7 +10751,7 @@
             ],
             "inferred_return": "number",
             "return_description": "Pan value from -1.0 (left) to 1.0 (right).",
-            "line": 1560,
+            "line": 1133,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -10774,7 +10774,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1572,
+            "line": 1145,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -10790,7 +10790,7 @@
             "typed_params": [],
             "inferred_return": "number",
             "return_description": "Master volume multiplier.",
-            "line": 1583,
+            "line": 1156,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -10806,7 +10806,7 @@
             "typed_params": [],
             "inferred_return": "integer",
             "return_description": "Count of active (playing) sources.",
-            "line": 1591,
+            "line": 1164,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -10822,7 +10822,7 @@
             "typed_params": [],
             "inferred_return": "integer",
             "return_description": "Total source count.",
-            "line": 1599,
+            "line": 1172,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -10845,7 +10845,7 @@
             ],
             "inferred_return": "string",
             "return_description": "Either \"static\" or \"stream\".",
-            "line": 1608,
+            "line": 1181,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -10868,7 +10868,7 @@
             ],
             "inferred_return": "LSource",
             "return_description": "A new source instance with identical settings.",
-            "line": 1617,
+            "line": 1190,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -10884,7 +10884,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 1624,
+            "line": 1197,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -10900,7 +10900,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 1634,
+            "line": 1207,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -10916,7 +10916,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 1644,
+            "line": 1217,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -10939,7 +10939,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the source was successfully released.",
-            "line": 1656,
+            "line": 1229,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -10962,7 +10962,7 @@
             ],
             "inferred_return": "LBus",
             "return_description": "The new audio bus handle.",
-            "line": 1665,
+            "line": 1238,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -10991,7 +10991,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1681,
+            "line": 1254,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11014,7 +11014,7 @@
             ],
             "inferred_return": "LBus",
             "return_description": "The assigned bus, or nil if using direct output.",
-            "line": 1692,
+            "line": 1265,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11030,7 +11030,7 @@
             "typed_params": [],
             "inferred_return": "integer",
             "return_description": "Maximum source count (64).",
-            "line": 1699,
+            "line": 1272,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11053,7 +11053,7 @@
             ],
             "inferred_return": "number",
             "return_description": "Duration in seconds.",
-            "line": 1705,
+            "line": 1278,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11076,7 +11076,7 @@
             ],
             "inferred_return": "number",
             "return_description": "Current position in seconds.",
-            "line": 1718,
+            "line": 1291,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11105,7 +11105,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1731,
+            "line": 1304,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11134,7 +11134,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1746,
+            "line": 1319,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11163,7 +11163,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1760,
+            "line": 1333,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11186,7 +11186,7 @@
             ],
             "inferred_return": "integer",
             "return_description": "Cutoff frequency in Hz, or 0 if not set.",
-            "line": 1774,
+            "line": 1347,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11209,7 +11209,7 @@
             ],
             "inferred_return": "integer",
             "return_description": "Cutoff frequency in Hz, or 0 if not set.",
-            "line": 1787,
+            "line": 1360,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11232,7 +11232,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1799,
+            "line": 1372,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11261,7 +11261,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1813,
+            "line": 1386,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11284,7 +11284,7 @@
             ],
             "inferred_return": "number",
             "return_description": "Fade-in duration in seconds.",
-            "line": 1827,
+            "line": 1400,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11313,7 +11313,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1840,
+            "line": 1413,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11329,7 +11329,7 @@
             "typed_params": [],
             "inferred_return": "number, number",
             "return_description": "X and Y position of the listener.",
-            "line": 1851,
+            "line": 1424,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11364,7 +11364,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1864,
+            "line": 1437,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11380,7 +11380,7 @@
             "typed_params": [],
             "inferred_return": "number, number, number",
             "return_description": "X, Y, and Z position of the listener.",
-            "line": 1877,
+            "line": 1450,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11421,7 +11421,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1891,
+            "line": 1464,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11444,7 +11444,7 @@
             ],
             "inferred_return": "number, number, number",
             "return_description": "X, Y, and Z position.",
-            "line": 1908,
+            "line": 1481,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11485,7 +11485,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1923,
+            "line": 1496,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11508,7 +11508,7 @@
             ],
             "inferred_return": "number, number, number",
             "return_description": "X, Y, and Z velocity components.",
-            "line": 1940,
+            "line": 1513,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11567,7 +11567,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1958,
+            "line": 1531,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11590,7 +11590,7 @@
             ],
             "inferred_return": "number, number, number, number, number, number",
             "return_description": "Forward (fx,fy,fz) and up (ux,uy,uz) vectors.",
-            "line": 1975,
+            "line": 1548,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11613,7 +11613,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1987,
+            "line": 1560,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11629,7 +11629,7 @@
             "typed_params": [],
             "inferred_return": "number",
             "return_description": "Doppler scale factor.",
-            "line": 1998,
+            "line": 1571,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11652,7 +11652,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2006,
+            "line": 1579,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11668,7 +11668,7 @@
             "typed_params": [],
             "inferred_return": "string",
             "return_description": "Distance model name.",
-            "line": 2017,
+            "line": 1590,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11691,7 +11691,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2025,
+            "line": 1598,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11707,7 +11707,7 @@
             "typed_params": [],
             "inferred_return": "number",
             "return_description": "Peak level from 0.0 to 1.0.",
-            "line": 2036,
+            "line": 1609,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11742,7 +11742,7 @@
             ],
             "inferred_return": "LSoundData",
             "return_description": "Raw PCM sample data for manipulation or playback.",
-            "line": 2047,
+            "line": 1620,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11771,7 +11771,7 @@
             ],
             "inferred_return": "LDecoder",
             "return_description": "A streaming decoder with `decode`, `seek`, `rewind`, and `getSampleRate` methods.",
-            "line": 2063,
+            "line": 1636,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11812,7 +11812,7 @@
             ],
             "inferred_return": "integer",
             "return_description": "An opaque integer handle for use with `queueSource`, `playQueueable`, and `stopQueueable`.",
-            "line": 2084,
+            "line": 1657,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11841,7 +11841,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2107,
+            "line": 1680,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11864,7 +11864,7 @@
             ],
             "inferred_return": "integer",
             "return_description": "Number of free buffer slots available for queuing.",
-            "line": 2122,
+            "line": 1695,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11887,7 +11887,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2132,
+            "line": 1705,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11910,7 +11910,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2143,
+            "line": 1716,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11926,7 +11926,7 @@
             "typed_params": [],
             "inferred_return": "string[]",
             "return_description": "Device name strings.",
-            "line": 2153,
+            "line": 1726,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11942,7 +11942,7 @@
             "typed_params": [],
             "inferred_return": "string",
             "return_description": "Current playback device name.",
-            "line": 2159,
+            "line": 1732,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11965,7 +11965,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2165,
+            "line": 1738,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -11994,7 +11994,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2176,
+            "line": 1749,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -12023,7 +12023,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2185,
+            "line": 1758,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -12052,7 +12052,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2192,
+            "line": 1765,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -12081,7 +12081,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2200,
+            "line": 1773,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -12110,7 +12110,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2208,
+            "line": 1781,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -12133,7 +12133,7 @@
             ],
             "inferred_return": "number",
             "return_description": "Stereo width factor (0.0 = mono, 1.0 = full stereo).",
-            "line": 2225,
+            "line": 1798,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -12168,7 +12168,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2243,
+            "line": 1816,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -12191,7 +12191,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2259,
+            "line": 1832,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -12226,7 +12226,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2275,
+            "line": 1848,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -12249,7 +12249,7 @@
             ],
             "inferred_return": "number",
             "return_description": "Peak amplitude in the range [0.0, 1.0+].",
-            "line": 2283,
+            "line": 1856,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -12272,7 +12272,7 @@
             ],
             "inferred_return": "number",
             "return_description": "RMS amplitude in the range [0.0, 1.0+].",
-            "line": 2296,
+            "line": 1869,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -12301,7 +12301,7 @@
             ],
             "inferred_return": "LSoundPool",
             "return_description": "A sound pool with `play`, `stopAll`, `setVolume`, `release`, and `getVoiceCount` methods.",
-            "line": 2310,
+            "line": 1883,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -12336,7 +12336,7 @@
             ],
             "inferred_return": "LBeatClock",
             "return_description": "New beat clock handle.",
-            "line": 2331,
+            "line": 1904,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -12371,7 +12371,7 @@
             ],
             "inferred_return": "LBeatClock",
             "return_description": "New beat clock handle synced to source time.",
-            "line": 2354,
+            "line": 1927,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -12394,7 +12394,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2381,
+            "line": 1954,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -12410,7 +12410,7 @@
             "typed_params": [],
             "inferred_return": "table",
             "return_description": "Table with `perfect`, `great`, `good` in seconds.",
-            "line": 2402,
+            "line": 1975,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -12445,7 +12445,7 @@
             ],
             "inferred_return": "string",
             "return_description": "One of `perfect`, `great`, `good`, `miss`.",
-            "line": 2422,
+            "line": 1995,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -12468,7 +12468,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2444,
+            "line": 2017,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -12484,7 +12484,7 @@
             "typed_params": [],
             "inferred_return": "boolean",
             "return_description": "True if muted (all sources paused).",
-            "line": 2460,
+            "line": 2033,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -12507,7 +12507,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2473,
+            "line": 2046,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -12536,7 +12536,7 @@
             ],
             "inferred_return": "LSource",
             "return_description": "The audio source handle for the playing effect.",
-            "line": 2489,
+            "line": 2062,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -12552,7 +12552,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 2549,
+            "line": 2122,
             "file": "src/lua_api/audio_api.rs"
           },
           {
@@ -12568,7 +12568,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 2559,
+            "line": 2132,
             "file": "src/lua_api/audio_api.rs"
           }
         ],
@@ -12590,7 +12590,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 425,
+                "line": 399,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -12606,7 +12606,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 434,
+                "line": 408,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -12622,7 +12622,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 442,
+                "line": 416,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -12638,7 +12638,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 450,
+                "line": 424,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -12661,7 +12661,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 459,
+                "line": 433,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -12677,7 +12677,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Current volume multiplier.",
-                "line": 468,
+                "line": 442,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -12700,7 +12700,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 476,
+                "line": 450,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -12716,7 +12716,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Current pitch multiplier.",
-                "line": 485,
+                "line": 459,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -12739,7 +12739,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 493,
+                "line": 467,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -12755,7 +12755,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if looping is enabled.",
-                "line": 502,
+                "line": 476,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -12771,7 +12771,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if the source is actively playing.",
-                "line": 510,
+                "line": 484,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -12787,7 +12787,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if the source is paused.",
-                "line": 518,
+                "line": 492,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -12803,7 +12803,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if the source is stopped.",
-                "line": 526,
+                "line": 500,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -12826,7 +12826,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 534,
+                "line": 508,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -12842,7 +12842,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Pan value from -1.0 (left) to 1.0 (right).",
-                "line": 543,
+                "line": 517,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -12858,7 +12858,7 @@
                 "typed_params": [],
                 "inferred_return": "LSource",
                 "return_description": "A new source instance with identical settings.",
-                "line": 551,
+                "line": 525,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -12874,7 +12874,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Either \"static\" or \"stream\".",
-                "line": 564,
+                "line": 538,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -12890,7 +12890,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Duration in seconds.",
-                "line": 575,
+                "line": 549,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -12906,7 +12906,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Current position in seconds from the start.",
-                "line": 583,
+                "line": 557,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -12929,7 +12929,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 591,
+                "line": 565,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -12952,7 +12952,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 601,
+                "line": 575,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -12975,7 +12975,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 610,
+                "line": 584,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -12991,7 +12991,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Cutoff frequency in Hz, or 0 if no lowpass is set.",
-                "line": 619,
+                "line": 593,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -13007,7 +13007,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Cutoff frequency in Hz, or 0 if no highpass is set.",
-                "line": 627,
+                "line": 601,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -13023,7 +13023,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 634,
+                "line": 608,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -13046,7 +13046,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 643,
+                "line": 617,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -13062,7 +13062,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Fade-in duration in seconds.",
-                "line": 652,
+                "line": 626,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -13078,7 +13078,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always returns \"LSource\".",
-                "line": 660,
+                "line": 634,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -13101,7 +13101,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if this object matches the given type.",
-                "line": 665,
+                "line": 639,
                 "file": "src/lua_api/audio_api.rs"
               }
             ]
@@ -13123,7 +13123,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Bus name as registered during creation.",
-                "line": 681,
+                "line": 655,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -13146,7 +13146,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 693,
+                "line": 667,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -13162,7 +13162,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Volume multiplier (defaults to 1.0).",
-                "line": 703,
+                "line": 677,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -13185,7 +13185,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 710,
+                "line": 684,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -13201,7 +13201,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Current pitch multiplier (defaults to 1.0).",
-                "line": 720,
+                "line": 694,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -13217,7 +13217,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 726,
+                "line": 700,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -13233,7 +13233,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 735,
+                "line": 709,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -13249,7 +13249,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if the bus is paused.",
-                "line": 745,
+                "line": 719,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -13265,7 +13265,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always returns \"LBus\".",
-                "line": 752,
+                "line": 726,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -13288,7 +13288,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if this object matches the given type.",
-                "line": 757,
+                "line": 731,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -13317,7 +13317,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 764,
+                "line": 738,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -13333,7 +13333,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 776,
+                "line": 750,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -13349,1012 +13349,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Peak level from 0.0 to 1.0.",
-                "line": 786,
-                "file": "src/lua_api/audio_api.rs"
-              }
-            ]
-          },
-          "LMidiPlayer": {
-            "description": "Lua-side wrapper around a MIDI file player with per-channel control and tempo scaling.",
-            "fields": [],
-            "methods": [
-              {
-                "name": "load",
-                "lua_name": "LMidiPlayer:load",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Loads a MIDI file from the given path relative to the game directory.",
-                "full_doc": "Loads a MIDI file from the given path relative to the game directory.\n@param | path | string | Relative path to the .mid file.\n@return | boolean | True if the file was loaded successfully.",
-                "params_doc": "- `path` â€” `string`: Relative path to the .mid file.",
-                "returns_doc": "boolean",
-                "inferred_sig": "(path)",
-                "typed_params": [
-                  [
-                    "path",
-                    "string",
-                    false,
-                    "Relative path to the .mid file."
-                  ]
-                ],
-                "inferred_return": "boolean",
-                "return_description": "True if the file was loaded successfully.",
-                "line": 806,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "loadData",
-                "lua_name": "LMidiPlayer:loadData",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Loads MIDI data from a raw byte string in memory.",
-                "full_doc": "Loads MIDI data from a raw byte string in memory.\n@param | data | string | Raw MIDI binary data.\n@return | boolean | True if the data was parsed successfully.",
-                "params_doc": "- `data` â€” `string`: Raw MIDI binary data.",
-                "returns_doc": "boolean",
-                "inferred_sig": "",
-                "typed_params": [
-                  [
-                    "data",
-                    "string",
-                    false,
-                    "Raw MIDI binary data."
-                  ]
-                ],
-                "inferred_return": "boolean",
-                "return_description": "True if the data was parsed successfully.",
-                "line": 815,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "isLoaded",
-                "lua_name": "LMidiPlayer:isLoaded",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Returns whether a MIDI file is currently loaded and ready to play.",
-                "full_doc": "Returns whether a MIDI file is currently loaded and ready to play.\n@return | boolean | True if a MIDI file is loaded.",
-                "params_doc": "",
-                "returns_doc": "boolean",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "boolean",
-                "return_description": "True if a MIDI file is loaded.",
-                "line": 822,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "getFilePath",
-                "lua_name": "LMidiPlayer:getFilePath",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Returns the file path of the currently loaded MIDI file.",
-                "full_doc": "Returns the file path of the currently loaded MIDI file.\n@return | string | File path string or nil if no file is loaded.",
-                "params_doc": "",
-                "returns_doc": "string",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "string",
-                "return_description": "File path string or nil if no file is loaded.",
-                "line": 828,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "setSoundFont",
-                "lua_name": "LMidiPlayer:setSoundFont",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Sets a custom SoundFont file for MIDI synthesis (stub, not yet implemented).",
-                "full_doc": "Sets a custom SoundFont file for MIDI synthesis (stub, not yet implemented).\n@param | path | string | Relative path to the .sf2 file.",
-                "params_doc": "- `path` â€” `string`: Relative path to the .sf2 file.",
-                "returns_doc": "",
-                "inferred_sig": "(path)",
-                "typed_params": [
-                  [
-                    "path",
-                    "string",
-                    false,
-                    "Relative path to the .sf2 file."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 834,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "getSoundFontPath",
-                "lua_name": "LMidiPlayer:getSoundFontPath",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Returns the path of the currently set SoundFont (stub, not yet implemented).",
-                "full_doc": "Returns the path of the currently set SoundFont (stub, not yet implemented).\n@return | string | SoundFont path or nil.",
-                "params_doc": "",
-                "returns_doc": "string",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "string",
-                "return_description": "SoundFont path or nil.",
-                "line": 841,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "useDefaultSoundFont",
-                "lua_name": "LMidiPlayer:useDefaultSoundFont",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Reverts to the built-in default SoundFont (stub, not yet implemented).",
-                "full_doc": "Reverts to the built-in default SoundFont (stub, not yet implemented).",
-                "params_doc": "",
-                "returns_doc": "",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 847,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "play",
-                "lua_name": "LMidiPlayer:play",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Starts MIDI playback from the current position using the audio output stream.",
-                "full_doc": "Starts MIDI playback from the current position using the audio output stream.",
-                "params_doc": "",
-                "returns_doc": "",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 853,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "pause",
-                "lua_name": "LMidiPlayer:pause",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Pauses MIDI playback at the current position.",
-                "full_doc": "Pauses MIDI playback at the current position.",
-                "params_doc": "",
-                "returns_doc": "",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 862,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "stop",
-                "lua_name": "LMidiPlayer:stop",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Stops MIDI playback and resets position to the beginning.",
-                "full_doc": "Stops MIDI playback and resets position to the beginning.",
-                "params_doc": "",
-                "returns_doc": "",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 868,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "isPlaying",
-                "lua_name": "LMidiPlayer:isPlaying",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Returns whether the MIDI player is currently playing.",
-                "full_doc": "Returns whether the MIDI player is currently playing.\n@return | boolean | True if playing.",
-                "params_doc": "",
-                "returns_doc": "boolean",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "boolean",
-                "return_description": "True if playing.",
-                "line": 875,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "isPaused",
-                "lua_name": "LMidiPlayer:isPaused",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Returns whether the MIDI player is currently paused.",
-                "full_doc": "Returns whether the MIDI player is currently paused.\n@return | boolean | True if paused.",
-                "params_doc": "",
-                "returns_doc": "boolean",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "boolean",
-                "return_description": "True if paused.",
-                "line": 881,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "seek",
-                "lua_name": "LMidiPlayer:seek",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Seeks to a specific position in the MIDI file.",
-                "full_doc": "Seeks to a specific position in the MIDI file.\n@param | secs | number | Target position in seconds.",
-                "params_doc": "- `secs` â€” `number`: Target position in seconds.",
-                "returns_doc": "",
-                "inferred_sig": "(secs)",
-                "typed_params": [
-                  [
-                    "secs",
-                    "number",
-                    false,
-                    "Target position in seconds."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 887,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "tell",
-                "lua_name": "LMidiPlayer:tell",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Returns the current playback position of the MIDI player in seconds.",
-                "full_doc": "Returns the current playback position of the MIDI player in seconds.\n@return | number | Current position in seconds.",
-                "params_doc": "",
-                "returns_doc": "number",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "number",
-                "return_description": "Current position in seconds.",
-                "line": 894,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "getDuration",
-                "lua_name": "LMidiPlayer:getDuration",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Returns the total duration of the loaded MIDI file in seconds.",
-                "full_doc": "Returns the total duration of the loaded MIDI file in seconds.\n@return | number | Duration in seconds.",
-                "params_doc": "",
-                "returns_doc": "number",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "number",
-                "return_description": "Duration in seconds.",
-                "line": 898,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "setLooping",
-                "lua_name": "LMidiPlayer:setLooping",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Enables or disables looping for MIDI playback.",
-                "full_doc": "Enables or disables looping for MIDI playback.\n@param | looping | boolean | True to loop, false to play once.",
-                "params_doc": "- `looping` â€” `boolean`: True to loop, false to play once.",
-                "returns_doc": "",
-                "inferred_sig": "(looping)",
-                "typed_params": [
-                  [
-                    "looping",
-                    "boolean",
-                    false,
-                    "True to loop, false to play once."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 904,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "isLooping",
-                "lua_name": "LMidiPlayer:isLooping",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Returns whether MIDI looping is enabled.",
-                "full_doc": "Returns whether MIDI looping is enabled.\n@return | boolean | True if looping.",
-                "params_doc": "",
-                "returns_doc": "boolean",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "boolean",
-                "return_description": "True if looping.",
-                "line": 911,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "setVolume",
-                "lua_name": "LMidiPlayer:setVolume",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Sets the master volume for MIDI playback.",
-                "full_doc": "Sets the master volume for MIDI playback.\n@param | vol | number | Volume multiplier (0.0 = silent, 1.0 = normal).",
-                "params_doc": "- `vol` â€” `number`: Volume multiplier (0.0 = silent, 1.0 = normal).",
-                "returns_doc": "",
-                "inferred_sig": "(vol)",
-                "typed_params": [
-                  [
-                    "vol",
-                    "number",
-                    false,
-                    "Volume multiplier (0.0 = silent, 1.0 = normal)."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 917,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "getVolume",
-                "lua_name": "LMidiPlayer:getVolume",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Returns the current master volume of the MIDI player.",
-                "full_doc": "Returns the current master volume of the MIDI player.\n@return | number | Volume multiplier.",
-                "params_doc": "",
-                "returns_doc": "number",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "number",
-                "return_description": "Volume multiplier.",
-                "line": 924,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "setBus",
-                "lua_name": "LMidiPlayer:setBus",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Routes this MIDI player's output through the specified audio bus.",
-                "full_doc": "Routes this MIDI player's output through the specified audio bus.\n@param | bus | LBus? | Bus to route through, or nil for direct output.",
-                "params_doc": "- `bus` â€” `LBus?`: Bus to route through, or nil for direct output.",
-                "returns_doc": "",
-                "inferred_sig": "(bus_val)",
-                "typed_params": [
-                  [
-                    "bus",
-                    "LBus?",
-                    true,
-                    "Bus to route through, or nil for direct output."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 928,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "getBus",
-                "lua_name": "LMidiPlayer:getBus",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Returns the audio bus this MIDI player is routed through.",
-                "full_doc": "Returns the audio bus this MIDI player is routed through.\n@return | LBus | The assigned bus, or nil if using direct output.",
-                "params_doc": "",
-                "returns_doc": "LBus",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "LBus",
-                "return_description": "The assigned bus, or nil if using direct output.",
-                "line": 945,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "setTempo",
-                "lua_name": "LMidiPlayer:setTempo",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Sets the playback tempo in beats per minute.",
-                "full_doc": "Sets the playback tempo in beats per minute.\n@param | bpm | number | Desired tempo in BPM.",
-                "params_doc": "- `bpm` â€” `number`: Desired tempo in BPM.",
-                "returns_doc": "",
-                "inferred_sig": "(bpm)",
-                "typed_params": [
-                  [
-                    "bpm",
-                    "number",
-                    false,
-                    "Desired tempo in BPM."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 957,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "getTempo",
-                "lua_name": "LMidiPlayer:getTempo",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Returns the current effective tempo in beats per minute.",
-                "full_doc": "Returns the current effective tempo in beats per minute.\n@return | number | Current tempo in BPM.",
-                "params_doc": "",
-                "returns_doc": "number",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "number",
-                "return_description": "Current tempo in BPM.",
-                "line": 969,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "getOriginalTempo",
-                "lua_name": "LMidiPlayer:getOriginalTempo",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Returns the original tempo of the MIDI file as authored.",
-                "full_doc": "Returns the original tempo of the MIDI file as authored.\n@return | number | Original tempo in BPM.",
-                "params_doc": "",
-                "returns_doc": "number",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "number",
-                "return_description": "Original tempo in BPM.",
-                "line": 976,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "setTempoScale",
-                "lua_name": "LMidiPlayer:setTempoScale",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Sets a tempo multiplier relative to the original speed.",
-                "full_doc": "Sets a tempo multiplier relative to the original speed.\n@param | scale | number | Tempo scale (1.0 = original, 2.0 = double speed).",
-                "params_doc": "- `scale` â€” `number`: Tempo scale (1.0 = original, 2.0 = double speed).",
-                "returns_doc": "",
-                "inferred_sig": "(scale)",
-                "typed_params": [
-                  [
-                    "scale",
-                    "number",
-                    false,
-                    "Tempo scale (1.0 = original, 2.0 = double speed)."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 982,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "getTempoScale",
-                "lua_name": "LMidiPlayer:getTempoScale",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Returns the current tempo scale multiplier.",
-                "full_doc": "Returns the current tempo scale multiplier.\n@return | number | Tempo scale factor.",
-                "params_doc": "",
-                "returns_doc": "number",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "number",
-                "return_description": "Tempo scale factor.",
-                "line": 989,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "getTicksPerBeat",
-                "lua_name": "LMidiPlayer:getTicksPerBeat",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Returns the MIDI file's resolution in ticks per beat (PPQN).",
-                "full_doc": "Returns the MIDI file's resolution in ticks per beat (PPQN).\n@return | integer | Ticks per quarter note.",
-                "params_doc": "",
-                "returns_doc": "integer",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "integer",
-                "return_description": "Ticks per quarter note.",
-                "line": 995,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "setChannelVolume",
-                "lua_name": "LMidiPlayer:setChannelVolume",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Sets the volume for a specific MIDI channel (1-16).",
-                "full_doc": "Sets the volume for a specific MIDI channel (1-16).\n@param | ch | integer | Channel number (1-16).\n@param | vol | number | Volume multiplier (0.0-1.0).",
-                "params_doc": "- `ch` â€” `integer`: Channel number (1-16).\n- `vol` â€” `number`: Volume multiplier (0.0-1.0).",
-                "returns_doc": "",
-                "inferred_sig": "(ch, vol)",
-                "typed_params": [
-                  [
-                    "ch",
-                    "integer",
-                    false,
-                    "Channel number (1-16)."
-                  ],
-                  [
-                    "vol",
-                    "number",
-                    false,
-                    "Volume multiplier (0.0-1.0)."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 1002,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "getChannelVolume",
-                "lua_name": "LMidiPlayer:getChannelVolume",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Returns the volume of a specific MIDI channel.",
-                "full_doc": "Returns the volume of a specific MIDI channel.\n@param | ch | integer | Channel number (1-16).\n@return | number | Channel volume (0.0-1.0).",
-                "params_doc": "- `ch` â€” `integer`: Channel number (1-16).",
-                "returns_doc": "number",
-                "inferred_sig": "(ch)",
-                "typed_params": [
-                  [
-                    "ch",
-                    "integer",
-                    false,
-                    "Channel number (1-16)."
-                  ]
-                ],
-                "inferred_return": "number",
-                "return_description": "Channel volume (0.0-1.0).",
-                "line": 1012,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "setChannelMuted",
-                "lua_name": "LMidiPlayer:setChannelMuted",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Mutes or unmutes a specific MIDI channel.",
-                "full_doc": "Mutes or unmutes a specific MIDI channel.\n@param | ch | integer | Channel number (1-16).\n@param | muted | boolean | True to mute, false to unmute.",
-                "params_doc": "- `ch` â€” `integer`: Channel number (1-16).\n- `muted` â€” `boolean`: True to mute, false to unmute.",
-                "returns_doc": "",
-                "inferred_sig": "(ch, muted)",
-                "typed_params": [
-                  [
-                    "ch",
-                    "integer",
-                    false,
-                    "Channel number (1-16)."
-                  ],
-                  [
-                    "muted",
-                    "boolean",
-                    false,
-                    "True to mute, false to unmute."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 1023,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "isChannelMuted",
-                "lua_name": "LMidiPlayer:isChannelMuted",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Returns whether a specific MIDI channel is muted.",
-                "full_doc": "Returns whether a specific MIDI channel is muted.\n@param | ch | integer | Channel number (1-16).\n@return | boolean | True if the channel is muted.",
-                "params_doc": "- `ch` â€” `integer`: Channel number (1-16).",
-                "returns_doc": "boolean",
-                "inferred_sig": "(ch)",
-                "typed_params": [
-                  [
-                    "ch",
-                    "integer",
-                    false,
-                    "Channel number (1-16)."
-                  ]
-                ],
-                "inferred_return": "boolean",
-                "return_description": "True if the channel is muted.",
-                "line": 1033,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "setChannelInstrument",
-                "lua_name": "LMidiPlayer:setChannelInstrument",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Sets the General MIDI instrument program for a channel.",
-                "full_doc": "Sets the General MIDI instrument program for a channel.\n@param | ch | integer | Channel number (1-16).\n@param | inst | integer | GM instrument program number (0-127).",
-                "params_doc": "- `ch` â€” `integer`: Channel number (1-16).\n- `inst` â€” `integer`: GM instrument program number (0-127).",
-                "returns_doc": "",
-                "inferred_sig": "(ch, inst)",
-                "typed_params": [
-                  [
-                    "ch",
-                    "integer",
-                    false,
-                    "Channel number (1-16)."
-                  ],
-                  [
-                    "inst",
-                    "integer",
-                    false,
-                    "GM instrument program number (0-127)."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 1044,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "getChannelInstrument",
-                "lua_name": "LMidiPlayer:getChannelInstrument",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Returns the current GM instrument program for a channel.",
-                "full_doc": "Returns the current GM instrument program for a channel.\n@param | ch | integer | Channel number (1-16).\n@return | integer | GM instrument program number (0-127).",
-                "params_doc": "- `ch` â€” `integer`: Channel number (1-16).",
-                "returns_doc": "integer",
-                "inferred_sig": "(ch)",
-                "typed_params": [
-                  [
-                    "ch",
-                    "integer",
-                    false,
-                    "Channel number (1-16)."
-                  ]
-                ],
-                "inferred_return": "integer",
-                "return_description": "GM instrument program number (0-127).",
-                "line": 1057,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "getChannelCount",
-                "lua_name": "LMidiPlayer:getChannelCount",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Returns the number of active MIDI channels in the loaded file.",
-                "full_doc": "Returns the number of active MIDI channels in the loaded file.\n@return | integer | Number of active channels.",
-                "params_doc": "",
-                "returns_doc": "integer",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "integer",
-                "return_description": "Number of active channels.",
-                "line": 1067,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "soloChannel",
-                "lua_name": "LMidiPlayer:soloChannel",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Solos a specific MIDI channel, muting all others.",
-                "full_doc": "Solos a specific MIDI channel, muting all others.\n@param | ch | integer | Channel number (1-16) to solo.",
-                "params_doc": "- `ch` â€” `integer`: Channel number (1-16) to solo.",
-                "returns_doc": "",
-                "inferred_sig": "(ch)",
-                "typed_params": [
-                  [
-                    "ch",
-                    "integer",
-                    false,
-                    "Channel number (1-16) to solo."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 1073,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "unsoloAll",
-                "lua_name": "LMidiPlayer:unsoloAll",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Removes solo from all channels, restoring normal playback.",
-                "full_doc": "Removes solo from all channels, restoring normal playback.",
-                "params_doc": "",
-                "returns_doc": "",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 1081,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "getTrackCount",
-                "lua_name": "LMidiPlayer:getTrackCount",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Returns the number of tracks in the loaded MIDI file.",
-                "full_doc": "Returns the number of tracks in the loaded MIDI file.\n@return | integer | Number of MIDI tracks.",
-                "params_doc": "",
-                "returns_doc": "integer",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "integer",
-                "return_description": "Number of MIDI tracks.",
-                "line": 1088,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "getTrackName",
-                "lua_name": "LMidiPlayer:getTrackName",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Returns the name of a MIDI track by 1-based index.",
-                "full_doc": "Returns the name of a MIDI track by 1-based index.\n@param | idx | integer | Track index (1-based).\n@return | string | Track name or nil if not available.",
-                "params_doc": "- `idx` â€” `integer`: Track index (1-based).",
-                "returns_doc": "string",
-                "inferred_sig": "(idx)",
-                "typed_params": [
-                  [
-                    "idx",
-                    "integer",
-                    false,
-                    "Track index (1-based)."
-                  ]
-                ],
-                "inferred_return": "string",
-                "return_description": "Track name or nil if not available.",
-                "line": 1095,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "setTrackMuted",
-                "lua_name": "LMidiPlayer:setTrackMuted",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Mutes or unmutes a specific MIDI track.",
-                "full_doc": "Mutes or unmutes a specific MIDI track.\n@param | idx | integer | Track index (1-based).\n@param | muted | boolean | True to mute, false to unmute.",
-                "params_doc": "- `idx` â€” `integer`: Track index (1-based).\n- `muted` â€” `boolean`: True to mute, false to unmute.",
-                "returns_doc": "",
-                "inferred_sig": "(idx, muted)",
-                "typed_params": [
-                  [
-                    "idx",
-                    "integer",
-                    false,
-                    "Track index (1-based)."
-                  ],
-                  [
-                    "muted",
-                    "boolean",
-                    false,
-                    "True to mute, false to unmute."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 1110,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "isTrackMuted",
-                "lua_name": "LMidiPlayer:isTrackMuted",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Returns whether a specific MIDI track is muted.",
-                "full_doc": "Returns whether a specific MIDI track is muted.\n@param | idx | integer | Track index (1-based).\n@return | boolean | True if the track is muted.",
-                "params_doc": "- `idx` â€” `integer`: Track index (1-based).",
-                "returns_doc": "boolean",
-                "inferred_sig": "(idx)",
-                "typed_params": [
-                  [
-                    "idx",
-                    "integer",
-                    false,
-                    "Track index (1-based)."
-                  ]
-                ],
-                "inferred_return": "boolean",
-                "return_description": "True if the track is muted.",
-                "line": 1120,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "getNoteCount",
-                "lua_name": "LMidiPlayer:getNoteCount",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Returns the total number of note events in the loaded MIDI file.",
-                "full_doc": "Returns the total number of note events in the loaded MIDI file.\n@return | integer | Total note count.",
-                "params_doc": "",
-                "returns_doc": "integer",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "integer",
-                "return_description": "Total note count.",
-                "line": 1130,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "setOnNoteOn",
-                "lua_name": "LMidiPlayer:setOnNoteOn",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Registers a callback for MIDI note-on events (stub, not yet implemented).",
-                "full_doc": "Registers a callback for MIDI note-on events (stub, not yet implemented).\n@param | cb | function? | Callback function or nil to clear.",
-                "params_doc": "- `cb` â€” `function?`: Callback function or nil to clear.",
-                "returns_doc": "",
-                "inferred_sig": "(cb)",
-                "typed_params": [
-                  [
-                    "cb",
-                    "function?",
-                    true,
-                    "Callback function or nil to clear."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 1136,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "setOnNoteOff",
-                "lua_name": "LMidiPlayer:setOnNoteOff",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Registers a callback for MIDI note-off events (stub, not yet implemented).",
-                "full_doc": "Registers a callback for MIDI note-off events (stub, not yet implemented).\n@param | cb | function? | Callback function or nil to clear.",
-                "params_doc": "- `cb` â€” `function?`: Callback function or nil to clear.",
-                "returns_doc": "",
-                "inferred_sig": "(cb)",
-                "typed_params": [
-                  [
-                    "cb",
-                    "function?",
-                    true,
-                    "Callback function or nil to clear."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 1143,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "setOnEnd",
-                "lua_name": "LMidiPlayer:setOnEnd",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Registers a callback invoked when MIDI playback finishes (stub, not yet implemented).",
-                "full_doc": "Registers a callback invoked when MIDI playback finishes (stub, not yet implemented).\n@param | cb | function? | Callback function or nil to clear.",
-                "params_doc": "- `cb` â€” `function?`: Callback function or nil to clear.",
-                "returns_doc": "",
-                "inferred_sig": "(cb)",
-                "typed_params": [
-                  [
-                    "cb",
-                    "function?",
-                    true,
-                    "Callback function or nil to clear."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 1150,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "getSampleRate",
-                "lua_name": "LMidiPlayer:getSampleRate",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Returns the output sample rate used for MIDI synthesis.",
-                "full_doc": "Returns the output sample rate used for MIDI synthesis.\n@return | integer | Sample rate in Hz (e.g. 44100).",
-                "params_doc": "",
-                "returns_doc": "integer",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "integer",
-                "return_description": "Sample rate in Hz (e.g. 44100).",
-                "line": 1157,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "setSampleRate",
-                "lua_name": "LMidiPlayer:setSampleRate",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Sets the output sample rate for MIDI synthesis.",
-                "full_doc": "Sets the output sample rate for MIDI synthesis.\n@param | rate | integer | Sample rate in Hz (e.g. 44100, 48000).",
-                "params_doc": "- `rate` â€” `integer`: Sample rate in Hz (e.g. 44100, 48000).",
-                "returns_doc": "",
-                "inferred_sig": "(rate)",
-                "typed_params": [
-                  [
-                    "rate",
-                    "integer",
-                    false,
-                    "Sample rate in Hz (e.g. 44100, 48000)."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 1163,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "getChannels",
-                "lua_name": "LMidiPlayer:getChannels",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Returns the number of output audio channels for MIDI synthesis.",
-                "full_doc": "Returns the number of output audio channels for MIDI synthesis.\n@return | integer | Channel count (1 = mono, 2 = stereo).",
-                "params_doc": "",
-                "returns_doc": "integer",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "integer",
-                "return_description": "Channel count (1 = mono, 2 = stereo).",
-                "line": 1170,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "setChannels",
-                "lua_name": "LMidiPlayer:setChannels",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Sets the number of output audio channels for MIDI synthesis.",
-                "full_doc": "Sets the number of output audio channels for MIDI synthesis.\n@param | channels | integer | Channel count (1 = mono, 2 = stereo).",
-                "params_doc": "- `channels` â€” `integer`: Channel count (1 = mono, 2 = stereo).",
-                "returns_doc": "",
-                "inferred_sig": "(channels)",
-                "typed_params": [
-                  [
-                    "channels",
-                    "integer",
-                    false,
-                    "Channel count (1 = mono, 2 = stereo)."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 1176,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "type",
-                "lua_name": "LMidiPlayer:type",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Returns the type name of this object for runtime type-checking.",
-                "full_doc": "Returns the type name of this object for runtime type-checking.\n@return | string | Always returns \"LMidiPlayer\".",
-                "params_doc": "",
-                "returns_doc": "string",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "string",
-                "return_description": "Always returns \"LMidiPlayer\".",
-                "line": 1183,
-                "file": "src/lua_api/audio_api.rs"
-              },
-              {
-                "name": "typeOf",
-                "lua_name": "LMidiPlayer:typeOf",
-                "kind": "method",
-                "owner_type": "LMidiPlayer",
-                "description": "Checks whether this object matches the given type name.",
-                "full_doc": "Checks whether this object matches the given type name.\n@param | name | string | Type name to check (e.g. \"LMidiPlayer\", \"MidiPlayer\", or \"Object\").\n@return | boolean | True if this object matches the given type.",
-                "params_doc": "- `name` â€” `string`: Type name to check (e.g. \"LMidiPlayer\", \"MidiPlayer\", or \"Object\").",
-                "returns_doc": "boolean",
-                "inferred_sig": "(name)",
-                "typed_params": [
-                  [
-                    "name",
-                    "string",
-                    false,
-                    "Type name to check (e.g. \"LMidiPlayer\", \"MidiPlayer\", or \"Object\")."
-                  ]
-                ],
-                "inferred_return": "boolean",
-                "return_description": "True if this object matches the given type.",
-                "line": 1188,
+                "line": 760,
                 "file": "src/lua_api/audio_api.rs"
               }
             ]
@@ -14376,7 +13371,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Numeric source ID of the voice that started playing.",
-                "line": 1203,
+                "line": 776,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -14392,7 +13387,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1211,
+                "line": 784,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -14415,7 +13410,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1222,
+                "line": 795,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -14438,7 +13433,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1234,
+                "line": 807,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -14454,7 +13449,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1246,
+                "line": 819,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -14470,7 +13465,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Voice count.",
-                "line": 1257,
+                "line": 830,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -14486,7 +13481,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always returns \"LSoundPool\".",
-                "line": 1261,
+                "line": 834,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -14509,7 +13504,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if this object matches the given type.",
-                "line": 1266,
+                "line": 839,
                 "file": "src/lua_api/audio_api.rs"
               }
             ]
@@ -14531,7 +13526,7 @@
                 "typed_params": [],
                 "inferred_return": "LSoundData",
                 "return_description": "Decoded PCM data, or nil if end of stream reached.",
-                "line": 1280,
+                "line": 853,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -14547,7 +13542,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Channel count (1 = mono, 2 = stereo).",
-                "line": 1292,
+                "line": 865,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -14563,7 +13558,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Bits per sample (e.g. 16, 24).",
-                "line": 1298,
+                "line": 871,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -14579,7 +13574,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Sample rate in Hz.",
-                "line": 1302,
+                "line": 875,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -14595,7 +13590,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Duration in seconds.",
-                "line": 1306,
+                "line": 879,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -14618,7 +13613,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1310,
+                "line": 883,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -14634,7 +13629,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1316,
+                "line": 889,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -14650,7 +13645,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Current position in seconds.",
-                "line": 1323,
+                "line": 896,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -14666,7 +13661,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if seek operations are supported.",
-                "line": 1327,
+                "line": 900,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -14682,7 +13677,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1330,
+                "line": 903,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -14698,7 +13693,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always returns \"LDecoder\".",
-                "line": 1334,
+                "line": 907,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -14721,7 +13716,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if this object matches the given type.",
-                "line": 1339,
+                "line": 912,
                 "file": "src/lua_api/audio_api.rs"
               }
             ]
@@ -14743,7 +13738,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2770,
+                "line": 2343,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -14759,7 +13754,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2776,
+                "line": 2349,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -14775,7 +13770,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2782,
+                "line": 2355,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -14798,7 +13793,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of beat numbers crossed during this tick.",
-                "line": 2790,
+                "line": 2363,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -14821,7 +13816,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Table with optional `beat` and `bar` integer fields.",
-                "line": 2802,
+                "line": 2375,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -14837,7 +13832,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Table with `beat`, `bar`, `beat_in_bar`, `phase` fields.",
-                "line": 2860,
+                "line": 2433,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -14853,7 +13848,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Beats-per-minute.",
-                "line": 2872,
+                "line": 2445,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -14869,7 +13864,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Beats-per-minute.",
-                "line": 2876,
+                "line": 2449,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -14892,7 +13887,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2880,
+                "line": 2453,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -14921,7 +13916,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2888,
+                "line": 2461,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -14944,7 +13939,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2895,
+                "line": 2468,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -14960,7 +13955,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Beats per bar.",
-                "line": 2902,
+                "line": 2475,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -14983,7 +13978,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2908,
+                "line": 2481,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -14999,7 +13994,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Fractional beat.",
-                "line": 2915,
+                "line": 2488,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -15015,7 +14010,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Fractional bar.",
-                "line": 2919,
+                "line": 2492,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -15038,7 +14033,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Phase value.",
-                "line": 2924,
+                "line": 2497,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -15061,7 +14056,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Seconds remaining.",
-                "line": 2932,
+                "line": 2505,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -15090,7 +14085,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when within tolerance.",
-                "line": 2941,
+                "line": 2514,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -15113,7 +14108,7 @@
                 ],
                 "inferred_return": "number, number",
                 "return_description": "Nearest beat and signed error in seconds.",
-                "line": 2955,
+                "line": 2528,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -15136,7 +14131,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Estimated BPM, or 0.0 when not enough taps.",
-                "line": 2963,
+                "line": 2536,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -15165,7 +14160,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Handle table usable with `cancel`.",
-                "line": 2969,
+                "line": 2542,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -15194,7 +14189,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Handle table usable with `cancel`.",
-                "line": 2982,
+                "line": 2555,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -15223,7 +14218,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Handle table usable with `cancel`.",
-                "line": 2992,
+                "line": 2565,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -15246,7 +14241,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when a schedule was cancelled.",
-                "line": 3005,
+                "line": 2578,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -15262,7 +14257,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "Always true.",
-                "line": 3012,
+                "line": 2585,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -15285,7 +14280,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when scheduled.",
-                "line": 3020,
+                "line": 2593,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -15301,7 +14296,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of fired beat numbers.",
-                "line": 3026,
+                "line": 2599,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -15317,7 +14312,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Seconds per beat.",
-                "line": 3037,
+                "line": 2610,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -15333,7 +14328,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Seconds until next beat.",
-                "line": 3043,
+                "line": 2616,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -15349,7 +14344,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "Running state.",
-                "line": 3049,
+                "line": 2622,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -15372,7 +14367,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3055,
+                "line": 2628,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -15388,7 +14383,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Table with bpm, beat, bar, phase, and running.",
-                "line": 3065,
+                "line": 2638,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -15417,7 +14412,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Quantised beat value.",
-                "line": 3080,
+                "line": 2653,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -15433,7 +14428,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LBeatClock`.",
-                "line": 3086,
+                "line": 2659,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -15456,7 +14451,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when matched.",
-                "line": 3091,
+                "line": 2664,
                 "file": "src/lua_api/audio_api.rs"
               }
             ]
@@ -15478,7 +14473,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Total sample count.",
-                "line": 3102,
+                "line": 2675,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -15494,7 +14489,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Sample rate in Hz.",
-                "line": 3106,
+                "line": 2679,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -15510,7 +14505,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Channel count.",
-                "line": 3110,
+                "line": 2683,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -15526,7 +14521,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Duration in seconds.",
-                "line": 3114,
+                "line": 2687,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -15542,7 +14537,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Bit depth per sample.",
-                "line": 3118,
+                "line": 2691,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -15565,7 +14560,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Sample value at the requested index.",
-                "line": 3123,
+                "line": 2696,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -15636,7 +14631,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3140,
+                "line": 2713,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -15665,7 +14660,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3164,
+                "line": 2737,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -15681,7 +14676,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always returns \"LSoundData\".",
-                "line": 3177,
+                "line": 2750,
                 "file": "src/lua_api/audio_api.rs"
               },
               {
@@ -15704,7 +14699,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if this object matches the given type.",
-                "line": 3182,
+                "line": 2755,
                 "file": "src/lua_api/audio_api.rs"
               }
             ]

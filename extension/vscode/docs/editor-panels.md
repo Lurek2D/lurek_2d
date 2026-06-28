@@ -103,8 +103,8 @@ The webview HTML must include a Content Security Policy meta tag. Scripts and st
 
 | Panel | Command | Namespace | Native output |
 |---|---|---|---|
-| GUI Widget Editor | `lurek.editor.guiWidget` | `lurek.html` | `HTML/CSS UI layout` |
-| GUI Theme Editor | `lurek.editor.guiTheme` | `lurek.html` | `global CSS theme` |
+| GUI Widget Editor | `lurek.editor.guiWidget` | `lurek.ui` | `UI layout data` |
+| GUI Theme Editor | `lurek.editor.guiTheme` | `lurek.ui` | `UI theme data` |
 | Database Editor | `lurek.editor.database` | `lurek.dataframe` | `dataframe JSON/CSV-friendly table` |
 | Input Mapper | `lurek.editor.inputMapper` | `lurek.input` | `input mapping TOML` |
 | Localization Editor | `lurek.editor.localization` | `lurek.i18n` | `.locale.json dictionary` |

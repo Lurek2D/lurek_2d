@@ -396,46 +396,6 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 
 - `content/examples/globe.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_globe_unit.lua` (present)
-- Rust: `tests/rust/unit/globe_tests.rs`
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Evidence test | `tests/lua/evidence/test_globe_evidence.lua` |
-| Golden test | `tests/lua/golden/test_globe_golden.lua` |
-| Current artifact | `tests/artifacts/current/globe/globe_camera_fog_registry_trace.txt` |
-| Current artifact | `tests/artifacts/current/globe/globe_camera_lod_panels.png` |
-| Current artifact | `tests/artifacts/current/globe/globe_great_circle_metrics.txt` |
-| Current artifact | `tests/artifacts/current/globe/globe_great_circle_route.png` |
-| Current artifact | `tests/artifacts/current/globe/globe_layer_heat_fog_composite.png` |
-| Current artifact | `tests/artifacts/current/globe/globe_marker_pick_surface.png` |
-| Current artifact | `tests/artifacts/current/globe/globe_province_projection.png` |
-| Current artifact | `tests/artifacts/current/globe/globe_region_trace.txt` |
-| Current artifact | `tests/artifacts/current/globe/globe_semantic_region_holes.png` |
-| Current artifact | `tests/artifacts/current/globe/globe_shader_binding_contract.txt` |
-| Current artifact | `tests/artifacts/current/globe/globe_shader_visual_01_atmosphere_band.png` |
-| Current artifact | `tests/artifacts/current/globe/globe_shader_visual_02_heat_overlay.png` |
-| Current artifact | `tests/artifacts/current/globe/globe_shader_visual_03_tactical_map.png` |
-| Current artifact | `tests/artifacts/current/globe/globe_terrain_region_overlay.png` |
-| Current artifact | `tests/artifacts/current/globe/globe_terrain_rotation.gif` |
-| Current artifact | `tests/artifacts/current/globe/globe_topology_cost_route.png` |
-| Baseline artifact | `tests/artifacts/baselines/globe/globe_camera_fog_registry_trace.txt` |
-| Baseline artifact | `tests/artifacts/baselines/globe/globe_camera_lod_panels.png` |
-| Baseline artifact | `tests/artifacts/baselines/globe/globe_great_circle_metrics.txt` |
-| Baseline artifact | `tests/artifacts/baselines/globe/globe_great_circle_route.png` |
-| Baseline artifact | `tests/artifacts/baselines/globe/globe_layer_heat_fog_composite.png` |
-| Baseline artifact | `tests/artifacts/baselines/globe/globe_marker_pick_surface.png` |
-| Baseline artifact | `tests/artifacts/baselines/globe/globe_province_projection.png` |
-| Baseline artifact | `tests/artifacts/baselines/globe/globe_region_trace.txt` |
-| Baseline artifact | `tests/artifacts/baselines/globe/globe_semantic_region_holes.png` |
-| Baseline artifact | `tests/artifacts/baselines/globe/globe_terrain_region_overlay.png` |
-| Baseline artifact | `tests/artifacts/baselines/globe/globe_terrain_rotation.gif` |
-| Baseline artifact | `tests/artifacts/baselines/globe/globe_topology_cost_route.png` |
-
 ## Architecture Links
 
 - Intentionally empty.

@@ -132,15 +132,6 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 
 - `content/examples/debugbridge.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_debugbridge_unit.lua` (present)
-- Rust: `tests/rust/unit/debugbridge_tests.rs`
-
-## Evidence / Golden
-
-- No evidence or golden artifacts registered.
-
 ## Architecture Links
 
 - Intentionally empty.

@@ -8,7 +8,7 @@ Ten dokument przepisuje wizualizację pod Lurek2D. Widok symulacji może być no
 |---|---|
 | canvas bloków i krawędzi | `lurek.render.rectangle`, `line`, `circle`, `print`, `setColor` |
 | wykresy i panele | `lurek.ui.newLineChart`, `newBarChart`, `newTable`, `newTreeView`, `newProgressBar`, `newWindow` |
-| HTML/HUD | `lurek.html` dla prostszych paneli, jeśli wygodniejsze niż retained UI |
+| HTML/HUD | `lurek.ui` dla prostszych paneli, jeśli wygodniejsze niż retained UI |
 | kamera/zoom/pan | `lurek.camera` albo własna transformacja w Lua |
 | input | `lurek.input` i callbacki mouse/key |
 | live tooling | `lurek.debugbridge.broadcast` |

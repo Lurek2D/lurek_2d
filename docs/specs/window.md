@@ -218,15 +218,6 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 - `content/examples/window.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_window_unit.lua` (present)
-- Rust: none detected.
-
-## Evidence / Golden
-
-- No evidence or golden artifacts registered.
-
 ## Architecture Links
 
 - Intentionally empty.

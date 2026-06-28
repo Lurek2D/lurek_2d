@@ -170,15 +170,6 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 - `content/examples/timer.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_timer_unit.lua` (present)
-- Rust: `tests/rust/unit/timer_tests.rs`
-
-## Evidence / Golden
-
-- No evidence or golden artifacts registered.
-
 ## Architecture Links
 
 - Intentionally empty.

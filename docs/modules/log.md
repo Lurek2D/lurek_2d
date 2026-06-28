@@ -4,40 +4,6 @@
 
 Runs structured logs with level-filtered sinks.
 
-## When To Use
-
-- It keeps message formatting, structured fields, severity, and sink routing together, which lets debugging output scale from quick traces to retained logs.
-- That common path makes filtering and correlation across subsystems easier.
-- Read it as the standard language for script diagnostics when several systems need to be debugged through the same output flow.
-
-## Minimal Example
-
-Example block: `lurek.log.debug`
-
-```lua
-do
-    lurek.log.clearSinks()
-    lurek.log.setLevel("debug")
-    local id = lurek.log.addSink({type = "memory", level = "debug", capacity = 8})
-    lurek.log.debug("tick completed", "Gameplay")
-    local entry = lurek.log.readMemory(id, true)[1]
-    lurek.log.removeSink(id)
-    lurek.log.info("captured debug entry: " .. entry.level .. " " .. entry.tag)
-end
-```
-
-## Common Patterns
-
-- Start with `lurek.log.addSink` when exploring this module.
-- Start with `lurek.log.clearSinks` when exploring this module.
-- Start with `lurek.log.debug` when exploring this module.
-- Start with `lurek.log.debug_fields` when exploring this module.
-- Start with `lurek.log.error` when exploring this module.
-
-## API Reference
-
-- This page is the generated API reference for this module.
-
 ## Summary
 
 - The `log` module is the common script-facing path for runtime diagnostics, so users can emit messages through one consistent logging surface instead of mixing ad hoc print styles.
@@ -46,6 +12,10 @@ end
 - Read it as the standard language for script diagnostics when several systems need to be debugged through the same output flow.
 
 This module primarily collaborates with `binary`, `runtime`. Its responsibility should stay inside the Foundations group rather than absorb behavior owned by those neighbors.
+
+## API Reference
+
+- This page is the generated API reference for this module.
 
 ## Functions
 

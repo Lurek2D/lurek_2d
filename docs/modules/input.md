@@ -2,48 +2,7 @@
 
 ## Purpose
 
-Unifies keyboard, mouse, gamepad slotting, and touch events into stable inputs.
-
-## When To Use
-
-- Its main job is normalization. Device-specific events become stable engine-side state so scripts can ask about buttons, axes, touches, combos, and actions through one consistent vocabulary.
-- Per-frame snapshots matter because gameplay, UI, replays, and tools all need deterministic control state rather than raw transient platform events.
-- Action mapping, rebinding, presets, and conflict handling are central because real projects care about intent and user-configurable schemes more than about hardwired physical keys.
-
-## Minimal Example
-
-Example block: `lurek.input.keyboard.isDown`
-
-```lua
-do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local jumpHeld = lurek.input.keyboard.isDown("space")
-    local climbHeld = lurek.input.keyboard.isDown("w", "up")
-    local moveHeld = lurek.input.keyboard.isDown("a", "d", "left", "right")
-    local hasInput = jumpHeld or climbHeld or moveHeld
-    lurek.log.info("platformer input jump=" .. tostring(jumpHeld) .. " climb=" .. tostring(climbHeld))
-    lurek.log.info("platformer movement held=" .. tostring(moveHeld) .. " active=" .. tostring(hasInput))
-end
-```
-
-## Common Patterns
-
-- Start with `lurek.input.advancePlayback` when exploring this module.
-- Start with `lurek.input.bind` when exploring this module.
-- Start with `lurek.input.clearBindings` when exploring this module.
-- Start with `lurek.input.define` when exploring this module.
-- Start with `lurek.input.deserializeBindings` when exploring this module.
-
-## API Reference
-
-- This page is the generated API reference for this module.
+Unifies keyboard, mouse, gamepad slotting, and touch events into stable inputs. - Supports custom action-bindings, gesture combo timing, and JSON input replays.
 
 ## Summary
 
@@ -61,6 +20,10 @@ end
 - Other systems consume the result, but `input` owns normalization, mapping, serialization, and replay semantics for device-originated intent.
 
 This module primarily collaborates with `filesystem`, `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
+
+## API Reference
+
+- This page is the generated API reference for this module.
 
 ## Functions
 
@@ -82,13 +45,6 @@ lurek.input.advancePlayback()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
@@ -125,13 +81,6 @@ lurek.input.bind(action, keys)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.input.bind("jump", "space")
     lurek.input.bind("move_left", {"a", "left"})
@@ -157,13 +106,6 @@ lurek.input.clearBindings()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.input.bind("a1", "q")
     lurek.input.bind("a2", "e")
@@ -197,13 +139,6 @@ lurek.input.define(name, bindings, category)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.input.define("jump", {"space", "up"}, "movement")
     lurek.input.define("pause", {"escape", "p"}, "system")
@@ -241,19 +176,12 @@ lurek.input.deserializeBindings(json)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.input.bind("test_deser", "q")
     local json = lurek.input.serializeBindings()
     lurek.input.reset()
     local ok = lurek.input.deserializeBindings(json)
-    example_print_log("deserializeBindings=" .. tostring(ok))
+    lurek.log.info(tostring("deserializeBindings=" .. tostring(ok)))
     lurek.input.reset()
 end
 ```
@@ -284,13 +212,6 @@ lurek.input.getAxis(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.input.bind("move_x", {"d", "a"})
     local v = lurek.input.getAxis("move_x")
@@ -321,19 +242,12 @@ lurek.input.getBindings()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.input.bind("shoot", "x")
     local bindings = lurek.input.getBindings()
     local shoot = rawget(bindings, "shoot") or {}
-    example_print_log("has shoot = " .. tostring(rawget(bindings, "shoot") ~= nil))
-    example_print_log("shoot bindings = " .. #shoot)
+    lurek.log.info(tostring("has shoot = " .. tostring(rawget(bindings, "shoot") ~= nil)))
+    lurek.log.info(tostring("shoot bindings = " .. #shoot))
 end
 ```
 
@@ -363,13 +277,6 @@ lurek.input.getByCategory(category)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.input.define("run", "lshift", "movement")
     local cats = lurek.input.getByCategory("movement")
@@ -401,18 +308,11 @@ lurek.input.getConflicts()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.input.bind("act_a", "x")
     lurek.input.bind("act_b", "x")
     local c = lurek.input.getConflicts()
-    example_print_log("getConflicts type=" .. type(c))
+    lurek.log.info(tostring("getConflicts type=" .. type(c)))
     lurek.input.reset()
 end
 ```
@@ -437,13 +337,6 @@ lurek.input.getPlaybackFrame()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local frame = lurek.input.getPlaybackFrame()
     local playing = lurek.input.isPlayingBack()
@@ -481,18 +374,11 @@ lurek.input.getVector(hname, vname)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.input.bind("haxis", {"d", "a"})
     lurek.input.bind("vaxis", {"s", "w"})
     local h, v = lurek.input.getVector("haxis", "vaxis")
-    example_print_log("getVector=" .. tostring(h) .. "," .. tostring(v))
+    lurek.log.info(tostring("getVector=" .. tostring(h) .. "," .. tostring(v)))
     lurek.input.reset()
 end
 ```
@@ -523,13 +409,6 @@ lurek.input.isActionDown(action)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.input.bind("fire", "space")
     local down = lurek.input.isActionDown("fire")
@@ -560,13 +439,6 @@ lurek.input.isDown()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local hasHelper = type(lurek.input.isDown) == "function"
     local keyboardDown = lurek.input.keyboard.isDown("a")
@@ -597,13 +469,6 @@ lurek.input.isPlayingBack()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
@@ -639,13 +504,6 @@ lurek.input.isRecording()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local before = lurek.input.isRecording()
     lurek.input.startRecording()
@@ -676,13 +534,6 @@ lurek.input.loadRecording(json)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
@@ -721,13 +572,6 @@ lurek.input.newCombo(steps, opts)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local combo = lurek.input.newCombo({"down", "right", "z"}, {total_gap = 500})
     local step1 = combo:getStep(1)
@@ -764,19 +608,12 @@ lurek.input.newMapping(name, keys)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local mapping = lurek.input.newMapping("attack", {"z", "button1"})
     local held = mapping.isDown()
     local just = mapping.wasPressed()
     local done = mapping.wasReleased()
-    example_print_log("held=" .. tostring(held) .. " just=" .. tostring(just) .. " done=" .. tostring(done))
+    lurek.log.info(tostring("held=" .. tostring(held) .. " just=" .. tostring(just) .. " done=" .. tostring(done)))
 end
 ```
 
@@ -800,13 +637,6 @@ lurek.input.onRebind(callback)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local firedAction = "none"
     local firedCount = 0
@@ -841,19 +671,12 @@ lurek.input.reset(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.input.bind("temp", "t")
     lurek.input.reset("temp")
-    example_print_log("reset(name) ok")
+    lurek.log.info(tostring("reset(name) ok"))
     lurek.input.reset()
-    example_print_log("reset() ok")
+    lurek.log.info(tostring("reset() ok"))
 end
 ```
 
@@ -877,13 +700,6 @@ lurek.input.serializeBindings()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.input.bind("test_ser", "s")
     local json = lurek.input.serializeBindings()
@@ -908,13 +724,6 @@ lurek.input.startPlayback()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
@@ -944,13 +753,6 @@ lurek.input.startRecording()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.input.startRecording()
     local recording = lurek.input.stopRecording()
@@ -975,13 +777,6 @@ lurek.input.stopPlayback()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
@@ -1014,13 +809,6 @@ lurek.input.stopRecording()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
@@ -1057,13 +845,6 @@ lurek.input.unbind(action)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.input.bind("temp", "t")
     local had = lurek.input.unbind("temp")
@@ -1101,13 +882,6 @@ lurek.input.wasActionPressed(action)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.input.bind("jump", "space")
     local pressed = lurek.input.wasActionPressed("jump")
@@ -1145,13 +919,6 @@ lurek.input.wasActionPressedWithin(action, frames)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.input.bind("dodge", "shift")
     local recent = lurek.input.wasActionPressedWithin("dodge", 10)
@@ -1188,13 +955,6 @@ lurek.input.wasActionReleased(action)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.input.bind("run", "shift")
     local released = lurek.input.wasActionReleased("run")
@@ -1225,13 +985,6 @@ lurek.input.wasPressed()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local has_was_pressed = type(lurek.input.wasPressed) == "function"
     local v = has_was_pressed and lurek.input.wasPressed() or false
@@ -1262,13 +1015,6 @@ lurek.input.wasReleased()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local has_was_released = type(lurek.input.wasReleased) == "function"
     local v = has_was_released and lurek.input.wasReleased() or false
@@ -1331,13 +1077,6 @@ LCombo:feed(key)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local combo = lurek.input.newCombo({"a", "b", "c"})
     local result = combo:feed("a")
@@ -1374,13 +1113,6 @@ LCombo:getStep(index)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local combo = lurek.input.newCombo({"a", "b"})
     local step = combo:getStep(1)
@@ -1410,13 +1142,6 @@ LCombo:isInProgress()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local combo = lurek.input.newCombo({ "a", "b", "c" })
     combo:feed("a")
@@ -1448,19 +1173,12 @@ LCombo:progress()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local combo = lurek.input.newCombo({ "a", "b", "c" })
     combo:feed("a")
     combo:tick(0.016)
-    example_print_log("in_progress=" .. tostring(combo:isInProgress()))
-    example_print_log("progress=" .. combo:progress())
+    lurek.log.info(tostring("in_progress=" .. tostring(combo:isInProgress())))
+    lurek.log.info(tostring("progress=" .. combo:progress()))
 end
 ```
 
@@ -1478,13 +1196,6 @@ LCombo:reset()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local combo = lurek.input.newCombo({"q", "w", "e"})
     combo:feed("q")
@@ -1522,13 +1233,6 @@ LCombo:tick(dt)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local combo = lurek.input.newCombo({"x", "y"}, {total_gap = 300})
     local result = combo:tick(0.016)
@@ -1559,13 +1263,6 @@ LCombo:totalSteps()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local combo = lurek.input.newCombo({ "a", "b", "c" })
     combo:feed("a")
@@ -1597,13 +1294,6 @@ LCombo:type()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local combo = lurek.input.newCombo({"a"})
     local total = combo:totalSteps()
@@ -1639,13 +1329,6 @@ LCombo:typeOf(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local combo = lurek.input.newCombo({"a"})
     local total = combo:totalSteps()
@@ -1683,18 +1366,11 @@ LCursor:getType()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sys_cursor = lurek.input.mouse.getSystemCursor("arrow")
-    example_print_log("cursor type=" .. sys_cursor:type())
-    example_print_log("cursor kind=" .. sys_cursor:getType())
-    example_print_log("typeOf=" .. tostring(sys_cursor:typeOf("LCursor")))
+    lurek.log.info(tostring("cursor type=" .. sys_cursor:type()))
+    lurek.log.info(tostring("cursor kind=" .. sys_cursor:getType()))
+    lurek.log.info(tostring("typeOf=" .. tostring(sys_cursor:typeOf("LCursor"))))
     sys_cursor:release()
 end
 ```
@@ -1713,18 +1389,11 @@ LCursor:release()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sys_cursor = lurek.input.mouse.getSystemCursor("arrow")
-    example_print_log("cursor type=" .. sys_cursor:type())
-    example_print_log("cursor kind=" .. sys_cursor:getType())
-    example_print_log("typeOf=" .. tostring(sys_cursor:typeOf("LCursor")))
+    lurek.log.info(tostring("cursor type=" .. sys_cursor:type()))
+    lurek.log.info(tostring("cursor kind=" .. sys_cursor:getType()))
+    lurek.log.info(tostring("typeOf=" .. tostring(sys_cursor:typeOf("LCursor"))))
     sys_cursor:release()
 end
 ```
@@ -1749,18 +1418,11 @@ LCursor:type()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sys_cursor = lurek.input.mouse.getSystemCursor("arrow")
-    example_print_log("cursor type=" .. sys_cursor:type())
-    example_print_log("cursor kind=" .. sys_cursor:getType())
-    example_print_log("typeOf=" .. tostring(sys_cursor:typeOf("LCursor")))
+    lurek.log.info(tostring("cursor type=" .. sys_cursor:type()))
+    lurek.log.info(tostring("cursor kind=" .. sys_cursor:getType()))
+    lurek.log.info(tostring("typeOf=" .. tostring(sys_cursor:typeOf("LCursor"))))
     sys_cursor:release()
 end
 ```
@@ -1791,18 +1453,11 @@ LCursor:typeOf(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sys_cursor = lurek.input.mouse.getSystemCursor("arrow")
-    example_print_log("cursor type=" .. sys_cursor:type())
-    example_print_log("cursor kind=" .. sys_cursor:getType())
-    example_print_log("typeOf=" .. tostring(sys_cursor:typeOf("LCursor")))
+    lurek.log.info(tostring("cursor type=" .. sys_cursor:type()))
+    lurek.log.info(tostring("cursor kind=" .. sys_cursor:getType()))
+    lurek.log.info(tostring("typeOf=" .. tostring(sys_cursor:typeOf("LCursor"))))
     sys_cursor:release()
 end
 ```
@@ -1835,13 +1490,6 @@ LInputRecording:frameCount()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
@@ -1872,13 +1520,6 @@ LInputRecording:toJson()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
@@ -1910,13 +1551,6 @@ LInputRecording:totalFrames()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
@@ -1947,13 +1581,6 @@ LInputRecording:type()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
@@ -1990,13 +1617,6 @@ LInputRecording:typeOf(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()

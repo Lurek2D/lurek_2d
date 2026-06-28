@@ -4,47 +4,6 @@
 
 Replays precise input steps, chords, device actions, and visual test assertions.
 
-## When To Use
-
-- It turns authored steps into real runtime input flow, covering the parsing of automation scripts, ordered playback, and step-level control over how the scenario advances.
-- Steps can model keyboard, mouse, wheel, text, touch, and gamepad input, including positions, click counts, axis values, pressure, and duration-generated release events.
-- Chord steps such as ctrl+a or shift+mouse1 are authored as one automation event but replay as the same primitive callbacks and input-state transitions that real user input would produce.
-
-## Minimal Example
-
-Example block: `lurek.automation.load`
-
-```lua
-do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local steps = { { action = "wait", time = 0.0 } }
-    lurek.automation.load("login_flow", { steps = steps })
-    local scripts = lurek.automation.getScripts()
-    example_print_log("loaded = " .. tostring(lurek.automation.hasScript("login_flow")))
-    example_print_log("script count = " .. tostring(#scripts))
-    lurek.automation.unload("login_flow")
-end
-```
-
-## Common Patterns
-
-- Start with `lurek.automation.getCondition` when exploring this module.
-- Start with `lurek.automation.getCurrentScript` when exploring this module.
-- Start with `lurek.automation.getCurrentStep` when exploring this module.
-- Start with `lurek.automation.getElapsedTime` when exploring this module.
-- Start with `lurek.automation.getLastError` when exploring this module.
-
-## API Reference
-
-- This page is the generated API reference for this module.
-
 ## Summary
 
 - The `automation` module is the scripted replay layer for users who want deterministic QA, repeatable demos, or regression-oriented gameplay checks.
@@ -56,6 +15,10 @@ end
 - Read it as the coordination layer above raw input and clocks. Neighboring modules provide the low-level events and timing primitives, while `automation` turns them into a reusable test workflow.
 
 This module primarily collaborates with `event`, `input`, `runtime`, `timer`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
+## API Reference
+
+- This page is the generated API reference for this module.
 
 ## Functions
 
@@ -83,19 +46,11 @@ lurek.automation.getCondition(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     lurek.automation.setCondition("ready", true)
     local val = lurek.automation.getCondition("ready")
     local missing = lurek.automation.getCondition("missing_condition")
-    example_print_log("ready = " .. tostring(val))
-    example_print_log("missing_condition = " .. tostring(missing))
+    lurek.log.info(tostring("ready = " .. tostring(val)))
+    lurek.log.info(tostring("missing_condition = " .. tostring(missing)))
     lurek.automation.setCondition("ready", false)
 end
 ```
@@ -120,20 +75,12 @@ lurek.automation.getCurrentScript()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("current_test", { steps = steps })
     lurek.automation.start("current_test")
     local name = lurek.automation.getCurrentScript()
-    example_print_log("current script = " .. tostring(name))
-    example_print_log("running = " .. tostring(lurek.automation.isRunning()))
+    lurek.log.info(tostring("current script = " .. tostring(name)))
+    lurek.log.info(tostring("running = " .. tostring(lurek.automation.isRunning())))
 end
 ```
 
@@ -157,14 +104,6 @@ lurek.automation.getCurrentStep()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local steps = {
         { action = "wait", time = 0.0 },
         { action = "wait", time = 0.2 },
@@ -172,8 +111,8 @@ do
     lurek.automation.load("step_test", { steps = steps })
     lurek.automation.start("step_test")
     local step = lurek.automation.getCurrentStep()
-    example_print_log("current step = " .. tostring(step))
-    example_print_log("step count = " .. tostring(lurek.automation.getStepCount()))
+    lurek.log.info(tostring("current step = " .. tostring(step)))
+    lurek.log.info(tostring("step count = " .. tostring(lurek.automation.getStepCount())))
 end
 ```
 
@@ -197,14 +136,6 @@ lurek.automation.getElapsedTime()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local steps = {
         { action = "wait", time = 0.0 },
         { action = "wait", time = 0.2 },
@@ -213,8 +144,8 @@ do
     lurek.automation.start("elapsed_test")
     lurek.automation.update(0.05)
     local t = lurek.automation.getElapsedTime()
-    example_print_log("elapsed = " .. tostring(t) .. "s")
-    example_print_log("current script = " .. tostring(lurek.automation.getCurrentScript()))
+    lurek.log.info(tostring("elapsed = " .. tostring(t) .. "s"))
+    lurek.log.info(tostring("current script = " .. tostring(lurek.automation.getCurrentScript())))
 end
 ```
 
@@ -238,20 +169,12 @@ lurek.automation.getLastError()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     lurek.automation.stop()
     local err = lurek.automation.getLastError()
     local failed = lurek.automation.isFailed()
-    example_print_log("last error = " .. tostring(err))
-    example_print_log("failed = " .. tostring(failed))
-    example_print_log("has error text = " .. tostring(err ~= nil and err ~= ""))
+    lurek.log.info(tostring("last error = " .. tostring(err)))
+    lurek.log.info(tostring("failed = " .. tostring(failed)))
+    lurek.log.info(tostring("has error text = " .. tostring(err ~= nil and err ~= "")))
 end
 ```
 
@@ -275,18 +198,10 @@ lurek.automation.getPlaybackSpeed()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     lurek.automation.setPlaybackSpeed(1.5)
     local speed = lurek.automation.getPlaybackSpeed()
-    example_print_log("playback speed = " .. tostring(speed))
-    example_print_log("speed query completed")
+    lurek.log.info(tostring("playback speed = " .. tostring(speed)))
+    lurek.log.info(tostring("speed query completed"))
     lurek.automation.setPlaybackSpeed(1.0)
 end
 ```
@@ -311,20 +226,12 @@ lurek.automation.getScripts()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("list_one", { steps = steps })
     lurek.automation.load("list_two", { steps = steps })
     local scripts = lurek.automation.getScripts()
-    example_print_log("loaded scripts = " .. #scripts)
-    example_print_log("first script = " .. tostring(scripts[1]))
+    lurek.log.info(tostring("loaded scripts = " .. #scripts))
+    lurek.log.info(tostring("first script = " .. tostring(scripts[1])))
 end
 ```
 
@@ -348,14 +255,6 @@ lurek.automation.getStepCount()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local steps = {
         { action = "wait", time = 0.0 },
         { action = "wait", time = 0.2 },
@@ -364,8 +263,8 @@ do
     lurek.automation.load("count_test", { steps = steps })
     lurek.automation.start("count_test")
     local count = lurek.automation.getStepCount()
-    example_print_log("step count = " .. tostring(count))
-    example_print_log("current step = " .. tostring(lurek.automation.getCurrentStep()))
+    lurek.log.info(tostring("step count = " .. tostring(count)))
+    lurek.log.info(tostring("current step = " .. tostring(lurek.automation.getCurrentStep())))
 end
 ```
 
@@ -395,20 +294,12 @@ lurek.automation.getStepLimit(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("limit_query", { steps = steps })
     local limit = lurek.automation.getStepLimit("run_test")
     local loaded_limit = lurek.automation.getStepLimit("limit_query")
-    example_print_log("step limit for run_test = " .. tostring(limit))
-    example_print_log("step limit for limit_query = " .. tostring(loaded_limit))
+    lurek.log.info(tostring("step limit for run_test = " .. tostring(limit)))
+    lurek.log.info(tostring("step limit for limit_query = " .. tostring(loaded_limit)))
 end
 ```
 
@@ -438,20 +329,12 @@ lurek.automation.hasMacro(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("macro_has_source", { steps = steps })
     lurek.automation.saveMacro("fast_login", "macro_has_source")
     local has = lurek.automation.hasMacro("fast_login")
-    example_print_log("has macro = " .. tostring(has))
-    example_print_log("macro count = " .. tostring(#lurek.automation.listMacros()))
+    lurek.log.info(tostring("has macro = " .. tostring(has)))
+    lurek.log.info(tostring("macro count = " .. tostring(#lurek.automation.listMacros())))
     lurek.automation.unload("macro_has_source")
 end
 ```
@@ -482,20 +365,12 @@ lurek.automation.hasScript(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("status_check", { steps = steps })
     local has = lurek.automation.hasScript("nonexistent")
     local loaded = lurek.automation.hasScript("status_check")
-    example_print_log("has nonexistent = " .. tostring(has))
-    example_print_log("has status_check = " .. tostring(loaded))
+    lurek.log.info(tostring("has nonexistent = " .. tostring(has)))
+    lurek.log.info(tostring("has status_check = " .. tostring(loaded)))
 end
 ```
 
@@ -519,21 +394,13 @@ lurek.automation.isComplete()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("complete_test", { steps = steps })
     lurek.automation.start("complete_test")
     lurek.automation.update(0.1)
     local done = lurek.automation.isComplete()
-    example_print_log("isComplete = " .. tostring(done))
-    example_print_log("current step = " .. tostring(lurek.automation.getCurrentStep()))
+    lurek.log.info(tostring("isComplete = " .. tostring(done)))
+    lurek.log.info(tostring("current step = " .. tostring(lurek.automation.getCurrentStep())))
 end
 ```
 
@@ -557,19 +424,11 @@ lurek.automation.isFailed()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     lurek.automation.stop()
     local err = lurek.automation.getLastError()
     local failed = lurek.automation.isFailed()
-    example_print_log("last error = " .. tostring(err))
-    example_print_log("isFailed = " .. tostring(failed))
+    lurek.log.info(tostring("last error = " .. tostring(err)))
+    lurek.log.info(tostring("isFailed = " .. tostring(failed)))
 end
 ```
 
@@ -593,19 +452,11 @@ lurek.automation.isHighlightMode()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     lurek.automation.setHighlightMode(true)
     local hl = lurek.automation.isHighlightMode()
-    example_print_log("highlight mode = " .. tostring(hl))
+    lurek.log.info(tostring("highlight mode = " .. tostring(hl)))
     lurek.automation.setHighlightMode(false)
-    example_print_log("highlight mode after reset = " .. tostring(lurek.automation.isHighlightMode()))
+    lurek.log.info(tostring("highlight mode after reset = " .. tostring(lurek.automation.isHighlightMode())))
 end
 ```
 
@@ -629,14 +480,6 @@ lurek.automation.isPaused()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local steps = {
         { action = "wait", time = 0.0 },
         { action = "wait", time = 0.5 },
@@ -645,9 +488,9 @@ do
     lurek.automation.start("paused_test")
     lurek.automation.pause()
     local paused = lurek.automation.isPaused()
-    example_print_log("isPaused = " .. tostring(paused))
+    lurek.log.info(tostring("isPaused = " .. tostring(paused)))
     lurek.automation.resume()
-    example_print_log("isPaused after resume = " .. tostring(lurek.automation.isPaused()))
+    lurek.log.info(tostring("isPaused after resume = " .. tostring(lurek.automation.isPaused())))
 end
 ```
 
@@ -671,21 +514,13 @@ lurek.automation.isRunning()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("running_test", { steps = steps })
     lurek.automation.start("running_test")
     local running = lurek.automation.isRunning()
-    example_print_log("isRunning = " .. tostring(running))
+    lurek.log.info(tostring("isRunning = " .. tostring(running)))
     lurek.automation.stop()
-    example_print_log("isRunning after stop = " .. tostring(lurek.automation.isRunning()))
+    lurek.log.info(tostring("isRunning after stop = " .. tostring(lurek.automation.isRunning())))
 end
 ```
 
@@ -709,20 +544,12 @@ lurek.automation.listMacros()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("macro_list_source", { steps = steps })
     lurek.automation.saveMacro("fast_login", "macro_list_source")
     local macros = lurek.automation.listMacros()
-    example_print_log("macros = " .. #macros)
-    example_print_log("first macro = " .. tostring(macros[1]))
+    lurek.log.info(tostring("macros = " .. #macros))
+    lurek.log.info(tostring("first macro = " .. tostring(macros[1])))
 end
 ```
 
@@ -747,19 +574,11 @@ lurek.automation.load(name, data)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("login_flow", { steps = steps })
     local scripts = lurek.automation.getScripts()
-    example_print_log("loaded = " .. tostring(lurek.automation.hasScript("login_flow")))
-    example_print_log("script count = " .. tostring(#scripts))
+    lurek.log.info(tostring("loaded = " .. tostring(lurek.automation.hasScript("login_flow"))))
+    lurek.log.info(tostring("script count = " .. tostring(#scripts)))
     lurek.automation.unload("login_flow")
 end
 ```
@@ -785,19 +604,11 @@ lurek.automation.loadFromToml(name, toml_str)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local toml = "[[steps]]\naction = \"wait\"\ntime = 0.0\n"
     lurek.automation.loadFromToml("toml_script", toml)
     local scripts = lurek.automation.getScripts()
-    example_print_log("loaded from TOML = " .. tostring(lurek.automation.hasScript("toml_script")))
-    example_print_log("script count = " .. tostring(#scripts))
+    lurek.log.info(tostring("loaded from TOML = " .. tostring(lurek.automation.hasScript("toml_script"))))
+    lurek.log.info(tostring("script count = " .. tostring(#scripts)))
     lurek.automation.unload("toml_script")
 end
 ```
@@ -816,14 +627,6 @@ lurek.automation.pause()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local steps = {
         { action = "wait", time = 0.0 },
         { action = "wait", time = 0.5 },
@@ -831,8 +634,8 @@ do
     lurek.automation.load("pause_test", { steps = steps })
     lurek.automation.start("pause_test")
     lurek.automation.pause()
-    example_print_log("paused = " .. tostring(lurek.automation.isPaused()))
-    example_print_log("running = " .. tostring(lurek.automation.isRunning()))
+    lurek.log.info(tostring("paused = " .. tostring(lurek.automation.isPaused())))
+    lurek.log.info(tostring("running = " .. tostring(lurek.automation.isRunning())))
 end
 ```
 
@@ -856,20 +659,12 @@ lurek.automation.playMacro(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("macro_play_source", { steps = steps })
     lurek.automation.saveMacro("fast_login", "macro_play_source")
     lurek.automation.playMacro("fast_login")
-    example_print_log("macro playing = " .. tostring(lurek.automation.isRunning()))
-    example_print_log("current script = " .. tostring(lurek.automation.getCurrentScript()))
+    lurek.log.info(tostring("macro playing = " .. tostring(lurek.automation.isRunning())))
+    lurek.log.info(tostring("current script = " .. tostring(lurek.automation.getCurrentScript())))
 end
 ```
 
@@ -887,14 +682,6 @@ lurek.automation.resume()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local steps = {
         { action = "wait", time = 0.0 },
         { action = "wait", time = 0.5 },
@@ -903,8 +690,8 @@ do
     lurek.automation.start("resume_test")
     lurek.automation.pause()
     lurek.automation.resume()
-    example_print_log("paused after resume = " .. tostring(lurek.automation.isPaused()))
-    example_print_log("running after resume = " .. tostring(lurek.automation.isRunning()))
+    lurek.log.info(tostring("paused after resume = " .. tostring(lurek.automation.isPaused())))
+    lurek.log.info(tostring("running after resume = " .. tostring(lurek.automation.isRunning())))
 end
 ```
 
@@ -929,19 +716,11 @@ lurek.automation.saveMacro(macro_name, script_name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("macro_source", { steps = steps })
     lurek.automation.saveMacro("fast_login", "macro_source")
-    example_print_log("macro saved = " .. tostring(lurek.automation.hasMacro("fast_login")))
-    example_print_log("macro count = " .. tostring(#lurek.automation.listMacros()))
+    lurek.log.info(tostring("macro saved = " .. tostring(lurek.automation.hasMacro("fast_login"))))
+    lurek.log.info(tostring("macro count = " .. tostring(#lurek.automation.listMacros())))
 end
 ```
 
@@ -966,19 +745,11 @@ lurek.automation.setCondition(name, value)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     lurek.automation.setCondition("logged_in", true)
     lurek.automation.setCondition("ready", false)
-    example_print_log("condition set")
-    example_print_log("logged_in = " .. tostring(lurek.automation.getCondition("logged_in")))
-    example_print_log("ready = " .. tostring(lurek.automation.getCondition("ready")))
+    lurek.log.info(tostring("condition set"))
+    lurek.log.info(tostring("logged_in = " .. tostring(lurek.automation.getCondition("logged_in"))))
+    lurek.log.info(tostring("ready = " .. tostring(lurek.automation.getCondition("ready"))))
 end
 ```
 
@@ -1002,20 +773,12 @@ lurek.automation.setHighlightMode(enable)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local before = lurek.automation.isHighlightMode()
     lurek.automation.setHighlightMode(true)
-    example_print_log("highlight before = " .. tostring(before))
-    example_print_log("highlight = " .. tostring(lurek.automation.isHighlightMode()))
+    lurek.log.info(tostring("highlight before = " .. tostring(before)))
+    lurek.log.info(tostring("highlight = " .. tostring(lurek.automation.isHighlightMode())))
     lurek.automation.setHighlightMode(false)
-    example_print_log("highlight after reset = " .. tostring(lurek.automation.isHighlightMode()))
+    lurek.log.info(tostring("highlight after reset = " .. tostring(lurek.automation.isHighlightMode())))
 end
 ```
 
@@ -1039,19 +802,11 @@ lurek.automation.setPlaybackSpeed(factor)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local before = lurek.automation.getPlaybackSpeed()
     lurek.automation.setPlaybackSpeed(2.0)
-    example_print_log("configured speed = 2.0")
-    example_print_log("speed before = " .. tostring(before))
-    example_print_log("speed = " .. tostring(lurek.automation.getPlaybackSpeed()))
+    lurek.log.info(tostring("configured speed = 2.0"))
+    lurek.log.info(tostring("speed before = " .. tostring(before)))
+    lurek.log.info(tostring("speed = " .. tostring(lurek.automation.getPlaybackSpeed())))
 end
 ```
 
@@ -1082,19 +837,11 @@ lurek.automation.setStepLimit(name, n)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("limit_set", { steps = steps })
     local ok = lurek.automation.setStepLimit("limit_set", 1000)
-    example_print_log("step limit updated = " .. tostring(ok))
-    example_print_log("step limit = " .. tostring(lurek.automation.getStepLimit("limit_set")))
+    lurek.log.info(tostring("step limit updated = " .. tostring(ok)))
+    lurek.log.info(tostring("step limit = " .. tostring(lurek.automation.getStepLimit("limit_set"))))
 end
 ```
 
@@ -1118,20 +865,12 @@ lurek.automation.start(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("run_test", { steps = steps })
     lurek.automation.start("run_test")
     local current = lurek.automation.getCurrentScript()
-    example_print_log("running = " .. tostring(lurek.automation.isRunning()))
-    example_print_log("current script = " .. tostring(current))
+    lurek.log.info(tostring("running = " .. tostring(lurek.automation.isRunning())))
+    lurek.log.info(tostring("current script = " .. tostring(current)))
     lurek.automation.stop()
     lurek.automation.unload("run_test")
 end
@@ -1151,20 +890,12 @@ lurek.automation.stop()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("stop_test", { steps = steps })
     lurek.automation.start("stop_test")
     lurek.automation.stop()
-    example_print_log("stopped = " .. tostring(not lurek.automation.isRunning()))
-    example_print_log("current script = " .. tostring(lurek.automation.getCurrentScript()))
+    lurek.log.info(tostring("stopped = " .. tostring(not lurek.automation.isRunning())))
+    lurek.log.info(tostring("current script = " .. tostring(lurek.automation.getCurrentScript())))
 end
 ```
 
@@ -1194,22 +925,14 @@ lurek.automation.unload(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("temp_script", { steps = steps })
     local loaded = lurek.automation.hasScript("temp_script")
     lurek.automation.unload("temp_script")
     local still_loaded = lurek.automation.hasScript("temp_script")
-    example_print_log("loaded before unload = " .. tostring(loaded))
-    example_print_log("unloaded = " .. tostring(not lurek.automation.hasScript("temp_script")))
-    example_print_log("loaded after unload = " .. tostring(still_loaded))
+    lurek.log.info(tostring("loaded before unload = " .. tostring(loaded)))
+    lurek.log.info(tostring("unloaded = " .. tostring(not lurek.automation.hasScript("temp_script"))))
+    lurek.log.info(tostring("loaded after unload = " .. tostring(still_loaded)))
 end
 ```
 
@@ -1233,14 +956,6 @@ lurek.automation.update(dt)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local steps = {
         { action = "wait", time = 0.0 },
         { action = "wait", time = 0.1 },
@@ -1248,8 +963,8 @@ do
     lurek.automation.load("update_test", { steps = steps })
     lurek.automation.start("update_test")
     lurek.automation.update(0.016)
-    example_print_log("updated by 16ms")
-    example_print_log("elapsed = " .. tostring(lurek.automation.getElapsedTime()))
+    lurek.log.info(tostring("updated by 16ms"))
+    lurek.log.info(tostring("elapsed = " .. tostring(lurek.automation.getElapsedTime())))
 
     lurek.automation.load("input_replay", {
         steps = {
@@ -1261,8 +976,8 @@ do
     })
     lurek.automation.start("input_replay")
     lurek.automation.update(0.50)
-    example_print_log("input replay step = " .. tostring(lurek.automation.getCurrentStep()))
-    example_print_log("gamepad down = " .. tostring(lurek.input.gamepad.isDown(0, 0)))
+    lurek.log.info(tostring("input replay step = " .. tostring(lurek.automation.getCurrentStep())))
+    lurek.log.info(tostring("gamepad down = " .. tostring(lurek.input.gamepad.isDown(0, 0))))
 end
 ```
 
@@ -1287,21 +1002,13 @@ lurek.automation.waitUntil(predicate, timeout)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     lurek.automation.setCondition("ready", false)
     lurek.automation.waitUntil(function()
         return lurek.automation.getCondition("ready")
     end, 5.0)
     lurek.automation.setCondition("ready", true)
-    example_print_log("waitUntil registered with 5s timeout")
-    example_print_log("ready = " .. tostring(lurek.automation.getCondition("ready")))
+    lurek.log.info(tostring("waitUntil registered with 5s timeout"))
+    lurek.log.info(tostring("ready = " .. tostring(lurek.automation.getCondition("ready"))))
 end
 ```
 

@@ -911,7 +911,7 @@ Inspiracja/Referencje: BMFont, FontForge.
 
 Przypadek użycia: Podgląd renderowania czcionek wektorowych i rastrowych przy różnych skalach.
 
-Integracja z API: Przygotowuje atlasy czcionek i metryki dla lurek.render i lurek.html.
+Integracja z API: Przygotowuje atlasy czcionek i metryki dla lurek.render i lurek.ui.
 
 Wizja: Precyzyjna kontrola nad czytelnością tekstów i optymalizacją ich renderowania.
 
@@ -941,7 +941,7 @@ Inspiracja/Referencje: Figma, Unity UI Builder.
 
 Przypadek użycia: Wizualne układanie interfejsów użytkownika (HUD, ekrany ekwipunku, menu).
 
-Integracja z API: Eksportuje pliki układu HTML/CSS renderowane natywnie przez lurek.html.
+Integracja z API: Eksportuje pliki układu HTML/CSS renderowane natywnie przez lurek.ui.
 
 Wizja: Projektowanie nowoczesnych interfejsów przy użyciu sprawdzonych technologii webowych bez ręcznego kodowania stylów.
 
@@ -969,7 +969,7 @@ Inspiracja/Referencje: Godot Theme Editor.
 
 Przypadek użycia: Definiowanie globalnego stylu (skóry) dla wszystkich widżetów UI.
 
-Integracja z API: Generuje pliki stylów CSS wstrzykiwane globalnie do dokumentów w lurek.html.
+Integracja z API: Generuje pliki stylów CSS wstrzykiwane globalnie do dokumentów w lurek.ui.
 
 Wizja: Szybka i łatwa zmiana wyglądu całej gry (re-skin) poprzez modyfikację jednego pliku stylu.
 

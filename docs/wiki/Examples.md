@@ -52,7 +52,6 @@ Examples come from `content/examples/` and show isolated `lurek.*` namespaces. A
 | [log.lua](../blob/main/content/examples/log.lua) | `lurek.log` | API example |
 | [mapblock.lua](../blob/main/content/examples/mapblock.lua) | `lurek.mapblock` | API example |
 | [math.lua](../blob/main/content/examples/math.lua) | `lurek.math` | API example |
-| [midi.lua](../blob/main/content/examples/midi.lua) | `lurek.midi` | API example |
 | [mods.lua](../blob/main/content/examples/mods.lua) | `lurek.mods` | API example |
 | [network.lua](../blob/main/content/examples/network.lua) | `lurek.network` | API example |
 | [overlay.lua](../blob/main/content/examples/overlay.lua) | `lurek.overlay` | API example |

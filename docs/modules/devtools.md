@@ -2,48 +2,7 @@
 
 ## Purpose
 
-Gathers hardware frame stats and runs a hierarchical zone profiler.
-
-## When To Use
-
-- Frame stats, profiling, structured logs, REPL evaluation, file watching, and value display work together so performance issues, script mistakes, and content regressions can be investigated through one integrated toolset.
-- Debugging rarely depends on one signal at a time, so the same workflow often needs timings, logs, on-the-fly evaluation, and change detection to explain what is actually happening.
-- Retained history, snapshots, and bounded diagnostic state make the module useful for both immediate interactive debugging and later post-failure analysis.
-
-## Minimal Example
-
-Example block: `lurek.devtools.log`
-
-```lua
-do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    lurek.devtools.log("info", "game started")
-    lurek.devtools.log("warn", "shader cache cold on first boot")
-    local level = lurek.devtools.getLogLevel()
-    local history = lurek.devtools.getLogHistory(2)
-    lurek.log.info("devtools log level=" .. tostring(level))
-    lurek.log.info("devtools log history rows=" .. tostring(#history))
-end
-```
-
-## Common Patterns
-
-- Start with `lurek.devtools.clearLog` when exploring this module.
-- Start with `lurek.devtools.clearWatches` when exploring this module.
-- Start with `lurek.devtools.debug` when exploring this module.
-- Start with `lurek.devtools.error` when exploring this module.
-- Start with `lurek.devtools.eval` when exploring this module.
-
-## API Reference
-
-- This page is the generated API reference for this module.
+Gathers hardware frame stats and runs a hierarchical zone profiler. - Integrates structured logs, REPL evaluation, and live file watching.
 
 ## Summary
 
@@ -59,6 +18,10 @@ end
 
 This module primarily collaborates with `filesystem`, `repl`. Its responsibility should stay inside the Edge/Integration group rather than absorb behavior owned by those neighbors.
 
+## API Reference
+
+- This page is the generated API reference for this module.
+
 ## Functions
 
 ### `lurek.devtools.clearLog`
@@ -73,13 +36,6 @@ lurek.devtools.clearLog()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.devtools.info("will be cleared")
     local beforeClear = lurek.devtools.getLogHistory()
@@ -104,13 +60,6 @@ lurek.devtools.clearWatches()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.devtools.watch("content/examples/assets/layouts/sample_main_menu.toml")
     local beforeClear = lurek.devtools.getWatchedPaths()
@@ -141,13 +90,6 @@ lurek.devtools.debug(message)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.devtools.debug("player pos = 100, 200")
     lurek.devtools.debug("camera follow target = player_1")
@@ -178,13 +120,6 @@ lurek.devtools.error(message)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.devtools.error("save file warning emitted")
     lurek.devtools.error("quest state patch failed validation")
@@ -221,13 +156,6 @@ lurek.devtools.eval(code)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local ok, value = lurek.devtools.eval("return 2 + 2")
     local badOk, badValue = lurek.devtools.eval("invalid syntax %%%")
@@ -265,13 +193,6 @@ lurek.devtools.exposeWatch(name, getter, category)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local id = lurek.devtools.exposeWatch("health", function() return 100 end, "player")
     local watchEntries = lurek.devtools.getWatches()
@@ -301,13 +222,6 @@ lurek.devtools.fatal(message)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.devtools.fatal("unrecoverable GPU error")
     lurek.devtools.fatal("recovery path exhausted for render backend")
@@ -344,13 +258,6 @@ lurek.devtools.getCallStack(max_depth)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local frames = lurek.devtools.getCallStack(5)
     local stackDepth = #frames
@@ -381,13 +288,6 @@ lurek.devtools.getFrameHistory()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.devtools.recordFrameTime(0.016)
     local h = lurek.devtools.getFrameHistory()
@@ -418,13 +318,6 @@ lurek.devtools.getFrameHistorySize()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local n = lurek.devtools.getFrameHistorySize()
     lurek.devtools.setFrameHistorySize(90)
@@ -455,19 +348,12 @@ lurek.devtools.getFrameStats()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.devtools.recordFrameTime(0.016)
     lurek.devtools.recordFrameTime(0.018)
     local stats = lurek.devtools.getFrameStats()
-    example_print_log("fps = " .. tostring(stats.fps))
-    example_print_log("samples = " .. tostring(stats.samples))
+    lurek.log.info(tostring("fps = " .. tostring(stats.fps)))
+    lurek.log.info(tostring("samples = " .. tostring(stats.samples)))
 end
 ```
 
@@ -491,19 +377,12 @@ lurek.devtools.getGpuFrameStats()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.devtools.recordGpuFrameTime(0.008)
     lurek.devtools.recordGpuFrameTime(0.009)
     local stats = lurek.devtools.getGpuFrameStats()
-    example_print_log("gpu fps = " .. tostring(stats.fps))
-    example_print_log("gpu samples = " .. tostring(stats.samples))
+    lurek.log.info(tostring("gpu fps = " .. tostring(stats.fps)))
+    lurek.log.info(tostring("gpu samples = " .. tostring(stats.samples)))
 end
 ```
 
@@ -527,13 +406,6 @@ lurek.devtools.getLogConsole()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local console = lurek.devtools.getLogConsole()
     lurek.devtools.setLogConsole(not console)
@@ -564,13 +436,6 @@ lurek.devtools.getLogFile()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local fp = lurek.devtools.getLogFile()
     lurek.devtools.setLogFile("save/devtools_session.log")
@@ -607,13 +472,6 @@ lurek.devtools.getLogHistory(count)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.devtools.info("test entry")
     local entries = lurek.devtools.getLogHistory(5)
@@ -644,13 +502,6 @@ lurek.devtools.getLogLevel()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local level = lurek.devtools.getLogLevel()
     lurek.devtools.setLogLevel("info")
@@ -687,22 +538,15 @@ lurek.devtools.getProfileData(frame)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.devtools.setProfilingEnabled(true)
     lurek.devtools.profilePush("update")
     lurek.devtools.profilePop()
     lurek.devtools.profileFrame()
     local frames = lurek.devtools.getProfileData()
-    example_print_log("profile rows = " .. #frames)
+    lurek.log.info(tostring("profile rows = " .. #frames))
     if frames[1] then
-        example_print_log("first zone = " .. tostring(frames[1].name))
+        lurek.log.info(tostring("first zone = " .. tostring(frames[1].name)))
     end
 end
 ```
@@ -727,13 +571,6 @@ lurek.devtools.getProfileFrameCount()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local n = lurek.devtools.getProfileFrameCount()
     lurek.devtools.setProfilingEnabled(true)
@@ -765,13 +602,6 @@ lurek.devtools.getWatchInterval()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local v = lurek.devtools.getWatchInterval()
     lurek.devtools.setWatchInterval(0.75)
@@ -802,13 +632,6 @@ lurek.devtools.getWatchedPaths()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.devtools.watch("content/examples/assets/images")
     local paths = lurek.devtools.getWatchedPaths()
@@ -839,13 +662,6 @@ lurek.devtools.getWatches()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.devtools.exposeWatch("score", function() return 42 end)
     local watches = lurek.devtools.getWatches()
@@ -876,13 +692,6 @@ lurek.devtools.info(message)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.devtools.info("level loaded")
     lurek.devtools.info("checkpoint state restored")
@@ -913,13 +722,6 @@ lurek.devtools.isConsoleOpen()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local v = lurek.devtools.isConsoleOpen()
     lurek.devtools.openConsole()
@@ -950,13 +752,6 @@ lurek.devtools.isEntityInspectorOpen()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local v = lurek.devtools.isEntityInspectorOpen()
     lurek.devtools.openEntityInspector()
@@ -987,13 +782,6 @@ lurek.devtools.isProfilingEnabled()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local v = lurek.devtools.isProfilingEnabled()
     lurek.devtools.setProfilingEnabled(not v)
@@ -1025,13 +813,6 @@ lurek.devtools.log(level, message)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.devtools.log("info", "game started")
     lurek.devtools.log("warn", "shader cache cold on first boot")
@@ -1068,13 +849,6 @@ lurek.devtools.newFileWatcher(path)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local watcher = lurek.devtools.newFileWatcher("content/")
     local path = watcher:getPath()
@@ -1111,13 +885,6 @@ lurek.devtools.newRepl(max_history)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local repl = lurek.devtools.newRepl(50)
     repl:eval("return 5 * 5")
@@ -1149,13 +916,6 @@ lurek.devtools.openConsole()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local ok = lurek.devtools.openConsole()
     local isOpen = lurek.devtools.isConsoleOpen()
@@ -1185,13 +945,6 @@ lurek.devtools.openEntityInspector()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local ok = lurek.devtools.openEntityInspector()
     local isOpen = lurek.devtools.isEntityInspectorOpen()
@@ -1215,19 +968,12 @@ lurek.devtools.profileFrame()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.devtools.setProfilingEnabled(true)
     lurek.devtools.profilePush("update")
     lurek.devtools.profilePop()
     lurek.devtools.profileFrame()
-    example_print_log("frame stored")
+    lurek.log.info(tostring("frame stored"))
 end
 ```
 
@@ -1251,13 +997,6 @@ lurek.devtools.profilePop(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.devtools.setProfilingEnabled(true)
     lurek.devtools.profilePush("render")
@@ -1290,13 +1029,6 @@ lurek.devtools.profilePush(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.devtools.setProfilingEnabled(true)
     lurek.devtools.profilePush("physics")
@@ -1328,22 +1060,15 @@ lurek.devtools.profilerReport()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.devtools.setProfilingEnabled(true)
     lurek.devtools.profilePush("render")
     lurek.devtools.profilePop()
     lurek.devtools.profileFrame()
     local report = lurek.devtools.profilerReport()
-    example_print_log("report rows = " .. #report)
+    lurek.log.info(tostring("report rows = " .. #report))
     if report[1] then
-        example_print_log("first report zone = " .. tostring(report[1].name))
+        lurek.log.info(tostring("first report zone = " .. tostring(report[1].name)))
     end
 end
 ```
@@ -1368,13 +1093,6 @@ lurek.devtools.recordFrameTime(dt_val)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.devtools.recordFrameTime(0.016)
     lurek.devtools.recordFrameTime(0.017)
@@ -1405,13 +1123,6 @@ lurek.devtools.recordGpuFrameTime(dt_val)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.devtools.recordGpuFrameTime(0.008)
     lurek.devtools.recordGpuFrameTime(0.009)
@@ -1448,13 +1159,6 @@ lurek.devtools.removeWatch(id)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local id = lurek.devtools.exposeWatch("temp", function() return 0 end)
     local ok = lurek.devtools.removeWatch(id)
@@ -1479,13 +1183,6 @@ lurek.devtools.resetProfile()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.devtools.setProfilingEnabled(true)
     lurek.devtools.profilePush("temporary")
@@ -1519,13 +1216,6 @@ lurek.devtools.scan()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.devtools.watch("content/examples/assets/layouts/sample_main_menu.toml")
     local changed = lurek.devtools.scan()
@@ -1556,13 +1246,6 @@ lurek.devtools.setFrameHistorySize(size)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.devtools.setFrameHistorySize(120)
     lurek.devtools.recordFrameTime(0.016)
@@ -1593,13 +1276,6 @@ lurek.devtools.setLogConsole(enabled)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.devtools.setLogConsole(true)
     lurek.devtools.info("console mirror enabled for local debugging")
@@ -1630,13 +1306,6 @@ lurek.devtools.setLogFile(path)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.devtools.setLogFile("save/devtools_example.log")
     lurek.devtools.info("writing runtime diagnostics to save/devtools_example.log")
@@ -1667,13 +1336,6 @@ lurek.devtools.setLogLevel(level)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.devtools.setLogLevel("warn")
     lurek.devtools.info("hidden by warn gate")
@@ -1705,13 +1367,6 @@ lurek.devtools.setProfilingEnabled(enabled)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.devtools.setProfilingEnabled(true)
     lurek.devtools.profilePush("bootstrap")
@@ -1742,13 +1397,6 @@ lurek.devtools.setWatchInterval(interval)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.devtools.setWatchInterval(0.5)
     lurek.devtools.watch("content/examples/assets/layouts/sample_main_menu.toml")
@@ -1779,13 +1427,6 @@ lurek.devtools.snapshot()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.devtools.recordFrameTime(0.016)
     lurek.devtools.info("snapshot ready")
@@ -1793,8 +1434,8 @@ do
         return 42
     end, "hud")
     local snap = lurek.devtools.snapshot()
-    example_print_log("watch count = " .. tostring(snap.watchCount))
-    example_print_log("log rows = " .. tostring(#snap.log))
+    lurek.log.info(tostring("watch count = " .. tostring(snap.watchCount)))
+    lurek.log.info(tostring("log rows = " .. tostring(#snap.log)))
 end
 ```
 
@@ -1818,13 +1459,6 @@ lurek.devtools.trace(message)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.devtools.trace("entering update loop")
     lurek.devtools.trace("polling input before simulation")
@@ -1861,13 +1495,6 @@ lurek.devtools.unwatch(path)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.devtools.watch("content/examples/assets/layouts/sample_main_menu.toml")
     local removed = lurek.devtools.unwatch("content/examples/assets/layouts/sample_main_menu.toml")
@@ -1898,13 +1525,6 @@ lurek.devtools.warn(message)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.devtools.warn("texture missing fallback used")
     lurek.devtools.warn("navmesh using last valid bake")
@@ -1941,13 +1561,6 @@ lurek.devtools.watch(path)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local added = lurek.devtools.watch("content/examples/assets/layouts/sample_main_menu.toml")
     lurek.devtools.watch("content/examples/assets/images")
@@ -1996,13 +1609,6 @@ LFileWatcher:cancel()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local watcher = lurek.devtools.newFileWatcher("save/")
     watcher:cancel()
@@ -2033,13 +1639,6 @@ LFileWatcher:check()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local watcher = lurek.devtools.newFileWatcher("content/")
     local changed = watcher:check()
@@ -2070,13 +1669,6 @@ LFileWatcher:getPath()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local watcher = lurek.devtools.newFileWatcher("content/")
     local path = watcher:getPath()
@@ -2107,19 +1699,12 @@ LFileWatcher:onChanged(func)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local watcher = lurek.devtools.newFileWatcher("assets/")
     watcher:onChanged(function()
-        example_print_log("file changed!")
+        lurek.log.info(tostring("file changed!"))
     end)
-    example_print_log("onChange callback set")
+    lurek.log.info(tostring("onChange callback set"))
 end
 ```
 
@@ -2143,13 +1728,6 @@ LFileWatcher:type()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local watcher = lurek.devtools.newFileWatcher("assets/")
     local typeName = watcher:type()
@@ -2186,13 +1764,6 @@ LFileWatcher:typeOf(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local watcher = lurek.devtools.newFileWatcher("assets/textures/")
     local isWatcher = watcher:typeOf("LFileWatcher")
@@ -2225,13 +1796,6 @@ LReplConsole:clear()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local repl = lurek.devtools.newRepl(100)
     repl:eval("print('hi')")
@@ -2270,13 +1834,6 @@ LReplConsole:eval(code)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local repl = lurek.devtools.newRepl(100)
     local result = repl:eval("return 1 + 1")
@@ -2307,19 +1864,12 @@ LReplConsole:history()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local repl = lurek.devtools.newRepl(100)
     repl:eval("local x = 1")
     repl:eval("local y = 2")
     local h = repl:history()
-    example_print_log("history entries = " .. #h)
+    lurek.log.info(tostring("history entries = " .. #h))
 end
 ```
 
@@ -2343,13 +1893,6 @@ LReplConsole:len()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local repl = lurek.devtools.newRepl(100)
     repl:eval("a = 1")
@@ -2381,13 +1924,6 @@ LReplConsole:type()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local repl = lurek.devtools.newRepl()
     repl:eval("return 'warmup'")
@@ -2424,13 +1960,6 @@ LReplConsole:typeOf(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local repl = lurek.devtools.newRepl()
     repl:eval("return 'warmup'")

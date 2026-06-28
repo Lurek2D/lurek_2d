@@ -2,40 +2,7 @@
 
 ## Purpose
 
-Drives the main winit/wgpu frame loop and Lua VM execution.
-
-## When To Use
-
-- It owns startup, frame progression, host-window lifecycle, and guarded callback dispatch, so update, draw, input, and lifecycle hooks reach game code in a stable order instead of through scattered platform calls.
-- Splash screens, error screens, and debug overlays belong here because they are part of the user-facing execution shell rather than any one gameplay feature.
-- This central shell also makes recovery possible when startup, callback, or shutdown errors occur.
-
-## Minimal Example
-
-Example block: `lurek.engine.getVersion`
-
-```lua
-do
-    local ver = lurek.engine.getVersion()
-    local platform = lurek.engine.platform()
-    local debug_build = lurek.engine.isDebug()
-    local label = "Lurek " .. ver .. " on " .. platform
-    lurek.log.info("engine build: " .. label)
-    lurek.log.info("debug assertions enabled = " .. tostring(debug_build))
-end
-```
-
-## Common Patterns
-
-- Start with `lurek.engine.fps` when exploring this module.
-- Start with `lurek.engine.frameCount` when exploring this module.
-- Start with `lurek.engine.getConfigRevision` when exploring this module.
-- Start with `lurek.engine.getFrameBudget` when exploring this module.
-- Start with `lurek.engine.getFrameProfile` when exploring this module.
-
-## API Reference
-
-- This page is the generated API reference for this module.
+Drives the main winit/wgpu frame loop and Lua VM execution. - Dispatches platform events to safe, guarded engine callbacks. - Renders startup splash layouts, fatal error screens, and debug HUDs.
 
 ## Summary
 
@@ -47,6 +14,10 @@ end
 - Read this module as the final integration boundary where rendering, input, windowing, and Lua execution are coordinated into one recoverable runtime loop.
 
 This module primarily collaborates with `event`, `filesystem`, `image`, `input`, `light`, `lua_api`, `math`, `parallax`, and adjacent engine modules. Its responsibility should stay inside the Edge/Integration group rather than absorb behavior owned by those neighbors.
+
+## API Reference
+
+- This page is the generated API reference for this module.
 
 ## Functions
 

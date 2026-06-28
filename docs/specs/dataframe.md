@@ -448,42 +448,6 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 
 - `content/examples/dataframe.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_dataframe_unit.lua` (present)
-- Rust: `tests/rust/unit/dataframe_tests.rs`
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Evidence test | `tests/lua/evidence/test_dataframe_evidence.lua` |
-| Golden test | `tests/lua/golden/test_dataframe_golden.lua` |
-| Current artifact | `tests/artifacts/current/dataframe/dataframe_correlation_matrix_heatmap.png` |
-| Current artifact | `tests/artifacts/current/dataframe/dataframe_csv_statistics.txt` |
-| Current artifact | `tests/artifacts/current/dataframe/dataframe_descriptive_statistics.txt` |
-| Current artifact | `tests/artifacts/current/dataframe/dataframe_grouped_kpi_pipeline.txt` |
-| Current artifact | `tests/artifacts/current/dataframe/dataframe_join_pivot_query_trace.txt` |
-| Current artifact | `tests/artifacts/current/dataframe/dataframe_lazy_feature_pipeline.txt` |
-| Current artifact | `tests/artifacts/current/dataframe/dataframe_serialization_snapshot.txt` |
-| Current artifact | `tests/artifacts/current/dataframe/dataframe_structure_query_trace.txt` |
-| Current artifact | `tests/artifacts/current/dataframe/dataframe_transform_snapshot.txt` |
-| Current artifact | `tests/artifacts/current/dataframe/dataframe_value_bars.png` |
-| Current artifact | `tests/artifacts/current/dataframe/dataframe_vecframe_compute_trace.txt` |
-| Current artifact | `tests/artifacts/current/dataframe/dataframe_window_risk_analysis.txt` |
-| Baseline artifact | `tests/artifacts/baselines/dataframe/dataframe_correlation_matrix_heatmap.png` |
-| Baseline artifact | `tests/artifacts/baselines/dataframe/dataframe_csv_statistics.txt` |
-| Baseline artifact | `tests/artifacts/baselines/dataframe/dataframe_descriptive_statistics.txt` |
-| Baseline artifact | `tests/artifacts/baselines/dataframe/dataframe_grouped_kpi_pipeline.txt` |
-| Baseline artifact | `tests/artifacts/baselines/dataframe/dataframe_join_pivot_query_trace.txt` |
-| Baseline artifact | `tests/artifacts/baselines/dataframe/dataframe_lazy_feature_pipeline.txt` |
-| Baseline artifact | `tests/artifacts/baselines/dataframe/dataframe_serialization_snapshot.txt` |
-| Baseline artifact | `tests/artifacts/baselines/dataframe/dataframe_structure_query_trace.txt` |
-| Baseline artifact | `tests/artifacts/baselines/dataframe/dataframe_transform_snapshot.txt` |
-| Baseline artifact | `tests/artifacts/baselines/dataframe/dataframe_value_bars.png` |
-| Baseline artifact | `tests/artifacts/baselines/dataframe/dataframe_vecframe_compute_trace.txt` |
-| Baseline artifact | `tests/artifacts/baselines/dataframe/dataframe_window_risk_analysis.txt` |
-
 ## Architecture Links
 
 - Intentionally empty.

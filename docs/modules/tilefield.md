@@ -2,43 +2,7 @@
 
 ## Purpose
 
-Coordinates exposed to Lua are one-based x, y, z; Rust storage is zero-based.
-
-## When To Use
-
-- LTileField is a single field with width, height, and one or more levels. This is the default one-level map model.
-- LTileFieldMap is a 2D or layered map of shared LTileField handles. Use it when a world is chunked into fields or stacked as layers of fields.
-- Supported topologies are square, square4, square8, iso_square, and hex. square/square8 use eight neighbors, but radial range budgets use Euclidean square distance so a diagonal is sqrt(2); square4 uses Manhattan distance, and iso_square uses square gameplay math because projection belongs to tilemap/rendering.
-
-## Minimal Example
-
-Example block: `lurek.tilefield.new`
-
-```lua
-do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
-
-    local field = lurek.tilefield.new({ width = 8, height = 8, levels = 2, topology = "square" })
-    local w, h, levels = field:getSize()
-    local topology = field:getTopology()
-    local inside = field:inBounds(8, 8, 2)
-    tilefield_log("new field " .. w .. "x" .. h .. "x" .. levels .. " " .. topology .. " inside=" .. tostring(inside))
-end
-```
-
-## Common Patterns
-
-- Start with `lurek.tilefield.createLightsFromTileset` when exploring this module.
-- Start with `lurek.tilefield.createPhysicsFromTileset` when exploring this module.
-- Start with `lurek.tilefield.fromProvider` when exploring this module.
-- Start with `lurek.tilefield.fromTileMap` when exploring this module.
-- Start with `lurek.tilefield.new` when exploring this module.
-
-## API Reference
-
-- This page is the generated API reference for this module.
+lurek.tilefield is the shared tile-based gameplay data owner for multi-level maps. It stores independent blockers, costs, profile names, and author-defined cell refs so pathfinding, awareness, tilelight, minimap, and raycaster adapters can share one source of truth without depending on each other.
 
 ## Summary
 
@@ -52,6 +16,10 @@ end
 - Cell refs such as `floor`, `wall_left`, `roof`, or `object` are author-defined slots. They are useful for mapping tile ids, object ids, or block slots onto the same gameplay field without forcing every system to own separate data.
 
 This module is mostly self-contained inside the Feature Systems group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+
+## API Reference
+
+- This page is the generated API reference for this module.
 
 ## Functions
 
@@ -82,9 +50,6 @@ lurek.tilefield.createLightsFromTileset(field, slot, tileset, opts)
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     lurek.light.clear()
     local tileset = lurek.tileset.fromProvider({
@@ -99,7 +64,7 @@ do
     local field = lurek.tilefield.new({ width = 2, height = 2 })
     field:setRef(1, 1, 1, "tiles", 1)
     local spawned = lurek.tilefield.createLightsFromTileset(field, "tiles", tileset, { refIsGid = true })
-    tilefield_log("tileset lights=" .. #spawned.lights .. " occluders=" .. #spawned.occluders)
+    lurek.log.info("tileset lights=" .. #spawned.lights .. " occluders=" .. #spawned.occluders)
 end
 ```
 
@@ -133,9 +98,6 @@ lurek.tilefield.createPhysicsFromTileset(field, slot, tileset, world, opts)
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local tileset = lurek.tileset.fromProvider({
         firstGid = 1,
@@ -150,7 +112,7 @@ do
     field:setRef(2, 2, 1, "tiles", 1)
     local world = lurek.physics.newWorld(0, 0)
     local bodies = lurek.tilefield.createPhysicsFromTileset(field, "tiles", tileset, world, { refIsGid = true })
-    tilefield_log("tileset physics bodies=" .. #bodies .. " world=" .. world:getBodyCount())
+    lurek.log.info("tileset physics bodies=" .. #bodies .. " world=" .. world:getBodyCount())
 end
 ```
 
@@ -180,9 +142,6 @@ lurek.tilefield.fromProvider(provider)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -193,7 +152,7 @@ do
         return f:getTopology()
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -224,15 +183,12 @@ lurek.tilefield.fromTileMap(tilemap, opts)
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local map = lurek.tilemap.newTileMap(16, 16)
     map:addLayer("ground", 4, 4)
     map:setTile(1, 2, 2, 9)
     local field = lurek.tilefield.fromTileMap(map, { layer = 1, solidGids = { 9 } })
-    tilefield_log("tilemap copied, blocked=" .. tostring(field:blocks(2, 2, 1, "move")))
+    lurek.log.info("tilemap copied, blocked=" .. tostring(field:blocks(2, 2, 1, "move")))
 end
 ```
 
@@ -262,15 +218,12 @@ lurek.tilefield.new(opts)
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local field = lurek.tilefield.new({ width = 8, height = 8, levels = 2, topology = "square" })
     local w, h, levels = field:getSize()
     local topology = field:getTopology()
     local inside = field:inBounds(8, 8, 2)
-    tilefield_log("new field " .. w .. "x" .. h .. "x" .. levels .. " " .. topology .. " inside=" .. tostring(inside))
+    lurek.log.info("new field " .. w .. "x" .. h .. "x" .. levels .. " " .. topology .. " inside=" .. tostring(inside))
 end
 ```
 
@@ -300,15 +253,12 @@ lurek.tilefield.newFieldMap(opts)
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local map = lurek.tilefield.newFieldMap({ width = 2, height = 2, layers = 2, fieldWidth = 4, fieldHeight = 4, topology = "square4" })
     local mw, mh, ml = map:getMapSize()
     local fw, fh = map:getFieldSize()
     local topology = map:getTopology()
-    tilefield_log("fieldmap " .. mw .. "x" .. mh .. "x" .. ml .. " field=" .. fw .. "x" .. fh .. " topology=" .. topology)
+    lurek.log.info("fieldmap " .. mw .. "x" .. mh .. "x" .. ml .. " field=" .. fw .. "x" .. fh .. " topology=" .. topology)
 end
 ```
 
@@ -1416,9 +1366,6 @@ LTileField:applyModifier(x, y, z, modifier)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -1430,7 +1377,7 @@ do
         return field:blocks(2, 2, 1, "move")
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -1457,15 +1404,12 @@ LTileField:applyProfile(x, y, z, profile)
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local field = lurek.tilefield.new({ width = 4, height = 4 })
     field:applyProfile(2, 2, 1, "window")
     local move = field:blocks(2, 2, 1, "move")
     local light = field:blocks(2, 2, 1, "light")
-    tilefield_log("window move=" .. tostring(move) .. " light=" .. tostring(light))
+    lurek.log.info("window move=" .. tostring(move) .. " light=" .. tostring(light))
 end
 ```
 
@@ -1500,9 +1444,6 @@ LTileField:applyTilesetObject(x, y, z, slot, tileset, opts)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -1513,7 +1454,7 @@ do
         return field:applyTilesetObject(1, 1, 1, "object", tileset)
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -1545,9 +1486,6 @@ LTileField:applyTilesetObjectLayer(slot, tileset, opts)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -1559,7 +1497,7 @@ do
         return field:applyTilesetObjectLayer("object", tileset, { z = 1 })
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -1592,15 +1530,12 @@ LTileField:blocks(x, y, z, channel)
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local field = lurek.tilefield.new({ width = 4, height = 4 })
     field:applyProfile(2, 2, 1, "window")
     local move = field:blocks(2, 2, 1, "move")
     local vision = field:blocks(2, 2, 1, "vision")
-    tilefield_log("blocks move=" .. tostring(move) .. " vision=" .. tostring(vision))
+    lurek.log.info("blocks move=" .. tostring(move) .. " vision=" .. tostring(vision))
 end
 ```
 
@@ -1627,9 +1562,6 @@ LTileField:blocksCategory(x, y, z, category)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -1640,7 +1572,7 @@ do
         return field:blocksCategory(2, 2, 1, "tank")
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -1658,15 +1590,12 @@ LTileField:clear()
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local field = lurek.tilefield.new({ width = 4, height = 4 })
     field:setBlock(2, 2, 1, "move", true)
     local before = field:blocks(2, 2, 1, "move")
     field:clear()
-    tilefield_log("clear before=" .. tostring(before) .. " after=" .. tostring(field:blocks(2, 2, 1, "move")))
+    lurek.log.info("clear before=" .. tostring(before) .. " after=" .. tostring(field:blocks(2, 2, 1, "move")))
 end
 ```
 
@@ -1692,15 +1621,12 @@ LTileField:clearCell(x, y, z)
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local field = lurek.tilefield.new({ width = 4, height = 4 })
     field:setBlock(2, 2, 1, "vision", true)
     field:setBlock(3, 2, 1, "vision", true)
     field:clearCell(2, 2, 1)
-    tilefield_log("clearCell target=" .. tostring(field:blocks(2, 2, 1, "vision")) .. " neighbor=" .. tostring(field:blocks(3, 2, 1, "vision")))
+    lurek.log.info("clearCell target=" .. tostring(field:blocks(2, 2, 1, "vision")) .. " neighbor=" .. tostring(field:blocks(3, 2, 1, "vision")))
 end
 ```
 
@@ -1733,15 +1659,12 @@ LTileField:clearLine(from_tbl, to_tbl, channel, opts)
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local field = lurek.tilefield.new({ width = 6, height = 3 })
     field:applyProfile(3, 2, 1, "window")
     local sight = field:clearLine({ x = 1, y = 2, z = 1 }, { x = 6, y = 2, z = 1 }, "vision")
     local action = field:clearLine({ x = 1, y = 2, z = 1 }, { x = 6, y = 2, z = 1 }, "action")
-    tilefield_log("clearLine sight=" .. tostring(sight) .. " action=" .. tostring(action))
+    lurek.log.info("clearLine sight=" .. tostring(sight) .. " action=" .. tostring(action))
 end
 ```
 
@@ -1774,9 +1697,6 @@ LTileField:clearModifier(x, y, z, modifier)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -1789,7 +1709,7 @@ do
         return #field:getModifiers(2, 2, 1)
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -1816,9 +1736,6 @@ LTileField:clearRef(x, y, z, slot)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -1830,7 +1747,7 @@ do
         return field:getRef(2, 2, 1, "object")
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -1855,9 +1772,6 @@ LTileField:defineCategory(name, opts)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -1868,7 +1782,7 @@ do
         return field:getCategory("tank").kind
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -1892,9 +1806,6 @@ LTileField:defineSlot(slot)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -1905,7 +1816,7 @@ do
         return field:hasSlot("object")
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -1936,15 +1847,12 @@ LTileField:exportBlockLayer(channel, z)
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local field = lurek.tilefield.new({ width = 3, height = 3 })
     field:applyProfile(2, 2, 1, "wall")
     local layer = field:exportBlockLayer("move", 1)
     local blocked = layer[5]
-    tilefield_log("block layer center=" .. tostring(blocked))
+    lurek.log.info("block layer center=" .. tostring(blocked))
 end
 ```
 
@@ -1975,15 +1883,12 @@ LTileField:exportCostLayer(channel, z)
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local field = lurek.tilefield.new({ width = 3, height = 3 })
     field:setCost(2, 2, 1, "move", 7)
     local layer = field:exportCostLayer("move", 1)
     local center = layer[5]
-    tilefield_log("cost layer center=" .. center)
+    lurek.log.info("cost layer center=" .. center)
 end
 ```
 
@@ -2008,15 +1913,12 @@ LTileField:exportRefLayer(slot, z)
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local field = lurek.tilefield.new({ width = 4, height = 4, levels = 2 })
     field:setRef(2, 2, 1, "floor", 101)
     field:setRef(2, 2, 1, "wall_left", 210)
     local layer = field:exportRefLayer("wall_left", 1)
-    tilefield_log("floor=" .. field:getRef(2, 2, 1, "floor") .. " wall_left=" .. tostring(layer[6]))
+    lurek.log.info("floor=" .. field:getRef(2, 2, 1, "floor") .. " wall_left=" .. tostring(layer[6]))
 end
 ```
 
@@ -2049,15 +1951,12 @@ LTileField:firstBlocker(from_tbl, to_tbl, channel, opts)
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local field = lurek.tilefield.new({ width = 6, height = 3 })
     field:applyProfile(4, 2, 1, "wall")
     local blocker = field:firstBlocker({ x = 1, y = 2, z = 1 }, { x = 6, y = 2, z = 1 }, "vision")
     local x = blocker and blocker.x or 0
-    tilefield_log("first blocker x=" .. x)
+    lurek.log.info("first blocker x=" .. x)
 end
 ```
 
@@ -2086,9 +1985,6 @@ LTileField:footprintPassable(x, y, z, w, h, category)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -2099,7 +1995,7 @@ do
         return field:footprintPassable(2, 2, 1, 2, 1, "tank")
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -2123,9 +2019,6 @@ LTileField:getCategories()
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -2136,7 +2029,7 @@ do
         return field:getCategories()[1]
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -2166,9 +2059,6 @@ LTileField:getCategory(name)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -2179,7 +2069,7 @@ do
         return field:getCategory("tank").kind
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -2206,9 +2096,6 @@ LTileField:getCategoryCost(x, y, z, category)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -2219,7 +2106,7 @@ do
         return field:getCategoryCost(2, 2, 1, "tank")
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -2246,9 +2133,6 @@ LTileField:getCategoryFilter(x, y, z, category)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -2259,7 +2143,7 @@ do
         return field:getCategoryFilter(2, 2, 1, "light")[3]
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -2286,9 +2170,6 @@ LTileField:getCategoryTransmission(x, y, z, category)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -2299,7 +2180,7 @@ do
         return field:getCategoryTransmission(2, 2, 1, "light")
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -2331,16 +2212,13 @@ LTileField:getCell(x, y, z)
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local field = lurek.tilefield.new({ width = 4, height = 4 })
     field:applyProfile(2, 2, 1, "window")
     local cell = field:getCell(2, 2, 1)
     local move = cell.blocks.move
     local vision = cell.blocks.vision
-    tilefield_log("cell move=" .. tostring(move) .. " vision=" .. tostring(vision))
+    lurek.log.info("cell move=" .. tostring(move) .. " vision=" .. tostring(vision))
 end
 ```
 
@@ -2373,15 +2251,12 @@ LTileField:getCost(x, y, z, channel)
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local field = lurek.tilefield.new({ width = 4, height = 4 })
     local base = field:getCost(1, 1, 1, "move")
     field:setCost(1, 2, 1, "move", 5)
     local changed = field:getCost(1, 2, 1, "move")
-    tilefield_log("cost base=" .. base .. " changed=" .. changed)
+    lurek.log.info("cost base=" .. base .. " changed=" .. changed)
 end
 ```
 
@@ -2411,9 +2286,6 @@ LTileField:getModifier(name)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -2424,7 +2296,7 @@ do
         return field:getModifier("mud").costs.move
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -2456,9 +2328,6 @@ LTileField:getModifiers(x, y, z)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -2470,7 +2339,7 @@ do
         return field:getModifiers(2, 2, 1)[1]
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -2502,9 +2371,6 @@ LTileField:getNeighbors(x, y, z)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -2514,7 +2380,7 @@ do
         return #field:getNeighbors(2, 2, 1)
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -2544,15 +2410,12 @@ LTileField:getProfile(name)
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local field = lurek.tilefield.new({ width = 4, height = 4 })
     local profile = field:getProfile("wall")
     local move = profile.blocks.move
     local vision = profile.blocks.vision
-    tilefield_log("wall profile move=" .. tostring(move) .. " vision=" .. tostring(vision))
+    lurek.log.info("wall profile move=" .. tostring(move) .. " vision=" .. tostring(vision))
 end
 ```
 
@@ -2585,14 +2448,12 @@ LTileField:getRef(x, y, z, slot)
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local field = lurek.tilefield.new({ width = 4, height = 4, levels = 2 })
     field:setRef(2, 2, 1, "object", { tileset = "props", object = "crate" })
     local value = field:getRef(2, 2, 1, "object")
-    tilefield_log("getRef object=" .. tostring(value.object))
+    local missing = field:getRef(1, 1, 1, "object")
+    lurek.log.info("getRef object=" .. tostring(value.object) .. " missing=" .. tostring(missing))
 end
 ```
 
@@ -2627,9 +2488,6 @@ LTileField:getRefProperties(x, y, z, slot, tileset, opts)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -2640,7 +2498,7 @@ do
         return field:getRefProperties(1, 1, 1, "object", tileset).terrain
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -2676,9 +2534,6 @@ LTileField:getRefProperty(x, y, z, slot, tileset, property, opts)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -2689,7 +2544,7 @@ do
         return field:getRefProperty(1, 1, 1, "object", tileset, "material")
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -2725,9 +2580,6 @@ LTileField:getRefPropertyBool(x, y, z, slot, tileset, property, opts)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -2738,7 +2590,7 @@ do
         return field:getRefPropertyBool(1, 1, 1, "object", tileset, "solid")
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -2774,9 +2626,6 @@ LTileField:getRefPropertyNumber(x, y, z, slot, tileset, property, opts)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -2787,7 +2636,7 @@ do
         return field:getRefPropertyNumber(1, 1, 1, "object", tileset, "cost")
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -2811,9 +2660,6 @@ LTileField:getRefSlots()
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -2824,7 +2670,7 @@ do
         return field:getRefSlots()[1]
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -2854,9 +2700,6 @@ LTileField:getRegionCells(name)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -2867,7 +2710,7 @@ do
         return #field:getRegionCells("room")
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -2891,9 +2734,6 @@ LTileField:getRegionNames()
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -2904,7 +2744,7 @@ do
         return field:getRegionNames()[1]
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -2930,15 +2770,12 @@ LTileField:getSize()
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local field = lurek.tilefield.new({ width = 10, height = 6, levels = 3 })
     local width, height, levels = field:getSize()
     local cells = width * height * levels
     local valid = cells == 180
-    tilefield_log("field cells=" .. cells .. " valid=" .. tostring(valid))
+    lurek.log.info("field cells=" .. cells .. " valid=" .. tostring(valid))
 end
 ```
 
@@ -2970,15 +2807,12 @@ LTileField:getSunOcclusion(x, y, z)
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local field = lurek.tilefield.new({ width = 2, height = 2 })
     field:setSunOcclusion(1, 1, 1, 0.3)
     local value = field:getSunOcclusion(1, 1, 1)
     local default = field:getSunOcclusion(2, 2, 1)
-    tilefield_log("sun values=" .. value .. "," .. default)
+    lurek.log.info("sun values=" .. value .. "," .. default)
 end
 ```
 
@@ -3002,15 +2836,12 @@ LTileField:getTopology()
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local field = lurek.tilefield.new({ width = 5, height = 5, topology = "iso_square" })
     local topology = field:getTopology()
     local same_logic = topology == "iso_square"
     local line = field:line({ from = { x = 1, y = 1, z = 1 }, to = { x = 3, y = 1, z = 1 } })
-    tilefield_log("topology=" .. topology .. " line=" .. #line .. " same=" .. tostring(same_logic))
+    lurek.log.info("topology=" .. topology .. " line=" .. #line .. " same=" .. tostring(same_logic))
 end
 ```
 
@@ -3034,9 +2865,6 @@ LTileField:getVersion()
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -3048,7 +2876,7 @@ do
         return field:getVersion() - before
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -3078,9 +2906,6 @@ LTileField:hasSlot(slot)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -3091,7 +2916,7 @@ do
         return field:hasSlot("object")
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -3123,15 +2948,12 @@ LTileField:inBounds(x, y, z)
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local field = lurek.tilefield.new({ width = 3, height = 3, levels = 2 })
     local a = field:inBounds(1, 1, 1)
     local b = field:inBounds(4, 1, 1)
     local c = field:inBounds(3, 3, 2)
-    tilefield_log("bounds " .. tostring(a) .. "," .. tostring(b) .. "," .. tostring(c))
+    lurek.log.info("bounds " .. tostring(a) .. "," .. tostring(b) .. "," .. tostring(c))
 end
 ```
 
@@ -3155,15 +2977,12 @@ LTileField:line(opts)
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local field = lurek.tilefield.new({ width = 6, height = 6 })
     local line = field:line({ from = { x = 1, y = 1, z = 1 }, to = { x = 5, y = 1, z = 1 } })
     local first = line[1].x
     local last = line[#line].x
-    tilefield_log("line first=" .. first .. " last=" .. last .. " count=" .. #line)
+    lurek.log.info("line first=" .. first .. " last=" .. last .. " count=" .. #line)
 end
 ```
 
@@ -3196,9 +3015,6 @@ LTileField:regionContains(name, x, y, z)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -3209,7 +3025,7 @@ do
         return field:regionContains("stairs", 2, 2, 1)
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -3239,9 +3055,6 @@ LTileField:removeModifier(name)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -3252,7 +3065,7 @@ do
         return field:removeModifier("mud")
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -3282,15 +3095,12 @@ LTileField:removeProfile(name)
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local field = lurek.tilefield.new({ width = 4, height = 4 })
     field:setProfile("temporary", { blocks = { move = true } })
     field:removeProfile("temporary")
     local missing = field:getProfile("temporary") == nil
-    tilefield_log("profile removed=" .. tostring(missing))
+    lurek.log.info("profile removed=" .. tostring(missing))
 end
 ```
 
@@ -3320,9 +3130,6 @@ LTileField:removeRegion(name)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -3333,7 +3140,7 @@ do
         return field:removeRegion("room")
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -3363,9 +3170,6 @@ LTileField:removeSlot(slot)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -3376,7 +3180,7 @@ do
         return field:removeSlot("object")
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -3404,15 +3208,12 @@ LTileField:setBlock(x, y, z, channel, blocked)
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local field = lurek.tilefield.new({ width = 4, height = 4 })
     field:setBlock(2, 2, 1, "move", true)
     field:setBlock(2, 2, 1, "vision", false)
     local move = field:blocks(2, 2, 1, "move")
-    tilefield_log("setBlock move=" .. tostring(move))
+    lurek.log.info("setBlock move=" .. tostring(move))
 end
 ```
 
@@ -3440,9 +3241,6 @@ LTileField:setCategoryBlock(x, y, z, category, blocked)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -3453,7 +3251,7 @@ do
         return field:blocksCategory(2, 2, 1, "tank")
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -3481,9 +3279,6 @@ LTileField:setCategoryCost(x, y, z, category, cost)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -3494,7 +3289,7 @@ do
         return field:getCategoryCost(2, 2, 1, "tank")
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -3522,9 +3317,6 @@ LTileField:setCategoryFilter(x, y, z, category, filter)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -3535,7 +3327,7 @@ do
         return field:getCategoryFilter(2, 2, 1, "light")[2]
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -3563,9 +3355,6 @@ LTileField:setCategoryTransmission(x, y, z, category, value)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -3576,7 +3365,7 @@ do
         return field:getCategoryTransmission(2, 2, 1, "light")
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -3603,15 +3392,12 @@ LTileField:setCell(x, y, z, cell)
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local field = lurek.tilefield.new({ width = 4, height = 4 })
     field:setCell(2, 2, 1, { blocks = { action = true }, costs = { move = 3 }, sunOcclusion = 0.25 })
     local action = field:blocks(2, 2, 1, "action")
     local cost = field:getCost(2, 2, 1, "move")
-    tilefield_log("setCell action=" .. tostring(action) .. " cost=" .. cost)
+    lurek.log.info("setCell action=" .. tostring(action) .. " cost=" .. cost)
 end
 ```
 
@@ -3639,15 +3425,12 @@ LTileField:setCost(x, y, z, channel, cost)
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local field = lurek.tilefield.new({ width = 4, height = 4 })
     field:setCost(2, 2, 1, "move", 4)
     field:setCost(2, 3, 1, "move", 2)
     local a = field:getCost(2, 2, 1, "move")
-    tilefield_log("setCost high=" .. a)
+    lurek.log.info("setCost high=" .. a)
 end
 ```
 
@@ -3672,9 +3455,6 @@ LTileField:setModifier(name, modifier)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -3685,7 +3465,7 @@ do
         return field:getModifier("mud").name
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -3710,15 +3490,12 @@ LTileField:setProfile(name, profile)
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local field = lurek.tilefield.new({ width = 4, height = 4 })
     field:setProfile("bars", { blocks = { move = true, vision = false, action = true }, sunOcclusion = 0.1 })
     field:applyProfile(2, 2, 1, "bars")
     local visible = not field:blocks(2, 2, 1, "vision")
-    tilefield_log("custom bars visible=" .. tostring(visible))
+    lurek.log.info("custom bars visible=" .. tostring(visible))
 end
 ```
 
@@ -3746,14 +3523,12 @@ LTileField:setRef(x, y, z, slot, value)
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local field = lurek.tilefield.new({ width = 4, height = 4, levels = 2 })
     field:setRef(2, 2, 1, "object", 101)
     local value = field:getRef(2, 2, 1, "object")
-    tilefield_log("setRef object=" .. tostring(value))
+    local slots = field:getRefSlots()
+    lurek.log.info("setRef object=" .. tostring(value) .. " slots=" .. #slots)
 end
 ```
 
@@ -3778,14 +3553,11 @@ LTileField:setRegionCells(name, cells)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local cells = { { x = 2, y = 2, z = 1 }, { x = 3, y = 2, z = 1 } }
     field:setRegionCells("stairs", cells)
     local ok = field:regionContains("stairs", 3, 2, 1)
-    example_log("setRegionCells contains=" .. tostring(ok))
+    lurek.log.info("setRegionCells contains=" .. tostring(ok))
 end
 ```
 
@@ -3814,9 +3586,6 @@ LTileField:setRegionRect(name, x1, y1, x2, y2, z)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -3827,7 +3596,7 @@ do
         return field:regionContains("room", 2, 2, 1)
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -3854,13 +3623,12 @@ LTileField:setSunOcclusion(x, y, z, value)
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local field = lurek.tilefield.new({ width = 2, height = 2, levels = 2 })
     field:setSunOcclusion(1, 1, 2, 0.5)
-    tilefield_log("sun occlusion=" .. field:getSunOcclusion(1, 1, 2))
+    local value = field:getSunOcclusion(1, 1, 2)
+    local default = field:getSunOcclusion(2, 2, 2)
+    lurek.log.info("sun occlusion=" .. value .. " default=" .. default)
 end
 ```
 
@@ -3884,15 +3652,12 @@ LTileField:type()
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local field = lurek.tilefield.new({ width = 2, height = 2 })
     local type_name = field:type()
     local expected = type_name == "LTileField"
     local object = field:typeOf("LObject")
-    tilefield_log("type=" .. type_name .. " ok=" .. tostring(expected) .. " object=" .. tostring(object))
+    lurek.log.info("type=" .. type_name .. " ok=" .. tostring(expected) .. " object=" .. tostring(object))
 end
 ```
 
@@ -3922,15 +3687,12 @@ LTileField:typeOf(name)
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local field = lurek.tilefield.new({ width = 2, height = 2 })
     local exact = field:typeOf("LTileField")
     local object = field:typeOf("LObject")
     local miss = field:typeOf("LNavGrid")
-    tilefield_log("typeOf exact=" .. tostring(exact) .. " object=" .. tostring(object) .. " miss=" .. tostring(miss))
+    lurek.log.info("typeOf exact=" .. tostring(exact) .. " object=" .. tostring(object) .. " miss=" .. tostring(miss))
 end
 ```
 
@@ -3956,9 +3718,6 @@ LTileField:writeBlockLayer(channel, z, values)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -3969,7 +3728,7 @@ do
         return field:blocks(1, 1, 1, "move")
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -3995,9 +3754,6 @@ LTileField:writeCostLayer(channel, z, values)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -4008,7 +3764,7 @@ do
         return field:getCost(2, 2, 1, "move")
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -4034,9 +3790,6 @@ LTileField:writeRefLayer(slot, z, values)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -4047,7 +3800,7 @@ do
         return field:getRef(1, 2, 1, "object")
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -4087,15 +3840,12 @@ LTileFieldMap:getField(mapX, mapY, mapZ)
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local map = lurek.tilefield.newFieldMap({ width = 2, height = 2, layers = 2, fieldWidth = 3, fieldHeight = 3 })
     local field = map:getField(2, 2, 2)
     field:setRef(1, 1, 1, "floor", 12)
     local shared = map:getField(2, 2, 2):getRef(1, 1, 1, "floor")
-    tilefield_log("shared field ref=" .. tostring(shared))
+    lurek.log.info("shared field ref=" .. tostring(shared))
 end
 ```
 
@@ -4121,15 +3871,12 @@ LTileFieldMap:getFieldSize()
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local map = lurek.tilefield.newFieldMap({ width = 1, height = 1, fieldWidth = 8, fieldHeight = 6, fieldLevels = 2 })
     local width, height, levels = map:getFieldSize()
     local cells = width * height * levels
     local field = map:getField(1, 1, 1)
-    tilefield_log("field cells=" .. cells .. " type=" .. field:type())
+    lurek.log.info("field cells=" .. cells .. " type=" .. field:type())
 end
 ```
 
@@ -4155,15 +3902,12 @@ LTileFieldMap:getMapSize()
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local map = lurek.tilefield.newFieldMap({ width = 3, height = 2, layers = 1, fieldWidth = 4, fieldHeight = 4 })
     local width, height, layers = map:getMapSize()
     local slots = width * height * layers
     local valid = slots == 6
-    tilefield_log("map slots=" .. slots .. " valid=" .. tostring(valid))
+    lurek.log.info("map slots=" .. slots .. " valid=" .. tostring(valid))
 end
 ```
 
@@ -4187,15 +3931,12 @@ LTileFieldMap:getTopology()
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local map = lurek.tilefield.newFieldMap({ width = 1, height = 1, fieldWidth = 4, fieldHeight = 4, topology = "hex" })
     local topology = map:getTopology()
     local field = map:getField(1, 1, 1)
     local same = field:getTopology() == topology
-    tilefield_log("fieldmap topology=" .. topology .. " same=" .. tostring(same))
+    lurek.log.info("fieldmap topology=" .. topology .. " same=" .. tostring(same))
 end
 ```
 
@@ -4227,15 +3968,12 @@ LTileFieldMap:inBounds(mapX, mapY, mapZ)
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local map = lurek.tilefield.newFieldMap({ width = 2, height = 2, layers = 2, fieldWidth = 3, fieldHeight = 3 })
     local inside = map:inBounds(2, 2, 2)
     local outside = map:inBounds(3, 1, 1)
     local default_layer = map:inBounds(1, 1)
-    tilefield_log("fieldmap bounds=" .. tostring(inside) .. "," .. tostring(outside) .. "," .. tostring(default_layer))
+    lurek.log.info("fieldmap bounds=" .. tostring(inside) .. "," .. tostring(outside) .. "," .. tostring(default_layer))
 end
 ```
 
@@ -4262,15 +4000,12 @@ LTileFieldMap:setField(mapX, mapY, mapZ, field)
 
 ```lua
 do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
 
     local map = lurek.tilefield.newFieldMap({ width = 1, height = 1, layers = 1, fieldWidth = 3, fieldHeight = 3, topology = "square8" })
     local field = lurek.tilefield.new({ width = 3, height = 3, topology = "square8" })
     field:setRef(2, 2, 1, "object", 90)
     map:setField(1, 1, 1, field)
-    tilefield_log("stored object=" .. tostring(map:getField(1, 1, 1):getRef(2, 2, 1, "object")))
+    lurek.log.info("stored object=" .. tostring(map:getField(1, 1, 1):getRef(2, 2, 1, "object")))
 end
 ```
 
@@ -4294,9 +4029,6 @@ LTileFieldMap:type()
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -4307,7 +4039,7 @@ do
         return map:type()
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -4337,9 +4069,6 @@ LTileFieldMap:typeOf(name)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
     tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
@@ -4350,7 +4079,7 @@ do
         return map:typeOf("LTileFieldMap")
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 

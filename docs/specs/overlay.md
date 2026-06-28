@@ -288,39 +288,6 @@ This module primarily collaborates with `color`, `image`, `render`, `runtime`. I
 
 - `content/examples/overlay.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_overlay_unit.lua` (present)
-- Rust: `tests/rust/unit/overlay_tests.rs`
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Evidence test | `tests/lua/evidence/test_overlay_evidence.lua` |
-| Golden test | `tests/lua/golden/test_overlay_golden.lua` |
-| Current artifact | `tests/artifacts/current/overlay/overlay_atmosphere_compositor.png` |
-| Current artifact | `tests/artifacts/current/overlay/overlay_environment_layers.gif` |
-| Current artifact | `tests/artifacts/current/overlay/overlay_flash_shake_fade_composite.gif` |
-| Current artifact | `tests/artifacts/current/overlay/overlay_screen_effects_timeline.gif` |
-| Current artifact | `tests/artifacts/current/overlay/overlay_shader_visual_01_screen_overlay.png` |
-| Current artifact | `tests/artifacts/current/overlay/overlay_shader_visual_02_heat_haze.png` |
-| Current artifact | `tests/artifacts/current/overlay/overlay_shader_visual_03_fog_layer.png` |
-| Current artifact | `tests/artifacts/current/overlay/overlay_storm_front_wind_sweep.gif` |
-| Current artifact | `tests/artifacts/current/overlay/overlay_transition_mask_atlas.png` |
-| Current artifact | `tests/artifacts/current/overlay/overlay_transition_modes.gif` |
-| Current artifact | `tests/artifacts/current/overlay/overlay_weather_state_trace.json` |
-| Current artifact | `tests/artifacts/current/overlay/overlay_weather_wind_field.png` |
-| Baseline artifact | `tests/artifacts/baselines/overlay/overlay_atmosphere_compositor.png` |
-| Baseline artifact | `tests/artifacts/baselines/overlay/overlay_environment_layers.gif` |
-| Baseline artifact | `tests/artifacts/baselines/overlay/overlay_flash_shake_fade_composite.gif` |
-| Baseline artifact | `tests/artifacts/baselines/overlay/overlay_screen_effects_timeline.gif` |
-| Baseline artifact | `tests/artifacts/baselines/overlay/overlay_storm_front_wind_sweep.gif` |
-| Baseline artifact | `tests/artifacts/baselines/overlay/overlay_transition_mask_atlas.png` |
-| Baseline artifact | `tests/artifacts/baselines/overlay/overlay_transition_modes.gif` |
-| Baseline artifact | `tests/artifacts/baselines/overlay/overlay_weather_state_trace.json` |
-| Baseline artifact | `tests/artifacts/baselines/overlay/overlay_weather_wind_field.png` |
-
 ## Architecture Links
 
 - `docs/architecture/module-scope-boundaries.md`

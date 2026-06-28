@@ -332,15 +332,6 @@ This module primarily collaborates with `filesystem`, `repl`. Its responsibility
 
 - `content/examples/devtools.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_devtools_unit.lua` (present)
-- Rust: none detected.
-
-## Evidence / Golden
-
-- No evidence or golden artifacts registered.
-
 ## Architecture Links
 
 - Intentionally empty.

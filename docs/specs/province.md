@@ -409,47 +409,6 @@ This module primarily collaborates with `camera`, `image`, `pathfind`, `render`,
 
 - `content/examples/province.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_province_unit.lua` (present)
-- Rust: `src/province/province_grid.rs`
-- Rust: `tests/rust/unit/province_tests.rs`
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Evidence test | `tests/lua/evidence/test_province_evidence.lua` |
-| Golden test | `tests/lua/golden/test_province_golden.lua` |
-| Current artifact | `tests/artifacts/current/province/_fixture/province_color_map.png` |
-| Current artifact | `tests/artifacts/current/province/_fixture/province_colors.csv` |
-| Current artifact | `tests/artifacts/current/province/_fixture/province_data.toml` |
-| Current artifact | `tests/artifacts/current/province/_fixture/province_marked_map.png` |
-| Current artifact | `tests/artifacts/current/province/province_border_segments.png` |
-| Current artifact | `tests/artifacts/current/province/province_capitals_centroids.png` |
-| Current artifact | `tests/artifacts/current/province/province_capitals_labels_centroids.png` |
-| Current artifact | `tests/artifacts/current/province/province_economy_properties_trace.txt` |
-| Current artifact | `tests/artifacts/current/province/province_registry_topology_trace.txt` |
-| Current artifact | `tests/artifacts/current/province/province_render_plan_overlay.png` |
-| Current artifact | `tests/artifacts/current/province/province_revision_timeline.gif` |
-| Current artifact | `tests/artifacts/current/province/province_route_trace.png` |
-| Current artifact | `tests/artifacts/current/province/province_sanitized_map.png` |
-| Current artifact | `tests/artifacts/current/province/province_shader_binding_contract.txt` |
-| Current artifact | `tests/artifacts/current/province/province_shader_visual_01_political_map.png` |
-| Current artifact | `tests/artifacts/current/province/province_shader_visual_02_selection_glow.png` |
-| Current artifact | `tests/artifacts/current/province/province_shader_visual_03_frontline_heat.png` |
-| Current artifact | `tests/artifacts/current/province/province_span_runs.png` |
-| Current artifact | `tests/artifacts/current/province/province_strategy_modes.png` |
-| Current artifact | `tests/artifacts/current/province/province_zoom_pick_view.png` |
-| Baseline artifact | `tests/artifacts/baselines/province/province_border_segments.png` |
-| Baseline artifact | `tests/artifacts/baselines/province/province_capitals_labels_centroids.png` |
-| Baseline artifact | `tests/artifacts/baselines/province/province_revision_timeline.gif` |
-| Baseline artifact | `tests/artifacts/baselines/province/province_route_trace.png` |
-| Baseline artifact | `tests/artifacts/baselines/province/province_sanitized_map.png` |
-| Baseline artifact | `tests/artifacts/baselines/province/province_span_runs.png` |
-| Baseline artifact | `tests/artifacts/baselines/province/province_strategy_modes.png` |
-| Baseline artifact | `tests/artifacts/baselines/province/province_zoom_pick_view.png` |
-
 ## Architecture Links
 
 - Intentionally empty.

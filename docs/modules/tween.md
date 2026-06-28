@@ -4,46 +4,6 @@
 
 Timed interpolation engine supporting easing curves, spring dynamics, and sequence composition with coroutine awaiting.
 
-## When To Use
-
-- Tweens, handles, chains, grouped sequences, interpolators, and springs all live together here so one-off transitions and larger scripted motion can share one model.
-- This matters because many features need shaped progression, not just endpoint changes: UI reveals, camera motion, gameplay feedback, and scripted effects all depend on timing semantics.
-- Easing and spring behavior give the module expressive range, while handle-based control makes active transitions inspectable, cancelable, and synchronizable.
-
-## Minimal Example
-
-Example block: `lurek.tween.tween`
-
-```lua
-do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local obj = { x = 0, y = 0 }
-    local tw = lurek.tween.tween(1.0, obj, { x = 100, y = 50 })
-    example_print_log("type = " .. tw:type())
-    lurek.tween.update(0.5)
-    example_print_log("at 0.5s: x=" .. obj.x .. " y=" .. obj.y)
-end
-```
-
-## Common Patterns
-
-- Start with `lurek.tween.cancelAll` when exploring this module.
-- Start with `lurek.tween.delay` when exploring this module.
-- Start with `lurek.tween.getActiveCount` when exploring this module.
-- Start with `lurek.tween.getEasingNames` when exploring this module.
-- Start with `lurek.tween.newChain` when exploring this module.
-
-## API Reference
-
-- This page is the generated API reference for this module.
-
 ## Summary
 
 - The `tween` module is the engine's interpolation and motion-sequencing surface for users who want values to change over time without hand-writing frame-by-frame update loops.
@@ -63,6 +23,10 @@ end
 
 This module primarily collaborates with `math`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
+## API Reference
+
+- This page is the generated API reference for this module.
+
 ## Functions
 
 ### `lurek.tween.cancelAll`
@@ -77,21 +41,14 @@ lurek.tween.cancelAll()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local target = { v = 0.0 }
     lurek.tween.to(target, { v = 1 }, 2.0, "linear")
-    example_print_log("active=" .. lurek.tween.getActiveCount())
+    lurek.log.info(tostring("active=" .. lurek.tween.getActiveCount()))
     lurek.tween.cancelAll()
-    example_print_log("active_after=" .. lurek.tween.getActiveCount())
+    lurek.log.info(tostring("active_after=" .. lurek.tween.getActiveCount()))
     local names = lurek.tween.getEasingNames()
-    example_print_log("easing_count=" .. #names)
+    lurek.log.info(tostring("easing_count=" .. #names))
 end
 ```
 
@@ -122,13 +79,6 @@ lurek.tween.delay(seconds, cb)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local gate = { locked = true, alpha = 0.0 }
     local d = lurek.tween.delay(1.5, function()
@@ -162,21 +112,14 @@ lurek.tween.getActiveCount()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local a = { x = 0 }
     local b = { y = 0 }
     lurek.tween.tween(1.0, a, { x = 10 })
     lurek.tween.tween(2.0, b, { y = 20 })
-    example_print_log("active count = " .. lurek.tween.getActiveCount())
+    lurek.log.info(tostring("active count = " .. lurek.tween.getActiveCount()))
     lurek.tween.cancelAll()
-    example_print_log("after cancelAll = " .. lurek.tween.getActiveCount())
+    lurek.log.info(tostring("after cancelAll = " .. lurek.tween.getActiveCount()))
 end
 ```
 
@@ -200,21 +143,14 @@ lurek.tween.getEasingNames()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local target = { v = 0.0 }
     lurek.tween.to(target, { v = 1 }, 2.0, "linear")
-    example_print_log("active=" .. lurek.tween.getActiveCount())
+    lurek.log.info(tostring("active=" .. lurek.tween.getActiveCount()))
     lurek.tween.cancelAll()
-    example_print_log("active_after=" .. lurek.tween.getActiveCount())
+    lurek.log.info(tostring("active_after=" .. lurek.tween.getActiveCount()))
     local names = lurek.tween.getEasingNames()
-    example_print_log("easing_count=" .. #names)
+    lurek.log.info(tostring("easing_count=" .. #names))
 end
 ```
 
@@ -244,13 +180,6 @@ lurek.tween.newChain(looping)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local chain = lurek.tween.newChain()
     chain:push({ from = 0.0, to = 1.0, duration = 0.2, label = "raise_platform" })
@@ -288,27 +217,20 @@ lurek.tween.newState(duration, easing)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local state = lurek.tween.newState(2.0, "easeInOutCubic")
-    example_print_log("type = " .. state:type())
-    example_print_log("complete = " .. tostring(state:isComplete()))
+    lurek.log.info(tostring("type = " .. state:type()))
+    lurek.log.info(tostring("complete = " .. tostring(state:isComplete())))
 
     state:tick(1.0)
     local val = state:lerp(0.0, 1.0)
-    example_print_log("at 1.0s: eased value = " .. string.format("%.3f", val))
-    example_print_log("raw t = " .. string.format("%.3f", state:t()))
+    lurek.log.info(tostring("at 1.0s: eased value = " .. string.format("%.3f", val)))
+    lurek.log.info(tostring("raw t = " .. string.format("%.3f", state:t())))
 
     local interp = state:lerp(100, 200)
-    example_print_log("lerp(100, 200) = " .. string.format("%.1f", interp))
+    lurek.log.info(tostring("lerp(100, 200) = " .. string.format("%.1f", interp)))
     state:tick(1.0)
-    example_print_log("complete = " .. tostring(state:isComplete()))
+    lurek.log.info(tostring("complete = " .. tostring(state:isComplete())))
 end
 ```
 
@@ -332,30 +254,23 @@ lurek.tween.parallel()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local a = { x = 0 }
     local b = { y = 0 }
     local c = { rot = 0 }
     local par = lurek.tween.parallel()
-    example_print_log("type = " .. par:type())
+    lurek.log.info(tostring("type = " .. par:type()))
 
     par:tween(1.0, a, { x = 200 }, "linear")
     par:tween(1.0, b, { y = 150 }, "easeOutQuad")
     par:tween(1.0, c, { rot = 360 }, "easeInOutSine")
     par:start()
 
-    example_print_log("active = " .. tostring(par:isActive()))
+    lurek.log.info(tostring("active = " .. tostring(par:isActive())))
     lurek.tween.update(0.5)
-    example_print_log("midpoint: x=" .. a.x .. " y=" .. string.format("%.0f", b.y) .. " rot=" .. c.rot)
+    lurek.log.info(tostring("midpoint: x=" .. a.x .. " y=" .. string.format("%.0f", b.y) .. " rot=" .. c.rot))
     lurek.tween.update(0.5)
-    example_print_log("done: x=" .. a.x .. " y=" .. b.y .. " rot=" .. c.rot)
+    lurek.log.info(tostring("done: x=" .. a.x .. " y=" .. b.y .. " rot=" .. c.rot))
 end
 ```
 
@@ -380,13 +295,6 @@ lurek.tween.registerEasing(name, f)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     lurek.tween.registerEasing("bounce3", function(t)
         return 1 - math.abs(math.cos(t * math.pi * 3)) * (1 - t)
@@ -394,10 +302,10 @@ do
 
     local names = lurek.tween.getEasingNames()
     local obj = { v = 0 }
-    example_print_log("available easings: " .. #names)
+    lurek.log.info(tostring("available easings: " .. #names))
     lurek.tween.tween(1.0, obj, { v = 1 }, "bounce3")
     lurek.tween.update(0.5)
-    example_print_log("custom easing at 0.5: " .. string.format("%.3f", obj.v))
+    lurek.log.info(tostring("custom easing at 0.5: " .. string.format("%.3f", obj.v)))
 end
 ```
 
@@ -421,27 +329,20 @@ lurek.tween.sequence()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { x = 0, y = 0 }
     local seq = lurek.tween.sequence()
-    example_print_log("type = " .. seq:type())
+    lurek.log.info(tostring("type = " .. seq:type()))
 
     seq:tween(0.5, obj, { x = 100 }, "easeOutQuad")
     seq:tween(0.5, obj, { y = 100 }, "easeInQuad")
     seq:start()
 
-    example_print_log("active = " .. tostring(seq:isActive()))
+    lurek.log.info(tostring("active = " .. tostring(seq:isActive())))
     lurek.tween.update(0.5)
-    example_print_log("after step 1: x=" .. obj.x .. " y=" .. obj.y)
+    lurek.log.info(tostring("after step 1: x=" .. obj.x .. " y=" .. obj.y))
     lurek.tween.update(0.5)
-    example_print_log("after step 2: x=" .. obj.x .. " y=" .. obj.y)
+    lurek.log.info(tostring("after step 2: x=" .. obj.x .. " y=" .. obj.y))
 end
 ```
 
@@ -473,13 +374,6 @@ lurek.tween.spring(target, fields, opts)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { x = 0, y = 0 }
     local spring = lurek.tween.spring(obj, { x = 100, y = 50 }, {
@@ -488,11 +382,11 @@ do
         precision = 0.01,
     })
 
-    example_print_log("type = " .. spring:type())
-    example_print_log("active = " .. tostring(spring:isActive()))
+    lurek.log.info(tostring("type = " .. spring:type()))
+    lurek.log.info(tostring("active = " .. tostring(spring:isActive())))
     for i = 1, 10 do spring:update(1 / 60) end
-    example_print_log("after 10 frames: x=" .. string.format("%.1f", obj.x) .. " y=" .. string.format("%.1f", obj.y))
-    example_print_log("settled = " .. tostring(spring:isSettled()))
+    lurek.log.info(tostring("after 10 frames: x=" .. string.format("%.1f", obj.x) .. " y=" .. string.format("%.1f", obj.y)))
+    lurek.log.info(tostring("settled = " .. tostring(spring:isSettled())))
 end
 ```
 
@@ -525,13 +419,6 @@ lurek.tween.to(target, fields, duration, easing)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local bossBar = { width = 24, alpha = 0.2 }
     local reveal = lurek.tween.to(bossBar, { width = 220, alpha = 1.0 }, 0.8, "easeOutCubic")
@@ -572,19 +459,12 @@ lurek.tween.tween(duration, target, fields, easing)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { x = 0, y = 0 }
     local tw = lurek.tween.tween(1.0, obj, { x = 100, y = 50 })
-    example_print_log("type = " .. tw:type())
+    lurek.log.info(tostring("type = " .. tw:type()))
     lurek.tween.update(0.5)
-    example_print_log("at 0.5s: x=" .. obj.x .. " y=" .. obj.y)
+    lurek.log.info(tostring("at 0.5s: x=" .. obj.x .. " y=" .. obj.y))
 end
 ```
 
@@ -614,13 +494,6 @@ lurek.tween.tweenChain(steps)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { x = 0, y = 0 }
     local chain = lurek.tween.tweenChain({
@@ -628,10 +501,10 @@ do
         { duration = 0.5, target = obj, fields = { y = 100 }, easing = "easeInQuad" },
     })
 
-    example_print_log("chain active = " .. tostring(chain:isActive()))
+    lurek.log.info(tostring("chain active = " .. tostring(chain:isActive())))
     lurek.tween.update(0.5)
     lurek.tween.update(0.5)
-    example_print_log("chain result: x=" .. obj.x .. " y=" .. obj.y)
+    lurek.log.info(tostring("chain result: x=" .. obj.x .. " y=" .. obj.y))
 end
 ```
 
@@ -664,21 +537,14 @@ lurek.tween.tweenColor(duration, target, color, easing)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local color = { r = 1.0, g = 0.0, b = 0.0, a = 1.0 }
     local tw = lurek.tween.tweenColor(2.0, color, { r = 0.0, g = 0.0, b = 1.0 }, "linear")
 
     lurek.tween.update(1.0)
-    example_print_log("midpoint: r=" .. string.format("%.2f", color.r) .. " g=" .. string.format("%.2f", color.g) .. " b=" .. string.format("%.2f", color.b))
+    lurek.log.info(tostring("midpoint: r=" .. string.format("%.2f", color.r) .. " g=" .. string.format("%.2f", color.g) .. " b=" .. string.format("%.2f", color.b)))
     lurek.tween.update(1.0)
-    example_print_log("end: r=" .. color.r .. " b=" .. color.b)
+    lurek.log.info(tostring("end: r=" .. color.r .. " b=" .. color.b))
 end
 ```
 
@@ -702,13 +568,6 @@ lurek.tween.update(dt)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local camera = { x = -240, y = 96 }
     local focus = { x = 0, y = 64 }
@@ -764,19 +623,12 @@ LSpring:cancel()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { val = 0 }
     local spring = lurek.tween.spring(obj, { val = 100 })
     spring:update(1 / 60)
     spring:cancel()
-    example_print_log("active after cancel = " .. tostring(spring:isActive()))
+    lurek.log.info(tostring("active after cancel = " .. tostring(spring:isActive())))
 end
 ```
 
@@ -806,21 +658,14 @@ LSpring:getPosition(field)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { size = 50 }
     local spring = lurek.tween.spring(obj, { size = 100 })
     spring:update(1 / 10)
 
     local pos = spring:getPosition("size")
-    example_print_log("size = " .. string.format("%.1f", obj.size))
-    example_print_log("getPosition = " .. tostring(pos))
+    lurek.log.info(tostring("size = " .. string.format("%.1f", obj.size)))
+    lurek.log.info(tostring("getPosition = " .. tostring(pos)))
 end
 ```
 
@@ -844,20 +689,13 @@ LSpring:isActive()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { x = 0 }
     local sp = lurek.tween.spring(obj, { x = 100 }, { stiffness = 200, damping = 20 })
     sp:update(0.016)
     local active = sp:isActive()
     local settled = sp:isSettled()
-    example_print_log("spring active:", active, "settled:", settled)
+    lurek.log.info(tostring("spring active:") .. " " .. tostring(active) .. " " .. tostring("settled:") .. " " .. tostring(settled))
 end
 ```
 
@@ -881,20 +719,13 @@ LSpring:isSettled()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { x = 0 }
     local sp = lurek.tween.spring(obj, { x = 100 }, { stiffness = 200, damping = 20 })
     sp:update(0.016)
     local active = sp:isActive()
     local settled = sp:isSettled()
-    example_print_log("spring active:", active, "settled:", settled)
+    lurek.log.info(tostring("spring active:") .. " " .. tostring(active) .. " " .. tostring("settled:") .. " " .. tostring(settled))
 end
 ```
 
@@ -918,20 +749,13 @@ LSpring:setDamping(value)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { size = 50 }
     local spring = lurek.tween.spring(obj, { size = 100 })
     spring:setDamping(20)
     spring:update(1 / 10)
-    example_print_log("size after damping = " .. string.format("%.1f", obj.size))
-    example_print_log("settled = " .. tostring(spring:isSettled()))
+    lurek.log.info(tostring("size after damping = " .. string.format("%.1f", obj.size)))
+    lurek.log.info(tostring("settled = " .. tostring(spring:isSettled())))
 end
 ```
 
@@ -955,20 +779,13 @@ LSpring:setStiffness(value)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { size = 50 }
     local spring = lurek.tween.spring(obj, { size = 100 })
     spring:setStiffness(300)
     spring:update(1 / 10)
-    example_print_log("size after stronger spring = " .. string.format("%.1f", obj.size))
-    example_print_log("position = " .. tostring(spring:getPosition("size")))
+    lurek.log.info(tostring("size after stronger spring = " .. string.format("%.1f", obj.size)))
+    lurek.log.info(tostring("position = " .. tostring(spring:getPosition("size"))))
 end
 ```
 
@@ -992,13 +809,6 @@ LSpring:setTarget(fields)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { size = 50 }
     local spring = lurek.tween.spring(obj, { size = 100 })
@@ -1008,7 +818,7 @@ do
     for i = 1, 30 do
         spring:update(1 / 60)
     end
-    example_print_log("size = " .. string.format("%.1f", obj.size))
+    lurek.log.info(tostring("size = " .. string.format("%.1f", obj.size)))
 
     spring:setTarget({ size = 0 })
     for i = 1, 60 do
@@ -1016,8 +826,8 @@ do
     end
 
     local pos = spring:getPosition("size")
-    example_print_log("retargeted size = " .. string.format("%.1f", obj.size))
-    example_print_log("getPosition = " .. tostring(pos))
+    lurek.log.info(tostring("retargeted size = " .. string.format("%.1f", obj.size)))
+    lurek.log.info(tostring("getPosition = " .. tostring(pos)))
 end
 ```
 
@@ -1041,19 +851,12 @@ LSpring:type()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local state = {v = 0}
     local sp = lurek.tween.spring(state, {v = 50}, {stiffness = 150, damping = 15})
     local t = sp:type()
     local ok = sp:typeOf("LSpring")
-    example_print_log("spring type:", t, "typeOf:", ok)
+    lurek.log.info(tostring("spring type:") .. " " .. tostring(t) .. " " .. tostring("typeOf:") .. " " .. tostring(ok))
 end
 ```
 
@@ -1083,19 +886,12 @@ LSpring:typeOf(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local state = {v = 0}
     local sp = lurek.tween.spring(state, {v = 50}, {stiffness = 150, damping = 15})
     local t = sp:type()
     local ok = sp:typeOf("LSpring")
-    example_print_log("spring type:", t, "typeOf:", ok)
+    lurek.log.info(tostring("spring type:") .. " " .. tostring(t) .. " " .. tostring("typeOf:") .. " " .. tostring(ok))
 end
 ```
 
@@ -1125,19 +921,12 @@ LSpring:update(dt)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { x = 0 }
     local sp = lurek.tween.spring(obj, { x = 100 }, { stiffness = 200, damping = 20 })
     local still_active = sp:update(0.016)
-    example_print_log("spring x:", obj.x)
-    example_print_log("spring still active:", still_active)
+    lurek.log.info(tostring("spring x:") .. " " .. tostring(obj.x))
+    lurek.log.info(tostring("spring still active:") .. " " .. tostring(still_active))
 end
 ```
 
@@ -1186,24 +975,17 @@ LTween:await()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
     local co = coroutine.create(function()
         tw:await()
-        example_print_log("await resumed at x=" .. target.x)
+        lurek.log.info(tostring("await resumed at x=" .. target.x))
     end)
 
     coroutine.resume(co)
     lurek.tween.update(1.0)
-    example_print_log("coroutine status = " .. coroutine.status(co))
+    lurek.log.info(tostring("coroutine status = " .. coroutine.status(co)))
 end
 ```
 
@@ -1221,23 +1003,16 @@ LTween:cancel()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { w = 100 }
     local tw = lurek.tween.tween(1.0, obj, { w = 200 })
 
     lurek.tween.update(0.3)
-    example_print_log("before cancel: w=" .. obj.w)
+    lurek.log.info(tostring("before cancel: w=" .. obj.w))
     tw:cancel()
-    example_print_log("active after cancel = " .. tostring(tw:isActive()))
+    lurek.log.info(tostring("active after cancel = " .. tostring(tw:isActive())))
     lurek.tween.update(1.0)
-    example_print_log("after update: w=" .. obj.w)
+    lurek.log.info(tostring("after update: w=" .. obj.w))
 end
 ```
 
@@ -1293,13 +1068,6 @@ LTween:getDuration()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local popup = { x = -64.0, alpha = 0.0 }
     local tw = lurek.tween.to(popup, { x = 16.0, alpha = 1.0 }, 1.0, "linear")
@@ -1331,21 +1099,14 @@ LTween:getEasingName()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
     local ok, easing = pcall(function()
         return tw:getEasingName()
     end)
-    example_print_log("easing=" .. tostring(ok and easing or "unavailable"))
-    example_print_log("typeOf=" .. tostring(tw:typeOf("LTween")))
+    lurek.log.info(tostring("easing=" .. tostring(ok and easing or "unavailable")))
+    lurek.log.info(tostring("typeOf=" .. tostring(tw:typeOf("LTween"))))
 end
 ```
 
@@ -1369,19 +1130,12 @@ LTween:getElapsed()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
     lurek.tween.update(0.25)
-    example_print_log("elapsed=" .. tw:getElapsed())
-    example_print_log("x=" .. target.x)
+    lurek.log.info(tostring("elapsed=" .. tw:getElapsed()))
+    lurek.log.info(tostring("x=" .. target.x))
 end
 ```
 
@@ -1405,13 +1159,6 @@ LTween:getFields()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local panel = { alpha = 0.0, x = -320, y = 24 }
     local tw = lurek.tween.tween(0.5, panel, { alpha = 1.0, x = 16, y = 40 })
@@ -1444,19 +1191,12 @@ LTween:getProgress()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
     lurek.tween.update(0.5)
-    example_print_log("progress=" .. tw:getProgress())
-    example_print_log("x=" .. target.x)
+    lurek.log.info(tostring("progress=" .. tw:getProgress()))
+    lurek.log.info(tostring("x=" .. target.x))
 end
 ```
 
@@ -1480,19 +1220,12 @@ LTween:getRemaining()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
     lurek.tween.update(0.25)
-    example_print_log("remaining=" .. tw:getRemaining())
-    example_print_log("active=" .. tostring(tw:isActive()))
+    lurek.log.info(tostring("remaining=" .. tw:getRemaining()))
+    lurek.log.info(tostring("active=" .. tostring(tw:isActive())))
 end
 ```
 
@@ -1570,19 +1303,12 @@ LTween:isActive()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
-    example_print_log("active before = " .. tostring(tw:isActive()))
+    lurek.log.info(tostring("active before = " .. tostring(tw:isActive())))
     tw:cancel()
-    example_print_log("active after = " .. tostring(tw:isActive()))
+    lurek.log.info(tostring("active after = " .. tostring(tw:isActive())))
 end
 ```
 
@@ -1628,13 +1354,6 @@ LTween:onCancel(f)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local shutter = { y = 0 }
     local cancelled = false
@@ -1673,13 +1392,6 @@ LTween:onComplete(f)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local chest = { scale = 0.8, glow = 0.0 }
     local tw = lurek.tween.tween(0.6, chest, { scale = 1.2, glow = 1.0 })
@@ -1717,13 +1429,6 @@ LTween:onUpdate(f)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local waypoint = { x = 0, y = 0 }
     local lastT = 0.0
@@ -1750,22 +1455,15 @@ LTween:pause()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { rotation = 0 }
     local tw = lurek.tween.tween(2.0, obj, { rotation = 360 })
 
     lurek.tween.update(0.5)
-    example_print_log("before pause: " .. obj.rotation)
+    lurek.log.info(tostring("before pause: " .. obj.rotation))
     tw:pause()
     lurek.tween.update(1.0)
-    example_print_log("while paused: " .. obj.rotation)
+    lurek.log.info(tostring("while paused: " .. obj.rotation))
 end
 ```
 
@@ -1795,13 +1493,6 @@ LTween:relative(enabled)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local player = { x = 48, y = 96 }
     local tw = lurek.tween.tween(0.4, player, { x = 32, y = -16 }):relative(true)
@@ -1836,26 +1527,19 @@ LTween:resume()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { rotation = 0 }
     local tw = lurek.tween.tween(2.0, obj, { rotation = 360 })
 
     lurek.tween.update(0.5)
-    example_print_log("before pause: " .. obj.rotation)
+    lurek.log.info(tostring("before pause: " .. obj.rotation))
     tw:pause()
     lurek.tween.update(1.0)
-    example_print_log("while paused: " .. obj.rotation)
+    lurek.log.info(tostring("while paused: " .. obj.rotation))
 
     tw:resume()
     lurek.tween.update(0.5)
-    example_print_log("after resume: " .. obj.rotation)
+    lurek.log.info(tostring("after resume: " .. obj.rotation))
 end
 ```
 
@@ -1895,20 +1579,13 @@ LTween:setRelative(enabled)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local target = { x = 10.0 }
     local tw = lurek.tween.to(target, { x = 5 }, 1.0, "linear")
     tw:setRelative(true)
     lurek.tween.update(1.0)
-    example_print_log("relative x=" .. target.x)
-    example_print_log("type=" .. tw:type())
+    lurek.log.info(tostring("relative x=" .. target.x))
+    lurek.log.info(tostring("type=" .. tw:type()))
 end
 ```
 
@@ -1932,13 +1609,6 @@ LTween:setRepeat(n)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local beacon = { alpha = 0.0 }
     local tw = lurek.tween.tween(0.2, beacon, { alpha = 1.0 })
@@ -1986,13 +1656,6 @@ LTween:setYoyo(enabled)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local prompt = { y = 0 }
     local tw = lurek.tween.tween(0.2, prompt, { y = -14 })
@@ -2024,13 +1687,6 @@ LTween:type()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local cursor = { x = 0.0, alpha = 0.3 }
     local tw = lurek.tween.to(cursor, { x = 48.0, alpha = 1.0 }, 1.0, "linear")
@@ -2068,13 +1724,6 @@ LTween:typeOf(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local reticle = { scale = 0.6 }
     local tw = lurek.tween.to(reticle, { scale = 1.0 }, 1.0, "linear")
@@ -2142,20 +1791,13 @@ LTweenChain:call(fn)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local called = false
     local chain = lurek.tween.newChain()
     chain:call(function() called = true end)
     chain:start()
     lurek.tween.update(0.01)
-    example_print_log("called = " .. tostring(called))
+    lurek.log.info(tostring("called = " .. tostring(called)))
 end
 ```
 
@@ -2173,13 +1815,6 @@ LTweenChain:clear()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local chain = lurek.tween.newChain()
     chain:push({ from = 0.0, to = 1.0, duration = 0.1, label = "windup" })
@@ -2211,13 +1846,6 @@ LTweenChain:cursor()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local chain = lurek.tween.newChain()
     chain:push({ from = 0.0, to = 1.0, duration = 0.1, label = "charge" })
@@ -2249,20 +1877,13 @@ LTweenChain:getIteration()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { x = 0 }
     local chain = lurek.tween.newChain()
     chain:to(obj, { x = 1 }, 0.01, "linear"):loop(2)
     chain:start()
     lurek.tween.update(0.03)
-    example_print_log("iteration = " .. tostring(chain:getIteration()))
+    lurek.log.info(tostring("iteration = " .. tostring(chain:getIteration())))
 end
 ```
 
@@ -2286,20 +1907,13 @@ LTweenChain:getProgress()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { x = 0 }
     local chain = lurek.tween.newChain()
     chain:to(obj, { x = 10 }, 0.2, "linear")
     chain:start()
     lurek.tween.update(0.1)
-    example_print_log("progress = " .. tostring(chain:getProgress()))
+    lurek.log.info(tostring("progress = " .. tostring(chain:getProgress())))
 end
 ```
 
@@ -2323,19 +1937,12 @@ LTweenChain:isActive()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { x = 0 }
     local chain = lurek.tween.newChain()
     chain:to(obj, { x = 10 }, 0.1, "linear")
     chain:start()
-    example_print_log("isActive = " .. tostring(chain:isActive()))
+    lurek.log.info(tostring("isActive = " .. tostring(chain:isActive())))
 end
 ```
 
@@ -2359,20 +1966,13 @@ LTweenChain:isComplete()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { x = 0 }
     local chain = lurek.tween.newChain()
     chain:to(obj, { x = 10 }, 0.05, "linear")
     chain:start()
     lurek.tween.update(0.06)
-    example_print_log("isComplete = " .. tostring(chain:isComplete()))
+    lurek.log.info(tostring("isComplete = " .. tostring(chain:isComplete())))
 end
 ```
 
@@ -2396,13 +1996,6 @@ LTweenChain:isFinished()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local chain = lurek.tween.newChain()
     chain:push({ from = 0.0, to = 0.5, duration = 0.01, label = "flare_in" })
@@ -2434,13 +2027,6 @@ LTweenChain:isLooping()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local chain = lurek.tween.newChain()
     chain:push({ from = 0.0, to = 1.0, duration = 0.1, label = "radar_ping" })
@@ -2472,19 +2058,12 @@ LTweenChain:jumpTo(step)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local chain = lurek.tween.newChain()
     chain:push({ from = 0.0, to = 1.0, duration = 0.1, label = "a" })
     chain:push({ from = 1.0, to = 2.0, duration = 0.1, label = "b" })
     chain:jumpTo(2)
-    example_print_log("cursor after jump = " .. tostring(chain:cursor()))
+    lurek.log.info(tostring("cursor after jump = " .. tostring(chain:cursor())))
 end
 ```
 
@@ -2508,13 +2087,6 @@ LTweenChain:len()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local chain = lurek.tween.newChain()
     chain:push({ from = 0.0, to = 1.0, duration = 0.1, label = "intro" })
@@ -2552,20 +2124,13 @@ LTweenChain:loop(n)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { x = 0 }
     local chain = lurek.tween.newChain()
     chain:to(obj, { x = 1 }, 0.01, "linear"):loop(2)
     chain:start()
     lurek.tween.update(0.03)
-    example_print_log("iteration = " .. tostring(chain:getIteration()))
+    lurek.log.info(tostring("iteration = " .. tostring(chain:getIteration())))
 end
 ```
 
@@ -2595,20 +2160,13 @@ LTweenChain:onComplete(fn)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local done = false
     local chain = lurek.tween.newChain()
     chain:wait(0.01):onComplete(function() done = true end)
     chain:start()
     lurek.tween.update(0.02)
-    example_print_log("complete callback = " .. tostring(done))
+    lurek.log.info(tostring("complete callback = " .. tostring(done)))
 end
 ```
 
@@ -2638,20 +2196,13 @@ LTweenChain:onLoop(fn)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local loops = 0
     local chain = lurek.tween.newChain()
     chain:to({ x = 0 }, { x = 1 }, 0.01, "linear"):loop(2):onLoop(function() loops = loops + 1 end)
     chain:start()
     lurek.tween.update(0.03)
-    example_print_log("loops = " .. tostring(loops))
+    lurek.log.info(tostring("loops = " .. tostring(loops)))
 end
 ```
 
@@ -2675,13 +2226,6 @@ LTweenChain:pause()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { x = 0 }
     local chain = lurek.tween.newChain()
@@ -2689,7 +2233,7 @@ do
     chain:start()
     lurek.tween.update(0.05)
     chain:pause()
-    example_print_log("progress after pause = " .. tostring(chain:getProgress()))
+    lurek.log.info(tostring("progress after pause = " .. tostring(chain:getProgress())))
 end
 ```
 
@@ -2719,13 +2263,6 @@ LTweenChain:push(opts)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local chain = lurek.tween.newChain()
     local fadeIn = chain:push({ from = 0.0, to = 1.0, duration = 0.1, label = "fade_in" })
@@ -2751,19 +2288,12 @@ LTweenChain:reset()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local chain = lurek.tween.newChain()
     chain:push({ from = 0.0, to = 5.0, duration = 1.0 })
     chain:tick(0.5)
     chain:reset()
-    example_print_log("value after reset = " .. tostring(chain:value()))
+    lurek.log.info(tostring("value after reset = " .. tostring(chain:value())))
 end
 ```
 
@@ -2787,13 +2317,6 @@ LTweenChain:resume()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { x = 0 }
     local chain = lurek.tween.newChain()
@@ -2801,7 +2324,7 @@ do
     chain:start()
     chain:pause()
     chain:resume()
-    example_print_log("active after resume = " .. tostring(chain:isActive()))
+    lurek.log.info(tostring("active after resume = " .. tostring(chain:isActive())))
 end
 ```
 
@@ -2825,13 +2348,6 @@ LTweenChain:setLooping(looping)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local chain = lurek.tween.newChain()
     chain:push({ from = 0.0, to = 1.0, duration = 0.1, label = "alarm_on" })
@@ -2863,19 +2379,12 @@ LTweenChain:start()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { x = 0 }
     local chain = lurek.tween.newChain()
     chain:to(obj, { x = 10 }, 0.1, "linear")
     chain:start()
-    example_print_log("active = " .. tostring(chain:isActive()))
+    lurek.log.info(tostring("active = " .. tostring(chain:isActive())))
 end
 ```
 
@@ -2899,20 +2408,13 @@ LTweenChain:stop()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { x = 0 }
     local chain = lurek.tween.newChain()
     chain:to(obj, { x = 10 }, 0.1, "linear")
     chain:start()
     chain:stop()
-    example_print_log("active after stop = " .. tostring(chain:isActive()))
+    lurek.log.info(tostring("active after stop = " .. tostring(chain:isActive())))
 end
 ```
 
@@ -2942,13 +2444,6 @@ LTweenChain:tick(dt)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local chain = lurek.tween.newChain()
     chain:push({ from = 0.0, to = 1.0, duration = 0.1, label = "charge" })
@@ -2989,20 +2484,13 @@ LTweenChain:to(target, fields, dur, easing)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { x = 0 }
     local chain = lurek.tween.newChain()
     chain:to(obj, { x = 10 }, 0.25, "linear")
     chain:start()
     lurek.tween.update(0.25)
-    example_print_log("x = " .. tostring(obj.x))
+    lurek.log.info(tostring("x = " .. tostring(obj.x)))
 end
 ```
 
@@ -3026,13 +2514,6 @@ LTweenChain:type()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local chain = lurek.tween.newChain()
     chain:push({ from = 0.0, to = 1.0, duration = 0.2, label = "charge" })
@@ -3069,13 +2550,6 @@ LTweenChain:typeOf(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local chain = lurek.tween.newChain()
     chain:push({ from = 0.0, to = 1.0, duration = 0.2, label = "shield_up" })
@@ -3106,13 +2580,6 @@ LTweenChain:value()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local chain = lurek.tween.newChain()
     chain:push({ from = 0.0, to = 5.0, duration = 1.0, label = "danger_fill" })
@@ -3151,20 +2618,13 @@ LTweenChain:wait(seconds, callback)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local fired = false
     local chain = lurek.tween.newChain()
     chain:wait(0.1, function() fired = true end)
     chain:start()
     lurek.tween.update(0.1)
-    example_print_log("wait fired = " .. tostring(fired))
+    lurek.log.info(tostring("wait fired = " .. tostring(fired)))
 end
 ```
 
@@ -3196,13 +2656,6 @@ LTweenParallel:add(tw_ud)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj1 = { alpha = 1 }
     local obj2 = { scale = 1 }
@@ -3212,11 +2665,11 @@ do
 
     par:add(tw1)
     par:add(tw2)
-    par:onComplete(function() example_print_log("  parallel group done") end)
+    par:onComplete(function() lurek.log.info(tostring("  parallel group done")) end)
     par:start()
 
     lurek.tween.update(0.8)
-    example_print_log("alpha=" .. obj1.alpha .. " scale=" .. obj2.scale)
+    lurek.log.info(tostring("alpha=" .. obj1.alpha .. " scale=" .. obj2.scale))
 end
 ```
 
@@ -3234,13 +2687,6 @@ LTweenParallel:cancel()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local a = { x = 0 }
     local b = { y = 0 }
@@ -3251,8 +2697,8 @@ do
 
     lurek.tween.update(1.0)
     par:cancel()
-    example_print_log("cancelled: active=" .. tostring(par:isActive()))
-    example_print_log("x=" .. a.x .. " y=" .. b.y)
+    lurek.log.info(tostring("cancelled: active=" .. tostring(par:isActive())))
+    lurek.log.info(tostring("x=" .. a.x .. " y=" .. b.y))
 end
 ```
 
@@ -3276,18 +2722,11 @@ LTweenParallel:isActive()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local a = { x = 0.0 } ; local b = { y = 0.0 } ; local par = lurek.tween.parallel()
     par:tween(1.0, a, { x = 50 }, "linear") ; par:tween(0.5, b, { y = 20 }, "easeinquad") ; local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, "linear")
-    par:add(tw_extra) ; par:onComplete(function() example_print_log("parallel_done") end) ; example_print_log("par_active=" .. tostring(par:isActive()))
-    example_print_log("par_type=" .. par:type()) ; example_print_log("par_typeOf=" .. tostring(par:typeOf("LTweenParallel")))
+    par:add(tw_extra) ; par:onComplete(function() lurek.log.info(tostring("parallel_done")) end) ; lurek.log.info(tostring("par_active=" .. tostring(par:isActive())))
+    lurek.log.info(tostring("par_type=" .. par:type())) ; lurek.log.info(tostring("par_typeOf=" .. tostring(par:typeOf("LTweenParallel"))))
     par:start() ; par:cancel()
 end
 ```
@@ -3318,18 +2757,11 @@ LTweenParallel:onComplete(f)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local a = { x = 0.0 } ; local b = { y = 0.0 } ; local par = lurek.tween.parallel()
     par:tween(1.0, a, { x = 50 }, "linear") ; par:tween(0.5, b, { y = 20 }, "easeinquad") ; local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, "linear")
-    par:add(tw_extra) ; par:onComplete(function() example_print_log("parallel_done") end) ; example_print_log("par_active=" .. tostring(par:isActive()))
-    example_print_log("par_type=" .. par:type()) ; example_print_log("par_typeOf=" .. tostring(par:typeOf("LTweenParallel")))
+    par:add(tw_extra) ; par:onComplete(function() lurek.log.info(tostring("parallel_done")) end) ; lurek.log.info(tostring("par_active=" .. tostring(par:isActive())))
+    lurek.log.info(tostring("par_type=" .. par:type())) ; lurek.log.info(tostring("par_typeOf=" .. tostring(par:typeOf("LTweenParallel"))))
     par:start() ; par:cancel()
 end
 ```
@@ -3354,18 +2786,11 @@ LTweenParallel:start()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local a = { x = 0.0 } ; local b = { y = 0.0 } ; local par = lurek.tween.parallel()
     par:tween(1.0, a, { x = 50 }, "linear") ; par:tween(0.5, b, { y = 20 }, "easeinquad") ; local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, "linear")
-    par:add(tw_extra) ; par:onComplete(function() example_print_log("parallel_done") end) ; example_print_log("par_active=" .. tostring(par:isActive()))
-    example_print_log("par_type=" .. par:type()) ; example_print_log("par_typeOf=" .. tostring(par:typeOf("LTweenParallel")))
+    par:add(tw_extra) ; par:onComplete(function() lurek.log.info(tostring("parallel_done")) end) ; lurek.log.info(tostring("par_active=" .. tostring(par:isActive())))
+    lurek.log.info(tostring("par_type=" .. par:type())) ; lurek.log.info(tostring("par_typeOf=" .. tostring(par:typeOf("LTweenParallel"))))
     par:start() ; par:cancel()
 end
 ```
@@ -3399,18 +2824,11 @@ LTweenParallel:tween(duration, target, fields, easing)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local a = { x = 0.0 } ; local b = { y = 0.0 } ; local par = lurek.tween.parallel()
     par:tween(1.0, a, { x = 50 }, "linear") ; par:tween(0.5, b, { y = 20 }, "easeinquad") ; local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, "linear")
-    par:add(tw_extra) ; par:onComplete(function() example_print_log("parallel_done") end) ; example_print_log("par_active=" .. tostring(par:isActive()))
-    example_print_log("par_type=" .. par:type()) ; example_print_log("par_typeOf=" .. tostring(par:typeOf("LTweenParallel")))
+    par:add(tw_extra) ; par:onComplete(function() lurek.log.info(tostring("parallel_done")) end) ; lurek.log.info(tostring("par_active=" .. tostring(par:isActive())))
+    lurek.log.info(tostring("par_type=" .. par:type())) ; lurek.log.info(tostring("par_typeOf=" .. tostring(par:typeOf("LTweenParallel"))))
     par:start() ; par:cancel()
 end
 ```
@@ -3435,18 +2853,11 @@ LTweenParallel:type()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local a = { x = 0.0 } ; local b = { y = 0.0 } ; local par = lurek.tween.parallel()
     par:tween(1.0, a, { x = 50 }, "linear") ; par:tween(0.5, b, { y = 20 }, "easeinquad") ; local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, "linear")
-    par:add(tw_extra) ; par:onComplete(function() example_print_log("parallel_done") end) ; example_print_log("par_active=" .. tostring(par:isActive()))
-    example_print_log("par_type=" .. par:type()) ; example_print_log("par_typeOf=" .. tostring(par:typeOf("LTweenParallel")))
+    par:add(tw_extra) ; par:onComplete(function() lurek.log.info(tostring("parallel_done")) end) ; lurek.log.info(tostring("par_active=" .. tostring(par:isActive())))
+    lurek.log.info(tostring("par_type=" .. par:type())) ; lurek.log.info(tostring("par_typeOf=" .. tostring(par:typeOf("LTweenParallel"))))
     par:start() ; par:cancel()
 end
 ```
@@ -3477,18 +2888,11 @@ LTweenParallel:typeOf(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local a = { x = 0.0 } ; local b = { y = 0.0 } ; local par = lurek.tween.parallel()
     par:tween(1.0, a, { x = 50 }, "linear") ; par:tween(0.5, b, { y = 20 }, "easeinquad") ; local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, "linear")
-    par:add(tw_extra) ; par:onComplete(function() example_print_log("parallel_done") end) ; example_print_log("par_active=" .. tostring(par:isActive()))
-    example_print_log("par_type=" .. par:type()) ; example_print_log("par_typeOf=" .. tostring(par:typeOf("LTweenParallel")))
+    par:add(tw_extra) ; par:onComplete(function() lurek.log.info(tostring("parallel_done")) end) ; lurek.log.info(tostring("par_active=" .. tostring(par:isActive())))
+    lurek.log.info(tostring("par_type=" .. par:type())) ; lurek.log.info(tostring("par_typeOf=" .. tostring(par:typeOf("LTweenParallel"))))
     par:start() ; par:cancel()
 end
 ```
@@ -3515,26 +2919,19 @@ LTweenSequence:await()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { x = 0.0 }
     local seq = lurek.tween.sequence()
     local co = coroutine.create(function()
         seq:await()
-        example_print_log("sequence await resumed at x=" .. obj.x)
+        lurek.log.info(tostring("sequence await resumed at x=" .. obj.x))
     end)
 
     seq:tween(0.5, obj, { x = 100 }, "linear")
     seq:start()
     coroutine.resume(co)
     lurek.tween.update(0.5)
-    example_print_log("coroutine status = " .. coroutine.status(co))
+    lurek.log.info(tostring("coroutine status = " .. coroutine.status(co)))
 end
 ```
 
@@ -3564,20 +2961,13 @@ LTweenSequence:callback(f)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { scale = 1 }
     local seq = lurek.tween.sequence()
     seq:tween(0.5, obj, { scale = 2 })
-    seq:callback(function() example_print_log("  halfway callback! scale=" .. obj.scale) end)
+    seq:callback(function() lurek.log.info(tostring("  halfway callback! scale=" .. obj.scale)) end)
     seq:tween(0.5, obj, { scale = 1 })
-    seq:onComplete(function() example_print_log("  sequence complete") end)
+    seq:onComplete(function() lurek.log.info(tostring("  sequence complete")) end)
     seq:start()
 
     lurek.tween.update(0.5)
@@ -3599,13 +2989,6 @@ LTweenSequence:cancel()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { w = 0 }
     local seq = lurek.tween.sequence()
@@ -3614,9 +2997,9 @@ do
     seq:start()
     lurek.tween.update(1.0)
 
-    example_print_log("progress at midpoint = " .. seq:getProgress())
+    lurek.log.info(tostring("progress at midpoint = " .. seq:getProgress()))
     seq:cancel()
-    example_print_log("active after cancel = " .. tostring(seq:isActive()))
+    lurek.log.info(tostring("active after cancel = " .. tostring(seq:isActive())))
 end
 ```
 
@@ -3647,13 +3030,6 @@ LTweenSequence:delay(seconds, cb)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { alpha = 0 }
     local seq = lurek.tween.sequence()
@@ -3663,11 +3039,11 @@ do
     seq:start()
 
     lurek.tween.update(0.3)
-    example_print_log("fade in done: alpha=" .. obj.alpha)
+    lurek.log.info(tostring("fade in done: alpha=" .. obj.alpha))
     lurek.tween.update(0.5)
-    example_print_log("after delay: alpha=" .. obj.alpha)
+    lurek.log.info(tostring("after delay: alpha=" .. obj.alpha))
     lurek.tween.update(0.3)
-    example_print_log("fade out done: alpha=" .. obj.alpha)
+    lurek.log.info(tostring("fade out done: alpha=" .. obj.alpha))
 end
 ```
 
@@ -3691,13 +3067,6 @@ LTweenSequence:getProgress()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { w = 0 }
     local seq = lurek.tween.sequence()
@@ -3706,9 +3075,9 @@ do
     seq:start()
     lurek.tween.update(1.0)
 
-    example_print_log("progress at midpoint = " .. seq:getProgress())
+    lurek.log.info(tostring("progress at midpoint = " .. seq:getProgress()))
     seq:cancel()
-    example_print_log("active after cancel = " .. tostring(seq:isActive()))
+    lurek.log.info(tostring("active after cancel = " .. tostring(seq:isActive())))
 end
 ```
 
@@ -3732,20 +3101,13 @@ LTweenSequence:isActive()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { x = 0.0 }
     local seq = lurek.tween.sequence()
     seq:tween(0.5, obj, { x = 100 }, "linear")
-    example_print_log("seq active before = " .. tostring(seq:isActive()))
+    lurek.log.info(tostring("seq active before = " .. tostring(seq:isActive())))
     seq:start()
-    example_print_log("seq active after = " .. tostring(seq:isActive()))
+    lurek.log.info(tostring("seq active after = " .. tostring(seq:isActive())))
 end
 ```
 
@@ -3775,21 +3137,14 @@ LTweenSequence:onComplete(f)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { x = 0.0, alpha = 1.0 }
     local seq = lurek.tween.sequence()
     seq:tween(0.5, obj, { x = 100 }, "linear")
-    seq:onComplete(function() example_print_log("seq_done") end)
+    seq:onComplete(function() lurek.log.info(tostring("seq_done")) end)
     seq:start()
     lurek.tween.update(0.5)
-    example_print_log("seq active = " .. tostring(seq:isActive()))
+    lurek.log.info(tostring("seq active = " .. tostring(seq:isActive())))
 end
 ```
 
@@ -3813,21 +3168,14 @@ LTweenSequence:start()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { x = 0.0 }
     local seq = lurek.tween.sequence()
     seq:tween(0.5, obj, { x = 100 }, "linear")
     seq:start()
-    example_print_log("seq active = " .. tostring(seq:isActive()))
+    lurek.log.info(tostring("seq active = " .. tostring(seq:isActive())))
     lurek.tween.update(0.5)
-    example_print_log("seq x = " .. obj.x)
+    lurek.log.info(tostring("seq x = " .. obj.x))
 end
 ```
 
@@ -3860,13 +3208,6 @@ LTweenSequence:tween(duration, target, fields, easing)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local obj = { x = 0.0, alpha = 1.0 }
     local seq = lurek.tween.sequence()
@@ -3874,8 +3215,8 @@ do
     seq:tween(0.5, obj, { alpha = 0 }, "easeout")
     seq:start()
     lurek.tween.update(0.5)
-    example_print_log("seq x=" .. obj.x)
-    example_print_log("seq active = " .. tostring(seq:isActive()))
+    lurek.log.info(tostring("seq x=" .. obj.x))
+    lurek.log.info(tostring("seq active = " .. tostring(seq:isActive())))
 end
 ```
 
@@ -3899,13 +3240,6 @@ LTweenSequence:type()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local panel = { alpha = 0.0, x = -100.0 }
     local seq = lurek.tween.sequence()
@@ -3945,13 +3279,6 @@ LTweenSequence:typeOf(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local alert = { alpha = 0.0 }
     local seq = lurek.tween.sequence()
@@ -3995,21 +3322,14 @@ LTweenState:isComplete()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local state = lurek.tween.newState(1.0, "linear")
     state:tick(0.25)
-    example_print_log("t=" .. state:t())
-    example_print_log("lerp=" .. state:lerp(0, 100))
-    example_print_log("complete=" .. tostring(state:isComplete()))
-    example_print_log("type=" .. state:type())
-    example_print_log("typeOf=" .. tostring(state:typeOf("LTweenState")))
+    lurek.log.info(tostring("t=" .. state:t()))
+    lurek.log.info(tostring("lerp=" .. state:lerp(0, 100)))
+    lurek.log.info(tostring("complete=" .. tostring(state:isComplete())))
+    lurek.log.info(tostring("type=" .. state:type()))
+    lurek.log.info(tostring("typeOf=" .. tostring(state:typeOf("LTweenState"))))
 end
 ```
 
@@ -4040,21 +3360,14 @@ LTweenState:lerp(start, finish)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local state = lurek.tween.newState(1.0, "linear")
     state:tick(0.25)
-    example_print_log("t=" .. state:t())
-    example_print_log("lerp=" .. state:lerp(0, 100))
-    example_print_log("complete=" .. tostring(state:isComplete()))
-    example_print_log("type=" .. state:type())
-    example_print_log("typeOf=" .. tostring(state:typeOf("LTweenState")))
+    lurek.log.info(tostring("t=" .. state:t()))
+    lurek.log.info(tostring("lerp=" .. state:lerp(0, 100)))
+    lurek.log.info(tostring("complete=" .. tostring(state:isComplete())))
+    lurek.log.info(tostring("type=" .. state:type()))
+    lurek.log.info(tostring("typeOf=" .. tostring(state:typeOf("LTweenState"))))
 end
 ```
 
@@ -4072,20 +3385,13 @@ LTweenState:reset()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local state = lurek.tween.newState(1.0)
     state:tick(1.0)
-    example_print_log("done = " .. tostring(state:isComplete()))
+    lurek.log.info(tostring("done = " .. tostring(state:isComplete())))
     state:reset()
-    example_print_log("after reset, done = " .. tostring(state:isComplete()))
-    example_print_log("t = " .. state:t())
+    lurek.log.info(tostring("after reset, done = " .. tostring(state:isComplete())))
+    lurek.log.info(tostring("t = " .. state:t()))
 end
 ```
 
@@ -4109,21 +3415,14 @@ LTweenState:t()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local state = lurek.tween.newState(1.0, "linear")
     state:tick(0.25)
-    example_print_log("t=" .. state:t())
-    example_print_log("lerp=" .. state:lerp(0, 100))
-    example_print_log("complete=" .. tostring(state:isComplete()))
-    example_print_log("type=" .. state:type())
-    example_print_log("typeOf=" .. tostring(state:typeOf("LTweenState")))
+    lurek.log.info(tostring("t=" .. state:t()))
+    lurek.log.info(tostring("lerp=" .. state:lerp(0, 100)))
+    lurek.log.info(tostring("complete=" .. tostring(state:isComplete())))
+    lurek.log.info(tostring("type=" .. state:type()))
+    lurek.log.info(tostring("typeOf=" .. tostring(state:typeOf("LTweenState"))))
 end
 ```
 
@@ -4153,21 +3452,14 @@ LTweenState:tick(dt)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local state = lurek.tween.newState(1.0, "linear")
     state:tick(0.25)
-    example_print_log("t=" .. state:t())
-    example_print_log("lerp=" .. state:lerp(0, 100))
-    example_print_log("complete=" .. tostring(state:isComplete()))
-    example_print_log("type=" .. state:type())
-    example_print_log("typeOf=" .. tostring(state:typeOf("LTweenState")))
+    lurek.log.info(tostring("t=" .. state:t()))
+    lurek.log.info(tostring("lerp=" .. state:lerp(0, 100)))
+    lurek.log.info(tostring("complete=" .. tostring(state:isComplete())))
+    lurek.log.info(tostring("type=" .. state:type()))
+    lurek.log.info(tostring("typeOf=" .. tostring(state:typeOf("LTweenState"))))
 end
 ```
 
@@ -4191,21 +3483,14 @@ LTweenState:type()
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local state = lurek.tween.newState(1.0, "linear")
     state:tick(0.25)
-    example_print_log("t=" .. state:t())
-    example_print_log("lerp=" .. state:lerp(0, 100))
-    example_print_log("complete=" .. tostring(state:isComplete()))
-    example_print_log("type=" .. state:type())
-    example_print_log("typeOf=" .. tostring(state:typeOf("LTweenState")))
+    lurek.log.info(tostring("t=" .. state:t()))
+    lurek.log.info(tostring("lerp=" .. state:lerp(0, 100)))
+    lurek.log.info(tostring("complete=" .. tostring(state:isComplete())))
+    lurek.log.info(tostring("type=" .. state:type()))
+    lurek.log.info(tostring("typeOf=" .. tostring(state:typeOf("LTweenState"))))
 end
 ```
 
@@ -4235,21 +3520,14 @@ LTweenState:typeOf(name)
 
 ```lua
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local state = lurek.tween.newState(1.0, "linear")
     state:tick(0.25)
-    example_print_log("t=" .. state:t())
-    example_print_log("lerp=" .. state:lerp(0, 100))
-    example_print_log("complete=" .. tostring(state:isComplete()))
-    example_print_log("type=" .. state:type())
-    example_print_log("typeOf=" .. tostring(state:typeOf("LTweenState")))
+    lurek.log.info(tostring("t=" .. state:t()))
+    lurek.log.info(tostring("lerp=" .. state:lerp(0, 100)))
+    lurek.log.info(tostring("complete=" .. tostring(state:isComplete())))
+    lurek.log.info(tostring("type=" .. state:type()))
+    lurek.log.info(tostring("typeOf=" .. tostring(state:typeOf("LTweenState"))))
 end
 ```
 

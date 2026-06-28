@@ -141,15 +141,6 @@ This module is mostly self-contained inside the `Platform Services` group. Cross
 
 - `content/examples/font.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_font_unit.lua` (present)
-- Rust: `tests/rust/unit/font_tests.rs`
-
-## Evidence / Golden
-
-- No evidence or golden artifacts registered.
-
 ## Architecture Links
 
 - Intentionally empty.

@@ -144,16 +144,6 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 - `content/examples/event.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_event_unit.lua` (present)
-- Rust: `src/event/event_queue.rs`
-- Rust: `tests/rust/unit/event_tests.rs`
-
-## Evidence / Golden
-
-- No evidence or golden artifacts registered.
-
 ## Architecture Links
 
 - Intentionally empty.

@@ -1276,9 +1276,6 @@ def build_spec(module: str, lua_parser) -> tuple[str, dict]:
     lua_api_text = format_lua_api(lua_api_for_spec)
     imports_text = format_references(group, source["references"], reference_overrides)
     examples_text = format_examples(module)
-    tests_text = format_tests(module)
-    evidence_text = format_evidence(module, load_evidence_manifest())
-
     content = f"""{GENERATED_HEADER.replace("<module>", module)}
 
 # {module}
@@ -1317,14 +1314,6 @@ def build_spec(module: str, lua_parser) -> tuple[str, dict]:
 
 {examples_text}
 
-## Tests
-
-{tests_text}
-
-## Evidence / Golden
-
-{evidence_text}
-
 ## Architecture Links
 
 {architecture_links}
@@ -1337,8 +1326,6 @@ def build_spec(module: str, lua_parser) -> tuple[str, dict]:
     inventory = {
         "group": group,
         "namespace": lua_api["namespace"],
-        "rust_tests": discover_rust_tests(module),
-        "lua_tests": module_registry.module_lua_unit_test(module),
         "references": source["references"],
         "file_count": len(source["files"]),
         "type_count": sum(len(items) for items in source["types_by_file"].values()),
@@ -1374,8 +1361,6 @@ def build_callbacks_spec() -> tuple[str, dict]:
             "- Binding: Global engine callback registration (no dedicated `src/lua_api/<module>_api.rs` spec target)",
             "- Namespace: `lurek.<callback>` (global callbacks)",
             f"- Callback surface: `{len(callbacks)}` engine callbacks",
-            "- Rust test path(s): None found in the workspace",
-            "- Lua test path(s): None found in the workspace",
         ]
     )
 
@@ -1440,8 +1425,6 @@ Global `lurek.*` callbacks are documented here as a dedicated generated spec, in
     inventory = {
         "group": "Edge/Integration",
         "namespace": "lurek.<callback>",
-        "rust_tests": "None found in the workspace",
-        "lua_tests": "None found in the workspace",
         "references": [],
         "file_count": 1,
         "type_count": 0,

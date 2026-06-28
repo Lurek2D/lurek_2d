@@ -409,28 +409,6 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 
 - `content/examples/flownet.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_flownet_unit.lua` (present)
-- Rust: `tests/rust/unit/flownet_tests.rs`
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Evidence test | `tests/lua/evidence/test_flownet_evidence.lua` |
-| Golden test | `tests/lua/golden/test_flownet_golden.lua` |
-| Current artifact | `tests/artifacts/current/flownet/flownet_queue_overflow.png` |
-| Current artifact | `tests/artifacts/current/flownet/flownet_route_constraints.png` |
-| Current artifact | `tests/artifacts/current/flownet/flownet_supply_conversion.png` |
-| Current artifact | `tests/artifacts/current/flownet/flownet_topology_algorithms.png` |
-| Current artifact | `tests/artifacts/current/flownet/flownet_transit_capacity.png` |
-| Baseline artifact | `tests/artifacts/baselines/flownet/flownet_queue_overflow.png` |
-| Baseline artifact | `tests/artifacts/baselines/flownet/flownet_route_constraints.png` |
-| Baseline artifact | `tests/artifacts/baselines/flownet/flownet_supply_conversion.png` |
-| Baseline artifact | `tests/artifacts/baselines/flownet/flownet_topology_algorithms.png` |
-| Baseline artifact | `tests/artifacts/baselines/flownet/flownet_transit_capacity.png` |
-
 ## Architecture Links
 
 - Intentionally empty.

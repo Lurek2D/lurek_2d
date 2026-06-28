@@ -231,26 +231,6 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 - `content/examples/awareness.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_awareness_unit.lua` (present)
-- Rust: none detected.
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Evidence test | `tests/lua/evidence/test_awareness_evidence.lua` |
-| Golden test | `tests/lua/golden/test_awareness_golden.lua` |
-| Current artifact | `tests/artifacts/current/awareness/awareness_fov_blockers.png` |
-| Current artifact | `tests/artifacts/current/awareness/awareness_hex_cone_share.png` |
-| Current artifact | `tests/artifacts/current/awareness/awareness_region_state_matrix.png` |
-| Current artifact | `tests/artifacts/current/awareness/awareness_tilefield_action_trace.txt` |
-| Baseline artifact | `tests/artifacts/baselines/awareness/awareness_fov_blockers.png` |
-| Baseline artifact | `tests/artifacts/baselines/awareness/awareness_hex_cone_share.png` |
-| Baseline artifact | `tests/artifacts/baselines/awareness/awareness_region_state_matrix.png` |
-| Baseline artifact | `tests/artifacts/baselines/awareness/awareness_tilefield_action_trace.txt` |
-
 ## Architecture Links
 
 - Intentionally empty.

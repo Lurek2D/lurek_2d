@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-06-28T12:41:11.036170+00:00",
+  "generated_at": "2026-06-28T18:54:26.990521+00:00",
   "summary": {
     "rust": {
-      "total": 8794,
-      "covered": 8789,
-      "missing": 5,
+      "total": 8791,
+      "covered": 8785,
+      "missing": 6,
       "pct": 99.9
     },
     "lua_api": {
@@ -14,9 +14,9 @@
       "pct": 100.0
     },
     "total": {
-      "total": 8972,
-      "covered": 8967,
-      "missing": 5,
+      "total": 8969,
+      "covered": 8963,
+      "missing": 6,
       "pct": 99.9
     }
   },
@@ -64,6 +64,15 @@
       "line": 1379,
       "kind": "fn",
       "name": "register",
+      "has_doc": false
+    },
+    {
+      "source": "rust",
+      "module": "runtime",
+      "file": "src/runtime/log_messages.rs",
+      "line": 157,
+      "kind": "const",
+      "name": "A003_AUDIO_OUTPUT_UNAVAIL",
       "has_doc": false
     }
   ],
@@ -33984,7 +33993,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/audio_api.rs",
-      "line": 417,
+      "line": 391,
       "kind": "struct",
       "name": "LuaSource",
       "has_doc": true
@@ -33993,7 +34002,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/audio_api.rs",
-      "line": 672,
+      "line": 646,
       "kind": "struct",
       "name": "LuaBus",
       "has_doc": true
@@ -34002,16 +34011,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/audio_api.rs",
-      "line": 795,
-      "kind": "struct",
-      "name": "LuaMidiPlayer",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "lua_api",
-      "file": "src/lua_api/audio_api.rs",
-      "line": 1194,
+      "line": 767,
       "kind": "struct",
       "name": "LuaSoundPool",
       "has_doc": true
@@ -34020,7 +34020,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/audio_api.rs",
-      "line": 1272,
+      "line": 845,
       "kind": "struct",
       "name": "LuaDecoder",
       "has_doc": true
@@ -34029,7 +34029,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/audio_api.rs",
-      "line": 1345,
+      "line": 918,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -34038,7 +34038,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/audio_api.rs",
-      "line": 2756,
+      "line": 2329,
       "kind": "struct",
       "name": "LuaBeatClock",
       "has_doc": true
@@ -61965,34 +61965,16 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 158,
-      "kind": "const",
-      "name": "A001_MIDI_READ_FAIL",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "runtime",
-      "file": "src/runtime/log_messages.rs",
-      "line": 160,
-      "kind": "const",
-      "name": "A002_MIDI_DISABLED",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "runtime",
-      "file": "src/runtime/log_messages.rs",
-      "line": 162,
+      "line": 157,
       "kind": "const",
       "name": "A003_AUDIO_OUTPUT_UNAVAIL",
-      "has_doc": true
+      "has_doc": false
     },
     {
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 164,
+      "line": 159,
       "kind": "const",
       "name": "A004_AUDIO_PLAY_QUEUED",
       "has_doc": true
@@ -62001,7 +61983,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 166,
+      "line": 161,
       "kind": "const",
       "name": "G001_FONT_GLYPH_WARN",
       "has_doc": true
@@ -62010,7 +61992,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 168,
+      "line": 163,
       "kind": "const",
       "name": "G002_SCREENSHOT_ZERO_SIZE",
       "has_doc": true
@@ -62019,7 +62001,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 170,
+      "line": 165,
       "kind": "const",
       "name": "G003_SCREENSHOT_MAP_FAIL",
       "has_doc": true
@@ -62028,7 +62010,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 172,
+      "line": 167,
       "kind": "const",
       "name": "G004_SCREENSHOT_RECV_FAIL",
       "has_doc": true
@@ -62037,7 +62019,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 174,
+      "line": 169,
       "kind": "const",
       "name": "G005_SCREENSHOT_DATA_FAIL",
       "has_doc": true
@@ -62046,7 +62028,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 176,
+      "line": 171,
       "kind": "const",
       "name": "P001_PULLEY_JOINT_FALLBACK",
       "has_doc": true
@@ -62055,7 +62037,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 178,
+      "line": 173,
       "kind": "const",
       "name": "P002_GEAR_JOINT_FALLBACK",
       "has_doc": true
@@ -62064,7 +62046,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 180,
+      "line": 175,
       "kind": "const",
       "name": "DF01_RIGHT_JOIN_UNIMPL",
       "has_doc": true
@@ -62073,7 +62055,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 182,
+      "line": 177,
       "kind": "const",
       "name": "LA01_API_STUB",
       "has_doc": true
@@ -62082,7 +62064,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 184,
+      "line": 179,
       "kind": "const",
       "name": "LA02_PIPELINE_CALLBACK_FAIL",
       "has_doc": true
@@ -62091,7 +62073,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 186,
+      "line": 181,
       "kind": "const",
       "name": "LA03_OPEN_URL_REJECTED",
       "has_doc": true
@@ -62100,7 +62082,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 188,
+      "line": 183,
       "kind": "const",
       "name": "LA04_CLIPBOARD_WRITE_FAIL",
       "has_doc": true
@@ -62109,7 +62091,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 190,
+      "line": 185,
       "kind": "const",
       "name": "LA05_CLIPBOARD_UNAVAIL",
       "has_doc": true
@@ -62118,7 +62100,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 192,
+      "line": 187,
       "kind": "const",
       "name": "LA06_CLIPBOARD_READ_FAIL",
       "has_doc": true
@@ -62127,7 +62109,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 194,
+      "line": 189,
       "kind": "const",
       "name": "LA07_SCALE_MODE_UNKNOWN",
       "has_doc": true
@@ -62136,7 +62118,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 196,
+      "line": 191,
       "kind": "const",
       "name": "LA08_PATHFINDING_THREAD_UNIMPL",
       "has_doc": true
@@ -62145,7 +62127,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 198,
+      "line": 193,
       "kind": "const",
       "name": "L060_LUA_CALLBACK_ERROR",
       "has_doc": true
@@ -62154,7 +62136,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 200,
+      "line": 195,
       "kind": "const",
       "name": "L070_SURFACE_NO_READBACK",
       "has_doc": true
@@ -62163,7 +62145,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 202,
+      "line": 197,
       "kind": "const",
       "name": "L071_CURSOR_GRAB_FAIL",
       "has_doc": true
@@ -62172,7 +62154,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 204,
+      "line": 199,
       "kind": "const",
       "name": "L072_CURSOR_GRAB_LOCK_FAIL",
       "has_doc": true
@@ -62181,7 +62163,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 206,
+      "line": 201,
       "kind": "const",
       "name": "L073_CURSOR_POS_FAIL",
       "has_doc": true
@@ -62190,7 +62172,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 208,
+      "line": 203,
       "kind": "const",
       "name": "L074_SCREENSHOT_NO_READBACK",
       "has_doc": true
@@ -62199,7 +62181,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 210,
+      "line": 205,
       "kind": "const",
       "name": "L075_SCREENSHOT_SAVE_FAIL",
       "has_doc": true
@@ -62208,7 +62190,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 212,
+      "line": 207,
       "kind": "const",
       "name": "L076_SCREENSHOT_ENCODE_FAIL",
       "has_doc": true
@@ -62217,7 +62199,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 214,
+      "line": 209,
       "kind": "const",
       "name": "L077_DRAG_HOVER",
       "has_doc": true
@@ -62226,7 +62208,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 216,
+      "line": 211,
       "kind": "const",
       "name": "L078_DRAG_HOVER_CANCEL",
       "has_doc": true
@@ -62235,7 +62217,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 218,
+      "line": 213,
       "kind": "const",
       "name": "L079_DRAG_DROP_IGNORED",
       "has_doc": true
@@ -62244,7 +62226,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 220,
+      "line": 215,
       "kind": "const",
       "name": "L080_GAME_DIR",
       "has_doc": true
@@ -62253,7 +62235,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 222,
+      "line": 217,
       "kind": "const",
       "name": "L081_LOG_FILE",
       "has_doc": true
@@ -62262,7 +62244,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 224,
+      "line": 219,
       "kind": "const",
       "name": "L082_LOG_FILE_FAIL",
       "has_doc": true
@@ -62271,7 +62253,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 226,
+      "line": 221,
       "kind": "const",
       "name": "L083_DROP_ARCHIVE",
       "has_doc": true
@@ -62280,7 +62262,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 228,
+      "line": 223,
       "kind": "const",
       "name": "L084_DROP_ARCHIVE_FAIL",
       "has_doc": true
@@ -62289,7 +62271,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 230,
+      "line": 225,
       "kind": "const",
       "name": "G006_ATLAS_MAX_SIZE",
       "has_doc": true
@@ -62298,7 +62280,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 232,
+      "line": 227,
       "kind": "const",
       "name": "FS01_GAMEFS_INIT",
       "has_doc": true
@@ -62307,7 +62289,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 234,
+      "line": 229,
       "kind": "const",
       "name": "FS02_FILE_READ",
       "has_doc": true
@@ -62316,7 +62298,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 236,
+      "line": 231,
       "kind": "const",
       "name": "FS03_FILE_WRITE",
       "has_doc": true
@@ -62325,7 +62307,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 238,
+      "line": 233,
       "kind": "const",
       "name": "FS04_PATH_TRAVERSAL",
       "has_doc": true
@@ -62334,7 +62316,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 240,
+      "line": 235,
       "kind": "const",
       "name": "FS05_VFS_MOUNT",
       "has_doc": true
@@ -62343,7 +62325,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 242,
+      "line": 237,
       "kind": "const",
       "name": "AN01_ANIM_CTRL_INIT",
       "has_doc": true
@@ -62352,7 +62334,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 244,
+      "line": 239,
       "kind": "const",
       "name": "AN02_CLIP_ADDED",
       "has_doc": true
@@ -62361,7 +62343,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 246,
+      "line": 241,
       "kind": "const",
       "name": "AN03_CLIP_NOT_FOUND",
       "has_doc": true
@@ -62370,7 +62352,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 248,
+      "line": 243,
       "kind": "const",
       "name": "EN01_UNIVERSE_INIT",
       "has_doc": true
@@ -62379,7 +62361,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 250,
+      "line": 245,
       "kind": "const",
       "name": "EN02_ENTITY_SPAWN",
       "has_doc": true
@@ -62388,7 +62370,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 252,
+      "line": 247,
       "kind": "const",
       "name": "EN03_ENTITY_LOW",
       "has_doc": true
@@ -62397,7 +62379,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 254,
+      "line": 249,
       "kind": "const",
       "name": "TM01_TILEMAP_INIT",
       "has_doc": true
@@ -62406,7 +62388,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 256,
+      "line": 251,
       "kind": "const",
       "name": "TM02_TILESET_ADD",
       "has_doc": true
@@ -62415,7 +62397,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 258,
+      "line": 253,
       "kind": "const",
       "name": "TM03_LAYER_ADD",
       "has_doc": true
@@ -62424,7 +62406,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 260,
+      "line": 255,
       "kind": "const",
       "name": "TM04_TMX_FAIL",
       "has_doc": true
@@ -62433,7 +62415,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 262,
+      "line": 257,
       "kind": "const",
       "name": "SV01_SAVE_INIT",
       "has_doc": true
@@ -62442,7 +62424,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 264,
+      "line": 259,
       "kind": "const",
       "name": "SV02_SAVE_WRITE",
       "has_doc": true
@@ -62451,7 +62433,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 266,
+      "line": 261,
       "kind": "const",
       "name": "SV03_SAVE_LOAD",
       "has_doc": true
@@ -62460,7 +62442,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 268,
+      "line": 263,
       "kind": "const",
       "name": "SV04_SAVE_ERROR",
       "has_doc": true
@@ -62469,7 +62451,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 270,
+      "line": 265,
       "kind": "const",
       "name": "SC01_STACK_INIT",
       "has_doc": true
@@ -62478,7 +62460,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 272,
+      "line": 267,
       "kind": "const",
       "name": "SC02_SCENE_PUSH",
       "has_doc": true
@@ -62487,7 +62469,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 274,
+      "line": 269,
       "kind": "const",
       "name": "SC03_SCENE_POP",
       "has_doc": true
@@ -62496,7 +62478,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 276,
+      "line": 271,
       "kind": "const",
       "name": "SC04_STACK_CLEAR",
       "has_doc": true
@@ -62505,7 +62487,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 278,
+      "line": 273,
       "kind": "const",
       "name": "TH01_WORKER_INIT",
       "has_doc": true
@@ -62514,7 +62496,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 280,
+      "line": 275,
       "kind": "const",
       "name": "TH02_WORKER_START",
       "has_doc": true
@@ -62523,7 +62505,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 282,
+      "line": 277,
       "kind": "const",
       "name": "TH03_WORKER_DONE",
       "has_doc": true
@@ -62532,7 +62514,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 284,
+      "line": 279,
       "kind": "const",
       "name": "TH04_WORKER_ERROR",
       "has_doc": true
@@ -62541,7 +62523,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 286,
+      "line": 281,
       "kind": "const",
       "name": "PF01_GRID_INIT",
       "has_doc": true
@@ -62550,7 +62532,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 288,
+      "line": 283,
       "kind": "const",
       "name": "PF02_PATH_FOUND",
       "has_doc": true
@@ -62559,7 +62541,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 290,
+      "line": 285,
       "kind": "const",
       "name": "PF03_NO_PATH",
       "has_doc": true
@@ -62568,7 +62550,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 292,
+      "line": 287,
       "kind": "const",
       "name": "MD01_MGR_INIT",
       "has_doc": true
@@ -62577,7 +62559,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 294,
+      "line": 289,
       "kind": "const",
       "name": "MD02_MOD_REG",
       "has_doc": true
@@ -62586,7 +62568,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 296,
+      "line": 291,
       "kind": "const",
       "name": "MD03_MOD_FAIL",
       "has_doc": true
@@ -62595,7 +62577,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 298,
+      "line": 293,
       "kind": "const",
       "name": "MD04_ORDER_OK",
       "has_doc": true
@@ -62604,7 +62586,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 300,
+      "line": 295,
       "kind": "const",
       "name": "NW01_HOST_BIND",
       "has_doc": true
@@ -62613,7 +62595,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 302,
+      "line": 297,
       "kind": "const",
       "name": "NW02_PEER_CONN",
       "has_doc": true
@@ -62622,7 +62604,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 304,
+      "line": 299,
       "kind": "const",
       "name": "NW03_PEER_DISC",
       "has_doc": true
@@ -62631,7 +62613,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 306,
+      "line": 301,
       "kind": "const",
       "name": "NW04_NET_ERROR",
       "has_doc": true
@@ -62640,7 +62622,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 308,
+      "line": 303,
       "kind": "const",
       "name": "PL01_PIPELINE_INIT",
       "has_doc": true
@@ -62649,7 +62631,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 310,
+      "line": 305,
       "kind": "const",
       "name": "PL02_STEP_ADD",
       "has_doc": true
@@ -62658,7 +62640,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 312,
+      "line": 307,
       "kind": "const",
       "name": "PL03_EXEC",
       "has_doc": true
@@ -62667,7 +62649,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 314,
+      "line": 309,
       "kind": "const",
       "name": "PL04_CYCLE",
       "has_doc": true
@@ -62676,7 +62658,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 316,
+      "line": 311,
       "kind": "const",
       "name": "AT01_SIM_INIT",
       "has_doc": true
@@ -62685,7 +62667,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 318,
+      "line": 313,
       "kind": "const",
       "name": "AT02_SCRIPT_LOAD",
       "has_doc": true
@@ -62694,7 +62676,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 320,
+      "line": 315,
       "kind": "const",
       "name": "AT03_STEP_WARN",
       "has_doc": true
@@ -62703,7 +62685,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 322,
+      "line": 317,
       "kind": "const",
       "name": "AD01_AUDIO_DECODED",
       "has_doc": true
@@ -62712,7 +62694,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 324,
+      "line": 319,
       "kind": "const",
       "name": "AD02_AUDIO_ERROR",
       "has_doc": true
@@ -62721,7 +62703,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 326,
+      "line": 321,
       "kind": "const",
       "name": "CP01_NDARRAY_ALLOC",
       "has_doc": true
@@ -62730,7 +62712,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 328,
+      "line": 323,
       "kind": "const",
       "name": "CP02_NDARRAY_LARGE",
       "has_doc": true
@@ -62739,7 +62721,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 330,
+      "line": 325,
       "kind": "const",
       "name": "MM01_MINIMAP_INIT",
       "has_doc": true
@@ -62748,7 +62730,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 332,
+      "line": 327,
       "kind": "const",
       "name": "MM02_TERRAIN_REBUILD",
       "has_doc": true
@@ -62757,7 +62739,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 334,
+      "line": 329,
       "kind": "const",
       "name": "PG01_CELLULAR_START",
       "has_doc": true
@@ -62766,7 +62748,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 336,
+      "line": 331,
       "kind": "const",
       "name": "PG02_CELLULAR_DONE",
       "has_doc": true
@@ -62775,7 +62757,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 338,
+      "line": 333,
       "kind": "const",
       "name": "SR01_JSON_OK",
       "has_doc": true
@@ -62784,7 +62766,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 340,
+      "line": 335,
       "kind": "const",
       "name": "SR02_JSON_ERR",
       "has_doc": true
@@ -62793,7 +62775,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 342,
+      "line": 337,
       "kind": "const",
       "name": "SR03_JSON_ENC",
       "has_doc": true
@@ -62802,7 +62784,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 344,
+      "line": 339,
       "kind": "const",
       "name": "SR04_MSGPACK_DEC",
       "has_doc": true
@@ -62811,7 +62793,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 346,
+      "line": 341,
       "kind": "const",
       "name": "SR05_MSGPACK_ENC",
       "has_doc": true
@@ -62820,7 +62802,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 348,
+      "line": 343,
       "kind": "const",
       "name": "SR06_XML_OK",
       "has_doc": true
@@ -62829,7 +62811,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 350,
+      "line": 345,
       "kind": "const",
       "name": "SR07_SCHEMA_PASS",
       "has_doc": true
@@ -62838,7 +62820,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 352,
+      "line": 347,
       "kind": "const",
       "name": "SR08_SCHEMA_FAIL",
       "has_doc": true
@@ -62847,7 +62829,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 354,
+      "line": 349,
       "kind": "const",
       "name": "GU01_CTX_INIT",
       "has_doc": true
@@ -62856,7 +62838,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 356,
+      "line": 351,
       "kind": "const",
       "name": "GU02_WIDGET_ADD",
       "has_doc": true
@@ -62865,7 +62847,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 358,
+      "line": 353,
       "kind": "const",
       "name": "GU03_CTX_RESET",
       "has_doc": true
@@ -62874,7 +62856,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 360,
+      "line": 355,
       "kind": "const",
       "name": "TX01_TEX_DECODED",
       "has_doc": true
@@ -62883,7 +62865,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 362,
+      "line": 357,
       "kind": "const",
       "name": "TX02_TEX_LARGE",
       "has_doc": true
@@ -62892,7 +62874,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 364,
+      "line": 359,
       "kind": "const",
       "name": "TX03_TEX_ERROR",
       "has_doc": true
@@ -62901,7 +62883,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 366,
+      "line": 361,
       "kind": "const",
       "name": "SH01_SHADER_OK",
       "has_doc": true
@@ -62910,7 +62892,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 368,
+      "line": 363,
       "kind": "const",
       "name": "SH02_SHADER_ERR",
       "has_doc": true
@@ -62919,7 +62901,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 370,
+      "line": 365,
       "kind": "const",
       "name": "LW01_LIGHT_WORLD_INIT",
       "has_doc": true
@@ -62928,7 +62910,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 372,
+      "line": 367,
       "kind": "const",
       "name": "LW02_LIGHT_ADD",
       "has_doc": true
@@ -62937,7 +62919,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 374,
+      "line": 369,
       "kind": "const",
       "name": "LW03_LIGHT_MAX",
       "has_doc": true
@@ -62946,7 +62928,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 376,
+      "line": 371,
       "kind": "const",
       "name": "SP01_SKEL_LOADED",
       "has_doc": true
@@ -62955,7 +62937,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 378,
+      "line": 373,
       "kind": "const",
       "name": "SP02_SKEL_ANIM_MISS",
       "has_doc": true
@@ -62964,7 +62946,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 380,
+      "line": 375,
       "kind": "const",
       "name": "IM01_IMAGE_LOADED",
       "has_doc": true
@@ -62973,7 +62955,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 382,
+      "line": 377,
       "kind": "const",
       "name": "IM02_IMAGE_MISMATCH",
       "has_doc": true
@@ -62982,7 +62964,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 384,
+      "line": 379,
       "kind": "const",
       "name": "AS01",
       "has_doc": true
@@ -62991,7 +62973,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 386,
+      "line": 381,
       "kind": "const",
       "name": "BU01",
       "has_doc": true
@@ -63000,7 +62982,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 388,
+      "line": 383,
       "kind": "const",
       "name": "BU02",
       "has_doc": true
@@ -63009,7 +62991,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 390,
+      "line": 385,
       "kind": "const",
       "name": "BU03",
       "has_doc": true
@@ -63018,7 +63000,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 392,
+      "line": 387,
       "kind": "const",
       "name": "PE01",
       "has_doc": true
@@ -63027,7 +63009,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 394,
+      "line": 389,
       "kind": "const",
       "name": "PE02",
       "has_doc": true
@@ -63036,7 +63018,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 396,
+      "line": 391,
       "kind": "const",
       "name": "PE03",
       "has_doc": true
@@ -63045,7 +63027,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 398,
+      "line": 393,
       "kind": "const",
       "name": "PE04",
       "has_doc": true
@@ -63054,7 +63036,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 400,
+      "line": 395,
       "kind": "const",
       "name": "BD01",
       "has_doc": true
@@ -63063,7 +63045,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 402,
+      "line": 397,
       "kind": "const",
       "name": "BD02",
       "has_doc": true
@@ -63072,7 +63054,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 404,
+      "line": 399,
       "kind": "const",
       "name": "BD03",
       "has_doc": true
@@ -63081,7 +63063,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 406,
+      "line": 401,
       "kind": "const",
       "name": "TI01",
       "has_doc": true
@@ -63090,7 +63072,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 408,
+      "line": 403,
       "kind": "const",
       "name": "TI02",
       "has_doc": true
@@ -63099,7 +63081,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 410,
+      "line": 405,
       "kind": "const",
       "name": "TI03",
       "has_doc": true
@@ -63108,7 +63090,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 412,
+      "line": 407,
       "kind": "const",
       "name": "TI04",
       "has_doc": true
@@ -63117,7 +63099,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 414,
+      "line": 409,
       "kind": "const",
       "name": "FN01",
       "has_doc": true
@@ -63126,7 +63108,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 416,
+      "line": 411,
       "kind": "const",
       "name": "FN02",
       "has_doc": true
@@ -63135,7 +63117,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 418,
+      "line": 413,
       "kind": "const",
       "name": "GP01",
       "has_doc": true
@@ -63144,7 +63126,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 420,
+      "line": 415,
       "kind": "const",
       "name": "GP02",
       "has_doc": true
@@ -63153,7 +63135,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 422,
+      "line": 417,
       "kind": "const",
       "name": "GP03",
       "has_doc": true
@@ -63162,7 +63144,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 424,
+      "line": 419,
       "kind": "const",
       "name": "FF01",
       "has_doc": true
@@ -63171,7 +63153,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 426,
+      "line": 421,
       "kind": "const",
       "name": "FF02",
       "has_doc": true
@@ -63180,7 +63162,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 428,
+      "line": 423,
       "kind": "const",
       "name": "FF03",
       "has_doc": true
@@ -63189,7 +63171,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 430,
+      "line": 425,
       "kind": "const",
       "name": "HP01",
       "has_doc": true
@@ -63198,7 +63180,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 432,
+      "line": 427,
       "kind": "const",
       "name": "HP02",
       "has_doc": true
@@ -63207,7 +63189,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 434,
+      "line": 429,
       "kind": "const",
       "name": "HP03",
       "has_doc": true
@@ -63216,7 +63198,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 436,
+      "line": 431,
       "kind": "const",
       "name": "TR01",
       "has_doc": true
@@ -63225,7 +63207,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 438,
+      "line": 433,
       "kind": "const",
       "name": "TR02",
       "has_doc": true
@@ -63234,7 +63216,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 440,
+      "line": 435,
       "kind": "const",
       "name": "GR01",
       "has_doc": true
@@ -63243,7 +63225,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 442,
+      "line": 437,
       "kind": "const",
       "name": "GR02",
       "has_doc": true
@@ -63252,7 +63234,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 444,
+      "line": 439,
       "kind": "const",
       "name": "CV01",
       "has_doc": true
@@ -63261,7 +63243,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 446,
+      "line": 441,
       "kind": "const",
       "name": "MS01",
       "has_doc": true
@@ -63270,7 +63252,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 448,
+      "line": 443,
       "kind": "const",
       "name": "MS02",
       "has_doc": true
@@ -63279,7 +63261,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 450,
+      "line": 445,
       "kind": "const",
       "name": "RC01",
       "has_doc": true
@@ -63288,7 +63270,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 452,
+      "line": 447,
       "kind": "const",
       "name": "FX01",
       "has_doc": true
@@ -63297,7 +63279,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 454,
+      "line": 449,
       "kind": "const",
       "name": "FX02",
       "has_doc": true
@@ -63306,7 +63288,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 456,
+      "line": 451,
       "kind": "const",
       "name": "DF01",
       "has_doc": true
@@ -63315,7 +63297,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 458,
+      "line": 453,
       "kind": "const",
       "name": "SG01",
       "has_doc": true
@@ -63324,7 +63306,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 460,
+      "line": 455,
       "kind": "const",
       "name": "SG02",
       "has_doc": true
@@ -63333,7 +63315,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 462,
+      "line": 457,
       "kind": "const",
       "name": "MG01",
       "has_doc": true
@@ -63342,7 +63324,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 464,
+      "line": 459,
       "kind": "const",
       "name": "MG02",
       "has_doc": true
@@ -63351,7 +63333,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 466,
+      "line": 461,
       "kind": "const",
       "name": "MG03",
       "has_doc": true
@@ -63360,7 +63342,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 468,
+      "line": 463,
       "kind": "const",
       "name": "AT01",
       "has_doc": true
@@ -63369,7 +63351,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 470,
+      "line": 465,
       "kind": "const",
       "name": "AT02",
       "has_doc": true
@@ -63378,7 +63360,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 472,
+      "line": 467,
       "kind": "const",
       "name": "AT03",
       "has_doc": true
@@ -63387,7 +63369,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 474,
+      "line": 469,
       "kind": "const",
       "name": "TL01",
       "has_doc": true
@@ -63396,7 +63378,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 476,
+      "line": 471,
       "kind": "const",
       "name": "TL02",
       "has_doc": true
@@ -63405,7 +63387,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 478,
+      "line": 473,
       "kind": "const",
       "name": "VR01",
       "has_doc": true
@@ -63414,7 +63396,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 480,
+      "line": 475,
       "kind": "const",
       "name": "VR02",
       "has_doc": true
@@ -63423,7 +63405,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 482,
+      "line": 477,
       "kind": "const",
       "name": "SV01",
       "has_doc": true
@@ -63432,7 +63414,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 484,
+      "line": 479,
       "kind": "const",
       "name": "SV02",
       "has_doc": true
@@ -63441,7 +63423,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 486,
+      "line": 481,
       "kind": "const",
       "name": "SV03",
       "has_doc": true
@@ -63450,7 +63432,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 488,
+      "line": 483,
       "kind": "const",
       "name": "SV04",
       "has_doc": true
@@ -63459,7 +63441,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 490,
+      "line": 485,
       "kind": "const",
       "name": "CH01",
       "has_doc": true
@@ -63468,7 +63450,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 492,
+      "line": 487,
       "kind": "const",
       "name": "CH02",
       "has_doc": true
@@ -63477,7 +63459,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 494,
+      "line": 489,
       "kind": "const",
       "name": "CH03",
       "has_doc": true
@@ -63486,7 +63468,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 496,
+      "line": 491,
       "kind": "const",
       "name": "CH04",
       "has_doc": true
@@ -63495,7 +63477,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 498,
+      "line": 493,
       "kind": "const",
       "name": "LT01",
       "has_doc": true
@@ -63504,7 +63486,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 500,
+      "line": 495,
       "kind": "const",
       "name": "LT02",
       "has_doc": true
@@ -63513,7 +63495,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 502,
+      "line": 497,
       "kind": "const",
       "name": "LT03",
       "has_doc": true
@@ -63522,7 +63504,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 504,
+      "line": 499,
       "kind": "const",
       "name": "RL01",
       "has_doc": true
@@ -63531,7 +63513,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 506,
+      "line": 501,
       "kind": "const",
       "name": "RL02",
       "has_doc": true
@@ -63540,7 +63522,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 508,
+      "line": 503,
       "kind": "const",
       "name": "RL03",
       "has_doc": true
@@ -63549,7 +63531,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 510,
+      "line": 505,
       "kind": "const",
       "name": "GC01",
       "has_doc": true
@@ -63558,7 +63540,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 512,
+      "line": 507,
       "kind": "const",
       "name": "GC02",
       "has_doc": true
@@ -63567,7 +63549,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 514,
+      "line": 509,
       "kind": "const",
       "name": "GC03",
       "has_doc": true
@@ -63576,7 +63558,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 516,
+      "line": 511,
       "kind": "const",
       "name": "GC04",
       "has_doc": true
@@ -63585,7 +63567,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 518,
+      "line": 513,
       "kind": "const",
       "name": "CQ01",
       "has_doc": true
@@ -63594,7 +63576,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 520,
+      "line": 515,
       "kind": "const",
       "name": "CQ02",
       "has_doc": true
@@ -63603,7 +63585,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 522,
+      "line": 517,
       "kind": "const",
       "name": "CQ03",
       "has_doc": true
@@ -63612,7 +63594,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 524,
+      "line": 519,
       "kind": "const",
       "name": "UP01",
       "has_doc": true
@@ -63621,7 +63603,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 526,
+      "line": 521,
       "kind": "const",
       "name": "UP02",
       "has_doc": true
@@ -63630,7 +63612,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 528,
+      "line": 523,
       "kind": "const",
       "name": "UP03",
       "has_doc": true
@@ -63639,7 +63621,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 530,
+      "line": 525,
       "kind": "const",
       "name": "OV01",
       "has_doc": true
@@ -63648,7 +63630,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 532,
+      "line": 527,
       "kind": "const",
       "name": "OV02",
       "has_doc": true
@@ -63657,7 +63639,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 534,
+      "line": 529,
       "kind": "const",
       "name": "OV03",
       "has_doc": true
@@ -63666,7 +63648,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 536,
+      "line": 531,
       "kind": "const",
       "name": "FE01",
       "has_doc": true
@@ -63675,7 +63657,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 538,
+      "line": 533,
       "kind": "const",
       "name": "FE02",
       "has_doc": true
@@ -63684,7 +63666,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 540,
+      "line": 535,
       "kind": "const",
       "name": "FE03",
       "has_doc": true
@@ -63693,7 +63675,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 542,
+      "line": 537,
       "kind": "const",
       "name": "CB01",
       "has_doc": true
@@ -63702,7 +63684,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 544,
+      "line": 539,
       "kind": "const",
       "name": "CB02",
       "has_doc": true
@@ -63711,7 +63693,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 546,
+      "line": 541,
       "kind": "const",
       "name": "TS01",
       "has_doc": true
@@ -63720,7 +63702,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 548,
+      "line": 543,
       "kind": "const",
       "name": "TS02",
       "has_doc": true
@@ -63729,7 +63711,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 550,
+      "line": 545,
       "kind": "const",
       "name": "TS03",
       "has_doc": true
@@ -63738,7 +63720,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 552,
+      "line": 547,
       "kind": "const",
       "name": "GD01",
       "has_doc": true
@@ -63747,7 +63729,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 554,
+      "line": 549,
       "kind": "const",
       "name": "GD02",
       "has_doc": true
@@ -63756,7 +63738,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 556,
+      "line": 551,
       "kind": "const",
       "name": "GD03",
       "has_doc": true
@@ -63765,7 +63747,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 558,
+      "line": 553,
       "kind": "const",
       "name": "DP01",
       "has_doc": true
@@ -63774,7 +63756,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 560,
+      "line": 555,
       "kind": "const",
       "name": "DP02",
       "has_doc": true
@@ -63783,7 +63765,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 562,
+      "line": 557,
       "kind": "const",
       "name": "DP03",
       "has_doc": true
@@ -63792,7 +63774,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 564,
+      "line": 559,
       "kind": "const",
       "name": "BB01",
       "has_doc": true
@@ -63801,7 +63783,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 566,
+      "line": 561,
       "kind": "const",
       "name": "BB02",
       "has_doc": true
@@ -63810,7 +63792,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 568,
+      "line": 563,
       "kind": "const",
       "name": "BB03",
       "has_doc": true
@@ -63819,7 +63801,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 570,
+      "line": 565,
       "kind": "const",
       "name": "CK01",
       "has_doc": true
@@ -63828,7 +63810,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 572,
+      "line": 567,
       "kind": "const",
       "name": "CK02",
       "has_doc": true
@@ -63837,7 +63819,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 574,
+      "line": 569,
       "kind": "const",
       "name": "CK03",
       "has_doc": true
@@ -63846,7 +63828,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 576,
+      "line": 571,
       "kind": "const",
       "name": "IE01",
       "has_doc": true
@@ -63855,7 +63837,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 578,
+      "line": 573,
       "kind": "const",
       "name": "IE02",
       "has_doc": true
@@ -63864,7 +63846,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 580,
+      "line": 575,
       "kind": "const",
       "name": "IE03",
       "has_doc": true
@@ -63873,7 +63855,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 582,
+      "line": 577,
       "kind": "const",
       "name": "NG01",
       "has_doc": true
@@ -63882,7 +63864,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 584,
+      "line": 579,
       "kind": "const",
       "name": "NG02",
       "has_doc": true
@@ -63891,7 +63873,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 586,
+      "line": 581,
       "kind": "const",
       "name": "NG03",
       "has_doc": true
@@ -63900,7 +63882,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 588,
+      "line": 583,
       "kind": "const",
       "name": "SS01",
       "has_doc": true
@@ -63909,7 +63891,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 590,
+      "line": 585,
       "kind": "const",
       "name": "SS02",
       "has_doc": true
@@ -63918,7 +63900,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 592,
+      "line": 587,
       "kind": "const",
       "name": "IF01",
       "has_doc": true
@@ -63927,7 +63909,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 594,
+      "line": 589,
       "kind": "const",
       "name": "IF02",
       "has_doc": true
@@ -63936,7 +63918,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 596,
+      "line": 591,
       "kind": "const",
       "name": "IF03",
       "has_doc": true
@@ -63945,7 +63927,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 598,
+      "line": 593,
       "kind": "const",
       "name": "HX01",
       "has_doc": true
@@ -63954,7 +63936,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 600,
+      "line": 595,
       "kind": "const",
       "name": "HX02",
       "has_doc": true
@@ -63963,7 +63945,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 602,
+      "line": 597,
       "kind": "const",
       "name": "BI01",
       "has_doc": true
@@ -63972,7 +63954,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 604,
+      "line": 599,
       "kind": "const",
       "name": "BI02",
       "has_doc": true
@@ -63981,7 +63963,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/log_messages.rs",
-      "line": 606,
+      "line": 601,
       "kind": "const",
       "name": "BI03",
       "has_doc": true
@@ -64368,7 +64350,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/resource_keys.rs",
-      "line": 29,
+      "line": 28,
       "kind": "struct",
       "name": "QueueableKey",
       "has_doc": true
@@ -64377,7 +64359,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/resource_keys.rs",
-      "line": 31,
+      "line": 30,
       "kind": "struct",
       "name": "LightKey",
       "has_doc": true
@@ -64386,7 +64368,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/resource_keys.rs",
-      "line": 33,
+      "line": 32,
       "kind": "struct",
       "name": "OccluderKey",
       "has_doc": true
@@ -64395,7 +64377,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/resource_keys.rs",
-      "line": 35,
+      "line": 34,
       "kind": "struct",
       "name": "StaticGeometryKey",
       "has_doc": true
@@ -64404,7 +64386,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/resource_keys.rs",
-      "line": 37,
+      "line": 36,
       "kind": "struct",
       "name": "InstanceBufferKey",
       "has_doc": true
@@ -79218,7 +79200,7 @@
       "source": "lua_api",
       "module": "audio_api",
       "file": "src/lua_api/audio_api.rs",
-      "line": 1699,
+      "line": 1272,
       "kind": "fn",
       "name": "getMaxSources",
       "has_doc": true
@@ -79227,7 +79209,7 @@
       "source": "lua_api",
       "module": "audio_api",
       "file": "src/lua_api/audio_api.rs",
-      "line": 2567,
+      "line": 2140,
       "kind": "fn",
       "name": "manager",
       "has_doc": true

@@ -854,40 +854,6 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 
 - `content/examples/pathfind.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_pathfind_unit.lua` (present)
-- Rust: `tests/rust/unit/pathfind_tests.rs`
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Evidence test | `tests/lua/evidence/test_pathfind_evidence.lua` |
-| Golden test | `tests/lua/golden/test_pathfind_golden.lua` |
-| Current artifact | `tests/artifacts/current/pathfind/astar_basic.png` |
-| Current artifact | `tests/artifacts/current/pathfind/pathfind_advanced_api_trace.txt` |
-| Current artifact | `tests/artifacts/current/pathfind/pathfind_api_surface.png` |
-| Current artifact | `tests/artifacts/current/pathfind/pathfind_astar_gap_trace.json` |
-| Current artifact | `tests/artifacts/current/pathfind/pathfind_flow_field_samples.json` |
-| Current artifact | `tests/artifacts/current/pathfind/pathfind_hex_tilefield_route.png` |
-| Current artifact | `tests/artifacts/current/pathfind/pathfind_hex_tilefield_trace.json` |
-| Current artifact | `tests/artifacts/current/pathfind/pathfind_iso_tilefield_route.png` |
-| Current artifact | `tests/artifacts/current/pathfind/pathfind_iso_tilefield_trace.json` |
-| Current artifact | `tests/artifacts/current/pathfind/pathfind_movement_surface_snapshot.txt` |
-| Current artifact | `tests/artifacts/current/pathfind/pathfind_weighted_route_trace.json` |
-| Current artifact | `tests/artifacts/current/pathfind/weighted_route.png` |
-| Baseline artifact | `tests/artifacts/baselines/pathfind/astar_basic.png` |
-| Baseline artifact | `tests/artifacts/baselines/pathfind/pathfind_api_surface.png` |
-| Baseline artifact | `tests/artifacts/baselines/pathfind/pathfind_astar_gap_trace.json` |
-| Baseline artifact | `tests/artifacts/baselines/pathfind/pathfind_flow_field_samples.json` |
-| Baseline artifact | `tests/artifacts/baselines/pathfind/pathfind_hex_tilefield_route.png` |
-| Baseline artifact | `tests/artifacts/baselines/pathfind/pathfind_hex_tilefield_trace.json` |
-| Baseline artifact | `tests/artifacts/baselines/pathfind/pathfind_iso_tilefield_route.png` |
-| Baseline artifact | `tests/artifacts/baselines/pathfind/pathfind_iso_tilefield_trace.json` |
-| Baseline artifact | `tests/artifacts/baselines/pathfind/pathfind_weighted_route_trace.json` |
-| Baseline artifact | `tests/artifacts/baselines/pathfind/weighted_route.png` |
-
 ## Architecture Links
 
 - Intentionally empty.

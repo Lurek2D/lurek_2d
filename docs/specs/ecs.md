@@ -343,26 +343,6 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 - `content/examples/ecs.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_ecs_unit.lua` (present)
-- Rust: `tests/rust/unit/ecs_tests.rs`
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Evidence test | `tests/lua/evidence/test_ecs_evidence.lua` |
-| Golden test | `tests/lua/golden/test_ecs_golden.lua` |
-| Current artifact | `tests/artifacts/current/ecs/ecs_blueprint_snapshot.txt` |
-| Current artifact | `tests/artifacts/current/ecs/ecs_class_object_registry_trace.txt` |
-| Current artifact | `tests/artifacts/current/ecs/ecs_component_query_snapshot.txt` |
-| Current artifact | `tests/artifacts/current/ecs/ecs_entity_lifecycle_snapshot.txt` |
-| Current artifact | `tests/artifacts/current/ecs/ecs_hierarchy_relation_observer_trace.txt` |
-| Current artifact | `tests/artifacts/current/ecs/ecs_system_snapshot_trace.txt` |
-| Current artifact | `tests/artifacts/current/ecs/ecs_tag_layer_snapshot.txt` |
-| Baseline artifact | `tests/artifacts/baselines/ecs/ecs_entity_lifecycle_snapshot.txt` |
-
 ## Architecture Links
 
 - Intentionally empty.

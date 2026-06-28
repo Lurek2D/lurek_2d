@@ -280,31 +280,6 @@ This module primarily collaborates with `math`, `render`, `tilemap`. Its respons
 
 - `content/examples/camera.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_camera_unit.lua` (present)
-- Rust: `tests/rust/unit/camera_tests.rs`
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Evidence test | `tests/lua/evidence/test_camera_evidence.lua` |
-| Golden test | `tests/lua/golden/test_camera_golden.lua` |
-| Current artifact | `tests/artifacts/current/camera/camera_follow_effects_bounds_trace.txt` |
-| Current artifact | `tests/artifacts/current/camera/camera_follow_path_trace.png` |
-| Current artifact | `tests/artifacts/current/camera/camera_follow_smoothing_trace.json` |
-| Current artifact | `tests/artifacts/current/camera/camera_shake_response_trace.json` |
-| Current artifact | `tests/artifacts/current/camera/camera_transform_samples.json` |
-| Current artifact | `tests/artifacts/current/camera/camera_transform_screen_panel.png` |
-| Current artifact | `tests/artifacts/current/camera/camera_visible_area_panel.png` |
-| Baseline artifact | `tests/artifacts/baselines/camera/camera_follow_path_trace.png` |
-| Baseline artifact | `tests/artifacts/baselines/camera/camera_follow_smoothing_trace.json` |
-| Baseline artifact | `tests/artifacts/baselines/camera/camera_shake_response_trace.json` |
-| Baseline artifact | `tests/artifacts/baselines/camera/camera_transform_samples.json` |
-| Baseline artifact | `tests/artifacts/baselines/camera/camera_transform_screen_panel.png` |
-| Baseline artifact | `tests/artifacts/baselines/camera/camera_visible_area_panel.png` |
-
 ## Architecture Links
 
 - Intentionally empty.

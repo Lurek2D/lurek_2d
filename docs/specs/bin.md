@@ -61,15 +61,6 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 
 - No user-facing example is registered for this module.
 
-## Tests
-
-- Lua unit: none registered.
-- Rust: `tests/rust/unit/binary_tests.rs`
-
-## Evidence / Golden
-
-- No evidence or golden artifacts registered.
-
 ## Architecture Links
 
 - Intentionally empty.

@@ -4,39 +4,6 @@
 
 Player-specific fog-of-war, remembered exploration, line-of-sight, and action-mask simulation.
 
-## When To Use
-
-- It combines adjacency rules, reveal cost, ownership flags, events, shadowcasting, and stored state so the same module can answer both gameplay questions and presentation needs.
-- That makes it more than a single visibility check: current sight, remembered discovery, reveal transitions, and display-friendly output are meant to behave as one coherent information system.
-- Team-specific reveal state and remembered exploration are especially important because many map-aware games care not only about what is visible now, but also about what was discovered earlier and by whom.
-
-## Minimal Example
-
-Example block: `lurek.awareness.new`
-
-```lua
-do
-    local vg = lurek.awareness.new({ regions = 20 * 15, players = 4 })
-    local regions = vg:regionCount()
-    local players = vg:playerCount()
-    local first_state = vg:getState(0, 0)
-    lurek.log.info("visibility grid created for dungeon floor")
-    lurek.log.info("regions=" .. regions .. " players=" .. players .. " state=" .. first_state)
-end
-```
-
-## Common Patterns
-
-- Start with `lurek.awareness.lineOfAction` when exploring this module.
-- Start with `lurek.awareness.lineOfSight` when exploring this module.
-- Start with `lurek.awareness.new` when exploring this module.
-- Start with `lurek.awareness.newFov` when exploring this module.
-- Start with `lurek.awareness.newTileAwareness` when exploring this module.
-
-## API Reference
-
-- This page is the generated API reference for this module.
-
 ## Summary
 
 - The `awareness` module is the shared answer to fog-of-war, line-of-sight, action reachability, and remembered exploration for users building map-aware gameplay.
@@ -48,6 +15,10 @@ end
 - Read this module as the authority for what an actor currently knows about a space.
 
 This module is mostly self-contained inside the `Edge/Integration` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+
+## API Reference
+
+- This page is the generated API reference for this module.
 
 ## Functions
 
@@ -1277,9 +1248,6 @@ LTileAwareness:clearShares()
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[awareness.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 5 })
     field:defineCategory("sound", { kind = "awareness" })
     local vis = lurek.awareness.newTileAwareness(field, { players = { "p1", "p2" } })
@@ -1290,7 +1258,7 @@ do
         return #vis:getCategories()
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -1373,9 +1341,6 @@ LTileAwareness:defineCategory(name, opts)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[awareness.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 5 })
     field:defineCategory("sound", { kind = "awareness" })
     local vis = lurek.awareness.newTileAwareness(field, { players = { "p1", "p2" } })
@@ -1384,7 +1349,7 @@ do
         return #vis:getCategories()
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -1408,9 +1373,6 @@ LTileAwareness:getCategories()
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[awareness.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 5 })
     field:defineCategory("sound", { kind = "awareness" })
     local vis = lurek.awareness.newTileAwareness(field, { players = { "p1", "p2" } })
@@ -1419,7 +1381,7 @@ do
         return vis:getCategories()[1]
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -1449,9 +1411,6 @@ LTileAwareness:getCategory(name)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[awareness.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 5 })
     field:defineCategory("sound", { kind = "awareness" })
     local vis = lurek.awareness.newTileAwareness(field, { players = { "p1", "p2" } })
@@ -1460,7 +1419,7 @@ do
         return vis:getCategory("sound").range
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -1488,9 +1447,6 @@ LTileAwareness:isAware(player, category, x, y, z)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[awareness.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 5 })
     field:defineCategory("sound", { kind = "awareness" })
     local vis = lurek.awareness.newTileAwareness(field, { players = { "p1", "p2" } })
@@ -1500,7 +1456,7 @@ do
         return vis:isAware("p1", 2, 2, 1, "sound")
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -1599,9 +1555,6 @@ LTileAwareness:setTeam(players, categories)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[awareness.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 5 })
     field:defineCategory("sound", { kind = "awareness" })
     local vis = lurek.awareness.newTileAwareness(field, { players = { "p1", "p2" } })
@@ -1612,7 +1565,7 @@ do
         return vis:type()
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 
@@ -1639,9 +1592,6 @@ LTileAwareness:share(from, to, category, opts)
 
 ```lua
 do
-    local function example_log(message)
-        lurek.log.info("[awareness.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 5 })
     field:defineCategory("sound", { kind = "awareness" })
     local vis = lurek.awareness.newTileAwareness(field, { players = { "p1", "p2" } })
@@ -1652,7 +1602,7 @@ do
         return vis:isAware("p2", 2, 2, 1, "sound")
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 ```
 

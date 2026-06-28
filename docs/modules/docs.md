@@ -2,47 +2,7 @@
 
 ## Purpose
 
-Builds an API catalog to generate editor files and Markdown reference.
-
-## When To Use
-
-- It builds and maintains a structured catalog of API knowledge, compares that catalog against what the engine actually exposes, and turns the result into actionable reports about missing, stale, or incomplete documentation.
-- This matters because documentation quality drifts quickly in evolving codebases. Without a module like this, docs become passive artifacts that are only corrected sporadically instead of being continuously checked against source reality.
-- The module acts as a bridge between implementation and publication by discovering what exists, validating whether it is described, and preparing that knowledge for several downstream consumers.
-
-## Minimal Example
-
-Example block: `lurek.docs.scan`
-
-```lua
-do
-    local docs_example_cat = lurek.docs.scanModule("math")
-    local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
-    local docs_example_validate = lurek.docs.validate(docs_example_cat)
-    local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
-
-    local cat = lurek.docs.scan()
-    local modules = cat:getModules()
-    docs_log("scanned entries = " .. cat:entryCount())
-    docs_log("catalog entries = " .. tostring(cat:entryCount()))
-    docs_log("first module = " .. tostring(modules[1]))
-end
-```
-
-## Common Patterns
-
-- Start with `lurek.docs.checkStaleness` when exploring this module.
-- Start with `lurek.docs.coverage` when exploring this module.
-- Start with `lurek.docs.coverageModule` when exploring this module.
-- Start with `lurek.docs.describe` when exploring this module.
-- Start with `lurek.docs.exportAll` when exploring this module.
-
-## API Reference
-
-- This page is the generated API reference for this module.
+Builds an API catalog to generate editor files and Markdown reference. - Analyzes docs-general coverage and quality using live table reflection.
 
 ## Summary
 
@@ -58,6 +18,10 @@ end
 - Read `docs` as the coordination layer between engine reality and documentation output.
 
 This module is mostly self-contained inside the Edge/Integration group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+
+## API Reference
+
+- This page is the generated API reference for this module.
 
 ## Functions
 
@@ -90,15 +54,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local result = lurek.docs.checkStaleness(cat, "src/math/")
-    docs_log("stale = " .. #result.stale .. " current = " .. #result.current)
-    docs_log("missing = " .. #result.missing)
-    docs_log("first current path = " .. tostring(result.current[1]))
+    lurek.log.info("stale = " .. #result.stale .. " current = " .. #result.current)
+    lurek.log.info("missing = " .. #result.missing)
+    lurek.log.info("first current path = " .. tostring(result.current[1]))
 end
 ```
 
@@ -133,15 +94,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local documented, live = lurek.docs.coverage(cat)
-    docs_log("documented=" .. documented .. " live=" .. live)
-    docs_log("coverage gap=" .. tostring(live - documented))
-    docs_log("catalog entries=" .. cat:entryCount())
+    lurek.log.info("documented=" .. documented .. " live=" .. live)
+    lurek.log.info("coverage gap=" .. tostring(live - documented))
+    lurek.log.info("catalog entries=" .. cat:entryCount())
 end
 ```
 
@@ -177,15 +135,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local documented, live = lurek.docs.coverageModule("math", cat)
-    docs_log("math documented=" .. documented .. " live=" .. live)
-    docs_log("math coverage gap=" .. tostring(live - documented))
-    docs_log("math entry count=" .. cat:entryCount("math"))
+    lurek.log.info("math documented=" .. documented .. " live=" .. live)
+    lurek.log.info("math coverage gap=" .. tostring(live - documented))
+    lurek.log.info("math entry count=" .. cat:entryCount("math"))
 end
 ```
 
@@ -214,16 +169,13 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     lurek.docs.describe("lurek.math.lerp", "Linearly interpolates between a and b.")
     local cat = lurek.docs.getCatalog()
     local entry = cat:getEntry("lurek.math.lerp")
-    docs_log("description set")
-    docs_log("catalog entries = " .. tostring(cat:entryCount()))
-    docs_log("description length = " .. tostring(entry and #entry:getDescription() or 0))
+    lurek.log.info("description set")
+    lurek.log.info("catalog entries = " .. tostring(cat:entryCount()))
+    lurek.log.info("description length = " .. tostring(entry and #entry:getDescription() or 0))
 end
 ```
 
@@ -252,16 +204,13 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local dir = "save/"
     lurek.docs.exportAll(cat, dir)
-    docs_log("all docs exported")
-    docs_log("export root = " .. dir)
-    docs_log("catalog entries exported = " .. cat:entryCount())
+    lurek.log.info("all docs exported")
+    lurek.log.info("export root = " .. dir)
+    lurek.log.info("catalog entries exported = " .. cat:entryCount())
 end
 ```
 
@@ -290,16 +239,13 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local path = "save/docs_cheatsheet.txt"
     lurek.docs.exportCheatsheet(cat, path)
-    docs_log("cheatsheet exported")
-    docs_log("cheatsheet target = " .. path)
-    docs_log("catalog entries exported = " .. cat:entryCount())
+    lurek.log.info("cheatsheet exported")
+    lurek.log.info("cheatsheet target = " .. path)
+    lurek.log.info("catalog entries exported = " .. cat:entryCount())
 end
 ```
 
@@ -328,16 +274,13 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local path = "save/docs_completions.json"
     lurek.docs.exportCompletions(cat, path)
-    docs_log("completions exported")
-    docs_log("completions target = " .. path)
-    docs_log("catalog entries exported = " .. cat:entryCount())
+    lurek.log.info("completions exported")
+    lurek.log.info("completions target = " .. path)
+    lurek.log.info("catalog entries exported = " .. cat:entryCount())
 end
 ```
 
@@ -366,16 +309,13 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local path = "save/docs_hover.json"
     lurek.docs.exportHover(cat, path)
-    docs_log("hover exported")
-    docs_log("hover target = " .. path)
-    docs_log("catalog entries exported = " .. cat:entryCount())
+    lurek.log.info("hover exported")
+    lurek.log.info("hover target = " .. path)
+    lurek.log.info("catalog entries exported = " .. cat:entryCount())
 end
 ```
 
@@ -404,16 +344,13 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local path = "save/docs_api.md"
     lurek.docs.exportMarkdown(cat, path)
-    docs_log("markdown exported")
-    docs_log("markdown target = " .. path)
-    docs_log("catalog entries exported = " .. cat:entryCount())
+    lurek.log.info("markdown exported")
+    lurek.log.info("markdown target = " .. path)
+    lurek.log.info("catalog entries exported = " .. cat:entryCount())
 end
 ```
 
@@ -442,16 +379,13 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local path = "save/docs_signatures.json"
     lurek.docs.exportSignatures(cat, path)
-    docs_log("signatures exported")
-    docs_log("signatures target = " .. path)
-    docs_log("catalog entries exported = " .. cat:entryCount())
+    lurek.log.info("signatures exported")
+    lurek.log.info("signatures target = " .. path)
+    lurek.log.info("catalog entries exported = " .. cat:entryCount())
 end
 ```
 
@@ -479,15 +413,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = lurek.docs.getCatalog()
     local modules = cat:getModules()
-    docs_log("catalog entries = " .. cat:entryCount())
-    docs_log("catalog userdata type = " .. cat:type())
-    docs_log("module count = " .. #modules)
+    lurek.log.info("catalog entries = " .. cat:entryCount())
+    lurek.log.info("catalog userdata type = " .. cat:type())
+    lurek.log.info("module count = " .. #modules)
 end
 ```
 
@@ -521,17 +452,14 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local dir = "save/_fs_tests/docs_load_all/"
     lurek.filesystem.write(dir .. "a.toml", '[[entries]]\nname = "one"\nqualifiedName = "lurek.test.one"\nmodule = "test"\nkind = "function"\ndescription = "First entry"')
     lurek.filesystem.write(dir .. "b.toml", '[[entries]]\nname = "two"\nqualifiedName = "lurek.test.two"\nmodule = "test"\nkind = "function"\ndescription = "Second entry"')
     local cat = lurek.docs.loadAll(dir)
-    docs_log("all entries = " .. cat:entryCount())
-    docs_log("loadAll type = " .. cat:type())
-    docs_log("has lurek.test.one = " .. tostring(cat:getEntry("lurek.test.one") ~= nil))
+    lurek.log.info("all entries = " .. cat:entryCount())
+    lurek.log.info("loadAll type = " .. cat:type())
+    lurek.log.info("has lurek.test.one = " .. tostring(cat:getEntry("lurek.test.one") ~= nil))
 end
 ```
 
@@ -565,17 +493,14 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local path = "save/_fs_tests/docs_load_toml_example.toml"
     lurek.filesystem.write(path, '[[entries]]\nname = "play"\nqualifiedName = "lurek.audio.play"\nmodule = "audio"\nkind = "function"\ndescription = "Plays a sound"')
     local cat = lurek.docs.loadToml(path)
     local entry = cat:getEntry("lurek.audio.play")
-    docs_log("loaded entries = " .. cat:entryCount())
-    docs_log("loaded type = " .. cat:type())
-    docs_log("loaded qualified name = " .. tostring(entry and entry:getQualifiedName()))
+    lurek.log.info("loaded entries = " .. cat:entryCount())
+    lurek.log.info("loaded type = " .. cat:type())
+    lurek.log.info("loaded qualified name = " .. tostring(entry and entry:getQualifiedName()))
 end
 ```
 
@@ -609,15 +534,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local qr = docs_example_quality
-    docs_log("quality score = " .. qr:getOverallScore())
-    docs_log("quality grade = " .. tostring(qr:getGrade()))
-    docs_log("report type = " .. qr:type())
+    lurek.log.info("quality score = " .. qr:getOverallScore())
+    lurek.log.info("quality grade = " .. tostring(qr:getGrade()))
+    lurek.log.info("report type = " .. qr:type())
 end
 ```
 
@@ -652,15 +574,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local qr = lurek.docs.qualityModule("math", cat)
-    docs_log("math quality = " .. qr:getOverallScore())
-    docs_log("math grade = " .. tostring(qr:getGrade()))
-    docs_log("report type = " .. qr:type())
+    lurek.log.info("math quality = " .. qr:getOverallScore())
+    lurek.log.info("math grade = " .. tostring(qr:getGrade()))
+    lurek.log.info("report type = " .. qr:type())
 end
 ```
 
@@ -694,15 +613,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local data = lurek.docs.reflectLive("math")
-    docs_log("reflect math type = " .. type(data))
-    docs_log("reflected rows = " .. #data)
-    docs_log("first reflected name = " .. tostring(data[1] and data[1].name))
-    docs_log("second reflected type = " .. tostring(data[2] and data[2].type))
+    lurek.log.info("reflect math type = " .. type(data))
+    lurek.log.info("reflected rows = " .. #data)
+    lurek.log.info("first reflected name = " .. tostring(data[1] and data[1].name))
+    lurek.log.info("second reflected type = " .. tostring(data[2] and data[2].type))
 end
 ```
 
@@ -737,15 +653,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local t = {foo = 1, bar = "hello"}
     local rows = lurek.docs.reflectTable(t, "mymod")
-    docs_log("reflected rows = " .. #rows)
-    docs_log("first reflected name = " .. tostring(rows[1] and rows[1].name))
-    docs_log("first reflected type = " .. tostring(rows[1] and rows[1].type))
+    lurek.log.info("reflected rows = " .. #rows)
+    lurek.log.info("first reflected name = " .. tostring(rows[1] and rows[1].name))
+    lurek.log.info("first reflected type = " .. tostring(rows[1] and rows[1].type))
 end
 ```
 
@@ -767,15 +680,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     lurek.docs.describe("lurek.test.temp", "Temporary entry")
     lurek.docs.resetCatalog()
     local cat = lurek.docs.getCatalog()
-    docs_log("after reset entries = " .. cat:entryCount())
-    docs_log("after reset type = " .. cat:type())
+    lurek.log.info("after reset entries = " .. cat:entryCount())
+    lurek.log.info("after reset type = " .. cat:type())
 end
 ```
 
@@ -809,15 +719,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = lurek.docs.scan()
     local modules = cat:getModules()
-    docs_log("scanned entries = " .. cat:entryCount())
-    docs_log("catalog entries = " .. tostring(cat:entryCount()))
-    docs_log("first module = " .. tostring(modules[1]))
+    lurek.log.info("scanned entries = " .. cat:entryCount())
+    lurek.log.info("catalog entries = " .. tostring(cat:entryCount()))
+    lurek.log.info("first module = " .. tostring(modules[1]))
 end
 ```
 
@@ -851,15 +758,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = lurek.docs.scanModule("math")
     local entries = cat:getEntries("math")
-    docs_log("math entries = " .. cat:entryCount())
-    docs_log("math catalog type = " .. cat:type())
-    docs_log("first math entry = " .. tostring(entries[1] and entries[1]:getQualifiedName()))
+    lurek.log.info("math entries = " .. cat:entryCount())
+    lurek.log.info("math catalog type = " .. cat:type())
+    lurek.log.info("first math entry = " .. tostring(entries[1] and entries[1]:getQualifiedName()))
 end
 ```
 
@@ -894,15 +798,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local s = lurek.docs.schema({ name = { type = "string", required = true }, age = { type = "number" } }, "PlayerSchema")
     local fields = s:getFields()
-    docs_log("schema name = " .. s:getName())
-    docs_log("schema type = " .. s:type())
-    docs_log("field count = " .. #fields)
+    lurek.log.info("schema name = " .. s:getName())
+    lurek.log.info("schema type = " .. s:type())
+    lurek.log.info("field count = " .. #fields)
 end
 ```
 
@@ -936,9 +837,6 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local toml = [[
 name = "PlayerSchema"
@@ -949,9 +847,9 @@ type = "string"
 required = true
 ]]
     local s = lurek.docs.schemaFromToml(toml)
-    docs_log("schema from toml, name = " .. s:getName())
-    docs_log("schema field count = " .. #s:getFields())
-    docs_log("schema type = " .. s:type())
+    lurek.log.info("schema from toml, name = " .. s:getName())
+    lurek.log.info("schema field count = " .. #s:getFields())
+    lurek.log.info("schema type = " .. s:type())
 end
 ```
 
@@ -980,9 +878,6 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     lurek.docs.resetCatalog()
     lurek.docs.describe("lurek.test.blend", "Blend two values.")
@@ -991,8 +886,8 @@ do
     })
     local entry = lurek.docs.getCatalog():getEntry("lurek.test.blend")
     local params = entry:getParameters()
-    docs_log("params set = " .. #params)
-    docs_log("first param name = " .. tostring(params[1] and params[1].name))
+    lurek.log.info("params set = " .. #params)
+    lurek.log.info("first param name = " .. tostring(params[1] and params[1].name))
 end
 ```
 
@@ -1021,9 +916,6 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     lurek.docs.resetCatalog()
     lurek.docs.describe("lurek.test.blend", "Blend two values.")
@@ -1032,8 +924,8 @@ do
     })
     local entry = lurek.docs.getCatalog():getEntry("lurek.test.blend")
     local returns = entry:getReturns()
-    docs_log("returns set = " .. #returns)
-    docs_log("first return type = " .. tostring(returns[1] and returns[1].type))
+    lurek.log.info("returns set = " .. #returns)
+    lurek.log.info("first return type = " .. tostring(returns[1] and returns[1].type))
 end
 ```
 
@@ -1067,15 +959,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local report = docs_example_validate
-    docs_log("valid = " .. tostring(report:isValid()))
-    docs_log("missing count = " .. tostring(report:missingCount()))
-    docs_log("report type = " .. report:type())
+    lurek.log.info("valid = " .. tostring(report:isValid()))
+    lurek.log.info("missing count = " .. tostring(report:missingCount()))
+    lurek.log.info("report type = " .. report:type())
 end
 ```
 
@@ -1110,15 +999,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local report = lurek.docs.validateModule("math", cat)
-    docs_log("math missing = " .. report:missingCount())
-    docs_log("math phantom = " .. report:phantomCount())
-    docs_log("report type = " .. report:type())
+    lurek.log.info("math missing = " .. report:missingCount())
+    lurek.log.info("math phantom = " .. report:phantomCount())
+    lurek.log.info("report type = " .. report:type())
 end
 ```
 
@@ -1176,15 +1062,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local total = cat:entryCount()
     local math_count = cat:entryCount("math")
-    docs_log("total=" .. total .. " math=" .. math_count)
-    docs_log("module count = " .. #cat:getModules())
+    lurek.log.info("total=" .. total .. " math=" .. math_count)
+    lurek.log.info("module count = " .. #cat:getModules())
 end
 ```
 
@@ -1218,15 +1101,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local fns = cat:filter(function(entry) return entry:getKind() == "function" end)
-    docs_log("functions = " .. fns:entryCount())
-    docs_log("filtered type = " .. fns:type())
-    docs_log("first filtered entry = " .. tostring(fns:getEntries()[1] and fns:getEntries()[1]:getQualifiedName()))
+    lurek.log.info("functions = " .. fns:entryCount())
+    lurek.log.info("filtered type = " .. fns:type())
+    lurek.log.info("first filtered entry = " .. tostring(fns:getEntries()[1] and fns:getEntries()[1]:getQualifiedName()))
 end
 ```
 
@@ -1260,15 +1140,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local all = cat:getEntries()
     local math_entries = cat:getEntries("math")
-    docs_log("all=" .. #all .. " math=" .. #math_entries)
-    docs_log("first global entry = " .. tostring(all[1] and all[1]:getQualifiedName()))
+    lurek.log.info("all=" .. #all .. " math=" .. #math_entries)
+    lurek.log.info("first global entry = " .. tostring(all[1] and all[1]:getQualifiedName()))
 end
 ```
 
@@ -1302,15 +1179,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local entry = cat:getEntry("lurek.math.lerp")
-    docs_log("found entry = " .. tostring(entry ~= nil))
-    docs_log("catalog modules = " .. tostring(#cat:getModules()))
-    docs_log("entry kind = " .. tostring(entry and entry:getKind()))
+    lurek.log.info("found entry = " .. tostring(entry ~= nil))
+    lurek.log.info("catalog modules = " .. tostring(#cat:getModules()))
+    lurek.log.info("entry kind = " .. tostring(entry and entry:getKind()))
 end
 ```
 
@@ -1338,15 +1212,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local modules = cat:getModules()
-    docs_log("modules = " .. #modules)
-    docs_log("first module = " .. tostring(modules[1]))
-    docs_log("catalog entries = " .. tostring(cat:entryCount()))
+    lurek.log.info("modules = " .. #modules)
+    lurek.log.info("first module = " .. tostring(modules[1]))
+    lurek.log.info("catalog entries = " .. tostring(cat:entryCount()))
 end
 ```
 
@@ -1380,15 +1251,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local methods = cat:getTypeMethods("LVec2")
-    docs_log("LVec2 methods = " .. #methods)
-    docs_log("first method = " .. tostring(methods[1] and methods[1]:getQualifiedName()))
-    docs_log("catalog entries = " .. tostring(cat:entryCount()))
+    lurek.log.info("LVec2 methods = " .. #methods)
+    lurek.log.info("first method = " .. tostring(methods[1] and methods[1]:getQualifiedName()))
+    lurek.log.info("catalog entries = " .. tostring(cat:entryCount()))
 end
 ```
 
@@ -1422,15 +1290,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local types = cat:getTypes("math")
-    docs_log("math types = " .. #types)
-    docs_log("first type = " .. tostring(types[1]))
-    docs_log("catalog entries = " .. tostring(cat:entryCount()))
+    lurek.log.info("math types = " .. #types)
+    lurek.log.info("first type = " .. tostring(types[1]))
+    lurek.log.info("catalog entries = " .. tostring(cat:entryCount()))
 end
 ```
 
@@ -1464,15 +1329,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local a = lurek.docs.scanModule("math")
     local b = lurek.docs.scanModule("timer")
     local merged = a:merge(b)
-    docs_log("merged = " .. merged:entryCount())
-    docs_log("merged module count = " .. #merged:getModules())
+    lurek.log.info("merged = " .. merged:entryCount())
+    lurek.log.info("merged module count = " .. #merged:getModules())
 end
 ```
 
@@ -1506,15 +1368,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local results = cat:search("lerp")
-    docs_log("search results = " .. #results)
-    docs_log("first search hit = " .. tostring(results[1] and results[1]:getQualifiedName()))
-    docs_log("catalog entries = " .. tostring(cat:entryCount()))
+    lurek.log.info("search results = " .. #results)
+    lurek.log.info("first search hit = " .. tostring(results[1] and results[1]:getQualifiedName()))
+    lurek.log.info("catalog entries = " .. tostring(cat:entryCount()))
 end
 ```
 
@@ -1542,15 +1401,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = lurek.docs.scanModule("timer")
     local json = cat:toJSON()
-    docs_log("json length = " .. #json)
-    docs_log("json has timer = " .. tostring(string.find(json, "timer", 1, true) ~= nil))
-    docs_log("catalog entries = " .. tostring(cat:entryCount()))
+    lurek.log.info("json length = " .. #json)
+    lurek.log.info("json has timer = " .. tostring(string.find(json, "timer", 1, true) ~= nil))
+    lurek.log.info("catalog entries = " .. tostring(cat:entryCount()))
 end
 ```
 
@@ -1578,15 +1434,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = lurek.docs.scanModule("math")
     local rows = cat:toTable()
-    docs_log("rows = " .. #rows)
-    docs_log("first row name = " .. tostring(rows[1] and rows[1].name))
-    docs_log("first row module = " .. tostring(rows[1] and rows[1].module))
+    lurek.log.info("rows = " .. #rows)
+    lurek.log.info("first row name = " .. tostring(rows[1] and rows[1].name))
+    lurek.log.info("first row module = " .. tostring(rows[1] and rows[1].module))
 end
 ```
 
@@ -1614,15 +1467,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
-    docs_log("type = " .. cat:type())
-    docs_log("catalog modules = " .. tostring(#cat:getModules()))
-    docs_log("typeOf LApiCatalog = " .. tostring(cat:typeOf("LApiCatalog")))
-    docs_log("module count = " .. tostring(#cat:getModules()))
+    lurek.log.info("type = " .. cat:type())
+    lurek.log.info("catalog modules = " .. tostring(#cat:getModules()))
+    lurek.log.info("typeOf LApiCatalog = " .. tostring(cat:typeOf("LApiCatalog")))
+    lurek.log.info("module count = " .. tostring(#cat:getModules()))
 end
 ```
 
@@ -1656,15 +1506,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
-    docs_log("is LApiCatalog = " .. tostring(cat:typeOf("LApiCatalog")))
-    docs_log("type = " .. tostring(cat:type()))
-    docs_log("catalog entries = " .. tostring(cat:entryCount()))
-    docs_log("entry count = " .. tostring(cat:entryCount()))
+    lurek.log.info("is LApiCatalog = " .. tostring(cat:typeOf("LApiCatalog")))
+    lurek.log.info("type = " .. tostring(cat:type()))
+    lurek.log.info("catalog entries = " .. tostring(cat:entryCount()))
+    lurek.log.info("entry count = " .. tostring(cat:entryCount()))
 end
 ```
 
@@ -1700,15 +1547,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local deprecated = docs_example_entry:getDeprecated()
-    docs_log("deprecated = " .. type(deprecated))
-    docs_log("deprecated value = " .. tostring(deprecated))
-    docs_log("entry qualified = " .. tostring(docs_example_entry:getQualifiedName()))
-    docs_log("entry module = " .. tostring(docs_example_entry:getModule()))
+    lurek.log.info("deprecated = " .. type(deprecated))
+    lurek.log.info("deprecated value = " .. tostring(deprecated))
+    lurek.log.info("entry qualified = " .. tostring(docs_example_entry:getQualifiedName()))
+    lurek.log.info("entry module = " .. tostring(docs_example_entry:getModule()))
 end
 ```
 
@@ -1736,15 +1580,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local entry = docs_example_entry
-    docs_log("desc len = " .. #entry:getDescription())
-    docs_log("qualified chars = " .. #entry:getQualifiedName())
-    docs_log("has description = " .. tostring(entry:hasDescription()))
-    docs_log("name = " .. tostring(entry:getName()))
+    lurek.log.info("desc len = " .. #entry:getDescription())
+    lurek.log.info("qualified chars = " .. #entry:getQualifiedName())
+    lurek.log.info("has description = " .. tostring(entry:hasDescription()))
+    lurek.log.info("name = " .. tostring(entry:getName()))
 end
 ```
 
@@ -1772,15 +1613,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local example = docs_example_entry:getExample()
-    docs_log("example = " .. type(example))
-    docs_log("example length = " .. tostring(example and #example or 0))
-    docs_log("has example = " .. tostring(docs_example_entry:hasExample()))
-    docs_log("entry kind = " .. tostring(docs_example_entry:getKind()))
+    lurek.log.info("example = " .. type(example))
+    lurek.log.info("example length = " .. tostring(example and #example or 0))
+    lurek.log.info("has example = " .. tostring(docs_example_entry:hasExample()))
+    lurek.log.info("entry kind = " .. tostring(docs_example_entry:getKind()))
 end
 ```
 
@@ -1808,15 +1646,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local entry = docs_example_entry
-    docs_log("kind = " .. entry:getKind())
-    docs_log("qualified chars = " .. #entry:getQualifiedName())
-    docs_log("name = " .. tostring(entry:getName()))
-    docs_log("qualified = " .. tostring(entry:getQualifiedName()))
+    lurek.log.info("kind = " .. entry:getKind())
+    lurek.log.info("qualified chars = " .. #entry:getQualifiedName())
+    lurek.log.info("name = " .. tostring(entry:getName()))
+    lurek.log.info("qualified = " .. tostring(entry:getQualifiedName()))
 end
 ```
 
@@ -1844,15 +1679,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local entry = docs_example_entry
-    docs_log("module = " .. entry:getModule())
-    docs_log("qualified chars = " .. #entry:getQualifiedName())
-    docs_log("kind = " .. tostring(entry:getKind()))
-    docs_log("name = " .. tostring(entry:getName()))
+    lurek.log.info("module = " .. entry:getModule())
+    lurek.log.info("qualified chars = " .. #entry:getQualifiedName())
+    lurek.log.info("kind = " .. tostring(entry:getKind()))
+    lurek.log.info("name = " .. tostring(entry:getName()))
 end
 ```
 
@@ -1880,15 +1712,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local entry = docs_example_entry
-    docs_log("name = " .. entry:getName())
-    docs_log("qualified chars = " .. #entry:getQualifiedName())
-    docs_log("qualified = " .. tostring(entry:getQualifiedName()))
-    docs_log("module = " .. tostring(entry:getModule()))
+    lurek.log.info("name = " .. entry:getName())
+    lurek.log.info("qualified chars = " .. #entry:getQualifiedName())
+    lurek.log.info("qualified = " .. tostring(entry:getQualifiedName()))
+    lurek.log.info("module = " .. tostring(entry:getModule()))
 end
 ```
 
@@ -1916,15 +1745,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local params = docs_example_entry:getParameters()
-    docs_log("params = " .. #params)
-    docs_log("params count = " .. tostring(#params))
-    docs_log("first param name = " .. tostring(params[1] and params[1].name))
-    docs_log("entry name = " .. tostring(docs_example_entry:getName()))
+    lurek.log.info("params = " .. #params)
+    lurek.log.info("params count = " .. tostring(#params))
+    lurek.log.info("first param name = " .. tostring(params[1] and params[1].name))
+    lurek.log.info("entry name = " .. tostring(docs_example_entry:getName()))
 end
 ```
 
@@ -1952,15 +1778,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local entry = docs_example_entry
-    docs_log("qualified = " .. entry:getQualifiedName())
-    docs_log("qualified chars = " .. #entry:getQualifiedName())
-    docs_log("module = " .. tostring(entry:getModule()))
-    docs_log("kind = " .. tostring(entry:getKind()))
+    lurek.log.info("qualified = " .. entry:getQualifiedName())
+    lurek.log.info("qualified chars = " .. #entry:getQualifiedName())
+    lurek.log.info("module = " .. tostring(entry:getModule()))
+    lurek.log.info("kind = " .. tostring(entry:getKind()))
 end
 ```
 
@@ -1988,15 +1811,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local returns = docs_example_entry:getReturns()
-    docs_log("returns = " .. #returns)
-    docs_log("returns count = " .. tostring(#returns))
-    docs_log("first return type = " .. tostring(returns[1] and returns[1].type))
-    docs_log("entry name = " .. tostring(docs_example_entry:getName()))
+    lurek.log.info("returns = " .. #returns)
+    lurek.log.info("returns count = " .. tostring(#returns))
+    lurek.log.info("first return type = " .. tostring(returns[1] and returns[1].type))
+    lurek.log.info("entry name = " .. tostring(docs_example_entry:getName()))
 end
 ```
 
@@ -2024,15 +1844,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local entry = docs_example_entry
-    docs_log("score = " .. entry:getScore())
-    docs_log("qualified chars = " .. #entry:getQualifiedName())
-    docs_log("module = " .. tostring(entry:getModule()))
-    docs_log("kind = " .. tostring(entry:getKind()))
+    lurek.log.info("score = " .. entry:getScore())
+    lurek.log.info("qualified chars = " .. #entry:getQualifiedName())
+    lurek.log.info("module = " .. tostring(entry:getModule()))
+    lurek.log.info("kind = " .. tostring(entry:getKind()))
 end
 ```
 
@@ -2060,15 +1877,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local since = docs_example_entry:getSince()
-    docs_log("since = " .. type(since))
-    docs_log("since value = " .. tostring(since))
-    docs_log("entry name = " .. tostring(docs_example_entry:getName()))
-    docs_log("entry module = " .. tostring(docs_example_entry:getModule()))
+    lurek.log.info("since = " .. type(since))
+    lurek.log.info("since value = " .. tostring(since))
+    lurek.log.info("entry name = " .. tostring(docs_example_entry:getName()))
+    lurek.log.info("entry module = " .. tostring(docs_example_entry:getModule()))
 end
 ```
 
@@ -2096,15 +1910,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local entry = docs_example_entry
-    docs_log("hasDesc = " .. tostring(entry:hasDescription()))
-    docs_log("qualified chars = " .. #entry:getQualifiedName())
-    docs_log("description length = " .. tostring(#entry:getDescription()))
-    docs_log("entry kind = " .. tostring(entry:getKind()))
+    lurek.log.info("hasDesc = " .. tostring(entry:hasDescription()))
+    lurek.log.info("qualified chars = " .. #entry:getQualifiedName())
+    lurek.log.info("description length = " .. tostring(#entry:getDescription()))
+    lurek.log.info("entry kind = " .. tostring(entry:getKind()))
 end
 ```
 
@@ -2132,15 +1943,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local entry = docs_example_entry
-    docs_log("hasExample = " .. tostring(entry:hasExample()))
-    docs_log("qualified chars = " .. #entry:getQualifiedName())
-    docs_log("example text type = " .. type(entry:getExample()))
-    docs_log("entry qualified = " .. tostring(entry:getQualifiedName()))
+    lurek.log.info("hasExample = " .. tostring(entry:hasExample()))
+    lurek.log.info("qualified chars = " .. #entry:getQualifiedName())
+    lurek.log.info("example text type = " .. type(entry:getExample()))
+    lurek.log.info("entry qualified = " .. tostring(entry:getQualifiedName()))
 end
 ```
 
@@ -2168,15 +1976,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local entry = docs_example_entry
-    docs_log("hasParams = " .. tostring(entry:hasParameters()))
-    docs_log("qualified chars = " .. #entry:getQualifiedName())
-    docs_log("param count = " .. tostring(#entry:getParameters()))
-    docs_log("entry name = " .. tostring(entry:getName()))
+    lurek.log.info("hasParams = " .. tostring(entry:hasParameters()))
+    lurek.log.info("qualified chars = " .. #entry:getQualifiedName())
+    lurek.log.info("param count = " .. tostring(#entry:getParameters()))
+    lurek.log.info("entry name = " .. tostring(entry:getName()))
 end
 ```
 
@@ -2204,15 +2009,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local entry = docs_example_entry
-    docs_log("hasReturn = " .. tostring(entry:hasReturnType()))
-    docs_log("qualified chars = " .. #entry:getQualifiedName())
-    docs_log("return count = " .. tostring(#entry:getReturns()))
-    docs_log("entry name = " .. tostring(entry:getName()))
+    lurek.log.info("hasReturn = " .. tostring(entry:hasReturnType()))
+    lurek.log.info("qualified chars = " .. #entry:getQualifiedName())
+    lurek.log.info("return count = " .. tostring(#entry:getReturns()))
+    lurek.log.info("entry name = " .. tostring(entry:getName()))
 end
 ```
 
@@ -2240,15 +2042,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local entry = docs_example_entry
-    docs_log("type = " .. entry:type())
-    docs_log("qualified chars = " .. #entry:getQualifiedName())
-    docs_log("typeOf LDocEntry = " .. tostring(entry:typeOf("LDocEntry")))
-    docs_log("entry module = " .. tostring(entry:getModule()))
+    lurek.log.info("type = " .. entry:type())
+    lurek.log.info("qualified chars = " .. #entry:getQualifiedName())
+    lurek.log.info("typeOf LDocEntry = " .. tostring(entry:typeOf("LDocEntry")))
+    lurek.log.info("entry module = " .. tostring(entry:getModule()))
 end
 ```
 
@@ -2282,15 +2081,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local entry = docs_example_entry
-    docs_log("is LDocEntry = " .. tostring(entry:typeOf("LDocEntry")))
-    docs_log("type = " .. tostring(entry:type()))
-    docs_log("entry module = " .. tostring(entry:getModule()))
-    docs_log("entry kind = " .. tostring(entry:getKind()))
+    lurek.log.info("is LDocEntry = " .. tostring(entry:typeOf("LDocEntry")))
+    lurek.log.info("type = " .. tostring(entry:type()))
+    lurek.log.info("entry module = " .. tostring(entry:getModule()))
+    lurek.log.info("entry kind = " .. tostring(entry:getKind()))
 end
 ```
 
@@ -2332,15 +2128,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local qr = docs_example_quality
     local best = qr:getBest(5)
-    docs_log("best 5 = " .. #best)
-    docs_log("first best = " .. tostring(best[1] and best[1]:getQualifiedName()))
+    lurek.log.info("best 5 = " .. #best)
+    lurek.log.info("first best = " .. tostring(best[1] and best[1]:getQualifiedName()))
 end
 ```
 
@@ -2374,15 +2167,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local qr = docs_example_quality
     local a_entries = qr:getByGrade("A")
-    docs_log("grade A entries = " .. #a_entries)
-    docs_log("first A entry = " .. tostring(a_entries[1] and a_entries[1]:getQualifiedName()))
+    lurek.log.info("grade A entries = " .. #a_entries)
+    lurek.log.info("first A entry = " .. tostring(a_entries[1] and a_entries[1]:getQualifiedName()))
 end
 ```
 
@@ -2410,15 +2200,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local qr = docs_example_quality
-    docs_log("grade = " .. qr:getGrade())
-    docs_log("overall score = " .. tostring(qr:getOverallScore()))
-    docs_log("type = " .. qr:type())
+    lurek.log.info("grade = " .. qr:getGrade())
+    lurek.log.info("overall score = " .. tostring(qr:getOverallScore()))
+    lurek.log.info("type = " .. qr:type())
 end
 ```
 
@@ -2446,16 +2233,13 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local qr = docs_example_quality
     local issues = qr:getIssues()
-    docs_log("quality issues = " .. #issues)
-    docs_log("first issue kind = " .. tostring(issues[1] and issues[1].kind))
-    docs_log("first issue message = " .. tostring(issues[1] and issues[1].message))
+    lurek.log.info("quality issues = " .. #issues)
+    lurek.log.info("first issue kind = " .. tostring(issues[1] and issues[1].kind))
+    lurek.log.info("first issue message = " .. tostring(issues[1] and issues[1].message))
 end
 ```
 
@@ -2483,15 +2267,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local qr = docs_example_quality
     local scores = qr:getModuleScores()
-    docs_log("module scores type = " .. type(scores))
-    docs_log("math score = " .. tostring(scores.math))
+    lurek.log.info("module scores type = " .. type(scores))
+    lurek.log.info("math score = " .. tostring(scores.math))
 end
 ```
 
@@ -2519,15 +2300,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local qr = docs_example_quality
-    docs_log("score = " .. qr:getOverallScore())
-    docs_log("grade = " .. tostring(qr:getGrade()))
-    docs_log("type = " .. qr:type())
+    lurek.log.info("score = " .. qr:getOverallScore())
+    lurek.log.info("grade = " .. tostring(qr:getGrade()))
+    lurek.log.info("type = " .. qr:type())
 end
 ```
 
@@ -2555,16 +2333,13 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local qr = docs_example_quality
     local summary = qr:getSummary()
-    docs_log("summary = " .. summary)
-    docs_log("summary length = " .. #summary)
-    docs_log("type = " .. qr:type())
+    lurek.log.info("summary = " .. summary)
+    lurek.log.info("summary length = " .. #summary)
+    lurek.log.info("type = " .. qr:type())
 end
 ```
 
@@ -2598,15 +2373,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local qr = docs_example_quality
     local worst = qr:getWorst(5)
-    docs_log("worst 5 = " .. #worst)
-    docs_log("first worst = " .. tostring(worst[1] and worst[1]:getQualifiedName()))
+    lurek.log.info("worst 5 = " .. #worst)
+    lurek.log.info("first worst = " .. tostring(worst[1] and worst[1]:getQualifiedName()))
 end
 ```
 
@@ -2634,16 +2406,13 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local qr = docs_example_quality
     local issues = qr:getIssues()
-    docs_log("quality issue count = " .. qr:issueCount())
-    docs_log("issues table size = " .. #issues)
-    docs_log("quality grade = " .. tostring(qr:getGrade()))
+    lurek.log.info("quality issue count = " .. qr:issueCount())
+    lurek.log.info("issues table size = " .. #issues)
+    lurek.log.info("quality grade = " .. tostring(qr:getGrade()))
 end
 ```
 
@@ -2671,15 +2440,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local qr = docs_example_quality
     local json = qr:toJSON()
-    docs_log("json length = " .. #json)
-    docs_log("json has grade = " .. tostring(string.find(json, "grade", 1, true) ~= nil))
+    lurek.log.info("json length = " .. #json)
+    lurek.log.info("json has grade = " .. tostring(string.find(json, "grade", 1, true) ~= nil))
 end
 ```
 
@@ -2707,15 +2473,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local qr = docs_example_quality
     local t = qr:toTable()
-    docs_log("overall = " .. t.overallScore .. " grade = " .. t.grade)
-    docs_log("module score count = " .. tostring(type(t.moduleScores)))
+    lurek.log.info("overall = " .. t.overallScore .. " grade = " .. t.grade)
+    lurek.log.info("module score count = " .. tostring(type(t.moduleScores)))
 end
 ```
 
@@ -2743,15 +2506,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local qr = docs_example_quality
-    docs_log("type = " .. qr:type())
-    docs_log("summary length = " .. #qr:getSummary())
-    docs_log("typeOf LQualityReport = " .. tostring(qr:typeOf("LQualityReport")))
+    lurek.log.info("type = " .. qr:type())
+    lurek.log.info("summary length = " .. #qr:getSummary())
+    lurek.log.info("typeOf LQualityReport = " .. tostring(qr:typeOf("LQualityReport")))
 end
 ```
 
@@ -2785,15 +2545,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local qr = docs_example_quality
-    docs_log("is report = " .. tostring(qr:typeOf("LQualityReport")))
-    docs_log("type = " .. tostring(qr:type()))
-    docs_log("grade = " .. tostring(qr:getGrade()))
+    lurek.log.info("is report = " .. tostring(qr:typeOf("LQualityReport")))
+    lurek.log.info("type = " .. tostring(qr:type()))
+    lurek.log.info("grade = " .. tostring(qr:getGrade()))
 end
 ```
 
@@ -2829,15 +2586,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local s = lurek.docs.schema({v = {type = "number"}})
     local ok = pcall(function() s["assert"](s, {v = 10}) end)
-    docs_log("assert passed = " .. tostring(ok))
-    docs_log("schema field count = " .. #s:getFields())
-    docs_log("schema type = " .. s:type())
+    lurek.log.info("assert passed = " .. tostring(ok))
+    lurek.log.info("schema field count = " .. #s:getFields())
+    lurek.log.info("schema type = " .. s:type())
 end
 ```
 
@@ -2871,15 +2625,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local s = lurek.docs.schema({x = {type = "number"}})
-    docs_log("check = " .. tostring(s:check({x = 42})))
-    docs_log("schema name = " .. tostring(s:getName()))
-    docs_log("is schema = " .. tostring(s:typeOf("LSchema")))
-    docs_log("field count = " .. #s:getFields())
+    lurek.log.info("check = " .. tostring(s:check({x = 42})))
+    lurek.log.info("schema name = " .. tostring(s:getName()))
+    lurek.log.info("is schema = " .. tostring(s:typeOf("LSchema")))
+    lurek.log.info("field count = " .. #s:getFields())
 end
 ```
 
@@ -2907,15 +2658,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local s = lurek.docs.schema({a = {type = "number"}, b = {type = "string"}})
     local fields = s:getFields()
-    docs_log("fields = " .. #fields)
-    docs_log("first field = " .. tostring(fields[1]))
-    docs_log("schema type = " .. s:type())
+    lurek.log.info("fields = " .. #fields)
+    lurek.log.info("first field = " .. tostring(fields[1]))
+    lurek.log.info("schema type = " .. s:type())
 end
 ```
 
@@ -2943,15 +2691,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local s = lurek.docs.schema({}, "TestSchema")
-    docs_log("name = " .. s:getName())
-    docs_log("schema name = " .. tostring(s:getName()))
-    docs_log("field count = " .. #s:getFields())
-    docs_log("is schema = " .. tostring(s:typeOf("LSchema")))
+    lurek.log.info("name = " .. s:getName())
+    lurek.log.info("schema name = " .. tostring(s:getName()))
+    lurek.log.info("field count = " .. #s:getFields())
+    lurek.log.info("is schema = " .. tostring(s:typeOf("LSchema")))
 end
 ```
 
@@ -2979,15 +2724,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local s = lurek.docs.schema({})
-    docs_log("type = " .. s:type())
-    docs_log("schema fields = " .. tostring(#s:getFields()))
-    docs_log("typeOf LSchema = " .. tostring(s:typeOf("LSchema")))
-    docs_log("field count = " .. #s:getFields())
+    lurek.log.info("type = " .. s:type())
+    lurek.log.info("schema fields = " .. tostring(#s:getFields()))
+    lurek.log.info("typeOf LSchema = " .. tostring(s:typeOf("LSchema")))
+    lurek.log.info("field count = " .. #s:getFields())
 end
 ```
 
@@ -3021,15 +2763,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local s = lurek.docs.schema({})
-    docs_log("is LSchema = " .. tostring(s:typeOf("LSchema")))
-    docs_log("type = " .. tostring(s:type()))
-    docs_log("first field = " .. tostring(s:getFields()[1]))
-    docs_log("field count = " .. #s:getFields())
+    lurek.log.info("is LSchema = " .. tostring(s:typeOf("LSchema")))
+    lurek.log.info("type = " .. tostring(s:type()))
+    lurek.log.info("first field = " .. tostring(s:getFields()[1]))
+    lurek.log.info("field count = " .. #s:getFields())
 end
 ```
 
@@ -3064,15 +2803,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local s = lurek.docs.schema({name = {type = "string", required = true}})
     local ok, errors = s:validate({name = "test"})
-    docs_log("valid = " .. tostring(ok) .. " errors = " .. #errors)
-    docs_log("schema type = " .. s:type())
-    docs_log("field count = " .. #s:getFields())
+    lurek.log.info("valid = " .. tostring(ok) .. " errors = " .. #errors)
+    lurek.log.info("schema type = " .. s:type())
+    lurek.log.info("field count = " .. #s:getFields())
 end
 ```
 
@@ -3108,15 +2844,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local report = docs_example_validate
     local incomplete = report:getIncomplete()
-    docs_log("incomplete = " .. #incomplete)
-    docs_log("first incomplete = " .. tostring(incomplete[1] and incomplete[1].qualifiedName))
+    lurek.log.info("incomplete = " .. #incomplete)
+    lurek.log.info("first incomplete = " .. tostring(incomplete[1] and incomplete[1].qualifiedName))
 end
 ```
 
@@ -3144,16 +2877,13 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local report = docs_example_validate
     local issues = report:getIssues()
-    docs_log("issues = " .. #issues)
-    docs_log("first issue severity = " .. tostring(issues[1] and issues[1].severity))
-    docs_log("first issue module = " .. tostring(issues[1] and issues[1].module))
+    lurek.log.info("issues = " .. #issues)
+    lurek.log.info("first issue severity = " .. tostring(issues[1] and issues[1].severity))
+    lurek.log.info("first issue module = " .. tostring(issues[1] and issues[1].module))
 end
 ```
 
@@ -3181,15 +2911,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local report = docs_example_validate
     local missing = report:getMissing()
-    docs_log("missing = " .. #missing)
-    docs_log("first missing = " .. tostring(missing[1] and missing[1].qualifiedName))
+    lurek.log.info("missing = " .. #missing)
+    lurek.log.info("first missing = " .. tostring(missing[1] and missing[1].qualifiedName))
 end
 ```
 
@@ -3217,15 +2944,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local report = docs_example_validate
     local phantom = report:getPhantom()
-    docs_log("phantom = " .. #phantom)
-    docs_log("first phantom = " .. tostring(phantom[1] and phantom[1].qualifiedName))
+    lurek.log.info("phantom = " .. #phantom)
+    lurek.log.info("first phantom = " .. tostring(phantom[1] and phantom[1].qualifiedName))
 end
 ```
 
@@ -3253,16 +2977,13 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local report = docs_example_validate
     local summary = report:getSummary()
-    docs_log("summary = " .. summary)
-    docs_log("summary length = " .. #summary)
-    docs_log("report type = " .. report:type())
+    lurek.log.info("summary = " .. summary)
+    lurek.log.info("summary length = " .. #summary)
+    lurek.log.info("report type = " .. report:type())
 end
 ```
 
@@ -3290,15 +3011,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local report = docs_example_validate
-    docs_log("incomplete count = " .. report:incompleteCount())
-    docs_log("phantom count = " .. report:phantomCount())
-    docs_log("report type = " .. report:type())
+    lurek.log.info("incomplete count = " .. report:incompleteCount())
+    lurek.log.info("phantom count = " .. report:phantomCount())
+    lurek.log.info("report type = " .. report:type())
 end
 ```
 
@@ -3326,15 +3044,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local report = docs_example_validate
-    docs_log("valid = " .. tostring(report:isValid()))
-    docs_log("missing count = " .. tostring(report:missingCount()))
-    docs_log("report type = " .. report:type())
+    lurek.log.info("valid = " .. tostring(report:isValid()))
+    lurek.log.info("missing count = " .. tostring(report:missingCount()))
+    lurek.log.info("report type = " .. report:type())
 end
 ```
 
@@ -3362,16 +3077,13 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local report = docs_example_validate
     local issues = report:getIssues()
-    docs_log("issue count = " .. report:issueCount())
-    docs_log("issues table size = " .. #issues)
-    docs_log("is valid = " .. tostring(report:isValid()))
+    lurek.log.info("issue count = " .. report:issueCount())
+    lurek.log.info("issues table size = " .. #issues)
+    lurek.log.info("is valid = " .. tostring(report:isValid()))
 end
 ```
 
@@ -3399,15 +3111,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local report = docs_example_validate
-    docs_log("missing count = " .. report:missingCount())
-    docs_log("is valid = " .. tostring(report:isValid()))
-    docs_log("report type = " .. report:type())
+    lurek.log.info("missing count = " .. report:missingCount())
+    lurek.log.info("is valid = " .. tostring(report:isValid()))
+    lurek.log.info("report type = " .. report:type())
 end
 ```
 
@@ -3435,15 +3144,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local report = docs_example_validate
-    docs_log("phantom count = " .. report:phantomCount())
-    docs_log("missing count = " .. report:missingCount())
-    docs_log("report type = " .. report:type())
+    lurek.log.info("phantom count = " .. report:phantomCount())
+    lurek.log.info("missing count = " .. report:missingCount())
+    lurek.log.info("report type = " .. report:type())
 end
 ```
 
@@ -3471,15 +3177,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local report = docs_example_validate
     local json = report:toJSON()
-    docs_log("json length = " .. #json)
-    docs_log("json has missing key = " .. tostring(string.find(json, "missing", 1, true) ~= nil))
+    lurek.log.info("json length = " .. #json)
+    lurek.log.info("json has missing key = " .. tostring(string.find(json, "missing", 1, true) ~= nil))
 end
 ```
 
@@ -3507,15 +3210,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local report = docs_example_validate
     local t = report:toTable()
-    docs_log("table keys: missing=" .. #t.missing .. " phantom=" .. #t.phantom)
-    docs_log("incomplete=" .. #t.incomplete)
+    lurek.log.info("table keys: missing=" .. #t.missing .. " phantom=" .. #t.phantom)
+    lurek.log.info("incomplete=" .. #t.incomplete)
 end
 ```
 
@@ -3543,15 +3243,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local report = docs_example_validate
-    docs_log("type = " .. report:type())
-    docs_log("missing count = " .. tostring(report:missingCount()))
-    docs_log("typeOf LValidationReport = " .. tostring(report:typeOf("LValidationReport")))
+    lurek.log.info("type = " .. report:type())
+    lurek.log.info("missing count = " .. tostring(report:missingCount()))
+    lurek.log.info("typeOf LValidationReport = " .. tostring(report:typeOf("LValidationReport")))
 end
 ```
 
@@ -3585,15 +3282,12 @@ do
     local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
     local docs_example_validate = lurek.docs.validate(docs_example_cat)
     local docs_example_quality = lurek.docs.quality(docs_example_cat)
-    local function docs_log(message)
-        lurek.log.info("[docs.example] " .. tostring(message))
-    end
 
     local cat = docs_example_cat
     local report = docs_example_validate
-    docs_log("is report = " .. tostring(report:typeOf("LValidationReport")))
-    docs_log("type = " .. tostring(report:type()))
-    docs_log("valid = " .. tostring(report:isValid()))
+    lurek.log.info("is report = " .. tostring(report:typeOf("LValidationReport")))
+    lurek.log.info("type = " .. tostring(report:type()))
+    lurek.log.info("valid = " .. tostring(report:isValid()))
 end
 ```
 

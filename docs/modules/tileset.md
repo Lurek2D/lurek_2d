@@ -2,37 +2,7 @@
 
 ## Purpose
 
-LTileSet describes what tile ids mean inside one atlas, independent of map storage and gameplay fields.
-
-## When To Use
-
-- Atlas geometry covers first gid, tile count, columns, tile size, spacing, margin, and computed source quads.
-- Tile properties are arbitrary author metadata and are useful for editor imports, object refs, and examples.
-- Object archetypes describe named tile objects with optional visual, blocker, cost, and property data.
-
-## Minimal Example
-
-Example block: `lurek.tileset.newTileSet`
-
-```lua
-do
-    local tileset = lurek.tileset.newTileSet(1, 16, 4, 16, 16, 1, 2)
-    lurek.log.info("tileset first gid = " .. tileset:getFirstGid())
-    local verified = true
-    local label = "tileset"
-    lurek.log.info(label .. " verified = " .. tostring(verified))
-end
-```
-
-## Common Patterns
-
-- Start with `lurek.tileset.fromProvider` when exploring this module.
-- Start with `lurek.tileset.newCatalog` when exploring this module.
-- Start with `lurek.tileset.newTileSet` when exploring this module.
-
-## API Reference
-
-- This page is the generated API reference for this module.
+lurek.tileset owns reusable tileset metadata: atlas geometry, tile properties, object archetypes, animation frames, autotile rules, and catalogs that resolve typed tilefield refs for tilemap rendering.
 
 ## Summary
 
@@ -46,6 +16,10 @@ end
 - The legacy `lurek.tilemap.newTileSet` alias remains a compatibility path, but new code should use `lurek.tileset.newTileSet`.
 
 This module primarily collaborates with `math`, `runtime`, `tilefield`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
+## API Reference
+
+- This page is the generated API reference for this module.
 
 ## Functions
 

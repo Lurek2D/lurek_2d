@@ -346,36 +346,6 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 - `content/examples/scene.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_scene_unit.lua` (present)
-- Rust: none detected.
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Evidence test | `tests/lua/evidence/test_scene_evidence.lua` |
-| Golden test | `tests/lua/golden/test_scene_golden.lua` |
-| Current artifact | `tests/artifacts/current/scene/scene_depth_sort_ascending.txt` |
-| Current artifact | `tests/artifacts/current/scene/scene_depth_sort_bands.png` |
-| Current artifact | `tests/artifacts/current/scene/scene_depth_sort_object_entries.txt` |
-| Current artifact | `tests/artifacts/current/scene/scene_depth_sort_stable_equal_depth.txt` |
-| Current artifact | `tests/artifacts/current/scene/scene_group_mask_transition.png` |
-| Current artifact | `tests/artifacts/current/scene/scene_group_mask_transition_trace.txt` |
-| Current artifact | `tests/artifacts/current/scene/scene_object_container_layer_trace.txt` |
-| Current artifact | `tests/artifacts/current/scene/scene_state_preload_overlay_trace.txt` |
-| Current artifact | `tests/artifacts/current/scene/scene_transition_progress_step01.png` |
-| Current artifact | `tests/artifacts/current/scene/scene_transition_progress_step02.png` |
-| Current artifact | `tests/artifacts/current/scene/scene_transition_progress_step03.png` |
-| Current artifact | `tests/artifacts/current/scene/scene_transition_progress_step04.png` |
-| Current artifact | `tests/artifacts/current/scene/scene_transition_queue_trace.txt` |
-| Baseline artifact | `tests/artifacts/baselines/scene/scene_depth_sort_ascending.txt` |
-| Baseline artifact | `tests/artifacts/baselines/scene/scene_depth_sort_bands.png` |
-| Baseline artifact | `tests/artifacts/baselines/scene/scene_depth_sort_object_entries.txt` |
-| Baseline artifact | `tests/artifacts/baselines/scene/scene_depth_sort_stable_equal_depth.txt` |
-| Baseline artifact | `tests/artifacts/baselines/scene/scene_transition_queue_trace.txt` |
-
 ## Architecture Links
 
 - Intentionally empty.

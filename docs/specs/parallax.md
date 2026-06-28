@@ -187,34 +187,6 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 
 - `content/examples/parallax.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_parallax_unit.lua` (present)
-- Rust: `tests/rust/unit/parallax_tests.rs`
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Evidence test | `tests/lua/evidence/test_parallax_evidence.lua` |
-| Golden test | `tests/lua/golden/test_parallax_golden.lua` |
-| Current artifact | `tests/artifacts/current/parallax/parallax_autoscroll_motion.gif` |
-| Current artifact | `tests/artifacts/current/parallax/parallax_depth_scroll_factors.png` |
-| Current artifact | `tests/artifacts/current/parallax/parallax_effect_tint_motion_stretch.png` |
-| Current artifact | `tests/artifacts/current/parallax/parallax_preset_layer_profiles.png` |
-| Current artifact | `tests/artifacts/current/parallax/parallax_shader_binding_contract.txt` |
-| Current artifact | `tests/artifacts/current/parallax/parallax_shader_visual_01_procedural_sky.png` |
-| Current artifact | `tests/artifacts/current/parallax/parallax_shader_visual_02_nebula_layer.png` |
-| Current artifact | `tests/artifacts/current/parallax/parallax_shader_visual_03_cloud_tint.png` |
-| Current artifact | `tests/artifacts/current/parallax/parallax_tiling_coverage_stats.png` |
-| Current artifact | `tests/artifacts/current/parallax/parallax_z_sorted_set.png` |
-| Baseline artifact | `tests/artifacts/baselines/parallax/parallax_autoscroll_motion.gif` |
-| Baseline artifact | `tests/artifacts/baselines/parallax/parallax_depth_scroll_factors.png` |
-| Baseline artifact | `tests/artifacts/baselines/parallax/parallax_effect_tint_motion_stretch.png` |
-| Baseline artifact | `tests/artifacts/baselines/parallax/parallax_preset_layer_profiles.png` |
-| Baseline artifact | `tests/artifacts/baselines/parallax/parallax_tiling_coverage_stats.png` |
-| Baseline artifact | `tests/artifacts/baselines/parallax/parallax_z_sorted_set.png` |
-
 ## Architecture Links
 
 - Intentionally empty.

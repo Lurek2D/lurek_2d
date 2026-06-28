@@ -339,33 +339,6 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`, `s
 
 - `content/examples/animation.lua` (present)
 
-## Tests
-
-- Lua unit: `tests/lua/unit/test_animation_unit.lua` (present)
-- Rust: `tests/rust/unit/animation_tests.rs`
-
-## Evidence / Golden
-
-| Kind | Path |
-|---|---|
-| Evidence test | `tests/lua/evidence/test_animation_evidence.lua` |
-| Golden test | `tests/lua/golden/test_animation_golden.lua` |
-| Current artifact | `tests/artifacts/current/animation/animation_clip_control_trace.txt` |
-| Current artifact | `tests/artifacts/current/animation/animation_clip_preview_frames.gif` |
-| Current artifact | `tests/artifacts/current/animation/animation_crossfade_transition.gif` |
-| Current artifact | `tests/artifacts/current/animation/animation_current_frame_walk.png` |
-| Current artifact | `tests/artifacts/current/animation/animation_curve_eased.png` |
-| Current artifact | `tests/artifacts/current/animation/animation_curve_linear.png` |
-| Current artifact | `tests/artifacts/current/animation/animation_state_machine_transition_trace.txt` |
-| Current artifact | `tests/artifacts/current/animation/animation_walk_cycle_preview.gif` |
-| Baseline artifact | `tests/artifacts/baselines/animation/animation_clip_preview_frames.gif` |
-| Baseline artifact | `tests/artifacts/baselines/animation/animation_crossfade_transition.gif` |
-| Baseline artifact | `tests/artifacts/baselines/animation/animation_current_frame_walk.png` |
-| Baseline artifact | `tests/artifacts/baselines/animation/animation_curve_eased.png` |
-| Baseline artifact | `tests/artifacts/baselines/animation/animation_curve_linear.png` |
-| Baseline artifact | `tests/artifacts/baselines/animation/animation_state_machine_transition_trace.txt` |
-| Baseline artifact | `tests/artifacts/baselines/animation/animation_walk_cycle_preview.gif` |
-
 ## Architecture Links
 
 - Intentionally empty.
