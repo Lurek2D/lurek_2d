@@ -157,6 +157,20 @@ describe("Evidence: lurek.province fixture-derived artifacts", function()
         save_png(Fixture.render_strategy_modes(loaded), OUT .. "province_strategy_modes.png")
         save_gif(frames, OUT .. "province_revision_timeline.gif")
     end)
+
+    -- Does: Binds mapviz-target shaders to province rendering and emits three province-map shader artifacts.
+    -- Shows: Political coloring, province selection glow, and frontline heat visualization are represented as province/map visualization outputs.
+    -- Artifact: tests/artifacts/current/province/province_shader_visual_01_political_map.png, tests/artifacts/current/province/province_shader_visual_02_selection_glow.png, tests/artifacts/current/province/province_shader_visual_03_frontline_heat.png
+    -- Why: Province owns semantic map data and render plans, so shader evidence should show map visualization use cases rather than generic shader geometry.
+    it("PNG: shader-backed province map visualization variants", function()
+        dofile("tests/lua/fixtures/shader_visual_helpers.lua")
+        local ShaderEvidence = _G.ShaderEvidence
+        ShaderEvidence.emit("province", {
+            { target = "mapviz", slug = "political_map" },
+            { target = "mapviz", slug = "selection_glow" },
+            { target = "mapviz", slug = "frontline_heat" },
+        }, OUT)
+    end)
 end)
 
 test_summary()

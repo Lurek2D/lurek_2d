@@ -200,6 +200,21 @@ describe("Evidence: lurek.render", function()
             "screen_transition.use_cases=wipe,dissolve,fade_mask",
         }, "\n") .. "\n")
     end)
+
+    -- Does: Builds render-owned shaders for draw, canvas postfx, text, and debugviz render surfaces and emits distinct visual proofs.
+    -- Shows: The PNGs demonstrate render's own shader responsibilities: material draw, canvas pass, text shader, and debug overlay shader routing.
+    -- Artifact: tests/artifacts/current/render/render_shader_visual_01_draw_material.png, tests/artifacts/current/render/render_shader_visual_02_canvas_postfx.png, tests/artifacts/current/render/render_shader_visual_03_text_material.png, tests/artifacts/current/render/render_shader_visual_04_debug_overlay.png
+    -- Why: Render owns shader compilation and GPU execution, so its visual evidence covers render-native shader surfaces rather than other modules.
+    it("PNG: render-owned shader surfaces", function()
+        dofile("tests/lua/fixtures/shader_visual_helpers.lua")
+        local ShaderEvidence = _G.ShaderEvidence
+        ShaderEvidence.emit("render", {
+            { target = "draw", slug = "draw_material" },
+            { target = "postfx", slug = "canvas_postfx" },
+            { target = "text", slug = "text_material" },
+            { target = "debugviz", slug = "debug_overlay" },
+        }, OUT)
+    end)
 end)
 
 test_summary()

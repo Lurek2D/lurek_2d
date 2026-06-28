@@ -931,6 +931,20 @@ fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
         }, "\n"))
         lurek.globe.remove("globe_shader_binding")
     end)
+
+    -- Does: Binds mapviz-target shaders to globe rendering and emits three globe/map shader artifacts.
+    -- Shows: Atmospheric bands, heat overlays, and tactical globe map visualization are represented as globe-specific outputs.
+    -- Artifact: tests/artifacts/current/globe/globe_shader_visual_01_atmosphere_band.png, tests/artifacts/current/globe/globe_shader_visual_02_heat_overlay.png, tests/artifacts/current/globe/globe_shader_visual_03_tactical_map.png
+    -- Why: Globe owns spherical/strategic map presentation, so shader evidence should show atmospheric and tactical map treatments.
+    it("PNG: shader-backed globe visualization variants", function()
+        dofile("tests/lua/fixtures/shader_visual_helpers.lua")
+        local ShaderEvidence = _G.ShaderEvidence
+        ShaderEvidence.emit("globe", {
+            { target = "mapviz", slug = "atmosphere_band" },
+            { target = "mapviz", slug = "heat_overlay" },
+            { target = "mapviz", slug = "tactical_map" },
+        }, OUT)
+    end)
 end)
 
 test_summary()

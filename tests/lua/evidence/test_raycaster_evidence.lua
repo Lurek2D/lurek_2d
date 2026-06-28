@@ -667,6 +667,20 @@ fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
         if write_file then write_file(path, text) else lurek.filesystem.write(path, text) end
         expect_evidence_created(path)
     end)
+
+    -- Does: Binds draw-target shaders to raycaster scene presentation and emits three raycaster-specific shader artifacts.
+    -- Shows: Wall shading, floor fog, and depth tint are represented as raycaster view/depth treatments.
+    -- Artifact: tests/artifacts/current/raycaster/raycaster_shader_visual_01_wall_shade.png, tests/artifacts/current/raycaster/raycaster_shader_visual_02_floor_fog.png, tests/artifacts/current/raycaster/raycaster_shader_visual_03_depth_tint.png
+    -- Why: Raycaster owns pseudo-3D wall/depth views, so shader evidence should show view shading and depth cues, not generic 2D cards.
+    it("PNG: shader-backed raycaster view variants", function()
+        dofile("tests/lua/fixtures/shader_visual_helpers.lua")
+        local ShaderEvidence = _G.ShaderEvidence
+        ShaderEvidence.emit("raycaster", {
+            { target = "draw", slug = "wall_shade" },
+            { target = "draw", slug = "floor_fog" },
+            { target = "draw", slug = "depth_tint" },
+        }, OUT)
+    end)
 end)
 
 test_summary()

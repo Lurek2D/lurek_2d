@@ -1556,5 +1556,19 @@ fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @locati
         save_png(img, path)
     end)
 
+    -- Does: Binds tilemap-target shaders to map-wide and layer-specific tilemap paths and emits three tile visual artifacts.
+    -- Shows: Global material tint, layer material overlay, and fog-tinted terrain are represented as tile grid outputs.
+    -- Artifact: tests/artifacts/current/tilemap/tilemap_shader_visual_01_global_material.png, tests/artifacts/current/tilemap/tilemap_shader_visual_02_layer_material.png, tests/artifacts/current/tilemap/tilemap_shader_visual_03_fog_tint.png
+    -- Why: Tilemap owns visual tile grids and layers, so shader evidence should show terrain/layer/fog tile semantics.
+    it("PNG: shader-backed tilemap visual variants", function()
+        dofile("tests/lua/fixtures/shader_visual_helpers.lua")
+        local ShaderEvidence = _G.ShaderEvidence
+        ShaderEvidence.emit("tilemap", {
+            { target = "tilemap", slug = "global_material" },
+            { target = "tilemap", slug = "layer_material" },
+            { target = "tilemap", slug = "fog_tint" },
+        }, OUT)
+    end)
+
 end)
 test_summary()

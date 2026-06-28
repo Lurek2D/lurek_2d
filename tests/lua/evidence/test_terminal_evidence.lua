@@ -302,6 +302,20 @@ fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>, @location(2) pi
 
         save_terminal(term, "terminal_tui_command_palette.png")
     end)
+
+    -- Does: Binds ui-target shaders to terminal rendering and emits three terminal-specific shader artifacts.
+    -- Shows: CRT scanlines, text glow, and panel-mask terminal treatments are represented as terminal surface outputs.
+    -- Artifact: tests/artifacts/current/terminal/terminal_shader_visual_01_crt_scanline.png, tests/artifacts/current/terminal/terminal_shader_visual_02_text_glow.png, tests/artifacts/current/terminal/terminal_shader_visual_03_panel_mask.png
+    -- Why: Terminal owns grid text and console surfaces, so shader evidence should show terminal display treatments rather than generic UI cards.
+    it("PNG: shader-backed terminal visual variants", function()
+        dofile("tests/lua/fixtures/shader_visual_helpers.lua")
+        local ShaderEvidence = _G.ShaderEvidence
+        ShaderEvidence.emit("terminal", {
+            { target = "ui", slug = "crt_scanline" },
+            { target = "ui", slug = "text_glow" },
+            { target = "ui", slug = "panel_mask" },
+        }, OUT)
+    end)
 end)
 
 test_summary()

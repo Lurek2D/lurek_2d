@@ -504,6 +504,20 @@ describe("Evidence: lurek.overlay API", function()
         end
         save_gif(frames, OUT .. "overlay_flash_shake_fade_composite.gif", { delayMs = 65, speed = 10 })
     end)
+
+    -- Does: Binds overlay-target shaders to overlay direct and named layer APIs and emits three overlay-specific visual artifacts.
+    -- Shows: Full-screen overlay tint, heat-haze distortion intent, and fog layer composition are represented as overlay layer outputs.
+    -- Artifact: tests/artifacts/current/overlay/overlay_shader_visual_01_screen_overlay.png, tests/artifacts/current/overlay/overlay_shader_visual_02_heat_haze.png, tests/artifacts/current/overlay/overlay_shader_visual_03_fog_layer.png
+    -- Why: Overlay owns presentation layers such as haze, fog, flash, and screen treatment, so shader evidence should visualize those overlay semantics.
+    it("PNG: shader-backed overlay layer variants", function()
+        dofile("tests/lua/fixtures/shader_visual_helpers.lua")
+        local ShaderEvidence = _G.ShaderEvidence
+        ShaderEvidence.emit("overlay", {
+            { target = "overlay", slug = "screen_overlay" },
+            { target = "overlay", slug = "heat_haze" },
+            { target = "overlay", slug = "fog_layer" },
+        }, OUT)
+    end)
 end)
 
 test_summary()

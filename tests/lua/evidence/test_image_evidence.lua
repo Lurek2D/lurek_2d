@@ -652,5 +652,19 @@ describe("Evidence: lurek.image shape galleries", function()
         base:drawRect(188, 148, 12, 12, 255, 146, 118, 255)
         save_png(base, path)
     end)
+
+    -- Does: Runs image-target shaders through ImageData offline processing and emits three bitmap-processing artifacts.
+    -- Shows: Palette/LUT remap, threshold mask generation, and posterize-style filtering are separate image shader outputs.
+    -- Artifact: tests/artifacts/current/image/image_shader_visual_01_palette_lut.png, tests/artifacts/current/image/image_shader_visual_02_threshold_mask.png, tests/artifacts/current/image/image_shader_visual_03_posterize_filter.png
+    -- Why: Image shader evidence should be actual ImageData processing/readback, because image owns offline bitmap workflows rather than render-time binding.
+    it("PNG: offline image shader processing variants", function()
+        dofile("tests/lua/fixtures/shader_visual_helpers.lua")
+        local ShaderEvidence = _G.ShaderEvidence
+        ShaderEvidence.emit("image", {
+            { target = "image", slug = "palette_lut" },
+            { target = "image", slug = "threshold_mask" },
+            { target = "image", slug = "posterize_filter" },
+        }, OUT)
+    end)
 end)
 test_summary()

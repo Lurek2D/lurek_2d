@@ -548,6 +548,20 @@ describe("Evidence: lurek.effect API", function()
         end
         save_gif(frames, OUT .. "effect_stack_order_lookbook.gif", { delayMs = 85, speed = 10 })
     end)
+
+    -- Does: Builds shader-backed postfx passes through lurek.effect and emits three effect-specific shader visual artifacts.
+    -- Shows: Custom pass chaining, auto-uniform modulation, and screen-transition postfx are represented as separate effect composition outputs.
+    -- Artifact: tests/artifacts/current/effect/effect_shader_visual_01_custom_pass.png, tests/artifacts/current/effect/effect_shader_visual_02_auto_uniforms.png, tests/artifacts/current/effect/effect_shader_visual_03_screen_transition.png
+    -- Why: The effect module owns post-processing stacks and pass policy, so its shader evidence must show postfx composition rather than generic shader cards.
+    it("PNG: shader-backed postfx effect variants", function()
+        dofile("tests/lua/fixtures/shader_visual_helpers.lua")
+        local ShaderEvidence = _G.ShaderEvidence
+        ShaderEvidence.emit("effect", {
+            { target = "postfx", slug = "custom_pass" },
+            { target = "postfx", slug = "auto_uniforms" },
+            { target = "postfx", slug = "screen_transition" },
+        }, OUT)
+    end)
 end)
 
 test_summary()

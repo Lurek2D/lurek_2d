@@ -423,5 +423,19 @@ describe("Evidence: lurek.minimap render output", function()
         mm:syncProvinceRegistry(reg)
         save_png(mm:drawToImage(0), path)
     end)
+
+    -- Does: Binds mapviz-target shaders to minimap rendering and emits three minimap shader artifacts.
+    -- Shows: Ownership heat, fog-of-war, and radar-scan minimap treatments are represented as minimap-specific outputs.
+    -- Artifact: tests/artifacts/current/minimap/minimap_shader_visual_01_ownership_heat.png, tests/artifacts/current/minimap/minimap_shader_visual_02_fog_of_war.png, tests/artifacts/current/minimap/minimap_shader_visual_03_radar_scan.png
+    -- Why: Minimap shaders are useful for compact strategic visualization, so evidence should show minimap semantics rather than province-scale detail.
+    it("PNG: shader-backed minimap visualization variants", function()
+        dofile("tests/lua/fixtures/shader_visual_helpers.lua")
+        local ShaderEvidence = _G.ShaderEvidence
+        ShaderEvidence.emit("minimap", {
+            { target = "mapviz", slug = "ownership_heat" },
+            { target = "mapviz", slug = "fog_of_war" },
+            { target = "mapviz", slug = "radar_scan" },
+        }, OUT)
+    end)
 end)
 test_summary()

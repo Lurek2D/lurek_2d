@@ -623,6 +623,20 @@ describe("Evidence: lurek.particle API", function()
         save_gif(frames, OUT .. "particle_control_state_timeline.gif", { delayMs = 70, speed = 10 })
         lurek.particle.release(ps)
     end)
+
+    -- Does: Binds particle-target shaders to particle systems and emits three particle-specific visual artifacts.
+    -- Shows: Dissolve, glow, and trail-tint use cases are drawn as particle behavior snapshots tied to LParticleSystem:setShader.
+    -- Artifact: tests/artifacts/current/particle/particle_shader_visual_01_dissolve.png, tests/artifacts/current/particle/particle_shader_visual_02_glow.png, tests/artifacts/current/particle/particle_shader_visual_03_trail_tint.png
+    -- Why: Particle shaders are render-time visual modifiers, so evidence should show particle shapes, aging, glow, and trail semantics instead of unrelated UI.
+    it("PNG: shader-backed particle visual variants", function()
+        dofile("tests/lua/fixtures/shader_visual_helpers.lua")
+        local ShaderEvidence = _G.ShaderEvidence
+        ShaderEvidence.emit("particle", {
+            { target = "particle", slug = "dissolve" },
+            { target = "particle", slug = "glow" },
+            { target = "particle", slug = "trail_tint" },
+        }, OUT)
+    end)
 end)
 
 test_summary()

@@ -392,5 +392,19 @@ describe("Evidence: lurek.light scenarios", function()
         lurek.light.clear()
     end)
 
+    -- Does: Binds light-target shaders through both world and instance light APIs and emits three light-specific visual artifacts.
+    -- Shows: World light contribution, instance cone/ray contribution, and rim/falloff contribution are represented as distinct light scenes.
+    -- Artifact: tests/artifacts/current/light/light_shader_visual_01_world_light.png, tests/artifacts/current/light/light_shader_visual_02_instance_light.png, tests/artifacts/current/light/light_shader_visual_03_rim_falloff.png
+    -- Why: Light shaders modify light contribution while shadow geometry stays engine-owned, so evidence should show falloff and contribution shapes.
+    it("PNG: shader-backed light contribution variants", function()
+        dofile("tests/lua/fixtures/shader_visual_helpers.lua")
+        local ShaderEvidence = _G.ShaderEvidence
+        ShaderEvidence.emit("light", {
+            { target = "light", slug = "world_light" },
+            { target = "light", slug = "instance_light" },
+            { target = "light", slug = "rim_falloff" },
+        }, OUT)
+    end)
+
 end)
 test_summary()

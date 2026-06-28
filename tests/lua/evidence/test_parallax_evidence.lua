@@ -352,6 +352,20 @@ fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
         if write_file then write_file(path, text) else lurek.filesystem.write(path, text) end
         expect_evidence_created(path)
     end)
+
+    -- Does: Binds draw-target shaders to parallax layers and emits three background-layer shader artifacts.
+    -- Shows: Procedural sky, nebula layer, and cloud tint are represented as parallax/background surfaces.
+    -- Artifact: tests/artifacts/current/parallax/parallax_shader_visual_01_procedural_sky.png, tests/artifacts/current/parallax/parallax_shader_visual_02_nebula_layer.png, tests/artifacts/current/parallax/parallax_shader_visual_03_cloud_tint.png
+    -- Why: Parallax owns layered backgrounds, so shader evidence should show scrollable atmospheric/background materials rather than foreground sprites.
+    it("PNG: shader-backed parallax layer variants", function()
+        dofile("tests/lua/fixtures/shader_visual_helpers.lua")
+        local ShaderEvidence = _G.ShaderEvidence
+        ShaderEvidence.emit("parallax", {
+            { target = "draw", slug = "procedural_sky" },
+            { target = "draw", slug = "nebula_layer" },
+            { target = "draw", slug = "cloud_tint" },
+        }, OUT)
+    end)
 end)
 
 test_summary()

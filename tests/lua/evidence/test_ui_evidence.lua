@@ -689,5 +689,19 @@ describe("Evidence: lurek.ui layout batch rendering", function()
         local manifest_path = OUT .. "layout_gallery_manifest.txt"
         write_text(manifest_path, table.concat(lines, "\n") .. "\n")
     end)
+
+    -- Does: Binds ui-target shaders to retained widgets and widget layers and emits three UI shader artifacts.
+    -- Shows: Widget material, named layer tint, and hover-highlight treatments are represented as retained UI outputs.
+    -- Artifact: tests/artifacts/current/ui/ui_shader_visual_01_widget_material.png, tests/artifacts/current/ui/ui_shader_visual_02_layer_tint.png, tests/artifacts/current/ui/ui_shader_visual_03_hover_highlight.png
+    -- Why: UI owns widget state and layout surfaces, so shader evidence should show widget/layer behavior instead of terminal or render primitives.
+    it("PNG: shader-backed retained UI variants", function()
+        dofile("tests/lua/fixtures/shader_visual_helpers.lua")
+        local ShaderEvidence = _G.ShaderEvidence
+        ShaderEvidence.emit("ui", {
+            { target = "ui", slug = "widget_material" },
+            { target = "ui", slug = "layer_tint" },
+            { target = "ui", slug = "hover_highlight" },
+        }, OUT)
+    end)
 end)
 test_summary()

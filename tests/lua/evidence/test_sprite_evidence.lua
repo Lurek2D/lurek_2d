@@ -286,6 +286,20 @@ describe("evidence: sprite", function()
         draw_text(img, "HAS " .. tostring(plain:hasNormalMap() and 1 or 0), 510, 336, 1, 228, 236, 244)
         save_png(img, OUT .. "sprite_lit_normal_state.png")
     end)
+
+    -- Does: Binds sprite-target shaders to sprite handles and emits three sprite-material artifacts.
+    -- Shows: Team color, palette swap, and damage-flash sprite material use cases are represented as sprite-shaped outputs.
+    -- Artifact: tests/artifacts/current/sprite/sprite_shader_visual_01_team_color.png, tests/artifacts/current/sprite/sprite_shader_visual_02_palette_swap.png, tests/artifacts/current/sprite/sprite_shader_visual_03_damage_flash.png
+    -- Why: Sprite shaders are material-style render modifiers, so evidence should show character/sprite recolor states instead of generic shapes.
+    it("PNG: shader-backed sprite material variants", function()
+        dofile("tests/lua/fixtures/shader_visual_helpers.lua")
+        local ShaderEvidence = _G.ShaderEvidence
+        ShaderEvidence.emit("sprite", {
+            { target = "sprite", slug = "team_color" },
+            { target = "sprite", slug = "palette_swap" },
+            { target = "sprite", slug = "damage_flash" },
+        }, OUT)
+    end)
 end)
 
 test_summary()
