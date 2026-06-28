@@ -1228,6 +1228,7 @@ do
         lurek.audio.setMuted(true)
         lurek.log.info(tostring("now muted = " .. tostring(lurek.audio.isMuted())))
     end
+
 end
 ```
 
@@ -1405,6 +1406,7 @@ do
     end
     lurek.log.info(tostring("mixInto available = " .. tostring(has_fn)))
     lurek.log.info(tostring("mixed 880 Hz into 440 Hz"))
+
 end
 ```
 
@@ -1991,6 +1993,7 @@ do
     end
     lurek.log.info(tostring("saveWAV available = " .. tostring(has_fn)))
     lurek.log.info(tostring("saved WAV file"))
+
 end
 ```
 
@@ -4736,6 +4739,7 @@ do
     local img = lurek.image.newImageData(400, 100)
     sd:drawWaveform(img, 0, 0, 400, 100, 0, 255, 0, 255)
     lurek.log.info(tostring("waveform drawn to image"))
+
 end
 ```
 
