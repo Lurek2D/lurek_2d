@@ -29,8 +29,8 @@ local function terrain_income(terrain)
     return 4
 end
 
-local function centroid_from_snap(snap)
-    local c = snap and snap.centroid
+local function point_from_snap(snap)
+    local c = snap and (snap.capital or snap.centroid)
     if type(c) == "table" then
         return c.x or c[1], c.y or c[2]
     end
@@ -205,7 +205,7 @@ function M.new(reg, scenario)
         local snap = reg:getProvince(id)
         local attrs = snap and snap.attrs or {}
         local owner = scenario.assign_owner(attrs, snap, id)
-        local cx, cy = centroid_from_snap(snap)
+        local cx, cy = point_from_snap(snap)
         local terrain = tostring(attrs.terrain or "unknown")
         local income = num(attrs.income, terrain_income(terrain))
         local manpower = num(attrs.manpower, income * 500)

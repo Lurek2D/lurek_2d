@@ -186,6 +186,8 @@ pub struct ProvinceSnapshot {
     pub revision: u64,
     /// Weighted pixel centroid; None if province has no spans.
     pub centroid: Option<(f32, f32)>,
+    /// Capital marker imported from marker metadata; None if province has no capital.
+    pub capital: Option<(f32, f32)>,
     /// Arbitrary key-value metadata set via set_attr.
     pub attrs: HashMap<String, String>,
 }

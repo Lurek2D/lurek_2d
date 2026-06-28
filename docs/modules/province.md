@@ -1579,7 +1579,7 @@ end
 
 #### `LProvinceRegistry:getProvince`
 
-Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state), centroid, and custom attributes.
+Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state), centroid, capital marker, and custom attributes.
 
 ```lua
 LProvinceRegistry:getProvince(id)

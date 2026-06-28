@@ -162,6 +162,9 @@ LSpacer = {}
 ---@class LThread
 LThread = {}
 
+---@class LZipMount
+LZipMount = {}
+
 ---@class LAnimationBuildCharacterResult
 ---@field animation LAnimation Animation handle.
 ---@field stateMachine LStateMachine State machine handle.
@@ -209,8 +212,10 @@ LArraySobelResult = {}
 ---@field name string Display name, or the path file-stem when none is set.
 ---@field path string Filesystem path to the asset.
 ---@field refcount number Current reference count.
+---@field revision number Reload revision.
 ---@field tags table Array of tag strings.
 ---@field type string Asset type string.
+---@field watched boolean True when live reload watching is requested.
 LAssetGetInfoResult = {}
 
 ---@class LAssetStatsResult
@@ -529,6 +534,11 @@ LInputAdvancePlaybackResult = {}
 ---@field wasReleased function Returns true on the frame the action was released.
 LInputNewMappingResult = {}
 
+---@class LIsoGridFindPathResult
+---@field x number X coordinate.
+---@field y number Y coordinate.
+LIsoGridFindPathResult = {}
+
 ---@class LJpsGridFindPathResult
 ---@field x number X.
 ---@field y number Y.
@@ -751,15 +761,6 @@ LNetworkPredictLinearResult = {}
 ---@field x number X.
 ---@field y number Y.
 LNetworkReconcileSnapshotResult = {}
-
----@class LNetworkRuntimePollResult
----@field body string? HTTP response body.
----@field headers table? HTTP response headers.
----@field id number? TCP/WS connection id.
----@field request_id number? HTTP request id.
----@field status number? HTTP status code.
----@field type string Response type (http, tcp, ws).
-LNetworkRuntimePollResult = {}
 
 ---@class LNetworkUnpackResult
 ---@field host string Host address.
@@ -986,6 +987,7 @@ LProvinceRegistryGetChangesSinceResult = {}
 
 ---@class LProvinceRegistryGetProvinceResult
 ---@field attrs table Custom attributes table.
+---@field capital table Capital marker position table imported from marker metadata.
 ---@field centroid table Centroid position table.
 ---@field province_id number Province id.
 ---@field revision number Revision number.
@@ -1337,18 +1339,6 @@ LTileMapFindTilesByGidResult = {}
 ---@field y number Y.
 LTileMapTileTypeIndexResult = {}
 
----@class LTileSetGetAnimationResult
----@field duration number Duration.
----@field tileid number Tileid.
-LTileSetGetAnimationResult = {}
-
----@class LTileSetGetQuadResult
----@field height number Height.
----@field width number Width.
----@field x number X.
----@field y number Y.
-LTileSetGetQuadResult = {}
-
 ---@class LTilemapFromLDtkResult
 ---@field code string Stable machine-readable error code.
 ---@field column number? Always nil for LDtk parser errors.
@@ -1356,31 +1346,6 @@ LTileSetGetQuadResult = {}
 ---@field line number? Always nil for LDtk parser errors.
 ---@field message string Human-readable parser message.
 LTilemapFromLDtkResult = {}
-
----@class LTilemapHexAreaResult
----@field q number Q.
----@field r number R.
-LTilemapHexAreaResult = {}
-
----@class LTilemapHexLineResult
----@field q number Q.
----@field r number R.
-LTilemapHexLineResult = {}
-
----@class LTilemapHexNeighborsResult
----@field q number Q.
----@field r number R.
-LTilemapHexNeighborsResult = {}
-
----@class LTilemapHexRingResult
----@field q number Q.
----@field r number R.
-LTilemapHexRingResult = {}
-
----@class LTilemapHexSpiralResult
----@field q number Q.
----@field r number R.
-LTilemapHexSpiralResult = {}
 
 ---@class LTilemapLoadTMXResult
 ---@field code string Stable machine-readable error code.
@@ -1621,6 +1586,9 @@ lurek.audio.manager = {}
 ---@class lurek.automation
 lurek.automation = {}
 
+---@class lurek.awareness
+lurek.awareness = {}
+
 ---@class lurek.binary
 lurek.binary = {}
 
@@ -1726,9 +1694,6 @@ lurek.mapblock = {}
 ---@class lurek.math
 lurek.math = {}
 
----@class lurek.midi
-lurek.midi = {}
-
 ---@class lurek.minimap
 lurek.minimap = {}
 
@@ -1807,8 +1772,14 @@ lurek.thread = {}
 ---@class lurek.tilefield
 lurek.tilefield = {}
 
+---@class lurek.tilelight
+lurek.tilelight = {}
+
 ---@class lurek.tilemap
 lurek.tilemap = {}
+
+---@class lurek.tileset
+lurek.tileset = {}
 
 ---@class lurek.timer
 lurek.timer = {}
@@ -1821,9 +1792,6 @@ lurek.ui = {}
 
 ---@class lurek.validator
 lurek.validator = {}
-
----@class lurek.visibility
-lurek.visibility = {}
 
 ---@class lurek.window
 lurek.window = {}
@@ -1900,6 +1868,10 @@ LBot = {}
 ---@class LCommandQueue
 LCommandQueue = {}
 
+--- Lua handle for open-ended rules that map traits to action or goal score changes.
+---@class LDecisionBiasSet
+LDecisionBiasSet = {}
+
 --- Lua handle for decaying named emotion intensities.
 ---@class LEmotionModel
 LEmotionModel = {}
@@ -1935,6 +1907,10 @@ LStimulusWorld = {}
 --- Lua handle for interval-based strategic goal selection.
 ---@class LStrategyAI
 LStrategyAI = {}
+
+--- Lua handle for named trait archetypes used to create reusable AI personalities.
+---@class LTraitArchetypes
+LTraitArchetypes = {}
 
 --- Lua handle for trait values with temporary modifiers and archetype lookup.
 ---@class LTraitProfile
@@ -1995,6 +1971,18 @@ LSoundPool = {}
 --- Lua-side wrapper around a loaded audio source (sound effect or music stream).
 ---@class LSource
 LSource = {}
+
+--- Lua-side wrapper for a visibility grid instance.
+---@class LAwarenessGrid
+LAwarenessGrid = {}
+
+--- Lua-side wrapper for a tile-grid recursive-shadowcasting FOV.
+---@class LFov
+LFov = {}
+
+--- Lua-side wrapper for per-player tile visibility/action masks.
+---@class LTileAwareness
+LTileAwareness = {}
 
 --- Exposes byte-buffer inspection and bit editing methods to Lua.
 ---@class LByteData
@@ -2068,7 +2056,7 @@ LRadarChart = {}
 ---@class LScatterPlot
 LScatterPlot = {}
 
---- Lua handle for a treemap chart.
+--- Lua handle for a treemap chart that renders weighted hierarchical rectangles.
 ---@class LTreemapChart
 LTreemapChart = {}
 
@@ -2228,10 +2216,6 @@ LFileData = {}
 ---@class LFileHandle
 LFileHandle = {}
 
---- Lua-side handle for a mounted ZIP archive view.
----@class LZipMount
-LZipMount = {}
-
 --- Lua-side graph handle storing graph state and registered event callbacks.
 ---@class LGraph
 LGraph = {}
@@ -2268,13 +2252,21 @@ LFileFilter = {}
 ---@class LGrepEngine
 LGrepEngine = {}
 
---- Lua-side handle for compressed DDS image metadata and mipmap data.
+--- Lua-side decoded animated image containing frame images and durations.
+---@class LAnimatedImage
+LAnimatedImage = {}
+
+--- Lua-side handle for legacy compressed DDS metadata.
 ---@class LCompressedImageData
 LCompressedImageData = {}
 
 --- Provides Lua methods for reading, editing, filtering, drawing, and encoding image data.
 ---@class LImageData
 LImageData = {}
+
+--- Lua handle for an offline image shader request.
+---@class LImageShaderJob
+LImageShaderJob = {}
 
 --- Lua-side handle for multiple image layers with visibility, opacity, and ordering.
 ---@class LLayeredImage
@@ -2284,7 +2276,7 @@ LLayeredImage = {}
 ---@class LPaletteLUT
 LPaletteLUT = {}
 
---- Lua-side handle for a province id grid decoded from an image.
+--- Lua-side compatibility handle for a province id grid decoded by the province subsystem.
 ---@class LProvinceGrid
 LProvinceGrid = {}
 
@@ -2352,10 +2344,6 @@ LNeuralNet = {}
 ---@class LNeuroevolution
 LNeuroevolution = {}
 
---- ONNX model handle that wraps a tract runnable plan for Lua-driven inference.
----@class LOnnxModel
-LOnnxModel = {}
-
 --- Lua wrapper over `PositionalEncoding`.
 ---@class LPositionalEncoding
 LPositionalEncoding = {}
@@ -2364,7 +2352,7 @@ LPositionalEncoding = {}
 ---@class LQLearner
 LQLearner = {}
 
---- Flat tensor handle exposing shape, element access, and tract conversion to Lua.
+--- Flat tensor handle exposing shape, element access, and flat data to Lua.
 ---@class LTensor
 LTensor = {}
 
@@ -2505,14 +2493,6 @@ LModManager = {}
 ---@class LNetworkHost
 LNetworkHost = {}
 
---- Lua-side wrapper for the background network runtime.
----@class LNetworkRuntime
-LNetworkRuntime = {}
-
---- Lua userdata wrapping an `SseStream` with an optional stored callback.
----@class LSseStream
-LSseStream = {}
-
 --- Lua-side handle for screen overlay, ambient, weather, and transition visual state.
 ---@class LOverlay
 LOverlay = {}
@@ -2561,6 +2541,10 @@ LHexGrid = {}
 ---@class LInfluenceMap
 LInfluenceMap = {}
 
+--- Lua-side wrapper for an isometric navigation grid.
+---@class LIsoGrid
+LIsoGrid = {}
+
 --- Lua-side wrapper for a Jump Point Search grid.
 ---@class LJpsGrid
 LJpsGrid = {}
@@ -2604,6 +2588,10 @@ LCommandStack = {}
 --- Lua-facing debounce that delays firing until input stops for a specified wait period.
 ---@class LDebounce
 LDebounce = {}
+
+--- Lua-facing reusable deck that stores arbitrary card payloads and delegates pile ordering to Rust.
+---@class LDeck
+LDeck = {}
 
 --- Lua-facing publish/subscribe event bus allowing decoupled communication between game systems.
 ---@class LEventBus
@@ -2725,6 +2713,14 @@ LCellular = {}
 ---@class LNoiseGenerator
 LNoiseGenerator = {}
 
+--- Lua-visible typed result for procgen functions that produce a 2D tile/value grid.
+---@class LProcgenGrid
+LProcgenGrid = {}
+
+--- Lua-visible typed result for procgen functions that produce a 2D scalar field.
+---@class LProcgenScalarGrid
+LProcgenScalarGrid = {}
+
 --- Handle to a named province registry, exposing spatial queries, style mutations, rendering, and change tracking to Lua scripts.
 ---@class LProvinceRegistry
 LProvinceRegistry = {}
@@ -2841,6 +2837,10 @@ LSpriteAnimator = {}
 ---@class LSpriteAtlas
 LSpriteAtlas = {}
 
+--- Lua-visible autotile sheet authored from a sprite/image source.
+---@class LSpriteAutoTileSheet
+LSpriteAutoTileSheet = {}
+
 --- Lua-visible wrapper around a SpriteSheet, providing grid-based frame access,.
 ---@class LSpriteSheet
 LSpriteSheet = {}
@@ -2877,6 +2877,14 @@ LThreadPool = {}
 ---@class LTileField
 LTileField = {}
 
+--- Lua-side handle wrapping a grid of shared tilefields.
+---@class LTileFieldMap
+LTileFieldMap = {}
+
+--- Lua-side handle wrapping a tile light map tied to one shared tilefield.
+---@class LTileLightMap
+LTileLightMap = {}
+
 --- Lua-side handle wrapping an `AutoTileSheet` that maps bitmasks to tile quads for auto-tiling.
 ---@class LAutoTileSheet
 LAutoTileSheet = {}
@@ -2893,27 +2901,15 @@ LIsoMap = {}
 ---@class LLargeMapRenderer
 LLargeMapRenderer = {}
 
---- Lua-side handle wrapping a `MapBlock` used for procedural map generation. A block is a tile grid with edge-matching sides.
----@class LMapBlock
-LMapBlock = {}
-
---- Lua-side handle wrapping a `MapGen` procedural map generator that assembles blocks into a tilemap.
----@class LMapGen
-LMapGen = {}
-
---- Lua-side handle wrapping a `MapGroup` that holds a collection of map blocks and generation scripts.
----@class LMapGroup
-LMapGroup = {}
-
---- Lua-side handle wrapping a `MapScript` that defines a sequence of procedural generation steps.
----@class LMapScript
-LMapScript = {}
-
---- Lua-side handle wrapping a `TileMap` with layers, tile data, collision, viewports, auto-tiling, and tile callbacks.
+--- Lua-side handle wrapping a `TileMap` with layers, tile data, viewports, auto-tiling, and render command output.
 ---@class LTileMap
 LTileMap = {}
 
---- Lua-side handle wrapping a `TileSet` for defining tile atlases, animations, solidity, and auto-tile rules.
+--- Creates a catalog that resolves typed references across named tilesets.
+---@class LTileCatalog
+LTileCatalog = {}
+
+--- Creates a native tileset from atlas dimensions.
 ---@class LTileSet
 LTileSet = {}
 
@@ -3022,6 +3018,10 @@ LPanel = {}
 ---@class LProgressBar : LUiWidget
 LProgressBar = {}
 
+--- Adds property-widget-specific methods to an inspector widget.
+---@class LPropertyWidget : LUiWidget
+LPropertyWidget = {}
+
 --- Adds radio-button-specific methods to a radio button widget table.
 ---@class LRadioButton : LUiWidget
 LRadioButton = {}
@@ -3050,6 +3050,10 @@ LSpinBox = {}
 ---@class LSplitPanel : LUiWidget
 LSplitPanel = {}
 
+--- Adds stack-container-specific methods to stack and tab container widget tables.
+---@class LStackContainer : LUiWidget
+LStackContainer = {}
+
 --- Adds status-bar-specific methods to a status bar widget table.
 ---@class LStatusBar : LUiWidget
 LStatusBar = {}
@@ -3061,6 +3065,10 @@ LSwitch = {}
 --- Adds tab-bar-specific methods to a tab bar widget table.
 ---@class LTabBar : LUiWidget
 LTabBar = {}
+
+--- Adds tab-container-specific methods to tab container widget tables.
+---@class LTabContainer : LUiWidget
+LTabContainer = {}
 
 --- Adds text-input-specific methods to a text input widget table.
 ---@class LTextInput : LUiWidget
@@ -3093,18 +3101,6 @@ LUiWidget = {}
 --- Lua userdata that runs schema and constraint validation on data tables and files.
 ---@class LValidationEngine
 LValidationEngine = {}
-
---- Lua-side wrapper for a tile-grid recursive-shadowcasting FOV.
----@class LFov
-LFov = {}
-
---- Lua-side wrapper for per-player tile visibility/action masks.
----@class LTileVisibility
-LTileVisibility = {}
-
---- Lua-side wrapper for a visibility grid instance.
----@class LVisibilityGrid
-LVisibilityGrid = {}
 
 --- Registers a named agent in the system.
 ---@param name string Unique agent name used for routing.
@@ -3882,6 +3878,13 @@ function LBehaviorTree:typeOf(name) end
 ---@param tag string Tag name to insert into the agent tag set.
 function LBot:addTag(tag) end
 
+--- Adds a temporary or permanent modifier to one trait on this agent.
+---@param trait_name string Trait key affected by the modifier.
+---@param delta number Additive value applied while the modifier is active.
+---@param duration? number Modifier lifetime in seconds, or nil for permanent.
+---@param source string Source label used for later removal.
+function LBot:addTraitModifier(trait_name, delta, duration, source) end
+
 --- Returns a blackboard snapshot for this agent or an empty blackboard when the agent has been removed.
 ---@return LAIBlackboard Blackboard handle initialized from the agent's local blackboard values at call time.
 function LBot:getBlackboard() end
@@ -3911,6 +3914,15 @@ function LBot:getPosition() end
 ---@return number Current priority value.
 function LBot:getPriority() end
 
+--- Returns one effective trait value from this agent's profile.
+---@param name string Trait key to read.
+---@return number Effective trait value, or zero when unset.
+function LBot:getTrait(name) end
+
+--- Returns a snapshot copy of this agent's trait profile when one is assigned.
+---@return LuaValue Trait profile snapshot, or nil when this agent has no profile.
+function LBot:getTraitProfile() end
+
 --- Returns this agent's velocity vector or zero velocity when the agent has been removed.
 ---@return number X and Y velocity in world units per second. (value 1).
 ---@return number X and Y velocity in world units per second. (value 2).
@@ -3920,6 +3932,10 @@ function LBot:getVelocity() end
 ---@param tag string Tag name to check in the agent tag set.
 ---@return boolean True when the tag exists on the agent.
 function LBot:hasTag(tag) end
+
+--- Returns whether this agent currently has an assigned trait profile.
+---@return boolean True when a trait profile exists on the agent.
+function LBot:hasTraitProfile() end
 
 --- Removes a tag string from this agent when the agent still exists in its world.
 ---@param tag string Tag name to remove from the agent tag set.
@@ -3949,6 +3965,15 @@ function LBot:setPosition(x, y) end
 --- Sets this agent's integer priority when the agent still exists in its world.
 ---@param p number Priority value used by game-side AI scheduling or ordering logic.
 function LBot:setPriority(p) end
+
+--- Sets one trait on this agent, creating an empty profile first when needed.
+---@param name string Trait key to create or update.
+---@param value number Base trait value clamped by the engine to `[0, 1]`.
+function LBot:setTrait(name, value) end
+
+--- Copies a trait profile onto this agent so future agent decisions can read commander personality values.
+---@param profile LTraitProfile Trait profile copied into the agent state.
+function LBot:setTraitProfile(profile) end
 
 --- Sets this agent's velocity vector when the agent still exists in its world.
 ---@param x number New X velocity in world units per second.
@@ -4014,6 +4039,33 @@ function LCommandQueue:type() end
 ---@param name string Type name to compare against `CommandQueue` and `Object`.
 ---@return boolean True when the supplied type name matches this handle.
 function LCommandQueue:typeOf(name) end
+
+--- Adds one rule that adjusts a named decision score using one trait.
+---@param trait_name string Trait key read from a profile.
+---@param decision_key string Action or goal key affected by this rule; `*` applies to every key.
+---@param weight number Adjustment strength; negative values reduce the score.
+---@param mode? string `add` or `multiply`; defaults to `add`.
+function LDecisionBiasSet:addRule(trait_name, decision_key, weight, mode) end
+
+--- Returns the number of stored bias rules.
+---@return number Rule count.
+function LDecisionBiasSet:ruleCount() end
+
+--- Scores one decision using a profile and this bias set.
+---@param profile LTraitProfile Profile that supplies trait values.
+---@param decision_key string Decision key to score.
+---@param base_score number Base score before bias rules.
+---@return number Biased score clamped to `[0, 1]`.
+function LDecisionBiasSet:score(profile, decision_key, base_score) end
+
+--- Returns the Lua-visible type name for this decision bias handle.
+---@return string The string `LDecisionBiasSet`.
+function LDecisionBiasSet:type() end
+
+--- Returns whether this decision bias handle matches a supported type name.
+---@param name string Type name to compare against `LDecisionBiasSet` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LDecisionBiasSet:typeOf(name) end
 
 --- Adds an emotion definition with resting value, decay, and visibility threshold.
 ---@param name string Emotion name.
@@ -4392,6 +4444,34 @@ function LStrategyAI:typeOf(name) end
 ---@param scorer_fn function Function called with a goal name and returning a numeric score.
 function LStrategyAI:update(dt, scorer_fn) end
 
+--- Returns the number of registered archetypes.
+---@return number Archetype count.
+function LTraitArchetypes:count() end
+
+--- Creates a trait profile from a registered archetype and optional deterministic variance.
+---@param name string Archetype name to copy.
+---@param variance? number Maximum deterministic trait jitter; defaults to zero.
+---@return LuaValue New trait profile, or nil when the archetype is unknown.
+function LTraitArchetypes:createProfile(name, variance) end
+
+--- Returns registered archetype names.
+---@return table Array of archetype names.
+function LTraitArchetypes:names() end
+
+--- Registers or replaces one named archetype from a table of trait values.
+---@param name string Archetype name.
+---@param traits table Map of trait names to numeric values.
+function LTraitArchetypes:register(name, traits) end
+
+--- Returns the Lua-visible type name for this archetype registry handle.
+---@return string The string `LTraitArchetypes`.
+function LTraitArchetypes:type() end
+
+--- Returns whether this archetype registry handle matches a supported type name.
+---@param name string Type name to compare against `LTraitArchetypes` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LTraitArchetypes:typeOf(name) end
+
 --- Adds a temporary or permanent modifier to a named trait.
 ---@param trait_name string Trait name affected by the modifier.
 ---@param delta number Value added to the trait while the modifier is active.
@@ -4418,9 +4498,20 @@ function LTraitProfile:getBase(name) end
 ---@return boolean True when the trait exists.
 function LTraitProfile:has(name) end
 
+--- Returns this profile's trait names.
+---@return table Array of trait names.
+function LTraitProfile:names() end
+
 --- Removes all trait modifiers that match a source label.
 ---@param source string Source label to remove.
 function LTraitProfile:removeModifiers(source) end
+
+--- Scores one decision by applying a decision bias set to this profile.
+---@param biases LDecisionBiasSet Bias rules to apply.
+---@param decision_key string Action or goal key to score.
+---@param base_score number Base score before bias rules.
+---@return number Biased score clamped to `[0, 1]`.
+function LTraitProfile:scoreDecision(biases, decision_key, base_score) end
 
 --- Sets the base value for a named trait.
 ---@param name string Trait name to create or update.
@@ -4464,6 +4555,12 @@ function LUtilityAI:addConsideration(action_name, name, scorer_fn, curve_arg, p1
 --- Evaluates all actions and returns the winning action name when one is available.
 ---@return LuaValue Winning action name, or nil when no action can be selected.
 function LUtilityAI:evaluate() end
+
+--- Evaluates all actions after applying trait-profile decision bias rules to each action score.
+---@param profile LTraitProfile Trait profile that supplies personality values.
+---@param biases LDecisionBiasSet Bias rules keyed by action name.
+---@return LuaValue Winning action name, or nil when no action can be selected.
+function LUtilityAI:evaluateWithProfile(profile, biases) end
 
 --- Returns the number of actions registered in this utility AI.
 ---@return number Current action count.
@@ -4515,6 +4612,10 @@ lurek.ai.newCommandQueue = function() end
 ---@param callback function Callback invoked when the condition node ticks.
 ---@return LBTNode New condition node handle.
 lurek.ai.newCondition = function(callback) end
+
+--- Creates an empty set of rules that map profile traits onto named decision scores.
+---@return LDecisionBiasSet New decision bias handle.
+lurek.ai.newDecisionBiasSet = function() end
 
 --- Creates an empty dialogue selector for weighted topics and branches.
 ---@return LDialogueAI New dialogue AI handle.
@@ -4594,6 +4695,10 @@ lurek.ai.newStrategyAI = function(update_interval) end
 --- Creates a behavior tree succeeder decorator with an empty sequence child.
 ---@return LBTNode New succeeder node handle.
 lurek.ai.newSucceeder = function() end
+
+--- Creates a trait archetype registry populated with engine-provided commander presets.
+---@return LTraitArchetypes New archetype registry handle.
+lurek.ai.newTraitArchetypes = function() end
 
 --- Creates an empty trait profile with modifier support.
 ---@return LTraitProfile New trait profile handle.
@@ -4845,6 +4950,10 @@ function LAnimation:pollEvents() end
 --- Resumes playback of a paused animation.
 function LAnimation:resume() end
 
+--- Seeks to a frame index in the current clip.
+---@param index number Frame index to make current.
+function LAnimation:seek(index) end
+
 --- Changes the playback mode for an existing clip.
 ---@param name string Clip name to update.
 ---@param mode string Playback mode `forward`, `reverse`, or `pingpong`.
@@ -4931,10 +5040,28 @@ function LBlendLayerSet:typeOf(name) end
 ---@return LAnimationBuildCharacterResult Table containing `animation` and, when states are supplied, `stateMachine` handles.
 lurek.animation.buildCharacter = function(cfg) end
 
+--- Creates an animation from decoded frames returned by `lurek.image.loadAnimated`.
+---@param animated LAnimatedImage Decoded animated image.
+---@param opts? table `{name, fps, loop, mode, play}` clip options.
+---@return LAnimation New animation handle.
+lurek.animation.fromAnimatedImage = function(animated, opts) end
+
 --- Loads an animation from an Aseprite JSON export string.
 ---@param json_str string Raw Aseprite JSON document contents.
 ---@return LuaValue Animation handle when parsing succeeds; raises an error when the JSON cannot be parsed.
 lurek.animation.fromAseprite = function(json_str) end
+
+--- Creates an animation from explicit frame rectangle DTOs.
+---@param frames table Array of `{x, y, w, h}` frame rectangles.
+---@param opts? table `{name, fps, loop, mode, play}` clip options.
+---@return LAnimation New animation handle.
+lurek.animation.fromFrames = function(frames, opts) end
+
+--- Creates an animation from a `LSpriteSheet`, optionally using a named group.
+---@param sheet LSpriteSheet Source sprite sheet.
+---@param opts? table `{group, name, fps, loop, mode, play}` clip options.
+---@return LAnimation New animation handle.
+lurek.animation.fromSpriteSheet = function(sheet, opts) end
 
 --- Creates an empty animation with no frames or clips.
 ---@return LAnimation New animation handle.
@@ -5023,6 +5150,11 @@ lurek.asset.getName = function(handle) end
 ---@return string Path that was passed to `lurek.asset.load`.
 lurek.asset.getPath = function(handle) end
 
+--- Returns the current reload revision for an asset handle.
+---@param handle LAssetHandle Asset handle to inspect.
+---@return number Current revision, or 0 when unloaded.
+lurek.asset.getRevision = function(handle) end
+
 --- Returns an array of all tags for an asset handle.
 ---@param handle LAssetHandle Asset handle to query.
 ---@return table Array of tag strings.
@@ -5051,6 +5183,17 @@ lurek.asset.isLoaded = function(handle) end
 ---@return LAssetHandle Handle that keeps the asset alive in the cache.
 lurek.asset.load = function(path, asset_type, opts) end
 
+--- Loads a TOML asset manifest and registers listed assets without transforming them.
+---@param path string Manifest path.
+---@return table Array of `LAssetHandle` values for loaded entries.
+lurek.asset.loadManifest = function(path) end
+
+--- Registers a callback fired by `lurek.asset.reload(handle)`.
+---@param handle LAssetHandle Asset handle to observe.
+---@param callback function Called as `callback(handle, revision)`.
+---@return nil No value is returned.
+lurek.asset.onReload = function(handle, callback) end
+
 --- Synchronously loads a batch of assets and fires `callback(loaded, total)` after each item.
 ---@param paths table Array of `{path, type}` pairs (or `{path=â€¦, type=â€¦}` tables).
 ---@param callback any Function invoked as `callback(loaded, total)` per item; `callback(nil, nil)` on finish.
@@ -5062,11 +5205,21 @@ lurek.asset.preload = function(paths, callback) end
 ---@return number Current reference count.
 lurek.asset.refcount = function(handle) end
 
+--- Reloads the cached asset metadata/content and increments its revision.
+---@param handle LAssetHandle Asset handle to refresh.
+---@return number New revision.
+lurek.asset.reload = function(handle) end
+
 --- Removes a tag from the tag set of an asset handle.
 ---@param handle LAssetHandle Asset handle to update.
 ---@param tag string Tag string to remove.
 ---@return boolean True when the tag was present and removed.
 lurek.asset.removeTag = function(handle, tag) end
+
+--- Returns a metadata snapshot for an asset handle without transforming the asset data.
+---@param handle LAssetHandle Asset handle to inspect.
+---@return table Snapshot with path, type, refcount, revision, watched, name, group, and tags.
+lurek.asset.resolve = function(handle) end
 
 --- Assigns an asset handle to a named group.
 ---@param handle LAssetHandle Asset handle to update.
@@ -5088,6 +5241,12 @@ lurek.asset.stats = function() end
 ---@param handle LAssetHandle Asset handle to release.
 ---@return nil No value is returned.
 lurek.asset.unload = function(handle) end
+
+--- Marks an asset handle or path as watched for live reload.
+---@param handle_or_path LAssetHandle|string Existing handle or path to register as watched.
+---@param asset_type? string Type used when `handle_or_path` is a path. Defaults to `unknown`.
+---@return LAssetHandle Watched handle.
+lurek.asset.watch = function(handle_or_path, asset_type) end
 
 --- Registers a one-shot callback fired when `beat` is crossed.
 ---@param beat number Beat value threshold.
@@ -5757,9 +5916,6 @@ lurek.audio.beatClockFromSource = function(source, bpm, opts) end
 ---@param source LSource|number Audio source or numeric source ID.
 lurek.audio.clearFilter = function(source) end
 
---- Clears the loaded SoundFont and reverts MIDI synthesis to default.
-lurek.audio.clearMidiSoundFont = function() end
-
 --- Clears any random pitch range previously set on the source.
 ---@param src_ud LSource The audio source to reset.
 lurek.audio.clearRandomPitch = function(src_ud) end
@@ -5925,10 +6081,6 @@ lurek.audio.getVelocity = function(source) end
 ---@return number Current volume multiplier.
 lurek.audio.getVolume = function(source) end
 
---- Returns whether a SoundFont file has been loaded for MIDI synthesis.
----@return boolean True if a SoundFont is loaded.
-lurek.audio.hasMidiSoundFont = function() end
-
 --- Returns whether a source has looping enabled.
 ---@param source LSource|number Audio source or numeric source ID.
 ---@return boolean True if looping is enabled.
@@ -5983,11 +6135,6 @@ lurek.audio.newBus = function(name) end
 ---@param buffersize? number Number of samples per decode chunk; defaults to 2048.
 ---@return LDecoder A streaming decoder with `decode`, `seek`, `rewind`, and `getSampleRate` methods.
 lurek.audio.newDecoder = function(source, buffersize) end
-
---- Creates a new MIDI player instance, optionally loading a file immediately.
----@param path? string Optional relative path to a .mid file to load.
----@return LMidiPlayer A new MIDI player ready for playback.
-lurek.audio.newMidiPlayer = function(path) end
 
 --- Creates a polyphonic sound pool that allows the same audio file to play on multiple simultaneous voices.
 ---@param file_path string Relative path to the audio file shared by all voices in the pool.
@@ -6121,10 +6268,6 @@ lurek.audio.setMasterVolume = function(vol) end
 --- Sets the master peak level for metering purposes.
 ---@param level number Peak level clamped to 0.0-1.0.
 lurek.audio.setMeter = function(level) end
-
---- Sets the SoundFont file used for MIDI synthesis.
----@param path string Relative path to the .sf2 SoundFont file.
-lurek.audio.setMidiSoundFont = function(path) end
 
 --- Globally mutes all audio (pauses all sources without stopping them).
 ---@param muted boolean True to mute, false to unmute all audio.
@@ -6350,6 +6493,266 @@ lurek.automation.update = function(dt) end
 ---@param predicate function Function called each update; true resolves the wait.
 ---@param timeout number Maximum wait duration in seconds.
 lurek.automation.waitUntil = function(predicate, timeout) end
+
+--- Drains and returns all pending visibility events.
+---@return table Array of event tables with `type`, `player_id`, and `region_id` fields.
+function LAwarenessGrid:drainEvents() end
+
+--- Gets the discovery cost for a region.
+---@param region_id number Region index (0-based).
+---@return number Discovery cost value.
+function LAwarenessGrid:getCost(region_id) end
+
+--- Gets the fog intensity for a region from a player's perspective.
+---@param player_id number Player index (0-based).
+---@param region_id number Region index (0-based).
+---@return number Fog intensity from 0.0 (clear) to 1.0 (fully fogged).
+function LAwarenessGrid:getFogIntensity(player_id, region_id) end
+
+--- Gets the visibility state for a player at a region.
+---@param player_id number Player index (0-based).
+---@param region_id number Region index (0-based).
+---@return string "hidden", "discovered", "visible", or a number for custom levels.
+function LAwarenessGrid:getState(player_id, region_id) end
+
+--- Checks if a visibility flag bit is set on a region.
+---@param region_id number Region index (0-based).
+---@param bit number Flag bit index (0-63).
+---@return boolean Whether the bit is set.
+function LAwarenessGrid:hasFlag(region_id, bit) end
+
+--- Hides a region for a player (moves from Visible to Discovered).
+---@param player_id number Player index (0-based).
+---@param region_id number Region index (0-based).
+function LAwarenessGrid:hide(player_id, region_id) end
+
+--- Returns the total number of players in the grid.
+---@return number Player count.
+function LAwarenessGrid:playerCount() end
+
+--- Returns the total number of regions in the grid.
+---@return number Region count.
+function LAwarenessGrid:regionCount() end
+
+--- Resets all visibility to Hidden for a player.
+---@param player_id number Player index (0-based).
+function LAwarenessGrid:reset(player_id) end
+
+--- Reveals a region for a player (and their allies). Optional flags argument.
+---@param player_id number Player index (0-based).
+---@param region_id number Region index (0-based).
+---@param flags? number Optional bitfield flags to set on the region.
+function LAwarenessGrid:reveal(player_id, region_id, flags) end
+
+--- Reveals all regions for a player (debug/cheat).
+---@param player_id number Player index (0-based).
+function LAwarenessGrid:revealAll(player_id) end
+
+--- Sets the discovery cost for a region.
+---@param region_id number Region index (0-based).
+---@param cost number Discovery cost value.
+function LAwarenessGrid:setCost(region_id, cost) end
+
+--- Sets a visibility flag bit on a region.
+---@param region_id number Region index (0-based).
+---@param bit number Flag bit index (0-63).
+---@param value boolean Whether to set or clear the bit.
+function LAwarenessGrid:setFlag(region_id, bit, value) end
+
+--- Sets an alliance group for a list of players (shared visibility).
+---@param players table Array of player IDs (0-based) to group together.
+---@return number The assigned group ID.
+function LAwarenessGrid:setGroup(players) end
+
+--- Checks if two players share visibility (same alliance group or same player).
+---@param player_a number First player index (0-based).
+---@param player_b number Second player index (0-based).
+---@return boolean Whether they share visibility.
+function LAwarenessGrid:sharesVisibility(player_a, player_b) end
+
+--- Runs recursive shadowcasting from the observer position.
+---@param ox number Observer column (one-based).
+---@param oy number Observer row (one-based).
+function LFov:compute(ox, oy) end
+
+--- Calls `fn(x, y)` for every currently visible cell (one-based coordinates).
+---@param fn function Callback receiving column and row integers.
+function LFov:eachVisible(fn) end
+
+--- Serialises the visible and explored masks to a binary blob.
+---@return string Binary blob.
+function LFov:export() end
+
+--- Restores visible and explored masks from a blob produced by `export`.
+---@param blob string Binary blob.
+function LFov:import(blob) end
+
+--- Returns true if the cell has ever been visible.
+---@param x number Column (one-based).
+---@param y number Row (one-based).
+---@return boolean True when explored.
+function LFov:isExplored(x, y) end
+
+--- Returns true if the cell is visible in the current frame.
+---@param x number Column (one-based).
+---@param y number Row (one-based).
+---@return boolean True when visible.
+function LFov:isVisible(x, y) end
+
+--- Clears the explored mask so all cells appear unexplored.
+function LFov:resetExplored() end
+
+--- Sets the Lua predicate that determines which cells are opaque.
+---@param fn function `fn(x: integer, y: integer) -> boolean` (one-based).
+function LFov:setBlocker(fn) end
+
+--- Changes the visibility radius for subsequent compute calls.
+---@param range number Maximum sight radius in cells.
+function LFov:setRange(range) end
+
+--- Returns the Lua-visible type name for this FOV handle.
+---@return string The string `LFov`.
+function LFov:type() end
+
+--- Returns whether this FOV handle matches the given type name.
+---@param name string Type name to check.
+---@return boolean True when the name matches.
+function LFov:typeOf(name) end
+
+--- Returns an array of `{x, y}` tables for all currently visible cells (one-based).
+---@return table Array of cell position tables.
+function LFov:visibleCells() end
+
+--- Returns all currently actionable cells for a player, optionally filtered to a level.
+---@param player string Player identifier to query.
+---@param z? number Optional one-based level filter.
+---@return table Array of one-based actionable cell tables.
+function LTileAwareness:actionCells(player, z) end
+
+--- Returns whether a one-based cell is currently actionable for a player.
+---@param player string Player identifier to query.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@return boolean True when the cell is currently actionable.
+function LTileAwareness:canActOn(player, x, y, z) end
+
+--- Clears current, explored, and action masks for all players.
+function LTileAwareness:clearAll() end
+
+--- Clears current, explored, and action masks for one player.
+---@param player string Player identifier whose visibility state should be cleared.
+function LTileAwareness:clearPlayer(player) end
+
+--- Clears all directed awareness share edges.
+function LTileAwareness:clearShares() end
+
+--- Computes one player's current action mask from a tilefield origin.
+---@param player string Player identifier whose action mask should be computed.
+---@param opts table Options table with origin, range, and optional action channel.
+function LTileAwareness:computeAction(player, opts) end
+
+--- Computes one player's current visible mask from a tilefield origin.
+---@param player string Player identifier whose visibility mask should be computed.
+---@param opts table Options table with origin, range, category, mode, arc, facing, and blockerCategory.
+function LTileAwareness:computeVisible(player, opts) end
+
+--- Defines or replaces one awareness category.
+---@param name any
+---@param opts? any
+function LTileAwareness:defineCategory(name, opts) end
+
+--- Returns known awareness category names.
+---@return table Array of registered awareness category names.
+function LTileAwareness:getCategories() end
+
+--- Returns awareness category metadata.
+---@param name string Category name to inspect.
+---@return table? Category metadata table, or nil when the category is unknown.
+function LTileAwareness:getCategory(name) end
+
+--- Returns whether a one-based cell is visible for a specific awareness category.
+---@param player any
+---@param category any
+---@param x any
+---@param y any
+---@param z? any
+function LTileAwareness:isAware(player, category, x, y, z) end
+
+--- Returns whether a one-based cell has been explored for a player.
+---@param player string Player identifier to query.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@return boolean True when the cell has been explored.
+function LTileAwareness:isExplored(player, x, y, z) end
+
+--- Returns whether a one-based cell is currently visible for a player.
+---@param player string Player identifier to query.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@return boolean True when the cell is currently visible.
+function LTileAwareness:isVisible(player, x, y, z) end
+
+--- Creates directed share edges between all listed players for selected categories.
+---@param players any
+---@param categories? any
+function LTileAwareness:setTeam(players, categories) end
+
+--- Adds a directed awareness share edge for one category.
+---@param from any
+---@param to any
+---@param category any
+---@param opts? any
+function LTileAwareness:share(from, to, category, opts) end
+
+--- Returns the Lua-visible type name for this tile visibility handle.
+---@return string The string `LTileAwareness`.
+function LTileAwareness:type() end
+
+--- Returns whether this handle matches a supported type name.
+---@param name string Type name to compare against this handle.
+---@return boolean True for `LTileAwareness` or `LObject`.
+function LTileAwareness:typeOf(name) end
+
+--- Returns all currently visible cells for a player, optionally filtered to a level.
+---@param player string Player identifier to query.
+---@param z? number Optional one-based level filter.
+---@return table Array of one-based visible cell tables.
+function LTileAwareness:visibleCells(player, z) end
+
+--- Returns whether two tilefield cells have a clear action line.
+---@param field LTileField Tilefield to query.
+---@param from table One-based `{x,y,z?}` start.
+---@param to table One-based `{x,y,z?}` target.
+---@param opts? table Optional `{category="action"}` or legacy `{channel="action"}`.
+---@return boolean True when clear.
+lurek.awareness.lineOfAction = function(field, from, to, opts) end
+
+--- Returns whether two tilefield cells have a clear sight line.
+---@param field LTileField Tilefield to query.
+---@param from table One-based `{x,y,z?}` start.
+---@param to table One-based `{x,y,z?}` target.
+---@param opts? table Optional `{category="sight"}` or legacy `{channel="vision"}`.
+---@return boolean True when clear.
+lurek.awareness.lineOfSight = function(field, from, to, opts) end
+
+--- Create a new visibility grid for shadow-cast computation.
+---@param config table Configuration table with `regions` (integer) and `players` (integer) fields. Optional `fog` sub-table with `discovered` (number), `hidden` (number), `smooth` (boolean), `speed` (number).
+---@return LAwarenessGrid New visibility grid handle.
+lurek.awareness.new = function(config) end
+
+--- Creates a new tile-grid shadowcasting FOV for roguelike and stealth games.
+---@param opts table `{ range=integer, light_walls=boolean? }` (default light_walls=true).
+---@return LFov New FOV handle ready for blocker assignment and compute calls.
+lurek.awareness.newFov = function(opts) end
+
+--- Creates per-player tile visibility/action masks backed by a tilefield.
+---@param field LTileField Source tilefield.
+---@param opts table `{players={...}, rememberExplored=true?}`.
+---@return LTileAwareness New tile visibility handle.
+lurek.awareness.newTileAwareness = function(field, opts) end
 
 --- Returns a deep copy of the entire byte buffer.
 ---@return LByteData New LByteData userdata containing copied bytes.
@@ -7156,8 +7559,8 @@ lurek.camera.newCamera = function(vw, vh) end
 lurek.camera.newRig = function() end
 
 --- Creates a tile-grid walker with smooth camera following.
----@param map LTileMap Tilemap for collision detection.
----@param opts? table Options table with keys: layer (default 1), tile_w, tile_h, body_w, body_h, speed, x, y, camera (optional custom camera).
+---@param map LTileMap Tilemap for tile/world coordinate conversion.
+---@param opts? table Options table with keys: layer (retained for compatibility), tile_w, tile_h, body_w, body_h, speed, x, y, camera (optional custom camera).
 ---@return LCameraWalker New walker handle.
 lurek.camera.newWalker = function(map, opts) end
 
@@ -7354,15 +7757,15 @@ function LBarChart:type() end
 function LBarChart:typeOf(name) end
 
 --- Adds or replaces a named distribution sample series.
----@param name any
----@param values any
----@param color? any
+---@param name string Distribution series name.
+---@param values table Numeric sample values for the distribution.
+---@param color? table Optional RGBA color table for the series.
 function LBoxPlotChart:addSeries(name, values, color) end
 
 --- Appends one numeric sample to a named distribution.
----@param name any
----@param value any
----@param color? any
+---@param name string Distribution series name.
+---@param value number Numeric sample value to append.
+---@param color? table Optional RGBA color table for a new series.
 function LBoxPlotChart:appendValue(name, value, color) end
 
 --- Clears all chart data and cached chart state.
@@ -7414,17 +7817,17 @@ function LBoxPlotChart:type() end
 function LBoxPlotChart:typeOf(name) end
 
 --- Adds or replaces a weighted point series from `{x, y, size}` rows.
----@param name any
----@param data any
----@param color? any
+---@param name string Bubble series name.
+---@param data table Array-style table of `{x, y, size}` rows.
+---@param color? table Optional RGBA color table for the series.
 function LBubbleChart:addSeries(name, data, color) end
 
 --- Appends one weighted point to a named bubble series.
----@param name any
----@param x any
----@param y any
----@param size any
----@param color? any
+---@param name string Bubble series name.
+---@param x number X value for the point.
+---@param y number Y value for the point.
+---@param size number Relative bubble size value.
+---@param color? table Optional RGBA color table for a new series.
 function LBubbleChart:appendPoint(name, x, y, size, color) end
 
 --- Clears all chart data and cached chart state.
@@ -7459,8 +7862,8 @@ function LBubbleChart:render() end
 function LBubbleChart:renderImage() end
 
 --- Sets the minimum and maximum bubble radius in pixels.
----@param min any
----@param max any
+---@param min number Minimum bubble radius in pixels.
+---@param max number Maximum bubble radius in pixels.
 function LBubbleChart:setRadiusRange(min, max) end
 
 --- Controls whether the chart legend is rendered.
@@ -7481,11 +7884,11 @@ function LBubbleChart:type() end
 function LBubbleChart:typeOf(name) end
 
 --- Appends one labeled OHLC candle to the end of the current candlestick stream.
----@param label any
----@param open any
----@param high any
----@param low any
----@param close any
+---@param label string Label for the candle, usually a time or category.
+---@param open number Opening value for the candle.
+---@param high number Highest value for the candle.
+---@param low number Lowest value for the candle.
+---@param close number Closing value for the candle.
 function LCandlestickChart:appendCandle(label, open, high, low, close) end
 
 --- Clears all chart data and cached chart state.
@@ -7520,12 +7923,12 @@ function LCandlestickChart:render() end
 function LCandlestickChart:renderImage() end
 
 --- Replaces all OHLC candles from table rows with open/high/low/close fields or values 1..4.
----@param candles any
+---@param candles table Array-style table containing OHLC candle rows.
 function LCandlestickChart:setCandles(candles) end
 
---- Sets up/down candle colors.
----@param up any
----@param down any
+--- Sets the rising and falling candle colors used by the candlestick renderer.
+---@param up table RGBA color table for rising candles.
+---@param down table RGBA color table for falling candles.
 function LCandlestickChart:setColors(up, down) end
 
 --- Controls whether the chart legend is rendered.
@@ -7946,9 +8349,9 @@ function LPieChart:type() end
 function LPieChart:typeOf(name) end
 
 --- Adds or replaces a named radar series.
----@param name any
----@param values any
----@param color? any
+---@param name string Radar series name.
+---@param values table Numeric values matching the configured axes.
+---@param color? table Optional RGBA color table for the series.
 function LRadarChart:addSeries(name, values, color) end
 
 --- Clears all chart data and cached chart state.
@@ -7985,12 +8388,12 @@ function LRadarChart:render() end
 --- Renders the chart into a new LImage userdata.
 function LRadarChart:renderImage() end
 
---- Replaces radar axis labels.
----@param axes any
+--- Replaces the radar axis labels used for each radial spoke.
+---@param axes table Array-style table of axis label strings.
 function LRadarChart:setAxes(axes) end
 
 --- Sets the explicit maximum radial value.
----@param value any
+---@param value number Maximum value used to scale radar series.
 function LRadarChart:setMaxValue(value) end
 
 --- Controls whether the chart legend is rendered.
@@ -8130,10 +8533,10 @@ function LScatterPlot:type() end
 ---@return boolean True when the supplied type name matches this chart userdata.
 function LScatterPlot:typeOf(name) end
 
---- Adds one weighted treemap item.
----@param label any
----@param value any
----@param color? any
+--- Adds one weighted treemap item to the current rectangle layout.
+---@param label string Label to display for the treemap item.
+---@param value number Positive weight value used for layout area.
+---@param color? table Optional RGBA color table for this item.
 function LTreemapChart:addItem(label, value, color) end
 
 --- Clears all chart data and cached chart state.
@@ -8168,7 +8571,7 @@ function LTreemapChart:render() end
 function LTreemapChart:renderImage() end
 
 --- Replaces weighted treemap items from label/value rows or fields.
----@param items any
+---@param items table Array-style table of weighted treemap item rows.
 function LTreemapChart:setItems(items) end
 
 --- Controls whether the chart legend is rendered.
@@ -11358,6 +11761,11 @@ function LUniverse:addTag(id, tag) end
 ---@param snapshot table Snapshot table previously produced by `snapshot` or `serialize`.
 function LUniverse:applySnapshot(snapshot) end
 
+--- Attaches an existing ECS object table to an entity as the `object` component.
+---@param entityId number Entity id that receives the object.
+---@param obj table Object table returned by `lurek.ecs.newObject`.
+function LUniverse:attachObject(entityId, obj) end
+
 --- Adds a bitmap tag to an entity, defining the tag if needed.
 ---@param id number Entity id to tag.
 ---@param name string Bitmap tag name.
@@ -11657,6 +12065,12 @@ function LUniverse:spawnBlueprint(name, overrides) end
 ---@return number[] Array table of spawned entity ids.
 function LUniverse:spawnBulk(name, count, overrides) end
 
+--- Creates an ECS object instance from a registered class and attaches it to a new entity.
+---@param className string Registered ECS class name.
+---@param props? table Optional property overrides copied onto the new object.
+---@return number Entity id that received the object component.
+function LUniverse:spawnObject(className, props) end
+
 --- Returns and clears accumulated ECS snapshot diff data.
 ---@return LUniverseTakeSnapshotDiffResult Diff table with added_components, removed_components, deleted_entities, and dirty_entities arrays.
 function LUniverse:takeSnapshotDiff() end
@@ -11679,6 +12093,60 @@ function LUniverse:update(dt) end
 ---@param dt number Frame delta time in seconds.
 function LUniverse:updatePhase(phase, dt) end
 
+--- Returns all global ECS class names in deterministic order.
+---@return string[] Registered class names.
+lurek.ecs.classNames = function() end
+
+--- Removes every global ECS class definition.
+lurek.ecs.clearClasses = function() end
+
+--- Removes every live ECS object while keeping class definitions.
+lurek.ecs.clearObjects = function() end
+
+--- Defines or replaces a global ECS class for Lua object instances.
+---@param name string Class name used by `newObject` and `LUniverse:spawnObject`.
+---@param def table Class definition with optional extends, defaults, methods, properties, constructor, and tags.
+lurek.ecs.defineClass = function(name, def) end
+
+--- Removes a live ECS object from the global object registry.
+---@param id number Object id to destroy.
+---@return boolean True when an object was removed.
+lurek.ecs.destroyObject = function(id) end
+
+--- Returns metadata for a global ECS class.
+---@param name string Class name to inspect.
+---@return table Metadata table with name, extends, and tags; nil when unknown.
+lurek.ecs.getClass = function(name) end
+
+--- Returns a live ECS object table by object id.
+---@param id number Object id returned in the object's `__id` field.
+---@return table Object table, or nil when not found.
+lurek.ecs.getObject = function(id) end
+
+---@param this any
+---@param name any
+lurek.ecs.getProperty = function(this, name) end
+
+--- Returns whether a global ECS class name is defined.
+---@param name string Class name to check.
+---@return boolean True when the class exists.
+lurek.ecs.hasClass = function(name) end
+
+--- Returns whether a live ECS object id exists.
+---@param id number Object id to check.
+---@return boolean True when the object id is live.
+lurek.ecs.hasObject = function(id) end
+
+---@param this any
+---@param candidate any
+lurek.ecs.isA = function(this, candidate) end
+
+--- Creates a Lua table object from a registered ECS class.
+---@param className string Registered class name.
+---@param props? table Optional property overrides.
+---@return table Object table with type, typeOf, isA, getProperty, and setProperty methods.
+lurek.ecs.newObject = function(className, props) end
+
 --- Creates a relationship manager for tracking numeric values and named levels between entity pairs.
 ---@return LRelationshipManager New relationship manager handle owned by `lurek.ecs`.
 lurek.ecs.newRelationshipManager = function() end
@@ -11686,6 +12154,22 @@ lurek.ecs.newRelationshipManager = function() end
 --- Creates an empty ECS universe for entity, component, system, and relationship management.
 ---@return LUniverse New universe handle.
 lurek.ecs.newUniverse = function() end
+
+--- Returns all live ECS object ids in ascending order.
+---@return number[] Object ids.
+lurek.ecs.objectIds = function() end
+
+---@param this any
+---@param name any
+---@param value any
+lurek.ecs.setProperty = function(this, name, value) end
+
+---@param this any
+lurek.ecs.type = function(this) end
+
+---@param this any
+---@param candidate any
+lurek.ecs.typeOf = function(this, candidate) end
 
 --- Appends a built-in post-effect by type name to this image effect chain.
 ---@param name string Built-in effect type name.
@@ -11957,10 +12441,10 @@ lurek.effect.getPresetNames = function() end
 ---@return boolean True when shader error display is enabled.
 lurek.effect.getShaderErrorDisplay = function() end
 
---- Creates a custom post-processing effect that references an existing shader id.
----@param shader_id number Renderer shader identifier used for the custom effect.
+--- Creates a custom post-processing effect from a postfx-target shader.
+---@param shader LShader|number Postfx-target shader handle or legacy shader id.
 ---@return LPostFxEffect New custom post-processing effect handle.
-lurek.effect.newCustomEffect = function(shader_id) end
+lurek.effect.newCustomEffect = function(shader) end
 
 --- Creates a built-in post-processing effect by type name.
 ---@param type_name string Built-in effect type name such as `blur`, `bloom`, or `crt`.
@@ -11973,10 +12457,10 @@ lurek.effect.newEffect = function(type_name) end
 ---@return LImageEffect New image effect chain handle.
 lurek.effect.newImageEffect = function(spec, params) end
 
---- Creates a custom post-processing pass from an existing shader id.
----@param shader_id number Renderer shader identifier used for the pass.
+--- Creates a custom post-processing pass from a postfx-target shader.
+---@param shader LShader|number Postfx-target shader handle or legacy shader id.
 ---@return LPostFxEffect New custom post-processing effect handle.
-lurek.effect.newPass = function(shader_id) end
+lurek.effect.newPass = function(shader) end
 
 --- Creates a named preset post-processing stack with optional dimensions.
 ---@param name string Preset stack name.
@@ -12246,33 +12730,6 @@ function LFileHandle:typeOf(name) end
 --- Writes a string to this file handle.
 ---@param data string Text bytes to write.
 function LFileHandle:write(data) end
-
---- Returns whether a virtual path exists in the ZIP mount.
----@param virtual_path string Path inside the mount prefix.
----@return boolean True when the file exists in the archive.
-function LZipMount:contains(virtual_path) end
-
---- Returns every virtual file path in the ZIP mount.
----@return string[] Mounted file paths.
-function LZipMount:listFiles() end
-
---- Returns the virtual prefix used by this ZIP mount.
----@return string Mount prefix.
-function LZipMount:prefix() end
-
---- Reads a file from the ZIP mount by virtual path.
----@param virtual_path string Path inside the mount prefix.
----@return string Raw file bytes as a Lua string.
-function LZipMount:readFile(virtual_path) end
-
---- Returns the Lua-visible type name for this ZIP mount handle.
----@return string The string `LZipMount`.
-function LZipMount:type() end
-
---- Returns whether this ZIP mount handle matches a supported type name.
----@param name string Type name to compare against `LZipMount` and `Object`.
----@return boolean True when the supplied type name matches this handle.
-function LZipMount:typeOf(name) end
 
 --- Appends UTF-8 text to a GameFS file.
 ---@param path string GameFS path to append to.
@@ -13252,9 +13709,14 @@ function LGlobe:addMarker(mtype, lat, lon, label) end
 function LGlobe:addProvince(p) end
 
 --- Adds a region described by id, centroid, polygon vertices or multipart geometry, neighbors, and optional base color.
----@param p table Region table with `id`, optional `centroid`, either `vertices` or `parts`, optional `neighbors`, and optional `base_color`.
+---@param p table Region table with `id`, optional `centroid`, `vertices` or `parts`, optional `members`, optional `neighbors`, optional `attrs`, and optional `base_color`.
 ---@return boolean True when the region was accepted by the globe.
 function LGlobe:addRegion(p) end
+
+--- Adds a base terrain polygon patch described by id, centroid, polygon vertices or multipart geometry, optional attrs, and optional base color.
+---@param p table Terrain patch table with `id`, optional `centroid`, either `vertices` or `parts`, optional `attrs`, and optional `base_color`.
+---@return boolean True when the terrain patch was accepted by the globe.
+function LGlobe:addTerrainPatch(p) end
 
 --- Applies a pointer drag to the globe camera using screen-space deltas.
 ---@param start_x number Drag start x.
@@ -13277,6 +13739,11 @@ function LGlobe:cacheReachability(faction, start_id, max_cost) end
 ---@param id number Province id.
 ---@return boolean True when the province exists.
 function LGlobe:clearProvinceTexture(id) end
+
+--- Removes texture metadata from a terrain patch.
+---@param id number Terrain patch id.
+---@return boolean True when the terrain patch exists.
+function LGlobe:clearTerrainPatchTexture(id) end
 
 --- Loads one viewer's fog state from a base64 string.
 ---@param viewer string Viewer name.
@@ -13379,6 +13846,16 @@ function LGlobe:getRegionAttr(id, key) end
 ---@param sector string Sector name.
 ---@return number[] Array table of province ids.
 function LGlobe:getSectorProvinces(sector) end
+
+--- Returns the mapviz-target shader bound to this globe, if any.
+---@return LShader? Bound shader handle, or nil.
+function LGlobe:getShader() end
+
+--- Reads a string attribute from a terrain patch.
+---@param id number Terrain patch id.
+---@param key string Attribute key.
+---@return string Attribute string, or nil when the patch or key is missing.
+function LGlobe:getTerrainPatchAttr(id, key) end
 
 --- Returns globe time of day. This method is available to Lua scripts.
 ---@return number Time of day in hours.
@@ -13508,6 +13985,11 @@ function LGlobe:removeProvince(id) end
 ---@param id number Region id to remove.
 ---@return boolean True when a region was removed.
 function LGlobe:removeRegion(id) end
+
+--- Removes a terrain patch by id.
+---@param id number Terrain patch id to remove.
+---@return boolean True when a terrain patch was removed.
+function LGlobe:removeTerrainPatch(id) end
 
 --- Reveals every province for one fog-of-war viewer.
 ---@param viewer string Viewer name.
@@ -13691,13 +14173,53 @@ function LGlobe:setProvinceTexture(id, tex_raw, u0, v0, u1, v1) end
 ---@return boolean True when the region exists.
 function LGlobe:setRegionAttr(id, key, val) end
 
+--- Sets the RGBA color used to render a semantic region overlay.
+---@param id number Region id.
+---@param r number Red channel.
+---@param g number Green channel.
+---@param b number Blue channel.
+---@param a number Alpha channel.
+---@return boolean True when the semantic region exists.
+function LGlobe:setRegionColor(id, r, g, b, a) end
+
+--- Shows or hides a semantic region overlay and its picking participation.
+---@param id number Region id.
+---@param visible boolean New visibility flag.
+---@return boolean True when the semantic region exists.
+function LGlobe:setRegionVisible(id, visible) end
+
 --- Sets globe rotation angle. This method is available to Lua scripts.
 ---@param deg number Rotation in degrees.
 function LGlobe:setRotation(deg) end
 
+--- Binds a mapviz-target shader to this globe's generated render commands. Pass nil to clear.
+---@param shader? LShader Shader created with `lurek.render.newShader(code, { target = "mapviz" })`, or nil to clear.
+function LGlobe:setShader(shader) end
+
+--- Sets a string attribute on a terrain patch.
+---@param id number Terrain patch id.
+---@param key string Attribute key.
+---@param val string Attribute value.
+---@return boolean True when the terrain patch exists.
+function LGlobe:setTerrainPatchAttr(id, key, val) end
+
+--- Assigns a raw texture handle and UV rectangle to a terrain patch.
+---@param id number Terrain patch id.
+---@param tex_raw number Raw texture identifier stored in terrain attributes.
+---@param u0 number Left UV coordinate.
+---@param v0 number Top UV coordinate.
+---@param u1 number Right UV coordinate.
+---@param v1 number Bottom UV coordinate.
+---@return boolean True when the terrain patch exists.
+function LGlobe:setTerrainPatchTexture(id, tex_raw, u0, v0, u1, v1) end
+
 --- Sets globe time of day modulo 24 hours.
 ---@param t number Time of day in hours.
 function LGlobe:setTimeOfDay(t) end
+
+--- Returns the number of stored base terrain patches.
+---@return number Terrain patch count.
+function LGlobe:terrainPatchCount() end
 
 --- Returns the Lua-visible type name for this globe handle.
 ---@return string The string `LGlobe`.
@@ -13711,6 +14233,11 @@ function LGlobe:typeOf(name) end
 --- Advances globe simulation timers and animated state.
 ---@param dt number Delta time in seconds.
 function LGlobe:update(dt) end
+
+--- Samples terrain coverage over equirectangular latitude-longitude space.
+---@param opts? table Optional `lat_step` and `lon_step` sample spacing in degrees.
+---@return table Coverage report with `ok`, `samples`, `covered_samples`, and `gaps`.
+function LGlobe:validateTerrainCoverage(opts) end
 
 --- Multiplies the globe camera zoom by a factor.
 ---@param factor number Zoom factor.
@@ -14084,6 +14611,37 @@ lurek.i18n.unloadTable = function(locale) end
 ---@return boolean True when the code is valid.
 lurek.i18n.validateLocale = function(locale) end
 
+--- Returns the number of decoded frames.
+---@return number Frame count.
+function LAnimatedImage:frameCount() end
+
+--- Returns a frame duration in milliseconds by one-based index.
+---@param index number One-based frame index.
+---@return number Duration in milliseconds.
+function LAnimatedImage:getDuration(index) end
+
+--- Returns all frame durations in milliseconds.
+---@return table Array of integer durations.
+function LAnimatedImage:getDurations() end
+
+--- Returns a decoded frame by one-based index.
+---@param index number One-based frame index.
+---@return LImageData Decoded frame image.
+function LAnimatedImage:getFrame(index) end
+
+--- Returns all decoded frame images as an array.
+---@return table Array of `LImageData` values.
+function LAnimatedImage:getFrames() end
+
+--- Returns the Lua-visible type name.
+---@return string The string `LAnimatedImage`.
+function LAnimatedImage:type() end
+
+--- Returns whether this handle matches a supported type name.
+---@param name string Type name to compare.
+---@return boolean True when the supplied type name matches.
+function LAnimatedImage:typeOf(name) end
+
 --- Returns compressed image dimensions.
 ---@return number Width in pixels.
 ---@return number Height in pixels.
@@ -14118,9 +14676,31 @@ function LCompressedImageData:typeOf(name) end
 ---@param factor number Alpha multiplier.
 function LImageData:alphaMask(factor) end
 
+--- Applies a named image effect in place, or returns a new image when the effect changes size.
+---@param name string Effect name.
+---@param opts? table Effect options such as `factor`, `amount`, `radius`, `levels`, `region`, or `color`.
+---@return LImageData nil | New image for size-changing effects, otherwise nil.
+function LImageData:applyEffect(name, opts) end
+
+--- Applies a sequence of named effects in order.
+---@param effects table Array of effect names or `{name=..., opts=...}` tables.
+---@param opts? table Default options used by string entries.
+---@return LImageData nil | Last new image returned by a size-changing effect, otherwise nil.
+function LImageData:applyEffects(effects, opts) end
+
+--- Multiplies this image alpha by another image's alpha channel.
+---@param mask LImageData Same-sized alpha mask image.
+function LImageData:applyMask(mask) end
+
 --- Applies a palette lookup table to this image in place.
 ---@param lut_ud LPaletteLUT Palette lookup table handle.
 function LImageData:applyPaletteLut(lut_ud) end
+
+--- Applies an offline image shader and returns the processed image.
+---@param shader LShader Image-target shader.
+---@param opts? table Optional processing options.
+---@return LImageData Processed image.
+function LImageData:applyShader(shader, opts) end
 
 --- Copies a source image into this image at a destination coordinate.
 ---@param src_ud LImageData Source image data handle.
@@ -14137,6 +14717,10 @@ function LImageData:blur(radius) end
 ---@param factor number Brightness multiplier or adjustment factor.
 function LImageData:brightness(factor) end
 
+--- Returns a deep copy of this image data.
+---@return LImageData Copied image data.
+function LImageData:clone() end
+
 --- Applies a contrast factor to this image in place.
 ---@param factor number Contrast factor.
 function LImageData:contrast(factor) end
@@ -14146,6 +14730,14 @@ function LImageData:contrast(factor) end
 ---@param ksize number Kernel width and height.
 ---@return LImageData Convolved image data handle.
 function LImageData:convolve(kernel_t, ksize) end
+
+--- Copies a rectangular region into a new image.
+---@param x number Source x coordinate.
+---@param y number Source y coordinate.
+---@param w number Region width.
+---@param h number Region height.
+---@return LImageData Copied region.
+function LImageData:copyRegion(x, y, w, h) end
 
 --- Returns a cropped image region. This method is available to Lua scripts.
 ---@param x number Source x coordinate.
@@ -14180,22 +14772,6 @@ function LImageData:drawCircle(cx, cy, radius, r, g, b, a) end
 ---@param b number Blue channel.
 ---@param a number Alpha channel.
 function LImageData:drawLine(x0, y0, x1, y1, r, g, b, a) end
-
---- Draws a nine-slice region from a source image into this image.
----@param src_ud LImageData Source image data handle.
----@param src_x number Source region x coordinate.
----@param src_y number Source region y coordinate.
----@param src_w number Source region width.
----@param src_h number Source region height.
----@param dst_x number Destination x coordinate.
----@param dst_y number Destination y coordinate.
----@param dst_w number Destination width.
----@param dst_h number Destination height.
----@param inset_left number Left inset width.
----@param inset_right number Right inset width.
----@param inset_top number Top inset height.
----@param inset_bottom number Bottom inset height.
-function LImageData:drawNineSlice(src_ud, src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w, dst_h, inset_left, inset_right, inset_top, inset_bottom) end
 
 --- Draws a filled rectangle into this image.
 ---@param x number Rectangle x coordinate.
@@ -14348,6 +14924,11 @@ function LImageData:threshold(value) end
 ---@param factor number Tint blend factor.
 function LImageData:tint(tr, tg, tb, factor) end
 
+--- Returns a transformed image, currently supporting high-quality resize through `width`, `height`, and `filter`.
+---@param opts? table Transform options.
+---@return LImageData Transformed image.
+function LImageData:transform(opts) end
+
 --- Returns the Lua-visible type name for this image data handle.
 ---@return string The string `LImageData`.
 function LImageData:type() end
@@ -14356,6 +14937,18 @@ function LImageData:type() end
 ---@param name string Type name to compare against `LImageData` or `Object`.
 ---@return boolean True when the supplied type name matches.
 function LImageData:typeOf(name) end
+
+--- Cancels this image shader job.
+function LImageShaderJob:cancel() end
+
+--- Returns the shader output image when the job has completed, or nil if pending/cancelled.
+---@return LImageData? Completed image result.
+function LImageShaderJob:poll() end
+
+--- Waits for the offline image shader job and returns its output image.
+---@param timeoutMs? number Optional timeout in milliseconds.
+---@return LImageData? Completed image result.
+function LImageShaderJob:wait(timeoutMs) end
 
 --- Adds a blank layer with an optional name.
 ---@param name? string Optional layer name.
@@ -14556,6 +15149,11 @@ lurek.image.fromScreen = function() end
 ---@return boolean True when the file appears to be DDS compressed data.
 lurek.image.isCompressed = function(filename) end
 
+--- Loads an animated GIF from GameFS path or decodes animated GIF bytes.
+---@param source string GameFS path or raw GIF bytes.
+---@return LAnimatedImage Decoded frames and durations.
+lurek.image.loadAnimated = function(source) end
+
 --- Loads and decodes image data from GameFS.
 ---@param filename string GameFS path to an encoded image.
 ---@return LImageData Loaded image data handle.
@@ -14566,9 +15164,9 @@ lurek.image.loadImage = function(filename) end
 ---@return LLayeredImage Loaded layered image handle.
 lurek.image.loadLayered = function(filename) end
 
---- Loads DDS compressed image data from GameFS.
+--- Attempts to load DDS compressed image data from GameFS.
 ---@param filename string GameFS path to a DDS file.
----@return LCompressedImageData New compressed image data handle.
+---@return LCompressedImageData New compressed image data handle when DDS support is enabled.
 lurek.image.newCompressedData = function(filename) end
 
 --- Creates empty image data from dimensions or decodes image data from a GameFS filename.
@@ -14594,10 +15192,17 @@ lurek.image.newLayeredImage = function(width, height) end
 ---@return LPaletteLUT New palette lookup table handle.
 lurek.image.newPaletteLut = function() end
 
---- Loads a province id grid from an image file under the current game directory.
+--- Loads a province id grid from an image file under the current game directory. This is a compatibility facade over the province subsystem.
 ---@param filename string Province map image filename relative to game directory.
 ---@return LProvinceGrid New province grid handle.
 lurek.image.newProvinceGrid = function(filename) end
+
+--- Starts an offline image shader request and returns a completed job handle.
+---@param image LImageData Source image data.
+---@param shader LShader Image-target shader.
+---@param opts? table Optional job options.
+---@return LImageShaderJob Offline shader job handle.
+lurek.image.requestShader = function(image, shader, opts) end
 
 --- Encodes a sequence of equally sized image frames as an animated GIF.
 ---@param frames table Array of `LImageData` frames in playback order.
@@ -15580,28 +16185,6 @@ function LNeuroevolution:type() end
 ---@return boolean True when the supplied type name matches this handle.
 function LNeuroevolution:typeOf(name) end
 
---- Returns the number of input tensors expected by the model.
----@return number Input tensor count.
-function LOnnxModel:inputCount() end
-
---- Returns the number of output tensors produced by the model.
----@return number Output tensor count.
-function LOnnxModel:outputCount() end
-
---- Runs inference on a table of LTensor inputs and returns a table of LTensor outputs.
----@param inputs table Array-indexed table of LTensor input values.
----@return table Array-indexed table of LTensor output values.
-function LOnnxModel:run(inputs) end
-
---- Returns the type name `"LOnnxModel"`.
----@return string The string `LOnnxModel`.
-function LOnnxModel:type() end
-
---- Returns whether this model handle matches a supported type name.
----@param name string Type name to compare against `LOnnxModel` and `Object`.
----@return boolean True when the supplied type name matches this handle.
-function LOnnxModel:typeOf(name) end
-
 --- Applies sinusoidal positional encoding values to a `[seq_len,d_model]` tensor.
 ---@param input LTensor Input sequence tensor to encode.
 ---@return LTensor Encoded sequence tensor with added positional values.
@@ -15804,11 +16387,6 @@ lurek.learning.defineEnv = function(config) end
 ---@param n number Number of frames to retain.
 ---@return LFrameStack New frame stack handle.
 lurek.learning.frameStack = function(n) end
-
---- Loads and optimises an ONNX model from a file path.
----@param path string Filesystem path to the `.onnx` model file inside the current sandbox root.
----@return LOnnxModel Loaded model handle ready for inference.
-lurek.learning.loadOnnx = function(path) end
 
 --- Creates a multi-armed bandit with a named selection strategy.
 ---@param arm_count number Number of selectable arms.
@@ -16020,6 +16598,10 @@ function LLight:getPosition() end
 ---@return number Radius value.
 function LLight:getRadius() end
 
+--- Returns the custom light shader bound to this light, if any.
+---@return LShader? Bound shader or nil.
+function LLight:getShader() end
+
 --- Returns this light shadow RGBA color.
 ---@return number Red channel.
 ---@return number Green channel.
@@ -16152,6 +16734,10 @@ function LLight:setPosition(x, y) end
 --- Sets this light radius. This method is available to Lua scripts.
 ---@param r number Radius value.
 function LLight:setRadius(r) end
+
+--- Sets or clears the custom light-contribution shader for this light.
+---@param shader? LShader Light-target shader or nil to clear.
+function LLight:setShader(shader) end
 
 --- Sets this light shadow RGBA color. This method is available to Lua scripts.
 ---@param r number Red channel.
@@ -16313,6 +16899,10 @@ lurek.light.getNormalMapHints = function() end
 ---@return number Occluder count.
 lurek.light.getOccluderCount = function() end
 
+--- Returns the default custom light shader for the light world.
+---@return LShader? Bound shader or nil.
+lurek.light.getShader = function() end
+
 --- Returns whether the shared light world is enabled.
 ---@return boolean True when lighting is enabled.
 lurek.light.isEnabled = function() end
@@ -16363,6 +16953,10 @@ lurek.light.setGroupIntensity = function(group_id, intensity) end
 --- Sets the maximum configured light count, clamped to 1 through 256.
 ---@param n number Requested maximum light count.
 lurek.light.setMaxLights = function(n) end
+
+--- Sets or clears the default custom light shader for the light world.
+---@param shader? LShader Light-target shader or nil to clear.
+lurek.light.setShader = function(shader) end
 
 --- Returns the light world's ambient color hint.
 ---@return number Red channel.
@@ -16673,6 +17267,16 @@ function LMapBlockResult:getWidth() end
 --- Check if result is empty for this object.
 ---@return boolean True if no blocks placed.
 function LMapBlockResult:isEmpty() end
+
+--- Converts one mapblock result layer and slot into a shared tilefield ref layer.
+---@param opts? table Options: layer, slot, ref, tilesetRef, topology, skipZero.
+---@return LTileField Tilefield populated from this result.
+function LMapBlockResult:toTileField(opts) end
+
+--- Writes one mapblock result layer and slot into an existing tilefield ref layer.
+---@param field LTileField Target tilefield.
+---@param opts? table Options: layer, slot, ref, tilesetRef, skipZero.
+function LMapBlockResult:writeTileField(field, opts) end
 
 --- Add a block to this group for this object.
 ---@param block LMapBlock Block to add.
@@ -18268,23 +18872,6 @@ lurek.math.vec2 = function(x, y) end
 ---@return LVec3 New vector handle.
 lurek.math.vec3 = function(x, y, z) end
 
---- Unloads the current SoundFont and frees its memory.
-lurek.midi.clearSoundFont = function() end
-
---- Returns whether a SoundFont is currently loaded and ready for synthesis.
----@return boolean True if a SoundFont is loaded.
-lurek.midi.hasSoundFont = function() end
-
---- Loads a SoundFont (SF2) file into the global MIDI state for synthesis.
----@param path string Relative path to the .sf2 file.
----@return boolean True if the SoundFont was loaded successfully.
-lurek.midi.loadSoundFont = function(path) end
-
---- Creates a new MIDI player instance, optionally loading a file immediately.
----@param path? string Optional relative path to a .mid file to load.
----@return LMidiPlayer A new MIDI player ready for playback.
-lurek.midi.newPlayer = function(path) end
-
 --- Adds a world-space marker and returns its unique id.
 ---@param x number Marker x coordinate.
 ---@param y number Marker y coordinate.
@@ -18497,6 +19084,10 @@ function LMinimap:getPathCount() end
 --- Returns the number of active pings.
 ---@return number Ping count.
 function LMinimap:getPingCount() end
+
+--- Returns the currently bound command-render minimap shader, or nil.
+---@return LShader? Bound shader handle.
+function LMinimap:getShader() end
 
 --- Returns terrain type for a one-based grid cell.
 ---@param x number One-based grid x coordinate.
@@ -18721,6 +19312,10 @@ function LMinimap:setObjectTypeVisible(type_idx, visible) end
 ---@param b number Blue channel.
 ---@param a? number Alpha channel, defaults to 1.0.
 function LMinimap:setOwnerColor(owner, r, g, b, a) end
+
+--- Binds or clears a `mapviz` shader for command-rendered minimap visualization.
+---@param shader? LShader Shader created by `lurek.render.newShader(code, { target = "mapviz" })`, or nil to clear.
+function LMinimap:setShader(shader) end
 
 --- Sets terrain type for a one-based grid cell.
 ---@param x number One-based grid x coordinate.
@@ -19211,134 +19806,6 @@ function LNetworkHost:type() end
 ---@return boolean True when the supplied type name matches this handle.
 function LNetworkHost:typeOf(name) end
 
---- Start authenticating with a backend.
----@param auth_url string Authentication URL.
----@param payload string JSON payload.
----@param refresh_url string Refresh URL.
----@return number Request id.
-function LNetworkRuntime:authBootstrap(auth_url, payload, refresh_url) end
-
---- Cancels the currently active authentication request.
-function LNetworkRuntime:authCancel() end
-
---- Returns the current active authentication status.
----@return string Current status ("unauthenticated", "authenticating", "authenticated", "failed").
-function LNetworkRuntime:getAuthStatus() end
-
---- Returns the current active access token.
----@return string Access token, or nil if unauthenticated.
-function LNetworkRuntime:getAuthToken() end
-
---- Returns current network runtime metrics.
----@return table Metrics table with queue_size, reconnect_count, http_active_count, tcp_active_count, ws_active_count.
-function LNetworkRuntime:getMetrics() end
-
---- Starts an HTTP GET request. This method is available to Lua scripts.
----@param url string Request URL.
----@param headers? table Optional headers table.
----@return number Request id.
-function LNetworkRuntime:httpGet(url, headers) end
-
---- Starts an HTTP POST request with a JSON-encoded body and Content-Type application/json.
----@param url string Request URL.
----@param body string JSON string to send as the request body.
----@param headers? table Optional additional headers table.
----@return number Request id.
-function LNetworkRuntime:httpJson(url, body, headers) end
-
---- Starts an HTTP POST request. This method is available to Lua scripts.
----@param url string Request URL.
----@param body string Request body.
----@param headers? table Optional headers table.
----@return number Request id.
-function LNetworkRuntime:httpPost(url, body, headers) end
-
---- Starts an HTTP request from an options table and returns its request id.
----@param opts table Options table with `url`, optional `method`, `headers`, `body`, and `timeout`.
----@return number Request id.
-function LNetworkRuntime:httpRequest(opts) end
-
---- Starts an HTTP GET request intended for Server-Sent Events or streaming responses.
----@param url string Request URL.
----@param headers? table Optional headers table.
----@param timeout_secs? number Optional timeout override in seconds.
----@return number Request id.
-function LNetworkRuntime:httpStream(url, headers, timeout_secs) end
-
---- Cancels a previously started matchmaking request.
----@param id number Request id.
-function LNetworkRuntime:matchmakeCancel(id) end
-
---- Starts a matchmaking request against the backend.
----@param url string Matchmaker URL.
----@param payload string JSON payload.
----@return number Request id.
-function LNetworkRuntime:matchmakeStart(url, payload) end
-
---- Polls runtime responses for HTTP, TCP, and WebSocket operations.
----@return LNetworkRuntimePollResult Array table of response/event tables.
-function LNetworkRuntime:poll() end
-
---- Shuts down the network runtime and cancels pending requests.
-function LNetworkRuntime:shutdown() end
-
---- Closes a TCP connection. This method is available to Lua scripts.
----@param id number Connection id.
-function LNetworkRuntime:tcpClose(id) end
-
---- Opens a TCP connection. This method is available to Lua scripts.
----@param addr string Remote address.
----@return number Connection id.
-function LNetworkRuntime:tcpConnect(addr) end
-
---- Sends bytes over a TCP connection. This method is available to Lua scripts.
----@param id number Connection id.
----@param data string Binary payload string.
-function LNetworkRuntime:tcpSend(id, data) end
-
---- Returns the Lua-visible type name for this network runtime handle.
----@return string The string `LNetworkRuntime`.
-function LNetworkRuntime:type() end
-
---- Returns whether this network runtime handle matches a supported type name.
----@param name string Type name to compare against `LNetworkRuntime` and `Object`.
----@return boolean True when the supplied type name matches this handle.
-function LNetworkRuntime:typeOf(name) end
-
---- Closes a WebSocket connection. This method is available to Lua scripts.
----@param id number Connection id.
-function LNetworkRuntime:wsClose(id) end
-
---- Opens a WebSocket connection. This method is available to Lua scripts.
----@param url string WebSocket URL.
----@return number Connection id.
-function LNetworkRuntime:wsConnect(url) end
-
---- Sends text over a WebSocket connection.
----@param id number Connection id.
----@param data string Text payload.
-function LNetworkRuntime:wsSend(id, data) end
-
---- Signals the background reader thread to stop and closes the stream.
-function LSseStream:close() end
-
---- Returns true if the background reader thread is still connected and reading.
----@return boolean True while the stream is open.
-function LSseStream:isOpen() end
-
---- Polls for the next available event from the SSE stream (non-blocking).
----@return table Event table `{ id?, event?, data }` when available; returns nil when no event is ready.
-function LSseStream:next() end
-
---- Returns the Lua-visible type name for this SSE stream handle.
----@return string The string `LSseStream`.
-function LSseStream:type() end
-
---- Returns whether this SSE stream handle matches a supported type name.
----@param name string Type name to compare against `LSseStream` and `Object`.
----@return boolean True when the supplied type name matches this handle.
-function LSseStream:typeOf(name) end
-
 --- Broadcasts lobby information and returns it as a table.
 ---@param name string Lobby name.
 ---@param port number Lobby port.
@@ -19422,10 +19889,6 @@ lurek.network.newRelayTicket = function(room_id, peer_id) end
 ---@return LNetworkRpc New RPC manager handle.
 lurek.network.newRpc = function(host, channel, timeout_ms) end
 
---- Creates a background network runtime.
----@return LNetworkRuntime New network runtime handle.
-lurek.network.newRuntime = function() end
-
 --- Creates a server host from an options table.
 ---@param opts table Options with required `port`, optional `maxPeers`/`peers`, and `channels`.
 ---@return LNetworkHost New server host handle.
@@ -19478,19 +19941,6 @@ lurek.network.reconcileWithPolicy = function(pred, auth, alpha, soft_threshold, 
 ---@param peer_id number Peer identifier.
 ---@param ready boolean True to mark as ready, false to unmark.
 lurek.network.setReady = function(room_name, peer_id, ready) end
-
---- Blocking helper: collects up to `n` events from a fresh SSE connection or until `timeout_secs` elapses.
----@param url string SSE endpoint URL.
----@param n number Maximum number of events to collect.
----@param timeout_secs? number Optional timeout in seconds; defaults to 5.
----@return table Array of event tables `{ id?, event?, data }`.
-lurek.network.sseCollect = function(url, n, timeout_secs) end
-
---- Opens an SSE stream to `url` and returns an `LSseStream` handle.
----@param url string SSE endpoint URL.
----@param callback function Called with each event table `{ id?, event?, data }`.
----@return LSseStream Stream handle for polling or closing.
-lurek.network.sseConnect = function(url, callback) end
 
 --- Broadcasts a packed entity sync payload through a network host.
 ---@param host_ud LNetworkHost Network host handle.
@@ -19606,8 +20056,17 @@ function LOverlay:getLightningAlpha() end
 function LOverlay:getLightningColor() end
 
 --- Returns the current render responsibility plan for active overlay layers.
----@return table Table with `rendered` and `externally_handled` string arrays.
+---@return table Table with `rendered`, `externally_handled`, and `shader` string arrays.
 function LOverlay:getRenderPlan() end
+
+--- Returns the shader bound to this overlay, if any.
+---@return LShader? Bound shader or nil.
+function LOverlay:getShader() end
+
+--- Returns a shader bound to one overlay layer, if present.
+---@param layer string Layer name.
+---@return LShader? Bound shader or nil.
+function LOverlay:getShaderLayer(layer) end
 
 --- Returns the current screen shake offset.
 ---@return number Current x offset.
@@ -19788,6 +20247,15 @@ function LOverlay:setHeatHazeIntensity(v) end
 ---@param b number Blue channel.
 ---@param a? number Alpha channel, defaulting to 1.0.
 function LOverlay:setLightningColor(r, g, b, a) end
+
+--- Sets or clears the shader used for custom overlay rendering.
+---@param shader? LShader Overlay-target shader or nil to clear.
+function LOverlay:setShader(shader) end
+
+--- Sets or clears an overlay-layer shader binding.
+---@param layer string Layer name such as `heat_haze`, `water`, or `fog`.
+---@param shader? LShader Overlay-target shader or nil to clear.
+function LOverlay:setShaderLayer(layer, shader) end
 
 --- Sets the overlay time-of-day value used by ambient effects.
 ---@param v number Time-of-day value stored on the overlay ambient state.
@@ -19996,6 +20464,10 @@ function LParallaxLayer:getOpacity() end
 ---@return number Y scroll factor.
 function LParallaxLayer:getScrollFactor() end
 
+--- Returns the draw-target shader bound to this parallax layer, if any.
+---@return LShader? Bound shader handle, or nil.
+function LParallaxLayer:getShader() end
+
 --- Returns telemetry for the current runtime camera and viewport.
 ---@return table Parallax layer telemetry fields.
 function LParallaxLayer:getStats() end
@@ -20079,6 +20551,10 @@ function LParallaxLayer:setScale(sx, sy) end
 ---@param x number X scroll factor.
 ---@param y number Y scroll factor.
 function LParallaxLayer:setScrollFactor(x, y) end
+
+--- Binds a draw-target shader to this parallax layer's generated render commands. Pass nil to clear.
+---@param shader? LShader Shader created with `lurek.render.newShader(code, { target = "draw" })`, or nil to clear.
+function LParallaxLayer:setShader(shader) end
 
 --- Sets tile size for tiling for this object.
 ---@param w number Tile width.
@@ -20338,6 +20814,10 @@ function LParticleSystem:getRadialAcceleration() end
 ---@return number Maximum rotation.
 function LParticleSystem:getRotation() end
 
+--- Returns the render-time shader bound to this particle system, if any.
+---@return LShader? Bound shader or nil.
+function LParticleSystem:getShader() end
+
 --- Returns particle shape. This method is available to Lua scripts.
 ---@return string Shape name.
 function LParticleSystem:getShape() end
@@ -20537,6 +21017,15 @@ function LParticleSystem:setRelativeRotation(v) end
 ---@param min number Minimum rotation.
 ---@param max number Maximum rotation.
 function LParticleSystem:setRotation(min, max) end
+
+--- Sets or clears the render-time shader for this particle system.
+---@param shader? LShader Particle-target shader or nil to clear.
+function LParticleSystem:setShader(shader) end
+
+--- Sends a uniform value to the shader bound to this particle system.
+---@param name string Uniform name.
+---@param value number|boolean|table Uniform value.
+function LParticleSystem:setShaderUniform(name, value) end
 
 --- Sets particle shape. This method is available to Lua scripts.
 ---@param shape string Shape name.
@@ -21084,6 +21573,47 @@ function LInfluenceMap:type() end
 ---@return boolean True when the supplied type name matches this handle.
 function LInfluenceMap:typeOf(name) end
 
+--- Finds a path between one-based isometric cells.
+---@param fx number One-based start X coordinate.
+---@param fy number One-based start Y coordinate.
+---@param tx number One-based goal X coordinate.
+---@param ty number One-based goal Y coordinate.
+---@return LIsoGridFindPathResult Array of `{x, y}` cell tables, or nil when no path exists.
+function LIsoGrid:findPath(fx, fy, tx, ty) end
+
+--- Returns movement cost for a one-based isometric grid cell.
+---@param x number One-based cell X coordinate.
+---@param y number One-based cell Y coordinate.
+---@return number Movement cost.
+function LIsoGrid:getCost(x, y) end
+
+--- Returns whether a one-based isometric grid cell is blocked.
+---@param x number One-based cell X coordinate.
+---@param y number One-based cell Y coordinate.
+---@return boolean True when blocked or out of bounds.
+function LIsoGrid:isBlocked(x, y) end
+
+--- Sets blocked state for a one-based isometric grid cell.
+---@param x number One-based cell X coordinate.
+---@param y number One-based cell Y coordinate.
+---@param blocked boolean True to block the cell.
+function LIsoGrid:setBlocked(x, y, blocked) end
+
+--- Sets movement cost for a one-based isometric grid cell.
+---@param x number One-based cell X coordinate.
+---@param y number One-based cell Y coordinate.
+---@param cost number Finite positive movement cost.
+function LIsoGrid:setCost(x, y, cost) end
+
+--- Returns the Lua-visible type name for this isometric grid handle.
+---@return string The string `LIsoGrid`.
+function LIsoGrid:type() end
+
+--- Returns whether this isometric grid handle matches a supported type name.
+---@param name string String value for `name`.
+---@return boolean True when the supplied type name matches this handle.
+function LIsoGrid:typeOf(name) end
+
 --- Finds a JPS path between one-based grid cells.
 ---@param fx number One-based start column.
 ---@param fy number One-based start row.
@@ -21626,6 +22156,36 @@ lurek.pathfind.getAsyncPendingCount = function() end
 ---@return number Thread count (minimum 1).
 lurek.pathfind.getThreadCount = function() end
 
+--- Returns true when a target node is reachable from a start node in an integer-id graph.
+---@param edges table Array of graph edge tables.
+---@param from number Start node id.
+---@param to number Target node id.
+---@param opts? table Options with `directed`.
+---@return boolean True when reachable.
+lurek.pathfind.graphConnected = function(edges, from, to, opts) end
+
+--- Returns connected components for an integer-id graph. Pass `nodes` to include isolated node ids.
+---@param edges table Array of graph edge tables.
+---@param nodes? table Optional array of node ids; omitted nodes are inferred from edge endpoints.
+---@param opts? table Options with `directed`; directed graphs follow outgoing edges.
+---@return table Array of node-id arrays, sorted by first node id.
+lurek.pathfind.graphConnectedComponents = function(edges, nodes, opts) end
+
+--- Finds a route through an integer-id graph. Edges may be `{from,to}`, `{a,b}`, `{province_a,province_b}`, or `{from_id,to_id}` arrays. Options: `directed`, `algorithm` ("bfs"|"dijkstra"), and optional `cost(from, to)`.
+---@param edges table Array of graph edge tables.
+---@param from number Start node id.
+---@param to number Target node id.
+---@param opts? table Options with `directed`, `algorithm`, and `cost` callback; a function may be passed directly as the cost callback.
+---@return number[] Node id route from start to target, or nil when unreachable.
+lurek.pathfind.graphRoute = function(edges, from, to, opts) end
+
+--- Finds routes for a batch of graph `{from, to}` requests using the same edge table and options as `graphRoute`.
+---@param edges table Array of graph edge tables.
+---@param requests table Array of `{from=integer,to=integer}` or `{from,to}` route requests.
+---@param opts? table Options with `directed`, `algorithm`, and `cost` callback; a function may be passed directly as the cost callback.
+---@return table Array of route arrays; unreachable entries are nil.
+lurek.pathfind.graphRoutes = function(edges, requests, opts) end
+
 --- Creates a context steering model with the requested directional slot count.
 ---@param slots number Directional slot count; zero selects the engine default of 16.
 ---@return LContextSteering New context steering handle.
@@ -21649,12 +22209,30 @@ lurek.pathfind.newGoalMap = function(width, height) end
 ---@return LHexGrid New hex grid handle.
 lurek.pathfind.newHexGrid = function(width, height, layout_str) end
 
+--- Creates a hex navigation grid from a hex tilefield level and movement category.
+---@param field_ud LTileField Hex tilefield to derive navigation data from.
+---@param opts? table Options with `level`, `category`, `costCategory`, and `layout` (`"flat"` or `"pointy"`).
+---@return LHexGrid New hex grid handle.
+lurek.pathfind.newHexGridFromField = function(field_ud, opts) end
+
 --- Creates a grid influence map with the supplied cell dimensions and world cell size.
 ---@param w number Map width in cells.
 ---@param h number Map height in cells.
 ---@param cs number World size of one cell.
 ---@return LInfluenceMap New influence map handle.
 lurek.pathfind.newInfluenceMap = function(w, h, cs) end
+
+--- Creates an isometric grid with the given dimensions.
+---@param width number Grid width in cells.
+---@param height number Grid height in cells.
+---@return LIsoGrid New isometric grid handle.
+lurek.pathfind.newIsoGrid = function(width, height) end
+
+--- Creates an isometric navigation grid from an iso-square tilefield level and movement category.
+---@param field_ud LTileField Iso-square tilefield to derive navigation data from.
+---@param opts? table Options with `level`, `category`, and `costCategory`.
+---@return LIsoGrid New isometric grid handle.
+lurek.pathfind.newIsoGridFromField = function(field_ud, opts) end
 
 --- Creates a Jump Point Search grid with given dimensions.
 ---@param width number Grid width in cells.
@@ -21668,11 +22246,16 @@ lurek.pathfind.newJpsGrid = function(width, height) end
 ---@return LNavGrid New navigation grid handle.
 lurek.pathfind.newNavGrid = function(width, height) end
 
---- Creates a navigation grid from a tilefield level and channel.
+--- Creates a navigation grid from a tilefield level and movement category.
 ---@param field_ud LTileField Tilefield to derive navigation grid from.
----@param opts? table Options with `level`, `channel`, `costChannel`, and `diagonalMode`.
+---@param opts? table Options with `level`, `category`, `costCategory`, `footprintWidth`, `footprintHeight`, and `diagonalMode`.
 ---@return LNavGrid New navigation grid handle.
 lurek.pathfind.newNavGridFromField = function(field_ud, opts) end
+
+--- Builds a navigation grid from a Lua provider table with width, height, optional costs/blocked arrays, or getCost/isBlocked callbacks.
+---@param provider table Lua-authored navigation-grid provider.
+---@return LNavGrid New navigation grid copied from provider data.
+lurek.pathfind.newNavGridFromProvider = function(provider) end
 
 --- Creates a navigation grid from a tilemap layer and blocked gid table.
 ---@param tm_ud LTileMap Tilemap to derive navigation grid from.
@@ -21702,6 +22285,11 @@ lurek.pathfind.newPathFlowField = function(grid_ud) end
 ---@return LPathGrid New path grid handle.
 lurek.pathfind.newPathGrid = function(w, h, cell_size) end
 
+--- Builds a path grid from a Lua provider table with width, height, optional cellSize, costs/walkable arrays, or getCost/isWalkable callbacks.
+---@param provider table Lua-authored path-grid provider.
+---@return LPathGrid New path grid copied from provider data.
+lurek.pathfind.newPathGridFromProvider = function(provider) end
+
 --- Creates a unit pathfinder for a navigation grid.
 ---@param grid_ud LNavGrid Navigation grid to pathfind on.
 ---@return LUnitPathfinder New pathfinder handle.
@@ -21720,9 +22308,9 @@ lurek.pathfind.pollAsyncPaths = function() end
 ---@return LPathfindRangeMapResult Range map result with `cells`, `width`, and `height` fields.
 lurek.pathfind.rangeMap = function(opts) end
 
---- Computes reachable cells from a tilefield level and movement channel.
+--- Computes reachable cells from a tilefield level and movement category.
 ---@param field_ud LTileField Tilefield to read.
----@param opts table Options with `origin`, `budget`, optional `level`, `channel`, `costChannel`, and `diagonal`.
+---@param opts table Options with `origin`, `budget`, optional `level`, `category`, `costCategory`, and `diagonal`.
 ---@return table Range map result with `cells`, `width`, `height`, and `level`.
 lurek.pathfind.rangeMapFromField = function(field_ud, opts) end
 
@@ -21898,6 +22486,51 @@ function LDebounce:trigger() end
 ---@param dt number Delta time in seconds since last update.
 ---@return boolean True if the debounce fired this frame.
 function LDebounce:update(dt) end
+
+--- Add a card payload to the bottom of the deck's draw pile.
+---@param card any Card payload stored by the deck.
+---@return number Stable card id for later discard or inspection.
+function LDeck:add(card) end
+
+--- Return the number of cards left in the draw pile.
+---@return number Remaining draw-pile count.
+function LDeck:count() end
+
+--- Move a card into the discard pile by card table or stable id.
+---@param card any Card table returned by the deck, or a stable card id.
+---@return boolean True when the card entered the discard pile.
+function LDeck:discard(card) end
+
+--- Return the number of cards in the discard pile.
+---@return number Discard pile count.
+function LDeck:discardCount() end
+
+--- Draw one or more cards from the top of the draw pile.
+---@param count? number Number of cards to draw; default `1`.
+---@return any Single card when count is omitted or `1`.
+---@return table Array of cards when count is greater than `1`.
+function LDeck:draw(count) end
+
+--- Return true when no cards remain in the draw pile.
+---@return boolean Whether the deck has no drawable cards.
+function LDeck:isEmpty() end
+
+--- Inspect one or more cards from the top without removing them.
+---@param count? number Number of cards to inspect; default `1`.
+---@return any Single card when count is omitted or `1`.
+---@return table Array of cards when count is greater than `1`.
+function LDeck:peek(count) end
+
+--- Restore the draw pile to original insertion order and clear discard.
+function LDeck:reset() end
+
+--- Shuffle the current draw pile with a deterministic optional seed.
+---@param seed? number Optional shuffle seed; omitted uses `1`.
+function LDeck:shuffle(seed) end
+
+--- Return the current draw pile as an array without modifying it.
+---@return table Array of card payloads in draw order.
+function LDeck:toArray() end
 
 --- Remove all listeners subscribed to a specific event name.
 ---@param event string The event name whose listeners will be removed.
@@ -22757,6 +23390,11 @@ lurek.patterns.newCommandStack = function(maxSize) end
 ---@return LDebounce A new debounce instance.
 lurek.patterns.newDebounce = function(wait) end
 
+--- Create a reusable deck/card collection with shuffle, draw, discard, and reset operations.
+---@param cards? table Optional array of initial card payloads.
+---@return LDeck A new deck instance.
+lurek.patterns.newDeck = function(cards) end
+
 --- Create a new publish/subscribe event bus for decoupled communication between game systems.
 ---@param name? string Optional name for debugging.
 ---@return LEventBus A new event bus instance.
@@ -22889,6 +23527,10 @@ function LBody:getAngularDamping() end
 ---@return number Angular velocity in radians per second.
 function LBody:getAngularVelocity() end
 
+--- Returns the single 0..15 collision group for this body, or nil for multi-group masks.
+---@return number? Collision group index, or nil.
+function LBody:getCollisionGroup() end
+
 --- Returns the body's friction coefficient.
 ---@return number Friction value.
 function LBody:getFriction() end
@@ -22987,6 +23629,10 @@ function LBody:setAngularVelocity(omega) end
 ---@param bullet boolean True to enable CCD.
 function LBody:setBullet(bullet) end
 
+--- Assigns the body to one collision group and opens its local mask to the 16 group bits.
+---@param group number Collision group index, 0..15.
+function LBody:setCollisionGroup(group) end
+
 --- Locks or unlocks the body's rotation. Useful for player characters.
 ---@param fixed boolean True to prevent rotation.
 function LBody:setFixedRotation(fixed) end
@@ -23069,6 +23715,14 @@ function LPhysicsShape:getRadius() end
 --- Returns the shape kind as a string: "circle", "rectangle", "polygon", "edge", or "chain".
 ---@return string Shape type name.
 function LPhysicsShape:getType() end
+
+--- Returns the number of local-space vertices for polygon, rectangle, edge, or chain shapes; circles return 0.
+---@return number Vertex count.
+function LPhysicsShape:getVertexCount() end
+
+--- Returns local-space vertices as an array of `{x, y}` tables, or nil for circles.
+---@return table? Vertex table, or nil for circles.
+function LPhysicsShape:getVertices() end
 
 --- Sets the density used when this shape is attached to a body (affects mass calculation).
 ---@param density number Mass density.
@@ -23349,7 +24003,7 @@ function LWorld:getBeginContactEvents() end
 --- Returns the body ID at a specific world point, or nil if no body is there.
 ---@param x number Query point X.
 ---@param y number Query point Y.
----@param filter? table Optional query filter: {layer?, mask?, includeSensors?}.
+---@param filter? table Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}.
 ---@return number Body ID at the point, or nil.
 function LWorld:getBodyAtPoint(x, y, filter) end
 
@@ -23390,6 +24044,17 @@ function LWorld:getBodyType(id) end
 --- Returns all collision events from the last step as a table of {bodyA, bodyB} pairs.
 ---@return LWorldGetCollisionEventsResult Array of collision event tables.
 function LWorld:getCollisionEvents() end
+
+--- Returns one row of the 16-group collision matrix.
+---@param group number Source collision group index, 0..15.
+---@return number Target group bitmask.
+function LWorld:getCollisionGroupMask(group) end
+
+--- Returns whether collisions are enabled between two world-level collision groups.
+---@param groupA number First collision group index, 0..15.
+---@param groupB number Second collision group index, 0..15.
+---@return boolean True when the pair is enabled in both matrix directions.
+function LWorld:getCollisionPair(groupA, groupB) end
 
 --- Returns all currently active contact manifolds with normals and touching state.
 ---@return LWorldGetContactsResult Array of {bodyA, bodyB, normalX, normalY, isTouching} tables.
@@ -23528,7 +24193,7 @@ function LWorld:newPolygonBody(x, y, vertices, bodyType) end
 ---@param y number Query rectangle top Y.
 ---@param w number Query rectangle width.
 ---@param h number Query rectangle height.
----@param filter? table Optional query filter: {layer?, mask?, includeSensors?}.
+---@param filter? table Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}.
 ---@return number[] Body ID numbers found in the region.
 function LWorld:queryAABB(x, y, w, h, filter) end
 
@@ -23537,7 +24202,7 @@ function LWorld:queryAABB(x, y, w, h, filter) end
 ---@param y1 number Ray origin Y.
 ---@param x2 number Ray end X.
 ---@param y2 number Ray end Y.
----@param filter? table Optional query filter: {layer?, mask?, includeSensors?}.
+---@param filter? table Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}.
 ---@return LWorldRaycastResult Hit info {bodyId, x, y, normalX, normalY, toi} or nil if no hit.
 function LWorld:raycast(x1, y1, x2, y2, filter) end
 
@@ -23547,7 +24212,7 @@ function LWorld:raycast(x1, y1, x2, y2, filter) end
 ---@param dx number Ray direction X.
 ---@param dy number Ray direction Y.
 ---@param maxDist number Maximum ray travel distance.
----@param filter? table Optional query filter: {layer?, mask?, includeSensors?}.
+---@param filter? table Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}.
 ---@return LWorldRaycastAllResult Array of hit tables {bodyId, x, y, normalX, normalY, toi}.
 function LWorld:raycastAll(x, y, dx, dy, maxDist, filter) end
 
@@ -23557,7 +24222,7 @@ function LWorld:raycastAll(x, y, dx, dy, maxDist, filter) end
 ---@param dx number Ray direction X (does not need to be normalized).
 ---@param dy number Ray direction Y.
 ---@param maxDist number Maximum ray travel distance.
----@param filter? table Optional query filter: {layer?, mask?, includeSensors?}.
+---@param filter? table Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}.
 ---@return LWorldRaycastClosestResult Hit info {bodyId, x, y, normalX, normalY, toi} or nil if no hit.
 function LWorld:raycastClosest(x, y, dx, dy, maxDist, filter) end
 
@@ -23565,6 +24230,9 @@ function LWorld:raycastClosest(x, y, dx, dy, maxDist, filter) end
 ---@param id number Gravity vector ID returned by addGravityVector.
 ---@return boolean True if an active vector was removed.
 function LWorld:removeGravityVector(id) end
+
+--- Restores all 16 collision groups so every group can collide with every other group.
+function LWorld:resetCollisionGroups() end
 
 --- Fully resets the world to its post-construction state.
 function LWorld:resetWorld() end
@@ -23593,6 +24261,17 @@ function LWorld:setBodyOneWay(id, nx, ny) end
 ---@param id number The body ID.
 ---@param bodyType string New type: "static", "dynamic", "kinematic", or "sensor".
 function LWorld:setBodyType(id, bodyType) end
+
+--- Replaces one row of the 16-group collision matrix.
+---@param group number Source collision group index, 0..15.
+---@param mask number Target group bitmask in 0..0xFFFF.
+function LWorld:setCollisionGroupMask(group, mask) end
+
+--- Enables or disables collisions between two world-level collision groups.
+---@param groupA number First collision group index, 0..15.
+---@param groupB number Second collision group index, 0..15.
+---@param enabled boolean True to allow collisions, false to block them.
+function LWorld:setCollisionPair(groupA, groupB, enabled) end
 
 --- Registers a callback function invoked whenever two bodies stop touching.
 ---@param callback function Called with (bodyIdA, bodyIdB) on each ended contact.
@@ -23900,6 +24579,12 @@ lurek.physics.setBodyVelocity = function(world, body, vx, vy) end
 ---@param allowed boolean True to allow sleeping.
 lurek.physics.setSleepingAllowed = function(world, body, allowed) end
 
+--- Builds an approximate collision shape from an image alpha mask.
+---@param image LImageData Source image; pixels with alpha above threshold are treated as solid.
+---@param opts? table Optional keys: alphaThreshold, maxVertices, circleAspectTolerance, circleFillTolerance, rectangleFillThreshold.
+---@return LPhysicsShape Circle, rectangle, or convex polygon approximating the opaque pixels.
+lurek.physics.shapeFromImage = function(image, opts) end
+
 --- Steps a physics world forward by dt seconds (free-function variant).
 ---@param world LWorld The world to step.
 ---@param dt number Time step in seconds.
@@ -24106,6 +24791,15 @@ function LPipeline:update(dt) end
 ---@return string[] Error message strings (empty if valid).
 function LPipeline:validate() end
 
+--- Connects one output slot (1..5) to a target step input slot (1..5), optionally gated by a Lua predicate.
+---@param outputSlot number Source output slot, clamped to 1..5.
+---@param target string|LPipelineStep Target step name or step object.
+---@param inputSlot? number Target input slot, defaults to the output slot.
+---@param condition? function Predicate receiving (ctx, payload, sourceName, targetName); false blocks signal and data.
+---@param signal? boolean Whether this link triggers target eligibility; defaults to true.
+---@return LPipelineStep Returns self for method chaining.
+function LPipelineStep:connectOutput(outputSlot, target, inputSlot, condition, signal) end
+
 --- Declares that this step depends on another step (by name or reference). The dependency must complete before this step runs.
 ---@param dep string|LPipelineStep The dependency step name or step object.
 ---@return LPipelineStep Returns self for method chaining.
@@ -24144,9 +24838,17 @@ function LPipelineStep:getError() end
 ---@return string The step name.
 function LPipelineStep:getName() end
 
+--- Returns configured output links for this step.
+---@return table Array of link tables with output, target, input, and signal fields.
+function LPipelineStep:getOutputLinks() end
+
 --- Returns the configured retry count for this step.
 ---@return number Number of retry attempts.
 function LPipelineStep:getRetryCount() end
+
+--- Returns this step's local state table, creating an empty one when none exists.
+---@return table Local step state table.
+function LPipelineStep:getState() end
 
 --- Returns the current execution status of this step as a string ("pending", "waiting", "running", "completed", "failed", "skipped", "cancelled").
 ---@return string Current step status.
@@ -24204,6 +24906,10 @@ function LPipelineStep:setRetryCount(count) end
 --- Sets the delay in seconds between retry attempts for this step.
 ---@param seconds number Delay between retries.
 function LPipelineStep:setRetryDelay(seconds) end
+
+--- Stores a Lua table as local state for this step. The table is retained by registry reference.
+---@param state? table Local step state table; pass nil to clear.
+function LPipelineStep:setState(state) end
 
 --- Assigns a tag string to this step for grouping and filtering purposes.
 ---@param tag string A category tag for this step.
@@ -24361,6 +25067,20 @@ function LNoiseGenerator:generateMap(w, h, opts) end
 ---@return number[] Noise values.
 function LNoiseGenerator:generateMapCompute(w, h, opts) end
 
+--- Generates a compute-style noise map and returns it as a typed scalar grid.
+---@param w number Map width.
+---@param h number Map height.
+---@param opts? table Generation options.
+---@return LProcgenScalarGrid Typed scalar grid.
+function LNoiseGenerator:generateMapComputeGrid(w, h, opts) end
+
+--- Generates a noise map and returns it as a typed scalar grid.
+---@param w number Map width.
+---@param h number Map height.
+---@param opts? table Generation options.
+---@return LProcgenScalarGrid Typed scalar grid.
+function LNoiseGenerator:generateMapGrid(w, h, opts) end
+
 --- Returns this noise generator seed.
 ---@return number Seed value.
 function LNoiseGenerator:getSeed() end
@@ -24466,6 +25186,98 @@ function LNoiseGenerator:worley2d(x, y, dist_name, f2) end
 ---@return number Noise value.
 function LNoiseGenerator:worley3d(x, y, z, dist_name, f2) end
 
+--- Returns one cell value using one-based Lua coordinates.
+---@param x number One-based column.
+---@param y number One-based row.
+---@return number Cell value.
+function LProcgenGrid:getCell(x, y) end
+
+--- Returns grid height.
+---@return number Height.
+function LProcgenGrid:getHeight() end
+
+--- Returns the generator kind label attached to this grid.
+---@return string Generator kind.
+function LProcgenGrid:getKind() end
+
+--- Returns grid width and height.
+---@return number Width.
+---@return number Height.
+function LProcgenGrid:getSize() end
+
+--- Returns grid width.
+---@return number Width.
+function LProcgenGrid:getWidth() end
+
+--- Serializes this grid to a plain Lua table.
+---@return table Table with kind, width, height, and cells.
+function LProcgenGrid:toTable() end
+
+--- Converts this generated grid into a tilefield by writing each value as a named ref.
+---@param opts? table Options: slot, topology, skipZero.
+---@return LTileField Tilefield populated with refs.
+function LProcgenGrid:toTileField(opts) end
+
+--- Returns the type name of this object.
+---@return string Always returns "LProcgenGrid".
+function LProcgenGrid:type() end
+
+--- Check whether this object matches a given type name.
+---@param name string Type name to test.
+---@return boolean True if the object is of the specified type.
+function LProcgenGrid:typeOf(name) end
+
+--- Writes this generated grid into an existing tilefield ref layer.
+---@param field LTileField Target tilefield.
+---@param opts? table Options: slot, z, skipZero.
+function LProcgenGrid:writeTileField(field, opts) end
+
+--- Returns one scalar cell value using one-based Lua coordinates.
+---@param x number One-based column.
+---@param y number One-based row.
+---@return number Scalar cell value.
+function LProcgenScalarGrid:getCell(x, y) end
+
+--- Returns scalar grid height.
+---@return number Height.
+function LProcgenScalarGrid:getHeight() end
+
+--- Returns the generator kind label attached to this scalar grid.
+---@return string Generator kind.
+function LProcgenScalarGrid:getKind() end
+
+--- Returns scalar grid width and height.
+---@return number Width.
+---@return number Height.
+function LProcgenScalarGrid:getSize() end
+
+--- Returns scalar grid width.
+---@return number Width.
+function LProcgenScalarGrid:getWidth() end
+
+--- Serializes this scalar grid to a plain Lua table.
+---@return table Table with kind, width, height, and cells.
+function LProcgenScalarGrid:toTable() end
+
+--- Converts this scalar field into a new tilefield channel layer.
+---@param opts? table Options: topology, target, channel, scale, offset, threshold, invert.
+---@return LTileField Tilefield populated from scalar values.
+function LProcgenScalarGrid:toTileField(opts) end
+
+--- Returns the type name of this object.
+---@return string Always returns "LProcgenScalarGrid".
+function LProcgenScalarGrid:type() end
+
+--- Check whether this object matches a given type name.
+---@param name string Type name to test.
+---@return boolean True if the object is of the specified type.
+function LProcgenScalarGrid:typeOf(name) end
+
+--- Writes this scalar field into an existing tilefield channel layer.
+---@param field LTileField Target tilefield.
+---@param opts? table Options: z, target, channel, scale, offset, threshold, invert.
+function LProcgenScalarGrid:writeTileField(field, opts) end
+
 --- Get the default RGBA display color for a biome type name. Useful for minimap or debug visualization.
 ---@param name string Biome name (e.g. "ocean", "desert", "taiga").
 ---@return number Red component (0â€“255).
@@ -24492,6 +25304,13 @@ lurek.procgen.bspDungeonWithPrefabs = function(opts, prefabs) end
 ---@param opts? table Options: fill (0.0â€“1.0 initial fill ratio), iterations, birth threshold, survive threshold, seed.
 ---@return number[] Flat array of cell values (0=empty, 1=wall) with length widthĂ—height.
 lurek.procgen.cellularAutomata = function(width, height, opts) end
+
+--- Generate a cave or organic map and return a typed grid result.
+---@param width number Grid width in cells.
+---@param height number Grid height in cells.
+---@param opts? table Cellular automata options.
+---@return LProcgenGrid Typed cellular grid.
+lurek.procgen.cellularAutomataGrid = function(width, height, opts) end
 
 --- Samples stateless fractal Brownian motion noise.
 ---@param x number X coordinate.
@@ -24544,6 +25363,19 @@ lurek.procgen.heightmap = function(opts) end
 ---@return LProcgenHeightmapFromCellularResult Table with .cells (flat f32 array), .width, .height.
 lurek.procgen.heightmapFromCellular = function(width, height, cells, floorValue) end
 
+--- Convert a cellular automata grid into a typed heightmap scalar grid.
+---@param width number Grid width.
+---@param height number Grid height.
+---@param cells table Flat u8 array from cellularAutomata.
+---@param floorValue? number Cell value treated as open floor.
+---@return LProcgenScalarGrid Typed heightmap scalar grid.
+lurek.procgen.heightmapFromCellularGrid = function(width, height, cells, floorValue) end
+
+--- Generate a fractal heightmap and return a typed scalar grid result.
+---@param opts? table Heightmap options.
+---@return LProcgenScalarGrid Typed heightmap scalar grid.
+lurek.procgen.heightmapGrid = function(opts) end
+
 --- Expand an L-system grammar and return the resulting string. Useful for generating branching structures like trees, rivers, or cave networks.
 ---@param opts table Options: axiom (starting string), iterations (expansion count), rules (table mapping single-char keys to replacement strings).
 ---@return string The fully expanded L-system string.
@@ -24567,10 +25399,26 @@ lurek.procgen.newBiomeClassifier = function(opts) end
 ---@return LCellular The cellular simulation object.
 lurek.procgen.newCellular = function(width, height) end
 
+--- Wrap a flat grid table as a typed procgen grid result.
+---@param width number Grid width.
+---@param height number Grid height.
+---@param cells table Flat integer grid.
+---@param opts? table Options: kind.
+---@return LProcgenGrid Typed procgen grid.
+lurek.procgen.newGridResult = function(width, height, cells, opts) end
+
 --- Creates a procedural noise generator with an optional seed.
 ---@param seed? number Seed value (default 0).
 ---@return LNoiseGenerator New noise generator handle.
 lurek.procgen.newNoiseGenerator = function(seed) end
+
+--- Wrap a flat numeric table as a typed procgen scalar grid result.
+---@param width number Grid width.
+---@param height number Grid height.
+---@param cells table Flat numeric grid.
+---@param opts? table Options: kind.
+---@return LProcgenScalarGrid Typed procgen scalar grid.
+lurek.procgen.newScalarGridResult = function(width, height, cells, opts) end
 
 --- Generate a 2D noise map with configurable scale, octaves, and offsets. Runs on a single thread.
 ---@param width number Map width in cells.
@@ -24579,6 +25427,13 @@ lurek.procgen.newNoiseGenerator = function(seed) end
 ---@return number[] F64 noise values (length = width*height).
 lurek.procgen.noiseMap = function(width, height, opts) end
 
+--- Generate a typed scalar noise grid using the optional seed in opts.
+---@param width number Map width in cells.
+---@param height number Map height in cells.
+---@param opts? table Options: scale_x, scale_y, octaves, lacunarity, persistence, offset_x, offset_y, seed.
+---@return LProcgenScalarGrid Typed scalar grid.
+lurek.procgen.noiseMapGrid = function(width, height, opts) end
+
 --- Generate a 2D noise map using multiple threads for faster computation on large maps. Uses seed 0.
 ---@param width number Map width in cells.
 ---@param height number Map height in cells.
@@ -24586,12 +25441,26 @@ lurek.procgen.noiseMap = function(width, height, opts) end
 ---@return number[] F64 noise values (length = width*height).
 lurek.procgen.noiseMapParallel = function(width, height, opts) end
 
+--- Generate a typed scalar noise grid using the parallel backend and seed 0.
+---@param width number Map width in cells.
+---@param height number Map height in cells.
+---@param opts? table Options: scale_x, scale_y, octaves, lacunarity, persistence, offset_x, offset_y.
+---@return LProcgenScalarGrid Typed scalar grid.
+lurek.procgen.noiseMapParallelGrid = function(width, height, opts) end
+
 --- Generate a 2D noise map using multiple threads with a specific seed for reproducible results.
 ---@param width number Map width in cells.
 ---@param height number Map height in cells.
 ---@param opts? table Options: scale_x, scale_y, octaves, lacunarity, persistence, offset_x, offset_y, seed.
 ---@return number[] F64 noise values (length = width*height).
 lurek.procgen.noiseMapParallelSeeded = function(width, height, opts) end
+
+--- Generate a typed scalar noise grid using the parallel backend and explicit seed.
+---@param width number Map width in cells.
+---@param height number Map height in cells.
+---@param opts? table Options: scale_x, scale_y, octaves, lacunarity, persistence, offset_x, offset_y, seed.
+---@return LProcgenScalarGrid Typed scalar grid.
+lurek.procgen.noiseMapParallelSeededGrid = function(width, height, opts) end
 
 --- Samples stateless 2D Perlin noise.
 ---@param x number X coordinate.
@@ -24639,6 +25508,11 @@ lurek.procgen.poissonDisk = function(width, height, minDist, maxAttempts, seed) 
 ---@return LProcgenRoomsDungeonResult Table with .rooms ({x,y,w,h}[]), .corridors ({x1,y1,x2,y2}[]), .grid (flat u8[]), .width, .height.
 lurek.procgen.roomsDungeon = function(opts) end
 
+--- Generate a rooms dungeon and return only its tile grid as a typed procgen result.
+---@param opts? table Room generation options.
+---@return LProcgenGrid Typed rooms-dungeon grid.
+lurek.procgen.roomsDungeonGrid = function(opts) end
+
 --- Generate a rooms-based dungeon and place named prefabs into qualifying rooms. Prefabs can have custom shape masks.
 ---@param opts? table Room generation options: width, height, max_rooms, min_room_size, max_room_size, seed.
 ---@param prefabs table Array of prefab definitions: {name, width, height, mask (optional flat u8[])}.
@@ -24646,6 +25520,13 @@ lurek.procgen.roomsDungeon = function(opts) end
 ---@return LProcgenRoomsDungeonWithPrefabsResult Dungeon table with .rooms; .corridors; .grid; .width; .height.
 ---@return LProcgenRoomsDungeonWithPrefabsResult Array of placed prefabs: {name; x; y; width; height}.
 lurek.procgen.roomsDungeonWithPrefabs = function(opts, prefabs, stampValue) end
+
+--- Generate a rooms dungeon with prefabs and return only its tile grid as a typed procgen result.
+---@param opts? table Room generation options.
+---@param prefabs table Prefab definitions.
+---@param stampValue? number Tile value written for prefab cells.
+---@return LProcgenGrid Typed rooms-dungeon grid.
+lurek.procgen.roomsDungeonWithPrefabsGrid = function(opts, prefabs, stampValue) end
 
 --- Sends a natural-language prompt to the global LLM and returns WFC adjacency constraints as a Lua table.
 ---@param prompt string Natural-language description of the desired tile adjacency rules.
@@ -24693,6 +25574,11 @@ lurek.procgen.wfcFromPrompt = function(prompt, config) end
 ---@return LProcgenWfcGenerateResult Table with .cells (flat array of tile IDs, 0 if unsolved), .width, .height.
 lurek.procgen.wfcGenerate = function(opts) end
 
+--- Run WFC and return a typed procgen grid result.
+---@param opts table WFC options.
+---@return LProcgenGrid Typed WFC tile-id grid.
+lurek.procgen.wfcGenerateGrid = function(opts) end
+
 --- Generate a connected world graph with named regions and weighted edges. Useful for overworld maps, trade routes, or quest connectivity.
 ---@param width number World area width.
 ---@param height number World area height.
@@ -24709,19 +25595,25 @@ function LProvinceRegistry:adjacencies() end
 ---@return LProvinceRegistryBorderSegmentsResult Array of tables with fields: province_a (number), province_b (number), x0 (number), y0 (number), x1 (number), y1 (number).
 function LProvinceRegistry:borderSegments() end
 
+--- Emits render commands for a route by connecting consecutive province capitals. Pass the route table returned by `findRoute`; pathfinding itself stays in the routing helpers. Options: mode ("line"|"bezier"), color ({r,g,b,a?} in 0..1), width, pixel_size, curve_offset, and segments.
+---@param route number[] Array of province ids whose capitals should be connected in order.
+---@param opts? table?|Draw "bezier", color={r,g,b,a?}, width=number, pixel_size=number, curve_offset=number, segments=integer.
+---@return number Number of route hop primitives queued.
+function LProvinceRegistry:drawCapitalPath(route, opts) end
+
 --- Returns provinces that have no adjacent province with the same owner attribute.
 ---@param owner_attr string Attribute key (for example `faction`).
 ---@return number[] Array of isolated province ids.
 function LProvinceRegistry:findIsolatedProvinces(owner_attr) end
 
---- Finds a route between two provinces using BFS or Dijkstra when `cost_fn` is supplied.
+--- Finds a route between two provinces by adapting registry adjacency to pathfind graph routing. Uses BFS by default or Dijkstra when `cost_fn` is supplied.
 ---@param from_id number Start province id.
 ---@param to_id number Target province id.
 ---@param cost_fn? function Optional cost callback `fn(from_id, to_id) -> number`.
 ---@return table Array of province ids from start to target; nil when unreachable.
 function LProvinceRegistry:findRoute(from_id, to_id, cost_fn) end
 
---- Finds routes for a batch of `{from, to}` pairs.
+--- Finds routes for a batch of `{from, to}` pairs by adapting registry adjacency to pathfind graph routing.
 ---@param pairs table Array of `{from=integer, to=integer}` tables.
 ---@param cost_fn? function Optional cost callback `fn(from_id, to_id) -> number?`.
 ---@return table Array of route arrays (or nil for unreachable entries).
@@ -24765,7 +25657,7 @@ function LProvinceRegistry:getBorderType(a, b) end
 ---@return LProvinceRegistryGetChangesSinceResult Array of change tables, each with a `revision` field and change-specific fields (kind, province_id, etc.).
 function LProvinceRegistry:getChangesSince(revision) end
 
---- Returns connected components in the province adjacency graph.
+--- Returns connected components in the province adjacency graph via pathfind graph traversal.
 ---@return table Array of arrays of province ids.
 function LProvinceRegistry:getConnectedComponents() end
 
@@ -24786,7 +25678,7 @@ function LProvinceRegistry:getName() end
 ---@return number[] Array of neighboring province IDs.
 function LProvinceRegistry:getNeighbors(id) end
 
---- Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state), centroid, and custom attributes.
+--- Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state), centroid, capital marker, and custom attributes.
 ---@param id number Province ID to query.
 ---@return LProvinceRegistryGetProvinceResult Province snapshot table, or nil if the ID does not exist.
 function LProvinceRegistry:getProvince(id) end
@@ -24794,6 +25686,10 @@ function LProvinceRegistry:getProvince(id) end
 --- Returns the current change revision counter. Incremented on every mutation (color, terrain, border, fog changes). Use with `getChangesSince` for incremental updates.
 ---@return number Current revision number.
 function LProvinceRegistry:getRevision() end
+
+--- Returns the currently bound command-render province shader, or nil.
+---@return LShader? Bound shader handle.
+function LProvinceRegistry:getShader() end
 
 --- Returns the width of the province grid in cells (pixels of the source PNG).
 ---@return number Grid width in cells.
@@ -24804,7 +25700,7 @@ function LProvinceRegistry:getWidth() end
 ---@return LProvinceRegistryImportMetadataFromFilesResult Summary with fields: mapped_provinces (number), capitals_set (number), label_lines_set (number), labels_set (number).
 function LProvinceRegistry:importMetadataFromFiles(opts) end
 
---- Returns true when there is at least one route between two provinces.
+--- Returns true when there is at least one pathfind graph route between two provinces.
 ---@param from_id number Start province id.
 ---@param to_id number Target province id.
 ---@return boolean True when connected.
@@ -24931,6 +25827,10 @@ function LProvinceRegistry:setMapMode(name) end
 ---@return boolean True if the province ID exists.
 function LProvinceRegistry:setPoliticalColor(id, r, g, b, a) end
 
+--- Binds or clears a `mapviz` shader for command-rendered province visualization.
+---@param shader? LShader Shader created by `lurek.render.newShader(code, { target = "mapviz" })`, or nil to clear.
+function LProvinceRegistry:setShader(shader) end
+
 --- Sets the terrain type index for a province. Terrain type controls which fill color or texture is used in terrain map mode.
 ---@param id number Province ID.
 ---@param terrain_type number Terrain type index (game-defined meaning).
@@ -24958,6 +25858,11 @@ function LProvinceRegistry:type() end
 ---@param name string Type name to check.
 ---@return boolean True if the name matches.
 function LProvinceRegistry:typeOf(name) end
+
+--- Computes the province-space viewport rectangle used by province rendering and culling. The returned table can be passed to minimap:setViewportRect(rect.x, rect.y, rect.w, rect.h).
+---@param opts? table Camera/render options: x/y translation, zoom, pixel_size, screen_w, screen_h.
+---@return table Viewport table with x, y, w, h, left, top, right, and bottom fields in province map pixels.
+function LProvinceRegistry:viewportRect(opts) end
 
 --- Removes all properties, attributes, and flags for a province.
 ---@param id number Province ID.
@@ -25734,10 +26639,10 @@ lurek.raycaster.buildMultiLevelScene = function(params, levels, lights, sprites,
 ---@return number Total number of quads in the built scene.
 lurek.raycaster.buildMultiLevelSceneFromAdapter = function(params, levels, adapter, wallTextures) end
 
---- Builds a multilevel raycaster scene from a tilefield blocker channel.
+--- Builds a multilevel raycaster scene from tilefield blockers, slots, holes, surfaces, and tile light emitters.
 ---@param params table Scene params plus optional active_level.
 ---@param field LTileField Source tilefield.
----@param opts? table Options with `wallChannel` (default `vision`).
+---@param opts? table Options with `wallChannel` (default `vision`), `catalog`/`tileCatalog`, `wallSlot`, `doorSlot`, `windowSlot`, `halfWallSlot`, `floorSlot`, `ceilingSlot`, `objectSlot`, `spriteSlot`, `floorHoleSlot`, `ceilingHoleSlot`, `backgroundSlot`, `skyboxSlot`, `overlaySlot`, `floorTextures`, `ceilingTextures`, `objectTextures`, `objectSize`, `objectIdBase`, `slotRefsAreTextures`, and `tileLights`.
 ---@param lights? table Optional raycaster point lights.
 ---@param sprites? table|LSpriteManager Optional raycaster sprites.
 ---@param wallTextures? table Map of cell_value -> texture for wall surfaces.
@@ -25750,9 +26655,19 @@ lurek.raycaster.buildMultiLevelSceneFromField = function(params, field, opts, li
 ---@return number Shade factor (1.0 at distance 0, approaching 0.0 at maxDistance).
 lurek.raycaster.distanceShade = function(distance, maxDistance) end
 
+--- Rasterizes the most recently built raycaster scene to raw image data.
+---@param width number Output image width in pixels.
+---@param height number Output image height in pixels.
+---@return LImageData Rasterized image data for the last built scene.
+lurek.raycaster.drawLastScene = function(width, height) end
+
 --- Returns stats for the last stored raycaster scene build.
 ---@return LRaycasterGetLastBuildStatsResult Nil if no raycaster scene has been built yet; otherwise a stats table.
 lurek.raycaster.getLastBuildStats = function() end
+
+--- Returns the draw-target shader applied to the stored raycaster scene, or nil when default rendering is used.
+---@return LShader? Bound shader handle, or nil.
+lurek.raycaster.getShader = function() end
 
 --- Creates a new raycaster map with the given grid dimensions.
 ---@param w number Map width in cells.
@@ -25816,6 +26731,16 @@ lurek.raycaster.pickScreenMultiLevelFromAdapter = function(sx, sy, params, level
 ---@param screenHeight number Screen height in pixels.
 ---@return number Projected column height in pixels.
 lurek.raycaster.projectColumn = function(distance, fov, screenHeight) end
+
+--- Binds a draw-target shader to the most recently built raycaster scene when it is presented by the renderer. Pass nil to clear.
+---@param shader? LShader Shader created with `lurek.render.newShader(code, { target = "draw" })`, or nil to clear.
+lurek.raycaster.setShader = function(shader) end
+
+--- Queues a postfx shader pass that mutates this canvas render target after queued canvas draws in the current frame.
+---@param shader LShader Shader created with `lurek.render.newShader(code, { target = "postfx" })`.
+---@param opts? table Reserved options table for future pass parameters.
+---@return LCanvas This canvas handle.
+function LCanvas:applyShader(shader, opts) end
 
 --- Returns both width and height of this canvas.
 ---@return number Width and height in pixels. (value 1).
@@ -26105,9 +27030,17 @@ function LQuad:type() end
 ---@return boolean True if the name matches.
 function LQuad:typeOf(name) end
 
+--- Returns shader validation diagnostics.
+---@return table Array of diagnostic strings.
+function LShader:getDiagnostics() end
+
 --- Returns the internal numeric handle ID for this shader.
 ---@return number Opaque shader handle identifier.
 function LShader:getId() end
+
+--- Returns the target this shader was validated for.
+---@return string Shader target name.
+function LShader:getTarget() end
 
 --- Checks whether this shader declares a uniform with the given name.
 ---@param name string Uniform name to check.
@@ -26273,6 +27206,13 @@ function LSpriteBatch:type() end
 ---@return boolean True if the name matches.
 function LSpriteBatch:typeOf(name) end
 
+--- Queues a postfx shader pass that mutates a canvas render target after queued canvas draws in the current frame.
+---@param canvas LCanvas Canvas render target to process.
+---@param shader LShader Shader created with `lurek.render.newShader(code, { target = "postfx" })`.
+---@param opts? table Reserved options table for future pass parameters.
+---@return LCanvas The processed canvas handle.
+lurek.render.applyShaderToCanvas = function(canvas, shader, opts) end
+
 --- Multiplies the current transformation matrix by a 3x3 matrix (9 values in row-major order).
 ---@param mat table Flat table of 9 numbers representing a 3x3 transform matrix.
 lurek.render.applyTransform = function(mat) end
@@ -26414,6 +27354,29 @@ lurek.render.drawPath = function(path, mode, close) end
 ---@param segments? number Number of line segments (default 16).
 lurek.render.drawQuadBezier = function(x1, y1, cx, cy, x2, y2, segments) end
 
+--- Draws text using the active font with image-like transform parameters on the GPU.
+---@param text string Text to render.
+---@param x number X position.
+---@param y number Y position.
+---@param rotation? number Rotation in radians (default 0).
+---@param sx? number X scale factor (default 1).
+---@param sy? number Y scale factor (defaults to sx).
+---@param ox? number Origin offset X in text-local pixels (default 0).
+---@param oy? number Origin offset Y in text-local pixels (default 0).
+lurek.render.drawText = function(text, x, y, rotation, sx, sy, ox, oy) end
+
+--- Draws text using a specific font with image-like transform parameters on the GPU.
+---@param font LFont Font handle to use for this draw.
+---@param text string Text to render.
+---@param x number X position.
+---@param y number Y position.
+---@param rotation? number Rotation in radians (default 0).
+---@param sx? number X scale factor (default 1).
+---@param sy? number Y scale factor (defaults to sx).
+---@param ox? number Origin offset X in text-local pixels (default 0).
+---@param oy? number Origin offset Y in text-local pixels (default 0).
+lurek.render.drawTextWithFont = function(font, text, x, y, rotation, sx, sy, ox, oy) end
+
 --- Draws a sub-region of an image defined by a Quad, with optional transform.
 ---@param image LImage Source image to draw from.
 ---@param quad LQuad Quad defining the source rectangle within the image.
@@ -26476,6 +27439,10 @@ lurek.render.getColor = function() end
 ---@return boolean Red; green; blue; alpha channel write states. (value 3).
 ---@return boolean Red; green; blue; alpha channel write states. (value 4).
 lurek.render.getColorMask = function() end
+
+--- Returns the active debug visualization shader, or nil if debug draws use the normal/default render shader path.
+---@return LShader? The active debug visualization shader handle.
+lurek.render.getDebugShader = function() end
 
 --- Returns the current default texture filtering settings.
 ---@return string Min filter; mag filter; anisotropy level. (value 1).
@@ -26583,6 +27550,10 @@ lurek.render.getStats = function() end
 ---@return number Action name; compare mode name; and reference value. (value 3).
 lurek.render.getStencilMode = function() end
 
+--- Returns the active text shader, or nil if font-atlas text uses the default/fallback shader path.
+---@return LShader? The active text shader handle.
+lurek.render.getTextShader = function() end
+
 --- Returns the current window width in pixels.
 ---@return number Window width.
 lurek.render.getWidth = function() end
@@ -26658,15 +27629,6 @@ lurek.render.newLayer = function(name, zOrder) end
 ---@return LMesh The created mesh handle.
 lurek.render.newMesh = function(verts, mode) end
 
---- Creates a 9-slice definition from an image and four border insets for scalable UI rendering.
----@param image LImage Source texture.
----@param top number Top border inset in pixels.
----@param right number Right border inset.
----@param bottom number Bottom border inset.
----@param left number Left border inset.
----@return LNineSlice The 9-slice handle.
-lurek.render.newNineSlice = function(image, top, right, bottom, left) end
-
 --- Creates a Quad defining a rectangular sub-region of a texture for sprite-sheet rendering.
 ---@param x number Left edge in texture pixels.
 ---@param y number Top edge in texture pixels.
@@ -26677,10 +27639,11 @@ lurek.render.newNineSlice = function(image, top, right, bottom, left) end
 ---@return LQuad The created quad.
 lurek.render.newQuad = function(x, y, w, h, sw, sh) end
 
---- Compiles a WGSL shader program from source code and returns a handle.
----@param code string WGSL shader source code.
+--- Compiles a target-aware WGSL fragment shader through the render module and returns a shader handle.
+---@param code string WGSL fragment shader source.
+---@param opts? table Options table with optional `target` string: draw, postfx, image, overlay, particle, light, sprite, tilemap, mapviz, text, ui, or debugviz. Defaults to draw.
 ---@return LShader The compiled shader handle.
-lurek.render.newShader = function(code) end
+lurek.render.newShader = function(code, opts) end
 
 --- Creates a new retained compound shape for accumulating draw commands.
 ---@return LShape The created shape handle.
@@ -26722,14 +27685,24 @@ lurek.render.print = function(text, x, y, scale) end
 ---@param spans table Array of span tables, each with fields: text, r, g, b, a, scale.
 ---@param x number X position.
 ---@param y number Y position.
-lurek.render.printRich = function(spans, x, y) end
+---@param rotation? number Rotation in radians (default 0).
+---@param sx? number X scale factor (default 1).
+---@param sy? number Y scale factor (defaults to sx).
+---@param ox? number Origin offset X in text-local pixels (default 0).
+---@param oy? number Origin offset Y in text-local pixels (default 0).
+lurek.render.printRich = function(spans, x, y, rotation, sx, sy, ox, oy) end
 
 --- Draws rich text using a specific font without changing the global active font.
 ---@param font LFont Font handle to use for this draw.
 ---@param spans table Array of span tables, each with fields: text, r, g, b, a, scale.
 ---@param x number X position.
 ---@param y number Y position.
-lurek.render.printRichWithFont = function(font, spans, x, y) end
+---@param rotation? number Rotation in radians (default 0).
+---@param sx? number X scale factor (default 1).
+---@param sy? number Y scale factor (defaults to sx).
+---@param ox? number Origin offset X in text-local pixels (default 0).
+---@param oy? number Origin offset Y in text-local pixels (default 0).
+lurek.render.printRichWithFont = function(font, spans, x, y, rotation, sx, sy, ox, oy) end
 
 --- Draws text centered and rotated around its midpoint.
 ---@param text string Text to render.
@@ -26846,6 +27819,10 @@ lurek.render.setColor = function(r, g, b, a) end
 ---@param a? boolean Enable alpha channel.
 lurek.render.setColorMask = function(r, g, b, a) end
 
+--- Activates a debugviz-target WGSL shader for subsequent diagnostic/debug draw commands. Pass nil to restore the normal draw shader state.
+---@param shader? LShader Shader created with `lurek.render.newShader(code, { target = "debugviz" })`, or nil for default debug rendering.
+lurek.render.setDebugShader = function(shader) end
+
 --- Sets the default texture filtering mode for newly created images.
 ---@param min string Minification filter: "nearest" or "linear".
 ---@param mag string Magnification filter: "nearest" or "linear".
@@ -26915,6 +27892,10 @@ lurek.render.setStencilMode = function(action, compare, value) end
 ---@param compare? string Compare function: "equal", "notequal", "less", "greater", etc. Nil disables.
 ---@param value? number Reference value to compare against (default 1).
 lurek.render.setStencilTest = function(compare, value) end
+
+--- Activates a text-target WGSL shader for subsequent font-atlas text draws. Pass nil to restore default text rendering.
+---@param shader? LShader Shader created with `lurek.render.newShader(code, { target = "text" })`, or nil for default.
+lurek.render.setTextShader = function(shader) end
 
 --- Enables or disables wireframe rendering mode.
 ---@param enabled boolean True for wireframe, false for solid.
@@ -27007,6 +27988,10 @@ function LSaveManager:enableAutoSave(interval, slot) end
 ---@return boolean True if the slot file is present.
 function LSaveManager:exists(slot) end
 
+--- Return the payload serialization format used for saves and loads.
+---@return string Current format name.
+function LSaveManager:getFormat() end
+
 --- Return the current schema version number set for this save manager.
 ---@return number The active schema version.
 function LSaveManager:getSchemaVersion() end
@@ -27063,12 +28048,16 @@ function LSaveManager:reset() end
 function LSaveManager:restore(data) end
 
 --- Persist all registered data sections to the named slot file on disk.
----@param slot string Slot name (e.g. "slot1", "quicksave"). The file is stored as save/slot_<name>.sav.
+---@param slot string Slot name (e.g. "slot1", "quicksave"). The file is stored as save/slots/slot_<name>.sav.
 function LSaveManager:save(slot) end
 
 --- Enable or disable LZ4 compression for save files. Compressed saves are smaller on disk.
 ---@param enabled boolean True to compress future saves, false to write plain text.
 function LSaveManager:setCompress(enabled) end
+
+--- Set the payload serialization format for future saves and loads.
+---@param format string Payload format name.
+function LSaveManager:setFormat(format) end
 
 --- Set the current schema version number for saves produced by this game build.
 ---@param version number Integer schema version (must increase with each breaking data format change).
@@ -27095,6 +28084,10 @@ function LSaveManager:unregister(name) end
 ---@param dt number Delta time in seconds since the last frame.
 ---@return string Auto-save slot name when save work is due, or nil when no flush is needed yet.
 function LSaveManager:update(dt) end
+
+--- Create a new SaveManager instance for managing persistent game saves.
+---@return LSaveManager A fresh save manager with no registered sections.
+lurek.save.newManager = function() end
 
 --- Create a new SaveManager instance for managing persistent game saves.
 ---@return LSaveManager A fresh save manager with no registered sections.
@@ -27146,6 +28139,11 @@ function LSceneObjectContainer:add(obj) end
 --- Remove all objects from the container.
 function LSceneObjectContainer:clear() end
 
+--- Define an object group and return its 0-based bit index.
+---@param name string Group name to define.
+---@return number Bit index from 0 to 15.
+function LSceneObjectContainer:defineGroup(name) end
+
 --- Call draw() on all objects that have a draw method, sorted by layer.
 function LSceneObjectContainer:draw() end
 
@@ -27157,6 +28155,11 @@ function LSceneObjectContainer:getByLayer(n) end
 --- Get the number of objects currently in the container.
 function LSceneObjectContainer:getCount() end
 
+--- Return the bit index assigned to a group name.
+---@param name string Group name to inspect.
+---@return number Bit index, or nil when undefined.
+function LSceneObjectContainer:getGroupBit(name) end
+
 --- Get all objects as an array (layer-sorted).
 ---@return table Sequential table containing current objects.
 function LSceneObjectContainer:getObjects() end
@@ -27166,9 +28169,26 @@ function LSceneObjectContainer:getObjects() end
 ---@return boolean True when the exact object exists in the container.
 function LSceneObjectContainer:has(obj) end
 
+--- Return whether one object group is enabled for one pass.
+---@param group any Group name or 0-based bit index.
+---@param pass string Pass name.
+---@return boolean True when the group is enabled for that pass.
+function LSceneObjectContainer:isGroupEnabled(group, pass) end
+
+--- Call process_physics(dt) or physics(dt) on all physics-pass-enabled objects.
+---@param dt number Physics delta time in seconds.
+function LSceneObjectContainer:processPhysics(dt) end
+
 --- Remove an object from the container (identity comparison).
 ---@param obj table Object table reference to remove.
 function LSceneObjectContainer:remove(obj) end
+
+--- Enable or disable one object group for one pass.
+---@param group any Group name or 0-based bit index.
+---@param pass string Pass name: update, physics/process_physics, or draw.
+---@param enabled boolean True to include the group in the pass.
+---@return boolean True when the group and pass were accepted.
+function LSceneObjectContainer:setGroupEnabled(group, pass, enabled) end
 
 --- Gets the Lua-visible type name of this userdata.
 ---@return string The literal `"LSceneObjectContainer"`.
@@ -27303,6 +28323,11 @@ lurek.scene.isPreloaded = function(name) end
 ---@return boolean True when enabled, false when frozen or target not found.
 lurek.scene.isProcessEnabled = function(target) end
 
+--- Returns whether the selected scene is globally active.
+---@param target? any nil/current, registered scene name, or 1-based stack index.
+---@return boolean True when the scene is active; false when inactive or target not found.
+lurek.scene.isSceneActive = function(target) end
+
 --- Returns true if a scene transition animation is currently playing. Use this to block input or skip certain logic during transitions.
 ---@return boolean True while a transition animation is in progress.
 lurek.scene.isTransitioning = function() end
@@ -27382,16 +28407,26 @@ lurek.scene.pushOverlay = function(scene, transition, duration, easing, params) 
 ---@param params? table Arbitrary data forwarded to the scene's `enter(self, params)` callback.
 lurek.scene.pushPreloaded = function(name, transition, duration, easing, params) end
 
+--- Push a registered scene by name, honoring its persistence policy.
+---@param name string Registered scene name to push.
+---@param transition? string Transition type name. Defaults to `"none"`.
+---@param duration? number Transition animation duration in seconds. Defaults to 0.
+---@param easing? string Easing curve name. Defaults to `"linear"`.
+---@param params? table Arbitrary data forwarded to the scene's `enter(self, params)` callback.
+---@return boolean True when the scene existed and was pushed.
+lurek.scene.pushRegistered = function(name, transition, duration, easing, params) end
+
 --- Queue a transition to play automatically after the current one finishes. Multiple queued transitions execute in FIFO order, enabling multi-step cinematic sequences (e.g. fade-out then slide-in).
 ---@param transition string Transition type name (e.g. `"fade"`, `"iris"`, `"wipe"`).
 ---@param duration number Duration in seconds.
 ---@param easing? string Easing curve name. Defaults to `"linear"`.
 lurek.scene.queueTransition = function(transition, duration, easing) end
 
---- Register a scene table under a unique name for later retrieval via `getRegistered`, navigation via `popTo`, or deferred push via `pushPreloaded`. Registering does not push the scene onto the stack.
+--- Register a scene table or scene factory under a unique name for later retrieval, pushRegistered navigation, or deferred push via `pushPreloaded`. Registering does not push the scene onto the stack.
 ---@param name string Unique name to associate with this scene (e.g. `"mainMenu"`, `"gameplay"`).
----@param scene table The scene table to register.
-lurek.scene.registerScene = function(name, scene) end
+---@param sceneOrFactory any Scene table or zero-argument factory function returning a scene table.
+---@param opts? table Optional registration settings; `persistence` accepts `"freeze"` or `"reset"`.
+lurek.scene.registerScene = function(name, sceneOrFactory, opts) end
 
 --- Remove a key and its associated value from the shared scene data map. No-op if the key does not exist.
 ---@param key string The data key to remove.
@@ -27435,6 +28470,12 @@ lurek.scene.setPhysicsEnabled = function(target, enabled) end
 ---@return boolean True when target scene was resolved and updated.
 lurek.scene.setProcessEnabled = function(target, enabled) end
 
+--- Enable or disable all update, process, physics, late, and render callbacks for a selected scene.
+---@param target? any nil/current, registered scene name, or 1-based stack index.
+---@param enabled boolean True to activate the scene, false to fully suspend it.
+---@return boolean True when target scene was resolved and updated.
+lurek.scene.setSceneActive = function(target, enabled) end
+
 --- Enable or disable `update(self, dt)` execution for a selected scene.
 ---@param target? any nil/current, registered scene name, or 1-based stack index.
 ---@param enabled boolean True to run update callback, false to freeze it.
@@ -27472,93 +28513,93 @@ lurek.scene.transitions.wipe = function(duration) end
 ---@param value any The data value that may have missing fields.
 ---@param schema table A schema table containing `default` entries for fields.
 ---@return table A new table with defaults applied for any absent fields.
-lurek.serial.applyDefaults = function(value, schema) end
+lurek.serialize.applyDefaults = function(value, schema) end
 
 --- Universal decoder that parses a string payload into a Lua table using the specified format. If no format is given, auto-detects from the content. Supports JSON, TOML, CSV, XML, INI, and MessagePack. Use this as a single entry point when handling files of varying or unknown formats.
 ---@param payload string The raw string (or binary for msgpack) to decode.
 ---@param format? string Format hint: "json", "toml", "csv", "xml", "ini", or "msgpack". Nil triggers auto-detection.
 ---@param opts? table Optional settings table. For CSV: `delimiter` (string) and `has_headers` (boolean).
 ---@return table The decoded Lua table.
-lurek.serial.decode = function(payload, format, opts) end
+lurek.serialize.decode = function(payload, format, opts) end
 
 --- Decodes a binary MessagePack string back into a Lua table. Use this to read save files, network packets, or any data previously encoded with encodeMsgPack.
 ---@param bytes string A binary string containing valid MessagePack data.
 ---@return table The decoded Lua table from the MessagePack payload.
-lurek.serial.decodeMsgPack = function(bytes) end
+lurek.serialize.decodeMsgPack = function(bytes) end
 
 --- Parses an XML string into a Lua table structure. Elements become nested tables with tag names as keys. Useful for loading Tiled map exports, SVG data, UI layout definitions, or other XML-based game assets.
 ---@param text string A valid XML string to parse.
 ---@return table A nested Lua table representing the XML document structure.
-lurek.serial.decodeXml = function(text) end
+lurek.serialize.decodeXml = function(text) end
 
 --- Attempts to auto-detect the serialization format of a string by inspecting its content (e.g., leading `{` for JSON, `[section]` for INI, XML declaration for XML). Returns the format name or nil if detection fails. Useful for loading user-provided files where the format is unknown.
 ---@param text string The raw text content to analyze.
 ---@return string The detected format name ("json", "toml", "csv", "xml", "ini"), or nil if unrecognized.
-lurek.serial.detectFormat = function(text) end
+lurek.serialize.detectFormat = function(text) end
 
 --- Universal encoder that serializes a Lua value into the specified format. Supports JSON, TOML, CSV, and MessagePack. Returns a string (text for JSON/TOML/CSV, binary for MessagePack). Use this as a single entry point for all serialization needs.
 ---@param value any The Lua value to encode.
 ---@param format string Target format: "json", "toml", "csv", or "msgpack".
 ---@param opts? table Optional settings table. For JSON: `pretty` (boolean). For CSV: `delimiter` (string) and `has_headers` (boolean).
 ---@return string The encoded string (text or binary depending on format).
-lurek.serial.encode = function(value, format, opts) end
+lurek.serialize.encode = function(value, format, opts) end
 
 --- Encodes a Lua table into a compact binary MessagePack string. MessagePack is faster and smaller than JSON, making it ideal for save files, network packets, or any scenario where performance matters more than human readability. The argument must be a table.
 ---@param value table The Lua table to encode. Must be a table (not a primitive).
 ---@return string A binary string containing the MessagePack-encoded data.
-lurek.serial.encodeMsgPack = function(value) end
+lurek.serialize.encodeMsgPack = function(value) end
 
 --- Encodes a Lua table into a compact binary MessagePack string. MessagePack is faster and smaller than JSON, making it ideal for save files, network packets, or any scenario where performance matters more than human readability. The argument must be a table.
 ---@param value table The Lua table to encode. Must be a table (not a primitive).
 ---@return string A binary string containing the MessagePack-encoded data.
-lurek.serial.encodeMsgPack = function(value) end
+lurek.serialize.encodeMsgPack = function(value) end
 
 --- Parses a CSV string into a Lua table (array of rows). Each row is either a keyed table (when headers are present) or an indexed array of field values. Useful for loading spreadsheet exports, leaderboard data, or tabular game data.
 ---@param text string The CSV content to parse.
 ---@param delimiter? string Single-character field delimiter. Defaults to comma (",").
 ---@param hasHeaders? boolean When true, the first row is treated as column names and each data row becomes a keyed table. Defaults to true.
 ---@return table An array of row tables containing the parsed CSV data.
-lurek.serial.fromCsv = function(text, delimiter, hasHeaders) end
+lurek.serialize.fromCsv = function(text, delimiter, hasHeaders) end
 
 --- Parses an INI-format string into a Lua table. Sections become nested tables, and key-value pairs become string fields. Useful for legacy config files or simple settings.
 ---@param text string A valid INI string to parse.
 ---@return table The decoded Lua table with section names as keys and their key-value pairs as nested tables.
-lurek.serial.fromIni = function(text) end
+lurek.serialize.fromIni = function(text) end
 
 --- Parses a JSON string into a Lua table. Use this to load configuration files, network responses, or any structured data stored as JSON.
 ---@param text string A valid JSON string to parse.
 ---@return table The decoded Lua table representing the JSON structure.
-lurek.serial.fromJson = function(text) end
+lurek.serialize.fromJson = function(text) end
 
 --- Parses a TOML string into a Lua table. Ideal for loading game configuration files, level definitions, and engine settings stored in TOML format.
 ---@param text string A valid TOML string to parse.
 ---@return table The decoded Lua table representing the TOML structure.
-lurek.serial.fromToml = function(text) end
+lurek.serialize.fromToml = function(text) end
 
 --- Serializes a Lua table (array of row tables) into a CSV-formatted string. Each row table should have consistent keys or be an indexed array. Use this to export leaderboards, save tabular data, or generate spreadsheet-compatible output.
 ---@param value table An array of row tables to serialize.
 ---@param delimiter? string Single-character field delimiter. Defaults to comma (",").
 ---@param hasHeaders? boolean When true, writes column names as the first row. Defaults to true.
 ---@return string The CSV-encoded string of the table data.
-lurek.serial.toCsv = function(value, delimiter, hasHeaders) end
+lurek.serialize.toCsv = function(value, delimiter, hasHeaders) end
 
 --- Serializes a Lua value (table, string, number, boolean, or nil) into a JSON string. Useful for saving game state, writing config files, or preparing network payloads.
 ---@param value any The Lua value to serialize into JSON.
 ---@param pretty? boolean When true, outputs indented human-readable JSON. Defaults to false (compact).
 ---@return string The JSON-encoded string representation of the value.
-lurek.serial.toJson = function(value, pretty) end
+lurek.serialize.toJson = function(value, pretty) end
 
 --- Serializes a Lua table into a TOML-formatted string. Use this to write configuration files, save structured settings, or export data in a human-readable format.
 ---@param value table The Lua table to serialize into TOML.
 ---@return string The TOML-encoded string representation of the table.
-lurek.serial.toToml = function(value) end
+lurek.serialize.toToml = function(value) end
 
 --- Validates a Lua value against a schema table. The schema defines expected types, required fields, and constraints. Returns a success boolean and an optional error message string describing the first validation failure. Use this to verify save data integrity or user-provided configuration before processing.
 ---@param value any The data to validate.
 ---@param schema table A schema table defining the expected structure and constraints.
 ---@return boolean True if validation passes; false otherwise.
 ---@return string An error message describing the validation failure; or nil on success.
-lurek.serial.validate = function(value, schema) end
+lurek.serialize.validate = function(value, schema) end
 
 --- Registers a SkeletonAnimation object with this skeleton so it can be played by name.
 ---@param anim LSkeletonAnimation The animation userdata to register. Consumed by this call.
@@ -27595,6 +28636,18 @@ function LSkeleton:addSkin(name) end
 ---@return number Zero-based index of the newly added slot.
 function LSkeleton:addSlot(name, bone_idx, attachment) end
 
+--- Binds all atlas entries as sprite-region attachment sources by name.
+---@param atlas LSpriteAtlas Sprite atlas containing named attachment regions.
+---@return number Number of bound sources.
+function LSkeleton:bindAtlas(atlas) end
+
+--- Creates physics bodies for skeleton parts and connects child parts to parent parts with joints.
+---@param world LWorld Physics world that will receive the generated bodies and joints.
+---@param parts table Array of part specs keyed by bone name/index plus shape, image, width/height, or radius.
+---@param opts? table Defaults such as `joint`, `bodyType`, alphaThreshold, and maxVertices.
+---@return table Binding result with bodies, bodyIds, joints, jointIds, and parts arrays.
+function LSkeleton:bindPhysics(world, parts, opts) end
+
 --- Blends an animation pose onto the skeleton at a given time with a weight factor for smooth transitions.
 ---@param anim LSkeletonAnimation The animation to sample and blend from.
 ---@param time number The time position to sample within the animation.
@@ -27604,6 +28657,13 @@ function LSkeleton:blendAnimation(anim, time, blend_weight) end
 --- Returns the total number of bones in the skeleton.
 ---@return number Bone count.
 function LSkeleton:boneCount() end
+
+--- Builds a full skeleton animation from bone tracks keyed by bone name or index.
+---@param name string Animation name.
+---@param duration number Duration in seconds.
+---@param tracks table|LArray index>, keys={...}}` track tables.
+---@return LSkeletonAnimation A new animation containing all requested bone timelines.
+function LSkeleton:buildAnimation(name, duration, tracks) end
 
 --- Renders the skeleton into an in-memory image of the given dimensions and returns it as LImageData userdata.
 ---@param w number Width of the output image in pixels.
@@ -27625,6 +28685,11 @@ function LSkeleton:findSlot(name) end
 ---@return number Current animation time position.
 function LSkeleton:getAnimationTime() end
 
+--- Returns the neutral visual source assigned to a slot/source key.
+---@param slot string Slot/source key.
+---@return table nil | Attachment source DTO or nil.
+function LSkeleton:getAttachmentSource(slot) end
+
 --- Returns the final world-space transform of a bone after hierarchy resolution.
 ---@param idx number Zero-based bone index.
 ---@return LSkeletonGetBoneWorldResult Table with keys x, y, rotation, scale_x, scale_y â€” or nil if the index is invalid.
@@ -27639,6 +28704,11 @@ function LSkeleton:getSkin() end
 ---@param looping? boolean Whether to loop the animation. Defaults to true.
 ---@return boolean True if the animation was found and started, false otherwise.
 function LSkeleton:playAnimation(name, looping) end
+
+--- Assigns a neutral visual source to a slot name, attachment name, or `slot:attachment` key.
+---@param slot string Slot/source key.
+---@param source table `{kind, name?, x, y, w, h, textureId?, textureWidth?, textureHeight?}`.
+function LSkeleton:setAttachmentSource(slot, source) end
 
 --- Sets the world-space target position for a named IK constraint. Call updateWorldTransforms after.
 ---@param name string Name of the IK constraint to update.
@@ -27685,6 +28755,11 @@ function LSkeleton:updateAnimation(dt) end
 
 --- Recomputes world transforms for all bones in hierarchy order. Call after modifying bone locals or IK targets.
 function LSkeleton:updateWorldTransforms() end
+
+--- Adds many keyframes for one bone from an array of key tables.
+---@param bone_idx number Zero-based index of the target bone.
+---@param keys table Array of key tables with `time` and any of x, y, rotation, scale_x, scale_y.
+function LSkeletonAnimation:addBoneTrack(bone_idx, keys) end
 
 --- Inserts an event trigger at a specific time within the animation timeline.
 ---@param time number Time position in seconds when the event fires.
@@ -27811,6 +28886,10 @@ function LSprite:getNormalMap() end
 ---@return number World Y position.
 function LSprite:getPosition() end
 
+--- Returns the sprite material shader bound to this sprite, if any.
+---@return LShader? Bound shader or nil.
+function LSprite:getShader() end
+
 --- Returns whether the sprite currently has a normal map.
 ---@return boolean True when a normal map is assigned.
 function LSprite:hasNormalMap() end
@@ -27827,6 +28906,15 @@ function LSprite:setNormalMap(texture_id) end
 ---@param x number World X position.
 ---@param y number World Y position.
 function LSprite:setPosition(x, y) end
+
+--- Sets or clears the render-owned sprite material shader.
+---@param shader? LShader Sprite-target shader or nil to clear.
+function LSprite:setShader(shader) end
+
+--- Sends a uniform value to the shader bound to this sprite.
+---@param name string Uniform name.
+---@param value number|boolean|table Uniform value.
+function LSprite:setShaderUniform(name, value) end
 
 --- Returns the type name of this object.
 ---@return string Always `"LSprite"`.
@@ -27936,6 +29024,46 @@ function LSpriteAtlas:type() end
 ---@return boolean True if the object is the given type.
 function LSpriteAtlas:typeOf(name) end
 
+--- Returns the bitmask for a one-based tile id.
+---@param tile_id number One-based tile id.
+---@return number Bitmask.
+function LSpriteAutoTileSheet:getBitmaskForTile(tile_id) end
+
+--- Returns the default autotile matching mode for this layout.
+---@return string Mode name.
+function LSpriteAutoTileSheet:getDefaultMode() end
+
+--- Returns the autotile layout name.
+---@return string Layout name.
+function LSpriteAutoTileSheet:getLayout() end
+
+--- Returns a one-based tile source rectangle.
+---@param tile_id number One-based tile id.
+---@return table Rectangle table.
+function LSpriteAutoTileSheet:getQuad(tile_id) end
+
+--- Returns the number of logical tiles in the sheet.
+---@return number Tile count.
+function LSpriteAutoTileSheet:getTileCount() end
+
+--- Returns a one-based tile id for a bitmask, or nil when missing.
+---@param bitmask number Neighbor bitmask.
+---@return number nil | One-based tile id.
+function LSpriteAutoTileSheet:getTileForBitmask(bitmask) end
+
+--- Returns all autotile source rectangles as sprite frame DTOs.
+---@return table Array of frame rectangles.
+function LSpriteAutoTileSheet:toFrames() end
+
+--- Returns the Lua-visible type name.
+---@return string The string `LSpriteAutoTileSheet`.
+function LSpriteAutoTileSheet:type() end
+
+--- Returns whether this handle matches a supported type name.
+---@param name string Type name to compare.
+---@return boolean True when the supplied type name matches.
+function LSpriteAutoTileSheet:typeOf(name) end
+
 --- Renders the sprite sheet grid into an LImage of the given size for debugging or previews.
 ---@param w number Output image width in pixels.
 ---@param h number Output image height in pixels.
@@ -27986,6 +29114,16 @@ function LSpriteSheet:getRow(row) end
 ---@param count number Number of frames in the group.
 function LSpriteSheet:nameGroup(name, start, count) end
 
+--- Builds an animation clip DTO from this sheet without creating playback state.
+---@param opts? table `{name, group, fps, loop, mode}`.
+---@return table Clip DTO with `name`, `frames`, `fps`, `loop`, and `mode`.
+function LSpriteSheet:toAnimationClip(opts) end
+
+--- Returns frame rectangle DTOs for all frames or a named group.
+---@param group? string Optional group name.
+---@return table Array of `{x, y, w, h}` frame rectangles.
+function LSpriteSheet:toFrames(group) end
+
 --- Returns the type name of this object.
 ---@return string Always `"LSpriteSheet"`.
 function LSpriteSheet:type() end
@@ -27999,6 +29137,12 @@ function LSpriteSheet:typeOf(name) end
 ---@param clips? table Map `{ clip_name = { row, from, to, fps, loop? } }`.
 ---@return LSpriteAnimator A new clip animator object.
 lurek.sprite.newAnimator = function(clips) end
+
+--- Parses atlas JSON for an existing `LImageData` source.
+---@param image LImageData Source image data used as the atlas texture.
+---@param atlas_json string TexturePacker or Aseprite JSON.
+---@return LSpriteAtlas Parsed atlas.
+lurek.sprite.newAtlasFromImage = function(image, atlas_json) end
 
 --- Creates a runtime atlas packer for dynamically allocating named sprite regions.
 ---@param width number Atlas width in pixels.
@@ -28014,6 +29158,22 @@ lurek.sprite.newAtlasPacker = function(width, height, padding) end
 ---@return LSpriteSheet A new sprite sheet derived from the atlas entries.
 lurek.sprite.newAtlasSheet = function(atlas, sw, sh) end
 
+--- Creates an autotile sheet descriptor from an image source, layout, and tile options.
+---@param image LImageData Source autotile sheet image.
+---@param layout string `blob47`, `composite48`, `rpgmaker48`, or `minimal16`.
+---@param opts table `{tileWidth, tileHeight}`.
+---@return LSpriteAutoTileSheet Autotile sheet descriptor.
+lurek.sprite.newAutoTileSheet = function(image, layout, opts) end
+
+--- Creates a 9-slice definition from an image and four border insets for scalable UI rendering.
+---@param image LImage Source texture.
+---@param top number Top border inset in pixels.
+---@param right number Right border inset.
+---@param bottom number Bottom border inset.
+---@param left number Left border inset.
+---@return LNineSlice The 9-slice handle.
+lurek.sprite.newNineSlice = function(image, top, right, bottom, left) end
+
 --- Creates a sprite sheet using RPG Maker's standard character layout (4 columns Ă— 4 rows per character block).
 ---@param tw number Full texture width in pixels.
 ---@param th number Full texture height in pixels.
@@ -28027,6 +29187,12 @@ lurek.sprite.newRPGMakerSheet = function(tw, th) end
 ---@param fh number Single frame height in pixels.
 ---@return LSpriteSheet A new sprite sheet object.
 lurek.sprite.newSheet = function(tw, th, fw, fh) end
+
+--- Creates a sprite sheet from an existing `LImageData` source and frame options.
+---@param image LImageData Source image data.
+---@param opts table `{frameWidth, frameHeight}` or `{columns, rows}`.
+---@return LSpriteSheet A new sprite sheet object.
+lurek.sprite.newSheetFromImage = function(image, opts) end
 
 --- Creates a lightweight sprite record with transform and optional normal-map metadata.
 ---@param texture_id number Texture handle used by the sprite.
@@ -28354,6 +29520,10 @@ function LTerminal:getFocused() end
 ---@return table Render stats keyed by stat name.
 function LTerminal:getRenderStats() end
 
+--- Returns the UI shader bound to this terminal, or nil when default terminal rendering is used.
+---@return LShader? Bound shader handle, if any.
+function LTerminal:getShader() end
+
 --- Returns the number of widgets currently attached to this terminal.
 ---@return number Widget count.
 function LTerminal:getWidgetCount() end
@@ -28419,6 +29589,10 @@ function LTerminal:setFocus(widget) end
 --- Selects the nearest built-in bitmap font by pixel height and refits the window to the terminal grid.
 ---@param height number Desired font height in pixels.
 function LTerminal:setFont(height) end
+
+--- Binds or clears a render-owned UI shader for this terminal's generated render commands.
+---@param shader? LShader Shader created with `lurek.render.newShader(code, { target = "ui" })`, or nil to clear.
+function LTerminal:setShader(shader) end
 
 --- Forwards a text input event to the terminal for character entry into focused widgets.
 ---@param text string The text characters entered.
@@ -28981,78 +30155,158 @@ lurek.thread.newPool = function(size, code) end
 ---@return LThread A thread handle that can be started, waited on, and inspected.
 lurek.thread.newThread = function(code) end
 
---- Adds a point light and returns its stable id.
----@param opts table `{x, y, z?, radius, intensity?, color?}` light definition.
-function LTileField:addPointLight(opts) end
+--- Applies a named modifier to one cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param modifier string Modifier name.
+function LTileField:applyModifier(x, y, z, modifier) end
 
---- Applies a named profile to one cell.
----@param x any
----@param y any
----@param z? any
----@param name any
-function LTileField:applyProfile(x, y, z, name) end
+--- Applies a legacy profile to one cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param profile string Profile name.
+function LTileField:applyProfile(x, y, z, profile) end
+
+--- Applies the object archetype defaults for a tileset tile referenced from one cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param slot string Reference slot name.
+---@param tileset LTileSet Tileset that stores object archetype metadata.
+---@param opts? table Options: refIsGid.
+---@return boolean True when the tileset object was found and applied.
+function LTileField:applyTilesetObject(x, y, z, slot, tileset, opts) end
+
+--- Applies tileset object defaults for every referenced cell on one tilefield level.
+---@param slot string Reference slot name.
+---@param tileset LTileSet Tileset that stores object metadata.
+---@param opts? table Options: z, refIsGid.
+---@return number Number of cells that received object defaults.
+function LTileField:applyTilesetObjectLayer(slot, tileset, opts) end
 
 --- Returns whether a cell blocks a channel.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param channel string Blocker channel name to query.
+---@return boolean True when the addressed cell blocks the channel.
+function LTileField:blocks(x, y, z, channel) end
+
+--- Returns whether one cell blocks a category.
 ---@param x any
 ---@param y any
 ---@param z? any
----@param channel any
-function LTileField:blocks(x, y, z, channel) end
+---@param category any
+function LTileField:blocksCategory(x, y, z, category) end
 
---- Clears all cell gameplay state and computed light values.
+--- Clears all cell gameplay state.
 function LTileField:clear() end
 
---- Clears one cell.
+--- Clears gameplay state for one addressed cell.
 ---@param x number One-based column.
 ---@param y number One-based row.
 ---@param z? number One-based level, default 1.
 function LTileField:clearCell(x, y, z) end
 
 --- Returns true when the line between two cell tables has no blocker for a channel.
----@param from_tbl any
----@param to_tbl any
----@param channel any
----@param opts? any
+---@param from_tbl table Start cell table with one-based x, y, and optional z fields.
+---@param to_tbl table End cell table with one-based x, y, and optional z fields.
+---@param channel string Blocker channel name to test along the line.
+---@param opts? table Reserved optional line query options.
+---@return boolean True when no blocker exists between the two cells.
 function LTileField:clearLine(from_tbl, to_tbl, channel, opts) end
 
---- Removes all point lights.
-function LTileField:clearPointLights() end
+--- Removes one modifier from one cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param modifier string Modifier name.
+---@return boolean True when the cell had the modifier.
+function LTileField:clearModifier(x, y, z, modifier) end
 
---- Computes tile light from ambient, point lights, and global top light.
----@param opts? table Optional includePointLights, includeGlobalLight, and ambient settings.
-function LTileField:computeLight(opts) end
+--- Clears a named object/tile reference from one cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param slot string Reference slot name.
+function LTileField:clearRef(x, y, z, slot) end
+
+--- Defines or replaces a user category used by movement, awareness, light, sun, or custom systems.
+---@param name string Stable category name.
+---@param opts? table?|Options custom', active=true?.
+function LTileField:defineCategory(name, opts) end
+
+--- Defines a named object slot that cells may reference.
+---@param slot string Slot name chosen by the Lua game.
+function LTileField:defineSlot(slot) end
 
 --- Exports one blocker channel and level as a row-major boolean array.
----@param channel any
----@param z? any
+---@param channel string Blocker channel name to export.
+---@param z? number One-based level, default 1.
+---@return table Row-major boolean array for the requested channel and level.
 function LTileField:exportBlockLayer(channel, z) end
 
 --- Exports one cost channel and level as a row-major number array.
----@param channel any
----@param z? any
+---@param channel string Cost channel name to export.
+---@param z? number One-based level, default 1.
+---@return table Row-major number array for the requested channel and level.
 function LTileField:exportCostLayer(channel, z) end
 
---- Exports one level of computed light as row-major `{r,g,b,luma}` tables.
+--- Exports one named object/tile reference slot and level as a row-major array.
+---@param slot string Reference slot name to export.
 ---@param z? number One-based level, default 1.
----@return table Row-major array of light tables.
-function LTileField:exportLightLayer(z) end
-
---- Exports all computed light levels as nested row-major tables.
----@return table Array of per-level row-major light layers.
-function LTileField:exportLightVolume() end
-
---- Exports one level of profile names as a row-major array.
----@param z? number One-based level, default 1.
-function LTileField:exportProfileLayer(z) end
+function LTileField:exportRefLayer(slot, z) end
 
 --- Returns the first one-based blocking cell table between two cells, or nil.
----@param from_tbl any
----@param to_tbl any
----@param channel any
----@param opts? any
+---@param from_tbl table Start cell table with one-based x, y, and optional z fields.
+---@param to_tbl table End cell table with one-based x, y, and optional z fields.
+---@param channel string Blocker channel name to test along the line.
+---@param opts? table Reserved optional line query options.
+---@return table nil | First blocking cell table, or nil when the line is clear.
 function LTileField:firstBlocker(from_tbl, to_tbl, channel, opts) end
 
---- Returns a table with blockers, costs, sun occlusion, and optional profile name.
+--- Returns whether a rectangular footprint can occupy a cell anchor for a category.
+---@param x any
+---@param y any
+---@param z? any
+---@param w any
+---@param h any
+---@param category any
+function LTileField:footprintPassable(x, y, z, w, h, category) end
+
+--- Returns known category names.
+---@return string[] Sorted category names.
+function LTileField:getCategories() end
+
+--- Returns category metadata, or nil when the category is unknown.
+---@param name string Category name.
+---@return table nil | Category table with name, kind, and active.
+function LTileField:getCategory(name) end
+
+--- Returns one effective category cost.
+---@param x any
+---@param y any
+---@param z? any
+---@param category any
+function LTileField:getCategoryCost(x, y, z, category) end
+
+--- Returns one effective RGB category filter.
+---@param x any
+---@param y any
+---@param z? any
+---@param category any
+function LTileField:getCategoryFilter(x, y, z, category) end
+
+--- Returns one effective category transmission multiplier.
+---@param x any
+---@param y any
+---@param z? any
+---@param category any
+function LTileField:getCategoryTransmission(x, y, z, category) end
+
+--- Returns a table with blockers, costs, sun occlusion, refs, and modifiers.
 ---@param x number One-based column.
 ---@param y number One-based row.
 ---@param z? number One-based level, default 1.
@@ -29060,26 +30314,100 @@ function LTileField:firstBlocker(from_tbl, to_tbl, channel, opts) end
 function LTileField:getCell(x, y, z) end
 
 --- Returns the cost for one cell/channel.
----@param x any
----@param y any
----@param z? any
----@param channel any
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param channel string Cost channel name to query.
+---@return number Movement or traversal cost value.
 function LTileField:getCost(x, y, z, channel) end
 
---- Returns r, g, b, and luma for one cell.
----@param x number One-based cell x coordinate.
----@param y number One-based cell y coordinate.
----@param z? number One-based level, default 1.
----@return number Red component in 0..1.
----@return number Green component in 0..1.
----@return number Blue component in 0..1.
----@return number Luma value in 0..1.
-function LTileField:getLight(x, y, z) end
+--- Returns a named tile modifier table, or nil.
+---@param name string Modifier name.
+---@return table nil | Modifier table.
+function LTileField:getModifier(name) end
 
---- Returns a named object profile table, or nil when absent.
----@param name string Profile name to read.
----@return table nil | Profile table with blockers, costs, and sunOcclusion, or nil.
+--- Returns active modifier names on one cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@return string[] Active modifier names.
+function LTileField:getModifiers(x, y, z) end
+
+--- Returns topology-aware same-level neighbours for one cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@return table Array of one-based coordinate tables.
+function LTileField:getNeighbors(x, y, z) end
+
+--- Returns a legacy profile table, or nil.
+---@param name string Profile name.
+---@return table nil | Profile table.
 function LTileField:getProfile(name) end
+
+--- Returns a named object/tile reference from one cell, or nil.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param slot string Reference slot name.
+---@return number table|nil | Stored legacy id, typed ref table, or nil when unset.
+function LTileField:getRef(x, y, z, slot) end
+
+--- Reads all tileset properties for a tile referenced from one cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param slot string Reference slot name.
+---@param tileset LTileSet Tileset that stores object metadata.
+---@param opts? table Options: refIsGid.
+---@return table nil | Property name/value table, or nil when the ref is missing/outside the tileset.
+function LTileField:getRefProperties(x, y, z, slot, tileset, opts) end
+
+--- Reads a tileset property for a tile referenced from one cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param slot string Reference slot name.
+---@param tileset LTileSet Tileset that stores object metadata.
+---@param property string Property name to read.
+---@param opts? table Options: refIsGid.
+---@return string nil | Property value, or nil when missing.
+function LTileField:getRefProperty(x, y, z, slot, tileset, property, opts) end
+
+--- Reads a tileset property for a tile referenced from one cell and parses it as a boolean.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param slot string Reference slot name.
+---@param tileset LTileSet Tileset that stores object metadata.
+---@param property string Property name to read.
+---@param opts? table Options: refIsGid.
+---@return boolean nil | Boolean property value, or nil when missing/not boolean.
+function LTileField:getRefPropertyBool(x, y, z, slot, tileset, property, opts) end
+
+--- Reads a tileset property for a tile referenced from one cell and parses it as a number.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param slot string Reference slot name.
+---@param tileset LTileSet Tileset that stores object metadata.
+---@param property string Property name to read.
+---@param opts? table Options: refIsGid.
+---@return number nil | Numeric property value, or nil when missing/not numeric.
+function LTileField:getRefPropertyNumber(x, y, z, slot, tileset, property, opts) end
+
+--- Returns every declared ref slot.
+---@return string[] Ref slot names.
+function LTileField:getRefSlots() end
+
+--- Returns one-based cells for a named region, or nil when it does not exist.
+---@param name string Region name.
+---@return table? Array of `{ x, y, z }` cells.
+function LTileField:getRegionCells(name) end
+
+--- Returns all region names in stable order.
+---@return table Array of region names.
+function LTileField:getRegionNames() end
 
 --- Returns field width, height, and level count.
 ---@return number Field width in cells.
@@ -29088,14 +30416,24 @@ function LTileField:getProfile(name) end
 function LTileField:getSize() end
 
 --- Returns top-light occlusion in the inclusive range 0..1.
----@param x any
----@param y any
----@param z? any
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@return number Top-light occlusion value in the inclusive range 0..1.
 function LTileField:getSunOcclusion(x, y, z) end
 
---- Returns the field topology name.
----@return string `square`, `iso_square`, or `hex`.
+--- Returns the field topology name used for coordinate interpretation.
+---@return string `square`, `square4`, `square8`, `iso_square`, or `hex`.
 function LTileField:getTopology() end
+
+--- Returns the current tilefield data version.
+---@return number Monotonic field version incremented by data mutations.
+function LTileField:getVersion() end
+
+--- Returns true when a named object slot is declared.
+---@param slot string Slot name.
+---@return boolean True when declared.
+function LTileField:hasSlot(slot) end
 
 --- Returns whether one-based coordinates are inside the field.
 ---@param x number One-based column.
@@ -29108,24 +30446,75 @@ function LTileField:inBounds(x, y, z) end
 ---@param opts table `{from={x,y,z?}, to={x,y,z?}, includeEndpoints?}`.
 function LTileField:line(opts) end
 
---- Removes a point light by id and returns whether it existed.
----@param id number Stable point light id returned by `addPointLight`.
----@return boolean True when a point light was removed.
-function LTileField:removePointLight(id) end
+--- Returns whether a named region contains a one-based tile cell.
+---@param name string Region name.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@return boolean True when the region contains the cell.
+function LTileField:regionContains(name, x, y, z) end
 
---- Removes a named object profile.
----@param name string Profile name to remove.
+--- Removes a named modifier and clears it from all cells.
+---@param name string Modifier name.
+---@return boolean True when removed.
+function LTileField:removeModifier(name) end
+
+--- Removes a legacy profile and clears it from all cells.
+---@param name string Profile name.
+---@return boolean True when removed.
 function LTileField:removeProfile(name) end
 
+--- Removes a named region.
+---@param name string Region name.
+---@return boolean True when the region existed.
+function LTileField:removeRegion(name) end
+
+--- Removes a named object slot and clears its references from the field.
+---@param slot string Slot name.
+---@return boolean True when the slot existed.
+function LTileField:removeSlot(slot) end
+
 --- Sets whether a cell blocks a channel.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param channel string Blocker channel name to update.
+---@param blocked boolean True when the channel should be blocked.
+function LTileField:setBlock(x, y, z, channel, blocked) end
+
+--- Sets one category blocker on one cell.
 ---@param x any
 ---@param y any
 ---@param z? any
----@param channel any
+---@param category any
 ---@param blocked any
-function LTileField:setBlock(x, y, z, channel, blocked) end
+function LTileField:setCategoryBlock(x, y, z, category, blocked) end
 
---- Sets cell state from a table with optional `blocks`, `costs`, `sunOcclusion`, and `profile`.
+--- Sets one category cost on one cell.
+---@param x any
+---@param y any
+---@param z? any
+---@param category any
+---@param cost any
+function LTileField:setCategoryCost(x, y, z, category, cost) end
+
+--- Sets one RGB category filter on one cell.
+---@param x any
+---@param y any
+---@param z? any
+---@param category any
+---@param filter any
+function LTileField:setCategoryFilter(x, y, z, category, filter) end
+
+--- Sets one category transmission multiplier on one cell.
+---@param x any
+---@param y any
+---@param z? any
+---@param category any
+---@param value any
+function LTileField:setCategoryTransmission(x, y, z, category, value) end
+
+--- Sets cell state from a table with optional `blocks`, `costs`, `sunOcclusion`, `refs`, and `modifiers`.
 ---@param x number One-based column.
 ---@param y number One-based row.
 ---@param z? number One-based level, default 1.
@@ -29133,27 +30522,50 @@ function LTileField:setBlock(x, y, z, channel, blocked) end
 function LTileField:setCell(x, y, z, cell) end
 
 --- Sets the cost for one cell/channel.
----@param x any
----@param y any
----@param z? any
----@param channel any
----@param cost any
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param channel string Cost channel name to update.
+---@param cost number Movement or traversal cost value.
 function LTileField:setCost(x, y, z, channel, cost) end
 
---- Sets top-down global light.
----@param opts table `{intensity?, color?}` global top-light settings.
-function LTileField:setGlobalLight(opts) end
+--- Registers or replaces a named tile modifier.
+---@param name string Modifier name.
+---@param modifier table Modifier table with blocks, costAdd, costMul, sunOcclusionAdd, light, properties.
+function LTileField:setModifier(name, modifier) end
 
---- Registers or replaces a named object profile.
----@param name any
----@param profile_tbl any
-function LTileField:setProfile(name, profile_tbl) end
+--- Registers or replaces a legacy tilefield profile.
+---@param name string Profile name.
+---@param profile table Profile table with blocks, costs, sunOcclusion, light, or properties.
+function LTileField:setProfile(name, profile) end
+
+--- Sets a named object/tile reference on one cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param slot string Reference slot name defined by the Lua game.
+---@param value number|table Legacy id or typed `{ tileset, tile?/object? }` ref stored for the slot.
+function LTileField:setRef(x, y, z, slot, value) end
+
+--- Defines or replaces a named region from explicit one-based tile cells.
+---@param name string Region name.
+---@param cells table Array of `{ x, y, z? }` cells.
+function LTileField:setRegionCells(name, cells) end
+
+--- Defines or replaces a named region from an inclusive one-based tile rectangle.
+---@param name string Region name.
+---@param x1 number First one-based column.
+---@param y1 number First one-based row.
+---@param x2 number Second one-based column.
+---@param y2 number Second one-based row.
+---@param z? number One-based level, default 1.
+function LTileField:setRegionRect(name, x1, y1, x2, y2, z) end
 
 --- Sets top-light occlusion in the inclusive range 0..1.
----@param x any
----@param y any
----@param z? any
----@param value any
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param value number Top-light occlusion value in the inclusive range 0..1.
 function LTileField:setSunOcclusion(x, y, z, value) end
 
 --- Returns the Lua-visible type name for this tilefield handle.
@@ -29165,21 +30577,237 @@ function LTileField:type() end
 ---@return boolean True for `LTileField` or `LObject`.
 function LTileField:typeOf(name) end
 
---- Updates an existing point light by id.
----@param id any
----@param opts any
-function LTileField:updatePointLight(id, opts) end
+--- Writes one full blocker channel layer from a row-major boolean array.
+---@param channel string Blocker channel name to write.
+---@param z? number One-based level, default 1.
+---@param values table Row-major boolean array with width*height entries.
+function LTileField:writeBlockLayer(channel, z, values) end
 
---- Copies a tilemap layer into a tilefield using solid and empty profiles.
+--- Writes one full cost channel layer from a row-major number array.
+---@param channel string Cost channel name to write.
+---@param z? number One-based level, default 1.
+---@param values table Row-major number array with width*height entries.
+function LTileField:writeCostLayer(channel, z, values) end
+
+--- Writes one full named ref layer from a row-major integer-or-nil array.
+---@param slot string Reference slot name to write.
+---@param z? number One-based level, default 1.
+---@param values table Row-major integer-or-nil array with width*height entries.
+function LTileField:writeRefLayer(slot, z, values) end
+
+--- Returns the shared tilefield at one field-map coordinate.
+---@param mapX number One-based field-map column.
+---@param mapY number One-based field-map row.
+---@param mapZ? number One-based field-map layer, default 1.
+---@return LTileField Shared tilefield handle.
+function LTileFieldMap:getField(mapX, mapY, mapZ) end
+
+--- Returns contained field width, height, and level count.
+---@return number Contained field width in cells.
+---@return number Contained field height in cells.
+---@return number Contained field level count.
+function LTileFieldMap:getFieldSize() end
+
+--- Returns field-map width, height, and layer count.
+---@return number Field-map width in field slots.
+---@return number Field-map height in field slots.
+---@return number Field-map layer count.
+function LTileFieldMap:getMapSize() end
+
+--- Returns the topology shared by every contained field.
+---@return string `square`, `square4`, `square8`, `iso_square`, or `hex`.
+function LTileFieldMap:getTopology() end
+
+--- Returns whether one-based field-map coordinates are inside the field map.
+---@param mapX number One-based field-map column.
+---@param mapY number One-based field-map row.
+---@param mapZ? number One-based field-map layer, default 1.
+---@return boolean True when coordinates are in bounds.
+function LTileFieldMap:inBounds(mapX, mapY, mapZ) end
+
+--- Replaces one field-map slot with an existing compatible tilefield handle.
+---@param mapX number One-based field-map column.
+---@param mapY number One-based field-map row.
+---@param mapZ? number One-based field-map layer, default 1.
+---@param field LTileField Existing compatible tilefield handle.
+function LTileFieldMap:setField(mapX, mapY, mapZ, field) end
+
+--- Returns the Lua-visible type name for this tilefield map handle.
+---@return string The string `LTileFieldMap`.
+function LTileFieldMap:type() end
+
+--- Returns whether this handle matches a supported type name.
+---@param name string Type name to compare.
+---@return boolean True for `LTileFieldMap` or `LObject`.
+function LTileFieldMap:typeOf(name) end
+
+--- Creates normal render lights and occluders from tilefield refs whose tileset objects define `renderLight` or `occluder`.
+---@param field LTileField Source field containing refs.
+---@param slot string Reference slot name.
+---@param tileset LTileSet Tileset with tile object metadata.
+---@param opts? table `{z?/level?, refIsGid?, originX?, originY?, tileWidth?, tileHeight?}`.
+---@return table `{lights=Llight[], occluders=LOccluder[]}`.
+lurek.tilefield.createLightsFromTileset = function(field, slot, tileset, opts) end
+
+--- Creates physics bodies from tilefield refs whose tileset objects define `physics`.
+---@param field LTileField Source field containing refs.
+---@param slot string Reference slot name.
+---@param tileset LTileSet Tileset with tile object metadata.
+---@param world LWorld Physics world that receives the bodies.
+---@param opts? table `{z?/level?, refIsGid?, originX?, originY?, tileWidth?, tileHeight?}`.
+---@return LBody[] Created physics body handles in row-major order.
+lurek.tilefield.createPhysicsFromTileset = function(field, slot, tileset, world, opts) end
+
+--- Builds a native tilefield from a Lua provider table with width, height, optional levels/topology, slots, modifiers, regions, and optional getCell(x,y,z).
+---@param provider table Lua-authored tilefield provider.
+---@return LTileField New tilefield copied from the provider.
+lurek.tilefield.fromProvider = function(provider) end
+
+--- Copies a tilemap layer into a tilefield, optionally applying tileset object defaults and a ref slot.
 ---@param tilemap LTileMap Source tilemap.
----@param opts? table `{level?, topology?, solidProfile?, emptyProfile?, solidGids?}`.
+---@param opts? table `{layer?, level?, levels?, topology?, solidGids?, refSlot?, applyTilesetObject?}`; `solidGids` and `applyTilesetObject` are explicit, no tileset solidity is inferred.
 ---@return LTileField New tilefield copied from the tilemap layer.
 lurek.tilefield.fromTileMap = function(tilemap, opts) end
 
---- Creates a multi-level tilefield.
+--- Creates a multi-level tilefield with explicit dimensions and topology.
 ---@param opts table `{width, height, levels?, topology?}`.
 ---@return LTileField New tilefield handle.
 lurek.tilefield.new = function(opts) end
+
+--- Creates a 2D or layered map of shared tilefields.
+---@param opts table `{width, height, layers?, fieldWidth, fieldHeight, fieldLevels?, topology?}`.
+---@return LTileFieldMap New tilefield map handle.
+lurek.tilefield.newFieldMap = function(opts) end
+
+--- Adds a rectangular area light and returns its stable id.
+---@param opts table h,radius,intensity?,color?,flicker?,colorCycle?}`.
+function LTileLightMap:addAreaLight(opts) end
+
+--- Adds a tile line light and returns its stable id.
+---@param opts table `{x1,y1,z1?,x2,y2,z2?,radius,intensity?,color?,flicker?,colorCycle?}`.
+function LTileLightMap:addLineLight(opts) end
+
+--- Adds a point light and returns its stable id.
+---@param opts table `{x, y, z?, radius, intensity?, color?, flicker?, colorCycle?}` light definition.
+function LTileLightMap:addPointLight(opts) end
+
+--- Alias for `addAreaLight`.
+---@param opts table h,radius,intensity?,color?,flicker?,colorCycle?}`.
+---@return number Stable rectangular light id.
+function LTileLightMap:addRectLight(opts) end
+
+--- Removes all rectangular area lights currently stored on this tile light map.
+function LTileLightMap:clearAreaLights() end
+
+--- Removes all line lights currently stored on this tile light map.
+function LTileLightMap:clearLineLights() end
+
+--- Removes all point lights currently stored on this tile light map.
+function LTileLightMap:clearPointLights() end
+
+--- Alias for `clearAreaLights`.
+function LTileLightMap:clearRectLights() end
+
+--- Computes tile light from ambient, point lights, line lights, and sun light.
+---@param opts? table Optional includePointLights, includeLineLights, includeAreaLights, includeSunLight, ambient, and time settings.
+function LTileLightMap:compute(opts) end
+
+--- Exports one level of computed light as row-major `{r,g,b,luma}` tables.
+---@param z? number One-based level, default 1.
+---@return table Row-major array of light color tables for the requested level.
+function LTileLightMap:exportLayer(z) end
+
+--- Exports all computed light levels as nested row-major tables.
+---@return table Array of exported light layers, one table per level.
+function LTileLightMap:exportVolume() end
+
+--- Returns r, g, b, and luma for one cell.
+---@param x number One-based cell x coordinate.
+---@param y number One-based cell y coordinate.
+---@param z? number One-based level, default 1.
+---@return number Red; green; blue; and luma values for the cell. (value 1).
+---@return number Red; green; blue; and luma values for the cell. (value 2).
+---@return number Red; green; blue; and luma values for the cell. (value 3).
+---@return number Red; green; blue; and luma values for the cell. (value 4).
+function LTileLightMap:getLight(x, y, z) end
+
+--- Returns light-map width, height, and level count.
+---@return number Width; height; and level count. (value 1).
+---@return number Width; height; and level count. (value 2).
+---@return number Width; height; and level count. (value 3).
+function LTileLightMap:getSize() end
+
+--- Removes a rectangular area light by id and returns whether it existed.
+---@param id number Stable area-light id returned by `addAreaLight`.
+---@return boolean True when an area light was removed.
+function LTileLightMap:removeAreaLight(id) end
+
+--- Removes a line light by id and returns whether it existed.
+---@param id number Stable line-light id returned by `addLineLight`.
+---@return boolean True when a line light was removed.
+function LTileLightMap:removeLineLight(id) end
+
+--- Removes a point light by id and returns whether it existed.
+---@param id number Stable point light id returned by `addPointLight`.
+---@return boolean True when a point light was removed.
+function LTileLightMap:removePointLight(id) end
+
+--- Alias for `removeAreaLight`.
+---@param id number Stable rectangular light id returned by `addRectLight`.
+---@return boolean True when a rectangular light was removed.
+function LTileLightMap:removeRectLight(id) end
+
+--- Sets ambient tile light stored on this light map.
+---@param color table `{r,g,b}` ambient color.
+function LTileLightMap:setAmbient(color) end
+
+--- Compatibility alias for top sun light parameters used during light computation.
+---@param opts table `{intensity?, color?}` top-light settings.
+function LTileLightMap:setGlobalLight(opts) end
+
+--- Sets tile sun light parameters used during light computation.
+---@param opts table 'directional', intensity?, color?, direction?}`.
+function LTileLightMap:setSunLight(opts) end
+
+--- Returns the Lua-visible type name for this tile light map handle.
+---@return string The string `LTileLightMap`.
+function LTileLightMap:type() end
+
+--- Returns whether this handle matches a supported type name.
+---@param name string Type name to compare.
+---@return boolean True for `LTileLightMap` or `LObject`.
+function LTileLightMap:typeOf(name) end
+
+--- Updates an existing rectangular area light by id.
+---@param id number Stable area-light id returned by `addAreaLight`.
+---@param opts table Area-light fields to update.
+function LTileLightMap:updateAreaLight(id, opts) end
+
+--- Updates an existing tile line light by id.
+---@param id number Stable line light id returned by `addLineLight`.
+---@param opts table Partial line light update.
+function LTileLightMap:updateLineLight(id, opts) end
+
+--- Updates an existing point light by id.
+---@param id number Stable point light id returned by `addPointLight`.
+---@param opts table Partial light update table with x, y, z, radius, intensity, or color.
+function LTileLightMap:updatePointLight(id, opts) end
+
+--- Alias for `updateAreaLight`.
+---@param id number Stable rectangular light id returned by `addRectLight`.
+---@param opts table Rectangular-light fields to update.
+function LTileLightMap:updateRectLight(id, opts) end
+
+--- Creates and computes a tile light map for a shared tilefield or Lua tilefield provider table.
+---@param field LTileField|table Source tilefield handle or provider table.
+---@param opts? table Optional includePointLights, includeLineLights, includeSunLight, ambient, and time settings.
+---@return LTileLightMap Computed tile light map handle.
+lurek.tilelight.compute = function(field, opts) end
+
+--- Creates a tile light map attached to a shared tilefield or copied from a Lua tilefield provider table.
+---@param field LTileField|table Source tilefield handle or provider table.
+---@return LTileLightMap New tile light map handle.
+lurek.tilelight.new = function(field) end
 
 --- Writes the auto-tile bitmask-to-tile rules from this sheet into a tileset.
 ---@param tileSet LTileSet Target tileset to receive the rules.
@@ -29479,7 +31107,7 @@ function LLargeMapRenderer:setTile(x, y, tileId) end
 ---@param cols number Number of columns in the tileset image.
 function LLargeMapRenderer:setTilesetColumns(cols) end
 
---- Sets the viewport dimensions for visibility calculations.
+--- Sets the viewport rectangle used for render-command culling.
 ---@param w number Viewport width in pixels.
 ---@param h number Viewport height in pixels.
 function LLargeMapRenderer:setViewport(w, h) end
@@ -29492,152 +31120,6 @@ function LLargeMapRenderer:type() end
 ---@param name string Type name to check against.
 ---@return boolean True if `name` is `"LLargeMapRenderer"` or `"Object"`.
 function LLargeMapRenderer:typeOf(name) end
-
---- Returns both width and height of the block in tiles.
----@return number Width.
----@return number Height.
-function LMapBlock:getDimensions() end
-
---- Returns the block height in tiles. This method is available to Lua scripts.
----@return number Height.
-function LMapBlock:getHeight() end
-
---- Returns the block height measured in segments.
----@return number Height in segments.
-function LMapBlock:getHeightInSegments() end
-
---- Returns the number of tile layers in this block.
----@return number Layer count.
-function LMapBlock:getLayerCount() end
-
---- Returns the block's name. This method is available to Lua scripts.
----@return string Block name.
-function LMapBlock:getName() end
-
---- Returns the segment size used for edge matching.
----@return number Segment size in tiles.
-function LMapBlock:getSegmentSize() end
-
---- Returns the side ID for an edge segment.
----@param edge string Edge direction: `"north"`, `"east"`, `"south"`, or `"west"`.
----@param segment number Segment index along the edge (1-based).
----@return number Side identifier.
-function LMapBlock:getSide(edge, segment) end
-
---- Returns the tile GID at a position within the block.
----@param layer number Layer index (1-based).
----@param x number Column (1-based).
----@param y number Row (1-based).
----@return number Global tile ID.
-function LMapBlock:getTile(layer, x, y) end
-
---- Returns the current selection weight.
----@return number Weight value.
-function LMapBlock:getWeight() end
-
---- Returns the block width in tiles. This method is available to Lua scripts.
----@return number Width.
-function LMapBlock:getWidth() end
-
---- Returns the block width measured in segments.
----@return number Width in segments.
-function LMapBlock:getWidthInSegments() end
-
---- Sets the block's name for identification during map generation.
----@param name string Block name.
-function LMapBlock:setName(name) end
-
---- Sets the side ID for an edge segment, used for edge matching in map generation.
----@param edge string Edge direction: `"north"`, `"east"`, `"south"`, or `"west"`.
----@param segment number Segment index along the edge (1-based).
----@param sideId number Side identifier for matching.
-function LMapBlock:setSide(edge, segment, sideId) end
-
---- Sets a tile GID at a position within the block.
----@param layer number Layer index (1-based).
----@param x number Column (1-based).
----@param y number Row (1-based).
----@param gid number Global tile ID.
-function LMapBlock:setTile(layer, x, y, gid) end
-
---- Sets the selection weight for this block during random placement.
----@param weight number Relative weight (higher = more likely to be chosen).
-function LMapBlock:setWeight(weight) end
-
---- Returns the type name of this userdata.
----@return string Always `"LMapBlock"`.
-function LMapBlock:type() end
-
---- Checks whether this object matches the given type name.
----@param name string Type name to check against.
----@return boolean True if `name` is `"LMapBlock"` or `"Object"`.
-function LMapBlock:typeOf(name) end
-
---- Runs the map generator, optionally using a specific script, seed, and layer name, returning a new tilemap.
----@param scriptIdx? number Script index in the group (1-based), or nil for default.
----@param seed? number Random seed, or nil for random.
----@param layerName? string Output layer name (default `"main"`).
----@return LTileMap Generated tilemap.
-function LMapGen:generate(scriptIdx, seed, layerName) end
-
---- Returns the type name of this userdata.
----@return string Always `"LMapGen"`.
-function LMapGen:type() end
-
---- Checks whether this object matches the given type name.
----@param name string Type name to check against.
----@return boolean True if `name` is `"LMapGen"` or `"Object"`.
-function LMapGen:typeOf(name) end
-
---- Adds a map block to this group for use in generation.
----@param block LMapBlock Block to add.
-function LMapGroup:addBlock(block) end
-
---- Attaches a map-generation script to this group.
----@param script LMapScript Script to add.
-function LMapGroup:addScript(script) end
-
---- Returns how many blocks are in this group.
----@return number Block count.
-function LMapGroup:getBlockCount() end
-
---- Returns the group name. This method is available to Lua scripts.
----@return string Group name.
-function LMapGroup:getName() end
-
---- Returns how many scripts are attached to this group.
----@return number Script count.
-function LMapGroup:getScriptCount() end
-
---- Removes a block from the group by index.
----@param idx number Block index (1-based).
-function LMapGroup:removeBlock(idx) end
-
---- Returns the type name of this userdata.
----@return string Always `"LMapGroup"`.
-function LMapGroup:type() end
-
---- Checks whether this object matches the given type name.
----@param name string Type name to check against.
----@return boolean True if `name` is `"LMapGroup"` or `"Object"`.
-function LMapGroup:typeOf(name) end
-
---- Appends a generation step. The step table must have a `type` field and optional parameters.
----@param stepDef table Step definition with `type` and parameters like `x`, `y`, `w`, `h`, `gid`, `chance`, etc.
-function LMapScript:addStep(stepDef) end
-
---- Returns the number of generation steps in this script.
----@return number Step count.
-function LMapScript:getStepCount() end
-
---- Returns the type name of this userdata.
----@return string Always `"LMapScript"`.
-function LMapScript:type() end
-
---- Checks whether this object matches the given type name.
----@param name string Type name to check against.
----@return boolean True if `name` is `"LMapScript"` or `"Object"`.
-function LMapScript:typeOf(name) end
 
 --- Creates a new tile layer with the given name and dimensions.
 ---@param name string Layer name.
@@ -29686,21 +31168,11 @@ function LTileMap:applyAutoTileMode(layer, typeName) end
 ---@param typeName string Tile type name whose configured mode and rules to apply.
 function LTileMap:applyAutoTileModeAt(layer, x, y, typeName) end
 
---- Checks a list of entities against registered tile-enter callbacks on a layer.
----@param layer number Layer index (1-based).
----@param entities table Array of entity tables, each with `x`/`y` or `[1]`/`[2]` fields.
-function LTileMap:checkEntities(layer, entities) end
-
 --- Removes the tile at a specific grid position, setting it to empty (GID 0).
 ---@param layer number Layer index (1-based).
 ---@param x number Column (1-based).
 ---@param y number Row (1-based).
 function LTileMap:clearTile(layer, x, y) end
-
---- Rasterizes the map into an image using the given tile size, returning an image handle.
----@param tileSize number Pixel size of each tile in the output image.
----@return LImage Rasterized image of the map.
-function LTileMap:drawToImage(tileSize) end
 
 --- Fills every cell of a layer with the given GID.
 ---@param layer number Layer index (1-based).
@@ -29712,20 +31184,6 @@ function LTileMap:fill(layer, gid) end
 ---@param gid number Global tile ID to search for.
 ---@return LTileMapFindTilesByGidResult Array of `{x=number, y=number}` positions.
 function LTileMap:findTilesByGid(layer, gid) end
-
---- Manually fires the tile-exit callback for a specific GID and entity at a tile position.
----@param gid number Global tile ID.
----@param entity table Entity table to pass to the callback.
----@param tx number Tile column.
----@param ty number Tile row.
-function LTileMap:fireTileExit(gid, entity, tx, ty) end
-
---- Manually fires the tile-step callback for a specific GID and entity at a tile position.
----@param gid number Global tile ID.
----@param entity table Entity table to pass to the callback.
----@param tx number Tile column.
----@param ty number Tile row.
-function LTileMap:fireTileStep(gid, entity, tx, ty) end
 
 --- Returns the chunk size used for internal tile storage.
 ---@return number Chunk size in tiles per side.
@@ -29763,6 +31221,11 @@ function LTileMap:getLayerOffset(idx) end
 ---@return number Vertical parallax factor.
 function LTileMap:getLayerParallax(idx) end
 
+--- Returns the shader override bound to one layer, or nil when the layer has no override.
+---@param layer number Layer index (1-based).
+---@return LShader? Bound layer shader handle.
+function LTileMap:getLayerShader(layer) end
+
 --- Returns whether a layer is currently visible.
 ---@param idx number Layer index (1-based).
 ---@return boolean True if the layer is visible.
@@ -29771,6 +31234,10 @@ function LTileMap:getLayerVisible(idx) end
 --- Returns the current map orientation as a string.
 ---@return string One of `"topdown"`, `"sideview"`, `"isometric"`, `"hexagonal"`.
 function LTileMap:getOrientation() end
+
+--- Returns the tilemap shader bound to this map, or nil when none is bound.
+---@return LShader? Bound shader handle.
+function LTileMap:getShader() end
 
 --- Returns the tile GID at a specific grid position on a layer.
 ---@param layer number Layer index (1-based).
@@ -29808,41 +31275,22 @@ function LTileMap:getTileWidth() end
 ---@return number Height.
 function LTileMap:getViewport() end
 
---- Checks whether the tile at a given position on a layer is solid.
----@param layer number Layer index (1-based).
----@param x number Column (1-based).
----@param y number Row (1-based).
----@return boolean True if the tile at that position is marked solid.
-function LTileMap:isSolid(layer, x, y) end
-
---- Registers a callback invoked when an entity enters a tile with the given GID.
----@param gid number Global tile ID to watch for.
----@param func function Callback receiving `(wx, wy, tx, ty)`.
-function LTileMap:onTileEnter(gid, func) end
-
---- Registers a callback invoked when an entity leaves a tile with the given GID.
----@param gid number Global tile ID to watch for.
----@param func function Callback receiving `(entity, tx, ty)`.
-function LTileMap:onTileExit(gid, func) end
-
---- Registers a callback invoked each frame an entity remains on a tile with the given GID.
----@param gid number Global tile ID to watch for.
----@param func function Callback receiving `(entity, tx, ty)`.
-function LTileMap:onTileStep(gid, func) end
-
---- Tests whether a world-space rectangle overlaps any solid tile on a layer.
----@param layer number Layer index (1-based).
----@param x number Rectangle left edge in world pixels.
----@param y number Rectangle top edge in world pixels.
----@param w number Rectangle width in pixels.
----@param h number Rectangle height in pixels.
----@return boolean True if any solid tile is overlapped.
-function LTileMap:rectOverlapsSolid(layer, x, y, w, h) end
-
 --- Submits render commands for all visible tiles, optionally offset by a scroll position.
 ---@param ox? number Horizontal scroll offset (default 0).
 ---@param oy? number Vertical scroll offset (default 0).
 function LTileMap:render(ox, oy) end
+
+--- Renders typed refs from a tilefield slot through a tileset catalog.
+---@param field LTileField|table Source tilefield handle or provider table containing typed slot refs.
+---@param catalog LTileCatalog Catalog resolving `{tileset,tile/object}` refs to visuals.
+---@param opts table Options: slot, z, offsetX, offsetY.
+function LTileMap:renderFieldCatalogSlot(field, catalog, opts) end
+
+--- Renders objects referenced from a tilefield slot using tileset object visuals.
+---@param field LTileField|table Source tilefield handle or provider table containing slot refs.
+---@param tileset LTileSet|table Tileset handle or provider table with object archetype visuals.
+---@param opts table Options: slot, z, offsetX, offsetY, refIsGid.
+function LTileMap:renderFieldSlot(field, tileset, opts) end
 
 --- Sets the tint color for an entire layer.
 ---@param idx number Layer index (1-based).
@@ -29864,6 +31312,11 @@ function LTileMap:setLayerOffset(idx, ox, oy) end
 ---@param py number Vertical parallax factor.
 function LTileMap:setLayerParallax(idx, px, py) end
 
+--- Binds a tilemap-target shader override to one layer. Pass nil to clear the layer override.
+---@param layer number Layer index (1-based).
+---@param shader? LShader Shader created with `lurek.render.newShader(code, { target = "tilemap" })`.
+function LTileMap:setLayerShader(layer, shader) end
+
 --- Sets whether a layer is drawn during rendering.
 ---@param idx number Layer index (1-based).
 ---@param visible boolean True to show, false to hide.
@@ -29872,6 +31325,10 @@ function LTileMap:setLayerVisible(idx, visible) end
 --- Sets the map orientation, affecting coordinate transforms and rendering.
 ---@param orientation string One of `"topdown"`, `"sideview"`, `"isometric"`, `"hexagonal"`.
 function LTileMap:setOrientation(orientation) end
+
+--- Binds a tilemap-target shader to this map's generated render commands. Pass nil to clear.
+---@param shader? LShader Shader created with `lurek.render.newShader(code, { target = "tilemap" })`.
+function LTileMap:setShader(shader) end
 
 --- Sets the tile GID at a specific grid position on a layer.
 ---@param layer number Layer index (1-based).
@@ -29897,22 +31354,6 @@ function LTileMap:setTileTint(layer, x, y, r, g, b, a) end
 ---@param h number Viewport height in pixels.
 function LTileMap:setViewport(x, y, w, h) end
 
---- Performs a swept AABB collision test against solid tiles on a layer, returning the contact point and normal.
----@param layer number Layer index (1-based).
----@param x number Rectangle left edge in world pixels.
----@param y number Rectangle top edge in world pixels.
----@param w number Rectangle width in pixels.
----@param h number Rectangle height in pixels.
----@param dx number Horizontal movement delta.
----@param dy number Vertical movement delta.
----@return number Contact X position.
----@return number Contact Y position.
----@return number Normal X component.
----@return number Normal Y component.
----@return number Tile column hit (1-based; or 0 if no hit).
----@return number Tile row hit (1-based; or 0 if no hit).
-function LTileMap:sweepRect(layer, x, y, w, h, dx, dy) end
-
 --- Converts tile-grid coordinates to world-space pixel coordinates (top-left corner of the tile).
 ---@param tx number Tile column (1-based).
 ---@param ty number Tile row (1-based).
@@ -29924,12 +31365,6 @@ function LTileMap:tileToWorld(tx, ty) end
 ---@param layer number Layer index (1-based).
 ---@return LTileMapTileTypeIndexResult Table keyed by GID, each value an array of `{x=number, y=number}`.
 function LTileMap:tileTypeIndex(layer) end
-
---- Converts a layer into a 2D boolean grid for pathfinding. Tiles with GIDs in the given list are marked walkable.
----@param layer number Layer index (1-based).
----@param gids table Array of walkable GIDs.
----@return boolean[] Flat walkable grid (true = walkable), row-major order.
-function LTileMap:toNavGrid(layer, gids) end
 
 --- Creates a new tile layer and returns `nil, error` instead of throwing on invalid dimensions or layer limits.
 ---@param name string Layer name.
@@ -29995,107 +31430,6 @@ function LTileMap:update(dt) end
 ---@return number Tile row (1-based).
 function LTileMap:worldToTile(wx, wy) end
 
---- Returns the animation frames for a tile, or nil if none are set.
----@param tileId number Tile ID to query (1-based).
----@return LTileSetGetAnimationResult Array of `{tileid=number, duration=number}` frames, or nil.
-function LTileSet:getAnimation(tileId) end
-
---- Looks up the tile ID for a 4-bit auto-tile bitmask and type name.
----@param typeName string Logical tile type name.
----@param bitmask number 4-bit neighbor bitmask (0..15).
----@return number Resolved tile ID (1-based), or nil if no rule matches.
-function LTileSet:getAutoTileId(typeName, bitmask) end
-
---- Looks up the tile ID for an 8-bit auto-tile bitmask and type name.
----@param typeName string Logical tile type name.
----@param bitmask number 8-bit neighbor bitmask (0..255).
----@return number Resolved tile ID (1-based), or nil if no rule matches.
-function LTileSet:getAutoTileId8(typeName, bitmask) end
-
---- Returns the neighbor matching mode for a named auto-tile type.
----@param typeName string Logical tile type name.
----@return string One of `"matchSides"`, `"matchCorners"`, `"matchCornersAndSides"`.
-function LTileSet:getAutoTileMode(typeName) end
-
---- Returns the number of columns in the tileset atlas image.
----@return number Column count.
-function LTileSet:getColumns() end
-
---- Returns the first global tile ID (GID) of this tileset.
----@return number First GID assigned to this tileset.
-function LTileSet:getFirstGid() end
-
---- Returns the margin around the edge of the atlas image, in pixels.
----@return number Margin in pixels.
-function LTileSet:getMargin() end
-
---- Returns the source rectangle (UV quad) for a tile in the atlas.
----@param tileId number Tile ID (1-based).
----@return LTileSetGetQuadResult Table with fields `x`, `y`, `width`, `height` in pixels.
-function LTileSet:getQuad(tileId) end
-
---- Returns the spacing between tiles in the atlas image, in pixels.
----@return number Spacing in pixels.
-function LTileSet:getSpacing() end
-
---- Returns the total number of tiles defined in this tileset.
----@return number Total tile count.
-function LTileSet:getTileCount() end
-
---- Returns both tile width and height in pixels.
----@return number Tile width in pixels.
----@return number Tile height in pixels.
-function LTileSet:getTileDimensions() end
-
---- Returns the height of a single tile in pixels.
----@return number Tile height in pixels.
-function LTileSet:getTileHeight() end
-
---- Returns the width of a single tile in pixels.
----@return number Tile width in pixels.
-function LTileSet:getTileWidth() end
-
---- Checks whether a tile is marked as solid.
----@param tileId number Tile ID to check (1-based).
----@return boolean True if the tile is solid.
-function LTileSet:isSolid(tileId) end
-
---- Assigns an animation sequence to a tile. Each frame references another tile ID and a duration.
----@param tileId number Tile ID to animate (1-based).
----@param frames table Array of `{tileid=number, duration=number}` frame definitions.
-function LTileSet:setAnimation(tileId, frames) end
-
---- Sets the neighbor matching mode for a named auto-tile type.
----@param typeName string Logical tile type name.
----@param mode string One of `"matchSides"`, `"matchCorners"`, `"matchCornersAndSides"`.
-function LTileSet:setAutoTileMode(typeName, mode) end
-
---- Registers a 4-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.
----@param typeName string Logical tile type name (e.g. "grass").
----@param bitmask number 4-bit neighbor bitmask (0..15).
----@param tileId number Tile ID to use for this bitmask (1-based).
-function LTileSet:setAutoTileRule(typeName, bitmask, tileId) end
-
---- Registers an 8-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.
----@param typeName string Logical tile type name.
----@param bitmask number 8-bit neighbor bitmask (0..255).
----@param tileId number Tile ID to use for this bitmask (1-based).
-function LTileSet:setAutoTileRule8(typeName, bitmask, tileId) end
-
---- Marks a tile as solid or non-solid for collision queries.
----@param tileId number Tile ID to modify (1-based).
----@param solid boolean Whether the tile blocks movement.
-function LTileSet:setSolid(tileId, solid) end
-
---- Returns the type name of this userdata.
----@return string Always `"LTileSet"`.
-function LTileSet:type() end
-
---- Checks whether this object matches the given type name.
----@param name string Type name to check against.
----@return boolean True if `name` is `"LTileSet"` or `"Object"`.
-function LTileSet:typeOf(name) end
-
 --- Loads a tilemap from an LDtk JSON string, optionally targeting a specific level.
 ---@param jsonStr string Raw LDtk JSON content.
 ---@param levelName? string Level name to load, or nil for the first level.
@@ -30103,6 +31437,12 @@ function LTileSet:typeOf(name) end
 ---@return LTileMap Loaded tilemap; or nil when import fails.
 ---@return LTilemapFromLDtkResult Structured import error table on import failure; or nil on success.
 lurek.tilemap.fromLDtk = function(jsonStr, levelName, opts) end
+
+--- Builds a native tilemap from a Lua provider table with tileWidth, tileHeight, layers, optional tilesets, and optional getTile(layer,x,y).
+---@param provider table Lua-authored tilemap provider.
+---@param opts? table Optional limits table.
+---@return LTileMap New tilemap copied from provider data.
+lurek.tilemap.fromProvider = function(provider, opts) end
 
 --- Converts screen-space pixel coordinates to axial hex coordinates.
 ---@param sx number Screen X.
@@ -30125,92 +31465,6 @@ lurek.tilemap.fromScreenIso = function(sx, sy, tw, th) end
 ---@return table Array of `{ name, tileCount, mode }` entries.
 lurek.tilemap.getAutoTileFormats = function() end
 
---- Returns all hex cells within a filled area of a given radius.
----@param q number Center Q.
----@param r number Center R.
----@param radius number Area radius.
----@return LTilemapHexAreaResult Array of `{q, r}` pairs inside the area.
-lurek.tilemap.hexArea = function(q, r, radius) end
-
---- Computes the hex grid distance between two axial coordinates.
----@param q1 number First Q.
----@param r1 number First R.
----@param q2 number Second Q.
----@param r2 number Second R.
----@return number Distance in hex steps.
-lurek.tilemap.hexDistance = function(q1, r1, q2, r2) end
-
---- Returns all hex cells along a line between two axial coordinates.
----@param q1 number Start Q.
----@param r1 number Start R.
----@param q2 number End Q.
----@param r2 number End R.
----@return LTilemapHexLineResult Array of `{q, r}` pairs along the line.
-lurek.tilemap.hexLine = function(q1, r1, q2, r2) end
-
---- Returns the six neighboring hex cells of a given axial coordinate.
----@param q number Axial Q.
----@param r number Axial R.
----@return LTilemapHexNeighborsResult Array of `{q=number, r=number}` neighbor cells.
-lurek.tilemap.hexNeighbors = function(q, r) end
-
---- Reflects a hex cell across an axis through a center point.
----@param q number Cell Q.
----@param r number Cell R.
----@param centerQ number Pivot Q.
----@param centerR number Pivot R.
----@param axis string Reflection axis name.
----@return number Reflected Q.
----@return number Reflected R.
-lurek.tilemap.hexReflect = function(q, r, centerQ, centerR, axis) end
-
---- Returns all hex cells forming a ring at a given radius around a center.
----@param q number Center Q.
----@param r number Center R.
----@param radius number Ring radius in hex steps.
----@return LTilemapHexRingResult Array of `{q, r}` pairs on the ring.
-lurek.tilemap.hexRing = function(q, r, radius) end
-
---- Rotates a hex cell around a center point by a number of 60-degree steps.
----@param q number Cell Q.
----@param r number Cell R.
----@param centerQ number Pivot Q.
----@param centerR number Pivot R.
----@param steps number Number of 60-degree rotation steps (positive = clockwise).
----@return number Rotated Q.
----@return number Rotated R.
-lurek.tilemap.hexRotate = function(q, r, centerQ, centerR, steps) end
-
---- Rounds fractional axial hex coordinates to the nearest integer hex cell.
----@param q number Fractional Q.
----@param r number Fractional R.
----@return number Rounded Q.
----@return number Rounded R.
-lurek.tilemap.hexRound = function(q, r) end
-
---- Returns all hex cells in a spiral pattern out to a given radius.
----@param q number Center Q.
----@param r number Center R.
----@param radius number Maximum radius.
----@return LTilemapHexSpiralResult Array of `{q, r}` pairs in spiral order.
-lurek.tilemap.hexSpiral = function(q, r, radius) end
-
---- Converts an angle in degrees to the nearest isometric direction index.
----@param angle number Angle in degrees.
----@return number Direction index.
-lurek.tilemap.isoDirectionFromAngle = function(angle) end
-
---- Returns a human-readable name for an isometric direction index.
----@param direction number Direction index.
----@return string Direction name (e.g. `"north"`, `"east"`, `"south"`, `"west"`).
-lurek.tilemap.isoDirectionName = function(direction) end
-
---- Rotates an isometric direction index by a number of 90-degree steps.
----@param direction number Current direction (0..3).
----@param steps number Number of 90-degree steps.
----@return number Rotated direction.
-lurek.tilemap.isoRotate = function(direction, steps) end
-
 --- Parses a TMX (Tiled XML) string and returns a table describing the map structure.
 ---@param xml string Raw TMX XML content.
 ---@param opts? any Optional import policy table (`strictLayerSize`, `allowExternalTilesets`, `safePaths`, `assetRoot`) plus byte/size limits.
@@ -30227,7 +31481,7 @@ lurek.tilemap.newAutoTileSheet = function(tileW, tileH, layout) end
 
 --- Creates a new infinite chunk-based tile map.
 ---@param chunkSize? number Tiles per chunk side (default 16).
----@param opts? any Optional limits table (`maxChunkCells`, `maxChunks`, `maxCollisionTileChecks`, and related tilemap ceilings).
+---@param opts? any Optional limits table (`maxChunkCells`, `maxChunks`, `maxTileOperationCells`, and related tilemap ceilings).
 ---@return LChunkMap New chunk map.
 lurek.tilemap.newChunkMap = function(chunkSize, opts) end
 
@@ -30247,56 +31501,16 @@ lurek.tilemap.newIsoMap = function(width, height, tileW, tileH, levelHeight, par
 ---@return LLargeMapRenderer New large-map renderer.
 lurek.tilemap.newLargeMapRenderer = function(tileW, tileH) end
 
---- Creates a new procedural map block with the given dimensions.
----@param width number Block width in tiles.
----@param height number Block height in tiles.
----@param layers? number Number of tile layers (default 1).
----@param segmentSize? number Edge segment size in tiles (default 1).
----@return LMapBlock New map block.
-lurek.tilemap.newMapBlock = function(width, height, layers, segmentSize) end
-
---- Creates a procedural map generator from a group and either a size preset or explicit dimensions.
----@param group LMapGroup Block group to generate from.
----@param presetOrWidth string|number Size preset (`"small"`, `"medium"`, `"large"`) or width in tiles.
----@param segmentSizeOrHeight number Segment size (if preset) or height in tiles.
----@param segmentSize? number Segment size when using explicit dimensions.
----@return LMapGen New map generator.
-lurek.tilemap.newMapGen = function(group, presetOrWidth, segmentSizeOrHeight, segmentSize) end
-
---- Creates a new map group to hold blocks and generation scripts.
----@param name string Group name.
----@return LMapGroup New map group.
-lurek.tilemap.newMapGroup = function(name) end
-
---- Creates a new empty map-generation script.
----@return LMapScript New script.
-lurek.tilemap.newMapScript = function() end
-
 --- Creates a new empty tilemap with the given tile dimensions.
 ---@param tileWidth number Tile width in pixels.
 ---@param tileHeight number Tile height in pixels.
 ---@param chunkSize? number Internal chunk size in tiles (default 16).
----@param opts? any Optional limits table (`maxLayers`, `maxTiles`, `maxImagePixels`, `maxImportBytes`, `maxDecodedBytes`, `maxChunkCells`, `maxChunks`, `maxCollisionTileChecks`).
+---@param opts? any Optional limits table (`maxLayers`, `maxTiles`, `maxImportBytes`, `maxDecodedBytes`, `maxChunkCells`, `maxChunks`, `maxTileOperationCells`).
 ---@return LTileMap New tilemap.
 lurek.tilemap.newTileMap = function(tileWidth, tileHeight, chunkSize, opts) end
 
---- Creates a new tileset from atlas parameters.
----@param firstGid number First global tile ID.
----@param tileCount number Total tiles in the set.
----@param columns number Columns in the atlas image.
----@param tileWidth number Tile width in pixels.
----@param tileHeight number Tile height in pixels.
----@param spacing? number Pixel spacing between tiles (default 0).
----@param margin? number Pixel margin around the atlas edge (default 0).
----@return LTileSet New tileset.
-lurek.tilemap.newTileSet = function(firstGid, tileCount, columns, tileWidth, tileHeight, spacing, margin) end
-
---- Synchronizes a tilemap layer's solid tiles into a minimap's terrain grid.
----@param map LTileMap Source tilemap.
----@param layer number Layer index (1-based).
----@param minimap LMinimap Target minimap.
----@param opts? table Options with keys: solid_terrain (default 2), empty_terrain (default 1).
-lurek.tilemap.syncMinimap = function(map, layer, minimap, opts) end
+--- Compatibility alias for `lurek.tileset.newTileSet`.
+lurek.tilemap.newTileSet = function() end
 
 --- Converts axial hex coordinates to screen-space pixel position.
 ---@param q number Axial Q coordinate.
@@ -30314,6 +31528,239 @@ lurek.tilemap.toScreenHex = function(q, r, size) end
 ---@return number Screen X.
 ---@return number Screen Y.
 lurek.tilemap.toScreenIso = function(tx, ty, tw, th) end
+
+--- Returns the sorted catalog ids available for typed tile references.
+---@return table Array of catalog id strings.
+function LTileCatalog:getIds() end
+
+--- Resolves object archetype metadata from a typed tile or object reference.
+---@param reference table Reference table with `tileset` and either `tile` or `object`.
+---@return table nil | Object archetype table, or nil when the reference cannot resolve.
+function LTileCatalog:getObject(reference) end
+
+--- Returns the tileset stored under a catalog id.
+---@param id string Catalog id to resolve.
+---@return LTileSet nil | Tileset for the id, or nil when missing.
+function LTileCatalog:getTileset(id) end
+
+--- Resolves render visual metadata from a typed tile or object reference.
+---@param reference table Reference table with `tileset` and either `tile` or `object`.
+---@return table nil | Visual metadata table, or nil when the reference has no visual.
+function LTileCatalog:getVisual(reference) end
+
+--- Returns the userdata type name.
+---@return string Always `LTileCatalog`.
+function LTileCatalog:type() end
+
+--- Checks whether this catalog matches a type name.
+---@param name string Type name to compare.
+---@return boolean True for `LTileCatalog` or `LObject`.
+function LTileCatalog:typeOf(name) end
+
+--- Returns the animation frames for one tile.
+---@param tile_id number Tile id (1-based).
+---@return table nil | Array of frame tables, or nil when no animation exists.
+function LTileSet:getAnimation(tile_id) end
+
+--- Resolves a four-neighbor autotile bitmask to a tile id.
+---@param type_name string Logical tile type name.
+---@param bitmask number Four-neighbor bitmask.
+---@return number nil | Tile id (1-based), or nil when no rule exists.
+function LTileSet:getAutoTileId(type_name, bitmask) end
+
+--- Resolves an eight-neighbor autotile bitmask to a tile id.
+---@param type_name string Logical tile type name.
+---@param bitmask number Eight-neighbor bitmask.
+---@return number nil | Tile id (1-based), or nil when no rule exists.
+function LTileSet:getAutoTileId8(type_name, bitmask) end
+
+--- Returns the autotile matching mode for a tile type.
+---@param type_name string Logical tile type name.
+---@return string Autotile matching mode.
+function LTileSet:getAutoTileMode(type_name) end
+
+--- Returns the number of atlas columns.
+---@return number Column count.
+function LTileSet:getColumns() end
+
+--- Returns the first global tile id assigned to this tileset.
+---@return number First global tile id.
+function LTileSet:getFirstGid() end
+
+--- Returns the atlas margin in pixels.
+---@return number Atlas margin.
+function LTileSet:getMargin() end
+
+--- Returns object archetype metadata by name.
+---@param name string Object archetype name.
+---@return table nil | Object metadata table, or nil when missing.
+function LTileSet:getObject(name) end
+
+--- Returns all object archetype names in this tileset.
+---@return table Array of object archetype names.
+function LTileSet:getObjectNames() end
+
+--- Returns the physics shape label for one tile.
+---@param tile_id number Tile id (1-based).
+---@return string nil | Physics shape label, or nil when unset.
+function LTileSet:getPhysicsShape(tile_id) end
+
+--- Returns the named gameplay profile for one tile.
+---@param tile_id number Tile id (1-based).
+---@return string nil | Profile name, or nil when unset.
+function LTileSet:getProfile(tile_id) end
+
+--- Returns all custom properties for one tile.
+---@param tile_id number Tile id (1-based).
+---@return table Property name/value table.
+function LTileSet:getProperties(tile_id) end
+
+--- Returns a custom tile property as a string.
+---@param tile_id number Tile id (1-based).
+---@param name string Property name.
+---@return string nil | Property value, or nil when unset.
+function LTileSet:getProperty(tile_id, name) end
+
+--- Returns a custom tile property parsed as a boolean.
+---@param tile_id number Tile id (1-based).
+---@param name string Property name.
+---@return boolean nil | Boolean property value, or nil when unset or not boolean.
+function LTileSet:getPropertyBool(tile_id, name) end
+
+--- Returns a custom tile property parsed as a number.
+---@param tile_id number Tile id (1-based).
+---@param name string Property name.
+---@return number nil | Numeric property value, or nil when unset or not numeric.
+function LTileSet:getPropertyNumber(tile_id, name) end
+
+--- Returns the atlas rectangle for one tile id.
+---@param tile_id number Tile id (1-based).
+---@return table Rectangle table with x, y, width, and height.
+function LTileSet:getQuad(tile_id) end
+
+--- Returns the spacing between atlas tiles in pixels.
+---@return number Tile spacing.
+function LTileSet:getSpacing() end
+
+--- Returns a Godot-style terrain-set profile.
+---@param name string Profile name.
+---@return table nil | Profile table or nil.
+function LTileSet:getTerrainProfile(name) end
+
+--- Returns the computed texture width and height in pixels.
+---@return number Texture width.
+---@return number Texture height.
+function LTileSet:getTextureDimensions() end
+
+--- Returns the number of tile entries in this tileset.
+---@return number Tile count.
+function LTileSet:getTileCount() end
+
+--- Returns the tile width and height in pixels.
+---@return number Tile width.
+---@return number Tile height.
+function LTileSet:getTileDimensions() end
+
+--- Returns the tile height in pixels.
+---@return number Tile height.
+function LTileSet:getTileHeight() end
+
+--- Returns the object archetype name mapped to one tile.
+---@param tile_id number Tile id (1-based).
+---@return string nil | Object archetype name, or nil when unmapped.
+function LTileSet:getTileObject(tile_id) end
+
+--- Returns the tile width in pixels.
+---@return number Tile width.
+function LTileSet:getTileWidth() end
+
+--- Removes an object archetype by name.
+---@param name string Object archetype name.
+---@return boolean True when an archetype was removed.
+function LTileSet:removeObject(name) end
+
+--- Replaces the animation frames for one tile.
+---@param tile_id number Tile id (1-based).
+---@param frames table Array of frame tables with `tileid` and `duration`.
+function LTileSet:setAnimation(tile_id, frames) end
+
+--- Sets the autotile matching mode for a tile type.
+---@param type_name string Logical tile type name.
+---@param mode string One of `matchSides`, `matchCorners`, or `matchCornersAndSides`.
+function LTileSet:setAutoTileMode(type_name, mode) end
+
+--- Sets a four-neighbor autotile bitmask rule for a tile type.
+---@param type_name string Logical tile type name.
+---@param bitmask number Four-neighbor bitmask.
+---@param tile_id number Tile id (1-based) to emit for the bitmask.
+function LTileSet:setAutoTileRule(type_name, bitmask, tile_id) end
+
+--- Sets an eight-neighbor autotile bitmask rule for a tile type.
+---@param type_name string Logical tile type name.
+---@param bitmask number Eight-neighbor bitmask.
+---@param tile_id number Tile id (1-based) to emit for the bitmask.
+function LTileSet:setAutoTileRule8(type_name, bitmask, tile_id) end
+
+--- Stores an object archetype and its visual, pathing, lighting, and custom metadata.
+---@param name string Object archetype name.
+---@param object table Object metadata table.
+function LTileSet:setObject(name, object) end
+
+--- Sets or clears the physics shape label for one tile.
+---@param tile_id number Tile id (1-based).
+---@param shape? string Physics shape label, or nil/empty to clear it.
+function LTileSet:setPhysicsShape(tile_id, shape) end
+
+--- Sets or clears the named gameplay profile for one tile.
+---@param tile_id number Tile id (1-based).
+---@param profile? string Profile name, or nil/empty to clear it.
+function LTileSet:setProfile(tile_id, profile) end
+
+--- Sets or clears a custom string-convertible tile property.
+---@param tile_id number Tile id (1-based).
+---@param name string Property name.
+---@param value any String, number, boolean, or nil to clear the property.
+function LTileSet:setProperty(tile_id, name, value) end
+
+--- Sets a Godot-style terrain-set profile for autotile authoring.
+---@param name string Profile name.
+---@param profile table `{terrainSet, mode, defaultTileId?}`.
+function LTileSet:setTerrainProfile(name, profile) end
+
+--- Assigns or clears the object archetype mapped to one tile.
+---@param tile_id number Tile id (1-based).
+---@param object_name? string Object archetype name, or nil to clear it.
+function LTileSet:setTileObject(tile_id, object_name) end
+
+--- Returns the userdata type name.
+---@return string Always `LTileSet`.
+function LTileSet:type() end
+
+--- Checks whether this tileset matches a type name.
+---@param name string Type name to compare.
+---@return boolean True for `LTileSet` or `LObject`.
+function LTileSet:typeOf(name) end
+
+--- Builds a native tileset from a Lua provider table with atlas fields, objects, tileObjects, properties, and animations.
+---@param provider table Lua-authored tileset provider.
+---@return LTileSet New tileset copied from provider data.
+lurek.tileset.fromProvider = function(provider) end
+
+--- Creates a catalog that resolves typed references across named tilesets.
+---@param entries table Map of catalog id to `LTileSet`.
+---@return LTileCatalog New tile catalog handle.
+lurek.tileset.newCatalog = function(entries) end
+
+--- Creates a native tileset from atlas dimensions.
+---@param first_gid number First global tile id assigned to the tileset.
+---@param tile_count number Number of tiles in the atlas.
+---@param columns number Number of atlas columns.
+---@param tile_width number Tile width in pixels.
+---@param tile_height number Tile height in pixels.
+---@param spacing? number Optional pixel spacing between tiles.
+---@param margin? number Optional atlas margin in pixels.
+---@return LTileSet New tileset handle.
+lurek.tileset.newTileSet = function(first_gid, tile_count, columns, tile_width, tile_height, spacing, margin) end
 
 --- Schedules a one-shot callback to fire after the given delay in seconds. Returns an event ID that can be used to cancel, pause, or query the event.
 ---@param delay number Time in seconds before the callback fires.
@@ -31623,6 +33070,70 @@ function LProgressBar:setRange(min, max) end
 ---@param v number The progress value.
 function LProgressBar:setValue(v) end
 
+--- Adds a collapsible property group and returns its 1-based index.
+---@param title string The group title.
+---@param collapsed? boolean Whether the group starts collapsed.
+---@return number The 1-based group index.
+function LPropertyWidget:addGroup(title, collapsed) end
+
+--- Adds a property row to a group.
+---@param group number The 1-based group index.
+---@param name string The property label.
+---@param value any Scalar value to display.
+---@param valueType? string `text`, `number`, `bool`, `select`, or `color`.
+---@param options? table Select options for `valueType = "select"`.
+---@param readOnly? boolean Whether the row is read-only.
+---@return number The 1-based row index in the group, or 0 on failure.
+function LPropertyWidget:addProperty(group, name, value, valueType, options, readOnly) end
+
+--- Returns the number of property groups.
+---@return number The group count.
+function LPropertyWidget:getGroupCount() end
+
+--- Returns the left label column width in pixels.
+---@return number Width in pixels.
+function LPropertyWidget:getLabelWidth() end
+
+--- Returns the row count for a property group.
+---@param group number The 1-based group index.
+---@return number The property row count.
+function LPropertyWidget:getPropertyCount(group) end
+
+--- Returns the select options of the first property with `name`.
+---@param name string Property name.
+---@return table Array of option strings.
+function LPropertyWidget:getPropertyOptions(name) end
+
+--- Returns the canonical editor type of the first property with `name`.
+---@param name string Property name.
+---@return string The editor type, or nil when missing.
+function LPropertyWidget:getPropertyType(name) end
+
+--- Returns the stringified value of the first property with `name`.
+---@param name string Property name.
+---@return string The value text, or nil when missing.
+function LPropertyWidget:getPropertyValue(name) end
+
+--- Returns whether a property group is collapsed.
+---@param group number The 1-based group index.
+---@return boolean True when collapsed, or nil when the index is invalid.
+function LPropertyWidget:isGroupCollapsed(group) end
+
+--- Sets the left label column width in pixels.
+---@param width number Width in pixels; clamped to at least 1.
+function LPropertyWidget:setLabelWidth(width) end
+
+--- Updates the first property with `name`.
+---@param name string Property name.
+---@param value any Scalar value to display.
+---@return boolean True when a row changed.
+function LPropertyWidget:setPropertyValue(name, value) end
+
+--- Toggles a property group collapsed/expanded state.
+---@param group number The 1-based group index.
+---@return boolean The new collapsed state, or nil when the index is invalid.
+function LPropertyWidget:toggleGroup(group) end
+
 --- Returns the radio button group name. Buttons in the same group are mutually exclusive.
 ---@return string The group name.
 function LRadioButton:getGroup() end
@@ -31820,6 +33331,32 @@ function LSplitPanel:setSecondChild(child_idx) end
 ---@param v number The split fraction.
 function LSplitPanel:setSplitPosition(v) end
 
+--- Adds a tab/page label to this stack or tab container.
+---@param label string The visible tab label.
+function LStackContainer:addTab(label) end
+
+--- Returns the widget index of the active child page.
+---@return number nil | The active child widget index, or nil when no child exists.
+function LStackContainer:getActiveChild() end
+
+--- Returns the active child page as a 1-based index.
+---@return number The active child index, or 0 when unavailable.
+function LStackContainer:getActiveIndex() end
+
+--- Returns a tab/page label by 1-based index.
+---@param index number The 1-based tab index.
+---@return string nil | The tab label, or nil when out of range.
+function LStackContainer:getTab(index) end
+
+--- Returns the number of tab/page labels in this stack or tab container.
+---@return number The tab label count.
+function LStackContainer:getTabCount() end
+
+--- Sets the active child page by 1-based child index.
+---@param index number The 1-based child index to show.
+---@return boolean True when the index exists and was set.
+function LStackContainer:setActiveIndex(index) end
+
 --- Adds a labeled section to this status bar.
 ---@param text string The section display text.
 ---@param width? number The section width in pixels (default 100).
@@ -31884,6 +33421,32 @@ function LTabBar:removeTab(index) end
 --- Sets the active (selected) tab by 1-based index.
 ---@param index number The 1-based tab index to activate.
 function LTabBar:setActiveTab(index) end
+
+--- Adds a tab label to this tab container.
+---@param label string The visible tab label.
+function LTabContainer:addTab(label) end
+
+--- Returns the widget index of the active tab page.
+---@return number nil | The active child widget index, or nil when no child exists.
+function LTabContainer:getActiveChild() end
+
+--- Returns the active tab page as a 1-based child index.
+---@return number The active child index, or 0 when unavailable.
+function LTabContainer:getActiveIndex() end
+
+--- Returns a tab label by 1-based index.
+---@param index number The 1-based tab index.
+---@return string nil | The tab label, or nil when out of range.
+function LTabContainer:getTab(index) end
+
+--- Returns the number of tab labels in this tab container.
+---@return number The tab label count.
+function LTabContainer:getTabCount() end
+
+--- Sets the active tab page by 1-based child index.
+---@param index number The 1-based child index to show.
+---@return boolean True when the index exists and was set.
+function LTabContainer:setActiveIndex(index) end
 
 --- Returns the current cursor position (character index) within the text input.
 ---@return number The zero-based cursor position.
@@ -32155,6 +33718,9 @@ function LUiWidget:clearAnchor() end
 --- Clears any font override on this widget so it inherits from its parent again.
 function LUiWidget:clearFont() end
 
+--- Clears this widget's assigned built-in icon.
+function LUiWidget:clearIcon() end
+
 --- Tests whether the given screen-space point is inside this widget's bounds.
 ---@param x number X coordinate in screen pixels.
 ---@param y number Y coordinate in screen pixels.
@@ -32198,6 +33764,18 @@ function LUiWidget:getFlexGrow() end
 --- Returns the flex-shrink factor of this widget.
 ---@return number The shrink factor.
 function LUiWidget:getFlexShrink() end
+
+--- Returns this widget's assigned built-in icon name, or nil when no icon is assigned.
+---@return string nil | The assigned icon name.
+function LUiWidget:getIcon() end
+
+--- Returns this widget's icon placement token.
+---@return string One of "left", "right", "top", "bottom", or "only".
+function LUiWidget:getIconPosition() end
+
+--- Returns this widget's requested icon size in pixels.
+---@return number Pixel size; 0 means the widget font size is used.
+function LUiWidget:getIconSize() end
 
 --- Returns the string identifier assigned to this widget.
 ---@return string The widget ID, or an empty string if none was set.
@@ -32347,6 +33925,21 @@ function LUiWidget:setFocusable(value) end
 ---@param font LFont Font handle to use for this widget subtree.
 function LUiWidget:setFont(font) end
 
+--- Sets this widget's built-in UI icon by semantic name.
+---@param icon string Built-in icon name such as "save", "settings", or "inventory".
+---@return boolean True when the icon exists and was assigned.
+function LUiWidget:setIcon(icon) end
+
+--- Sets where this widget's icon is placed relative to its text.
+---@param position string One of "left", "right", "top", "bottom", or "only".
+---@return boolean True when the position string is recognised.
+function LUiWidget:setIconPosition(position) end
+
+--- Sets this widget's requested icon size in pixels.
+---@param size number Pixel size; 0 uses the widget font size.
+---@return boolean True when size is finite and non-negative.
+function LUiWidget:setIconSize(size) end
+
 --- Assigns a string identifier to this widget for lookup with findById.
 ---@param id string A unique identifier string.
 function LUiWidget:setId(id) end
@@ -32404,6 +33997,17 @@ function LUiWidget:setPosition(x, y) end
 --- Sets a semantic role string for this widget.
 ---@param role string Semantic role name.
 function LUiWidget:setRole(role) end
+
+--- Binds or clears a render-owned UI shader for this widget subtree.
+---@param shader? LShader Shader created with `lurek.render.newShader(code, { target = "ui" })`, or nil to clear.
+---@param opts? table Reserved options table for future UI shader parameters.
+function LUiWidget:setShader(shader, opts) end
+
+--- Binds or clears a named render-owned UI shader layer for this widget subtree.
+---@param name string Layer name. Names are sorted deterministically when choosing the active layer.
+---@param shader? LShader Shader created with `lurek.render.newShader(code, { target = "ui" })`, or nil to clear the layer.
+---@param opts? table Reserved options table for future UI shader parameters.
+function LUiWidget:setShaderLayer(name, shader, opts) end
 
 --- Sets the width and height of this widget in pixels.
 ---@param w number Width in pixels.
@@ -32519,7 +34123,7 @@ lurek.ui.clearFocus = function() end
 --- Clears the global UI font override so the UI falls back to the active render font again.
 lurek.ui.clearFont = function() end
 
---- Invokes custom draw callbacks for all widgets that have one registered.
+--- Queues retained UI render commands, then invokes custom draw callbacks for widgets that registered one.
 lurek.ui.draw = function() end
 
 --- Renders the entire UI to an image buffer.
@@ -32574,6 +34178,15 @@ lurek.ui.getFocus = function() end
 ---@return LFont Current global UI font handle.
 lurek.ui.getFont = function() end
 
+--- Returns the built-in text glyph for an icon name, or nil when missing.
+---@param name string Icon name to resolve.
+---@return string nil | The text glyph used by the built-in renderer backend.
+lurek.ui.getIconGlyph = function(name) end
+
+--- Returns all built-in UI icon names in stable catalog order.
+---@return string[] Built-in icon names such as "save", "settings", and "inventory".
+lurek.ui.getIconNames = function() end
+
 --- Returns the root panel widget of the UI tree.
 ---@return LPanel The root panel widget table.
 lurek.ui.getRoot = function() end
@@ -32613,6 +34226,11 @@ lurek.ui.hasAutoInput = function() end
 --- Returns whether `lurek.ui.update(dt)` is called automatically each frame.
 ---@return boolean True when automatic UI updates are enabled.
 lurek.ui.hasAutoUpdate = function() end
+
+--- Returns whether a built-in UI icon name exists.
+---@param name string Icon name to resolve.
+---@return boolean True when the icon exists.
+lurek.ui.hasIcon = function(name) end
 
 --- Delivers a key press event to the UI.
 ---@param key string The key name.
@@ -32668,6 +34286,10 @@ lurek.ui.newBadge = function(count) end
 ---@return LButton The new button widget table.
 lurek.ui.newButton = function(text) end
 
+--- Creates a container that centers its child along both axes.
+---@return LLayout The new centered layout widget table.
+lurek.ui.newCenterContainer = function() end
+
 --- Creates a new checkbox widget with optional label.
 ---@param text? string The checkbox label text.
 ---@return LCheckbox The new checkbox widget table.
@@ -32695,6 +34317,20 @@ lurek.ui.newDialog = function(title) end
 ---@return LDockPanel The new dock panel widget table.
 lurek.ui.newDockPanel = function() end
 
+--- Creates a grid container with an optional column count.
+---@param columns? number Number of columns; defaults to 1.
+---@return LLayout The new grid layout widget table.
+lurek.ui.newGridContainer = function(columns) end
+
+--- Creates a horizontal box container that stacks children left-to-right.
+---@return LLayout The new horizontal layout widget table.
+lurek.ui.newHBoxContainer = function() end
+
+--- Creates a label-like widget that displays only a built-in UI icon.
+---@param icon string Built-in icon name.
+---@return LLabel nil | The icon widget, or nil when the icon name is unknown.
+lurek.ui.newIcon = function(icon) end
+
 --- Creates a new image display widget.
 ---@return LImageWidget The new image widget table.
 lurek.ui.newImageWidget = function() end
@@ -32712,6 +34348,14 @@ lurek.ui.newLayout = function(direction) end
 --- Creates a new list box widget for item selection.
 ---@return LListBox The new list box widget table.
 lurek.ui.newList = function() end
+
+--- Creates a padding container around one or more child widgets using CSS-style shorthand.
+---@param top? number Top padding in pixels; defaults to 0.
+---@param right? number Right padding; defaults to top.
+---@param bottom? number Bottom padding; defaults to top.
+---@param left? number Left padding; defaults to right.
+---@return LLayout The new margin container widget table.
+lurek.ui.newMarginContainer = function(top, right, bottom, left) end
 
 --- Creates a new menu bar widget for top-level menus.
 ---@return LMenuBar The new menu bar widget table.
@@ -32736,6 +34380,10 @@ lurek.ui.newPanel = function() end
 ---@return LProgressBar The new progress bar widget table.
 lurek.ui.newProgressBar = function(min, max) end
 
+--- Creates a new property inspector widget with collapsible groups and typed value rows.
+---@return LPropertyWidget The new property widget table.
+lurek.ui.newPropertyWidget = function() end
+
 --- Creates a new radio button widget in a named group.
 ---@param text? string The radio button label.
 ---@param group? string The radio group name.
@@ -32746,6 +34394,10 @@ lurek.ui.newRadioButton = function(text, group) end
 ---@param vertical? boolean True for vertical (default true).
 ---@return LScrollBar The new scroll bar widget table.
 lurek.ui.newScrollBar = function(vertical) end
+
+--- Creates a scroll container alias for `newScrollPanel`.
+---@return LScrollPanel The new scroll panel widget table.
+lurek.ui.newScrollContainer = function() end
 
 --- Creates a new scrollable panel widget.
 ---@return LScrollPanel The new scroll panel widget table.
@@ -32774,10 +34426,19 @@ lurek.ui.newSpacer = function(w, h) end
 ---@return LSpinBox The new spin box widget table.
 lurek.ui.newSpinBox = function(min, max) end
 
+--- Creates a split container alias for `newSplitPanel`.
+---@param orientation? string "horizontal" or "vertical" (default "horizontal").
+---@return LSplitPanel The new split panel widget table.
+lurek.ui.newSplitContainer = function(orientation) end
+
 --- Creates a new split panel widget with two resizable sub-panels.
 ---@param orientation? string "horizontal" or "vertical" (default "horizontal").
 ---@return LSplitPanel The new split panel widget table.
 lurek.ui.newSplitPanel = function(orientation) end
+
+--- Creates a stack container that lays out all children in one rectangle and shows one active child.
+---@return LStackContainer The new stack container widget table.
+lurek.ui.newStackContainer = function() end
 
 --- Creates a new status bar widget for app-level info.
 ---@return LStatusBar The new status bar widget table.
@@ -32791,6 +34452,10 @@ lurek.ui.newSwitch = function(on) end
 --- Creates a new tab bar widget for tabbed navigation.
 ---@return LTabBar The new tab bar widget table.
 lurek.ui.newTabBar = function() end
+
+--- Creates a tab container with tab labels and one active child page.
+---@return LTabContainer The new tab container widget table.
+lurek.ui.newTabContainer = function() end
 
 --- Creates a new table widget for tabular data display.
 ---@return LGuiTable The new table widget.
@@ -32823,6 +34488,10 @@ lurek.ui.newTooltipPanel = function(text) end
 --- Creates a new tree view widget for hierarchical data.
 ---@return LTreeView The new tree view widget table.
 lurek.ui.newTreeView = function() end
+
+--- Creates a vertical box container that stacks children top-to-bottom.
+---@return LLayout The new vertical layout widget table.
+lurek.ui.newVBoxContainer = function() end
 
 --- Creates a new GUI window widget with an optional title.
 ---@param title? string The window title.
@@ -32970,222 +34639,6 @@ lurek.validator.validate = function(path) end
 ---@param path string Absolute or relative path to the Lua file to validate.
 ---@return table Table with fields: errors (table), warnings (table), passed (boolean).
 lurek.validator.validateFile = function(path) end
-
---- Runs recursive shadowcasting from the observer position.
----@param ox number Observer column (one-based).
----@param oy number Observer row (one-based).
-function LFov:compute(ox, oy) end
-
---- Calls `fn(x, y)` for every currently visible cell (one-based coordinates).
----@param fn function Callback receiving column and row integers.
-function LFov:eachVisible(fn) end
-
---- Serialises the visible and explored masks to a binary blob.
----@return string Binary blob.
-function LFov:export() end
-
---- Restores visible and explored masks from a blob produced by `export`.
----@param blob string Binary blob.
-function LFov:import(blob) end
-
---- Returns true if the cell has ever been visible.
----@param x number Column (one-based).
----@param y number Row (one-based).
----@return boolean True when explored.
-function LFov:isExplored(x, y) end
-
---- Returns true if the cell is visible in the current frame.
----@param x number Column (one-based).
----@param y number Row (one-based).
----@return boolean True when visible.
-function LFov:isVisible(x, y) end
-
---- Clears the explored mask so all cells appear unexplored.
-function LFov:resetExplored() end
-
---- Sets the Lua predicate that determines which cells are opaque.
----@param fn function `fn(x: integer, y: integer) -> boolean` (one-based).
-function LFov:setBlocker(fn) end
-
---- Changes the visibility radius for subsequent compute calls.
----@param range number Maximum sight radius in cells.
-function LFov:setRange(range) end
-
---- Returns the Lua-visible type name for this FOV handle.
----@return string The string `LFov`.
-function LFov:type() end
-
---- Returns whether this FOV handle matches the given type name.
----@param name string Type name to check.
----@return boolean True when the name matches.
-function LFov:typeOf(name) end
-
---- Returns an array of `{x, y}` tables for all currently visible cells (one-based).
----@return table Array of cell position tables.
-function LFov:visibleCells() end
-
---- Returns all currently actionable cells for a player, optionally filtered to a level.
----@param player any
----@param z? any
-function LTileVisibility:actionCells(player, z) end
-
---- Returns whether a one-based cell is currently actionable for a player.
----@param player any
----@param x any
----@param y any
----@param z? any
-function LTileVisibility:canActOn(player, x, y, z) end
-
---- Clears current, explored, and action masks for all players.
-function LTileVisibility:clearAll() end
-
---- Clears current, explored, and action masks for one player.
----@param player any
-function LTileVisibility:clearPlayer(player) end
-
---- Computes one player's current action mask from a tilefield origin.
----@param player any
----@param opts any
-function LTileVisibility:computeAction(player, opts) end
-
---- Computes one player's current visible mask from a tilefield origin.
----@param player any
----@param opts any
-function LTileVisibility:computeVisible(player, opts) end
-
---- Returns whether a one-based cell has been explored for a player.
----@param player any
----@param x any
----@param y any
----@param z? any
-function LTileVisibility:isExplored(player, x, y, z) end
-
---- Returns whether a one-based cell is currently visible for a player.
----@param player any
----@param x any
----@param y any
----@param z? any
-function LTileVisibility:isVisible(player, x, y, z) end
-
---- Returns the Lua-visible type name for this tile visibility handle.
-function LTileVisibility:type() end
-
---- Returns whether this handle matches a supported type name.
----@param name any
-function LTileVisibility:typeOf(name) end
-
---- Returns all currently visible cells for a player, optionally filtered to a level.
----@param player any
----@param z? any
-function LTileVisibility:visibleCells(player, z) end
-
---- Drains and returns all pending visibility events.
----@return table Array of event tables with `type`, `player_id`, and `region_id` fields.
-function LVisibilityGrid:drainEvents() end
-
---- Gets the discovery cost for a region.
----@param region_id number Region index (0-based).
----@return number Discovery cost value.
-function LVisibilityGrid:getCost(region_id) end
-
---- Gets the fog intensity for a region from a player's perspective.
----@param player_id number Player index (0-based).
----@param region_id number Region index (0-based).
----@return number Fog intensity from 0.0 (clear) to 1.0 (fully fogged).
-function LVisibilityGrid:getFogIntensity(player_id, region_id) end
-
---- Gets the visibility state for a player at a region.
----@param player_id number Player index (0-based).
----@param region_id number Region index (0-based).
----@return string "hidden", "discovered", "visible", or a number for custom levels.
-function LVisibilityGrid:getState(player_id, region_id) end
-
---- Checks if a visibility flag bit is set on a region.
----@param region_id number Region index (0-based).
----@param bit number Flag bit index (0-63).
----@return boolean Whether the bit is set.
-function LVisibilityGrid:hasFlag(region_id, bit) end
-
---- Hides a region for a player (moves from Visible to Discovered).
----@param player_id number Player index (0-based).
----@param region_id number Region index (0-based).
-function LVisibilityGrid:hide(player_id, region_id) end
-
---- Returns the total number of players in the grid.
----@return number Player count.
-function LVisibilityGrid:playerCount() end
-
---- Returns the total number of regions in the grid.
----@return number Region count.
-function LVisibilityGrid:regionCount() end
-
---- Resets all visibility to Hidden for a player.
----@param player_id number Player index (0-based).
-function LVisibilityGrid:reset(player_id) end
-
---- Reveals a region for a player (and their allies). Optional flags argument.
----@param player_id number Player index (0-based).
----@param region_id number Region index (0-based).
----@param flags? number Optional bitfield flags to set on the region.
-function LVisibilityGrid:reveal(player_id, region_id, flags) end
-
---- Reveals all regions for a player (debug/cheat).
----@param player_id number Player index (0-based).
-function LVisibilityGrid:revealAll(player_id) end
-
---- Sets the discovery cost for a region.
----@param region_id number Region index (0-based).
----@param cost number Discovery cost value.
-function LVisibilityGrid:setCost(region_id, cost) end
-
---- Sets a visibility flag bit on a region.
----@param region_id number Region index (0-based).
----@param bit number Flag bit index (0-63).
----@param value boolean Whether to set or clear the bit.
-function LVisibilityGrid:setFlag(region_id, bit, value) end
-
---- Sets an alliance group for a list of players (shared visibility).
----@param players table Array of player IDs (0-based) to group together.
----@return number The assigned group ID.
-function LVisibilityGrid:setGroup(players) end
-
---- Checks if two players share visibility (same alliance group or same player).
----@param player_a number First player index (0-based).
----@param player_b number Second player index (0-based).
----@return boolean Whether they share visibility.
-function LVisibilityGrid:sharesVisibility(player_a, player_b) end
-
---- Returns whether two tilefield cells have a clear action line.
----@param field LTileField Tilefield to query.
----@param from table One-based `{x,y,z?}` start.
----@param to table One-based `{x,y,z?}` target.
----@param opts? table Optional `{channel="action"}`.
----@return boolean True when clear.
-lurek.visibility.lineOfAction = function(field, from, to, opts) end
-
---- Returns whether two tilefield cells have a clear sight line.
----@param field LTileField Tilefield to query.
----@param from table One-based `{x,y,z?}` start.
----@param to table One-based `{x,y,z?}` target.
----@param opts? table Optional `{channel="vision"}`.
----@return boolean True when clear.
-lurek.visibility.lineOfSight = function(field, from, to, opts) end
-
---- Create a new visibility grid for shadow-cast computation.
----@param config table Configuration table with `regions` (integer) and `players` (integer) fields. Optional `fog` sub-table with `discovered` (number), `hidden` (number), `smooth` (boolean), `speed` (number).
----@return LVisibilityGrid New visibility grid handle.
-lurek.visibility.new = function(config) end
-
---- Creates a new tile-grid shadowcasting FOV for roguelike and stealth games.
----@param opts table `{ range=integer, light_walls=boolean? }` (default light_walls=true).
----@return LFov New FOV handle ready for blocker assignment and compute calls.
-lurek.visibility.newFov = function(opts) end
-
---- Creates per-player tile visibility/action masks backed by a tilefield.
----@param field LTileField Source tilefield.
----@param opts table `{players={...}, rememberExplored=true?}`.
----@return LTileVisibility New tile visibility handle.
-lurek.visibility.newTileVisibility = function(field, opts) end
 
 --- Closes the window and signals the engine to shut down.
 lurek.window.close = function() end

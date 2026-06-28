@@ -7800,7 +7800,7 @@ LProvinceRegistry:getHeight() -> integer  -- Returns the height of the province 
 LProvinceRegistry:getMapMode() -> string  -- Returns the name of the currently active map mode
 LProvinceRegistry:getName() -> string  -- Returns the string name used to identify this registry in the province system
 LProvinceRegistry:getNeighbors( id : integer ) -> integer[]  -- Returns a table of province IDs that share a border with the given province
-LProvinceRegistry:getProvince( id : integer ) -> table  -- Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state), centroid, and custom attributes
+LProvinceRegistry:getProvince( id : integer ) -> table  -- Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state), centroid, capital marker, and custom attributes
 LProvinceRegistry:getRevision() -> integer  -- Returns the current change revision counter. Incremented on every mutation (color, terrain, border, fog changes). Use with `getChangesSince` for incremental updates
 LProvinceRegistry:getShader() -> LShader?  -- Returns the currently bound command-render province shader, or nil
 LProvinceRegistry:getWidth() -> integer  -- Returns the width of the province grid in cells (pixels of the source PNG)

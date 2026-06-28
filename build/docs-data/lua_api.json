@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-06-28T10:54:58.617100+00:00",
+    "generated": "2026-06-28T12:40:41.823877+00:00",
     "generator": "tools/gen_lua_api_data.py",
     "version": "1.1.0",
     "stats": {
@@ -109520,7 +109520,7 @@
             ],
             "inferred_return": "LProvinceRegistry",
             "return_description": "The newly created registry handle.",
-            "line": 1974,
+            "line": 1984,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -109555,7 +109555,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Summary with fields: replaced_pixels (number), unresolved_pixels (number).",
-            "line": 2000,
+            "line": 2010,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -109578,7 +109578,7 @@
             ],
             "inferred_return": "LProvinceRegistry",
             "return_description": "The registry handle, or nil if not found.",
-            "line": 2024,
+            "line": 2034,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -109601,7 +109601,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the registry exists.",
-            "line": 2043,
+            "line": 2053,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -109624,7 +109624,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the registry existed and was removed.",
-            "line": 2054,
+            "line": 2064,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -109647,7 +109647,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the registry was found and activated.",
-            "line": 2070,
+            "line": 2080,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -109663,7 +109663,7 @@
             "typed_params": [],
             "inferred_return": "LProvinceRegistry",
             "return_description": "The active registry handle, or nil.",
-            "line": 2086,
+            "line": 2096,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -109716,7 +109716,7 @@
             ],
             "inferred_return": "number, number",
             "return_description": "New camera x and y after zoom adjustment.",
-            "line": 2105,
+            "line": 2115,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -109751,7 +109751,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2129,
+            "line": 2139,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -109780,7 +109780,7 @@
             ],
             "inferred_return": "number",
             "return_description": "The stored value, or nil.",
-            "line": 2144,
+            "line": 2154,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -109815,7 +109815,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2156,
+            "line": 2166,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -109844,7 +109844,7 @@
             ],
             "inferred_return": "string",
             "return_description": "The stored value, or nil.",
-            "line": 2171,
+            "line": 2181,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -109879,7 +109879,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2186,
+            "line": 2196,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -109908,7 +109908,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the flag bit is set.",
-            "line": 2199,
+            "line": 2209,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -109931,7 +109931,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2209,
+            "line": 2219,
             "file": "src/lua_api/province_api.rs"
           }
         ],
@@ -110321,8 +110321,8 @@
                 "lua_name": "LProvinceRegistry:getProvince",
                 "kind": "method",
                 "owner_type": "LProvinceRegistry",
-                "description": "Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state), centroid, and custom attributes.",
-                "full_doc": "Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state), centroid, and custom attributes.\n@param | id | integer | Province ID to query.\n@return | table | Province snapshot table, or nil if the ID does not exist.\n@field | province_id | integer | Province id.\n@field | revision | integer | Revision number.\n@field | style | table | Style table with terrain_type, fog_state, etc.\n@field | centroid | table | Centroid position table.\n@field | attrs | table | Custom attributes table.",
+                "description": "Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state), centroid, capital marker, and custom attributes.",
+                "full_doc": "Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state), centroid, capital marker, and custom attributes.\n@param | id | integer | Province ID to query.\n@return | table | Province snapshot table, or nil if the ID does not exist.\n@field | province_id | integer | Province id.\n@field | revision | integer | Revision number.\n@field | style | table | Style table with terrain_type, fog_state, etc.\n@field | centroid | table | Centroid position table.\n@field | capital | table | Capital marker position table imported from marker metadata.\n@field | attrs | table | Custom attributes table.",
                 "params_doc": "- `id` â€” `integer`: Province ID to query.",
                 "returns_doc": "table",
                 "inferred_sig": "(id)",
@@ -110336,7 +110336,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Province snapshot table, or nil if the ID does not exist.",
-                "line": 825,
+                "line": 826,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -110359,7 +110359,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array of neighboring province IDs.",
-                "line": 876,
+                "line": 886,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -110394,7 +110394,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of province ids from start to target; nil when unreachable.",
-                "line": 890,
+                "line": 900,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -110423,7 +110423,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Number of route hop primitives queued.",
-                "line": 947,
+                "line": 957,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -110452,7 +110452,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of route arrays (or nil for unreachable entries).",
-                "line": 1013,
+                "line": 1023,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -110468,7 +110468,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of arrays of province ids.",
-                "line": 1075,
+                "line": 1085,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -110491,7 +110491,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array of isolated province ids.",
-                "line": 1101,
+                "line": 1111,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -110520,7 +110520,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when connected.",
-                "line": 1138,
+                "line": 1148,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -110555,7 +110555,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Total numeric sum.",
-                "line": 1160,
+                "line": 1170,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -110584,7 +110584,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Border type ID, or nil.",
-                "line": 1197,
+                "line": 1207,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -110619,7 +110619,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1206,
+                "line": 1216,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -110648,7 +110648,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Border type ID, or nil.",
-                "line": 1220,
+                "line": 1230,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -110683,7 +110683,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1229,
+                "line": 1239,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -110712,7 +110712,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1242,
+                "line": 1252,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -110747,7 +110747,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when style was applied.",
-                "line": 1273,
+                "line": 1283,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -110776,7 +110776,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Style table or nil.",
-                "line": 1288,
+                "line": 1298,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -110823,7 +110823,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 1319,
+                "line": 1329,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -110852,7 +110852,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 1332,
+                "line": 1342,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -110881,7 +110881,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 1343,
+                "line": 1353,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -110910,7 +110910,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 1354,
+                "line": 1364,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -110939,7 +110939,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 1362,
+                "line": 1372,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -110974,7 +110974,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 1376,
+                "line": 1386,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -111009,7 +111009,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 1388,
+                "line": 1398,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -111056,7 +111056,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 1399,
+                "line": 1409,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -111085,7 +111085,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 1410,
+                "line": 1420,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -111108,7 +111108,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Summary with fields: mapped_provinces (number), capitals_set (number), label_lines_set (number), labels_set (number).",
-                "line": 1421,
+                "line": 1431,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -111131,7 +111131,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1496,
+                "line": 1506,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -111154,7 +111154,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of change tables, each with a `revision` field and change-specific fields (kind, province_id, etc.).",
-                "line": 1777,
+                "line": 1787,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -111183,7 +111183,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1896,
+                "line": 1906,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -111206,7 +111206,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if mode exists and was activated.",
-                "line": 1941,
+                "line": 1951,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -111222,7 +111222,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Active mode name.",
-                "line": 1948,
+                "line": 1958,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -111238,7 +111238,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always \"LProvinceRegistry\".",
-                "line": 1955,
+                "line": 1965,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -111261,7 +111261,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the name matches.",
-                "line": 1960,
+                "line": 1970,
                 "file": "src/lua_api/province_api.rs"
               }
             ]

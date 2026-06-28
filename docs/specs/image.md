@@ -585,6 +585,9 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 | Current artifact | `tests/artifacts/current/image/image_province_palette_topology_trace.txt` |
 | Current artifact | `tests/artifacts/current/image/image_resize_nearest.png` |
 | Current artifact | `tests/artifacts/current/image/image_resize_smooth.png` |
+| Current artifact | `tests/artifacts/current/image/image_shader_visual_01_palette_lut.png` |
+| Current artifact | `tests/artifacts/current/image/image_shader_visual_02_threshold_mask.png` |
+| Current artifact | `tests/artifacts/current/image/image_shader_visual_03_posterize_filter.png` |
 | Current artifact | `tests/artifacts/current/image/image_shape_concentric_circles.png` |
 | Current artifact | `tests/artifacts/current/image/image_shape_radiating_lines.png` |
 | Current artifact | `tests/artifacts/current/image/image_shape_rect_grid.png` |

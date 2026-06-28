@@ -814,13 +814,14 @@ impl LuaUserData for LuaProvinceRegistry {
             this.with_registry(|r| r.revision())
         });
         // -- getProvince --
-        /// Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state), centroid, and custom attributes.
+        /// Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state), centroid, capital marker, and custom attributes.
         /// @param | id | integer | Province ID to query.
         /// @return | table | Province snapshot table, or nil if the ID does not exist.
         /// @field | province_id | integer | Province id.
         /// @field | revision | integer | Revision number.
         /// @field | style | table | Style table with terrain_type, fog_state, etc.
         /// @field | centroid | table | Centroid position table.
+        /// @field | capital | table | Capital marker position table imported from marker metadata.
         /// @field | attrs | table | Custom attributes table.
         methods.add_method("getProvince", |lua, this, id: u32| {
             let snap = this.with_registry(|r| r.get_province(ProvinceId(id)))?;
@@ -860,6 +861,15 @@ impl LuaUserData for LuaProvinceRegistry {
                 ct.set("y", cy)?;
                 /// Performs the 'centroid' operation.
                 out.set("centroid", ct)?;
+            }
+            if let Some((cx, cy)) = snap.capital {
+                let ct = lua.create_table()?;
+                /// The 'x' field value exposed to Lua scripts.
+                ct.set("x", cx)?;
+                /// The 'y' field value exposed to Lua scripts.
+                ct.set("y", cy)?;
+                /// Performs the 'capital' operation.
+                out.set("capital", ct)?;
             }
             let attrs = lua.create_table()?;
             for (k, v) in snap.attrs {

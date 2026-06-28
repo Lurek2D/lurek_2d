@@ -10911,7 +10911,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/province_api.rs",
-        "line": 1966
+        "line": 1976
       },
       {
         "module": "lua_api",
@@ -17301,139 +17301,139 @@
         "module": "province",
         "name": "ProvinceRegistry::get_neighbors",
         "file": "src/province/registry.rs",
-        "line": 240
+        "line": 241
       },
       {
         "module": "province",
         "name": "ProvinceRegistry::spans",
         "file": "src/province/registry.rs",
-        "line": 248
+        "line": 249
       },
       {
         "module": "province",
         "name": "ProvinceRegistry::border_segments",
         "file": "src/province/registry.rs",
-        "line": 252
+        "line": 253
       },
       {
         "module": "province",
         "name": "ProvinceRegistry::spans_for",
         "file": "src/province/registry.rs",
-        "line": 256
+        "line": 257
       },
       {
         "module": "province",
         "name": "ProvinceRegistry::bbox_for",
         "file": "src/province/registry.rs",
-        "line": 260
+        "line": 261
       },
       {
         "module": "province",
         "name": "ProvinceRegistry::style_for",
         "file": "src/province/registry.rs",
-        "line": 264
+        "line": 265
       },
       {
         "module": "province",
         "name": "ProvinceRegistry::set_capital",
         "file": "src/province/registry.rs",
-        "line": 268
+        "line": 269
       },
       {
         "module": "province",
         "name": "ProvinceRegistry::capital_for",
         "file": "src/province/registry.rs",
-        "line": 276
+        "line": 277
       },
       {
         "module": "province",
         "name": "ProvinceRegistry::set_label_line",
         "file": "src/province/registry.rs",
-        "line": 280
+        "line": 281
       },
       {
         "module": "province",
         "name": "ProvinceRegistry::label_line_for",
         "file": "src/province/registry.rs",
-        "line": 288
+        "line": 289
       },
       {
         "module": "province",
         "name": "ProvinceRegistry::set_label_text",
         "file": "src/province/registry.rs",
-        "line": 292
+        "line": 293
       },
       {
         "module": "province",
         "name": "ProvinceRegistry::label_text_for",
         "file": "src/province/registry.rs",
-        "line": 300
+        "line": 301
       },
       {
         "module": "province",
         "name": "ProvinceRegistry::get_changes_since",
         "file": "src/province/registry.rs",
-        "line": 311
+        "line": 312
       },
       {
         "module": "province",
         "name": "ProvinceRegistry::set_political_color",
         "file": "src/province/registry.rs",
-        "line": 319
+        "line": 320
       },
       {
         "module": "province",
         "name": "ProvinceRegistry::set_terrain_type",
         "file": "src/province/registry.rs",
-        "line": 334
+        "line": 335
       },
       {
         "module": "province",
         "name": "ProvinceRegistry::set_visibility_state",
         "file": "src/province/registry.rs",
-        "line": 379
+        "line": 380
       },
       {
         "module": "province",
         "name": "ProvinceRegistry::set_border_type",
         "file": "src/province/registry.rs",
-        "line": 402
+        "line": 403
       },
       {
         "module": "province",
         "name": "ProvinceRegistry::get_border_type",
         "file": "src/province/registry.rs",
-        "line": 412
+        "line": 413
       },
       {
         "module": "province",
         "name": "ProvinceRegistry::register_border_type",
         "file": "src/province/registry.rs",
-        "line": 416
+        "line": 417
       },
       {
         "module": "province",
         "name": "ProvinceRegistry::get_border_type_config",
         "file": "src/province/registry.rs",
-        "line": 424
+        "line": 425
       },
       {
         "module": "province",
         "name": "ProvinceRegistry::set_border_pair_style",
         "file": "src/province/registry.rs",
-        "line": 430
+        "line": 431
       },
       {
         "module": "province",
         "name": "ProvinceRegistry::get_border_pair_style",
         "file": "src/province/registry.rs",
-        "line": 442
+        "line": 443
       },
       {
         "module": "province",
         "name": "ProvinceRegistry::set_attr",
         "file": "src/province/registry.rs",
-        "line": 446
+        "line": 447
       },
       {
         "module": "province",
@@ -36083,49 +36083,49 @@
         "module": "province",
         "name": "ProvinceRegistry::adjacency_pairs",
         "file": "src/province/registry.rs",
-        "line": 244
+        "line": 245
       },
       {
         "module": "province",
         "name": "ProvinceRegistry::set_border_style",
         "file": "src/province/registry.rs",
-        "line": 349
+        "line": 350
       },
       {
         "module": "province",
         "name": "ProvinceRegistry::set_fog_state",
         "file": "src/province/registry.rs",
-        "line": 364
+        "line": 365
       },
       {
         "module": "province",
         "name": "ProvinceRegistry::register_map_mode",
         "file": "src/province/registry.rs",
-        "line": 454
+        "line": 455
       },
       {
         "module": "province",
         "name": "ProvinceRegistry::set_map_mode",
         "file": "src/province/registry.rs",
-        "line": 458
+        "line": 459
       },
       {
         "module": "province",
         "name": "ProvinceRegistry::active_map_mode",
         "file": "src/province/registry.rs",
-        "line": 468
+        "line": 469
       },
       {
         "module": "province",
         "name": "ProvinceRegistry::map_mode_config",
         "file": "src/province/registry.rs",
-        "line": 472
+        "line": 473
       },
       {
         "module": "province",
         "name": "ProvinceRegistry::get_map_mode_config",
         "file": "src/province/registry.rs",
-        "line": 476
+        "line": 477
       },
       {
         "module": "province",
@@ -73133,336 +73133,336 @@
         "lua_name": "LProvinceRegistry:getProvince",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 825
+        "line": 826
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:getNeighbors",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 876
+        "line": 886
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:findRoute",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 890
+        "line": 900
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:drawCapitalPath",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 947
+        "line": 957
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:findRoutes",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1013
+        "line": 1023
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:getConnectedComponents",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1075
+        "line": 1085
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:findIsolatedProvinces",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1101
+        "line": 1111
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:isConnected",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1138
+        "line": 1148
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:totalAttrForOwner",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1160
+        "line": 1170
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:getBorderType",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1197
+        "line": 1207
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setBorderType",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1206
+        "line": 1216
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:getBorderClass",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1220
+        "line": 1230
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setBorderClass",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1229
+        "line": 1239
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:registerBorderType",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1242
+        "line": 1252
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setBorderPairStyle",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1273
+        "line": 1283
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:getBorderPairStyle",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1288
+        "line": 1298
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setPoliticalColor",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1319
+        "line": 1329
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setTerrainType",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1332
+        "line": 1342
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setBorderStyle",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1343
+        "line": 1353
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setFogState",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1354
+        "line": 1364
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setVisibilityState",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1362
+        "line": 1372
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setAttr",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1376
+        "line": 1386
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setCapital",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1388
+        "line": 1398
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setLabelLine",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1399
+        "line": 1409
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setLabelText",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1410
+        "line": 1420
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:importMetadataFromFiles",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1421
+        "line": 1431
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:render",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1496
+        "line": 1506
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:getChangesSince",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1777
+        "line": 1787
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:registerMapMode",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1896
+        "line": 1906
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setMapMode",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1941
+        "line": 1951
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:getMapMode",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1948
+        "line": 1958
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:type",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1955
+        "line": 1965
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:typeOf",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1960
+        "line": 1970
       },
       {
         "module": "province",
         "lua_name": "lurek.province.newFromPng",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 1974
+        "line": 1984
       },
       {
         "module": "province",
         "lua_name": "lurek.province.sanitizeMarkedPng",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 2000
+        "line": 2010
       },
       {
         "module": "province",
         "lua_name": "lurek.province.get",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 2024
+        "line": 2034
       },
       {
         "module": "province",
         "lua_name": "lurek.province.exists",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 2043
+        "line": 2053
       },
       {
         "module": "province",
         "lua_name": "lurek.province.remove",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 2054
+        "line": 2064
       },
       {
         "module": "province",
         "lua_name": "lurek.province.setActive",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 2070
+        "line": 2080
       },
       {
         "module": "province",
         "lua_name": "lurek.province.getActive",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 2086
+        "line": 2096
       },
       {
         "module": "province",
         "lua_name": "lurek.province.zoomCameraAt",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 2105
+        "line": 2115
       },
       {
         "module": "province",
         "lua_name": "lurek.province.setProperty",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 2129
+        "line": 2139
       },
       {
         "module": "province",
         "lua_name": "lurek.province.getProperty",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 2144
+        "line": 2154
       },
       {
         "module": "province",
         "lua_name": "lurek.province.setAttr",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 2156
+        "line": 2166
       },
       {
         "module": "province",
         "lua_name": "lurek.province.getAttr",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 2171
+        "line": 2181
       },
       {
         "module": "province",
         "lua_name": "lurek.province.setFlag",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 2186
+        "line": 2196
       },
       {
         "module": "province",
         "lua_name": "lurek.province.hasFlag",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 2199
+        "line": 2209
       },
       {
         "module": "province",
         "lua_name": "lurek.province.clearProperties",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 2209
+        "line": 2219
       },
       {
         "module": "raycaster",

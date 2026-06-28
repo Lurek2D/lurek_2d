@@ -1,13 +1,13 @@
 {
   "meta": {
-    "generated": "2026-06-28T10:54:55.558701+00:00",
+    "generated": "2026-06-28T12:40:38.868454+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
       "rust_items": 3100,
       "rust_modules": 723,
       "rust_tests": 499,
-      "lua_tests": 284
+      "lua_tests": 285
     }
   },
   "rust_api": {
@@ -29833,6 +29833,13 @@
         "module": "test_ui_evidence",
         "name": "test_ui_evidence",
         "description": "test_ui_evidence.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/fixtures/shader_visual_helpers.lua",
+        "module": "shader_visual_helpers",
+        "name": "shader_visual_helpers",
+        "description": "",
         "kind": "lua"
       },
       {

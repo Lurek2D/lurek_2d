@@ -362,6 +362,9 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 | Current artifact | `tests/artifacts/current/particle/particle_emission_area_shapes.png` |
 | Current artifact | `tests/artifacts/current/particle/particle_lifecycle_chart.png` |
 | Current artifact | `tests/artifacts/current/particle/particle_paint_composite.png` |
+| Current artifact | `tests/artifacts/current/particle/particle_shader_visual_01_dissolve.png` |
+| Current artifact | `tests/artifacts/current/particle/particle_shader_visual_02_glow.png` |
+| Current artifact | `tests/artifacts/current/particle/particle_shader_visual_03_trail_tint.png` |
 | Current artifact | `tests/artifacts/current/particle/particle_shape_size_keyframes.png` |
 | Current artifact | `tests/artifacts/current/particle/particle_subemitter_death_burst.gif` |
 | Current artifact | `tests/artifacts/current/particle/particle_trail_ribbon_decay.gif` |

@@ -852,6 +852,10 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 | Current artifact | `tests/artifacts/current/render/render_shader_tilemap_contract.txt` |
 | Current artifact | `tests/artifacts/current/render/render_shader_ui_contract.txt` |
 | Current artifact | `tests/artifacts/current/render/render_shader_uniform_scene.png` |
+| Current artifact | `tests/artifacts/current/render/render_shader_visual_01_draw_material.png` |
+| Current artifact | `tests/artifacts/current/render/render_shader_visual_02_canvas_postfx.png` |
+| Current artifact | `tests/artifacts/current/render/render_shader_visual_03_text_material.png` |
+| Current artifact | `tests/artifacts/current/render/render_shader_visual_04_debug_overlay.png` |
 | Current artifact | `tests/artifacts/current/render/render_spritebatch_grid_scene.png` |
 | Current artifact | `tests/artifacts/current/render/render_stencil_portal_scene.png` |
 | Current artifact | `tests/artifacts/current/render/render_text_font_layout.png` |

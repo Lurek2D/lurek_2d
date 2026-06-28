@@ -307,6 +307,9 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 | Evidence test | `tests/lua/evidence/test_terminal_evidence.lua` |
 | Golden test | `tests/lua/golden/test_terminal_golden.lua` |
 | Current artifact | `tests/artifacts/current/terminal/terminal_shader_binding_contract.txt` |
+| Current artifact | `tests/artifacts/current/terminal/terminal_shader_visual_01_crt_scanline.png` |
+| Current artifact | `tests/artifacts/current/terminal/terminal_shader_visual_02_text_glow.png` |
+| Current artifact | `tests/artifacts/current/terminal/terminal_shader_visual_03_panel_mask.png` |
 | Current artifact | `tests/artifacts/current/terminal/terminal_tui_chart_panels.png` |
 | Current artifact | `tests/artifacts/current/terminal/terminal_tui_command_palette.png` |
 | Current artifact | `tests/artifacts/current/terminal/terminal_tui_dashboard_widgets.png` |

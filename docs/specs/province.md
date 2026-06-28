@@ -268,7 +268,7 @@ This module primarily collaborates with `camera`, `image`, `pathfind`, `render`,
 - `LProvinceRegistry:getMapMode() -> string`: Returns the name of the currently active map mode.
 - `LProvinceRegistry:getName() -> string`: Returns the string name used to identify this registry in the province system.
 - `LProvinceRegistry:getNeighbors(id) -> integer[]`: Returns a table of province IDs that share a border with the given province.
-- `LProvinceRegistry:getProvince(id) -> table`: Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state), centroid, and custom attributes.
+- `LProvinceRegistry:getProvince(id) -> table`: Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state), centroid, capital marker, and custom attributes.
 - `LProvinceRegistry:getRevision() -> integer`: Returns the current change revision counter. Incremented on every mutation (color, terrain, border, fog changes). Use with `getChangesSince` for incremental updates.
 - `LProvinceRegistry:getShader() -> LShader?`: Returns the currently bound command-render province shader, or nil.
 - `LProvinceRegistry:getWidth() -> integer`: Returns the width of the province grid in cells (pixels of the source PNG).
@@ -352,6 +352,7 @@ This module primarily collaborates with `camera`, `image`, `pathfind`, `render`,
 ##### Fields
 
 - `attrs` (`table`): Custom attributes table.
+- `capital` (`table`): Capital marker position table imported from marker metadata.
 - `centroid` (`table`): Centroid position table.
 - `province_id` (`integer`): Province id.
 - `revision` (`integer`): Revision number.
@@ -434,6 +435,9 @@ This module primarily collaborates with `camera`, `image`, `pathfind`, `render`,
 | Current artifact | `tests/artifacts/current/province/province_route_trace.png` |
 | Current artifact | `tests/artifacts/current/province/province_sanitized_map.png` |
 | Current artifact | `tests/artifacts/current/province/province_shader_binding_contract.txt` |
+| Current artifact | `tests/artifacts/current/province/province_shader_visual_01_political_map.png` |
+| Current artifact | `tests/artifacts/current/province/province_shader_visual_02_selection_glow.png` |
+| Current artifact | `tests/artifacts/current/province/province_shader_visual_03_frontline_heat.png` |
 | Current artifact | `tests/artifacts/current/province/province_span_runs.png` |
 | Current artifact | `tests/artifacts/current/province/province_strategy_modes.png` |
 | Current artifact | `tests/artifacts/current/province/province_zoom_pick_view.png` |

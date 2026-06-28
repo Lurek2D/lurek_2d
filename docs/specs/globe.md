@@ -417,6 +417,9 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 | Current artifact | `tests/artifacts/current/globe/globe_region_trace.txt` |
 | Current artifact | `tests/artifacts/current/globe/globe_semantic_region_holes.png` |
 | Current artifact | `tests/artifacts/current/globe/globe_shader_binding_contract.txt` |
+| Current artifact | `tests/artifacts/current/globe/globe_shader_visual_01_atmosphere_band.png` |
+| Current artifact | `tests/artifacts/current/globe/globe_shader_visual_02_heat_overlay.png` |
+| Current artifact | `tests/artifacts/current/globe/globe_shader_visual_03_tactical_map.png` |
 | Current artifact | `tests/artifacts/current/globe/globe_terrain_region_overlay.png` |
 | Current artifact | `tests/artifacts/current/globe/globe_terrain_rotation.gif` |
 | Current artifact | `tests/artifacts/current/globe/globe_topology_cost_route.png` |

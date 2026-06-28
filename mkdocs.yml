@@ -154,7 +154,6 @@ nav:
     - Save: modules/save.md
     - Scene: modules/scene.md
     - Serialize: modules/serialize.md
-    - Shader: modules/shader.md
     - Spine: modules/spine.md
     - Sprite: modules/sprite.md
     - SVG: modules/svg.md

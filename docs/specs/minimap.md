@@ -254,6 +254,9 @@ The broader integration map is split by role:
 | Current artifact | `tests/artifacts/current/minimap/minimap_paths_and_overlay_shapes.png` |
 | Current artifact | `tests/artifacts/current/minimap/minimap_province_registry_compact.png` |
 | Current artifact | `tests/artifacts/current/minimap/minimap_shader_binding_contract.txt` |
+| Current artifact | `tests/artifacts/current/minimap/minimap_shader_visual_01_ownership_heat.png` |
+| Current artifact | `tests/artifacts/current/minimap/minimap_shader_visual_02_fog_of_war.png` |
+| Current artifact | `tests/artifacts/current/minimap/minimap_shader_visual_03_radar_scan.png` |
 | Current artifact | `tests/artifacts/current/minimap/minimap_terrain_palette_grid.png` |
 | Current artifact | `tests/artifacts/current/minimap/minimap_tilefield_layers.png` |
 | Current artifact | `tests/artifacts/current/minimap/minimap_viewport_rect.png` |

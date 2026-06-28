@@ -123,4 +123,49 @@ describe("eu2 playable slice", function()
         assert(state.armies[1].target_id == 2, "army should move to the next route hop")
         assert(state.armies[1].eta == 5, "movement cost should use next-hop terrain")
     end)
+
+    it("province positions prefer imported capital markers over centroids", function()
+        local state_module = load_demo_module("state.lua")
+        local reg = {
+            provinceIds = function()
+                return { 7 }
+            end,
+            getProvince = function()
+                return {
+                    attrs = {
+                        name = "Krakow",
+                        terrain = "plains",
+                        income = "4",
+                        manpower = "1000",
+                    },
+                    capital = { x = 321.5, y = 123.5 },
+                    centroid = { x = 300.0, y = 100.0 },
+                }
+            end,
+            getNeighbors = function()
+                return {}
+            end,
+            setAttr = function()
+                return true
+            end,
+        }
+        local scenario = {
+            player_tag = "POL",
+            start_date = { year = 1419, month = 1, day = 1 },
+            countries = {
+                POL = { name = "Poland", color = { 0.78, 0.16, 0.20, 1.0 } },
+            },
+            starting_armies = {},
+            assign_owner = function()
+                return "POL"
+            end,
+        }
+
+        local state = state_module.new(reg, scenario)
+        local province = state.provinces[7]
+
+        assert(province ~= nil, "province should be imported into demo state")
+        assert(province.cx == 321.5, "demo province x should use imported capital marker")
+        assert(province.cy == 123.5, "demo province y should use imported capital marker")
+    end)
 end)

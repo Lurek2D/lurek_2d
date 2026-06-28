@@ -522,6 +522,9 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 | Current artifact | `tests/artifacts/current/tilemap/tilemap_isometric_stacked_settlement.png` |
 | Current artifact | `tests/artifacts/current/tilemap/tilemap_layers.png` |
 | Current artifact | `tests/artifacts/current/tilemap/tilemap_shader_binding_contract.txt` |
+| Current artifact | `tests/artifacts/current/tilemap/tilemap_shader_visual_01_global_material.png` |
+| Current artifact | `tests/artifacts/current/tilemap/tilemap_shader_visual_02_layer_material.png` |
+| Current artifact | `tests/artifacts/current/tilemap/tilemap_shader_visual_03_fog_tint.png` |
 | Current artifact | `tests/artifacts/current/tilemap/tilemap_viewport.png` |
 | Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_autotile.png` |
 | Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_autotile_format_showcase.png` |

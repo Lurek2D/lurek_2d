@@ -180,9 +180,11 @@ describe("province metadata import pipeline", function()
 
         expect_type("table", imported)
         expect_true((imported.mapped_provinces or 0) > 0)
+        expect_true((imported.capitals_set or 0) > 0)
 
         local snap = reg:getProvince(1)
         expect_type("table", snap)
+        expect_type("table", snap.capital)
         expect_type("table", snap.attrs)
     end)
 end)

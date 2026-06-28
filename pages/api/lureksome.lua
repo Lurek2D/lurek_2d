@@ -12,6 +12,14 @@ library = {}
 ---@class userdata
 ---@class nil
 
+---@class AwarenessMinimap
+---@field public visibility any
+---@field public width any
+---@field public height any
+---@field public z any
+---@field public minimap any
+AwarenessMinimap = {}
+
 ---@class StatusEffect
 ---@field public name any
 ---@field public duration any
@@ -301,6 +309,15 @@ LevelThresholds = {}
 ---@class Sheet
 Sheet = {}
 
+---@class TilefieldMinimap
+---@field public field any
+---@field public lightMap any
+---@field public width any
+---@field public height any
+---@field public z any
+---@field public minimap any
+TilefieldMinimap = {}
+
 ---@class TilemapMinimap
 ---@field public map any
 ---@field public layer any
@@ -308,6 +325,9 @@ Sheet = {}
 ---@field public height any
 ---@field public solid_terrain any
 ---@field public empty_terrain any
+---@field public blocked_gids any
+---@field public terrain_by_gid any
+---@field public terrain_at any
 ---@field public minimap any
 TilemapMinimap = {}
 
@@ -337,6 +357,38 @@ RecipeOutput = {}
 
 ---@class Skill
 Skill = {}
+
+---@class library.awareness_minimap
+library.awareness_minimap = {}
+
+--- Create a visibility->minimap sync helper.
+---@param opts table
+---@return any
+function library.awareness_minimap.new(opts) end
+
+--- Copy visible and explored tile visibility state into minimap fog data.
+---@param player string
+---@param opts table|nil
+---@return any
+function AwarenessMinimap:syncFog(player, opts) end
+
+--- Copy current visible cells into a minimap raw data layer.
+---@param player string
+---@param layer integer
+---@param opts table|nil
+---@return any
+function AwarenessMinimap:syncVisibleLayer(player, layer, opts) end
+
+--- Copy current actionable cells into a minimap raw data layer.
+---@param player string
+---@param layer integer
+---@param opts table|nil
+---@return any
+function AwarenessMinimap:syncActionLayer(player, layer, opts) end
+
+--- Expose the underlying minimap handle.
+---@return any
+function AwarenessMinimap:getMinimap() end
 
 ---@class library.battle
 library.battle = {}
@@ -4847,7 +4899,7 @@ function library.loot.newTable() end
 ---@return LootTable
 function library.loot.fromList(entries) end
 
---- Load a loot table from a TOML file via `lurek.filesystem.read` + `lurek.serial.fromToml`. The file must contain an `entries = [...]` array.
+--- Load a loot table from a TOML file via `lurek.filesystem.read` + `lurek.serialize.fromToml`. The file must contain an `entries = [...]` array.
 ---@param path string
 ---@return LootTable
 function library.loot.fromToml(path) end
@@ -5821,7 +5873,7 @@ function QuestLog:completedCount() end
 ---@return boolean
 function Objective:removeTag(tag) end
 
---- Encode a `QuestLog` to a JSON string via `lurek.serialize.toJson`.
+--- Encode a `QuestLog` to a JSON string via `lurek.serializeize.toJson`.
 ---@param log QuestLog
 ---@return string
 function library.quest.toJson(log) end
@@ -6128,6 +6180,29 @@ function library.scene_objects.new() end
 ---@return nil
 function ObjectContainer:add(obj) end
 
+--- Define an object group and return its 0-based bit index.
+---@param name string
+---@return number
+function ObjectContainer:defineGroup(name) end
+
+--- Return the bit index assigned to a group name, or nil when undefined.
+---@param name string
+---@return number|nil
+function ObjectContainer:getGroupBit(name) end
+
+--- Enable or disable one group for one pass.
+---@param group string|number
+---@param pass string
+---@param enabled boolean
+---@return boolean
+function ObjectContainer:setGroupEnabled(group, pass, enabled) end
+
+--- Return whether one group is enabled for one pass.
+---@param group string|number
+---@param pass string
+---@return boolean
+function ObjectContainer:isGroupEnabled(group, pass) end
+
 --- Remove an object from the container (identity comparison). Silently does nothing when the object is not present.
 ---@param obj table
 ---@return nil
@@ -6141,6 +6216,11 @@ function ObjectContainer:clear() end
 ---@param dt number
 ---@return nil
 function ObjectContainer:update(dt) end
+
+--- Call `obj:process_physics(dt)` on objects enabled for the physics pass. Falls back to `obj:physics(dt)` when present.
+---@param dt number
+---@return nil
+function ObjectContainer:processPhysics(dt) end
 
 --- Call `obj:draw()` on every object that has a `draw` method, sorted by `layer` ascending.  Objects with the same layer are drawn in insertion order.
 ---@return nil
@@ -6574,15 +6654,47 @@ function Sheet:snapshot() end
 ---@return nil
 function Sheet:restore(snap) end
 
---- Encode a snapshot table to a JSON string via `lurek.serialize.toJson`.
+--- Encode a snapshot table to a JSON string via `lurek.serializeize.toJson`.
 ---@param snap table
 ---@return string
 function library.stats.snapshotToJson(snap) end
 
---- Decode a JSON snapshot string back into a Lua table via `lurek.serialize.fromJson`. The returned table can be passed to `Sheet:restore`.
+--- Decode a JSON snapshot string back into a Lua table via `lurek.serializeize.fromJson`. The returned table can be passed to `Sheet:restore`.
 ---@param str string
 ---@return table
 function library.stats.snapshotFromJson(str) end
+
+---@class library.tilefield_minimap
+library.tilefield_minimap = {}
+
+--- Create a tilefield->minimap sync helper.
+---@param opts table
+---@return any
+function library.tilefield_minimap.new(opts) end
+
+--- Convert a tilefield boolean blocker layer into a minimap raw data layer.
+---@param channel string
+---@param layer integer
+---@param opts table|nil
+---@return any
+function TilefieldMinimap:syncBlockLayer(channel, layer, opts) end
+
+--- Convert a tilefield numeric cost layer into a minimap raw data layer.
+---@param channel string
+---@param layer integer
+---@param opts table|nil
+---@return any
+function TilefieldMinimap:syncCostLayer(channel, layer, opts) end
+
+--- Convert a tilelight computed layer into a minimap raw data layer.
+---@param layer integer
+---@param opts table|nil
+---@return any
+function TilefieldMinimap:syncLightLayer(layer, opts) end
+
+--- Expose the underlying minimap handle.
+---@return any
+function TilefieldMinimap:getMinimap() end
 
 ---@class library.tilemap_minimap
 library.tilemap_minimap = {}
@@ -6592,7 +6704,7 @@ library.tilemap_minimap = {}
 ---@return any
 function library.tilemap_minimap.new(opts) end
 
---- Sync tile solidity from tilemap layer into minimap terrain.
+--- Sync explicit tilemap-derived terrain into minimap terrain.
 ---@return nil
 function TilemapMinimap:syncTerrain() end
 

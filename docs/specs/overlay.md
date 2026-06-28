@@ -303,6 +303,9 @@ This module primarily collaborates with `color`, `image`, `render`, `runtime`. I
 | Current artifact | `tests/artifacts/current/overlay/overlay_environment_layers.gif` |
 | Current artifact | `tests/artifacts/current/overlay/overlay_flash_shake_fade_composite.gif` |
 | Current artifact | `tests/artifacts/current/overlay/overlay_screen_effects_timeline.gif` |
+| Current artifact | `tests/artifacts/current/overlay/overlay_shader_visual_01_screen_overlay.png` |
+| Current artifact | `tests/artifacts/current/overlay/overlay_shader_visual_02_heat_haze.png` |
+| Current artifact | `tests/artifacts/current/overlay/overlay_shader_visual_03_fog_layer.png` |
 | Current artifact | `tests/artifacts/current/overlay/overlay_storm_front_wind_sweep.gif` |
 | Current artifact | `tests/artifacts/current/overlay/overlay_transition_mask_atlas.png` |
 | Current artifact | `tests/artifacts/current/overlay/overlay_transition_modes.gif` |

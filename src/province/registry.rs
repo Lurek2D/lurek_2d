@@ -233,6 +233,7 @@ impl ProvinceRegistry {
             style: rec.style.clone(),
             revision: self.revision,
             centroid: rec.centroid,
+            capital: rec.capital,
             attrs: rec.attrs.clone(),
         })
     }

@@ -987,6 +987,7 @@ LProvinceRegistryGetChangesSinceResult = {}
 
 ---@class LProvinceRegistryGetProvinceResult
 ---@field attrs table Custom attributes table.
+---@field capital table Capital marker position table imported from marker metadata.
 ---@field centroid table Centroid position table.
 ---@field province_id number Province id.
 ---@field revision number Revision number.
@@ -25677,7 +25678,7 @@ function LProvinceRegistry:getName() end
 ---@return number[] Array of neighboring province IDs.
 function LProvinceRegistry:getNeighbors(id) end
 
---- Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state), centroid, and custom attributes.
+--- Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state), centroid, capital marker, and custom attributes.
 ---@param id number Province ID to query.
 ---@return LProvinceRegistryGetProvinceResult Province snapshot table, or nil if the ID does not exist.
 function LProvinceRegistry:getProvince(id) end

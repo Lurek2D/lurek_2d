@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-28T10:55:44.042076+00:00",
+  "generated_at": "2026-06-28T12:41:11.036170+00:00",
   "summary": {
     "rust": {
       "total": 8794,
@@ -35820,7 +35820,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/province_api.rs",
-      "line": 1966,
+      "line": 1976,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -55836,7 +55836,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/registry.rs",
-      "line": 240,
+      "line": 241,
       "kind": "fn",
       "name": "get_neighbors",
       "has_doc": true
@@ -55845,7 +55845,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/registry.rs",
-      "line": 244,
+      "line": 245,
       "kind": "fn",
       "name": "adjacency_pairs",
       "has_doc": true
@@ -55854,7 +55854,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/registry.rs",
-      "line": 248,
+      "line": 249,
       "kind": "fn",
       "name": "spans",
       "has_doc": true
@@ -55863,7 +55863,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/registry.rs",
-      "line": 252,
+      "line": 253,
       "kind": "fn",
       "name": "border_segments",
       "has_doc": true
@@ -55872,7 +55872,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/registry.rs",
-      "line": 256,
+      "line": 257,
       "kind": "fn",
       "name": "spans_for",
       "has_doc": true
@@ -55881,7 +55881,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/registry.rs",
-      "line": 260,
+      "line": 261,
       "kind": "fn",
       "name": "bbox_for",
       "has_doc": true
@@ -55890,7 +55890,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/registry.rs",
-      "line": 264,
+      "line": 265,
       "kind": "fn",
       "name": "style_for",
       "has_doc": true
@@ -55899,7 +55899,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/registry.rs",
-      "line": 268,
+      "line": 269,
       "kind": "fn",
       "name": "set_capital",
       "has_doc": true
@@ -55908,7 +55908,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/registry.rs",
-      "line": 276,
+      "line": 277,
       "kind": "fn",
       "name": "capital_for",
       "has_doc": true
@@ -55917,7 +55917,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/registry.rs",
-      "line": 280,
+      "line": 281,
       "kind": "fn",
       "name": "set_label_line",
       "has_doc": true
@@ -55926,7 +55926,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/registry.rs",
-      "line": 288,
+      "line": 289,
       "kind": "fn",
       "name": "label_line_for",
       "has_doc": true
@@ -55935,7 +55935,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/registry.rs",
-      "line": 292,
+      "line": 293,
       "kind": "fn",
       "name": "set_label_text",
       "has_doc": true
@@ -55944,7 +55944,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/registry.rs",
-      "line": 300,
+      "line": 301,
       "kind": "fn",
       "name": "label_text_for",
       "has_doc": true
@@ -55953,7 +55953,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/registry.rs",
-      "line": 311,
+      "line": 312,
       "kind": "fn",
       "name": "get_changes_since",
       "has_doc": true
@@ -55962,7 +55962,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/registry.rs",
-      "line": 319,
+      "line": 320,
       "kind": "fn",
       "name": "set_political_color",
       "has_doc": true
@@ -55971,7 +55971,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/registry.rs",
-      "line": 334,
+      "line": 335,
       "kind": "fn",
       "name": "set_terrain_type",
       "has_doc": true
@@ -55980,7 +55980,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/registry.rs",
-      "line": 349,
+      "line": 350,
       "kind": "fn",
       "name": "set_border_style",
       "has_doc": true
@@ -55989,7 +55989,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/registry.rs",
-      "line": 364,
+      "line": 365,
       "kind": "fn",
       "name": "set_fog_state",
       "has_doc": true
@@ -55998,7 +55998,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/registry.rs",
-      "line": 379,
+      "line": 380,
       "kind": "fn",
       "name": "set_visibility_state",
       "has_doc": true
@@ -56007,7 +56007,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/registry.rs",
-      "line": 402,
+      "line": 403,
       "kind": "fn",
       "name": "set_border_type",
       "has_doc": true
@@ -56016,7 +56016,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/registry.rs",
-      "line": 412,
+      "line": 413,
       "kind": "fn",
       "name": "get_border_type",
       "has_doc": true
@@ -56025,7 +56025,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/registry.rs",
-      "line": 416,
+      "line": 417,
       "kind": "fn",
       "name": "register_border_type",
       "has_doc": true
@@ -56034,7 +56034,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/registry.rs",
-      "line": 424,
+      "line": 425,
       "kind": "fn",
       "name": "get_border_type_config",
       "has_doc": true
@@ -56043,7 +56043,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/registry.rs",
-      "line": 430,
+      "line": 431,
       "kind": "fn",
       "name": "set_border_pair_style",
       "has_doc": true
@@ -56052,7 +56052,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/registry.rs",
-      "line": 442,
+      "line": 443,
       "kind": "fn",
       "name": "get_border_pair_style",
       "has_doc": true
@@ -56061,7 +56061,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/registry.rs",
-      "line": 446,
+      "line": 447,
       "kind": "fn",
       "name": "set_attr",
       "has_doc": true
@@ -56070,7 +56070,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/registry.rs",
-      "line": 454,
+      "line": 455,
       "kind": "fn",
       "name": "register_map_mode",
       "has_doc": true
@@ -56079,7 +56079,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/registry.rs",
-      "line": 458,
+      "line": 459,
       "kind": "fn",
       "name": "set_map_mode",
       "has_doc": true
@@ -56088,7 +56088,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/registry.rs",
-      "line": 468,
+      "line": 469,
       "kind": "fn",
       "name": "active_map_mode",
       "has_doc": true
@@ -56097,7 +56097,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/registry.rs",
-      "line": 472,
+      "line": 473,
       "kind": "fn",
       "name": "map_mode_config",
       "has_doc": true
@@ -56106,7 +56106,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/registry.rs",
-      "line": 476,
+      "line": 477,
       "kind": "fn",
       "name": "get_map_mode_config",
       "has_doc": true

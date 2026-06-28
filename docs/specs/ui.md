@@ -1231,6 +1231,9 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 | Current artifact | `tests/artifacts/current/ui/structured_widget_table.png` |
 | Current artifact | `tests/artifacts/current/ui/structured_widget_tree_view.png` |
 | Current artifact | `tests/artifacts/current/ui/ui_shader_binding_contract.txt` |
+| Current artifact | `tests/artifacts/current/ui/ui_shader_visual_01_widget_material.png` |
+| Current artifact | `tests/artifacts/current/ui/ui_shader_visual_02_layer_tint.png` |
+| Current artifact | `tests/artifacts/current/ui/ui_shader_visual_03_hover_highlight.png` |
 | Current artifact | `tests/artifacts/current/ui/visual_widget_image.png` |
 | Current artifact | `tests/artifacts/current/ui/visual_widget_nine_patch.png` |
 | Baseline artifact | `tests/artifacts/baselines/ui/container_widget_inspector_panel.png` |

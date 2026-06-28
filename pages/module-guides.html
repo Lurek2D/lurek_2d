@@ -458,6 +458,8 @@
       
         
       
+        
+      
     
     
     
@@ -699,6 +701,34 @@
     
   
     Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/awareness.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Awareness
   
 
     
@@ -1587,34 +1617,6 @@
   
   
     <li class="md-nav__item">
-      <a href="modules/midi.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Midi
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="modules/minimap.html" class="md-nav__link">
         
   
@@ -2119,14 +2121,14 @@
   
   
     <li class="md-nav__item">
-      <a href="modules/serial.html" class="md-nav__link">
+      <a href="modules/serialize.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Serial
+    Serialize
   
 
     
@@ -2287,6 +2289,62 @@
   
   
     <li class="md-nav__item">
+      <a href="modules/tilefield.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tilefield
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/tilelight.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tilelight
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="modules/tilemap.html" class="md-nav__link">
         
   
@@ -2315,14 +2373,14 @@
   
   
     <li class="md-nav__item">
-      <a href="modules/tilefield.html" class="md-nav__link">
+      <a href="modules/tileset.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Tilefield
+    Tileset
   
 
     
@@ -2435,34 +2493,6 @@
     
   
     Validator
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="modules/visibility.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Visibility
   
 
     
@@ -2616,6 +2646,11 @@
 <td>The automation module is the scripted replay layer for users who want deterministic QA, repeatable demos, or regression-oriented gameplay checks.</td>
 </tr>
 <tr>
+<td><a href="modules/awareness.html">Awareness</a></td>
+<td><code>lurek.awareness</code></td>
+<td>The awareness module is the shared answer to fog-of-war, line-of-sight, action reachability, and remembered exploration for users building map-aware gameplay.</td>
+</tr>
+<tr>
 <td><a href="modules/binary.html">Binary</a></td>
 <td><code>lurek.binary</code></td>
 <td>The binary module is the byte-oriented data surface for users who need exact control over compact formats, protocol payloads, and structured runtime interchange.</td>
@@ -2748,7 +2783,7 @@
 <tr>
 <td><a href="modules/learning.html">Learning</a></td>
 <td><code>lurek.learning</code></td>
-<td>The learning module is the engine's machine-learning and adaptive-policy surface for users who want experimentation, inference, and lightweight training loops to live inside the same runtime as gameplay and tooling code.</td>
+<td>The learning module is the engine's lightweight adaptive-policy surface for users who want experimentation, inference-like forward passes, and basic training loops to live inside the same runtime as gameplay and tooling code.</td>
 </tr>
 <tr>
 <td><a href="modules/light.html">Light</a></td>
@@ -2771,11 +2806,6 @@
 <td>The math module is the engine's shared numerical and geometric foundation for users who need consistent rules for coordinates, shapes, transforms, interpolation, sampling, and spatial reasoning across many feature areas.</td>
 </tr>
 <tr>
-<td><a href="modules/midi.html">Midi</a></td>
-<td><code>lurek.midi</code></td>
-<td>The midi module is the playback surface for projects that want symbolic music control instead of treating every cue as rendered audio.</td>
-</tr>
-<tr>
 <td><a href="modules/minimap.html">Minimap</a></td>
 <td><code>lurek.minimap</code></td>
 <td>The minimap module is the HUD-scale map surface for users who want world state, fog, markers, and view tracking to become a compact readable overlay.</td>
@@ -2788,7 +2818,7 @@
 <tr>
 <td><a href="modules/network.html">Network</a></td>
 <td><code>lurek.network</code></td>
-<td>The network module is the engine's communication and session surface for users who need game state, tool messages, service calls, telemetry, or multiplayer traffic to move between processes or machines.</td>
+<td>The network module is the engine's small-game multiplayer surface for users who need direct IP or LAN-hosted sessions for roughly 8-16 players.</td>
 </tr>
 <tr>
 <td><a href="modules/overlay.html">Overlay</a></td>
@@ -2866,9 +2896,9 @@
 <td>The scene module is the high-level flow coordinator for users who want menus, gameplay states, overlays, pause layers, and transitions to behave like one ordered stack instead of a collection of unrelated toggles.</td>
 </tr>
 <tr>
-<td><a href="modules/serial.html">Serial</a></td>
-<td><code>lurek.serial</code></td>
-<td>The serial module is the format-translation surface for users who want several external data formats to map into one shared runtime value model.</td>
+<td><a href="modules/serialize.html">Serialize</a></td>
+<td><code>lurek.serialize</code></td>
+<td>The serialize module is the format-translation surface for users who want several external data formats to map into one shared runtime value model.</td>
 </tr>
 <tr>
 <td><a href="modules/spine.html">Spine</a></td>
@@ -2883,7 +2913,7 @@
 <tr>
 <td><a href="modules/svg.html">SVG</a></td>
 <td><code>lurek.svg</code></td>
-<td>The svg module is the engine surface for scalable vector artwork, aimed at users who want SVG-style content to stay editable and resolution-independent for as long as possible.</td>
+<td>The svg module is the engine surface for scalable SVG artwork, aimed at users who want SVG-style content to stay editable and resolution-independent for as long as possible.</td>
 </tr>
 <tr>
 <td><a href="modules/terminal.html">Terminal</a></td>
@@ -2901,9 +2931,19 @@
 <td>Coordinates exposed to Lua are one-based x, y, z; Rust storage is zero-based.</td>
 </tr>
 <tr>
+<td><a href="modules/tilelight.html">Tilelight</a></td>
+<td><code>lurek.tilelight</code></td>
+<td>The tilelight module owns light propagation over tile cells. It reads blockers, transmission costs, topology, and sun occlusion from tilefield, then produces computed RGB/luma layers.</td>
+</tr>
+<tr>
 <td><a href="modules/tilemap.html">Tilemap</a></td>
 <td><code>lurek.tilemap</code></td>
-<td>The tilemap module is the engine's full grid-world framework for users who want tile-based spaces to be authored, generated, rendered, queried, and traversed through one reusable system rather than through several disconnected helpers.</td>
+<td>The tilemap module is the engine's runtime tile-grid storage and presentation bridge for users who want tile-based spaces to be authored, generated, imported, indexed, and submitted to rendering through one reusable storage model.</td>
+</tr>
+<tr>
+<td><a href="modules/tileset.html">Tileset</a></td>
+<td><code>lurek.tileset</code></td>
+<td>LTileSet describes what tile ids mean inside one atlas, independent of map storage and gameplay fields.</td>
 </tr>
 <tr>
 <td><a href="modules/timer.html">Timer</a></td>
@@ -2924,11 +2964,6 @@
 <td><a href="modules/validator.html">Validator</a></td>
 <td><code>lurek.validator</code></td>
 <td>The validator module is the content-checking surface for users who want assets, imports, and API usage to be verified as a structured workflow instead of informal manual review.</td>
-</tr>
-<tr>
-<td><a href="modules/visibility.html">Visibility</a></td>
-<td><code>lurek.visibility</code></td>
-<td>The visibility module is the shared answer to fog-of-war, line-of-sight, and remembered exploration for users building map-aware gameplay.</td>
 </tr>
 <tr>
 <td><a href="modules/window.html">Window</a></td>

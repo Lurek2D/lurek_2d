@@ -122,10 +122,15 @@ def check_module_pages_indexed(errors: list[str]) -> None:
         f"modules/{api_module_name(module)}.md"
         for module in module_registry.user_facing_modules()
     }
+    nav_module_refs = set(re.findall(r"^\s*-\s+[^:\n]+:\s+(modules/[^\s#]+\.md)\s*$", mkdocs_text, re.MULTILINE))
     for module_page in (ROOT / "docs" / "modules").glob("*.md"):
         module_ref = f"modules/{module_page.name}"
         if module_ref not in expected_refs:
             errors.append(f"FORBIDDEN_NON_API_MODULE_PAGE docs/{module_ref}")
+
+    for module_ref in sorted(nav_module_refs):
+        if module_ref not in expected_refs:
+            errors.append(f"STALE_MKDOCS_MODULE_NAV {module_ref}")
 
     for module in module_registry.user_facing_modules():
         api_module = api_module_name(module)

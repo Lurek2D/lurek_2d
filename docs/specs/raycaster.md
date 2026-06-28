@@ -705,6 +705,9 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 | Current artifact | `tests/artifacts/current/raycaster/raycaster_full_scene_day_night.png` |
 | Current artifact | `tests/artifacts/current/raycaster/raycaster_multilevel_hole_pick.png` |
 | Current artifact | `tests/artifacts/current/raycaster/raycaster_shader_binding_contract.txt` |
+| Current artifact | `tests/artifacts/current/raycaster/raycaster_shader_visual_01_wall_shade.png` |
+| Current artifact | `tests/artifacts/current/raycaster/raycaster_shader_visual_02_floor_fog.png` |
+| Current artifact | `tests/artifacts/current/raycaster/raycaster_shader_visual_03_depth_tint.png` |
 | Current artifact | `tests/artifacts/current/raycaster/raycaster_topdown_cast_rays.png` |
 | Current artifact | `tests/artifacts/current/raycaster/raycaster_transparent_layered_hits.png` |
 | Baseline artifact | `tests/artifacts/baselines/raycaster/raycaster_camera_sweep_atlas.png` |

@@ -333,6 +333,9 @@ This module primarily collaborates with `color`, `image`, `math`, `runtime`. Its
 | Current artifact | `tests/artifacts/current/light/light_normal_map.png` |
 | Current artifact | `tests/artifacts/current/light/light_occluder_left.png` |
 | Current artifact | `tests/artifacts/current/light/light_occluder_right.png` |
+| Current artifact | `tests/artifacts/current/light/light_shader_visual_01_world_light.png` |
+| Current artifact | `tests/artifacts/current/light/light_shader_visual_02_instance_light.png` |
+| Current artifact | `tests/artifacts/current/light/light_shader_visual_03_rim_falloff.png` |
 | Current artifact | `tests/artifacts/current/light/light_shadow_occlusion.png` |
 | Current artifact | `tests/artifacts/current/light/light_spotlight_sweep.gif` |
 | Current artifact | `tests/artifacts/current/light/light_vending_machine_occlusion.png` |

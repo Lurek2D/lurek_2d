@@ -275,6 +275,9 @@ This module primarily collaborates with `image`, `overlay`, `render`, `runtime`.
 | Current artifact | `tests/artifacts/current/effect/effect_image_chain_state.json` |
 | Current artifact | `tests/artifacts/current/effect/effect_parameter_response_curves.png` |
 | Current artifact | `tests/artifacts/current/effect/effect_preset_stack_contact_sheet.png` |
+| Current artifact | `tests/artifacts/current/effect/effect_shader_visual_01_custom_pass.png` |
+| Current artifact | `tests/artifacts/current/effect/effect_shader_visual_02_auto_uniforms.png` |
+| Current artifact | `tests/artifacts/current/effect/effect_shader_visual_03_screen_transition.png` |
 | Current artifact | `tests/artifacts/current/effect/effect_stack_order_lookbook.gif` |
 | Current artifact | `tests/artifacts/current/effect/effect_stack_pipeline.gif` |
 | Current artifact | `tests/artifacts/current/effect/effect_stack_state.json` |

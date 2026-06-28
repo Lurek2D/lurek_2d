@@ -433,6 +433,9 @@ This module primarily collaborates with `animation`, `color`, `image`, `math`, `
 | Current artifact | `tests/artifacts/current/sprite/sprite_atlas_regions_flips.png` |
 | Current artifact | `tests/artifacts/current/sprite/sprite_lit_normal_state.png` |
 | Current artifact | `tests/artifacts/current/sprite/sprite_packer_nine_slice.png` |
+| Current artifact | `tests/artifacts/current/sprite/sprite_shader_visual_01_team_color.png` |
+| Current artifact | `tests/artifacts/current/sprite/sprite_shader_visual_02_palette_swap.png` |
+| Current artifact | `tests/artifacts/current/sprite/sprite_shader_visual_03_damage_flash.png` |
 | Current artifact | `tests/artifacts/current/sprite/sprite_sheet_groups.png` |
 | Baseline artifact | `tests/artifacts/baselines/image/sprite_16x16.png` |
 | Baseline artifact | `tests/artifacts/baselines/image/sprite_32x32.png` |
