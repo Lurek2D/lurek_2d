@@ -124,6 +124,14 @@ pub enum ShaderFragmentInput {
     Scalar1,
     /// `@location(7) f32` random seed, intensity, or target-specific scalar input.
     Scalar2,
+    /// `@location(8) f32` shadow factor or target-specific scalar input.
+    Scalar3,
+    /// `@location(8) vec4<f32>` sampled particle texture color.
+    SampledTextureColor,
+    /// `@location(9) vec4<f32>` ambient color or target-specific color input.
+    AmbientColor,
+    /// `@location(10) vec4<f32>` light direction and spot-angle input.
+    LightDirection,
 }
 /// Rewritten fragment source and its entry name, ready for injection into the wrapper pipeline.
 #[derive(Debug, Clone)]
@@ -281,6 +289,10 @@ fn fullscreen_fragment_call_args(inputs: &[ShaderFragmentInput]) -> String {
             ShaderFragmentInput::Scalar0 => "params.p[3].x",
             ShaderFragmentInput::Scalar1 => "params.p[3].y",
             ShaderFragmentInput::Scalar2 => "params.p[3].z",
+            ShaderFragmentInput::Scalar3 => "params.p[3].w",
+            ShaderFragmentInput::SampledTextureColor => "source",
+            ShaderFragmentInput::AmbientColor => "vec4<f32>(0.0, 0.0, 0.0, 1.0)",
+            ShaderFragmentInput::LightDirection => "vec4<f32>(0.0, 0.0, 0.0, 0.0)",
         })
         .collect::<Vec<_>>()
         .join(", ")
@@ -463,6 +475,10 @@ fn validate_target_input(
                 validate_f32(module, ty)?;
                 ShaderFragmentInput::Scalar2
             }
+            8 => {
+                validate_vec4_f32(module, ty)?;
+                ShaderFragmentInput::SampledTextureColor
+            }
             _ => {
                 return Err(format!(
                     "particle shader uses unsupported input @location({location})"
@@ -501,6 +517,18 @@ fn validate_target_input(
             7 => {
                 validate_f32(module, ty)?;
                 ShaderFragmentInput::Scalar2
+            }
+            8 => {
+                validate_f32(module, ty)?;
+                ShaderFragmentInput::Scalar3
+            }
+            9 => {
+                validate_vec4_f32(module, ty)?;
+                ShaderFragmentInput::AmbientColor
+            }
+            10 => {
+                validate_vec4_f32(module, ty)?;
+                ShaderFragmentInput::LightDirection
             }
             _ => return Err(format!("light shader uses unsupported input @location({location})")),
         },

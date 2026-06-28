@@ -27,6 +27,8 @@ pub struct ParticleVertex {
     pub(crate) position: [f32; 2],
     /// Per-vertex particle color.
     pub(crate) color: [f32; 4],
+    /// Particle-local UV coordinate.
+    pub(crate) uv: [f32; 2],
     /// Particle-local position before emitter/world offset.
     pub(crate) local_pos: [f32; 2],
     /// Particle world-space center position.
@@ -57,7 +59,7 @@ pub struct TexVertex {
     /// Padding to meet `Pod` alignment requirements.
     pub(crate) _pad: [f32; 3],
 }
-/// Light-pass vertex with position, UV, RGBA tint, shadow map value, and shadow parameters.
+/// Light-pass vertex with position, UV, RGBA tint, shadow map value, and custom light inputs.
 #[repr(C)]
 #[derive(Copy, Clone, Pod, Zeroable)]
 pub struct LightVertex {
@@ -69,8 +71,22 @@ pub struct LightVertex {
     pub(crate) color: [f32; 4],
     /// Normalised 0..1 shadow map value for this vertex.
     pub(crate) shadow_v: f32,
-    /// Shadow sampling parameters: `[radius, mode, texel_size, _pad]`.
+    /// Shadow sampling parameters: `[filter_mode, softness, texel_size, _pad]`.
     pub(crate) shadow_params: [f32; 4],
+    /// World-space light center.
+    pub(crate) light_pos: [f32; 2],
+    /// Effective light radius in pixels.
+    pub(crate) radius: f32,
+    /// Effective light intensity after energy and flicker.
+    pub(crate) intensity: f32,
+    /// Normal-map hint passed to custom light shaders.
+    pub(crate) normal_hint: [f32; 2],
+    /// Ambient scene color passed to custom light shaders.
+    pub(crate) ambient_color: [f32; 4],
+    /// Direction vector and spot cone angles `[dir_x, dir_y, inner, outer]`.
+    pub(crate) direction_spot: [f32; 4],
+    /// Padding to keep the vertex layout aligned.
+    pub(crate) _pad: [f32; 2],
 }
 /// Shadow caster edge representation for compute shader processing.
 #[repr(C)]

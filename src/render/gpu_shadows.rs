@@ -367,7 +367,11 @@ impl GpuRenderer {
                                 1 => Float32x2,
                                 2 => Float32x4,
                                 3 => Float32,
-                                4 => Float32x4
+                                4 => Float32x4,
+                                5 => Float32x2,
+                                6 => Float32,
+                                7 => Float32,
+                                8 => Float32x2
                             ],
                         }],
                     },
@@ -554,6 +558,7 @@ impl GpuRenderer {
             shadow_atlas_texture,
             shadow_atlas_view,
             shadow_atlas_bind_group,
+            shadow_atlas_bind_group_layout: shadow_bgl,
             shadow_compute_bind_group_layout,
             shadow_compute_bind_group,
             shadow_compute_pipeline,

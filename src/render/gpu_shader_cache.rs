@@ -8,8 +8,10 @@
 use std::collections::HashMap;
 
 use crate::render::gpu_pipeline::{
-    build_custom_color_shader_source, build_custom_particle_shader_source,
-    build_custom_texture_shader_source, create_render_pipeline, GeometryKind, PipelineKey,
+    build_custom_color_shader_source, build_custom_light_shader_source,
+    build_custom_particle_shader_source, build_custom_texture_shader_source,
+    build_custom_textured_particle_shader_source, create_render_pipeline, GeometryKind,
+    PipelineKey,
 };
 use crate::render::gpu_renderer::GpuRenderer;
 use crate::render::gpu_shaders::{GpuShader, ShaderUniformKind};
@@ -85,7 +87,11 @@ impl GpuRenderer {
                 })
             });
             let color_source = build_custom_color_shader_source(shader, &uniform_signature);
+            let light_source = (shader.target() == ShaderTarget::Light)
+                .then(|| build_custom_light_shader_source(shader, &uniform_signature));
             let particle_source = build_custom_particle_shader_source(shader, &uniform_signature);
+            let textured_particle_source =
+                build_custom_textured_particle_shader_source(shader, &uniform_signature);
             let texture_source = build_custom_texture_shader_source(shader, &uniform_signature);
             let color_module = self
                 .device
@@ -99,6 +105,19 @@ impl GpuRenderer {
                     label: Some("custom_particle_shader"),
                     source: wgpu::ShaderSource::Wgsl(particle_source.into()),
                 });
+            let textured_particle_module =
+                self.device
+                    .create_shader_module(wgpu::ShaderModuleDescriptor {
+                        label: Some("custom_textured_particle_shader"),
+                        source: wgpu::ShaderSource::Wgsl(textured_particle_source.into()),
+                    });
+            let light_module = light_source.map(|source| {
+                self.device
+                    .create_shader_module(wgpu::ShaderModuleDescriptor {
+                        label: Some("custom_light_shader"),
+                        source: wgpu::ShaderSource::Wgsl(source.into()),
+                    })
+            });
             let texture_module = self
                 .device
                 .create_shader_module(wgpu::ShaderModuleDescriptor {
@@ -148,6 +167,51 @@ impl GpuRenderer {
                         push_constant_ranges: &[],
                     })
             };
+            let textured_particle_layout = {
+                let bind_group_layouts = match uniform_bind_group_layout.as_ref() {
+                    Some(uniform_layout) => vec![
+                        &self.viewport_bind_group_layout,
+                        &self.texture_bind_group_layout,
+                        uniform_layout,
+                    ],
+                    None => vec![
+                        &self.viewport_bind_group_layout,
+                        &self.texture_bind_group_layout,
+                    ],
+                };
+                self.device
+                    .create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
+                        label: Some("custom_textured_particle_layout"),
+                        bind_group_layouts: &bind_group_layouts,
+                        push_constant_ranges: &[],
+                    })
+            };
+            let light_layout = if shader.target() == ShaderTarget::Light {
+                let Some(light_gpu) = self.light_gpu.as_ref() else {
+                    return;
+                };
+                let bind_group_layouts = match uniform_bind_group_layout.as_ref() {
+                    Some(uniform_layout) => vec![
+                        &self.viewport_bind_group_layout,
+                        &light_gpu.shadow_atlas_bind_group_layout,
+                        uniform_layout,
+                    ],
+                    None => vec![
+                        &self.viewport_bind_group_layout,
+                        &light_gpu.shadow_atlas_bind_group_layout,
+                    ],
+                };
+                Some(
+                    self.device
+                        .create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
+                            label: Some("custom_light_layout"),
+                            bind_group_layouts: &bind_group_layouts,
+                            push_constant_ranges: &[],
+                        }),
+                )
+            } else {
+                None
+            };
             self.shader_cache.insert(
                 shader_key,
                 GpuShader {
@@ -158,12 +222,18 @@ impl GpuRenderer {
                     color_module,
                     texture_module,
                     particle_module,
+                    textured_particle_module,
+                    light_module,
                     color_layout,
                     texture_layout,
                     particle_layout,
+                    textured_particle_layout,
+                    light_layout,
                     color_pipelines: HashMap::new(),
                     texture_pipelines: HashMap::new(),
                     particle_pipelines: HashMap::new(),
+                    textured_particle_pipelines: HashMap::new(),
+                    light_pipelines: HashMap::new(),
                 },
             );
         }
@@ -183,7 +253,17 @@ impl GpuRenderer {
         geometry: GeometryKind,
         key: PipelineKey,
     ) -> Option<&wgpu::RenderPipeline> {
-        if !matches!(shader.target(), ShaderTarget::Draw | ShaderTarget::Particle) {
+        let target_matches_geometry = matches!(
+            (geometry, shader.target()),
+            (GeometryKind::Light, ShaderTarget::Light)
+                | (GeometryKind::Particle, ShaderTarget::Particle)
+                | (GeometryKind::ParticleTextured, ShaderTarget::Particle)
+                | (GeometryKind::Color, ShaderTarget::Draw)
+                | (GeometryKind::ColorInstanced, ShaderTarget::Draw)
+                | (GeometryKind::Texture, ShaderTarget::Draw)
+                | (GeometryKind::TextureInstanced, ShaderTarget::Draw)
+        );
+        if !target_matches_geometry {
             return None;
         }
         self.ensure_shader_cache(shader_key, shader);
@@ -200,6 +280,10 @@ impl GpuRenderer {
                     !cache.texture_pipelines.contains_key(&key)
                 }
                 GeometryKind::Particle => !cache.particle_pipelines.contains_key(&key),
+                GeometryKind::ParticleTextured => {
+                    !cache.textured_particle_pipelines.contains_key(&key)
+                }
+                GeometryKind::Light => !cache.light_pipelines.contains_key(&key),
             }
         };
         if missing {
@@ -238,6 +322,31 @@ impl GpuRenderer {
                         key,
                         "lurek_fragment_main",
                     ),
+                    GeometryKind::ParticleTextured => create_render_pipeline(
+                        &self.device,
+                        self.surface_format,
+                        &cache.textured_particle_layout,
+                        &cache.textured_particle_module,
+                        geometry,
+                        key,
+                        "lurek_fragment_main",
+                    ),
+                    GeometryKind::Light => {
+                        let (Some(light_layout), Some(light_module)) =
+                            (cache.light_layout.as_ref(), cache.light_module.as_ref())
+                        else {
+                            return None;
+                        };
+                        create_render_pipeline(
+                            &self.device,
+                            self.surface_format,
+                            light_layout,
+                            light_module,
+                            geometry,
+                            key,
+                            "lurek_fragment_main",
+                        )
+                    }
                 }
             };
             let Some(cache) = self.shader_cache.get_mut(shader_key) else {
@@ -253,6 +362,12 @@ impl GpuRenderer {
                 }
                 GeometryKind::Particle => {
                     cache.particle_pipelines.insert(key, pipeline);
+                }
+                GeometryKind::ParticleTextured => {
+                    cache.textured_particle_pipelines.insert(key, pipeline);
+                }
+                GeometryKind::Light => {
+                    cache.light_pipelines.insert(key, pipeline);
                 }
             }
         }
@@ -285,6 +400,22 @@ impl GpuRenderer {
                 );
                 pipeline
             }
+            GeometryKind::ParticleTextured => {
+                let pipeline = cache.textured_particle_pipelines.get(&key);
+                debug_assert!(
+                    pipeline.is_some(),
+                    "custom textured particle pipeline missing after ensure"
+                );
+                pipeline
+            }
+            GeometryKind::Light => {
+                let pipeline = cache.light_pipelines.get(&key);
+                debug_assert!(
+                    pipeline.is_some(),
+                    "custom light pipeline missing after ensure"
+                );
+                pipeline
+            }
         }
     }
 
@@ -293,5 +424,24 @@ impl GpuRenderer {
         self.shader_cache
             .get(shader_key)
             .and_then(|cache| cache.uniform_bind_group.as_ref())
+    }
+
+    /// Return an already-created custom render pipeline without mutating the cache.
+    pub(crate) fn cached_custom_pipeline(
+        &self,
+        shader_key: ShaderKey,
+        geometry: GeometryKind,
+        key: PipelineKey,
+    ) -> Option<&wgpu::RenderPipeline> {
+        let cache = self.shader_cache.get(shader_key)?;
+        match geometry {
+            GeometryKind::Color | GeometryKind::ColorInstanced => cache.color_pipelines.get(&key),
+            GeometryKind::Texture | GeometryKind::TextureInstanced => {
+                cache.texture_pipelines.get(&key)
+            }
+            GeometryKind::Particle => cache.particle_pipelines.get(&key),
+            GeometryKind::ParticleTextured => cache.textured_particle_pipelines.get(&key),
+            GeometryKind::Light => cache.light_pipelines.get(&key),
+        }
     }
 }

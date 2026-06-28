@@ -35,6 +35,8 @@ pub struct LightGpuState {
     pub(crate) shadow_atlas_view: wgpu::TextureView,
     /// Bind group for sampling the shadow atlas in the light pass shader.
     pub(crate) shadow_atlas_bind_group: wgpu::BindGroup,
+    /// Layout for sampling the shadow atlas in built-in and custom light shaders.
+    pub(crate) shadow_atlas_bind_group_layout: wgpu::BindGroupLayout,
     /// Layout required for the compute shadow dispatch.
     pub(crate) shadow_compute_bind_group_layout: wgpu::BindGroupLayout,
     /// Bind group supplying edges and params to the compute shader.

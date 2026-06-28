@@ -9,7 +9,7 @@
 
 use crate::render::gpu_shaders::ShaderUniformKind;
 use crate::render::gpu_tess::color_write_mask_from_bits;
-use crate::render::gpu_types::{ColorVertex, ParticleVertex, TexVertex};
+use crate::render::gpu_types::{ColorVertex, LightVertex, ParticleVertex, TexVertex};
 use crate::render::renderer::BlendMode;
 use crate::render::shader::{Shader, ShaderFragmentInput};
 use crate::runtime::resource_keys::ShaderKey;
@@ -27,6 +27,10 @@ pub enum GeometryKind {
     TextureInstanced,
     /// Particle shader layout with per-particle visual inputs.
     Particle,
+    /// Textured particle shader layout with per-particle visual inputs and sampled texture color.
+    ParticleTextured,
+    /// Light contribution shader layout with per-light visual inputs.
+    Light,
 }
 /// Stencil operation mode for a draw call; used as part of the pipeline cache key.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
@@ -159,7 +163,11 @@ pub(crate) fn custom_fragment_call_args(
             | ShaderFragmentInput::TexelOrVelocity => "vec2<f32>(0.0, 0.0)",
             ShaderFragmentInput::Scalar0
             | ShaderFragmentInput::Scalar1
-            | ShaderFragmentInput::Scalar2 => "0.0",
+            | ShaderFragmentInput::Scalar2
+            | ShaderFragmentInput::Scalar3 => "0.0",
+            ShaderFragmentInput::SampledTextureColor => color_expr,
+            ShaderFragmentInput::AmbientColor => "vec4<f32>(0.0, 0.0, 0.0, 1.0)",
+            ShaderFragmentInput::LightDirection => "vec4<f32>(0.0, 0.0, 0.0, 0.0)",
         })
         .collect::<Vec<_>>()
         .join(", ")
@@ -177,6 +185,31 @@ pub(crate) fn particle_fragment_call_args(inputs: &[ShaderFragmentInput]) -> Str
             ShaderFragmentInput::Scalar0 => "in.normalized_age",
             ShaderFragmentInput::Scalar1 => "in.lifetime",
             ShaderFragmentInput::Scalar2 => "in.seed",
+            ShaderFragmentInput::Scalar3 => "0.0",
+            ShaderFragmentInput::SampledTextureColor => "in.sampled_color",
+            ShaderFragmentInput::AmbientColor => "vec4<f32>(0.0, 0.0, 0.0, 1.0)",
+            ShaderFragmentInput::LightDirection => "vec4<f32>(0.0, 0.0, 0.0, 0.0)",
+        })
+        .collect::<Vec<_>>()
+        .join(", ")
+}
+/// Build fragment call arguments for the light shader vertex output contract.
+pub(crate) fn light_fragment_call_args(inputs: &[ShaderFragmentInput]) -> String {
+    inputs
+        .iter()
+        .map(|input| match input {
+            ShaderFragmentInput::Color => "in.color",
+            ShaderFragmentInput::Uv => "in.uv",
+            ShaderFragmentInput::PixelOrLocal => "in.world_pos",
+            ShaderFragmentInput::ResolutionOrWorld => "in.light_pos",
+            ShaderFragmentInput::TexelOrVelocity => "in.normal_hint",
+            ShaderFragmentInput::Scalar0 => "in.distance_norm",
+            ShaderFragmentInput::Scalar1 => "in.radius",
+            ShaderFragmentInput::Scalar2 => "in.intensity",
+            ShaderFragmentInput::Scalar3 => "in.shadow_factor",
+            ShaderFragmentInput::SampledTextureColor => "in.color",
+            ShaderFragmentInput::AmbientColor => "in.ambient_color",
+            ShaderFragmentInput::LightDirection => "in.direction_spot",
         })
         .collect::<Vec<_>>()
         .join(", ")
@@ -252,12 +285,13 @@ pub fn build_custom_particle_shader_source(
 struct VertexInput {{
     @location(0) position: vec2<f32>,
     @location(1) color: vec4<f32>,
-    @location(2) local_pos: vec2<f32>,
-    @location(3) world_pos: vec2<f32>,
-    @location(4) velocity: vec2<f32>,
-    @location(5) normalized_age: f32,
-    @location(6) lifetime: f32,
-    @location(7) seed: f32,
+    @location(2) uv: vec2<f32>,
+    @location(3) local_pos: vec2<f32>,
+    @location(4) world_pos: vec2<f32>,
+    @location(5) velocity: vec2<f32>,
+    @location(6) normalized_age: f32,
+    @location(7) lifetime: f32,
+    @location(8) seed: f32,
 }}
 struct VertexOutput {{
     @builtin(position) clip_position: vec4<f32>,
@@ -269,6 +303,7 @@ struct VertexOutput {{
     @location(5) normalized_age: f32,
     @location(6) lifetime: f32,
     @location(7) seed: f32,
+    @location(8) sampled_color: vec4<f32>,
 }}
 struct LurekGlobals {{
     lurek_ScreenSize: vec2<f32>,
@@ -296,13 +331,14 @@ fn vs_main(in: VertexInput) -> VertexOutput {{
         1.0
     );
     out.color = in.color;
-    out.uv = vec2<f32>(0.0, 0.0);
+    out.uv = in.uv;
     out.local_pos = in.local_pos;
     out.world_pos = in.world_pos;
     out.velocity = in.velocity;
     out.normalized_age = in.normalized_age;
     out.lifetime = in.lifetime;
     out.seed = in.seed;
+    out.sampled_color = in.color;
     return out;
 }}
 {user_source}
@@ -314,6 +350,212 @@ fn lurek_fragment_main(in: VertexOutput) -> @location(0) vec4<f32> {{
         user_source = shader.wrapper_source(),
         fragment_entry = shader.fragment_entry_name(),
         fragment_call_args = fragment_call_args,
+    )
+}
+/// Assemble the full WGSL source for a textured custom particle shader pipeline.
+pub fn build_custom_textured_particle_shader_source(
+    shader: &Shader,
+    uniform_signature: &[(String, ShaderUniformKind)],
+) -> String {
+    let uniform_decls = custom_uniform_declarations(uniform_signature, 2);
+    let fragment_call_args = particle_fragment_call_args(shader.fragment_inputs());
+    format!(
+        r#"
+struct VertexInput {{
+    @location(0) position: vec2<f32>,
+    @location(1) color: vec4<f32>,
+    @location(2) uv: vec2<f32>,
+    @location(3) local_pos: vec2<f32>,
+    @location(4) world_pos: vec2<f32>,
+    @location(5) velocity: vec2<f32>,
+    @location(6) normalized_age: f32,
+    @location(7) lifetime: f32,
+    @location(8) seed: f32,
+}}
+struct VertexOutput {{
+    @builtin(position) clip_position: vec4<f32>,
+    @location(0) color: vec4<f32>,
+    @location(1) uv: vec2<f32>,
+    @location(2) local_pos: vec2<f32>,
+    @location(3) world_pos: vec2<f32>,
+    @location(4) velocity: vec2<f32>,
+    @location(5) normalized_age: f32,
+    @location(6) lifetime: f32,
+    @location(7) seed: f32,
+    @location(8) sampled_color: vec4<f32>,
+}}
+struct LurekGlobals {{
+    lurek_ScreenSize: vec2<f32>,
+    lurek_Time: f32,
+    _pad: f32,
+    view_col0: vec4<f32>,
+    view_col1: vec4<f32>,
+    view_col2: vec4<f32>,
+}}
+@group(0) @binding(0) var<uniform> lurek: LurekGlobals;
+@group(1) @binding(0) var t_particle: texture_2d<f32>;
+@group(1) @binding(1) var s_particle: sampler;
+{uniform_decls}
+@vertex
+fn vs_main(in: VertexInput) -> VertexOutput {{
+    var out: VertexOutput;
+    let view = mat3x3<f32>(
+        lurek.view_col0.xyz,
+        lurek.view_col1.xyz,
+        lurek.view_col2.xyz,
+    );
+    let cam_pos = view * vec3<f32>(in.position, 1.0);
+    out.clip_position = vec4<f32>(
+        (cam_pos.x / lurek.lurek_ScreenSize.x) * 2.0 - 1.0,
+        1.0 - (cam_pos.y / lurek.lurek_ScreenSize.y) * 2.0,
+        0.0,
+        1.0
+    );
+    out.color = in.color;
+    out.uv = in.uv;
+    out.local_pos = in.local_pos;
+    out.world_pos = in.world_pos;
+    out.velocity = in.velocity;
+    out.normalized_age = in.normalized_age;
+    out.lifetime = in.lifetime;
+    out.seed = in.seed;
+    out.sampled_color = textureSample(t_particle, s_particle, in.uv) * in.color;
+    return out;
+}}
+{user_source}
+@fragment
+fn lurek_fragment_main(in: VertexOutput) -> @location(0) vec4<f32> {{
+    return {fragment_entry}({fragment_call_args});
+}}
+"#,
+        user_source = shader.wrapper_source(),
+        fragment_entry = shader.fragment_entry_name(),
+        fragment_call_args = fragment_call_args,
+    )
+}
+/// Assemble the full WGSL source for a custom light contribution shader pipeline.
+pub fn build_custom_light_shader_source(
+    shader: &Shader,
+    uniform_signature: &[(String, ShaderUniformKind)],
+) -> String {
+    let uniform_decls = custom_uniform_declarations(uniform_signature, 2);
+    let fragment_call_args = light_fragment_call_args(shader.fragment_inputs());
+    let shadow_multiplier = if shader
+        .fragment_inputs()
+        .contains(&ShaderFragmentInput::Scalar3)
+    {
+        "1.0"
+    } else {
+        "in.shadow_factor"
+    };
+    format!(
+        r#"
+struct VertexInput {{
+    @location(0) position: vec2<f32>,
+    @location(1) uv: vec2<f32>,
+    @location(2) color: vec4<f32>,
+    @location(3) shadow_v: f32,
+    @location(4) shadow_params: vec4<f32>,
+    @location(5) light_pos: vec2<f32>,
+    @location(6) radius: f32,
+    @location(7) intensity: f32,
+    @location(8) normal_hint: vec2<f32>,
+    @location(9) ambient_color: vec4<f32>,
+    @location(10) direction_spot: vec4<f32>,
+}}
+struct VertexOutput {{
+    @builtin(position) clip_position: vec4<f32>,
+    @location(0) color: vec4<f32>,
+    @location(1) uv: vec2<f32>,
+    @location(2) world_pos: vec2<f32>,
+    @location(3) light_pos: vec2<f32>,
+    @location(4) normal_hint: vec2<f32>,
+    @location(5) distance_norm: f32,
+    @location(6) radius: f32,
+    @location(7) intensity: f32,
+    @location(8) shadow_factor: f32,
+    @location(9) ambient_color: vec4<f32>,
+    @location(10) direction_spot: vec4<f32>,
+}}
+struct LurekGlobals {{
+    lurek_ScreenSize: vec2<f32>,
+    lurek_Time: f32,
+    _pad: f32,
+    view_col0: vec4<f32>,
+    view_col1: vec4<f32>,
+    view_col2: vec4<f32>,
+}}
+@group(0) @binding(0) var<uniform> lurek: LurekGlobals;
+@group(1) @binding(0) var shadow_atlas: texture_2d<f32>;
+@group(1) @binding(1) var shadow_sampler: sampler;
+{uniform_decls}
+fn lurek_sample_shadow_row(u: f32, v: f32, mode: f32, texel_size: f32) -> f32 {{
+    if mode < 0.5 {{
+        return textureSample(shadow_atlas, shadow_sampler, vec2<f32>(u, v)).r;
+    }}
+    var acc = 0.0;
+    if mode < 1.5 {{
+        for (var k = -2; k <= 2; k++) {{
+            acc += textureSample(shadow_atlas, shadow_sampler, vec2<f32>(u + f32(k) * texel_size, v)).r;
+        }}
+        return acc / 5.0;
+    }}
+    for (var k = -6; k <= 6; k++) {{
+        acc += textureSample(shadow_atlas, shadow_sampler, vec2<f32>(u + f32(k) * texel_size, v)).r;
+    }}
+    return acc / 13.0;
+}}
+fn lurek_shadow_factor(uv: vec2<f32>, shadow_v: f32, shadow_params: vec4<f32>) -> f32 {{
+    if shadow_v < 0.0 {{
+        return 1.0;
+    }}
+    let delta = uv - vec2<f32>(0.5, 0.5);
+    let angle = atan2(delta.y, delta.x);
+    let u = (angle + 3.14159265) / (2.0 * 3.14159265);
+    let dist = length(delta);
+    let sd = lurek_sample_shadow_row(u, shadow_v, shadow_params.x, shadow_params.z);
+    let edge = max(1e-4, shadow_params.y * 0.05);
+    return 1.0 - smoothstep(sd - edge, sd + edge, dist);
+}}
+@vertex
+fn vs_main(in: VertexInput) -> VertexOutput {{
+    var out: VertexOutput;
+    let view = mat3x3<f32>(
+        lurek.view_col0.xyz,
+        lurek.view_col1.xyz,
+        lurek.view_col2.xyz,
+    );
+    let cam_pos = view * vec3<f32>(in.position, 1.0);
+    out.clip_position = vec4<f32>(
+        (cam_pos.x / lurek.lurek_ScreenSize.x) * 2.0 - 1.0,
+        1.0 - (cam_pos.y / lurek.lurek_ScreenSize.y) * 2.0,
+        0.0,
+        1.0
+    );
+    out.color = in.color;
+    out.uv = in.uv;
+    out.world_pos = in.position;
+    out.light_pos = in.light_pos;
+    out.normal_hint = in.normal_hint;
+    out.distance_norm = clamp(length(in.uv - vec2<f32>(0.5, 0.5)) * 2.0, 0.0, 1.0);
+    out.radius = in.radius;
+    out.intensity = in.intensity;
+    out.shadow_factor = lurek_shadow_factor(in.uv, in.shadow_v, in.shadow_params);
+    out.ambient_color = in.ambient_color;
+    out.direction_spot = in.direction_spot;
+    return out;
+}}
+{user_source}
+@fragment
+fn lurek_fragment_main(in: VertexOutput) -> @location(0) vec4<f32> {{
+    let contribution = {fragment_entry}({fragment_call_args});
+    return vec4<f32>(contribution.rgb * {shadow_multiplier}, contribution.a);
+}}
+"#,
+        user_source = shader.wrapper_source(),
+        fragment_entry = shader.fragment_entry_name(),
+        fragment_call_args = fragment_call_args,
+        shadow_multiplier = shadow_multiplier,
     )
 }
 /// Assemble the full WGSL source for a custom textured shader pipeline.
@@ -521,7 +763,7 @@ pub(crate) fn create_render_pipeline(
             multiview: None,
             cache: None,
         }),
-        GeometryKind::Particle => device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
+        GeometryKind::Particle | GeometryKind::ParticleTextured => device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
             label: Some("particle_pipeline"),
             layout: Some(layout),
             vertex: wgpu::VertexState {
@@ -537,9 +779,10 @@ pub(crate) fn create_render_pipeline(
                         2 => Float32x2,
                         3 => Float32x2,
                         4 => Float32x2,
-                        5 => Float32,
+                        5 => Float32x2,
                         6 => Float32,
-                        7 => Float32
+                        7 => Float32,
+                        8 => Float32
                     ],
                 }],
             },
@@ -551,6 +794,43 @@ pub(crate) fn create_render_pipeline(
             }),
             primitive,
             depth_stencil: Some(depth_stencil_state(key.stencil_mode)),
+            multisample: wgpu::MultisampleState::default(),
+            multiview: None,
+            cache: None,
+        }),
+        GeometryKind::Light => device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
+            label: Some("custom_light_pipeline"),
+            layout: Some(layout),
+            vertex: wgpu::VertexState {
+                module,
+                entry_point: "vs_main",
+                compilation_options: Default::default(),
+                buffers: &[wgpu::VertexBufferLayout {
+                    array_stride: std::mem::size_of::<LightVertex>() as wgpu::BufferAddress,
+                    step_mode: wgpu::VertexStepMode::Vertex,
+                    attributes: &wgpu::vertex_attr_array![
+                        0 => Float32x2,
+                        1 => Float32x2,
+                        2 => Float32x4,
+                        3 => Float32,
+                        4 => Float32x4,
+                        5 => Float32x2,
+                        6 => Float32,
+                        7 => Float32,
+                        8 => Float32x2,
+                        9 => Float32x4,
+                        10 => Float32x4
+                    ],
+                }],
+            },
+            fragment: Some(wgpu::FragmentState {
+                module,
+                entry_point: fragment_entry,
+                compilation_options: Default::default(),
+                targets: &[target],
+            }),
+            primitive,
+            depth_stencil: None,
             multisample: wgpu::MultisampleState::default(),
             multiview: None,
             cache: None,

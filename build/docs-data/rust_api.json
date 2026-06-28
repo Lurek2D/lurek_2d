@@ -1,10 +1,10 @@
 {
   "meta": {
-    "generated": "2026-06-27T20:24:51.111589+00:00",
+    "generated": "2026-06-27T21:17:37.286596+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "rust_items": 3098,
+      "rust_items": 3100,
       "rust_modules": 723,
       "rust_tests": 500,
       "lua_tests": 285
@@ -12,8 +12,8 @@
   },
   "rust_api": {
     "summary": {
-      "total_items": 3098,
-      "documented": 3095,
+      "total_items": 3100,
+      "documented": 3097,
       "modules": 723
     },
     "modules": {
@@ -18027,70 +18027,84 @@
             "kind": "enum",
             "description": "Stencil operation mode for a draw call; used as part of the pipeline cache key.",
             "file": "src/render/gpu_pipeline.rs",
-            "line": 33
+            "line": 37
           },
           {
             "name": "PipelineKey",
             "kind": "struct",
             "description": "Composite key used to look up or create a cached `wgpu::RenderPipeline`.",
             "file": "src/render/gpu_pipeline.rs",
-            "line": 44
+            "line": 48
           },
           {
             "name": "PipelineSelectionKey",
             "kind": "enum",
             "description": "Full pipeline selection key: default vs. custom shader, plus geometry kind and blend/stencil state.",
             "file": "src/render/gpu_pipeline.rs",
-            "line": 54
+            "line": 58
           },
           {
             "name": "blend_state_for",
             "kind": "fn",
             "description": "Return the wgpu `BlendState` for a given `BlendMode`.",
             "file": "src/render/gpu_pipeline.rs",
-            "line": 73
+            "line": 77
           },
           {
             "name": "build_custom_color_shader_source",
             "kind": "fn",
             "description": "Assemble the full WGSL source for a custom flat-color shader pipeline.",
             "file": "src/render/gpu_pipeline.rs",
-            "line": 185
+            "line": 218
           },
           {
             "name": "build_custom_particle_shader_source",
             "kind": "fn",
             "description": "Assemble the full WGSL source for a custom particle shader pipeline.",
             "file": "src/render/gpu_pipeline.rs",
-            "line": 244
+            "line": 277
+          },
+          {
+            "name": "build_custom_textured_particle_shader_source",
+            "kind": "fn",
+            "description": "Assemble the full WGSL source for a textured custom particle shader pipeline.",
+            "file": "src/render/gpu_pipeline.rs",
+            "line": 356
+          },
+          {
+            "name": "build_custom_light_shader_source",
+            "kind": "fn",
+            "description": "Assemble the full WGSL source for a custom light contribution shader pipeline.",
+            "file": "src/render/gpu_pipeline.rs",
+            "line": 437
           },
           {
             "name": "build_custom_texture_shader_source",
             "kind": "fn",
             "description": "Assemble the full WGSL source for a custom textured shader pipeline.",
             "file": "src/render/gpu_pipeline.rs",
-            "line": 320
+            "line": 562
           },
           {
             "name": "depth_stencil_state",
             "kind": "fn",
             "description": "Build the depth/stencil descriptor for a given stencil mode.",
             "file": "src/render/gpu_pipeline.rs",
-            "line": 561
+            "line": 841
           },
           {
             "name": "compare_function",
             "kind": "fn",
             "description": "Map a renderer `CompareMode` to a wgpu `CompareFunction`.",
             "file": "src/render/gpu_pipeline.rs",
-            "line": 607
+            "line": 887
           },
           {
             "name": "stencil_operation",
             "kind": "fn",
             "description": "Map a renderer `StencilAction` to a wgpu `StencilOperation`.",
             "file": "src/render/gpu_pipeline.rs",
-            "line": 620
+            "line": 900
           }
         ]
       },
@@ -18103,7 +18117,7 @@
             "kind": "struct",
             "description": "Concrete hardware-accelerated 2D renderer backing all Lurek2D visual presentation.",
             "file": "src/render/gpu_renderer.rs",
-            "line": 532
+            "line": 539
           }
         ]
       },
@@ -18376,126 +18390,126 @@
             "kind": "struct",
             "description": "Textured vertex with position, UV, RGBA tint, and homogeneous W depth for perspective correction.",
             "file": "src/render/gpu_types.rs",
-            "line": 48
+            "line": 50
           },
           {
             "name": "LightVertex",
             "kind": "struct",
-            "description": "Light-pass vertex with position, UV, RGBA tint, shadow map value, and shadow parameters.",
+            "description": "Light-pass vertex with position, UV, RGBA tint, shadow map value, and custom light inputs.",
             "file": "src/render/gpu_types.rs",
-            "line": 63
+            "line": 65
           },
           {
             "name": "ShadowEdgeGpu",
             "kind": "struct",
             "description": "Shadow caster edge representation for compute shader processing.",
             "file": "src/render/gpu_types.rs",
-            "line": 78
+            "line": 94
           },
           {
             "name": "ShadowComputeParams",
             "kind": "struct",
             "description": "Uniform payload for a single shadow casting dispatch.",
             "file": "src/render/gpu_types.rs",
-            "line": 91
+            "line": 107
           },
           {
             "name": "ShadowDispatchInput",
             "kind": "struct",
             "description": "CPU-side configuration for preparing a shadow compute dispatch.",
             "file": "src/render/gpu_types.rs",
-            "line": 102
+            "line": 118
           },
           {
             "name": "ViewportUniform",
             "kind": "struct",
             "description": "Per-frame viewport uniform uploaded to the GPU: pixel dimensions, time, and camera transform.",
             "file": "src/render/gpu_types.rs",
-            "line": 119
+            "line": 135
           },
           {
             "name": "TexRef",
             "kind": "enum",
             "description": "Identifies a GPU texture source during draw batching.",
             "file": "src/render/gpu_types.rs",
-            "line": 135
+            "line": 151
           },
           {
             "name": "MAX_COLOR_VERTS",
             "kind": "const",
             "description": "Maximum flat-color vertex count before the buffer must grow.",
             "file": "src/render/gpu_types.rs",
-            "line": 144
+            "line": 160
           },
           {
             "name": "MAX_COLOR_IDXS",
             "kind": "const",
             "description": "Maximum flat-color index count before the buffer must grow.",
             "file": "src/render/gpu_types.rs",
-            "line": 146
+            "line": 162
           },
           {
             "name": "MAX_PARTICLE_VERTS",
             "kind": "const",
             "description": "Maximum particle shader vertex count before the buffer must grow.",
             "file": "src/render/gpu_types.rs",
-            "line": 148
+            "line": 164
           },
           {
             "name": "MAX_PARTICLE_IDXS",
             "kind": "const",
             "description": "Maximum particle shader index count before the buffer must grow.",
             "file": "src/render/gpu_types.rs",
-            "line": 150
+            "line": 166
           },
           {
             "name": "MAX_TEX_VERTS",
             "kind": "const",
             "description": "Maximum textured vertex count before the buffer must grow.",
             "file": "src/render/gpu_types.rs",
-            "line": 152
+            "line": 168
           },
           {
             "name": "MAX_TEX_IDXS",
             "kind": "const",
             "description": "Maximum textured index count before the buffer must grow.",
             "file": "src/render/gpu_types.rs",
-            "line": 154
+            "line": 170
           },
           {
             "name": "MAX_LIGHT_QUADS",
             "kind": "const",
             "description": "Maximum number of light quads batched per frame.",
             "file": "src/render/gpu_types.rs",
-            "line": 156
+            "line": 172
           },
           {
             "name": "ScissorRect",
             "kind": "type",
             "description": "Optional pixel-space scissor rectangle `(x, y, width, height)`.",
             "file": "src/render/gpu_types.rs",
-            "line": 158
+            "line": 174
           },
           {
             "name": "RenderTargetId",
             "kind": "enum",
             "description": "Identifies the active render target during a frame.",
             "file": "src/render/gpu_types.rs",
-            "line": 161
+            "line": 177
           },
           {
             "name": "PreparedDraw",
             "kind": "struct",
             "description": "A fully resolved draw call ready to be encoded in the GPU render pass.",
             "file": "src/render/gpu_types.rs",
-            "line": 169
+            "line": 185
           },
           {
             "name": "InstanceData",
             "kind": "struct",
             "description": "Packed 2D instance transform data: 3 columns of `vec2<f32>`.",
             "file": "src/render/gpu_types.rs",
-            "line": 205
+            "line": 221
           }
         ]
       },
@@ -19149,21 +19163,21 @@
             "kind": "struct",
             "description": "A compiled and validated user WGSL shader with its rewritten source and uniform map.",
             "file": "src/render/shader.rs",
-            "line": 148
+            "line": 156
           },
           {
             "name": "UniformValue",
             "kind": "enum",
             "description": "A typed uniform value sent to a `Shader` via `send()`.",
             "file": "src/render/shader.rs",
-            "line": 166
+            "line": 174
           },
           {
             "name": "validate_uniform_name",
             "kind": "fn",
             "description": "Validate a user-supplied shader uniform name before it is interpolated into WGSL.",
             "file": "src/render/shader.rs",
-            "line": 289
+            "line": 301
           }
         ]
       },

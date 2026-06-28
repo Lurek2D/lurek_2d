@@ -1,8 +1,8 @@
 {
   "rust": {
-    "total": 6798,
-    "covered": 3884,
-    "uncovered": 2914,
+    "total": 6802,
+    "covered": 3887,
+    "uncovered": 2915,
     "coverage_pct": 57.1,
     "covered_items": [
       {
@@ -13741,6 +13741,12 @@
       },
       {
         "module": "particle",
+        "name": "expand_particle_commands",
+        "file": "src/particle/render.rs",
+        "line": 22
+      },
+      {
+        "module": "particle",
         "name": "Trail::new",
         "file": "src/particle/trail.rs",
         "line": 41
@@ -18219,37 +18225,49 @@
         "module": "render",
         "name": "build_custom_color_shader_source",
         "file": "src/render/gpu_pipeline.rs",
-        "line": 185
+        "line": 218
       },
       {
         "module": "render",
         "name": "build_custom_particle_shader_source",
         "file": "src/render/gpu_pipeline.rs",
-        "line": 244
+        "line": 277
+      },
+      {
+        "module": "render",
+        "name": "build_custom_textured_particle_shader_source",
+        "file": "src/render/gpu_pipeline.rs",
+        "line": 356
+      },
+      {
+        "module": "render",
+        "name": "build_custom_light_shader_source",
+        "file": "src/render/gpu_pipeline.rs",
+        "line": 437
       },
       {
         "module": "render",
         "name": "build_custom_texture_shader_source",
         "file": "src/render/gpu_pipeline.rs",
-        "line": 320
+        "line": 562
       },
       {
         "module": "render",
         "name": "depth_stencil_state",
         "file": "src/render/gpu_pipeline.rs",
-        "line": 561
+        "line": 841
       },
       {
         "module": "render",
         "name": "GpuRenderer::new",
         "file": "src/render/gpu_renderer.rs",
-        "line": 642
+        "line": 649
       },
       {
         "module": "render",
         "name": "GpuRenderer::resize",
         "file": "src/render/gpu_renderer.rs",
-        "line": 884
+        "line": 891
       },
       {
         "module": "render",
@@ -18741,49 +18759,49 @@
         "module": "render",
         "name": "Shader::new",
         "file": "src/render/shader.rs",
-        "line": 182
+        "line": 190
       },
       {
         "module": "render",
         "name": "Shader::new_for_target",
         "file": "src/render/shader.rs",
-        "line": 186
+        "line": 194
       },
       {
         "module": "render",
         "name": "Shader::send",
         "file": "src/render/shader.rs",
-        "line": 201
+        "line": 209
       },
       {
         "module": "render",
         "name": "Shader::has_uniform",
         "file": "src/render/shader.rs",
-        "line": 207
+        "line": 215
       },
       {
         "module": "render",
         "name": "Shader::target",
         "file": "src/render/shader.rs",
-        "line": 211
+        "line": 219
       },
       {
         "module": "render",
         "name": "Shader::diagnostics",
         "file": "src/render/shader.rs",
-        "line": 215
+        "line": 223
       },
       {
         "module": "render",
         "name": "Shader::fullscreen_postfx_source",
         "file": "src/render/shader.rs",
-        "line": 241
+        "line": 249
       },
       {
         "module": "render",
         "name": "validate_uniform_name",
         "file": "src/render/shader.rs",
-        "line": 289
+        "line": 301
       },
       {
         "module": "render",
@@ -33855,12 +33873,6 @@
       },
       {
         "module": "particle",
-        "name": "expand_particle_commands",
-        "file": "src/particle/render.rs",
-        "line": 22
-      },
-      {
-        "module": "particle",
         "name": "Trail::push_point",
         "file": "src/particle/trail.rs",
         "line": 53
@@ -36563,67 +36575,73 @@
         "module": "render",
         "name": "GpuRenderer::issue_draw",
         "file": "src/render/gpu_draw_encode.rs",
-        "line": 181
+        "line": 187
       },
       {
         "module": "render",
         "name": "blend_state_for",
         "file": "src/render/gpu_pipeline.rs",
-        "line": 73
+        "line": 77
       },
       {
         "module": "render",
         "name": "uniform_wgsl_type",
         "file": "src/render/gpu_pipeline.rs",
-        "line": 120
+        "line": 124
       },
       {
         "module": "render",
         "name": "custom_uniform_declarations",
         "file": "src/render/gpu_pipeline.rs",
-        "line": 131
+        "line": 135
       },
       {
         "module": "render",
         "name": "custom_fragment_call_args",
         "file": "src/render/gpu_pipeline.rs",
-        "line": 147
+        "line": 151
       },
       {
         "module": "render",
         "name": "particle_fragment_call_args",
         "file": "src/render/gpu_pipeline.rs",
-        "line": 168
+        "line": 176
+      },
+      {
+        "module": "render",
+        "name": "light_fragment_call_args",
+        "file": "src/render/gpu_pipeline.rs",
+        "line": 197
       },
       {
         "module": "render",
         "name": "create_render_pipeline",
         "file": "src/render/gpu_pipeline.rs",
-        "line": 382
+        "line": 624
       },
       {
         "module": "render",
         "name": "stencil_face_state",
         "file": "src/render/gpu_pipeline.rs",
-        "line": 584
+        "line": 864
       },
       {
         "module": "render",
         "name": "compare_function",
         "file": "src/render/gpu_pipeline.rs",
-        "line": 607
+        "line": 887
       },
       {
         "module": "render",
         "name": "stencil_operation",
         "file": "src/render/gpu_pipeline.rs",
-        "line": 620
+        "line": 900
       },
       {
         "module": "render",
         "name": "GpuRenderer::render_frame",
         "file": "src/render/gpu_renderer.rs",
-        "line": 1073
+        "line": 1080
       },
       {
         "module": "render",
@@ -36719,13 +36737,19 @@
         "module": "render",
         "name": "GpuRenderer::custom_pipeline",
         "file": "src/render/gpu_shader_cache.rs",
-        "line": 179
+        "line": 249
       },
       {
         "module": "render",
         "name": "GpuRenderer::shader_bind_group",
         "file": "src/render/gpu_shader_cache.rs",
-        "line": 292
+        "line": 423
+      },
+      {
+        "module": "render",
+        "name": "GpuRenderer::cached_custom_pipeline",
+        "file": "src/render/gpu_shader_cache.rs",
+        "line": 430
       },
       {
         "module": "render",
@@ -36737,19 +36761,19 @@
         "module": "render",
         "name": "GpuRenderer::ensure_shadow_edge_capacity",
         "file": "src/render/gpu_shadows.rs",
-        "line": 569
+        "line": 574
       },
       {
         "module": "render",
         "name": "GpuRenderer::dispatch_shadow_map_gpu",
         "file": "src/render/gpu_shadows.rs",
-        "line": 608
+        "line": 613
       },
       {
         "module": "render",
         "name": "GpuRenderer::aabb_visible_2d",
         "file": "src/render/gpu_shadows.rs",
-        "line": 662
+        "line": 667
       },
       {
         "module": "render",
@@ -36935,25 +36959,25 @@
         "module": "render",
         "name": "Shader::ordered_uniforms",
         "file": "src/render/shader.rs",
-        "line": 219
+        "line": 227
       },
       {
         "module": "render",
         "name": "Shader::wrapper_source",
         "file": "src/render/shader.rs",
-        "line": 229
+        "line": 237
       },
       {
         "module": "render",
         "name": "Shader::fragment_entry_name",
         "file": "src/render/shader.rs",
-        "line": 233
+        "line": 241
       },
       {
         "module": "render",
         "name": "Shader::fragment_inputs",
         "file": "src/render/shader.rs",
-        "line": 237
+        "line": 245
       },
       {
         "module": "repl",

@@ -21,7 +21,7 @@ use crate::render::renderer::{
     GradientDirection, HexOrientation, ParticleRenderShape, PathSegment, RenderCommand,
     TextureData,
 };
-use crate::render::shader::Shader;
+use crate::render::shader::{Shader, ShaderTarget};
 use crate::runtime::resource_keys::{
     CanvasKey, FontKey, MeshKey, ShaderKey, ShapeKey, SpriteBatchKey, StaticGeometryKey, TextureKey,
 };
@@ -32,7 +32,9 @@ use std::sync::OnceLock;
 use std::time::Instant;
 
 use crate::render::gpu_light::{MAX_SHADOW_LIGHTS, SHADOW_MAP_RES};
-use crate::render::gpu_pipeline::{GeometryKind, GpuStencilMode, PipelineSelectionKey};
+use crate::render::gpu_pipeline::{
+    GeometryKind, GpuStencilMode, PipelineKey, PipelineSelectionKey,
+};
 use crate::render::gpu_shadows::ShadowEdgeCache;
 use crate::render::gpu_state::{FrameRenderBuffers, RenderStats};
 use crate::render::gpu_types::{
@@ -443,6 +445,10 @@ struct VertexInput {
     @location(2) color:    vec4<f32>,
     @location(3) shadow_v: f32,
     @location(4) shadow_params: vec4<f32>,
+    @location(5) light_pos: vec2<f32>,
+    @location(6) radius: f32,
+    @location(7) intensity: f32,
+    @location(8) normal_hint: vec2<f32>,
 }
 struct VertexOutput {
     @builtin(position) clip_position: vec4<f32>,
@@ -450,6 +456,7 @@ struct VertexOutput {
     @location(1)       color:         vec4<f32>,
     @location(2)       shadow_v:      f32,
     @location(3)       shadow_params: vec4<f32>,
+    @location(4)       intensity:     f32,
 }
 struct Viewport {
     size: vec2<f32>,
@@ -468,7 +475,7 @@ fn vs_main(in: VertexInput) -> VertexOutput {
     let view = mat3x3<f32>(viewport.view_col0.xyz, viewport.view_col1.xyz, viewport.view_col2.xyz);
     let cam_pos = view * vec3<f32>(in.position, 1.0);
     out.clip_position = vec4<f32>((cam_pos.x/viewport.size.x)*2.0-1.0, 1.0-(cam_pos.y/viewport.size.y)*2.0, 0.0, 1.0);
-    out.uv = in.uv; out.color = in.color; out.shadow_v = in.shadow_v; out.shadow_params = in.shadow_params;
+    out.uv = in.uv; out.color = in.color; out.shadow_v = in.shadow_v; out.shadow_params = in.shadow_params; out.intensity = in.intensity;
     return out;
 }
 fn sample_shadow_row(u: f32, v: f32, mode: f32, texel_size: f32) -> f32 {
@@ -494,7 +501,7 @@ fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {
         let edge = max(1e-4, in.shadow_params.y * 0.05);
         shadow = 1.0 - smoothstep(sd - edge, sd + edge, dist * 0.5);
     }
-    return vec4<f32>(in.color.rgb * intensity * shadow, 1.0);
+    return vec4<f32>(in.color.rgb * intensity * shadow * in.intensity, 1.0);
 }
 "#;
 
@@ -2618,6 +2625,11 @@ impl GpuRenderer {
                     let mut shader_pverts: Vec<ParticleVertex> =
                         Vec::with_capacity(particles.len() * 6);
                     let mut shader_pidxs: Vec<u32> = Vec::with_capacity(particles.len() * 12);
+                    let mut shader_textured_batches: Vec<(
+                        TextureKey,
+                        Vec<ParticleVertex>,
+                        Vec<u32>,
+                    )> = Vec::new();
                     use std::f32::consts::PI;
                     for inst in particles {
                         let color = [inst.r, inst.g, inst.b, inst.a];
@@ -2883,11 +2895,40 @@ impl GpuRenderer {
                             }
                         }
                         if shader.is_some() {
-                            let particle_base = shader_pverts.len() as u32;
+                            let mut particle_vertices =
+                                Vec::with_capacity(pverts.len() - vertex_start);
+                            let mut particle_indices =
+                                Vec::with_capacity(pidxs.len() - index_start);
+                            let (center_x, center_y) = apply(t, inst.x, inst.y);
+                            let inv_size = if inst.size.abs() > f32::EPSILON {
+                                1.0 / inst.size.abs()
+                            } else {
+                                0.0
+                            };
+                            let atlas_quad = inst
+                                .quad
+                                .zip(inst.quad_tex_dims)
+                                .filter(|(_, (tex_w, tex_h))| *tex_w > 0.0 && *tex_h > 0.0);
                             for vertex in &pverts[vertex_start..] {
-                                shader_pverts.push(ParticleVertex {
+                                let local_uv = [
+                                    ((vertex.position[0] - center_x) * inv_size + 0.5)
+                                        .clamp(0.0, 1.0),
+                                    ((vertex.position[1] - center_y) * inv_size + 0.5)
+                                        .clamp(0.0, 1.0),
+                                ];
+                                let uv =
+                                    if let Some(([qx, qy, qw, qh], (tex_w, tex_h))) = atlas_quad {
+                                        [
+                                            (qx + qw * local_uv[0]) / tex_w,
+                                            (qy + qh * local_uv[1]) / tex_h,
+                                        ]
+                                    } else {
+                                        local_uv
+                                    };
+                                particle_vertices.push(ParticleVertex {
                                     position: vertex.position,
                                     color: vertex.color,
+                                    uv,
                                     local_pos: [inst.local_x, inst.local_y],
                                     world_pos: [inst.x, inst.y],
                                     velocity: [inst.velocity_x, inst.velocity_y],
@@ -2898,8 +2939,34 @@ impl GpuRenderer {
                                 });
                             }
                             for idx in &pidxs[index_start..] {
-                                shader_pidxs
-                                    .push(particle_base + idx.saturating_sub(vertex_start as u32));
+                                particle_indices.push(idx.saturating_sub(vertex_start as u32));
+                            }
+                            if let Some(texture_key) = inst.texture_key {
+                                let batch_index = shader_textured_batches
+                                    .iter()
+                                    .position(|(key, _, _)| *key == texture_key);
+                                let batch = match batch_index {
+                                    Some(index) => &mut shader_textured_batches[index],
+                                    None => {
+                                        shader_textured_batches.push((
+                                            texture_key,
+                                            Vec::new(),
+                                            Vec::new(),
+                                        ));
+                                        shader_textured_batches.last_mut().expect("just pushed")
+                                    }
+                                };
+                                let particle_base = batch.1.len() as u32;
+                                batch.1.extend_from_slice(&particle_vertices);
+                                batch.2.extend(
+                                    particle_indices.iter().map(|idx| particle_base + *idx),
+                                );
+                            } else {
+                                let particle_base = shader_pverts.len() as u32;
+                                shader_pverts.extend_from_slice(&particle_vertices);
+                                shader_pidxs.extend(
+                                    particle_indices.iter().map(|idx| particle_base + *idx),
+                                );
                             }
                         }
                     }
@@ -2914,6 +2981,33 @@ impl GpuRenderer {
                                 target: current_target,
                                 geometry: GeometryKind::Particle,
                                 texture_ref: None,
+                                idx_start,
+                                idx_count,
+                                blend_mode: current_blend_mode,
+                                scissor,
+                                color_mask_bits,
+                                shader: Some(shader_key),
+                                stencil_mode,
+                                stencil_reference: stencil_reference as u32,
+                                static_geometry: None,
+                                instance_buffer: None,
+                                instance_start: 0,
+                                instance_count: 1,
+                            });
+                        }
+                        for (texture_key, batch_verts, batch_idxs) in shader_textured_batches {
+                            if batch_verts.is_empty() {
+                                continue;
+                            }
+                            let idx_start = all_particle_idxs.len() as u32;
+                            let base = all_particle_verts.len() as u32;
+                            let idx_count = batch_idxs.len() as u32;
+                            all_particle_verts.extend_from_slice(&batch_verts);
+                            all_particle_idxs.extend(batch_idxs.iter().map(|idx| base + *idx));
+                            draws.push(PreparedDraw {
+                                target: current_target,
+                                geometry: GeometryKind::ParticleTextured,
+                                texture_ref: Some(TexRef::Texture(texture_key)),
                                 idx_start,
                                 idx_count,
                                 blend_mode: current_blend_mode,
@@ -4241,8 +4335,15 @@ impl GpuRenderer {
             }
             let mut light_verts: Vec<LightVertex> = Vec::new();
             let mut light_idxs: Vec<u32> = Vec::new();
+            let mut light_draw_shaders: Vec<Option<ShaderKey>> = Vec::new();
             let mut light_count = 0usize;
             let atlas_height = MAX_SHADOW_LIGHTS as f32;
+            let ambient_color = [
+                light_world.ambient.r,
+                light_world.ambient.g,
+                light_world.ambient.b,
+                light_world.ambient.a,
+            ];
             for ((_, light), shadow_opt) in light_world.lights.iter().zip(light_shadow_rows.iter())
             {
                 if !light.enabled {
@@ -4256,12 +4357,7 @@ impl GpuRenderer {
                     continue;
                 }
                 let ci = light.intensity * light.energy;
-                let c = [
-                    light.color.r * ci,
-                    light.color.g * ci,
-                    light.color.b * ci,
-                    1.0,
-                ];
+                let c = [light.color.r, light.color.g, light.color.b, 1.0];
                 let sv = match shadow_opt {
                     Some(row) => (*row as f32 + 0.5) / atlas_height,
                     None => -1.0,
@@ -4273,6 +4369,27 @@ impl GpuRenderer {
                 };
                 let softness = (light.shadow_smooth * light.shadow_softness).max(0.0);
                 let shadow_params = [filter_mode, softness, 1.0 / SHADOW_MAP_RES as f32, 0.0];
+                let light_shader = light.shader.or(light_world.shader).filter(|key| {
+                    shaders
+                        .get(*key)
+                        .map(|shader| shader.target() == ShaderTarget::Light)
+                        .unwrap_or(false)
+                });
+                let direction_spot = [
+                    light.direction.cos(),
+                    light.direction.sin(),
+                    light.inner_angle,
+                    light.outer_angle,
+                ];
+                let normal_strength = if light.normal_map_path.is_some() {
+                    light.normal_strength.clamp(0.0, 1.0)
+                } else {
+                    0.0
+                };
+                let normal_hint = [
+                    light.direction.cos() * normal_strength,
+                    light.direction.sin() * normal_strength,
+                ];
                 let base = light_verts.len() as u32;
                 light_verts.push(LightVertex {
                     position: [light.x - r, light.y - r],
@@ -4280,6 +4397,13 @@ impl GpuRenderer {
                     color: c,
                     shadow_v: sv,
                     shadow_params,
+                    light_pos: [light.x, light.y],
+                    radius: r,
+                    intensity: ci,
+                    normal_hint,
+                    ambient_color,
+                    direction_spot,
+                    _pad: [0.0; 2],
                 });
                 light_verts.push(LightVertex {
                     position: [light.x + r, light.y - r],
@@ -4287,6 +4411,13 @@ impl GpuRenderer {
                     color: c,
                     shadow_v: sv,
                     shadow_params,
+                    light_pos: [light.x, light.y],
+                    radius: r,
+                    intensity: ci,
+                    normal_hint,
+                    ambient_color,
+                    direction_spot,
+                    _pad: [0.0; 2],
                 });
                 light_verts.push(LightVertex {
                     position: [light.x + r, light.y + r],
@@ -4294,6 +4425,13 @@ impl GpuRenderer {
                     color: c,
                     shadow_v: sv,
                     shadow_params,
+                    light_pos: [light.x, light.y],
+                    radius: r,
+                    intensity: ci,
+                    normal_hint,
+                    ambient_color,
+                    direction_spot,
+                    _pad: [0.0; 2],
                 });
                 light_verts.push(LightVertex {
                     position: [light.x - r, light.y + r],
@@ -4301,8 +4439,16 @@ impl GpuRenderer {
                     color: c,
                     shadow_v: sv,
                     shadow_params,
+                    light_pos: [light.x, light.y],
+                    radius: r,
+                    intensity: ci,
+                    normal_hint,
+                    ambient_color,
+                    direction_spot,
+                    _pad: [0.0; 2],
                 });
                 light_idxs.extend_from_slice(&[base, base + 1, base + 2, base, base + 2, base + 3]);
+                light_draw_shaders.push(light_shader);
                 light_count += 1;
             }
             let composite_base = light_verts.len() as u32;
@@ -4314,6 +4460,13 @@ impl GpuRenderer {
                 color: [1.0; 4],
                 shadow_v: -1.0,
                 shadow_params: [0.0; 4],
+                light_pos: [0.0, 0.0],
+                radius: 0.0,
+                intensity: 0.0,
+                normal_hint: [0.0, 0.0],
+                ambient_color: [0.0; 4],
+                direction_spot: [0.0; 4],
+                _pad: [0.0; 2],
             });
             light_verts.push(LightVertex {
                 position: [sw, 0.0],
@@ -4321,6 +4474,13 @@ impl GpuRenderer {
                 color: [1.0; 4],
                 shadow_v: -1.0,
                 shadow_params: [0.0; 4],
+                light_pos: [0.0, 0.0],
+                radius: 0.0,
+                intensity: 0.0,
+                normal_hint: [0.0, 0.0],
+                ambient_color: [0.0; 4],
+                direction_spot: [0.0; 4],
+                _pad: [0.0; 2],
             });
             light_verts.push(LightVertex {
                 position: [sw, sh],
@@ -4328,6 +4488,13 @@ impl GpuRenderer {
                 color: [1.0; 4],
                 shadow_v: -1.0,
                 shadow_params: [0.0; 4],
+                light_pos: [0.0, 0.0],
+                radius: 0.0,
+                intensity: 0.0,
+                normal_hint: [0.0, 0.0],
+                ambient_color: [0.0; 4],
+                direction_spot: [0.0; 4],
+                _pad: [0.0; 2],
             });
             light_verts.push(LightVertex {
                 position: [0.0, sh],
@@ -4335,6 +4502,13 @@ impl GpuRenderer {
                 color: [1.0; 4],
                 shadow_v: -1.0,
                 shadow_params: [0.0; 4],
+                light_pos: [0.0, 0.0],
+                radius: 0.0,
+                intensity: 0.0,
+                normal_hint: [0.0, 0.0],
+                ambient_color: [0.0; 4],
+                direction_spot: [0.0; 4],
+                _pad: [0.0; 2],
             });
             light_idxs.extend_from_slice(&[
                 composite_base,
@@ -4352,6 +4526,26 @@ impl GpuRenderer {
                     .write_buffer(&lg.index_buffer, 0, bytemuck::cast_slice(&light_idxs));
             }
             self.update_viewport_uniform(self.width, self.height, camera_matrix, frame_time);
+            let light_pipeline_key = PipelineKey {
+                blend_mode: BlendMode::Add,
+                color_mask_bits: 0xF,
+                stencil_mode: GpuStencilMode::Disabled,
+            };
+            let mut prepared_light_shaders = HashSet::new();
+            for shader_key in light_draw_shaders.iter().flatten().copied() {
+                if !prepared_light_shaders.insert(shader_key) {
+                    continue;
+                }
+                let Some(shader) = shaders.get(shader_key) else {
+                    continue;
+                };
+                if self
+                    .custom_pipeline(shader_key, shader, GeometryKind::Light, light_pipeline_key)
+                    .is_none()
+                {
+                    self.render_diagnostics.record_shader_pipeline_failure();
+                }
+            }
             if let Some(lg) = self.light_gpu.as_ref() {
                 let ambient = &light_world.ambient;
                 let mut pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
@@ -4373,12 +4567,36 @@ impl GpuRenderer {
                     ..Default::default()
                 });
                 if light_count > 0 {
-                    pass.set_pipeline(&lg.additive_pipeline);
                     pass.set_bind_group(0, &self.viewport_bind_group, &[]);
                     pass.set_bind_group(1, &lg.shadow_atlas_bind_group, &[]);
                     pass.set_vertex_buffer(0, lg.vertex_buffer.slice(..));
                     pass.set_index_buffer(lg.index_buffer.slice(..), wgpu::IndexFormat::Uint32);
-                    pass.draw_indexed(0..(light_count * 6) as u32, 0, 0..1);
+                    let mut run_start = 0usize;
+                    while run_start < light_count {
+                        let run_shader = light_draw_shaders[run_start];
+                        let mut run_end = run_start + 1;
+                        while run_end < light_count && light_draw_shaders[run_end] == run_shader {
+                            run_end += 1;
+                        }
+                        if let Some(shader_key) = run_shader {
+                            if let Some(pipeline) = self.cached_custom_pipeline(
+                                shader_key,
+                                GeometryKind::Light,
+                                light_pipeline_key,
+                            ) {
+                                pass.set_pipeline(pipeline);
+                                if let Some(bind_group) = self.shader_bind_group(shader_key) {
+                                    pass.set_bind_group(2, bind_group, &[]);
+                                }
+                            } else {
+                                pass.set_pipeline(&lg.additive_pipeline);
+                            }
+                        } else {
+                            pass.set_pipeline(&lg.additive_pipeline);
+                        }
+                        pass.draw_indexed((run_start * 6) as u32..(run_end * 6) as u32, 0, 0..1);
+                        run_start = run_end;
+                    }
                 }
             }
             self.update_viewport_uniform(self.width, self.height, &Mat3::identity(), frame_time);

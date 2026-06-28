@@ -395,6 +395,8 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
   Deferred Lua custom-shape callbacks target stable particle ids instead of raw pool indices, so `bottom` and `random` insert modes cannot retarget pending offsets after later inserts. Failed callbacks leave the particle's existing spawn offset unchanged.
 - Render and collision policy:
   Invalid sprite-sheet quads are removed during config normalization, render extraction skips non-finite or invisible instances, and bounds/attractor strict setters reject non-finite coordinates instead of propagating NaNs into the update loop.
+- Shader render policy:
+  `LParticleSystem:setShader(shader)` binds a `target = "particle"` WGSL fragment shader to rendering only. CPU simulation, deterministic seeds, collisions, and sub-emitter behavior remain unchanged. The renderer forwards color, uv, local/world position, velocity, normalized age, lifetime, seed, and sampled texture color; textured particles stay on the particle shader path instead of being expanded into ordinary image draws.
 - GPU path:
   The current production simulation is CPU-owned and renderer-facing through particle snapshots. A GPU particle path should keep emitter authoring and policy in `particle`, but place storage buffers, compute dispatch, and instanced drawing in `render`; gameplay-critical physics/custom callbacks stay on the CPU path unless a bounded hybrid bridge is explicitly added.
 - Ordering policy:

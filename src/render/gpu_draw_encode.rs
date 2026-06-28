@@ -51,7 +51,9 @@ impl GpuRenderer {
             GeometryKind::TextureInstanced => {
                 !self.default_texture_instanced_pipelines.contains_key(&key)
             }
-            GeometryKind::Particle => return None,
+            GeometryKind::Particle | GeometryKind::ParticleTextured | GeometryKind::Light => {
+                return None
+            }
         };
         if missing {
             let pipeline = match geometry {
@@ -91,7 +93,9 @@ impl GpuRenderer {
                     key,
                     "fs_main",
                 ),
-                GeometryKind::Particle => return None,
+                GeometryKind::Particle | GeometryKind::ParticleTextured | GeometryKind::Light => {
+                    return None
+                }
             };
             match geometry {
                 GeometryKind::Color => {
@@ -107,7 +111,9 @@ impl GpuRenderer {
                     self.default_texture_instanced_pipelines
                         .insert(key, pipeline);
                 }
-                GeometryKind::Particle => return None,
+                GeometryKind::Particle | GeometryKind::ParticleTextured | GeometryKind::Light => {
+                    return None
+                }
             }
         }
         match geometry {
@@ -143,7 +149,7 @@ impl GpuRenderer {
                 );
                 pipeline
             }
-            GeometryKind::Particle => None,
+            GeometryKind::Particle | GeometryKind::ParticleTextured | GeometryKind::Light => None,
         }
     }
 
@@ -215,8 +221,13 @@ impl GpuRenderer {
                 GeometryKind::Texture | GeometryKind::TextureInstanced => {
                     (&self.tex_vertex_buffer, &self.tex_index_buffer)
                 }
-                GeometryKind::Particle => {
+                GeometryKind::Particle | GeometryKind::ParticleTextured => {
                     (&self.particle_vertex_buffer, &self.particle_index_buffer)
+                }
+                GeometryKind::Light => {
+                    self.render_diagnostics.record_shader_pipeline_failure();
+                    self.render_diagnostics.record_dropped_command();
+                    return false;
                 }
             },
         };
@@ -298,7 +309,7 @@ impl GpuRenderer {
                     pass.set_pipeline(pipeline);
                 }
             }
-            GeometryKind::Particle => {
+            GeometryKind::Particle | GeometryKind::ParticleTextured => {
                 let Some(shader_key) = effective_shader else {
                     self.render_diagnostics.record_shader_pipeline_failure();
                     self.render_diagnostics.record_dropped_command();
@@ -313,7 +324,20 @@ impl GpuRenderer {
                     self.custom_pipeline(shader_key, shader, draw.geometry, pipeline_key)
                 {
                     pass.set_pipeline(pipeline);
-                    if let Some(bind_group) = self.shader_bind_group(shader_key) {
+                    if draw.geometry == GeometryKind::ParticleTextured {
+                        let Some(texture_ref) = draw.texture_ref else {
+                            self.render_diagnostics.record_missing_texture();
+                            return false;
+                        };
+                        let Some(texture_bind_group) = self.texture_bind_group(texture_ref) else {
+                            self.record_missing_texture_ref(texture_ref);
+                            return false;
+                        };
+                        pass.set_bind_group(1, texture_bind_group, &[]);
+                        if let Some(bind_group) = self.shader_bind_group(shader_key) {
+                            pass.set_bind_group(2, bind_group, &[]);
+                        }
+                    } else if let Some(bind_group) = self.shader_bind_group(shader_key) {
                         pass.set_bind_group(1, bind_group, &[]);
                     }
                 } else {
@@ -393,6 +417,11 @@ impl GpuRenderer {
                     pass.set_bind_group(1, texture_bind_group, &[]);
                 }
             }
+            GeometryKind::Light => {
+                self.render_diagnostics.record_shader_pipeline_failure();
+                self.render_diagnostics.record_dropped_command();
+                return false;
+            }
         }
         let (target_width, target_height) = self.target_dimensions_from_gpu(draw.target);
         match draw.scissor {
@@ -404,6 +433,7 @@ impl GpuRenderer {
         let inst_start = draw.instance_start;
         let inst_count = if draw.geometry == GeometryKind::ColorInstanced
             || draw.geometry == GeometryKind::TextureInstanced
+            || draw.geometry == GeometryKind::ParticleTextured
         {
             draw.instance_count
         } else {

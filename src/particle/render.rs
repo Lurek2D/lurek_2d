@@ -23,6 +23,10 @@ pub fn expand_particle_commands(cmds: Vec<RenderCommand>) -> Vec<RenderCommand> 
     let mut out = Vec::with_capacity(cmds.len());
     for cmd in cmds {
         if let RenderCommand::DrawParticleSystem { particles, shader } = cmd {
+            if shader.is_some() {
+                out.push(RenderCommand::DrawParticleSystem { particles, shader });
+                continue;
+            }
             let mut untextured = Vec::new();
             for particle in particles {
                 if let Some(tex_key) = particle.texture_key {

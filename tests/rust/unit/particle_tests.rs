@@ -21,8 +21,10 @@ mod visualization_tests {
 }
 
 mod extensibility_tests {
+    use lurek2d::particle::render::expand_particle_commands;
     use lurek2d::particle::{EmissionShape, ParticleConfig, ParticleSystem};
-    use lurek2d::render::renderer::RenderCommand;
+    use lurek2d::render::renderer::{ParticleInstance, ParticleRenderShape, RenderCommand};
+    use lurek2d::runtime::resource_keys::{ShaderKey, TextureKey};
 
     #[test]
     fn custom_emission_shape_variant_exists() {
@@ -105,6 +107,43 @@ mod extensibility_tests {
                 .any(|cmd| matches!(cmd, RenderCommand::DrawParticleSystem { .. })),
             "sub-system particles should still render"
         );
+    }
+
+    #[test]
+    fn shadered_textured_particles_stay_on_particle_shader_path() {
+        let particle = ParticleInstance {
+            x: 10.0,
+            y: 20.0,
+            r: 1.0,
+            g: 1.0,
+            b: 1.0,
+            a: 1.0,
+            rotation: 0.0,
+            size: 8.0,
+            shape: ParticleRenderShape::Square,
+            texture_key: Some(TextureKey::default()),
+            quad: Some([0.0, 0.0, 8.0, 8.0]),
+            quad_tex_dims: Some((8.0, 8.0)),
+            local_x: 1.0,
+            local_y: 2.0,
+            velocity_x: 3.0,
+            velocity_y: 4.0,
+            normalized_age: 0.5,
+            lifetime: 2.0,
+            seed: 123,
+        };
+        let expanded = expand_particle_commands(vec![RenderCommand::DrawParticleSystem {
+            particles: vec![particle],
+            shader: Some(ShaderKey::default()),
+        }]);
+
+        assert!(matches!(
+            expanded.as_slice(),
+            [RenderCommand::DrawParticleSystem {
+                shader: Some(_),
+                ..
+            }]
+        ));
     }
 
     #[test]

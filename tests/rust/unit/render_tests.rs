@@ -1579,8 +1579,10 @@ mod render_input_validation_tests {
 mod gpu_renderer_tests {
     use lurek2d::render::gpu_frame_builder::merge_adjacent_prepared_draws;
     use lurek2d::render::gpu_pipeline::{
-        build_custom_color_shader_source, build_custom_particle_shader_source,
-        build_custom_texture_shader_source, depth_stencil_state, GeometryKind, GpuStencilMode,
+        build_custom_color_shader_source, build_custom_light_shader_source,
+        build_custom_particle_shader_source, build_custom_texture_shader_source,
+        build_custom_textured_particle_shader_source, depth_stencil_state, GeometryKind,
+        GpuStencilMode,
     };
     use lurek2d::render::gpu_resources::{
         canvas_texture_needs_recreate, is_builtin_static_geometry_key, texture_needs_upload,
@@ -1629,8 +1631,9 @@ fn fs_main(
     @location(5) age: f32,
     @location(6) lifetime: f32,
     @location(7) seed: f32,
+    @location(8) sampled_color: vec4<f32>,
 ) -> @location(0) vec4<f32> {
-    return color + vec4<f32>(uv + local_pos * 0.0 + world_pos * 0.0 + velocity * 0.0, age + lifetime + seed, 0.0);
+    return sampled_color + color + vec4<f32>(uv + local_pos * 0.0 + world_pos * 0.0 + velocity * 0.0, age + lifetime + seed, 0.0);
 }
 "#;
     const LIGHT_SHADER: &str = r#"
@@ -1644,9 +1647,12 @@ fn fs_main(
     @location(5) distance_norm: f32,
     @location(6) radius: f32,
     @location(7) intensity: f32,
+    @location(8) shadow_factor: f32,
+    @location(9) ambient_color: vec4<f32>,
+    @location(10) direction_spot: vec4<f32>,
 ) -> @location(0) vec4<f32> {
-    let falloff = max(1.0 - distance_norm, 0.0) * intensity;
-    return vec4<f32>(color.rgb * falloff + (world_pos + light_pos + normal_hint + uv).x * 0.0, color.a + radius * 0.0);
+    let falloff = max(1.0 - distance_norm, 0.0) * intensity * shadow_factor;
+    return vec4<f32>(color.rgb * falloff + ambient_color.rgb * 0.0 + (world_pos + light_pos + normal_hint + uv).x * 0.0 + direction_spot.xyz * 0.0, color.a + radius * 0.0 + direction_spot.w * 0.0);
 }
 "#;
 
@@ -1907,13 +1913,57 @@ fn fs_main(
         let source = build_custom_particle_shader_source(&shader, &[]);
 
         assert!(source.contains("in.local_pos"));
+        assert!(source.contains("out.uv = in.uv"));
         assert!(source.contains("in.world_pos"));
         assert!(source.contains("in.velocity"));
         assert!(source.contains("in.normalized_age"));
         assert!(source.contains("in.lifetime"));
         assert!(source.contains("in.seed"));
+        assert!(source.contains("out.sampled_color = in.color"));
+        assert!(source.contains("in.sampled_color"));
         wgpu::naga::front::wgsl::parse_str(&source)
             .expect("wrapped particle shader source should remain valid WGSL");
+    }
+
+    #[test]
+    fn custom_textured_particle_shader_source_samples_texture_color() {
+        let shader = Shader::new_for_target(PARTICLE_SHADER.to_string(), ShaderTarget::Particle)
+            .expect("expected valid particle shader");
+        let source = build_custom_textured_particle_shader_source(
+            &shader,
+            &[("amount".to_string(), ShaderUniformKind::Float)],
+        );
+
+        assert!(source.contains("@group(1) @binding(0) var t_particle: texture_2d<f32>;"));
+        assert!(source.contains("@group(1) @binding(1) var s_particle: sampler;"));
+        assert!(source.contains("@group(2) @binding(0) var<uniform> amount: f32;"));
+        assert!(source.contains("textureSample(t_particle, s_particle, in.uv) * in.color"));
+        assert!(source.contains("in.sampled_color"));
+        wgpu::naga::front::wgsl::parse_str(&source)
+            .expect("wrapped textured particle shader source should remain valid WGSL");
+    }
+
+    #[test]
+    fn custom_light_shader_source_forwards_light_inputs() {
+        let shader = Shader::new_for_target(LIGHT_SHADER.to_string(), ShaderTarget::Light)
+            .expect("expected valid light shader");
+        let source = build_custom_light_shader_source(
+            &shader,
+            &[("rim".to_string(), ShaderUniformKind::Float)],
+        );
+
+        assert!(source.contains("in.world_pos"));
+        assert!(source.contains("in.light_pos"));
+        assert!(source.contains("in.normal_hint"));
+        assert!(source.contains("in.distance_norm"));
+        assert!(source.contains("in.radius"));
+        assert!(source.contains("in.intensity"));
+        assert!(source.contains("in.shadow_factor"));
+        assert!(source.contains("in.ambient_color"));
+        assert!(source.contains("in.direction_spot"));
+        assert!(source.contains("@group(2) @binding(0) var<uniform> rim: f32;"));
+        wgpu::naga::front::wgsl::parse_str(&source)
+            .expect("wrapped light shader source should remain valid WGSL");
     }
 
     #[test]

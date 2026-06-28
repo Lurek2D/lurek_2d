@@ -46,8 +46,7 @@ end
 - `lurek.shader.new(code, { target = ... })` is the canonical constructor for target-aware runtime shaders.
 - `lurek.render.newShader(code)` remains a compatibility path for `target = "draw"`.
 - Target validation is strict: post-fx, image, overlay, particle, and light APIs reject shaders created for another target.
-- The current implementation establishes the shared API, validation, example WGSL assets, custom post-fx execution, and offline `ImageData` GPU processing through a render-owned headless readback path.
-- Particle shader rendering and light contribution pipeline replacement are staged behind the same target contracts; their public bindings validate targets and preserve shader selections while renderer specialization continues.
+- The current implementation establishes the shared API, validation, example WGSL assets, custom post-fx execution, offline `ImageData` GPU processing through a render-owned headless readback path, render-time particle shader specialization, and custom light contribution pipeline replacement.
 
 This module is mostly self-contained inside the Platform Services group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
