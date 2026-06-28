@@ -2247,7 +2247,7 @@ end
 do
     local image = lurek.image.newImageData(4, 4)
     image:fill(40, 80, 160, 255)
-    local shader = lurek.shader.new([[
+    local shader = lurek.render.newShader([[
 @fragment
 fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
     return vec4<f32>(1.0 - color.r, color.g, uv.x, color.a);
@@ -2262,7 +2262,7 @@ end
 do
     local image = lurek.image.newImageData(2, 2)
     image:fill(120, 80, 40, 255)
-    local shader = lurek.shader.new([[
+    local shader = lurek.render.newShader([[
 @fragment
 fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
     return vec4<f32>(color.b, color.g, color.r, color.a);
@@ -2277,7 +2277,7 @@ end
 do
     local image = lurek.image.newImageData(2, 2)
     image:fill(10, 20, 30, 255)
-    local shader = lurek.shader.new("@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }", { target = "image" })
+    local shader = lurek.render.newShader("@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }", { target = "image" })
     local job = lurek.image.requestShader(image, shader)
     local output = job:poll()
     local ready = output ~= nil and output:getWidth() == image:getWidth()
@@ -2288,7 +2288,7 @@ end
 do
     local image = lurek.image.newImageData(2, 2)
     image:fill(40, 50, 60, 255)
-    local shader = lurek.shader.new("@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }", { target = "image" })
+    local shader = lurek.render.newShader("@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }", { target = "image" })
     local job = lurek.image.requestShader(image, shader)
     local output = job:wait(100)
     local done = output ~= nil and output:getHeight() == image:getHeight()
@@ -2299,7 +2299,7 @@ end
 do
     local image = lurek.image.newImageData(2, 2)
     image:fill(70, 80, 90, 255)
-    local shader = lurek.shader.new("@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }", { target = "image" })
+    local shader = lurek.render.newShader("@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }", { target = "image" })
     local job = lurek.image.requestShader(image, shader)
     job:cancel()
     local output = job:poll()

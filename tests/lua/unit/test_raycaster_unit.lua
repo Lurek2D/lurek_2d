@@ -54,6 +54,15 @@ local function scene_params()
     }
 end
 
+local function draw_shader()
+    return lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb * vec3<f32>(1.0, uv.y, 1.0), color.a);
+}
+]], { target = "draw" })
+end
+
 local function make_scene_adapter_fixture(x, y, angle)
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(x or 10.0, y or 8.0, "dynamic")
@@ -130,6 +139,34 @@ describe("lurek.raycaster functions", function()
         local far = lurek.raycaster.distanceShade(9, 10)
         expect_true(near >= mid)
         expect_true(mid >= far)
+    end)
+
+    -- @covers lurek.raycaster.setShader
+    it("binds only draw-target shaders for raycaster scene presentation", function()
+        local shader = draw_shader()
+        lurek.raycaster.setShader(shader)
+        expect_equal(shader:getId(), lurek.raycaster.getShader():getId())
+        expect_error(function()
+            lurek.raycaster.setShader(lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return color;
+}
+]], { target = "mapviz" }))
+        end)
+        lurek.raycaster.setShader(nil)
+        expect_equal(nil, lurek.raycaster.getShader())
+    end)
+
+    -- @covers lurek.raycaster.getShader
+    it("returns the raycaster scene shader or nil after clearing", function()
+        lurek.raycaster.setShader(nil)
+        expect_equal(nil, lurek.raycaster.getShader())
+        local shader = draw_shader()
+        lurek.raycaster.setShader(shader)
+        expect_equal(shader:getId(), lurek.raycaster.getShader():getId())
+        lurek.raycaster.setShader(nil)
+        expect_equal(nil, lurek.raycaster.getShader())
     end)
 
     -- @covers lurek.raycaster.new

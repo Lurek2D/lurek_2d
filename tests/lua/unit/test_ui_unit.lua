@@ -15,6 +15,25 @@ local function make_basic_widget(opts)
     })
 end
 
+local function ui_shader_code()
+    return [[
+@fragment
+fn fs(
+    @location(0) color: vec4<f32>,
+    @location(1) uv: vec2<f32>,
+    @location(2) pixel: vec2<f32>,
+    @location(3) resolution: vec2<f32>,
+    @location(4) texel: vec2<f32>
+) -> @location(0) vec4<f32> {
+    _ = uv;
+    _ = pixel;
+    _ = resolution;
+    _ = texel;
+    return color;
+}
+]]
+end
+
 -- @describe lurek.ui module
 describe("lurek.ui module", function()
     -- @covers lurek.ui.loadLayout
@@ -101,6 +120,37 @@ describe("lurek.ui module", function()
         end)
         lurek.ui.draw()
         expect_true(called)
+    end)
+
+    -- @covers LUiWidget:setShader
+    it("setShader accepts ui shaders and rejects other targets", function()
+        local widget = make_basic_widget()
+        local shader = lurek.render.newShader(ui_shader_code(), { target = "ui" })
+        expect_no_error(function()
+            widget:setShader(shader)
+            lurek.ui.draw()
+            widget:setShader(nil)
+        end)
+        expect_error(function()
+            widget:setShader(lurek.render.newShader(ui_shader_code(), { target = "overlay" }))
+        end)
+    end)
+
+    -- @covers LUiWidget:setShaderLayer
+    it("setShaderLayer accepts named ui shader layers and rejects empty names", function()
+        local widget = make_basic_widget()
+        local shader = lurek.render.newShader(ui_shader_code(), { target = "ui" })
+        expect_no_error(function()
+            widget:setShaderLayer("hover_glow", shader)
+            lurek.ui.draw()
+            widget:setShaderLayer("hover_glow", nil)
+        end)
+        expect_error(function()
+            widget:setShaderLayer("", shader)
+        end)
+        expect_error(function()
+            widget:setShaderLayer("bad", lurek.render.newShader(ui_shader_code(), { target = "draw" }))
+        end)
     end)
 
     -- @covers lurek.ui.drawToImage

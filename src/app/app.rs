@@ -1846,7 +1846,18 @@ impl LurekApp {
                 let cmds = rc
                     .borrow()
                     .generate_render_commands(cam_x, cam_y, screen_w, screen_h);
-                state.borrow_mut().render_commands.extend(cmds);
+                let mut st = state.borrow_mut();
+                let previous_shader = st.active_shader;
+                let changed_shader = cmds
+                    .iter()
+                    .any(|command| matches!(command, RenderCommand::SetShader(_)));
+                st.render_commands.extend(cmds);
+                if changed_shader {
+                    if let Some(shader_key) = previous_shader {
+                        st.render_commands
+                            .push(RenderCommand::SetShader(Some(shader_key)));
+                    }
+                }
             }
             state
                 .borrow_mut()
@@ -1867,7 +1878,18 @@ impl LurekApp {
                 let cmds = rc
                     .borrow()
                     .generate_render_commands(0.0, 0.0, cam_x, cam_y, cam_w, cam_h);
-                state.borrow_mut().render_commands.extend(cmds);
+                let mut st = state.borrow_mut();
+                let previous_shader = st.active_shader;
+                let changed_shader = cmds
+                    .iter()
+                    .any(|command| matches!(command, RenderCommand::SetShader(_)));
+                st.render_commands.extend(cmds);
+                if changed_shader {
+                    if let Some(shader_key) = previous_shader {
+                        st.render_commands
+                            .push(RenderCommand::SetShader(Some(shader_key)));
+                    }
+                }
             }
             state
                 .borrow_mut()
@@ -2084,6 +2106,12 @@ impl LurekApp {
                     bd.partial_cmp(&ad).unwrap_or(std::cmp::Ordering::Equal)
                 });
                 let mut s = state.borrow_mut();
+                let previous_shader = s.active_shader;
+                let raycaster_shader = s.raycaster_shader;
+                if let Some(shader_key) = raycaster_shader {
+                    s.render_commands
+                        .push(RenderCommand::SetShader(Some(shader_key)));
+                }
                 if let Some(background) = &scene.background {
                     push_raycaster_background_commands(
                         &mut s.render_commands,
@@ -2123,6 +2151,10 @@ impl LurekApp {
                     scene.screen_width,
                     scene.screen_height,
                 );
+                if raycaster_shader.is_some() {
+                    s.render_commands
+                        .push(RenderCommand::SetShader(previous_shader));
+                }
             }
         }
         {

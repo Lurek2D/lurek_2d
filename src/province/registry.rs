@@ -14,6 +14,7 @@ use crate::province::topology::ProvinceGraph;
 use crate::province::types::{
     BorderPairStyle, BorderType, BorderTypeConfig, ProvinceId, ProvinceSnapshot, ProvinceStyle,
 };
+use crate::runtime::resource_keys::ShaderKey;
 use std::collections::HashMap;
 
 /// Full mutable record for a single province stored inside ProvinceRegistry.
@@ -66,6 +67,8 @@ pub struct ProvinceRegistry {
     revision: u64,
     /// Ordered change log entries as (revision, change) pairs.
     changes: Vec<(u64, ProvinceChange)>,
+    /// Optional render-owned shader binding for province command visualization.
+    shader: Option<ShaderKey>,
 }
 
 impl ProvinceRegistry {
@@ -87,7 +90,18 @@ impl ProvinceRegistry {
             map_modes: MapModeRegistry::new(),
             revision: 0,
             changes: Vec::new(),
+            shader: None,
         }
+    }
+
+    /// Bind or clear a render-owned shader used when command-rendering province visualization.
+    pub fn set_shader(&mut self, shader: Option<ShaderKey>) {
+        self.shader = shader;
+    }
+
+    /// Return the currently bound command-render visualization shader, if any.
+    pub fn get_shader(&self) -> Option<ShaderKey> {
+        self.shader
     }
 
     /// Build a registry from a pre-parsed ProvinceGrid, computing spans, adjacency, and centroids.
@@ -174,6 +188,7 @@ impl ProvinceRegistry {
             map_modes: MapModeRegistry::new(),
             revision: 0,
             changes: Vec::new(),
+            shader: None,
         }
     }
     /// Build a registry by loading a province colour-map PNG from path; return error on I/O or decode failure.

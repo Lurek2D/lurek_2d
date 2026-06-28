@@ -1060,6 +1060,68 @@ do
     example_print_log("canvas rendered and drawn back")
 end
 
+--@api: lurek.render.applyShaderToCanvas
+do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local code = [[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    let vignette = smoothstep(0.85, 0.2, distance(uv, vec2<f32>(0.5, 0.5)));
+    return vec4<f32>(color.rgb * (0.35 + vignette), color.a);
+}
+]]
+    local shader = lurek.render.newShader(code, { target = "postfx" })
+    local canvas = lurek.render.newCanvas(96, 96)
+    lurek.render.setCanvas(canvas)
+    lurek.render.rectangle("fill", 0, 0, 96, 96)
+    lurek.render.setCanvas(nil)
+    lurek.render.applyShaderToCanvas(canvas, shader)
+    lurek.render.draw(canvas, 120, 70)
+    example_print_log("canvas postfx shader target = " .. shader:getTarget())
+    render_log("queued render.applyShaderToCanvas")
+end
+
+--@api: LCanvas:applyShader
+do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local code = [[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    let tint = vec3<f32>(uv.x, 0.4, 1.0 - uv.y);
+    return vec4<f32>(mix(color.rgb, tint, 0.35), color.a);
+}
+]]
+    local shader = lurek.render.newShader(code, { target = "postfx" })
+    local canvas = lurek.render.newCanvas(96, 96)
+    lurek.render.setCanvas(canvas)
+    lurek.render.circle("fill", 48, 48, 32)
+    lurek.render.setCanvas(nil)
+    canvas:applyShader(shader)
+    lurek.render.draw(canvas, 230, 70)
+    example_print_log("LCanvas shader target = " .. shader:getTarget())
+    render_log("queued LCanvas:applyShader")
+end
+
 --@api: LCanvas:type
 do
     local function render_log(message)
@@ -1517,7 +1579,7 @@ do
     end
 
     local code = "@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }"
-    local shader = lurek.render.newShader(code)
+    local shader = lurek.render.newShader(code, { target = "draw" })
     local target = shader:getTarget()
     local id = shader:getId()
     example_print_log("shader target = " .. target .. " id=" .. tostring(id))
@@ -1538,50 +1600,6 @@ do
     local diagnostics = shader:getDiagnostics()
     local first = diagnostics[1] or ""
     example_print_log("shader diagnostics = " .. first)
-end
-
---@api: LShader:setShader
-do
-    local function render_log(message)
-        lurek.log.info("[render.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local code = "@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }"
-    local shader = lurek.render.newShader(code)
-    lurek.render.setShader(shader)
-    lurek.render.rectangle("fill", 10, 380, 30, 20)
-    example_print_log("active shader exists = " .. tostring(lurek.render.getShader() ~= nil))
-    lurek.render.setShader(nil)
-    example_print_log("shader cleared")
-end
-
---@api: LShader:getShader
-do
-    local function render_log(message)
-        lurek.log.info("[render.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local code = "@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }"
-    local shader = lurek.render.newShader(code)
-    lurek.render.setShader(shader)
-    local active = lurek.render.getShader()
-    example_print_log("getShader returned handle = " .. tostring(active ~= nil))
-    lurek.render.setShader(nil)
-    example_print_log("shader restored to default")
 end
 
 --@api: LShader:release
@@ -4249,4 +4267,86 @@ do
     sorter:add(function() example_print_log("draw layer B") end, 5)
     sorter:flush()
     example_print_log("depth sorter type = " .. sorter:type())
+end
+
+--@api: lurek.render.setTextShader
+do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs(
+    @location(0) color: vec4<f32>,
+    @location(1) uv: vec2<f32>,
+    @location(2) pixel: vec2<f32>,
+    @location(3) resolution: vec2<f32>,
+    @location(4) texel: vec2<f32>
+) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb * vec3<f32>(0.7, 0.95, 1.2) + uv.xyx * 0.0 + pixel.xyx * 0.0 + resolution.xyx * texel.x * 0.0, color.a);
+}
+]], { target = "text" })
+    lurek.render.setTextShader(shader)
+    lurek.render.print("text shader", 24, 48)
+    lurek.render.setTextShader(nil)
+    render_log("text shader target=" .. shader:getTarget())
+end
+
+--@api: lurek.render.getTextShader
+do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0, color.a);
+}
+]], { target = "text" })
+    lurek.render.setTextShader(shader)
+    local active = lurek.render.getTextShader()
+    render_log("active text shader=" .. tostring(active and active:getTarget() or "nil"))
+    lurek.render.setTextShader(nil)
+end
+
+--@api: lurek.render.setDebugShader
+do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>, @location(2) pixel: vec2<f32>) -> @location(0) vec4<f32> {
+    let heat = vec3<f32>(uv.x, 0.2 + uv.y * 0.5, 1.0 - uv.x);
+    return vec4<f32>(mix(color.rgb, heat, 0.6 + pixel.x * 0.0), color.a);
+}
+]], { target = "debugviz" })
+    lurek.render.setDebugShader(shader)
+    lurek.render.rectangle("fill", 24, 24, 64, 20)
+    lurek.render.circle("line", 56, 56, 18)
+    lurek.render.setDebugShader(nil)
+    render_log("debug shader target=" .. shader:getTarget())
+end
+
+--@api: lurek.render.getDebugShader
+do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(3) resolution: vec2<f32>) -> @location(0) vec4<f32> {
+    let scale = clamp(resolution.x / max(resolution.x, 1.0), 0.0, 1.0);
+    return vec4<f32>(color.rgb * vec3<f32>(1.0, scale, 0.35), color.a);
+}
+]], { target = "debugviz" })
+    lurek.render.setDebugShader(shader)
+    local active = lurek.render.getDebugShader()
+    lurek.render.line(8, 96, 128, 96)
+    render_log("active debug shader=" .. tostring(active and active:getTarget() or "nil"))
+    lurek.render.setDebugShader(nil)
 end

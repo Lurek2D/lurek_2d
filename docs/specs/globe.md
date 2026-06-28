@@ -13,7 +13,7 @@
 - Source path: `src/globe`
 - Binding: `src/lua_api/globe_api.rs`
 - Namespace: `lurek.globe`
-- Lua API surface: `12` functions, `4` types, `102` methods
+- Lua API surface: `12` functions, `4` types, `104` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -280,6 +280,7 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - `LGlobe:getProvinceSector(id) -> string`: Returns the sector name assigned to a province.
 - `LGlobe:getRegionAttr(id, key) -> string`: Reads a string attribute from a semantic region.
 - `LGlobe:getSectorProvinces(sector) -> integer[]`: Returns province ids assigned to a sector.
+- `LGlobe:getShader() -> LShader?`: Returns the mapviz-target shader bound to this globe, if any.
 - `LGlobe:getTerrainPatchAttr(id, key) -> string`: Reads a string attribute from a terrain patch.
 - `LGlobe:getTimeOfDay() -> number`: Returns globe time of day. This method is available to Lua scripts.
 - `LGlobe:hideProvince(viewer, id) -> nil`: Hides a province for one fog-of-war viewer.
@@ -336,6 +337,7 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - `LGlobe:setRegionColor(id, r, g, b, a) -> boolean`: Sets the RGBA color used to render a semantic region overlay.
 - `LGlobe:setRegionVisible(id, visible) -> boolean`: Shows or hides a semantic region overlay and its picking participation.
 - `LGlobe:setRotation(deg) -> nil`: Sets globe rotation angle. This method is available to Lua scripts.
+- `LGlobe:setShader(shader?) -> nil`: Binds a mapviz-target shader to this globe's generated render commands. Pass nil to clear.
 - `LGlobe:setTerrainPatchAttr(id, key, val) -> boolean`: Sets a string attribute on a terrain patch.
 - `LGlobe:setTerrainPatchTexture(id, tex_raw, u0, v0, u1, v1) -> boolean`: Assigns a raw texture handle and UV rectangle to a terrain patch.
 - `LGlobe:setTimeOfDay(t) -> nil`: Sets globe time of day modulo 24 hours.
@@ -414,6 +416,7 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 | Current artifact | `tests/artifacts/current/globe/globe_province_projection.png` |
 | Current artifact | `tests/artifacts/current/globe/globe_region_trace.txt` |
 | Current artifact | `tests/artifacts/current/globe/globe_semantic_region_holes.png` |
+| Current artifact | `tests/artifacts/current/globe/globe_shader_binding_contract.txt` |
 | Current artifact | `tests/artifacts/current/globe/globe_terrain_region_overlay.png` |
 | Current artifact | `tests/artifacts/current/globe/globe_terrain_rotation.gif` |
 | Current artifact | `tests/artifacts/current/globe/globe_topology_cost_route.png` |
@@ -436,4 +439,5 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 
 ## Notes
 
-- No additional module-specific notes.
+- `LGlobe:setShader(shaderOrNil)` accepts only `mapviz` shaders created through `lurek.render.newShader`. A globe stores only the semantic `ShaderKey`; render still owns WGSL validation, pipeline selection, fallback, and GPU execution.
+- Globe shaders are intended for atmospheric bands, tactical heatmap styling, fog/visibility tinting, and map visualization treatments over the generated command stream. Globe topology, picking, routes, and fog state remain CPU-owned gameplay/tooling data.

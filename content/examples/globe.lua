@@ -3766,3 +3766,33 @@ do
     local after = #g:regionsAtLatLon(0, 0)
     example_print_log("region visible set=" .. tostring(ok) .. " hits=" .. tostring(before) .. "->" .. tostring(after))
 end
+
+--@api: LGlobe:setShader
+do
+    local g = lurek.globe.new("example_globe_set_shader")
+    g:addTerrainPatch({ id = 77, vertices = {{-20,-20},{-20,20},{20,20},{20,-20}}, base_color = {0.2, 0.5, 0.8, 1.0} })
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.r, color.g * (0.7 + uv.x * 0.3), color.b, color.a);
+}
+]], { target = "mapviz" })
+    g:setShader(shader)
+    g:draw({ screen_cx = 320, screen_cy = 180 })
+    g:setShader(nil)
+end
+
+--@api: LGlobe:getShader
+do
+    local g = lurek.globe.new("example_globe_get_shader")
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb * vec3<f32>(0.9, 1.0, 0.95), color.a);
+}
+]], { target = "mapviz" })
+    g:setShader(shader)
+    local active = g:getShader()
+    lurek.log.info("globe shader id = " .. tostring(active and active:getId()))
+    g:setShader(nil)
+end

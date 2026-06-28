@@ -19,7 +19,7 @@ use crate::globe::types::{
     Arc as GlobeArc, GlobeError, GlobeSpec, HeatLayer, Region, RegionId, MAX_REGIONS,
 };
 use crate::render::renderer::RenderCommand;
-use crate::runtime::resource_keys::FontKey;
+use crate::runtime::resource_keys::{FontKey, ShaderKey};
 use std::collections::{HashMap, HashSet};
 
 #[inline]
@@ -64,6 +64,8 @@ pub struct Globe {
     pub reachability_cache: HashMap<String, HashMap<RegionId, f64>>,
     /// Simulation time in seconds.
     pub sim_time_sec: f32,
+    /// Optional render-owned map visualization shader applied while drawing this globe.
+    pub shader: Option<ShaderKey>,
 }
 
 /// Sampled terrain coverage report for a globe.

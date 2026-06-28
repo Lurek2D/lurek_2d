@@ -13,7 +13,7 @@
 - Source path: `src/terminal`
 - Binding: `src/lua_api/terminal_api.rs`
 - Namespace: `lurek.terminal`
-- Lua API surface: `31` functions, `3` types, `66` methods
+- Lua API surface: `31` functions, `3` types, `68` methods
 - User-facing: `true`
 - Plugin tier: `tier_1_plugin`
 
@@ -204,6 +204,7 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LTerminal:getDimensions() -> integer, integer`: Returns the number of columns and rows in the terminal grid.
 - `LTerminal:getFocused() -> LWidget`: Returns the widget that currently has keyboard focus, or nil if no widget is focused.
 - `LTerminal:getRenderStats() -> table`: Returns the most recent render composition stats gathered by terminal render helpers.
+- `LTerminal:getShader() -> LShader?`: Returns the UI shader bound to this terminal, or nil when default terminal rendering is used.
 - `LTerminal:getWidgetCount() -> integer`: Returns the number of widgets currently attached to this terminal.
 - `LTerminal:keypressed(key) -> boolean`: Forwards a key press event to the terminal for widget input processing.
 - `LTerminal:mousepressed(px, py, button?) -> nil`: Forwards a mouse press event to the terminal, converting pixel coordinates to cell coordinates.
@@ -216,6 +217,7 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LTerminal:setCellSize(w, h) -> nil`: Overrides the cell width and height used for rendering this terminal grid and refits the window.
 - `LTerminal:setFocus(widget?) -> nil`: Sets which widget currently has keyboard focus, or clears focus when nil is passed.
 - `LTerminal:setFont(height) -> nil`: Selects the nearest built-in bitmap font by pixel height and refits the window to the terminal grid.
+- `LTerminal:setShader(shader?) -> nil`: Binds or clears a render-owned UI shader for this terminal's generated render commands.
 - `LTerminal:textinput(text) -> boolean`: Forwards a text input event to the terminal for character entry into focused widgets.
 - `LTerminal:trySet(col, row, ch, fr?, fg?, fb?, fa?, br?, bg?, bb?, ba?) -> boolean, string`: Strictly writes a character with colors to a specific cell and returns an explicit error string on invalid input.
 - `LTerminal:type() -> string`: Returns the type name string "LTerminal".
@@ -304,6 +306,7 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 |---|---|
 | Evidence test | `tests/lua/evidence/test_terminal_evidence.lua` |
 | Golden test | `tests/lua/golden/test_terminal_golden.lua` |
+| Current artifact | `tests/artifacts/current/terminal/terminal_shader_binding_contract.txt` |
 | Current artifact | `tests/artifacts/current/terminal/terminal_tui_chart_panels.png` |
 | Current artifact | `tests/artifacts/current/terminal/terminal_tui_command_palette.png` |
 | Current artifact | `tests/artifacts/current/terminal/terminal_tui_dashboard_widgets.png` |
@@ -329,3 +332,5 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - Panel ownership is validated. A child widget may not belong to multiple panels, stale child references are invalid, and cycles are rejected before traversal.
 - Cell colors must be finite and are clamped to `0..1`. Invalid codepoints are rejected by strict setters and sanitized to a safe fallback by permissive setters.
 - Render helpers record composition stats including visible list rows, skipped rows, drawn widgets, and clipped characters so large-list behavior is observable instead of implicit.
+- `LTerminal:setShader` accepts only `ui` shaders created by `lurek.render.newShader`; terminal stores the binding and wraps the render-command group, while WGSL validation, pipeline creation, fallback, and execution remain owned by `render`.
+- Terminal shader binding affects `LTerminal:render` GPU command output. `LTerminal:renderImage` remains a deterministic software preview and does not execute GPU shaders.

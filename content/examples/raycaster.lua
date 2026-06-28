@@ -5189,3 +5189,32 @@ do
 
     example_print_log("projected count = " .. #projected)
 end
+
+--@api: lurek.raycaster.setShader
+do
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.r * (0.75 + uv.x * 0.25), color.g, color.b, color.a);
+}
+]], { target = "draw" })
+    lurek.raycaster.setShader(shader)
+    local map = lurek.raycaster.new(8, 8)
+    map:setCell(7, 4, 1)
+    map:buildScene({ px = 3, py = 4, angle = 0, fov = math.pi / 3, rays = 16, max_dist = 8, screen_w = 160, screen_h = 90 }, {}, {}, {})
+    lurek.raycaster.setShader(nil)
+end
+
+--@api: lurek.raycaster.getShader
+do
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb * vec3<f32>(1.0, 0.9, 0.8), color.a);
+}
+]], { target = "draw" })
+    lurek.raycaster.setShader(shader)
+    local active = lurek.raycaster.getShader()
+    lurek.log.info("raycaster shader id = " .. tostring(active and active:getId()))
+    lurek.raycaster.setShader(nil)
+end

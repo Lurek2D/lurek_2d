@@ -13,7 +13,7 @@
 - Source path: `src/sprite`
 - Binding: `src/lua_api/sprite_api.rs`
 - Namespace: `lurek.sprite`
-- Lua API surface: `12` functions, `14` types, `64` methods
+- Lua API surface: `12` functions, `14` types, `67` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
@@ -193,10 +193,13 @@ This module primarily collaborates with `animation`, `color`, `image`, `math`, `
 - `LSprite:getNormalIntensity() -> number`: Returns the normal-map intensity multiplier.
 - `LSprite:getNormalMap() -> integer`: Returns the assigned normal-map texture handle, or nil when absent.
 - `LSprite:getPosition() -> number`: Returns the sprite anchor position in pixels.
+- `LSprite:getShader() -> LShader?`: Returns the sprite material shader bound to this sprite, if any.
 - `LSprite:hasNormalMap() -> boolean`: Returns whether the sprite currently has a normal map.
 - `LSprite:setNormalIntensity(intensity) -> nil`: Sets the normal-map intensity used by lit sprite workflows.
 - `LSprite:setNormalMap(texture_id) -> nil`: Assigns the texture used as this sprite's normal map for lit sprite workflows.
 - `LSprite:setPosition(x, y) -> nil`: Sets the sprite anchor position in pixels.
+- `LSprite:setShader(shader?) -> nil`: Sets or clears the render-owned sprite material shader.
+- `LSprite:setShaderUniform(name, value) -> nil`: Sends a uniform value to the shader bound to this sprite.
 - `LSprite:type() -> string`: Returns the type name of this object.
 - `LSprite:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
@@ -447,4 +450,5 @@ This module primarily collaborates with `animation`, `color`, `image`, `math`, `
 
 ## Notes
 
-- No additional module-specific notes.
+- Sprite shader materials:
+  `LSprite:setShader(shader)`, `LSprite:getShader()`, and `LSprite:setShaderUniform(name, value)` bind render-owned `target = "sprite"` WGSL shaders to sprite instances. The sprite module stores only the `LShader` handle and semantic material choice; `render` owns WGSL validation, uniform validation, GPU pipeline cache, and execution. The current sprite target is fragment-only and uses the existing textured contract: sampled sprite color at `@location(0)` and uv at `@location(1)`.

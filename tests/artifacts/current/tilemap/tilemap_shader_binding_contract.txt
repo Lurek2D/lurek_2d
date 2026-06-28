@@ -1,0 +1,6 @@
+Tilemap shader binding evidence
+constructor=lurek.render.newShader
+target=tilemap
+tilemap.shader=tilemap
+tilemap.layer_shader=tilemap
+render_submitted=true

@@ -1,0 +1,9 @@
+Shader API v2 per-target evidence
+constructor=lurek.render.newShader
+target=image
+id=4294967299
+actual_target=image
+diagnostics=validated for image shader target
+image.applyShader=2x2
+image.applyShader.pixel=255,0,0,255
+image.requestShader.wait=true

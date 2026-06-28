@@ -45,6 +45,8 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `LTileMap:worldToTile(...)` preserves legacy clamping semantics, while `LTileMap:tryWorldToTile(...)` returns `nil` for negative or non-finite world coordinates and should be preferred for picking front-ends.
 - Reverse tile-position indexing is lazy after large writes such as `fill(...)`; callers that need dense reverse lookups should use `tileTypeIndex(...)` or `findTilesByGid(...)` and can inspect `getDiagnostics().lazyIndexRebuilds`.
 - Diagnostics counters are part of the public debugging contract: invalid layer access, invalid coordinates, invalid coordinate queries, unknown gids, and lazy reverse-index rebuilds are observable through `LTileMap:getDiagnostics()`.
+- Tilemap shader bindings are visual-only render bindings. `LTileMap:setShader(shaderOrNil)` applies a `tilemap` target shader to generated tilemap render commands, while `LTileMap:setLayerShader(layer, shaderOrNil)` overrides one layer. Tilemap stores only `ShaderKey` handles and semantic layer choices; WGSL validation, GPU pipeline selection, and execution stay in `render`.
+- The current `tilemap` shader contract exposes draw color at `@location(0)` and uv at `@location(1)`. Textured tile visuals receive atlas uv; debug-color tile primitives receive zero uv until tilemap-specific vertex payloads are added.
 
 ## Architecture Links
 

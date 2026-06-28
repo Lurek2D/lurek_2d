@@ -19,7 +19,8 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 
 ## Notes
 
-- No additional module-specific notes.
+- `LParallaxLayer:setShader(shaderOrNil)` accepts only draw-target shaders created through `lurek.render.newShader`. Parallax stores the `ShaderKey` with layer state and wraps generated background draw commands; WGSL validation, pipeline creation, and GPU execution remain owned by `render`.
+- Existing named effect chains stay separate from custom `LShader` binding. They continue to describe post-process-style effect names, while `setShader` is the direct custom fragment material path for procedural/tinted background layers.
 
 ## Architecture Links
 

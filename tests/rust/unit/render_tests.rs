@@ -1655,6 +1655,15 @@ fn fs_main(
     return vec4<f32>(color.rgb * falloff + ambient_color.rgb * 0.0 + (world_pos + light_pos + normal_hint + uv).x * 0.0 + direction_spot.xyz * 0.0, color.a + radius * 0.0 + direction_spot.w * 0.0);
 }
 "#;
+    const SPRITE_SHADER: &str = r#"
+@fragment
+fn fs_main(
+    @location(0) color: vec4<f32>,
+    @location(1) uv: vec2<f32>,
+) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb * vec3<f32>(uv, 1.0), color.a);
+}
+"#;
 
     fn prepared_color_draw(idx_start: u32, idx_count: u32) -> PreparedDraw {
         PreparedDraw {
@@ -1999,6 +2008,18 @@ struct VertexOutput {
             .expect("particle shader should validate");
         Shader::new_for_target(LIGHT_SHADER.to_string(), ShaderTarget::Light)
             .expect("light shader should validate");
+        Shader::new_for_target(SPRITE_SHADER.to_string(), ShaderTarget::Sprite)
+            .expect("sprite shader should validate");
+        Shader::new_for_target(SPRITE_SHADER.to_string(), ShaderTarget::Tilemap)
+            .expect("tilemap shader should validate");
+        Shader::new_for_target(SCREEN_SHADER.to_string(), ShaderTarget::MapViz)
+            .expect("mapviz shader should validate");
+        Shader::new_for_target(SCREEN_SHADER.to_string(), ShaderTarget::Text)
+            .expect("text shader should validate");
+        Shader::new_for_target(SCREEN_SHADER.to_string(), ShaderTarget::Ui)
+            .expect("ui shader should validate");
+        Shader::new_for_target(SCREEN_SHADER.to_string(), ShaderTarget::DebugViz)
+            .expect("debugviz shader should validate");
     }
 
     #[test]
@@ -2047,9 +2068,19 @@ struct VertexOutput {
             ),
             (
                 include_str!(
+                    "../../../content/examples/assets/shaders/postfx_screen_transition_wipe.wgsl"
+                ),
+                ShaderTarget::PostFx,
+            ),
+            (
+                include_str!(
                     "../../../content/examples/assets/shaders/sprite_recolor_palette_swap.wgsl"
                 ),
-                ShaderTarget::Draw,
+                ShaderTarget::Sprite,
+            ),
+            (
+                include_str!("../../../content/examples/assets/shaders/tilemap_biome_tint.wgsl"),
+                ShaderTarget::Tilemap,
             ),
             (
                 include_str!("../../../content/examples/assets/shaders/fog_of_war.wgsl"),
@@ -2063,7 +2094,19 @@ struct VertexOutput {
                 include_str!(
                     "../../../content/examples/assets/shaders/province_minimap_visualization.wgsl"
                 ),
-                ShaderTarget::Overlay,
+                ShaderTarget::MapViz,
+            ),
+            (
+                include_str!("../../../content/examples/assets/shaders/text_glow_gradient.wgsl"),
+                ShaderTarget::Text,
+            ),
+            (
+                include_str!("../../../content/examples/assets/shaders/ui_terminal_crt.wgsl"),
+                ShaderTarget::Ui,
+            ),
+            (
+                include_str!("../../../content/examples/assets/shaders/debugviz_cost_heatmap.wgsl"),
+                ShaderTarget::DebugViz,
             ),
         ];
 

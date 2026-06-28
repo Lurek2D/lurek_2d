@@ -4023,3 +4023,42 @@ do
     local first = list:getItem(1)
     terminal_log("removeItem before=" .. before .. " after=" .. after .. " first='" .. tostring(first) .. "'")
 end
+
+--@api: LTerminal:setShader
+do
+    local shader_code = [[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>, @location(2) pixel: vec2<f32>) -> @location(0) vec4<f32> {
+    _ = uv;
+    let band = select(0.72, 1.0, (i32(pixel.y) & 1) == 0);
+    return vec4<f32>(color.rgb * band + vec3<f32>(0.02, 0.08, 0.06), color.a);
+}
+]]
+    local shader = lurek.render.newShader(shader_code, { target = "ui" })
+    local term = lurek.terminal.newTerminal(40, 8)
+    term:setShader(shader)
+    term:print(1, 1, "terminal ui shader")
+    term:print(1, 2, "CRT scanline material")
+    term:render(16, 24)
+    lurek.log.info("[terminal] setShader target=" .. term:getShader():getTarget())
+end
+
+--@api: LTerminal:getShader
+do
+    local shader_code = [[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>, @location(3) resolution: vec2<f32>) -> @location(0) vec4<f32> {
+    _ = uv;
+    let fade = clamp(resolution.x / max(resolution.x, 1.0), 0.0, 1.0);
+    return vec4<f32>(color.rgb * fade, color.a);
+}
+]]
+    local shader = lurek.render.newShader(shader_code, { target = "ui" })
+    local term = lurek.terminal.newTerminal(32, 6)
+    local before = term:getShader()
+    term:setShader(shader)
+    local after = term:getShader()
+    term:print(1, 1, "before=" .. tostring(before))
+    term:print(1, 2, "after=" .. after:getTarget())
+    term:render(8, 8)
+end

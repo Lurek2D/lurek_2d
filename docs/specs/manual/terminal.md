@@ -31,6 +31,8 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - Panel ownership is validated. A child widget may not belong to multiple panels, stale child references are invalid, and cycles are rejected before traversal.
 - Cell colors must be finite and are clamped to `0..1`. Invalid codepoints are rejected by strict setters and sanitized to a safe fallback by permissive setters.
 - Render helpers record composition stats including visible list rows, skipped rows, drawn widgets, and clipped characters so large-list behavior is observable instead of implicit.
+- `LTerminal:setShader` accepts only `ui` shaders created by `lurek.render.newShader`; terminal stores the binding and wraps the render-command group, while WGSL validation, pipeline creation, fallback, and execution remain owned by `render`.
+- Terminal shader binding affects `LTerminal:render` GPU command output. `LTerminal:renderImage` remains a deterministic software preview and does not execute GPU shaders.
 
 ## Architecture Links
 

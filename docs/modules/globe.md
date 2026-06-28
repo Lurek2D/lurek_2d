@@ -2560,6 +2560,40 @@ end
 
 ---
 
+#### `LGlobe:getShader`
+
+Returns the mapviz-target shader bound to this globe, if any.
+
+```lua
+LGlobe:getShader()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LShader](render.md#lshader)? | Bound shader handle, or nil. |
+
+**Example**
+
+```lua
+do
+    local g = lurek.globe.new("example_globe_get_shader")
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb * vec3<f32>(0.9, 1.0, 0.95), color.a);
+}
+]], { target = "mapviz" })
+    g:setShader(shader)
+    local active = g:getShader()
+    lurek.log.info("globe shader id = " .. tostring(active and active:getId()))
+    g:setShader(nil)
+end
+```
+
+---
+
 #### `LGlobe:getTerrainPatchAttr`
 
 Reads a string attribute from a terrain patch.
@@ -5758,6 +5792,40 @@ do
     local province_count = g:provinceCount()
     g:setRotation(45)
     example_print_log("rotation = 45 deg")
+end
+```
+
+---
+
+#### `LGlobe:setShader`
+
+Binds a mapviz-target shader to this globe's generated render commands. Pass nil to clear.
+
+```lua
+LGlobe:setShader(shader)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `shader?` | [LShader](render.md#lshader) | Shader created with `lurek.render.newShader(code, { target = "mapviz" })`, or nil to clear. |
+
+**Example**
+
+```lua
+do
+    local g = lurek.globe.new("example_globe_set_shader")
+    g:addTerrainPatch({ id = 77, vertices = {{-20,-20},{-20,20},{20,20},{20,-20}}, base_color = {0.2, 0.5, 0.8, 1.0} })
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.r, color.g * (0.7 + uv.x * 0.3), color.b, color.a);
+}
+]], { target = "mapviz" })
+    g:setShader(shader)
+    g:draw({ screen_cx = 320, screen_cy = 180 })
+    g:setShader(nil)
 end
 ```
 

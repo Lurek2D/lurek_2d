@@ -20,6 +20,25 @@ local function click_cell(term, col, row, button)
     term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
 end
 
+local function ui_shader_code()
+    return [[
+@fragment
+fn fs(
+    @location(0) color: vec4<f32>,
+    @location(1) uv: vec2<f32>,
+    @location(2) pixel: vec2<f32>,
+    @location(3) resolution: vec2<f32>,
+    @location(4) texel: vec2<f32>
+) -> @location(0) vec4<f32> {
+    _ = uv;
+    _ = pixel;
+    _ = resolution;
+    _ = texel;
+    return color;
+}
+]]
+end
+
 -- @describe terminal handles
 describe("terminal handles", function()
     -- @covers LTerminal:getDimensions
@@ -63,6 +82,32 @@ describe("terminal handles", function()
         expect_type("number", reset_h)
         expect_true(reset_w > 0)
         expect_true(reset_h > 0)
+    end)
+    -- @covers LTerminal:setShader
+    it("binds a ui shader to terminal render commands and rejects other targets", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(10, 5)
+        local shader = lurek.render.newShader(ui_shader_code(), { target = "ui" })
+        term:setShader(shader)
+        expect_equal("ui", term:getShader():getTarget())
+        term:print(1, 1, "shader terminal")
+        expect_no_error(function()
+            term:render(0, 0)
+        end)
+        expect_error(function()
+            term:setShader(lurek.render.newShader(ui_shader_code(), { target = "overlay" }))
+        end)
+        term:setShader(nil)
+        expect_equal(nil, term:getShader())
+    end)
+    -- @covers LTerminal:getShader
+    it("returns nil when no terminal shader is bound", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(10, 5)
+        expect_equal(nil, term:getShader())
+        local shader = lurek.render.newShader(ui_shader_code(), { target = "ui" })
+        term:setShader(shader)
+        expect_type("userdata", term:getShader())
     end)
     -- @covers LTerminal:set
     it("sets and gets cells with colon syntax", function()

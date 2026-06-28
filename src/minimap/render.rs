@@ -9,9 +9,24 @@
 use super::minimap::Minimap;
 use super::types::{FogLevel, MinimapRenderStats, OverlayShape};
 use crate::render::renderer::{DrawMode, RenderCommand};
+use crate::runtime::resource_keys::ShaderKey;
 
 fn same_color(lhs: [f32; 4], rhs: [f32; 4]) -> bool {
     lhs.map(f32::to_bits) == rhs.map(f32::to_bits)
+}
+
+fn wrap_commands_with_shader(
+    shader: Option<ShaderKey>,
+    commands: Vec<RenderCommand>,
+) -> Vec<RenderCommand> {
+    let Some(shader) = shader else {
+        return commands;
+    };
+    let mut wrapped = Vec::with_capacity(commands.len() + 2);
+    wrapped.push(RenderCommand::SetShader(Some(shader)));
+    wrapped.extend(commands);
+    wrapped.push(RenderCommand::SetShader(None));
+    wrapped
 }
 
 /// Provide `RenderCommand` generation for `Minimap`.
@@ -320,7 +335,10 @@ impl Minimap {
 
     /// Build the full ordered `RenderCommand` list for this minimap at screen origin `(screen_x, screen_y)`.
     pub fn generate_render_commands(&self, screen_x: f32, screen_y: f32) -> Vec<RenderCommand> {
-        self.generate_render_commands_with_stats(screen_x, screen_y)
-            .0
+        wrap_commands_with_shader(
+            self.get_shader(),
+            self.generate_render_commands_with_stats(screen_x, screen_y)
+                .0,
+        )
     }
 }

@@ -5543,6 +5543,57 @@ end
 
 ---
 
+#### `LTileMap:getLayerShader`
+
+Returns the shader override bound to one layer, or nil when the layer has no override.
+
+```lua
+LTileMap:getLayerShader(layer)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LShader](render.md#lshader)? | Bound layer shader handle. |
+
+**Example**
+
+```lua
+do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb * 1.1, color.a);
+}
+]], { target = "tilemap" })
+    local map = lurek.tilemap.newTileMap(16, 16)
+    map:addLayer("highlight", 2, 2)
+    map:setLayerShader(1, shader)
+    local layer_shader = map:getLayerShader(1)
+    example_print_log("layer shader id = " .. tostring(layer_shader:getId()))
+end
+```
+
+---
+
 #### `LTileMap:getLayerVisible`
 
 Returns whether a layer is currently visible.
@@ -5654,6 +5705,51 @@ do
     example_print_log("default orientation = " .. map:getOrientation())
     example_print_log("initial orientation = " .. before)
     example_print_log("hex orientation = " .. map:getOrientation())
+end
+```
+
+---
+
+#### `LTileMap:getShader`
+
+Returns the tilemap shader bound to this map, or nil when none is bound.
+
+```lua
+LTileMap:getShader()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LShader](render.md#lshader)? | Bound shader handle. |
+
+**Example**
+
+```lua
+do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb * vec3<f32>(1.0, 0.9, 0.75), color.a);
+}
+]], { target = "tilemap" })
+    local map = lurek.tilemap.newTileMap(32, 32)
+    map:addLayer("ground", 2, 2)
+    map:setShader(shader)
+    local bound = map:getShader()
+    example_print_log("bound tilemap shader id = " .. tostring(bound:getId()))
 end
 ```
 
@@ -6340,6 +6436,53 @@ end
 
 ---
 
+#### `LTileMap:setLayerShader`
+
+Binds a tilemap-target shader override to one layer. Pass nil to clear the layer override.
+
+```lua
+LTileMap:setLayerShader(layer, shader)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `shader?` | [LShader](render.md#lshader) | Shader created with `lurek.render.newShader(code, { target = "tilemap" })`. |
+
+**Example**
+
+```lua
+do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rg, max(color.b, uv.x), color.a);
+}
+]], { target = "tilemap" })
+    local map = lurek.tilemap.newTileMap(16, 16)
+    map:addLayer("base", 3, 3)
+    map:addLayer("water", 3, 3)
+    map:setLayerShader(2, shader)
+    map:render()
+    example_print_log("layer shader target = " .. map:getLayerShader(2):getTarget())
+end
+```
+
+---
+
 #### `LTileMap:setLayerVisible`
 
 Sets whether a layer is drawn during rendering.
@@ -6446,6 +6589,53 @@ do
     local wx, wy = map:tileToWorld(3, 2)
     example_print_log("set to " .. map:getOrientation())
     example_print_log("tile(3,2) projects near world(" .. wx .. "," .. wy .. ")")
+end
+```
+
+---
+
+#### `LTileMap:setShader`
+
+Binds a tilemap-target shader to this map's generated render commands. Pass nil to clear.
+
+```lua
+LTileMap:setShader(shader)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `shader?` | [LShader](render.md#lshader) | Shader created with `lurek.render.newShader(code, { target = "tilemap" })`. |
+
+**Example**
+
+```lua
+do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+
+    local code = [[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(mix(color.rgb, vec3<f32>(uv.x, 0.45, 0.2), 0.25), color.a);
+}
+]]
+    local shader = lurek.render.newShader(code, { target = "tilemap" })
+    local map = lurek.tilemap.newTileMap(32, 32)
+    map:addLayer("ground", 4, 4)
+    map:setTile(1, 1, 1, 1)
+    map:setShader(shader)
+    map:render()
+    example_print_log("tilemap shader target = " .. map:getShader():getTarget())
 end
 ```
 

@@ -1056,3 +1056,33 @@ do
     example_print_log("set stats visible tiles=" .. stats.visible_tile_count .. " effects=" .. stats.effect_pass_count)
 end
 
+--@api: LParallaxLayer:setShader
+do
+    local img = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local layer = lurek.parallax.newLayer({ texture = img, z = -10, tiling = true })
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.r, color.g * (0.6 + uv.y * 0.4), color.b, color.a);
+}
+]], { target = "draw" })
+    layer:setShader(shader)
+    layer:render(0, 0)
+    layer:setShader(nil)
+end
+
+--@api: LParallaxLayer:getShader
+do
+    local img = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local layer = lurek.parallax.newLayer({ texture = img, opacity = 0.8 })
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb * vec3<f32>(0.85, 0.95, 1.0), color.a);
+}
+]], { target = "draw" })
+    layer:setShader(shader)
+    local active = layer:getShader()
+    lurek.log.info("parallax shader id = " .. tostring(active and active:getId()))
+end
+

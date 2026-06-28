@@ -935,7 +935,7 @@ describe("image extended editing API", function()
     -- @covers LImageData:applyShader
     it("applyShader executes image-target shader and returns processed image data", function()
         local img = solid_image(2, 2, 20, 40, 80, 255)
-        local shader = lurek.shader.new([[
+        local shader = lurek.render.newShader([[
 @fragment
 fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>, @location(2) pixel: vec2<f32>, @location(3) resolution: vec2<f32>, @location(4) texel: vec2<f32>) -> @location(0) vec4<f32> {
     _ = uv;
@@ -950,14 +950,14 @@ fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>, @location(
         expect_equal(2, out:getHeight())
         expect_pixel(out, 0, 0, 255, 0, 0, 255)
         expect_error(function()
-            img:applyShader(lurek.shader.new("@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }", { target = "draw" }))
+            img:applyShader(lurek.render.newShader("@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }", { target = "draw" }))
         end)
     end)
 
     -- @covers lurek.image.requestShader
-    it("requestShader exposes poll wait and cancel for image shader jobs", function()
+    it("requestShader returns an image shader job", function()
         local img = solid_image(1, 1, 1, 2, 3, 255)
-        local shader = lurek.shader.new([[
+        local shader = lurek.render.newShader([[
 @fragment
 fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
     _ = color;
@@ -966,10 +966,52 @@ fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @locati
 }
 ]], { target = "image" })
         local job = lurek.image.requestShader(img, shader)
-        local polled = job:poll()
+        expect_type("userdata", job)
+    end)
+
+    -- @covers LImageShaderJob:poll
+    it("poll returns a processed image when the shader job is ready", function()
+        local img = solid_image(1, 1, 1, 2, 3, 255)
+        local shader = lurek.render.newShader([[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    _ = color;
+    _ = uv;
+    return vec4<f32>(0.0, 1.0, 0.0, 1.0);
+}
+]], { target = "image" })
+        local polled = lurek.image.requestShader(img, shader):poll()
         expect_equal(1, polled:getWidth())
         expect_pixel(polled, 0, 0, 0, 255, 0, 255)
+    end)
+
+    -- @covers LImageShaderJob:wait
+    it("wait returns the processed image within the timeout", function()
+        local img = solid_image(1, 1, 1, 2, 3, 255)
+        local shader = lurek.render.newShader([[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    _ = color;
+    _ = uv;
+    return vec4<f32>(0.0, 1.0, 0.0, 1.0);
+}
+]], { target = "image" })
+        local job = lurek.image.requestShader(img, shader)
         expect_equal(1, job:wait(10):getHeight())
+    end)
+
+    -- @covers LImageShaderJob:cancel
+    it("cancel marks the image shader job as unavailable", function()
+        local img = solid_image(1, 1, 1, 2, 3, 255)
+        local shader = lurek.render.newShader([[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    _ = color;
+    _ = uv;
+    return vec4<f32>(0.0, 1.0, 0.0, 1.0);
+}
+]], { target = "image" })
+        local job = lurek.image.requestShader(img, shader)
         job:cancel()
         expect_equal(nil, job:poll())
     end)

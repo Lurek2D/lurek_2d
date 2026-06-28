@@ -18,7 +18,7 @@ local function minimal_shader_code()
 end
 
 local function postfx_shader()
-    return lurek.shader.new([[
+    return lurek.render.newShader([[
 @fragment
 fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>, @location(2) pixel: vec2<f32>, @location(3) resolution: vec2<f32>, @location(4) texel: vec2<f32>) -> @location(0) vec4<f32> {
     return vec4<f32>(color.rgb + uv.xyx * 0.0 + pixel.xyx * 0.0 + resolution.xyx * 0.0 + texel.xyx * 0.0, color.a);

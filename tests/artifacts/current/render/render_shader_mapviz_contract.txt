@@ -1,0 +1,8 @@
+Shader API v2 per-target evidence
+constructor=lurek.render.newShader
+target=mapviz
+id=4294967305
+actual_target=mapviz
+diagnostics=validated for mapviz shader target
+province.shader=mapviz
+minimap.shader=mapviz

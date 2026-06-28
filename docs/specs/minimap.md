@@ -12,7 +12,7 @@
 - Source path: `src/minimap`
 - Binding: `src/lua_api/minimap_api.rs`
 - Namespace: `lurek.minimap`
-- Lua API surface: `1` functions, `1` types, `95` methods
+- Lua API surface: `1` functions, `1` types, `97` methods
 - User-facing: `true`
 - Plugin tier: `tier_2_plugin`
 
@@ -175,6 +175,7 @@ The broader integration map is split by role:
 - `LMinimap:getOwnerColor(owner) -> number`: Returns the current RGBA color for an owner id.
 - `LMinimap:getPathCount() -> integer`: Returns the number of active path overlays.
 - `LMinimap:getPingCount() -> integer`: Returns the number of active pings.
+- `LMinimap:getShader() -> LShader?`: Returns the currently bound command-render minimap shader, or nil.
 - `LMinimap:getTerrain(x, y) -> integer`: Returns terrain type for a one-based grid cell.
 - `LMinimap:getTerrainColor(terrain_type) -> number`: Returns RGBA color for a terrain type.
 - `LMinimap:getTileDescription(type_id) -> string`: Returns text description for a tile type.
@@ -215,6 +216,7 @@ The broader integration map is split by role:
 - `LMinimap:setObjectTypeTexture(type_idx, image_ud, width?, height?) -> nil`: Assigns an image texture to an object type.
 - `LMinimap:setObjectTypeVisible(type_idx, visible) -> nil`: Sets visibility for an object type by one-based index.
 - `LMinimap:setOwnerColor(owner, r, g, b, a?) -> nil`: Sets the RGBA display color for an owner id.
+- `LMinimap:setShader(shader?) -> nil`: Binds or clears a `mapviz` shader for command-rendered minimap visualization.
 - `LMinimap:setTerrain(x, y, terrain_type) -> nil`: Sets terrain type for a one-based grid cell.
 - `LMinimap:setTerrainColor(terrain_type, r, g, b, a?) -> nil`: Sets the RGBA display color for a terrain type.
 - `LMinimap:setTerrainData(data) -> nil`: Replaces terrain data from a flat array table.
@@ -251,6 +253,7 @@ The broader integration map is split by role:
 | Current artifact | `tests/artifacts/current/minimap/minimap_markers_objects_pings.png` |
 | Current artifact | `tests/artifacts/current/minimap/minimap_paths_and_overlay_shapes.png` |
 | Current artifact | `tests/artifacts/current/minimap/minimap_province_registry_compact.png` |
+| Current artifact | `tests/artifacts/current/minimap/minimap_shader_binding_contract.txt` |
 | Current artifact | `tests/artifacts/current/minimap/minimap_terrain_palette_grid.png` |
 | Current artifact | `tests/artifacts/current/minimap/minimap_tilefield_layers.png` |
 | Current artifact | `tests/artifacts/current/minimap/minimap_viewport_rect.png` |
@@ -284,5 +287,6 @@ The broader integration map is split by role:
 - `library.awareness_minimap` is the reference adapter for `LTileAwareness`: it copies visible/explored masks into minimap fog data and actionable or visible masks into styled raw layers without making minimap compute line-of-sight.
 - `drawToImage(pixel_size)` now honors `pixel_size` when provided, falls back to the configured display size when `pixel_size == 0`, and covers the full output image even when display pixels do not divide evenly by grid size.
 - Render-command generation batches adjacent same-color cells into horizontal runs and exposes debug stats through `Minimap::render_stats(screen_x, screen_y)` for tooling and regression tests.
+- `LMinimap:setShader(shaderOrNil)` accepts only `mapviz` shaders created by `lurek.render.newShader`. The minimap stores only the shader handle and wraps command-rendered output in render-owned shader state. `drawToImage` remains deterministic CPU export and does not execute the shader; callers that need offline GPU bitmap processing should apply an `image` shader to the returned `ImageData`.
 - Raycaster minimap extraction uses checked arithmetic for radius, cell size, pixel count, and byte count, and player-arrow drawing validates both width and height against the supplied RGBA buffer length.
 - Marker/object/ping/icon setters reject missing ids, invalid type indices, non-finite coordinates, and invalid icon size overrides on the strict Lua path instead of silently no-oping.

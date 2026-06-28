@@ -483,7 +483,7 @@ describe("Evidence: lurek.effect API", function()
     -- Artifact: tests/artifacts/current/effect/effect_custom_shader_pass_map.png
     -- Why: It proves lurek.effect.newPass/newCustomEffect plus LPostFxEffect auto-uniform and parameter APIs are represented visually.
     it("PNG: custom shader pass map", function()
-        local shader = lurek.shader.new(minimal_shader_code(), { target = "postfx" })
+        local shader = lurek.render.newShader(minimal_shader_code(), { target = "postfx" })
         local pass_a = lurek.effect.newPass(shader)
         local pass_b = lurek.effect.newCustomEffect(shader)
         pass_a:enableAutoUniforms()

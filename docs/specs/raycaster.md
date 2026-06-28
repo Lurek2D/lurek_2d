@@ -15,7 +15,7 @@
 - Source path: `src/raycaster`
 - Binding: `src/lua_api/raycaster_api.rs`
 - Namespace: `lurek.raycaster`
-- Lua API surface: `17` functions, `18` types, `109` methods
+- Lua API surface: `19` functions, `18` types, `109` methods
 - User-facing: `true`
 - Plugin tier: `tier_1_plugin`
 
@@ -274,6 +274,7 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - `lurek.raycaster.distanceShade(distance, maxDistance) -> number`: Returns a brightness multiplier (0.0..1.0) based on distance for fog/darkness falloff.
 - `lurek.raycaster.drawLastScene(width, height) -> LImageData`: Rasterizes the most recently built raycaster scene to raw image data.
 - `lurek.raycaster.getLastBuildStats() -> table`: Returns stats for the last stored raycaster scene build.
+- `lurek.raycaster.getShader() -> LShader?`: Returns the draw-target shader applied to the stored raycaster scene, or nil when default rendering is used.
 - `lurek.raycaster.new(w, h) -> LRaycaster`: Creates a new raycaster map with the given grid dimensions.
 - `lurek.raycaster.newDoorManager() -> LDoorManager`: Creates a new door manager for tracking and animating sliding doors.
 - `lurek.raycaster.newHeightMap(w, h) -> LHeightMap`: Creates a new height map for variable floor/ceiling heights across the grid.
@@ -284,6 +285,7 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - `lurek.raycaster.pickScreenMultiLevel(sx, sy, params, levels, wallTextures?, sprites?, models?) -> table`: Resolves a screen-space click against a stack of plain Lua level tables and returns the owning level.
 - `lurek.raycaster.pickScreenMultiLevelFromAdapter(sx, sy, params, levels, wallTextures?, adapter) -> table`: Resolves a screen-space click against a stack of plain Lua level tables using a runtime scene adapter.
 - `lurek.raycaster.projectColumn(distance, fov, screenHeight) -> number`: Computes the projected wall-column height for a given distance, FOV, and screen height.
+- `lurek.raycaster.setShader(shader?) -> nil`: Binds a draw-target shader to the most recently built raycaster scene when it is presented by the renderer. Pass nil to clear.
 
 ### Callbacks
 
@@ -702,6 +704,7 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 | Current artifact | `tests/artifacts/current/raycaster/raycaster_floor_ceiling_pick_uv.png` |
 | Current artifact | `tests/artifacts/current/raycaster/raycaster_full_scene_day_night.png` |
 | Current artifact | `tests/artifacts/current/raycaster/raycaster_multilevel_hole_pick.png` |
+| Current artifact | `tests/artifacts/current/raycaster/raycaster_shader_binding_contract.txt` |
 | Current artifact | `tests/artifacts/current/raycaster/raycaster_topdown_cast_rays.png` |
 | Current artifact | `tests/artifacts/current/raycaster/raycaster_transparent_layered_hits.png` |
 | Baseline artifact | `tests/artifacts/baselines/raycaster/raycaster_camera_sweep_atlas.png` |
@@ -724,3 +727,4 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - Tile gameplay semantics such as movement blockers, vision blockers, action blockers, point tile-light, global sunlight, and window/door/half-wall profile behavior belong in `lurek.tilefield`.
 - `raycaster` no longer exposes gameplay movement, line-of-sight, tile-light, or minimap-light helpers. Tile-based gameplay flows should build or export from `lurek.tilefield`, then pass render input to `raycaster`.
 - `lurek.raycaster.buildMultiLevelSceneFromField(params, field, opts)` is the field-consuming bridge for generated multilevel render input. It can read `tilefield` blocker channels as a fallback, but the preferred structured path is to map named field slots such as `wallSlot`, `doorSlot`, `windowSlot`, `floorSlot`, `ceilingSlot`, `objectSlot`, `spriteSlot`, `floorHoleSlot`, and `ceilingHoleSlot` into raycaster walls, wall features, surface textures, billboard sprites, holes, and render-only point-light samples. Presentation slots such as `backgroundSlot`, `skyboxSlot`, and `overlaySlot` let typed map refs select first-person sky/background and full-frame effects like fog or snow without moving gameplay semantics into raycaster. When `opts.catalog` or `opts.tileCatalog` is an `LTileCatalog`, typed tilefield refs reuse `tileset` visuals, texture ids, and object properties instead of requiring duplicate raycaster-only material maps.
+- `lurek.raycaster.setShader(shaderOrNil)` accepts only draw-target shaders created through `lurek.render.newShader`. The module stores a render-owned shader handle for the most recently built scene presentation path; it does not compile WGSL or own GPU pipeline state. Software exports such as `drawLastScene` remain CPU captures and do not execute the shader.

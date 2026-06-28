@@ -13,7 +13,7 @@
 - Source path: `src/parallax`
 - Binding: `src/lua_api/parallax_api.rs`
 - Namespace: `lurek.parallax`
-- Lua API surface: `3` functions, `2` types, `50` methods
+- Lua API surface: `3` functions, `2` types, `52` methods
 - User-facing: `true`
 - Plugin tier: `tier_2_plugin`
 
@@ -130,6 +130,7 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LParallaxLayer:getOffset() -> number`: Returns layer offset for this object.
 - `LParallaxLayer:getOpacity() -> number`: Returns layer opacity from this object.
 - `LParallaxLayer:getScrollFactor() -> number`: Returns layer scroll factor from this object.
+- `LParallaxLayer:getShader() -> LShader?`: Returns the draw-target shader bound to this parallax layer, if any.
 - `LParallaxLayer:getStats() -> table`: Returns telemetry for the current runtime camera and viewport.
 - `LParallaxLayer:getTiling() -> boolean`: Returns whether layer tiling is enabled.
 - `LParallaxLayer:getTint() -> number`: Returns layer tint color from this object.
@@ -148,6 +149,7 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LParallaxLayer:setRepeat(rx, ry) -> nil`: Sets horizontal and vertical repeat flags.
 - `LParallaxLayer:setScale(sx, sy) -> nil`: Sets the layer scale factor for this object.
 - `LParallaxLayer:setScrollFactor(x, y) -> nil`: Sets layer scroll factor for this object.
+- `LParallaxLayer:setShader(shader?) -> nil`: Binds a draw-target shader to this parallax layer's generated render commands. Pass nil to clear.
 - `LParallaxLayer:setTileSize(w, h) -> nil`: Sets tile size for tiling for this object.
 - `LParallaxLayer:setTiling(enabled) -> nil`: Enables or disables the layer tiling mode.
 - `LParallaxLayer:setTint(r, g, b, a) -> nil`: Sets layer tint color for this object.
@@ -200,6 +202,7 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 | Current artifact | `tests/artifacts/current/parallax/parallax_depth_scroll_factors.png` |
 | Current artifact | `tests/artifacts/current/parallax/parallax_effect_tint_motion_stretch.png` |
 | Current artifact | `tests/artifacts/current/parallax/parallax_preset_layer_profiles.png` |
+| Current artifact | `tests/artifacts/current/parallax/parallax_shader_binding_contract.txt` |
 | Current artifact | `tests/artifacts/current/parallax/parallax_tiling_coverage_stats.png` |
 | Current artifact | `tests/artifacts/current/parallax/parallax_z_sorted_set.png` |
 | Baseline artifact | `tests/artifacts/baselines/parallax/parallax_autoscroll_motion.gif` |
@@ -215,4 +218,5 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 
 ## Notes
 
-- No additional module-specific notes.
+- `LParallaxLayer:setShader(shaderOrNil)` accepts only draw-target shaders created through `lurek.render.newShader`. Parallax stores the `ShaderKey` with layer state and wraps generated background draw commands; WGSL validation, pipeline creation, and GPU execution remain owned by `render`.
+- Existing named effect chains stay separate from custom `LShader` binding. They continue to describe post-process-style effect names, while `setShader` is the direct custom fragment material path for procedural/tinted background layers.

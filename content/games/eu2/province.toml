@@ -3642,6 +3642,13 @@ terrain = "sea"
 name = "Columbia_River"
 terrain = "river"
 
+[1380]
+name = "Lake_Huron"
+continent = "america"
+region = "lake"
+area = "lake"
+terrain = "sea"
+
 [138]
 name = "Moron"
 continent = "america"
@@ -3659,10 +3666,6 @@ cot_modifier = -3
 colonization_difficulty = 3
 type = "coastal"
 sea_adjacency = 966
-
-[1380]
-name = "Sacramento_River"
-terrain = "river"
 
 [1381]
 name = "Colorado_River"
@@ -19997,6 +20000,13 @@ ice = true
 
 [833]
 name = "Gulf_of_Saint_Lawrence"
+continent = "america"
+region = "hudsonbaysea"
+area = "sea"
+terrain = "sea"
+
+[1615]
+name = "Gulf_of_Saint_Lawrence_2"
 continent = "america"
 region = "hudsonbaysea"
 area = "sea"

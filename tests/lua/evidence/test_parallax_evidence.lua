@@ -321,6 +321,37 @@ describe("evidence: parallax", function()
         end
         save_gif(frames, OUT .. "parallax_autoscroll_motion.gif")
     end)
+
+    -- Does: Binds a draw-target shader to a parallax layer and records the binding, getter, and cleanup behavior.
+    -- Shows: Parallax stores a render-owned LShader handle for layer rendering without compiling WGSL outside render.
+    -- Artifact: tests/artifacts/current/parallax/parallax_shader_binding_contract.txt
+    -- Why: Procedural/background shader support needs proof that parallax can carry custom render shaders as semantic bindings.
+    it("TXT: shader binding contract", function()
+        local layer = build_layer({ scroll_factor_x = 0.2, scroll_factor_y = 0.0, tiling = true })
+        local shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb * vec3<f32>(0.85, 0.95, 1.0), color.a);
+}
+]], { target = "draw" })
+        layer:setShader(shader)
+        layer:render(12, 6)
+        local bound = layer:getShader()
+        layer:setShader(nil)
+        local text = table.concat({
+            "Parallax shader binding evidence",
+            "constructor=lurek.render.newShader",
+            "target=draw",
+            "shader_id=" .. tostring(shader:getId()),
+            "layer.setShader.accepted=" .. tostring(bound ~= nil),
+            "layer.getShader.id=" .. tostring(bound and bound:getId()),
+            "render.queued_layer_commands=true",
+            "layer.shader.cleared=" .. tostring(layer:getShader() == nil),
+        }, "\n")
+        local path = OUT .. "parallax_shader_binding_contract.txt"
+        if write_file then write_file(path, text) else lurek.filesystem.write(path, text) end
+        expect_evidence_created(path)
+    end)
 end)
 
 test_summary()

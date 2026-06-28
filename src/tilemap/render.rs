@@ -11,7 +11,7 @@ use super::coords::{to_screen_hex, to_screen_iso};
 use super::orientation::MapOrientation;
 use super::tilemap::TileMap;
 use crate::render::renderer::{DrawMode, RenderCommand};
-use crate::runtime::resource_keys::TextureKey;
+use crate::runtime::resource_keys::{ShaderKey, TextureKey};
 use crate::tilefield::{CellCoord, TileField};
 use crate::tileset::{TileCatalog, TileSet, TileVisual};
 
@@ -49,6 +49,35 @@ fn gid_to_color(gid: u32) -> (f32, f32, f32) {
 }
 /// Render-command generation for `TileMap`.
 impl TileMap {
+    fn push_shader_scope_start(cmds: &mut Vec<RenderCommand>, shader: Option<ShaderKey>) {
+        if let Some(shader) = shader {
+            cmds.push(RenderCommand::SetShader(Some(shader)));
+        }
+    }
+
+    fn push_shader_scope_end(cmds: &mut Vec<RenderCommand>, shader: Option<ShaderKey>) {
+        if shader.is_some() {
+            cmds.push(RenderCommand::SetShader(None));
+        }
+    }
+
+    fn wrap_commands_with_shader(
+        commands: Vec<RenderCommand>,
+        shader: Option<ShaderKey>,
+    ) -> Vec<RenderCommand> {
+        let Some(shader) = shader else {
+            return commands;
+        };
+        if commands.is_empty() {
+            return commands;
+        }
+        let mut wrapped = Vec::with_capacity(commands.len() + 2);
+        wrapped.push(RenderCommand::SetShader(Some(shader)));
+        wrapped.extend(commands);
+        wrapped.push(RenderCommand::SetShader(None));
+        wrapped
+    }
+
     fn tile_origin_for_render(&self, tx: u32, ty: u32, tw: f32, th: f32) -> (f32, f32) {
         match self.get_orientation() {
             MapOrientation::TopDown | MapOrientation::SideView => (tx as f32 * tw, ty as f32 * th),
@@ -217,7 +246,7 @@ impl TileMap {
         for (_, _, _, commands) in ordered {
             out.extend(commands);
         }
-        Ok(out)
+        Ok(Self::wrap_commands_with_shader(out, self.get_shader()))
     }
 
     /// Build render commands for one typed tilefield ref slot through a multi-tileset catalog.
@@ -283,7 +312,7 @@ impl TileMap {
         for (_, _, _, commands) in ordered {
             out.extend(commands);
         }
-        Ok(out)
+        Ok(Self::wrap_commands_with_shader(out, self.get_shader()))
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -356,6 +385,8 @@ impl TileMap {
             let Some((lw, lh)) = self.get_layer_dimensions(layer_idx) else {
                 continue;
             };
+            let layer_shader = self.effective_layer_shader(layer_idx);
+            Self::push_shader_scope_start(&mut cmds, layer_shader);
             for ty in 0..lh {
                 for tx in 0..lw {
                     let source_gid = self.get_tile(layer_idx, tx, ty);
@@ -375,6 +406,7 @@ impl TileMap {
                     );
                 }
             }
+            Self::push_shader_scope_end(&mut cmds, layer_shader);
         }
         cmds
     }
@@ -408,6 +440,8 @@ impl TileMap {
                 continue;
             };
             let [lt_r, lt_g, lt_b, lt_a] = self.get_layer_color(layer_idx);
+            let layer_shader = self.effective_layer_shader(layer_idx);
+            Self::push_shader_scope_start(&mut cmds, layer_shader);
             let (x_start, x_end, y_start, y_end) = match self.get_orientation() {
                 MapOrientation::TopDown | MapOrientation::SideView => {
                     let tile_x0 = ((cam_x / tw).floor() as i64).max(0) as u32;
@@ -453,6 +487,7 @@ impl TileMap {
                     );
                 }
             }
+            Self::push_shader_scope_end(&mut cmds, layer_shader);
         }
         cmds
     }

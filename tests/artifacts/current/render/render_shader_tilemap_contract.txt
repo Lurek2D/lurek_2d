@@ -1,0 +1,8 @@
+Shader API v2 per-target evidence
+constructor=lurek.render.newShader
+target=tilemap
+id=4294967304
+actual_target=tilemap
+diagnostics=validated for tilemap shader target
+tilemap.shader=tilemap
+tilemap.layer_shader=tilemap

@@ -9,8 +9,9 @@
 //! Preserves deterministic behavior by keeping widget calculations explicit at their owner boundary.
 //! Provides the local adaptation layer that lets callers avoid duplicating ui rules while keeping call sites explicit.
 
-use crate::runtime::resource_keys::FontKey;
+use crate::runtime::resource_keys::{FontKey, ShaderKey};
 use crate::ui::icons::UiIconPosition;
+use std::collections::HashMap;
 
 /// Vertical alignment of text inside a text-bearing widget.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -698,6 +699,10 @@ pub struct WidgetBase {
     pub alpha: f32,
     /// Optional font override inherited by this widget and its descendants when set.
     pub font_key: Option<FontKey>,
+    /// Optional UI shader applied to this widget subtree during render-command emission.
+    pub shader: Option<ShaderKey>,
+    /// Named UI shader layers for this widget subtree, used when no direct shader override is set.
+    pub shader_layers: HashMap<String, ShaderKey>,
     /// Optional entity ID linking this widget to a game entity.
     pub entity_attachment: Option<u64>,
     /// Optional data-binding key for `GuiContext::apply_bindings`.
@@ -789,6 +794,8 @@ impl WidgetBase {
             flex_shrink: 0.0,
             alpha: 1.0,
             font_key: None,
+            shader: None,
+            shader_layers: HashMap::new(),
             entity_attachment: None,
             bind_key: None,
             transitions: Vec::new(),

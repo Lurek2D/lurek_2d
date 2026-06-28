@@ -47,7 +47,9 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 
 ## Notes
 
-- No additional module-specific notes.
+- `LUiWidget:setShader` and `LUiWidget:setShaderLayer` accept only `ui` shaders created through `lurek.render.newShader`. UI stores `ShaderKey` bindings on retained widget state; WGSL validation, pipeline creation, fallback, and GPU execution remain owned by `render`.
+- `lurek.ui.draw()` queues retained widget render commands before invoking custom draw callbacks. Widget shader bindings affect that live render-command path and are inherited by child widgets until overridden by a child shader.
+- `lurek.ui.drawToImage` and `lurek.ui.renderToImage` remain deterministic software preview/export paths and do not execute GPU shaders.
 
 ## Architecture Links
 

@@ -5,9 +5,11 @@ use super::tileset_api::LuaTileCatalog;
 use super::SharedState;
 use crate::color::Color;
 use crate::lua_api::physics_api::LuaBody;
-use crate::lua_api::render_api::LuaImage;
 #[cfg(feature = "obj-loader")]
 use crate::lua_api::render_api::LuaObjModel;
+use crate::lua_api::render_api::{
+    ensure_shader_target, shader_key_from_userdata, LuaImage, LuaShader,
+};
 use crate::raycaster::lighting::{apply_global_light, apply_lit_shade};
 use crate::raycaster::sprite_manager::SpriteManager;
 #[cfg(feature = "obj-loader")]
@@ -22,6 +24,7 @@ use crate::raycaster::{
 };
 #[cfg(feature = "obj-loader")]
 use crate::render::obj_loader::Vec3;
+use crate::render::ShaderTarget;
 use crate::runtime::resource_keys::TextureKey;
 use crate::tilefield::{CellCoord, TileChannel, TileField, TileObjectCatalog, TileRef};
 use crate::tileset::{TileCatalog, TileVisual};
@@ -6316,6 +6319,47 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 )?)),
                 None => Ok(LuaValue::Nil),
             }
+        })?,
+    )?;
+    // -- setShader --
+    /// Binds a draw-target shader to the most recently built raycaster scene when it is presented by the renderer. Pass nil to clear.
+    /// @param | shader | LShader? | Shader created with `lurek.render.newShader(code, { target = "draw" })`, or nil to clear.
+    let set_shader_state = state.clone();
+    tbl.set(
+        "setShader",
+        lua.create_function(move |_, shader: Option<LuaAnyUserData>| {
+            let key = match shader {
+                Some(shader_ud) => {
+                    let key = shader_key_from_userdata(&shader_ud)?;
+                    let st = set_shader_state.borrow();
+                    ensure_shader_target(
+                        &st,
+                        key,
+                        ShaderTarget::Draw,
+                        "lurek.raycaster.setShader",
+                    )?;
+                    Some(key)
+                }
+                None => None,
+            };
+            set_shader_state.borrow_mut().raycaster_shader = key;
+            Ok(())
+        })?,
+    )?;
+    // -- getShader --
+    /// Returns the draw-target shader applied to the stored raycaster scene, or nil when default rendering is used.
+    /// @return | LShader? | Bound shader handle, or nil.
+    let get_shader_state = state.clone();
+    tbl.set(
+        "getShader",
+        lua.create_function(move |_, ()| {
+            Ok(get_shader_state
+                .borrow()
+                .raycaster_shader
+                .map(|key| LuaShader {
+                    key,
+                    state: get_shader_state.clone(),
+                }))
         })?,
     )?;
     // -- drawLastScene --

@@ -2643,7 +2643,7 @@ LParticleSystem:getShader()
 ```lua
 do
     local ps = lurek.particle.newSystem({ maxParticles = 32 })
-    local shader = lurek.shader.new("@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }", { target = "particle" })
+    local shader = lurek.render.newShader("@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }", { target = "particle" })
     ps:setShader(shader)
     local active = ps:getShader()
     local target = active and active:getTarget() or "nil"
@@ -4489,7 +4489,7 @@ LParticleSystem:setShader(shader)
 ```lua
 do
     local ps = lurek.particle.newSystem({ maxParticles = 32 })
-    local shader = lurek.shader.new([[
+    local shader = lurek.render.newShader([[
 @fragment
 fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
     return vec4<f32>(color.rgb + uv.xyx * 0.0, color.a);
@@ -4522,7 +4522,7 @@ LParticleSystem:setShaderUniform(name, value)
 ```lua
 do
     local ps = lurek.particle.newSystem({ maxParticles = 32 })
-    local shader = lurek.shader.new([[
+    local shader = lurek.render.newShader([[
 @fragment
 fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
     return color;

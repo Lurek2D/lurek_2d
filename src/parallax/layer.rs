@@ -8,7 +8,7 @@
 
 use crate::render::BlendMode;
 use crate::render::ShaderPassDescriptor;
-use crate::runtime::resource_keys::TextureKey;
+use crate::runtime::resource_keys::{ShaderKey, TextureKey};
 use std::collections::HashMap;
 /// Minimum tile edge size in pixels; prevents degenerate zero-area tile geometry.
 const MIN_TILE_SIZE: f32 = 16.0;
@@ -120,6 +120,8 @@ pub struct ParallaxLayer {
     pub depth: f32,
     /// Optional shader pass chain applied to this layer.
     pub effect_chain: Option<Vec<ShaderPassDescriptor>>,
+    /// Optional render-owned shader binding used while drawing this layer.
+    pub shader: Option<ShaderKey>,
     /// Whether motion-stretch blur is active for this layer.
     pub motion_stretch_enabled: bool,
     /// Strength of the motion-stretch effect; higher values stretch more per pixel/sec.
@@ -153,6 +155,7 @@ impl ParallaxLayer {
             tile_h: None,
             depth: 0.0,
             effect_chain: None,
+            shader: None,
             motion_stretch_enabled: false,
             motion_stretch_strength: 0.001,
             motion_stretch_max_scale: 2.0,

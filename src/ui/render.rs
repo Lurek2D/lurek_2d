@@ -17,7 +17,7 @@
 use crate::font::Font;
 use crate::math::Rect;
 use crate::render::renderer::{DrawMode, GradientDirection, RenderCommand};
-use crate::runtime::resource_keys::FontKey;
+use crate::runtime::resource_keys::{FontKey, ShaderKey};
 use crate::ui::context::{GuiContext, WidgetKind};
 use crate::ui::theme::{ThemeToken, WidgetStyle};
 use crate::ui::widget::{TextVAlign, WidgetBase, WidgetState};
@@ -1250,6 +1250,14 @@ fn emit_text_centered_vertically(
         cmds,
     );
 }
+
+fn first_named_shader_layer(base: &WidgetBase) -> Option<ShaderKey> {
+    base.shader_layers
+        .iter()
+        .min_by(|(left, _), (right, _)| left.cmp(right))
+        .map(|(_, shader)| *shader)
+}
+
 /// Temporary borrowed context passed through recursive `emit_tree_nodes` calls.
 struct TreeCtx<'a> {
     /// Flat node list owned by the `TreeView`.
@@ -1515,6 +1523,13 @@ impl<'a> WidgetRenderer<'a> {
             .and_then(|w| w.base().font_key)
             .unwrap_or(self.font_key);
         if let Some(children) = self.ctx.widgets.first().and_then(|w| w.children()) {
+            let root_shader = self.ctx.widgets.first().and_then(|widget| {
+                let base = widget.base();
+                base.shader.or_else(|| first_named_shader_layer(base))
+            });
+            if let Some(shader) = root_shader {
+                self.cmds.push(RenderCommand::SetShader(Some(shader)));
+            }
             let mut sorted = children.to_vec();
             sorted.sort_by_key(|&i| {
                 self.ctx
@@ -1537,9 +1552,13 @@ impl<'a> WidgetRenderer<'a> {
                         root_font_key,
                         self.fonts,
                         self.default_style,
+                        root_shader,
                         self.cmds,
                     );
                 }
+            }
+            if root_shader.is_some() {
+                self.cmds.push(RenderCommand::SetShader(None));
             }
         }
     }
@@ -1551,6 +1570,7 @@ fn render_widget(
     font_key: FontKey,
     fonts: &SlotMap<FontKey, Font>,
     default_style: &WidgetStyle,
+    inherited_shader: Option<ShaderKey>,
     cmds: &mut Vec<RenderCommand>,
 ) {
     let widget = &ctx.widgets[idx];
@@ -1577,6 +1597,11 @@ fn render_widget(
             raw_base
         };
     let font_key = base.font_key.unwrap_or(font_key);
+    let local_shader = base.shader.or_else(|| first_named_shader_layer(base));
+    let effective_shader = local_shader.or(inherited_shader);
+    if let Some(shader) = local_shader {
+        cmds.push(RenderCommand::SetShader(Some(shader)));
+    }
     let font = fonts.get(font_key);
     let style_with_alpha = resolve_style_with_alpha(ctx, base, default_style);
     let style = &style_with_alpha;
@@ -2599,12 +2624,23 @@ fn render_widget(
 
     for child_idx in render_children {
         if child_idx < ctx.widgets.len() {
-            render_widget(ctx, child_idx, font_key, fonts, default_style, cmds);
+            render_widget(
+                ctx,
+                child_idx,
+                font_key,
+                fonts,
+                default_style,
+                effective_shader,
+                cmds,
+            );
         }
     }
 
     if needs_scissor {
         cmds.push(RenderCommand::SetScissor(None));
+    }
+    if local_shader.is_some() {
+        cmds.push(RenderCommand::SetShader(inherited_shader));
     }
 }
 impl GuiContext {

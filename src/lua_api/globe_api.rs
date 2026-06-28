@@ -12,7 +12,9 @@ use crate::globe::types::{
     FogState, GlobeSpec, HeatLayer, LabelStyle, Layer, LodTier, MarkerShape, MarkerStyle, Region,
     RegionId, RegionPart, MAX_REGIONS,
 };
+use crate::lua_api::render_api::{ensure_shader_target, shader_key_from_userdata, LuaShader};
 use crate::pathfind::graph_path::GraphCostFn;
+use crate::render::ShaderTarget;
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
@@ -1417,6 +1419,31 @@ impl LuaUserData for LuaGlobe {
         methods.add_method_mut("setBorders", |_, this, show: bool| {
             this.with_mut(|g| g.spec.render_borders = show)
         });
+        // -- setShader --
+        /// Binds a mapviz-target shader to this globe's generated render commands. Pass nil to clear.
+        /// @param | shader | LShader? | Shader created with `lurek.render.newShader(code, { target = "mapviz" })`, or nil to clear.
+        methods.add_method_mut("setShader", |_, this, shader: Option<LuaAnyUserData>| {
+            let key = match shader {
+                Some(shader_ud) => {
+                    let key = shader_key_from_userdata(&shader_ud)?;
+                    let st = this.state.borrow();
+                    ensure_shader_target(&st, key, ShaderTarget::MapViz, "LGlobe:setShader")?;
+                    Some(key)
+                }
+                None => None,
+            };
+            this.with_mut(|g| g.shader = key)
+        });
+        // -- getShader --
+        /// Returns the mapviz-target shader bound to this globe, if any.
+        /// @return | LShader? | Bound shader handle, or nil.
+        methods.add_method("getShader", |_, this, ()| {
+            let key = this.with(|g| g.shader)?;
+            Ok(key.map(|key| LuaShader {
+                key,
+                state: this.state.clone(),
+            }))
+        });
         // -- draw --
         /// Emits the globe's render commands into the shared renderer command queue.
         /// @param | opts | table? | Optional draw settings with `screen_cx` and `screen_cy`.
@@ -1436,9 +1463,26 @@ impl LuaUserData for LuaGlobe {
             let cmds = this.with_mut(|g| {
                 g.camera.screen_cx = screen_cx;
                 g.camera.screen_cy = screen_cy;
-                g.emit_frame(default_font)
+                let shader = g.shader;
+                let mut cmds = g.emit_frame(default_font);
+                if let Some(shader) = shader {
+                    cmds.insert(0, crate::render::RenderCommand::SetShader(Some(shader)));
+                    cmds.push(crate::render::RenderCommand::SetShader(None));
+                }
+                cmds
             })?;
-            this.state.borrow_mut().render_commands.extend(cmds);
+            let mut st = this.state.borrow_mut();
+            let previous_shader = st.active_shader;
+            let changed_shader = cmds
+                .iter()
+                .any(|command| matches!(command, crate::render::RenderCommand::SetShader(_)));
+            st.render_commands.extend(cmds);
+            if changed_shader {
+                if let Some(shader_key) = previous_shader {
+                    st.render_commands
+                        .push(crate::render::RenderCommand::SetShader(Some(shader_key)));
+                }
+            }
             Ok(())
         });
         // -- findPath --

@@ -63,7 +63,6 @@ Callbacks: [Runtime callbacks](api/callbacks.md)
 | [Save](modules/save.md) | `lurek.save` | The save module is the persistence-lifecycle surface for users who want game state to be stored, versioned, and restored as a managed workflow instead of a raw file dump. |
 | [Scene](modules/scene.md) | `lurek.scene` | The scene module is the high-level flow coordinator for users who want menus, gameplay states, overlays, pause layers, and transitions to behave like one ordered stack instead of a collection of unrelated toggles. |
 | [Serialize](modules/serialize.md) | `lurek.serialize` | The serialize module is the format-translation surface for users who want several external data formats to map into one shared runtime value model. |
-| [Shader](modules/shader.md) | `lurek.shader` | WGSL is the only supported user shader language. |
 | [Spine](modules/spine.md) | `lurek.spine` | The spine module is the skeletal-animation surface for users who want bone-based rigs, slots, skins, and timeline-driven pose changes inside the engine. |
 | [Sprite](modules/sprite.md) | `lurek.sprite` | The sprite module is the engine's textured-2D surface for users who want single sprites, sheets, atlases, scalable panels, and batched instances to share one coherent runtime model. |
 | [SVG](modules/svg.md) | `lurek.svg` | The svg module is the engine surface for scalable SVG artwork, aimed at users who want SVG-style content to stay editable and resolution-independent for as long as possible. |

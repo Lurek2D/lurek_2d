@@ -1,0 +1,11 @@
+Shader API v2 per-target evidence
+constructor=lurek.render.newShader
+target=ui
+id=4294967307
+actual_target=ui
+diagnostics=validated for ui shader target
+terminal.shader=ui
+terminal.render.queued=true
+terminal.shader.cleared=true
+ui.widget.setShader=true
+ui.draw.queued_retained_commands=true

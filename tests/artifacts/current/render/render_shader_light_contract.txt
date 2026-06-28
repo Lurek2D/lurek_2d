@@ -1,0 +1,8 @@
+Shader API v2 per-target evidence
+constructor=lurek.render.newShader
+target=light
+id=4294967302
+actual_target=light
+diagnostics=validated for light shader target
+light.world=light
+light.instance=light

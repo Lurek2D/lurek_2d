@@ -1,6 +1,10 @@
 //! Registers the `lurek.terminal` Lua API for terminal widgets, font sizing, layout fit, and terminal userdata.
 
+use super::render_api::{ensure_shader_target, shader_key_from_userdata, LuaShader};
 use super::SharedState;
+use crate::render::renderer::RenderCommand;
+use crate::render::ShaderTarget;
+use crate::runtime::resource_keys::ShaderKey;
 use crate::terminal::ansi::{parse_ansi_spans, strip_ansi_codes};
 use crate::terminal::completion::CompletionEngine;
 use crate::terminal::highlighter::{highlight_spans, HighlightRule};
@@ -86,10 +90,25 @@ struct TerminalBinding {
     terminal: Rc<RefCell<Terminal>>,
     shared_state: Rc<RefCell<SharedState>>,
     widget_handles: RefCell<HashMap<usize, Weak<RefCell<WidgetBinding>>>>,
+    shader: RefCell<Option<ShaderKey>>,
 }
 /// Builds a terminal API runtime error tagged with the Lua-visible method name.
 fn runtime_error(method: &str, message: &str) -> LuaError {
     LuaError::RuntimeError(format!("{method}: {message}"))
+}
+/// Extends frame commands and restores the previously active global draw shader if a local shader was used.
+fn extend_terminal_render_commands(st: &mut SharedState, commands: Vec<RenderCommand>) {
+    let previous_shader = st.active_shader;
+    let changed_shader = commands
+        .iter()
+        .any(|command| matches!(command, RenderCommand::SetShader(_)));
+    st.render_commands.extend(commands);
+    if changed_shader {
+        if let Some(shader_key) = previous_shader {
+            st.render_commands
+                .push(RenderCommand::SetShader(Some(shader_key)));
+        }
+    }
 }
 /// Builds the standard error used when a widget belongs to a different terminal.
 fn wrong_terminal(method: &str) -> LuaError {
@@ -666,6 +685,44 @@ impl LuaUserData for LuaTerminal {
             table.set("list_items_skipped", stats.list_items_skipped)?;
             Ok(table)
         });
+        // -- setShader --
+        /// Binds or clears a render-owned UI shader for this terminal's generated render commands.
+        /// @param | shader | LShader? | Shader created with `lurek.render.newShader(code, { target = "ui" })`, or nil to clear.
+        methods.add_method("setShader", |_, this, shader: Option<LuaAnyUserData>| {
+            let shader_key = if let Some(shader_ud) = shader {
+                let key = shader_key_from_userdata(&shader_ud).map_err(|_| {
+                    runtime_error(
+                        "LTerminal:setShader",
+                        "expected LShader from lurek.render.newShader",
+                    )
+                })?;
+                let st = this.binding.shared_state.borrow();
+                ensure_shader_target(&st, key, ShaderTarget::Ui, "LTerminal:setShader")?;
+                Some(key)
+            } else {
+                None
+            };
+            *this.binding.shader.borrow_mut() = shader_key;
+            Ok(())
+        });
+        // -- getShader --
+        /// Returns the UI shader bound to this terminal, or nil when default terminal rendering is used.
+        /// @return | LShader? | Bound shader handle, if any.
+        methods.add_method("getShader", |_, this, ()| {
+            let shader_key = *this.binding.shader.borrow();
+            let Some(key) = shader_key else {
+                return Ok(None);
+            };
+            if this.binding.shared_state.borrow().shaders.contains_key(key) {
+                Ok(Some(LuaShader {
+                    state: this.binding.shared_state.clone(),
+                    key,
+                }))
+            } else {
+                *this.binding.shader.borrow_mut() = None;
+                Ok(None)
+            }
+        });
         // -- keypressed --
         /// Forwards a key press event to the terminal for widget input processing.
         /// @param | key | string | The key name (e.g. "return", "backspace", "left").
@@ -739,7 +796,17 @@ impl LuaUserData for LuaTerminal {
                 drop(st);
                 let mut shared = this.binding.shared_state.borrow_mut();
                 shared.window_state.pending_size = Some((target_w, target_h));
-                shared.render_commands.extend(commands);
+                let shader_key =
+                    (*this.binding.shader.borrow()).filter(|key| shared.shaders.contains_key(*key));
+                if let Some(shader_key) = shader_key {
+                    let mut wrapped = Vec::with_capacity(commands.len() + 2);
+                    wrapped.push(RenderCommand::SetShader(Some(shader_key)));
+                    wrapped.extend(commands);
+                    wrapped.push(RenderCommand::SetShader(None));
+                    extend_terminal_render_commands(&mut shared, wrapped);
+                } else {
+                    extend_terminal_render_commands(&mut shared, commands);
+                }
             }
             Ok(())
         });
@@ -1399,6 +1466,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                 ))),
                 shared_state: s.clone(),
                 widget_handles: RefCell::new(HashMap::new()),
+                shader: RefCell::new(None),
             });
             queue_terminal_window_fit(&binding);
             lua.create_userdata(LuaTerminal { binding })

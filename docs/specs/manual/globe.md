@@ -24,7 +24,8 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 
 ## Notes
 
-- No additional module-specific notes.
+- `LGlobe:setShader(shaderOrNil)` accepts only `mapviz` shaders created through `lurek.render.newShader`. A globe stores only the semantic `ShaderKey`; render still owns WGSL validation, pipeline selection, fallback, and GPU execution.
+- Globe shaders are intended for atmospheric bands, tactical heatmap styling, fog/visibility tinting, and map visualization treatments over the generated command stream. Globe topology, picking, routes, and fog state remain CPU-owned gameplay/tooling data.
 
 ## Architecture Links
 

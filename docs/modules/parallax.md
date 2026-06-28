@@ -764,6 +764,40 @@ end
 
 ---
 
+#### `LParallaxLayer:getShader`
+
+Returns the draw-target shader bound to this parallax layer, if any.
+
+```lua
+LParallaxLayer:getShader()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LShader](render.md#lshader)? | Bound shader handle, or nil. |
+
+**Example**
+
+```lua
+do
+    local img = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local layer = lurek.parallax.newLayer({ texture = img, opacity = 0.8 })
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb * vec3<f32>(0.85, 0.95, 1.0), color.a);
+}
+]], { target = "draw" })
+    layer:setShader(shader)
+    local active = layer:getShader()
+    lurek.log.info("parallax shader id = " .. tostring(active and active:getId()))
+end
+```
+
+---
+
 #### `LParallaxLayer:getStats`
 
 Returns telemetry for the current runtime camera and viewport.
@@ -1435,6 +1469,40 @@ do
     layer:setScrollFactor(0.5, 0.2)
     local sx, sy = layer:getScrollFactor()
     example_print_log("scroll = " .. sx .. "," .. sy)
+end
+```
+
+---
+
+#### `LParallaxLayer:setShader`
+
+Binds a draw-target shader to this parallax layer's generated render commands. Pass nil to clear.
+
+```lua
+LParallaxLayer:setShader(shader)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `shader?` | [LShader](render.md#lshader) | Shader created with `lurek.render.newShader(code, { target = "draw" })`, or nil to clear. |
+
+**Example**
+
+```lua
+do
+    local img = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local layer = lurek.parallax.newLayer({ texture = img, z = -10, tiling = true })
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.r, color.g * (0.6 + uv.y * 0.4), color.b, color.a);
+}
+]], { target = "draw" })
+    layer:setShader(shader)
+    layer:render(0, 0)
+    layer:setShader(nil)
 end
 ```
 

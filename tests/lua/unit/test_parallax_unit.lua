@@ -24,6 +24,15 @@ local function make_set(name)
     return lurek.parallax.newSet(name or "scene")
 end
 
+local function draw_shader()
+    return lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb * vec3<f32>(uv.x, 1.0, 1.0), color.a);
+}
+]], { target = "draw" })
+end
+
 -- @describe lurek.parallax
 describe("lurek.parallax", function()
     -- @covers lurek.parallax.newLayer
@@ -78,6 +87,35 @@ describe("lurek.parallax", function()
     -- @covers LParallaxLayer:getZ
     it("returns zero z by default", function()
         expect_equal(0, make_layer():getZ())
+    end)
+
+    -- @covers LParallaxLayer:setShader
+    it("binds only draw-target shaders to parallax layers", function()
+        local layer = make_layer()
+        local shader = draw_shader()
+        layer:setShader(shader)
+        expect_equal(shader:getId(), layer:getShader():getId())
+        layer:setShader(nil)
+        expect_equal(nil, layer:getShader())
+        expect_error(function()
+            layer:setShader(lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return color;
+}
+]], { target = "mapviz" }))
+        end)
+    end)
+
+    -- @covers LParallaxLayer:getShader
+    it("returns the currently bound parallax shader or nil", function()
+        local layer = make_layer()
+        expect_equal(nil, layer:getShader())
+        local shader = draw_shader()
+        layer:setShader(shader)
+        expect_equal(shader:getId(), layer:getShader():getId())
+        layer:setShader(nil)
+        expect_equal(nil, layer:getShader())
     end)
 
     -- @covers LParallaxLayer:getBlendMode

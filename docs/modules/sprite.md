@@ -2751,6 +2751,44 @@ end
 
 ---
 
+#### `LSprite:getShader`
+
+Returns the sprite material shader bound to this sprite, if any.
+
+```lua
+LSprite:getShader()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LShader](render.md#lshader)? | Bound shader or nil. |
+
+**Example**
+
+```lua
+do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+
+    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0, color.a);
+}
+]], { target = "sprite" })
+    sprite:setShader(shader)
+    local bound = sprite:getShader()
+    local id = bound:getId()
+    sprite_log("getShader id=" .. id .. " target=" .. bound:getTarget())
+end
+```
+
+---
+
 #### `LSprite:hasNormalMap`
 
 Returns whether the sprite currently has a normal map.
@@ -3007,6 +3045,82 @@ do
     local x, y = sprite:getPosition()
     local kind = sprite:type()
     sprite_log("setPosition type=" .. kind .. " pos=" .. x .. "," .. y)
+end
+```
+
+---
+
+#### `LSprite:setShader`
+
+Sets or clears the render-owned sprite material shader.
+
+```lua
+LSprite:setShader(shader)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `shader?` | [LShader](render.md#lshader) | Sprite-target shader or nil to clear. |
+
+**Example**
+
+```lua
+do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+
+    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0, color.a);
+}
+]], { target = "sprite" })
+    sprite:setShader(shader)
+    local target = sprite:getShader():getTarget()
+    sprite:setShader(nil)
+    sprite_log("setShader target=" .. target .. " cleared=" .. tostring(sprite:getShader() == nil))
+end
+```
+
+---
+
+#### `LSprite:setShaderUniform`
+
+Sends a uniform value to the shader bound to this sprite.
+
+```lua
+LSprite:setShaderUniform(name, value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Uniform name. |
+| `value` | number|boolean|table | Uniform value. |
+
+**Example**
+
+```lua
+do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+
+    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0, color.a);
+}
+]], { target = "sprite" })
+    sprite:setShader(shader)
+    sprite:setShaderUniform("team_color", { 0.2, 0.6, 1.0, 1.0 })
+    sprite_log("setShaderUniform team_color=" .. tostring(shader:hasUniform("team_color")))
 end
 ```
 

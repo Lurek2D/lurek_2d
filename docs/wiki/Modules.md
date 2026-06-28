@@ -61,7 +61,6 @@ Modules are grouped by runtime layer. Links open the canonical GitHub Pages modu
 | [light](https://lurek2d.github.io/lurek_2d/modules/light.html) | `lurek.light` | The light module is the engine's shared 2D lighting-data surface for users who need lights, occluders, shadows, and illumination behavior to remain structured before rendering. |
 | [physics](https://lurek2d.github.io/lurek_2d/modules/physics.html) | `lurek.physics` | The physics module is the engine's 2D simulation authority for users who want motion, contact, shapes, joints, and collision queries to live inside one consistent world model. |
 | [render](https://lurek2d.github.io/lurek_2d/modules/render.html) | `lurek.render` | The render module is the engine's central visual execution layer, responsible for turning high-level drawing intent from many other systems into concrete frame output on GPU-backed and software-backed paths. |
-| [shader](https://lurek2d.github.io/lurek_2d/modules/shader.html) | `lurek.shader` | WGSL is the only supported user shader language. |
 | [window](https://lurek2d.github.io/lurek_2d/modules/window.html) | `lurek.window` | The window module is the desktop-window control surface for users who need display selection, viewport scaling, mode changes, and OS-facing window behavior under one runtime API. |
 
 ## Feature Systems

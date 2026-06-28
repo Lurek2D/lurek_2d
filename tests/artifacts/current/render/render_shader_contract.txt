@@ -1,0 +1,34 @@
+Shader API v2 target contract evidence
+draw: id=4294967297 diagnostics=validated for draw shader target
+postfx: id=4294967298 diagnostics=validated for postfx shader target
+image: id=4294967299 diagnostics=validated for image shader target
+overlay: id=4294967300 diagnostics=validated for overlay shader target
+particle: id=4294967301 diagnostics=validated for particle shader target
+light: id=4294967302 diagnostics=validated for light shader target
+sprite: id=4294967303 diagnostics=validated for sprite shader target
+tilemap: id=4294967304 diagnostics=validated for tilemap shader target
+mapviz: id=4294967305 diagnostics=validated for mapviz shader target
+text: id=4294967306 diagnostics=validated for text shader target
+ui: id=4294967307 diagnostics=validated for ui shader target
+debugviz: id=4294967308 diagnostics=validated for debugviz shader target
+image.applyShader=2x2
+image.applyShader.pixel=255,0,0,255
+image.requestShader.wait=true
+effect.custom=custom
+canvas.applyShaderToCanvas=LCanvas
+canvas.method.applyShader=LCanvas
+postfx.screen_transition=wipe,dissolve,fade_mask
+overlay.layer=overlay
+overlay.plan.shader=heat_haze
+particle.shader=particle
+light.world=light
+light.instance=light
+sprite.shader=sprite
+tilemap.shader=tilemap
+tilemap.layer_shader=tilemap
+province.shader=mapviz
+minimap.shader=mapviz
+render.text_shader=text
+terminal.shader=ui
+ui.widget_shader=ui
+render.debug_shader=debugviz

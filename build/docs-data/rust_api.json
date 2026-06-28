@@ -1,13 +1,13 @@
 {
   "meta": {
-    "generated": "2026-06-27T21:17:37.286596+00:00",
+    "generated": "2026-06-28T10:54:55.558701+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
       "rust_items": 3100,
       "rust_modules": 723,
-      "rust_tests": 500,
-      "lua_tests": 285
+      "rust_tests": 499,
+      "lua_tests": 284
     }
   },
   "rust_api": {
@@ -1816,14 +1816,14 @@
             "kind": "struct",
             "description": "Thin bootstrap wrapper that owns startup config and launches `LurekApp` event loop.",
             "file": "src/app/app.rs",
-            "line": 4057
+            "line": 4089
           },
           {
             "name": "AppRunOptions",
             "kind": "struct",
             "description": "Startup options passed to the GUI/TUI/CLI application runner.",
             "file": "src/app/app.rs",
-            "line": 4065
+            "line": 4097
           }
         ]
       },
@@ -7813,14 +7813,14 @@
             "kind": "struct",
             "description": "Sampled terrain coverage report for a globe.",
             "file": "src/globe/registry.rs",
-            "line": 71
+            "line": 73
           },
           {
             "name": "GlobeRegistry",
             "kind": "struct",
             "description": "Named globe registry keyed by globe name.",
             "file": "src/globe/registry.rs",
-            "line": 400
+            "line": 402
           }
         ]
       },
@@ -13259,7 +13259,7 @@
             "kind": "fn",
             "description": "Convert a `ParallaxDrawBatch` into a flat list of `RenderCommand` values ready for submission.",
             "file": "src/parallax/render.rs",
-            "line": 26
+            "line": 31
           }
         ]
       },
@@ -16886,14 +16886,14 @@
             "kind": "struct",
             "description": "Full mutable record for a single province stored inside ProvinceRegistry.",
             "file": "src/province/registry.rs",
-            "line": 21
+            "line": 22
           },
           {
             "name": "ProvinceRegistry",
             "kind": "struct",
             "description": "Central authoritative store for all province state: geometry, style, labels, adjacency, and change log.",
             "file": "src/province/registry.rs",
-            "line": 38
+            "line": 39
           }
         ]
       },
@@ -18055,56 +18055,56 @@
             "kind": "fn",
             "description": "Assemble the full WGSL source for a custom flat-color shader pipeline.",
             "file": "src/render/gpu_pipeline.rs",
-            "line": 218
+            "line": 221
           },
           {
             "name": "build_custom_particle_shader_source",
             "kind": "fn",
             "description": "Assemble the full WGSL source for a custom particle shader pipeline.",
             "file": "src/render/gpu_pipeline.rs",
-            "line": 277
+            "line": 288
           },
           {
             "name": "build_custom_textured_particle_shader_source",
             "kind": "fn",
             "description": "Assemble the full WGSL source for a textured custom particle shader pipeline.",
             "file": "src/render/gpu_pipeline.rs",
-            "line": 356
+            "line": 367
           },
           {
             "name": "build_custom_light_shader_source",
             "kind": "fn",
             "description": "Assemble the full WGSL source for a custom light contribution shader pipeline.",
             "file": "src/render/gpu_pipeline.rs",
-            "line": 437
+            "line": 448
           },
           {
             "name": "build_custom_texture_shader_source",
             "kind": "fn",
             "description": "Assemble the full WGSL source for a custom textured shader pipeline.",
             "file": "src/render/gpu_pipeline.rs",
-            "line": 562
+            "line": 573
           },
           {
             "name": "depth_stencil_state",
             "kind": "fn",
             "description": "Build the depth/stencil descriptor for a given stencil mode.",
             "file": "src/render/gpu_pipeline.rs",
-            "line": 841
+            "line": 860
           },
           {
             "name": "compare_function",
             "kind": "fn",
             "description": "Map a renderer `CompareMode` to a wgpu `CompareFunction`.",
             "file": "src/render/gpu_pipeline.rs",
-            "line": 887
+            "line": 906
           },
           {
             "name": "stencil_operation",
             "kind": "fn",
             "description": "Map a renderer `StencilAction` to a wgpu `StencilOperation`.",
             "file": "src/render/gpu_pipeline.rs",
-            "line": 900
+            "line": 919
           }
         ]
       },
@@ -18563,14 +18563,14 @@
             "kind": "fn",
             "description": "Validate one render command and attach its broad owner bucket to any failure.",
             "file": "src/render/input_validation.rs",
-            "line": 736
+            "line": 738
           },
           {
             "name": "validate_compound_shape",
             "kind": "fn",
             "description": "Validate a registered compound shape before replaying its nested commands in a backend.",
             "file": "src/render/input_validation.rs",
-            "line": 747
+            "line": 749
           }
         ]
       },
@@ -19059,84 +19059,84 @@
             "kind": "enum",
             "description": "Broad owner bucket for one `RenderCommand` variant.",
             "file": "src/render/renderer.rs",
-            "line": 621
+            "line": 628
           },
           {
             "name": "TextureData",
             "kind": "struct",
             "description": "Raw CPU-side texture pixel data passed to `GpuRenderer::upload_texture`.",
             "file": "src/render/renderer.rs",
-            "line": 729
+            "line": 739
           },
           {
             "name": "ParticleRenderShape",
             "kind": "enum",
             "description": "Shape used to render a single particle in `DrawParticleSystem`.",
             "file": "src/render/renderer.rs",
-            "line": 766
+            "line": 776
           },
           {
             "name": "ParticleInstance",
             "kind": "struct",
             "description": "A single particle snapshot submitted by `DrawParticleSystem`.",
             "file": "src/render/renderer.rs",
-            "line": 790
+            "line": 800
           },
           {
             "name": "DrawableKind",
             "kind": "enum",
             "description": "A renderable resource handle used by generic draw utilities.",
             "file": "src/render/renderer.rs",
-            "line": 832
+            "line": 842
           },
           {
             "name": "PathSegment",
             "kind": "enum",
             "description": "A single segment in a `DrawPath` command.",
             "file": "src/render/renderer.rs",
-            "line": 844
+            "line": 854
           },
           {
             "name": "GradientDirection",
             "kind": "enum",
             "description": "Direction of the color transition in a `DrawGradientRect` command.",
             "file": "src/render/renderer.rs",
-            "line": 888
+            "line": 898
           },
           {
             "name": "HexOrientation",
             "kind": "enum",
             "description": "Hex tile axis orientation used by `DrawHexTile`.",
             "file": "src/render/renderer.rs",
-            "line": 902
+            "line": 912
           },
           {
             "name": "BevelStyle",
             "kind": "enum",
             "description": "Lighting style for a `DrawBevelRect` command.",
             "file": "src/render/renderer.rs",
-            "line": 910
+            "line": 920
           },
           {
             "name": "PhysicsDebugShape",
             "kind": "struct",
             "description": "A single physics collider shape record used in `DrawPhysicsDebug`.",
             "file": "src/render/renderer.rs",
-            "line": 924
+            "line": 934
           },
           {
             "name": "PhysicsDebugConfig",
             "kind": "struct",
             "description": "Color and line-width settings for `DrawPhysicsDebug`.",
             "file": "src/render/renderer.rs",
-            "line": 948
+            "line": 958
           },
           {
             "name": "SpineSlotDraw",
             "kind": "struct",
             "description": "One Spine animation slot draw record used in `DrawSpineSkeleton`.",
             "file": "src/render/renderer.rs",
-            "line": 974
+            "line": 984
           }
         ]
       },
@@ -19156,28 +19156,28 @@
             "kind": "enum",
             "description": "Fragment input location slot decoded from a user shader entry point.",
             "file": "src/render/shader.rs",
-            "line": 110
+            "line": 138
           },
           {
             "name": "Shader",
             "kind": "struct",
             "description": "A compiled and validated user WGSL shader with its rewritten source and uniform map.",
             "file": "src/render/shader.rs",
-            "line": 156
+            "line": 184
           },
           {
             "name": "UniformValue",
             "kind": "enum",
             "description": "A typed uniform value sent to a `Shader` via `send()`.",
             "file": "src/render/shader.rs",
-            "line": 174
+            "line": 202
           },
           {
             "name": "validate_uniform_name",
             "kind": "fn",
             "description": "Validate a user-supplied shader uniform name before it is interpolated into WGSL.",
             "file": "src/render/shader.rs",
-            "line": 301
+            "line": 329
           }
         ]
       },
@@ -21699,7 +21699,7 @@
             "kind": "struct",
             "description": "Runtime data model for aggregate renderer counters derived from the current frame state. # Fields",
             "file": "src/runtime/shared_state.rs",
-            "line": 1221
+            "line": 1251
           }
         ]
       },
@@ -22769,7 +22769,7 @@
             "kind": "struct",
             "description": "A single drawable texture instance with position, scale, rotation, and colour tint.",
             "file": "src/sprite/sprite.rs",
-            "line": 10
+            "line": 11
           }
         ]
       },
@@ -24050,28 +24050,28 @@
             "kind": "struct",
             "description": "A single tile layer with per-tile GID and optional per-tile tint data.",
             "file": "src/tilemap/tilemap.rs",
-            "line": 26
+            "line": 27
           },
           {
             "name": "TileIndexPolicy",
             "kind": "enum",
             "description": "Policy controlling when the reverse GID index is materialized.",
             "file": "src/tilemap/tilemap.rs",
-            "line": 81
+            "line": 82
           },
           {
             "name": "TileMapDiagnosticsSnapshot",
             "kind": "struct",
             "description": "Snapshot of tilemap diagnostics counters used to surface silent fallbacks and guarded queries.",
             "file": "src/tilemap/tilemap.rs",
-            "line": 90
+            "line": 91
           },
           {
             "name": "TileMap",
             "kind": "struct",
             "description": "Multi-layer tile map with tileset attachment, tile storage, autotile, animation, and render-command output.",
             "file": "src/tilemap/tilemap.rs",
-            "line": 130
+            "line": 131
           }
         ]
       },
@@ -25243,14 +25243,14 @@
             "kind": "fn",
             "description": "Push a scissor rect onto the stack, intersecting with the current topmost scissor.",
             "file": "src/ui/render.rs",
-            "line": 1451
+            "line": 1459
           },
           {
             "name": "pop_scissor",
             "kind": "fn",
             "description": "Pop the topmost scissor rect and restore the previous one (or disable scissor if stack is empty).",
             "file": "src/ui/render.rs",
-            "line": 1472
+            "line": 1480
           }
         ]
       },
@@ -25290,56 +25290,56 @@
             "kind": "enum",
             "description": "Vertical alignment of text inside a text-bearing widget.",
             "file": "src/ui/widget.rs",
-            "line": 17
+            "line": 18
           },
           {
             "name": "WidgetState",
             "kind": "enum",
             "description": "Interaction state of a widget used as a theme lookup key.",
             "file": "src/ui/widget.rs",
-            "line": 47
+            "line": 48
           },
           {
             "name": "MouseFilter",
             "kind": "enum",
             "description": "Mouse interaction filter matching Godot's control behavior.",
             "file": "src/ui/widget.rs",
-            "line": 108
+            "line": 109
           },
           {
             "name": "WidgetType",
             "kind": "enum",
             "description": "Discriminated widget class used as the second key in `Theme` style lookups and for dispatch.",
             "file": "src/ui/widget.rs",
-            "line": 137
+            "line": 138
           },
           {
             "name": "EasingFunction",
             "kind": "enum",
             "description": "Easing function for property animations.",
             "file": "src/ui/widget.rs",
-            "line": 437
+            "line": 438
           },
           {
             "name": "WidgetTransitionKind",
             "kind": "enum",
             "description": "Which property a `WidgetTransition` animates.",
             "file": "src/ui/widget.rs",
-            "line": 518
+            "line": 519
           },
           {
             "name": "WidgetTransition",
             "kind": "struct",
             "description": "Active animation on a `WidgetBase`; evaluated each frame by `GuiContext::update`.",
             "file": "src/ui/widget.rs",
-            "line": 565
+            "line": 566
           },
           {
             "name": "WidgetBase",
             "kind": "struct",
             "description": "Shared layout, identity, and state fields embedded in every concrete widget struct.",
             "file": "src/ui/widget.rs",
-            "line": 646
+            "line": 647
           }
         ]
       },
@@ -27806,7 +27806,7 @@
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_shader_evidence",
+        "name": "lua_evidence_render_shader_evidence",
         "description": "",
         "line": 378
       },
@@ -29388,135 +29388,128 @@
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_shader_unit",
+        "name": "lua_unit_shape_unit",
         "description": "",
         "line": 1643
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_shape_unit",
+        "name": "lua_unit_spine_unit",
         "description": "",
         "line": 1648
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_spine_unit",
+        "name": "lua_unit_sprite_unit",
         "description": "",
         "line": 1653
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_sprite_unit",
+        "name": "lua_unit_svg_unit",
         "description": "",
         "line": 1658
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_svg_unit",
+        "name": "lua_unit_terminal_unit",
         "description": "",
         "line": 1663
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_terminal_unit",
+        "name": "lua_unit_thread_unit",
         "description": "",
         "line": 1668
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_thread_unit",
+        "name": "lua_unit_tilemap_unit",
         "description": "",
         "line": 1673
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tilemap_unit",
+        "name": "lua_unit_tilefield_unit",
         "description": "",
         "line": 1678
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tilefield_unit",
+        "name": "lua_unit_tilefield_gap_unit",
         "description": "",
         "line": 1683
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tilefield_gap_unit",
+        "name": "lua_unit_tilelight_unit",
         "description": "",
         "line": 1688
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tilelight_unit",
+        "name": "lua_unit_tileset_unit",
         "description": "",
         "line": 1693
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tileset_unit",
+        "name": "lua_unit_timer_unit",
         "description": "",
         "line": 1698
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_timer_unit",
+        "name": "lua_unit_tween_unit",
         "description": "",
         "line": 1703
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tween_unit",
+        "name": "lua_unit_ui_unit",
         "description": "",
         "line": 1708
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_ui_unit",
+        "name": "lua_unit_validator_unit",
         "description": "",
         "line": 1713
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_validator_unit",
+        "name": "lua_unit_awareness_unit",
         "description": "",
         "line": 1718
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_awareness_unit",
+        "name": "lua_unit_window_unit",
         "description": "",
         "line": 1723
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_window_unit",
-        "description": "",
-        "line": 1728
-      },
-      {
-        "file": "tests/lua_tests.rs",
-        "module": "lua",
         "name": "lua_demo_colocated_games",
         "description": "",
-        "line": 1733
+        "line": 1728
       }
     ],
     "lua": [
@@ -29759,6 +29752,13 @@
         "kind": "lua"
       },
       {
+        "file": "tests/lua/evidence/test_render_shader_evidence.lua",
+        "module": "test_render_shader_evidence",
+        "name": "test_render_shader_evidence",
+        "description": "Canonical evidence file for lurek.render shader target contracts and shader-bound module APIs.",
+        "kind": "lua"
+      },
+      {
         "file": "tests/lua/evidence/test_repl_evidence.lua",
         "module": "test_repl_evidence",
         "name": "test_repl_evidence",
@@ -29770,13 +29770,6 @@
         "module": "test_scene_evidence",
         "name": "test_scene_evidence",
         "description": "Canonical evidence file for lurek.scene data and visual outputs.",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/evidence/test_shader_evidence.lua",
-        "module": "test_shader_evidence",
-        "name": "test_shader_evidence",
-        "description": "Canonical evidence file for lurek.shader target contracts and shader-bound module APIs.",
         "kind": "lua"
       },
       {
@@ -31394,13 +31387,6 @@
         "module": "test_serialize_unit",
         "name": "test_serialize_unit",
         "description": "Reorganized unit test file.",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/unit/test_shader_unit.lua",
-        "module": "test_shader_unit",
-        "name": "test_shader_unit",
-        "description": "Shader API unit tests.",
         "kind": "lua"
       },
       {

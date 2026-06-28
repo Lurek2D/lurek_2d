@@ -375,8 +375,8 @@ fn lua_evidence_scene_evidence() {
 }
 
 #[test]
-fn lua_evidence_shader_evidence() {
-    run_lua_test("evidence/test_shader_evidence.lua");
+fn lua_evidence_render_shader_evidence() {
+    run_lua_test("evidence/test_render_shader_evidence.lua");
 }
 
 #[test]
@@ -1637,11 +1637,6 @@ fn lua_unit_scene_unit() {
 #[test]
 fn lua_unit_serialize_unit() {
     run_lua_test("unit/test_serialize_unit.lua");
-}
-
-#[test]
-fn lua_unit_shader_unit() {
-    run_lua_test("unit/test_shader_unit.lua");
 }
 
 #[test]

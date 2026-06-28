@@ -1,6 +1,6 @@
 {
   "version": "auto-generated",
-  "generated": "2026-06-27",
+  "generated": "2026-06-28",
   "modules": [
     {
       "name": "agent",
@@ -22891,6 +22891,35 @@
           "objectType": null
         },
         {
+          "name": "setShader",
+          "fullPath": "lurek.raycaster.setShader",
+          "signature": "([shader])",
+          "description": "Binds a draw-target shader to the most recently built raycaster scene when it is presented by the renderer. Pass nil to clear.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"draw\" })`, or nil to clear.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getShader",
+          "fullPath": "lurek.raycaster.getShader",
+          "signature": "()",
+          "description": "Returns the draw-target shader applied to the stored raycaster scene, or nil when default rendering is used.",
+          "parameters": [],
+          "returns": "LShader?",
+          "returnType": "LShader?",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "drawLastScene",
           "fullPath": "lurek.raycaster.drawLastScene",
           "signature": "(width, height)",
@@ -24626,6 +24655,36 @@
           "objectType": null
         },
         {
+          "name": "applyShaderToCanvas",
+          "fullPath": "lurek.render.applyShaderToCanvas",
+          "signature": "lurek.render.applyShaderToCanvas(canvas, shader, [opts])",
+          "description": "Queues a postfx shader pass that mutates a canvas render target after queued canvas draws in the current frame.",
+          "parameters": [
+            {
+              "name": "canvas",
+              "type": "LCanvas",
+              "description": "Canvas render target to process.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"postfx\" })`.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future pass parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "LCanvas",
+          "returnType": "LCanvas",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "setCanvas",
           "fullPath": "lurek.render.setCanvas",
           "signature": "([ud])",
@@ -24723,14 +24782,20 @@
         {
           "name": "newShader",
           "fullPath": "lurek.render.newShader",
-          "signature": "(code)",
-          "description": "Compiles a WGSL shader program from source code and returns a handle.",
+          "signature": "(code, [opts])",
+          "description": "Compiles a target-aware WGSL fragment shader through the render module and returns a shader handle.",
           "parameters": [
             {
               "name": "code",
               "type": "string",
-              "description": "WGSL shader source code.",
+              "description": "WGSL fragment shader source.",
               "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Options table with optional `target` string: draw, postfx, image, overlay, particle, light, sprite, tilemap, mapviz, text, ui, or debugviz. Defaults to draw.",
+              "optional": true
             }
           ],
           "returns": "LShader",
@@ -24764,6 +24829,64 @@
           "parameters": [],
           "returns": "LShader",
           "returnType": "LShader",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "setTextShader",
+          "fullPath": "lurek.render.setTextShader",
+          "signature": "([ud])",
+          "description": "Activates a text-target WGSL shader for subsequent font-atlas text draws. Pass nil to restore default text rendering.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"text\" })`, or nil for default.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getTextShader",
+          "fullPath": "lurek.render.getTextShader",
+          "signature": "()",
+          "description": "Returns the active text shader, or nil if font-atlas text uses the default/fallback shader path.",
+          "parameters": [],
+          "returns": "LShader?",
+          "returnType": "LShader?",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "setDebugShader",
+          "fullPath": "lurek.render.setDebugShader",
+          "signature": "([ud])",
+          "description": "Activates a debugviz-target WGSL shader for subsequent diagnostic/debug draw commands. Pass nil to restore the normal draw shader state.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"debugviz\" })`, or nil for default debug rendering.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getDebugShader",
+          "fullPath": "lurek.render.getDebugShader",
+          "signature": "()",
+          "description": "Returns the active debug visualization shader, or nil if debug draws use the normal/default render shader path.",
+          "parameters": [],
+          "returns": "LShader?",
+          "returnType": "LShader?",
           "isMethod": false,
           "objectType": null
         },
@@ -27696,37 +27819,6 @@
           ],
           "returns": "table",
           "returnType": "table",
-          "isMethod": false,
-          "objectType": null
-        }
-      ],
-      "methods": []
-    },
-    {
-      "name": "shader",
-      "description": "Registers the `lurek.shader` Lua API for target-aware WGSL shader handles.\n\nThe shader namespace is a thin public constructor layer over the shared render\nshader store. Rendering modules decide where validated shader targets may be\nbound; this file only parses options, constructs shaders, and returns handles.",
-      "functions": [
-        {
-          "name": "new",
-          "fullPath": "lurek.shader.new",
-          "signature": "(code, [opts])",
-          "description": "Compiles a target-aware WGSL fragment shader and returns a shader handle.",
-          "parameters": [
-            {
-              "name": "code",
-              "type": "string",
-              "description": "WGSL fragment shader source code.",
-              "optional": false
-            },
-            {
-              "name": "opts",
-              "type": "table",
-              "description": "Options table with optional `target` string.",
-              "optional": true
-            }
-          ],
-          "returns": "LShader",
-          "returnType": "LShader",
           "isMethod": false,
           "objectType": null
         }
@@ -32232,7 +32324,7 @@
           "name": "draw",
           "fullPath": "lurek.ui.draw",
           "signature": "()",
-          "description": "Invokes custom draw callbacks for all widgets that have one registered.",
+          "description": "Queues retained UI render commands, then invokes custom draw callbacks for widgets that registered one.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -35802,6 +35894,60 @@
               "type": "function",
               "description": "Callback receiving a rect table {x, y, w, h} with the computed bounds.",
               "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAccordion"
+        },
+        {
+          "name": "setShader",
+          "fullPath": "LAccordion.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAccordion"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LAccordion.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
             }
           ],
           "returns": "nil",
@@ -42184,6 +42330,60 @@
           "objectType": "LBadge"
         },
         {
+          "name": "setShader",
+          "fullPath": "LBadge.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBadge"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LBadge.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBadge"
+        },
+        {
           "name": "containsPoint",
           "fullPath": "LBadge.containsPoint",
           "signature": "(x, y)",
@@ -47624,6 +47824,60 @@
           "objectType": "LButton"
         },
         {
+          "name": "setShader",
+          "fullPath": "LButton.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LButton"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LButton.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LButton"
+        },
+        {
           "name": "containsPoint",
           "fullPath": "LButton.containsPoint",
           "signature": "(x, y)",
@@ -50425,6 +50679,30 @@
           "objectType": "LCanvas"
         },
         {
+          "name": "applyShader",
+          "fullPath": "LCanvas:applyShader",
+          "signature": "(shader_ud, [opts])",
+          "description": "Queues a postfx shader pass that mutates this canvas render target after queued canvas draws in the current frame.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"postfx\" })`.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future pass parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "LCanvas",
+          "returnType": "LCanvas",
+          "isMethod": true,
+          "objectType": "LCanvas"
+        },
+        {
           "name": "release",
           "fullPath": "LCanvas:release",
           "signature": "()",
@@ -51990,6 +52268,60 @@
               "type": "function",
               "description": "Callback receiving a rect table {x, y, w, h} with the computed bounds.",
               "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LCheckbox"
+        },
+        {
+          "name": "setShader",
+          "fullPath": "LCheckbox.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LCheckbox"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LCheckbox.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
             }
           ],
           "returns": "nil",
@@ -54310,6 +54642,60 @@
           "objectType": "LColorPicker"
         },
         {
+          "name": "setShader",
+          "fullPath": "LColorPicker.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LColorPicker"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LColorPicker.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LColorPicker"
+        },
+        {
           "name": "containsPoint",
           "fullPath": "LColorPicker.containsPoint",
           "signature": "(x, y)",
@@ -55989,6 +56375,60 @@
               "type": "function",
               "description": "Callback receiving a rect table {x, y, w, h} with the computed bounds.",
               "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LComboBox"
+        },
+        {
+          "name": "setShader",
+          "fullPath": "LComboBox.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LComboBox"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LComboBox.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
             }
           ],
           "returns": "nil",
@@ -62533,6 +62973,60 @@
           "objectType": "LDialog"
         },
         {
+          "name": "setShader",
+          "fullPath": "LDialog.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDialog"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LDialog.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDialog"
+        },
+        {
           "name": "containsPoint",
           "fullPath": "LDialog.containsPoint",
           "signature": "(x, y)",
@@ -64820,6 +65314,60 @@
               "type": "function",
               "description": "Callback receiving a rect table {x, y, w, h} with the computed bounds.",
               "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDockPanel"
+        },
+        {
+          "name": "setShader",
+          "fullPath": "LDockPanel.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDockPanel"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LDockPanel.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
             }
           ],
           "returns": "nil",
@@ -68101,6 +68649,60 @@
               "type": "function",
               "description": "Callback receiving a rect table {x, y, w, h} with the computed bounds.",
               "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LFont"
+        },
+        {
+          "name": "setShader",
+          "fullPath": "LFont.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LFont"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LFont.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
             }
           ],
           "returns": "nil",
@@ -71615,6 +72217,35 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "setShader",
+          "fullPath": "LGlobe:setShader",
+          "signature": "([shader])",
+          "description": "Binds a mapviz-target shader to this globe's generated render commands. Pass nil to clear.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"mapviz\" })`, or nil to clear.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "getShader",
+          "fullPath": "LGlobe:getShader",
+          "signature": "()",
+          "description": "Returns the mapviz-target shader bound to this globe, if any.",
+          "parameters": [],
+          "returns": "LShader?",
+          "returnType": "LShader?",
           "isMethod": true,
           "objectType": "LGlobe"
         },
@@ -75761,6 +76392,60 @@
           "objectType": "LGuiTable"
         },
         {
+          "name": "setShader",
+          "fullPath": "LGuiTable.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LGuiTable"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LGuiTable.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LGuiTable"
+        },
+        {
           "name": "containsPoint",
           "fullPath": "LGuiTable.containsPoint",
           "signature": "(x, y)",
@@ -77296,6 +77981,60 @@
               "type": "function",
               "description": "Callback receiving a rect table {x, y, w, h} with the computed bounds.",
               "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LGuiWindow"
+        },
+        {
+          "name": "setShader",
+          "fullPath": "LGuiWindow.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LGuiWindow"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LGuiWindow.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
             }
           ],
           "returns": "nil",
@@ -81528,6 +82267,60 @@
           "objectType": "LImageData"
         },
         {
+          "name": "setShader",
+          "fullPath": "LImageData.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LImageData"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LImageData.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LImageData"
+        },
+        {
           "name": "containsPoint",
           "fullPath": "LImageData.containsPoint",
           "signature": "(x, y)",
@@ -83242,6 +84035,60 @@
               "type": "function",
               "description": "Callback receiving a rect table {x, y, w, h} with the computed bounds.",
               "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LImageWidget"
+        },
+        {
+          "name": "setShader",
+          "fullPath": "LImageWidget.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LImageWidget"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LImageWidget.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
             }
           ],
           "returns": "nil",
@@ -85959,6 +86806,60 @@
           "objectType": "LLabel"
         },
         {
+          "name": "setShader",
+          "fullPath": "LLabel.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLabel"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LLabel.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLabel"
+        },
+        {
           "name": "containsPoint",
           "fullPath": "LLabel.containsPoint",
           "signature": "(x, y)",
@@ -87360,6 +88261,60 @@
               "type": "function",
               "description": "Callback receiving a rect table {x, y, w, h} with the computed bounds.",
               "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLabel|nil"
+        },
+        {
+          "name": "setShader",
+          "fullPath": "LLabel|nil.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLabel|nil"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LLabel|nil.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
             }
           ],
           "returns": "nil",
@@ -89627,6 +90582,60 @@
               "type": "function",
               "description": "Callback receiving a rect table {x, y, w, h} with the computed bounds.",
               "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLayout"
+        },
+        {
+          "name": "setShader",
+          "fullPath": "LLayout.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLayout"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LLayout.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
             }
           ],
           "returns": "nil",
@@ -93244,6 +94253,60 @@
           "objectType": "LListBox"
         },
         {
+          "name": "setShader",
+          "fullPath": "LListBox.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LListBox"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LListBox.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LListBox"
+        },
+        {
           "name": "containsPoint",
           "fullPath": "LListBox.containsPoint",
           "signature": "(x, y)",
@@ -96461,6 +97524,60 @@
           "objectType": "LMenuBar"
         },
         {
+          "name": "setShader",
+          "fullPath": "LMenuBar.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMenuBar"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LMenuBar.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMenuBar"
+        },
+        {
           "name": "containsPoint",
           "fullPath": "LMenuBar.containsPoint",
           "signature": "(x, y)",
@@ -97978,6 +99095,60 @@
               "type": "function",
               "description": "Callback receiving a rect table {x, y, w, h} with the computed bounds.",
               "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMenuItem"
+        },
+        {
+          "name": "setShader",
+          "fullPath": "LMenuItem.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMenuItem"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LMenuItem.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
             }
           ],
           "returns": "nil",
@@ -99564,6 +100735,35 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMinimap"
+        },
+        {
+          "name": "setShader",
+          "fullPath": "LMinimap:setShader",
+          "signature": "([shader])",
+          "description": "Binds or clears a `mapviz` shader for command-rendered minimap visualization.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created by `lurek.render.newShader(code, { target = \"mapviz\" })`, or nil to clear.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMinimap"
+        },
+        {
+          "name": "getShader",
+          "fullPath": "LMinimap:getShader",
+          "signature": "()",
+          "description": "Returns the currently bound command-render minimap shader, or nil.",
+          "parameters": [],
+          "returns": "LShader?",
+          "returnType": "LShader?",
           "isMethod": true,
           "objectType": "LMinimap"
         },
@@ -105858,6 +107058,60 @@
           "objectType": "LNinePatch"
         },
         {
+          "name": "setShader",
+          "fullPath": "LNinePatch.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LNinePatch"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LNinePatch.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LNinePatch"
+        },
+        {
           "name": "containsPoint",
           "fullPath": "LNinePatch.containsPoint",
           "signature": "(x, y)",
@@ -110518,6 +111772,60 @@
           "objectType": "LPanel"
         },
         {
+          "name": "setShader",
+          "fullPath": "LPanel.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LPanel"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LPanel.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LPanel"
+        },
+        {
           "name": "containsPoint",
           "fullPath": "LPanel.containsPoint",
           "signature": "(x, y)",
@@ -111643,6 +112951,35 @@
           "parameters": [],
           "returns": "number",
           "returnType": "number",
+          "isMethod": true,
+          "objectType": "LParallaxLayer"
+        },
+        {
+          "name": "setShader",
+          "fullPath": "LParallaxLayer:setShader",
+          "signature": "([shader])",
+          "description": "Binds a draw-target shader to this parallax layer's generated render commands. Pass nil to clear.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"draw\" })`, or nil to clear.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LParallaxLayer"
+        },
+        {
+          "name": "getShader",
+          "fullPath": "LParallaxLayer:getShader",
+          "signature": "()",
+          "description": "Returns the draw-target shader bound to this parallax layer, if any.",
+          "parameters": [],
+          "returns": "LShader?",
+          "returnType": "LShader?",
           "isMethod": true,
           "objectType": "LParallaxLayer"
         },
@@ -117931,6 +119268,60 @@
           "objectType": "LProgressBar"
         },
         {
+          "name": "setShader",
+          "fullPath": "LProgressBar.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressBar"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LProgressBar.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressBar"
+        },
+        {
           "name": "containsPoint",
           "fullPath": "LProgressBar.containsPoint",
           "signature": "(x, y)",
@@ -119676,6 +121067,60 @@
           "objectType": "LPropertyWidget"
         },
         {
+          "name": "setShader",
+          "fullPath": "LPropertyWidget.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LPropertyWidget"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LPropertyWidget.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LPropertyWidget"
+        },
+        {
           "name": "containsPoint",
           "fullPath": "LPropertyWidget.containsPoint",
           "signature": "(x, y)",
@@ -120526,6 +121971,35 @@
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LProvinceRegistry"
+        },
+        {
+          "name": "setShader",
+          "fullPath": "LProvinceRegistry:setShader",
+          "signature": "([shader])",
+          "description": "Binds or clears a `mapviz` shader for command-rendered province visualization.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created by `lurek.render.newShader(code, { target = \"mapviz\" })`, or nil to clear.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProvinceRegistry"
+        },
+        {
+          "name": "getShader",
+          "fullPath": "LProvinceRegistry:getShader",
+          "signature": "()",
+          "description": "Returns the currently bound command-render province shader, or nil.",
+          "parameters": [],
+          "returns": "LShader?",
+          "returnType": "LShader?",
           "isMethod": true,
           "objectType": "LProvinceRegistry"
         },
@@ -123579,6 +125053,60 @@
               "type": "function",
               "description": "Callback receiving a rect table {x, y, w, h} with the computed bounds.",
               "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRadioButton"
+        },
+        {
+          "name": "setShader",
+          "fullPath": "LRadioButton.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRadioButton"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LRadioButton.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
             }
           ],
           "returns": "nil",
@@ -130115,6 +131643,60 @@
           "objectType": "LScrollBar"
         },
         {
+          "name": "setShader",
+          "fullPath": "LScrollBar.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LScrollBar"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LScrollBar.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LScrollBar"
+        },
+        {
           "name": "containsPoint",
           "fullPath": "LScrollBar.containsPoint",
           "signature": "(x, y)",
@@ -131626,6 +133208,60 @@
               "type": "function",
               "description": "Callback receiving a rect table {x, y, w, h} with the computed bounds.",
               "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LScrollPanel"
+        },
+        {
+          "name": "setShader",
+          "fullPath": "LScrollPanel.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LScrollPanel"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LScrollPanel.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
             }
           ],
           "returns": "nil",
@@ -133188,6 +134824,60 @@
               "type": "function",
               "description": "Callback receiving a rect table {x, y, w, h} with the computed bounds.",
               "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSeparator"
+        },
+        {
+          "name": "setShader",
+          "fullPath": "LSeparator.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSeparator"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LSeparator.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
             }
           ],
           "returns": "nil",
@@ -136773,6 +138463,60 @@
           "objectType": "LSlider"
         },
         {
+          "name": "setShader",
+          "fullPath": "LSlider.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSlider"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LSlider.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSlider"
+        },
+        {
           "name": "containsPoint",
           "fullPath": "LSlider.containsPoint",
           "signature": "(x, y)",
@@ -138883,6 +140627,60 @@
           "objectType": "LSpacer"
         },
         {
+          "name": "setShader",
+          "fullPath": "LSpacer.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSpacer"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LSpacer.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSpacer"
+        },
+        {
           "name": "containsPoint",
           "fullPath": "LSpacer.containsPoint",
           "signature": "(x, y)",
@@ -140835,6 +142633,60 @@
           "objectType": "LSpinBox"
         },
         {
+          "name": "setShader",
+          "fullPath": "LSpinBox.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSpinBox"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LSpinBox.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSpinBox"
+        },
+        {
           "name": "containsPoint",
           "fullPath": "LSpinBox.containsPoint",
           "signature": "(x, y)",
@@ -142389,6 +144241,60 @@
           "objectType": "LSplitPanel"
         },
         {
+          "name": "setShader",
+          "fullPath": "LSplitPanel.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSplitPanel"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LSplitPanel.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSplitPanel"
+        },
+        {
           "name": "containsPoint",
           "fullPath": "LSplitPanel.containsPoint",
           "signature": "(x, y)",
@@ -143267,6 +145173,59 @@
           "parameters": [],
           "returns": "number",
           "returnType": "number",
+          "isMethod": true,
+          "objectType": "LSprite"
+        },
+        {
+          "name": "setShader",
+          "fullPath": "LSprite:setShader",
+          "signature": "([shader])",
+          "description": "Sets or clears the render-owned sprite material shader.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Sprite-target shader or nil to clear.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSprite"
+        },
+        {
+          "name": "getShader",
+          "fullPath": "LSprite:getShader",
+          "signature": "()",
+          "description": "Returns the sprite material shader bound to this sprite, if any.",
+          "parameters": [],
+          "returns": "LShader?",
+          "returnType": "LShader?",
+          "isMethod": true,
+          "objectType": "LSprite"
+        },
+        {
+          "name": "setShaderUniform",
+          "fullPath": "LSprite:setShaderUniform",
+          "signature": "(name, value)",
+          "description": "Sends a uniform value to the shader bound to this sprite.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Uniform name.",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "number|boolean|table",
+              "description": "Uniform value.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": true,
           "objectType": "LSprite"
         },
@@ -145881,6 +147840,60 @@
           "objectType": "LStackContainer"
         },
         {
+          "name": "setShader",
+          "fullPath": "LStackContainer.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LStackContainer"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LStackContainer.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LStackContainer"
+        },
+        {
           "name": "containsPoint",
           "fullPath": "LStackContainer.containsPoint",
           "signature": "(x, y)",
@@ -147554,6 +149567,60 @@
               "type": "function",
               "description": "Callback receiving a rect table {x, y, w, h} with the computed bounds.",
               "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LStatusBar"
+        },
+        {
+          "name": "setShader",
+          "fullPath": "LStatusBar.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LStatusBar"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LStatusBar.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
             }
           ],
           "returns": "nil",
@@ -150606,6 +152673,60 @@
           "objectType": "LSwitch"
         },
         {
+          "name": "setShader",
+          "fullPath": "LSwitch.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSwitch"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LSwitch.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSwitch"
+        },
+        {
           "name": "containsPoint",
           "fullPath": "LSwitch.containsPoint",
           "signature": "(x, y)",
@@ -152223,6 +154344,60 @@
           "objectType": "LTabBar"
         },
         {
+          "name": "setShader",
+          "fullPath": "LTabBar.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTabBar"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LTabBar.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTabBar"
+        },
+        {
           "name": "containsPoint",
           "fullPath": "LTabBar.containsPoint",
           "signature": "(x, y)",
@@ -153719,6 +155894,60 @@
           "objectType": "LTabContainer"
         },
         {
+          "name": "setShader",
+          "fullPath": "LTabContainer.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTabContainer"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LTabContainer.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTabContainer"
+        },
+        {
           "name": "containsPoint",
           "fullPath": "LTabContainer.containsPoint",
           "signature": "(x, y)",
@@ -154773,6 +157002,35 @@
           "parameters": [],
           "returns": "table",
           "returnType": "table",
+          "isMethod": true,
+          "objectType": "LTerminal"
+        },
+        {
+          "name": "setShader",
+          "fullPath": "LTerminal:setShader",
+          "signature": "([shader])",
+          "description": "Binds or clears a render-owned UI shader for this terminal's generated render commands.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTerminal"
+        },
+        {
+          "name": "getShader",
+          "fullPath": "LTerminal:getShader",
+          "signature": "()",
+          "description": "Returns the UI shader bound to this terminal, or nil when default terminal rendering is used.",
+          "parameters": [],
+          "returns": "LShader?",
+          "returnType": "LShader?",
           "isMethod": true,
           "objectType": "LTerminal"
         },
@@ -156256,6 +158514,60 @@
               "type": "function",
               "description": "Callback receiving a rect table {x, y, w, h} with the computed bounds.",
               "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextInput"
+        },
+        {
+          "name": "setShader",
+          "fullPath": "LTextInput.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextInput"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LTextInput.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
             }
           ],
           "returns": "nil",
@@ -161436,6 +163748,77 @@
           "objectType": "LTileMap"
         },
         {
+          "name": "setShader",
+          "fullPath": "LTileMap:setShader",
+          "signature": "([shader])",
+          "description": "Binds a tilemap-target shader to this map's generated render commands. Pass nil to clear.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"tilemap\" })`.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileMap"
+        },
+        {
+          "name": "getShader",
+          "fullPath": "LTileMap:getShader",
+          "signature": "()",
+          "description": "Returns the tilemap shader bound to this map, or nil when none is bound.",
+          "parameters": [],
+          "returns": "LShader?",
+          "returnType": "LShader?",
+          "isMethod": true,
+          "objectType": "LTileMap"
+        },
+        {
+          "name": "setLayerShader",
+          "fullPath": "LTileMap:setLayerShader",
+          "signature": "(layer, [shader])",
+          "description": "Binds a tilemap-target shader override to one layer. Pass nil to clear the layer override.",
+          "parameters": [
+            {
+              "name": "layer",
+              "type": "integer",
+              "description": "Layer index (1-based).",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"tilemap\" })`.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileMap"
+        },
+        {
+          "name": "getLayerShader",
+          "fullPath": "LTileMap:getLayerShader",
+          "signature": "(layer)",
+          "description": "Returns the shader override bound to one layer, or nil when the layer has no override.",
+          "parameters": [
+            {
+              "name": "layer",
+              "type": "integer",
+              "description": "Layer index (1-based).",
+              "optional": false
+            }
+          ],
+          "returns": "LShader?",
+          "returnType": "LShader?",
+          "isMethod": true,
+          "objectType": "LTileMap"
+        },
+        {
           "name": "render",
           "fullPath": "LTileMap:render",
           "signature": "([ox], [oy])",
@@ -163195,6 +165578,60 @@
           "objectType": "LToast"
         },
         {
+          "name": "setShader",
+          "fullPath": "LToast.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LToast"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LToast.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LToast"
+        },
+        {
           "name": "containsPoint",
           "fullPath": "LToast.containsPoint",
           "signature": "(x, y)",
@@ -164770,6 +167207,60 @@
           "objectType": "LToolbar"
         },
         {
+          "name": "setShader",
+          "fullPath": "LToolbar.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LToolbar"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LToolbar.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LToolbar"
+        },
+        {
           "name": "containsPoint",
           "fullPath": "LToolbar.containsPoint",
           "signature": "(x, y)",
@@ -166258,6 +168749,60 @@
               "type": "function",
               "description": "Callback receiving a rect table {x, y, w, h} with the computed bounds.",
               "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTooltipPanel"
+        },
+        {
+          "name": "setShader",
+          "fullPath": "LTooltipPanel.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTooltipPanel"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LTooltipPanel.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
             }
           ],
           "returns": "nil",
@@ -169108,6 +171653,60 @@
               "type": "function",
               "description": "Callback receiving a rect table {x, y, w, h} with the computed bounds.",
               "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTreeView"
+        },
+        {
+          "name": "setShader",
+          "fullPath": "LTreeView.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTreeView"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LTreeView.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
             }
           ],
           "returns": "nil",
@@ -172063,6 +174662,60 @@
               "type": "function",
               "description": "Callback receiving a rect table {x, y, w, h} with the computed bounds.",
               "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LUiWidget"
+        },
+        {
+          "name": "setShader",
+          "fullPath": "LUiWidget:setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LUiWidget"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LUiWidget:setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
             }
           ],
           "returns": "nil",

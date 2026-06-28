@@ -1,0 +1,9 @@
+Shader API v2 per-target evidence
+constructor=lurek.render.newShader
+target=draw
+id=4294967297
+actual_target=draw
+diagnostics=validated for draw shader target
+render.setShader.accepted=true
+render.getShader.target=draw
+render.setShader.cleared=true

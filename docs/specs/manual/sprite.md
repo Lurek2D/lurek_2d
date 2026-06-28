@@ -20,7 +20,8 @@ This module primarily collaborates with `animation`, `color`, `image`, `math`, `
 
 ## Notes
 
-- No additional module-specific notes.
+- Sprite shader materials:
+  `LSprite:setShader(shader)`, `LSprite:getShader()`, and `LSprite:setShaderUniform(name, value)` bind render-owned `target = "sprite"` WGSL shaders to sprite instances. The sprite module stores only the `LShader` handle and semantic material choice; `render` owns WGSL validation, uniform validation, GPU pipeline cache, and execution. The current sprite target is fragment-only and uses the existing textured contract: sampled sprite color at `@location(0)` and uv at `@location(1)`.
 
 ## Architecture Links
 

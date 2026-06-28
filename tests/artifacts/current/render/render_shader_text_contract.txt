@@ -1,0 +1,10 @@
+Shader API v2 per-target evidence
+constructor=lurek.render.newShader
+target=text
+id=4294967306
+actual_target=text
+diagnostics=validated for text shader target
+render.setTextShader.accepted=true
+render.getTextShader.target=text
+render.print.queued=true
+render.setTextShader.cleared=true

@@ -1,0 +1,11 @@
+Shader API v2 per-target evidence
+constructor=lurek.render.newShader
+target=postfx
+id=4294967298
+actual_target=postfx
+diagnostics=validated for postfx shader target
+effect.newCustomEffect.type=custom
+effect.target=postfx
+render.applyShaderToCanvas=LCanvas
+LCanvas.applyShader=LCanvas
+screen_transition.use_cases=wipe,dissolve,fade_mask

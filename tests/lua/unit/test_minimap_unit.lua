@@ -6,6 +6,21 @@ do
 -- Lurek2D minimap API tests.
 -- Covers minimap construction, terrain/object/fog state, view controls, and helper queries exposed through lurek.minimap.
 
+local function mapviz_shader_code()
+    return [[
+@fragment
+fn fs(
+    @location(0) color: vec4<f32>,
+    @location(1) uv: vec2<f32>,
+    @location(2) pixel: vec2<f32>,
+    @location(3) resolution: vec2<f32>,
+    @location(4) texel: vec2<f32>
+) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0 + pixel.xyx * 0.0 + resolution.xyx * texel.x * 0.0, color.a);
+}
+]]
+end
+
 -- @describe lurek.minimap.newMinimap
 describe("lurek.minimap.newMinimap", function()
     -- @covers lurek.minimap.newMinimap
@@ -73,6 +88,41 @@ describe("display size", function()
         expect_error(function()
             m:setDisplaySize(100, 0)
         end)
+    end)
+end)
+
+-- Minimap render shader binding
+
+-- @describe minimap render shader
+describe("minimap render shader", function()
+    -- @covers LMinimap:setShader
+    it("accepts only mapviz shaders for command rendering", function()
+        local m = lurek.minimap.newMinimap(8, 8, 64, 64)
+        local shader = lurek.render.newShader(mapviz_shader_code(), { target = "mapviz" })
+        m:setShader(shader)
+        m:render(0, 0)
+        m:setShader(nil)
+
+        local draw_shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0, color.a);
+}
+]], { target = "draw" })
+        expect_error(function()
+            m:setShader(draw_shader)
+        end)
+    end)
+
+    -- @covers LMinimap:getShader
+    it("returns the bound mapviz shader", function()
+        local m = lurek.minimap.newMinimap(8, 8, 64, 64)
+        local shader = lurek.render.newShader(mapviz_shader_code(), { target = "mapviz" })
+        expect_equal(nil, m:getShader())
+        m:setShader(shader)
+        expect_equal("mapviz", m:getShader():getTarget())
+        m:setShader(nil)
+        expect_equal(nil, m:getShader())
     end)
 end)
 

@@ -2,16 +2,32 @@
 
 use super::camera_api::LuaCamera2D;
 use super::province_api::LuaProvinceRegistry;
-use super::render_api::LuaImage;
+use super::render_api::{ensure_shader_target, LuaImage, LuaShader};
 use super::SharedState;
 use crate::minimap::province_adapter;
 use crate::minimap::{
     ColorMode, FogLevel, LayerBlendMode, LayerData, MarkerAnimation, Minimap, MinimapError,
     MinimapLimits,
 };
+use crate::render::renderer::RenderCommand;
+use crate::render::ShaderTarget;
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
+
+fn extend_minimap_render_commands(st: &mut SharedState, commands: Vec<RenderCommand>) {
+    let previous_shader = st.active_shader;
+    let changed_shader = commands
+        .iter()
+        .any(|command| matches!(command, RenderCommand::SetShader(_)));
+    st.render_commands.extend(commands);
+    if changed_shader {
+        if let Some(shader_key) = previous_shader {
+            st.render_commands
+                .push(RenderCommand::SetShader(Some(shader_key)));
+        }
+    }
+}
 /// Reads an RGBA byte color from a Lua array table, defaulting missing channels to 255.
 fn parse_color_table(tbl: LuaTable) -> LuaResult<[u8; 4]> {
     let r: u8 = tbl.get(1).unwrap_or(255);
@@ -160,6 +176,38 @@ impl LuaUserData for LuaMinimap {
         /// @param | h | integer | Display height in pixels.
         methods.add_method_mut("setDisplaySize", |_, this, (w, h): (u32, u32)| {
             this.inner.try_set_display_size(w, h).map_err(minimap_error)
+        });
+        // -- setShader --
+        /// Binds or clears a `mapviz` shader for command-rendered minimap visualization.
+        /// @param | shader | LShader? | Shader created by `lurek.render.newShader(code, { target = "mapviz" })`, or nil to clear.
+        methods.add_method_mut("setShader", |_, this, shader: Option<LuaAnyUserData>| {
+            let shader_key = if let Some(shader_ud) = shader {
+                let key = shader_ud
+                    .borrow::<LuaShader>()
+                    .map_err(|_| {
+                        LuaError::RuntimeError(
+                            "LMinimap:setShader expects LShader from lurek.render.newShader"
+                                .to_string(),
+                        )
+                    })?
+                    .key;
+                let st = this.state.borrow();
+                ensure_shader_target(&st, key, ShaderTarget::MapViz, "LMinimap:setShader")?;
+                Some(key)
+            } else {
+                None
+            };
+            this.inner.set_shader(shader_key);
+            Ok(())
+        });
+        // -- getShader --
+        /// Returns the currently bound command-render minimap shader, or nil.
+        /// @return | LShader? | Bound shader handle.
+        methods.add_method("getShader", |_, this, ()| {
+            Ok(this.inner.get_shader().map(|key| LuaShader {
+                key,
+                state: this.state.clone(),
+            }))
         });
         // -- setTerrain --
         /// Sets terrain type for a one-based grid cell.
@@ -1237,7 +1285,7 @@ impl LuaUserData for LuaMinimap {
             let sx = x.unwrap_or(0.0);
             let sy = y.unwrap_or(0.0);
             let cmds = this.inner.build_render_commands(sx, sy);
-            this.state.borrow_mut().render_commands.extend(cmds);
+            extend_minimap_render_commands(&mut this.state.borrow_mut(), cmds);
             Ok(())
         });
         // -- drawToImage --

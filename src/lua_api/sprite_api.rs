@@ -2,8 +2,11 @@
 
 use super::SharedState;
 use crate::image::ImageData;
-use crate::lua_api::render_api::{LuaImage, LuaNineSlice};
+use crate::lua_api::render_api::{
+    ensure_shader_target, shader_key_from_userdata, LuaImage, LuaNineSlice, LuaShader,
+};
 use crate::math::{Rect, Vec2};
+use crate::render::{ShaderTarget, UniformValue};
 use crate::sprite::animator::{AnimatorEvent, SpriteAnimator, SpriteClip};
 use crate::sprite::atlas::{parse_aseprite_json, parse_texturepacker_json, SpriteAtlas};
 use crate::sprite::sprite::Sprite;
@@ -39,8 +42,34 @@ fn parse_autotile_layout(api: &str, layout: &str) -> LuaResult<AutoTileLayout> {
     }
 }
 
+fn lua_value_to_uniform(api: &str, value: LuaValue) -> LuaResult<UniformValue> {
+    match value {
+        LuaValue::Number(n) => Ok(UniformValue::Float(n as f32)),
+        LuaValue::Integer(n) => Ok(UniformValue::Int(n as i32)),
+        LuaValue::Boolean(b) => Ok(UniformValue::Bool(b)),
+        LuaValue::Table(t) => match t.raw_len() {
+            2 => Ok(UniformValue::Vec2([t.get(1)?, t.get(2)?])),
+            3 => Ok(UniformValue::Vec3([t.get(1)?, t.get(2)?, t.get(3)?])),
+            4 => Ok(UniformValue::Vec4([
+                t.get(1)?,
+                t.get(2)?,
+                t.get(3)?,
+                t.get(4)?,
+            ])),
+            _ => Err(LuaError::RuntimeError(format!(
+                "{api}: uniform table must have 2, 3, or 4 elements"
+            ))),
+        },
+        other => Err(LuaError::RuntimeError(format!(
+            "{api}: uniform value must be number, boolean, or numeric table, got {}",
+            other.type_name()
+        ))),
+    }
+}
+
 /// Lua-visible single sprite data container, including optional normal-map metadata for lit sprites.
 pub struct LuaSprite {
+    state: Rc<RefCell<SharedState>>,
     inner: Sprite,
 }
 impl LuaUserData for LuaSprite {
@@ -98,6 +127,52 @@ impl LuaUserData for LuaSprite {
         methods.add_method("getNormalIntensity", |_, this, ()| {
             Ok(this.inner.get_normal_intensity())
         });
+        // -- setShader --
+        /// Sets or clears the render-owned sprite material shader.
+        /// @param | shader | LShader? | Sprite-target shader or nil to clear.
+        methods.add_method_mut("setShader", |_, this, shader: Option<LuaAnyUserData>| {
+            let key = match shader {
+                Some(ud) => {
+                    let key = shader_key_from_userdata(&ud)?;
+                    let st = this.state.as_ref().borrow();
+                    ensure_shader_target(&st, key, ShaderTarget::Sprite, "LSprite:setShader")?;
+                    Some(key)
+                }
+                None => None,
+            };
+            this.inner.set_shader(key);
+            Ok(())
+        });
+        // -- getShader --
+        /// Returns the sprite material shader bound to this sprite, if any.
+        /// @return | LShader? | Bound shader or nil.
+        methods.add_method("getShader", |_, this, ()| {
+            Ok(this.inner.get_shader().map(|key| LuaShader {
+                state: this.state.clone(),
+                key,
+            }))
+        });
+        // -- setShaderUniform --
+        /// Sends a uniform value to the shader bound to this sprite.
+        /// @param | name | string | Uniform name.
+        /// @param | value | number|boolean|table | Uniform value.
+        methods.add_method_mut(
+            "setShaderUniform",
+            |_, this, (name, value): (String, LuaValue)| {
+                let key = this.inner.get_shader().ok_or_else(|| {
+                    LuaError::runtime("LSprite:setShaderUniform: no shader is bound")
+                })?;
+                let uniform = lua_value_to_uniform("LSprite:setShaderUniform", value)?;
+                let mut st = this.state.borrow_mut();
+                let shader = st.shaders.get_mut(key).ok_or_else(|| {
+                    LuaError::runtime("LSprite:setShaderUniform: shader handle is invalid")
+                })?;
+                shader.send(name, uniform).map_err(|err| {
+                    LuaError::RuntimeError(format!("LSprite:setShaderUniform: {err}"))
+                })?;
+                Ok(())
+            },
+        );
         // -- type --
         /// Returns the type name of this object.
         /// @return | string | Always `"LSprite"`.
@@ -792,7 +867,7 @@ impl LuaUserData for LuaSpriteAnimator {
 }
 
 /// Registers the `lurek.sprite` module, exposing sprite sheet and texture atlas constructors.
-pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
     // -- newSprite --
@@ -803,8 +878,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return | LSprite | A new sprite object.
     tbl.set(
         "newSprite",
-        lua.create_function(|lua, (texture_id, x, y): (usize, f32, f32)| {
+        lua.create_function(move |lua, (texture_id, x, y): (usize, f32, f32)| {
             lua.create_userdata(LuaSprite {
+                state: state.clone(),
                 inner: Sprite::new(texture_id, Vec2::new(x, y)),
             })
         })?,

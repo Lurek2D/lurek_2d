@@ -5,6 +5,21 @@
 do
 -- Lurek2D province API tests.
 
+local function mapviz_shader_code()
+    return [[
+@fragment
+fn fs(
+    @location(0) color: vec4<f32>,
+    @location(1) uv: vec2<f32>,
+    @location(2) pixel: vec2<f32>,
+    @location(3) resolution: vec2<f32>,
+    @location(4) texel: vec2<f32>
+) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0 + pixel.xyx * 0.0 + resolution.xyx * texel.x * 0.0, color.a);
+}
+]]
+end
+
 -- @describe lurek.province.newFromPng
 describe("lurek.province.newFromPng", function()
     -- @covers LProvinceRegistry:getName
@@ -227,6 +242,36 @@ describe("province strict uncovered symbols", function()
             reg:render({ province_tints = { [province_id] = "blue" } })
         end)
         expect_false(bad_ok)
+    end)
+
+    -- @covers LProvinceRegistry:setShader
+    it("province registry accepts only mapviz render shaders", function()
+        local reg = lurek.province.newFromPng("test-province-mapviz-shader", "content/games/eu2/map.png")
+        local shader = lurek.render.newShader(mapviz_shader_code(), { target = "mapviz" })
+        reg:setShader(shader)
+        reg:render({ backend = "commands", draw_labels = false, draw_capitals = false })
+        reg:setShader(nil)
+
+        local draw_shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0, color.a);
+}
+]], { target = "draw" })
+        expect_error(function()
+            reg:setShader(draw_shader)
+        end)
+    end)
+
+    -- @covers LProvinceRegistry:getShader
+    it("province registry returns the bound mapviz shader", function()
+        local reg = lurek.province.newFromPng("test-province-mapviz-get-shader", "content/games/eu2/map.png")
+        local shader = lurek.render.newShader(mapviz_shader_code(), { target = "mapviz" })
+        expect_equal(nil, reg:getShader())
+        reg:setShader(shader)
+        expect_equal("mapviz", reg:getShader():getTarget())
+        reg:setShader(nil)
+        expect_equal(nil, reg:getShader())
     end)
 
     -- @covers LProvinceRegistry:type
@@ -463,7 +508,7 @@ do
 local function province_registry(stem, path)
     return lurek.province.newFromPng(
         "prov_" .. stem .. "_" .. tostring(math.floor(os.clock() * 1000000)),
-        path or "assets/textures/province_map.png"
+        path or "content/examples/assets/textures/province_map.png"
     )
 end
 

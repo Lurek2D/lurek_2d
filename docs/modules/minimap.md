@@ -1866,6 +1866,43 @@ end
 
 ---
 
+#### `LMinimap:getShader`
+
+Returns the currently bound command-render minimap shader, or nil.
+
+```lua
+LMinimap:getShader()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LShader](render.md#lshader)? | Bound shader handle. |
+
+**Example**
+
+```lua
+do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+
+    local mm = lurek.minimap.newMinimap(16, 16, 128, 128)
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0, color.a);
+}
+]], { target = "mapviz" })
+    mm:setShader(shader)
+    local active = mm:getShader()
+    minimap_log("active minimap mapviz shader=" .. tostring(active and active:getTarget() or "nil"))
+end
+```
+
+---
+
 #### `LMinimap:getTerrain`
 
 Returns terrain type for a one-based grid cell.
@@ -3570,6 +3607,49 @@ do
     mm:setObject(1, 8, 8, scout, 1)
     local r, g, b, a = mm:getOwnerColor(1)
     minimap_log("owner 1 faction tint = " .. r .. "," .. g .. "," .. b .. "," .. a)
+end
+```
+
+---
+
+#### `LMinimap:setShader`
+
+Binds or clears a `mapviz` shader for command-rendered minimap visualization.
+
+```lua
+LMinimap:setShader(shader)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `shader?` | [LShader](render.md#lshader) | Shader created by `lurek.render.newShader(code, { target = "mapviz" })`, or nil to clear. |
+
+**Example**
+
+```lua
+do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+
+    local mm = lurek.minimap.newMinimap(16, 16, 128, 128)
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs(
+    @location(0) color: vec4<f32>,
+    @location(1) uv: vec2<f32>,
+    @location(2) pixel: vec2<f32>,
+    @location(3) resolution: vec2<f32>,
+    @location(4) texel: vec2<f32>
+) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb * vec3<f32>(1.1, 0.95, 0.8) + uv.xyx * 0.0 + pixel.xyx * 0.0 + resolution.xyx * texel.x * 0.0, color.a);
+}
+]], { target = "mapviz" })
+    mm:setShader(shader)
+    mm:render(12, 12)
+    minimap_log("minimap mapviz shader target=" .. mm:getShader():getTarget())
 end
 ```
 

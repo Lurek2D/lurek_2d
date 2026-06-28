@@ -38,6 +38,7 @@ The broader integration map is split by role:
 - `library.awareness_minimap` is the reference adapter for `LTileAwareness`: it copies visible/explored masks into minimap fog data and actionable or visible masks into styled raw layers without making minimap compute line-of-sight.
 - `drawToImage(pixel_size)` now honors `pixel_size` when provided, falls back to the configured display size when `pixel_size == 0`, and covers the full output image even when display pixels do not divide evenly by grid size.
 - Render-command generation batches adjacent same-color cells into horizontal runs and exposes debug stats through `Minimap::render_stats(screen_x, screen_y)` for tooling and regression tests.
+- `LMinimap:setShader(shaderOrNil)` accepts only `mapviz` shaders created by `lurek.render.newShader`. The minimap stores only the shader handle and wraps command-rendered output in render-owned shader state. `drawToImage` remains deterministic CPU export and does not execute the shader; callers that need offline GPU bitmap processing should apply an `image` shader to the returned `ImageData`.
 - Raycaster minimap extraction uses checked arithmetic for radius, cell size, pixel count, and byte count, and player-arrow drawing validates both width and height against the supplied RGBA buffer length.
 - Marker/object/ping/icon setters reject missing ids, invalid type indices, non-finite coordinates, and invalid icon size overrides on the strict Lua path instead of silently no-oping.
 

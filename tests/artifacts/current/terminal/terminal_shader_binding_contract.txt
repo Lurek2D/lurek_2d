@@ -1,0 +1,8 @@
+Terminal shader binding evidence
+constructor=lurek.render.newShader
+target=ui
+shader_id=4294967297
+terminal.getShader.target=ui
+terminal.render.queued=true
+software.renderImage.shadered=false
+terminal.shader.cleared=true

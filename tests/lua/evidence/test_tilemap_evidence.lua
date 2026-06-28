@@ -727,6 +727,34 @@ end
 
 -- @describe Evidence: lurek.tilemap scenarios
 describe("Evidence: lurek.tilemap scenarios", function()
+    -- Does: Binds render-owned tilemap shaders to a map and to one layer.
+    -- Shows: Text artifact records the target, map shader, layer shader, and that render commands were submitted.
+    -- Artifact: tests/artifacts/current/tilemap/tilemap_shader_binding_contract.txt
+    -- Why: Tilemap owns only visual shader binding decisions while render owns WGSL validation and GPU execution.
+    it("TXT: tilemap shader binding contract", function()
+        ensure_evidence_dir("tilemap")
+        local shader = lurek.render.newShader([[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(mix(color.rgb, vec3<f32>(uv.x, 0.5, 0.25), 0.3), color.a);
+}
+]], { target = "tilemap" })
+        local tm = lurek.tilemap.newTileMap(16, 16)
+        tm:addLayer("terrain", 2, 2)
+        tm:setTile(1, 1, 1, 1)
+        tm:setShader(shader)
+        tm:setLayerShader(1, shader)
+        tm:render()
+        save_text(OUT .. "tilemap_shader_binding_contract.txt", table.concat({
+            "Tilemap shader binding evidence",
+            "constructor=lurek.render.newShader",
+            "target=" .. shader:getTarget(),
+            "tilemap.shader=" .. tm:getShader():getTarget(),
+            "tilemap.layer_shader=" .. tm:getLayerShader(1):getTarget(),
+            "render_submitted=true",
+        }, "\n") .. "\n")
+    end)
+
     -- Does: Runs "tilemap layers (ground + decoration overlay)" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.tilemap.newTileMap without needing a special evidence-only renderer.
     -- Artifact: tests/artifacts/current/tilemap/tilemap_layers.png

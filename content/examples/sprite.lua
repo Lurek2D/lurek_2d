@@ -1587,6 +1587,62 @@ do
     sprite_log("newSprite type=" .. kind .. " pos=" .. x .. "," .. y .. " has_normal=" .. tostring(has_normal))
 end
 
+--@api: LSprite:setShader
+do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+
+    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0, color.a);
+}
+]], { target = "sprite" })
+    sprite:setShader(shader)
+    local target = sprite:getShader():getTarget()
+    sprite:setShader(nil)
+    sprite_log("setShader target=" .. target .. " cleared=" .. tostring(sprite:getShader() == nil))
+end
+
+--@api: LSprite:getShader
+do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+
+    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0, color.a);
+}
+]], { target = "sprite" })
+    sprite:setShader(shader)
+    local bound = sprite:getShader()
+    local id = bound:getId()
+    sprite_log("getShader id=" .. id .. " target=" .. bound:getTarget())
+end
+
+--@api: LSprite:setShaderUniform
+do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+
+    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0, color.a);
+}
+]], { target = "sprite" })
+    sprite:setShader(shader)
+    sprite:setShaderUniform("team_color", { 0.2, 0.6, 1.0, 1.0 })
+    sprite_log("setShaderUniform team_color=" .. tostring(shader:hasUniform("team_color")))
+end
+
 --@api: LSprite:setNormalMap
 do
     local function sprite_log(message)

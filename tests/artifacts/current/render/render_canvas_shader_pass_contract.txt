@@ -1,0 +1,7 @@
+Render canvas shader pass evidence
+constructor=lurek.render.newShader
+target=postfx
+render.applyShaderToCanvas=LCanvas
+LCanvas.applyShader=LCanvas
+canvas_target_reuse=postfx
+screen_transition.use_cases=wipe,dissolve,fade_mask

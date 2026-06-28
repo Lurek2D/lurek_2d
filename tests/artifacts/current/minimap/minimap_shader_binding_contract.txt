@@ -1,0 +1,8 @@
+Minimap mapviz shader binding evidence
+constructor=lurek.render.newShader
+target=mapviz
+shader_id=4294967297
+bound_target=mapviz
+render_path=commands
+drawToImage_shadered=false
+cleared=true

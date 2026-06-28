@@ -405,6 +405,7 @@ pub fn validate_render_command(
             }
             Ok(())
         }
+        ApplyShaderToCanvas { passes, .. } => validate_postfx_passes(passes, limits),
         Points { points } => {
             validate_count("points", points.len(), limits.max_vertices_per_command)?;
             for &(x, y) in points {
@@ -722,6 +723,7 @@ pub fn validate_render_command(
         | StencilEnd
         | SetStencilTest(_)
         | SetShader(_)
+        | SetTextShader(_)
         | SyncMesh { .. }
         | BeginPostFx { .. }
         | EndPostFx { .. }

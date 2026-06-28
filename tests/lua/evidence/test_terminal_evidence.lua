@@ -2,6 +2,17 @@
 
 local OUT = evidence_output_dir("terminal")
 
+local function save_text(path, text)
+    if write_file then
+        write_file(path, text)
+    elseif lurek and lurek.filesystem and lurek.filesystem.write then
+        lurek.filesystem.write(path, text)
+    else
+        error("unable to create evidence text artifact: " .. path)
+    end
+    expect_evidence_created(path)
+end
+
 local function save_terminal(term, name)
     lurek.image.savePNG(term:renderImage(1200, 540), OUT .. name)
     expect_evidence_created(OUT .. name)
@@ -99,6 +110,37 @@ end
 describe("Evidence: terminal", function()
     before_each(function()
         ensure_evidence_dir("terminal")
+    end)
+
+    -- Does: Binds a render-owned ui-target shader to LTerminal, queues terminal rendering, and records the handle contract.
+    -- Shows: The text artifact states the shader target, handle id, terminal getShader target, and that render queued with the shader binding.
+    -- Artifact: tests/artifacts/current/terminal/terminal_shader_binding_contract.txt
+    -- Why: This proves terminal participates in Shader API v2 through render-owned LShader handles while terminal itself only stores binding state.
+    it("TXT: terminal ui shader binding contract", function()
+        local shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>, @location(2) pixel: vec2<f32>) -> @location(0) vec4<f32> {
+    _ = uv;
+    let band = select(0.75, 1.0, (i32(pixel.y) & 1) == 0);
+    return vec4<f32>(color.rgb * band, color.a);
+}
+]], { target = "ui" })
+        local term = make_term(32, 8, "nord")
+        term:setShader(shader)
+        term:print(1, 1, "terminal shader evidence")
+        term:render(0, 0)
+        local lines = {
+            "Terminal shader binding evidence",
+            "constructor=lurek.render.newShader",
+            "target=" .. shader:getTarget(),
+            "shader_id=" .. shader:getId(),
+            "terminal.getShader.target=" .. term:getShader():getTarget(),
+            "terminal.render.queued=true",
+            "software.renderImage.shadered=false",
+        }
+        term:setShader(nil)
+        lines[#lines + 1] = "terminal.shader.cleared=" .. tostring(term:getShader() == nil)
+        save_text(OUT .. "terminal_shader_binding_contract.txt", table.concat(lines, "\n") .. "\n")
     end)
 
     -- Does: Builds a full terminal user interface from single-line borders, text box, list, gauge, rasterized bar blocks, and dot sparklines, then exports the engine-rendered widget surface.

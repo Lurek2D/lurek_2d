@@ -1039,7 +1039,7 @@ LOverlay:getShader()
 ```lua
 do
     local ov = lurek.overlay.new(800, 600)
-    local shader = lurek.shader.new("@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }", { target = "overlay" })
+    local shader = lurek.render.newShader("@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }", { target = "overlay" })
     ov:setShader(shader)
     local active = ov:getShader()
     local target = active and active:getTarget() or "nil"
@@ -1075,7 +1075,7 @@ LOverlay:getShaderLayer(layer)
 ```lua
 do
     local ov = lurek.overlay.new(800, 600)
-    local shader = lurek.shader.new("@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }", { target = "overlay" })
+    local shader = lurek.render.newShader("@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }", { target = "overlay" })
     ov:setShaderLayer("heat_haze", shader)
     local active = ov:getShaderLayer("heat_haze")
     local target = active and active:getTarget() or "nil"
@@ -2882,7 +2882,7 @@ LOverlay:setShader(shader)
 ```lua
 do
     local ov = lurek.overlay.new(800, 600)
-    local shader = lurek.shader.new([[
+    local shader = lurek.render.newShader([[
 @fragment
 fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
     return vec4<f32>(color.rgb + uv.xyx * 0.0, color.a);
@@ -2915,7 +2915,7 @@ LOverlay:setShaderLayer(layer, shader)
 ```lua
 do
     local ov = lurek.overlay.new(800, 600)
-    local shader = lurek.shader.new([[
+    local shader = lurek.render.newShader([[
 @fragment
 fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
     return color;

@@ -1,11 +1,13 @@
 //! Registers the `lurek.parallax` Lua API for parallax layers, blend modes, sorting, and render command helpers.
 
 use super::SharedState;
-use crate::lua_api::render_api::LuaImage;
+use crate::lua_api::render_api::{
+    ensure_shader_target, shader_key_from_userdata, LuaImage, LuaShader,
+};
 use crate::parallax::layer::ParallaxLayer;
 use crate::parallax::presets;
-use crate::render::ShaderPassDescriptor;
 use crate::render::{BlendMode, RenderCommand};
+use crate::render::{ShaderPassDescriptor, ShaderTarget};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -97,31 +99,22 @@ impl LuaParallaxLayer {
         cam_x: f32,
         cam_y: f32,
     ) {
-        let screen_w = st.window_state.game_width;
-        let screen_h = st.window_state.game_height;
-        let Some(batch) = layer.build_draw_calls(cam_x, cam_y, screen_w, screen_h) else {
-            return;
-        };
-        st.render_commands.push(RenderCommand::SetColor(
-            batch.color[0],
-            batch.color[1],
-            batch.color[2],
-            batch.color[3],
-        ));
-        st.render_commands
-            .push(RenderCommand::SetBlendMode(batch.blend_mode));
-        for (tx, ty) in &batch.tiles {
-            st.render_commands.push(RenderCommand::DrawImageEx {
-                texture_key: batch.texture_key,
-                x: *tx,
-                y: *ty,
-                rotation: 0.0,
-                sx: batch.sx,
-                sy: batch.sy,
-                ox: 0.0,
-                oy: 0.0,
-                effect: batch.effect.clone(),
-            });
+        let previous_shader = st.active_shader;
+        let commands = layer.generate_render_commands(
+            cam_x,
+            cam_y,
+            st.window_state.game_width,
+            st.window_state.game_height,
+        );
+        let changed_shader = commands
+            .iter()
+            .any(|command| matches!(command, RenderCommand::SetShader(_)));
+        st.render_commands.extend(commands);
+        if changed_shader {
+            if let Some(shader_key) = previous_shader {
+                st.render_commands
+                    .push(RenderCommand::SetShader(Some(shader_key)));
+            }
         }
     }
 }
@@ -395,6 +388,31 @@ impl LuaUserData for LuaParallaxLayer {
         /// @return | number | Depth value.
         methods.add_method("getDepth", |_, this, ()| {
             Ok(this.layer.borrow().get_depth())
+        });
+        // -- setShader --
+        /// Binds a draw-target shader to this parallax layer's generated render commands. Pass nil to clear.
+        /// @param | shader | LShader? | Shader created with `lurek.render.newShader(code, { target = "draw" })`, or nil to clear.
+        methods.add_method("setShader", |_, this, shader: Option<LuaAnyUserData>| {
+            let key = match shader {
+                Some(shader_ud) => {
+                    let key = shader_key_from_userdata(&shader_ud)?;
+                    let st = this.state.borrow();
+                    ensure_shader_target(&st, key, ShaderTarget::Draw, "LParallaxLayer:setShader")?;
+                    Some(key)
+                }
+                None => None,
+            };
+            this.layer.borrow_mut().shader = key;
+            Ok(())
+        });
+        // -- getShader --
+        /// Returns the draw-target shader bound to this parallax layer, if any.
+        /// @return | LShader? | Bound shader handle, or nil.
+        methods.add_method("getShader", |_, this, ()| {
+            Ok(this.layer.borrow().shader.map(|key| LuaShader {
+                key,
+                state: this.state.clone(),
+            }))
         });
         // -- addEffectPass --
         /// Adds a shader effect pass to this layer.

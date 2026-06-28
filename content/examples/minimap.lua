@@ -2033,3 +2033,45 @@ do
     mm:syncProvinceRegistry(reg)
     minimap_log("province minimap terrain color blue = " .. tostring(select(3, mm:getTerrainColor(6))))
 end
+
+--@api: LMinimap:setShader
+do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+
+    local mm = lurek.minimap.newMinimap(16, 16, 128, 128)
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs(
+    @location(0) color: vec4<f32>,
+    @location(1) uv: vec2<f32>,
+    @location(2) pixel: vec2<f32>,
+    @location(3) resolution: vec2<f32>,
+    @location(4) texel: vec2<f32>
+) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb * vec3<f32>(1.1, 0.95, 0.8) + uv.xyx * 0.0 + pixel.xyx * 0.0 + resolution.xyx * texel.x * 0.0, color.a);
+}
+]], { target = "mapviz" })
+    mm:setShader(shader)
+    mm:render(12, 12)
+    minimap_log("minimap mapviz shader target=" .. mm:getShader():getTarget())
+end
+
+--@api: LMinimap:getShader
+do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+
+    local mm = lurek.minimap.newMinimap(16, 16, 128, 128)
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0, color.a);
+}
+]], { target = "mapviz" })
+    mm:setShader(shader)
+    local active = mm:getShader()
+    minimap_log("active minimap mapviz shader=" .. tostring(active and active:getTarget() or "nil"))
+end

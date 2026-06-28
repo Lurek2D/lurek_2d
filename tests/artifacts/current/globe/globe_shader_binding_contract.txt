@@ -1,0 +1,8 @@
+Globe shader binding evidence
+constructor=lurek.render.newShader
+target=mapviz
+shader_id=4294967297
+globe.setShader.accepted=true
+globe.getShader.id=4294967297
+globe.draw.queued_commands=true
+globe.shader.cleared=true

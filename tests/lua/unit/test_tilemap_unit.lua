@@ -35,6 +35,15 @@ local function new_ready_tilemap()
     return tm
 end
 
+local function tilemap_shader()
+    return lurek.render.newShader([[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0, color.a);
+}
+]], { target = "tilemap" })
+end
+
 local function new_ready_tileset()
     local ts = new_tileset()
     ts:setProfile(1, "blocked")
@@ -642,6 +651,53 @@ describe("LTileMap methods", function()
         local ok, err = tm:trySetTileTint(1, 99, 99, 1.0, 0.0, 0.0, 1.0)
         expect_equal(false, ok)
         expect_type("string", err)
+    end)
+
+    -- @covers LTileMap:setShader
+    it("setShader binds tilemap shaders and rejects wrong targets", function()
+        local tm = new_ready_tilemap()
+        local shader = tilemap_shader()
+        tm:setShader(shader)
+        expect_equal("tilemap", tm:getShader():getTarget())
+        tm:setShader(nil)
+        expect_equal(nil, tm:getShader())
+        expect_error(function()
+            tm:setShader(lurek.render.newShader([[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return color;
+}
+]], { target = "draw" }))
+        end)
+    end)
+
+    -- @covers LTileMap:getShader
+    it("getShader returns the tilemap shader handle", function()
+        local tm = new_ready_tilemap()
+        local shader = tilemap_shader()
+        tm:setShader(shader)
+        expect_equal(shader:getId(), tm:getShader():getId())
+    end)
+
+    -- @covers LTileMap:setLayerShader
+    it("setLayerShader binds and clears one layer shader override", function()
+        local tm = new_ready_tilemap()
+        local shader = tilemap_shader()
+        tm:setLayerShader(1, shader)
+        expect_equal("tilemap", tm:getLayerShader(1):getTarget())
+        tm:setLayerShader(1, nil)
+        expect_equal(nil, tm:getLayerShader(1))
+        expect_error(function()
+            tm:setLayerShader(99, shader)
+        end)
+    end)
+
+    -- @covers LTileMap:getLayerShader
+    it("getLayerShader rejects invalid one-based layer indices", function()
+        local tm = new_ready_tilemap()
+        expect_error(function()
+            tm:getLayerShader(0)
+        end)
     end)
 
     -- @covers LTileMap:renderFieldCatalogSlot

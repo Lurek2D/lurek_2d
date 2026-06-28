@@ -1668,6 +1668,49 @@ end
 
 ---
 
+#### `LProvinceRegistry:getShader`
+
+Returns the currently bound command-render province shader, or nil.
+
+```lua
+LProvinceRegistry:getShader()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LShader](render.md#lshader)? | Bound shader handle. |
+
+**Example**
+
+```lua
+do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
+    local reg = province_registry("get_shader", "content/examples/assets/province/map.png")
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0, color.a);
+}
+]], { target = "mapviz" })
+    reg:setShader(shader)
+    local active = reg:getShader()
+    province_log("active province mapviz shader=" .. tostring(active and active:getTarget() or "nil"))
+end
+```
+
+---
+
 #### `LProvinceRegistry:getWidth`
 
 Returns the width of the province grid in cells (pixels of the source PNG).
@@ -2762,6 +2805,55 @@ do
 
     province_log("province_id = " .. tostring(province_id))
     province_log("applied = " .. tostring(ok))
+end
+```
+
+---
+
+#### `LProvinceRegistry:setShader`
+
+Binds or clears a `mapviz` shader for command-rendered province visualization.
+
+```lua
+LProvinceRegistry:setShader(shader)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `shader?` | [LShader](render.md#lshader) | Shader created by `lurek.render.newShader(code, { target = "mapviz" })`, or nil to clear. |
+
+**Example**
+
+```lua
+do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
+    local reg = province_registry("set_shader", "content/examples/assets/province/map.png")
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs(
+    @location(0) color: vec4<f32>,
+    @location(1) uv: vec2<f32>,
+    @location(2) pixel: vec2<f32>,
+    @location(3) resolution: vec2<f32>,
+    @location(4) texel: vec2<f32>
+) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb * vec3<f32>(0.8, 1.0, 1.1) + uv.xyx * 0.0 + pixel.xyx * 0.0 + resolution.xyx * texel.x * 0.0, color.a);
+}
+]], { target = "mapviz" })
+    reg:setShader(shader)
+    reg:render({ backend = "commands", draw_labels = false })
+    province_log("province mapviz shader target=" .. reg:getShader():getTarget())
 end
 ```
 

@@ -375,6 +375,11 @@ pub enum RenderCommand {
     },
     /// Mark a canvas as needing a full clear before its next render pass.
     ResetCanvas(CanvasKey),
+    /// Apply post-fx shader passes to a canvas render target after queued canvas draws.
+    ApplyShaderToCanvas {
+        canvas_key: CanvasKey,
+        passes: Vec<PostFxPass>,
+    },
     /// Draw a list of screen-space points.
     Points { points: Vec<(f32, f32)> },
     /// Set the point-sprite size in pixels.
@@ -403,6 +408,8 @@ pub enum RenderCommand {
     SetStencilTest(Option<(CompareMode, u8)>),
     /// Set or clear the active WGSL shader; `None` restores the default pipeline.
     SetShader(Option<ShaderKey>),
+    /// Set or clear the active text WGSL shader; `None` restores text's default pipeline.
+    SetTextShader(Option<ShaderKey>),
     /// Draw a registered mesh with full transform parameters.
     DrawMesh {
         mesh_key: MeshKey,
@@ -663,7 +670,8 @@ impl RenderCommand {
             | StencilBegin { .. }
             | StencilEnd
             | SetStencilTest(..)
-            | SetShader(..) => RenderCommandCategory::State,
+            | SetShader(..)
+            | SetTextShader(..) => RenderCommandCategory::State,
             PushTransform
             | PopTransform
             | Translate { .. }
@@ -701,9 +709,11 @@ impl RenderCommand {
             | DrawRichText { .. }
             | DrawRichTextTransformed { .. }
             | PrintFormatted { .. } => RenderCommandCategory::Text,
-            SetCanvas(..) | DrawCanvas { .. } | RegisterCanvas { .. } | ResetCanvas(..) => {
-                RenderCommandCategory::Canvas
-            }
+            SetCanvas(..)
+            | DrawCanvas { .. }
+            | RegisterCanvas { .. }
+            | ResetCanvas(..)
+            | ApplyShaderToCanvas { .. } => RenderCommandCategory::Canvas,
             DrawMesh { .. }
             | SyncMesh { .. }
             | DrawMeshTransient { .. }

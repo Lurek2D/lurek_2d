@@ -844,6 +844,113 @@ do
     example_print_log("rendered with offset")
 end
 
+--@api: LTileMap:setShader
+do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+
+    local code = [[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(mix(color.rgb, vec3<f32>(uv.x, 0.45, 0.2), 0.25), color.a);
+}
+]]
+    local shader = lurek.render.newShader(code, { target = "tilemap" })
+    local map = lurek.tilemap.newTileMap(32, 32)
+    map:addLayer("ground", 4, 4)
+    map:setTile(1, 1, 1, 1)
+    map:setShader(shader)
+    map:render()
+    example_print_log("tilemap shader target = " .. map:getShader():getTarget())
+end
+
+--@api: LTileMap:getShader
+do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb * vec3<f32>(1.0, 0.9, 0.75), color.a);
+}
+]], { target = "tilemap" })
+    local map = lurek.tilemap.newTileMap(32, 32)
+    map:addLayer("ground", 2, 2)
+    map:setShader(shader)
+    local bound = map:getShader()
+    example_print_log("bound tilemap shader id = " .. tostring(bound:getId()))
+end
+
+--@api: LTileMap:setLayerShader
+do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rg, max(color.b, uv.x), color.a);
+}
+]], { target = "tilemap" })
+    local map = lurek.tilemap.newTileMap(16, 16)
+    map:addLayer("base", 3, 3)
+    map:addLayer("water", 3, 3)
+    map:setLayerShader(2, shader)
+    map:render()
+    example_print_log("layer shader target = " .. map:getLayerShader(2):getTarget())
+end
+
+--@api: LTileMap:getLayerShader
+do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb * 1.1, color.a);
+}
+]], { target = "tilemap" })
+    local map = lurek.tilemap.newTileMap(16, 16)
+    map:addLayer("highlight", 2, 2)
+    map:setLayerShader(1, shader)
+    local layer_shader = map:getLayerShader(1)
+    example_print_log("layer shader id = " .. tostring(layer_shader:getId()))
+end
+
 --@api: LTileMap:worldToTile
 do
     local function tilemap_log(message)

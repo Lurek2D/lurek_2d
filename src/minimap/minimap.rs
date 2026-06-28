@@ -20,7 +20,7 @@ use super::types::{
 use crate::camera::Camera2D;
 use crate::log_msg;
 use crate::runtime::log_messages::MM01_MINIMAP_INIT;
-use crate::runtime::resource_keys::TextureKey;
+use crate::runtime::resource_keys::{ShaderKey, TextureKey};
 use std::collections::HashMap;
 
 /// Cached icon dimensions for one object type or marker texture slot.
@@ -111,6 +111,8 @@ pub struct Minimap {
     layer_styles: Vec<LayerStyle>,
     /// Currently active render layer index.
     active_layer: usize,
+    /// Optional render-owned shader binding for minimap command visualization.
+    shader: Option<ShaderKey>,
 }
 
 impl Minimap {
@@ -374,7 +376,18 @@ impl Minimap {
             layers: Vec::new(),
             layer_styles: Vec::new(),
             active_layer: 0,
+            shader: None,
         })
+    }
+
+    /// Bind or clear a render-owned shader used when command-rendering minimap visualization.
+    pub fn set_shader(&mut self, shader: Option<ShaderKey>) {
+        self.shader = shader;
+    }
+
+    /// Return the currently bound command-render visualization shader, if any.
+    pub fn get_shader(&self) -> Option<ShaderKey> {
+        self.shader
     }
 
     /// Return the number of grid columns.

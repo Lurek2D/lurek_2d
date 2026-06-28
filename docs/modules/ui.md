@@ -405,7 +405,7 @@ end
 
 ### `lurek.ui.draw`
 
-Invokes custom draw callbacks for all widgets that have one registered.
+Queues retained UI render commands, then invokes custom draw callbacks for widgets that registered one.
 
 ```lua
 lurek.ui.draw()
@@ -20227,6 +20227,98 @@ do
     example_print_log("button text = " .. btn:getText())
     example_print_log("button width = " .. select(3, btn:getRect()))
     example_print_log("button enabled = " .. tostring(btn:isEnabled()))
+end
+```
+
+---
+
+#### `LUiWidget:setShader`
+
+Binds or clears a render-owned UI shader for this widget subtree.
+
+```lua
+LUiWidget:setShader(shader, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `shader?` | [LShader](render.md#lshader) | Shader created with `lurek.render.newShader(code, { target = "ui" })`, or nil to clear. |
+| `opts?` | table | Reserved options table for future UI shader parameters. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>, @location(2) pixel: vec2<f32>) -> @location(0) vec4<f32> {
+    let tint = vec3<f32>(0.15 + uv.x * 0.5, 0.45, 0.9);
+    return vec4<f32>(mix(color.rgb, tint, 0.35 + pixel.x * 0.0), color.a);
+}
+]], { target = "ui" })
+    local button = lurek.ui.newButton("Shader Button")
+    button:setPosition(24, 24)
+    button:setSize(160, 36)
+    button:setShader(shader)
+    lurek.ui.draw()
+    example_print_log("ui widget shader = " .. shader:getTarget())
+end
+```
+
+---
+
+#### `LUiWidget:setShaderLayer`
+
+Binds or clears a named render-owned UI shader layer for this widget subtree.
+
+```lua
+LUiWidget:setShaderLayer(name, shader, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Layer name. Names are sorted deterministically when choosing the active layer. |
+| `shader?` | [LShader](render.md#lshader) | Shader created with `lurek.render.newShader(code, { target = "ui" })`, or nil to clear the layer. |
+| `opts?` | table | Reserved options table for future UI shader parameters. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(3) resolution: vec2<f32>) -> @location(0) vec4<f32> {
+    let keep = clamp(resolution.x / max(resolution.x, 1.0), 0.0, 1.0);
+    return vec4<f32>(color.rgb * vec3<f32>(keep, 0.85, 1.15), color.a);
+}
+]], { target = "ui" })
+    local panel = lurek.ui.newPanel()
+    panel:setPosition(16, 80)
+    panel:setSize(220, 96)
+    panel:setShaderLayer("panel_tint", shader)
+    lurek.ui.draw()
+    panel:setShaderLayer("panel_tint", nil)
+    example_print_log("ui shader layer cleared")
 end
 ```
 

@@ -1,0 +1,8 @@
+Parallax shader binding evidence
+constructor=lurek.render.newShader
+target=draw
+shader_id=4294967297
+layer.setShader.accepted=true
+layer.getShader.id=4294967297
+render.queued_layer_commands=true
+layer.shader.cleared=true

@@ -1,8 +1,10 @@
 //! Registers the `lurek.ui` Lua API for widget userdata, render-to-image helpers, dialogs, and typed widgets.
 
 use super::dataframe_api::LuaDataFrame;
-use super::render_api::LuaFont;
+use super::render_api::{ensure_shader_target, LuaFont, LuaShader};
 use super::SharedState;
+use crate::render::renderer::RenderCommand;
+use crate::render::ShaderTarget;
 use crate::ui::containers::LayoutDirection;
 use crate::ui::context::{GuiContext, GuiEvent, UiBindingValue, WidgetKind};
 use crate::ui::extras::{
@@ -93,6 +95,20 @@ fn parse_render_to_image_args(args: LuaMultiValue) -> LuaResult<(u32, u32, Strin
         let height = render_to_image_u32_arg("height", &second)?;
         let path = render_to_image_string_arg("path", third)?;
         Ok((width, height, path))
+    }
+}
+
+fn extend_ui_render_commands(st: &mut SharedState, commands: Vec<RenderCommand>) {
+    let previous_shader = st.active_shader;
+    let changed_shader = commands
+        .iter()
+        .any(|command| matches!(command, RenderCommand::SetShader(_)));
+    st.render_commands.extend(commands);
+    if changed_shader {
+        if let Some(shader_key) = previous_shader {
+            st.render_commands
+                .push(RenderCommand::SetShader(Some(shader_key)));
+        }
     }
 }
 
@@ -1097,6 +1113,89 @@ fn create_widget_table<'a>(
             cbs2.borrow_mut().on_draw.insert(idx, key);
             Ok(())
         })?,
+    )?;
+    let c = ctx.clone();
+    // -- setShader --
+    /// Binds or clears a render-owned UI shader for this widget subtree.
+    /// @param | self | LUiWidget | The widget instance.
+    /// @param | shader | LShader? | Shader created with `lurek.render.newShader(code, { target = "ui" })`, or nil to clear.
+    /// @param | opts | table? | Reserved options table for future UI shader parameters.
+    t.set(
+        "setShader",
+        lua.create_function(
+            move |_, (_self, shader, _opts): (LuaValue, Option<LuaAnyUserData>, Option<LuaTable>)| {
+                let shader_key = if let Some(shader_ud) = shader {
+                    let shader = shader_ud.borrow::<LuaShader>().map_err(|_| {
+                        LuaError::RuntimeError(
+                            "LUiWidget:setShader expects LShader from lurek.render.newShader"
+                                .to_string(),
+                        )
+                    })?;
+                    let key = shader.key;
+                    let st = shader.state.borrow();
+                    ensure_shader_target(&st, key, ShaderTarget::Ui, "LUiWidget:setShader")?;
+                    Some(key)
+                } else {
+                    None
+                };
+                let mut g = c.borrow_mut();
+                if let Some(widget) = g.widgets.get_mut(idx) {
+                    widget.base_mut().shader = shader_key;
+                    g.mark_widget_dirty(false, false, false, true);
+                }
+                Ok(())
+            },
+        )?,
+    )?;
+    let c = ctx.clone();
+    // -- setShaderLayer --
+    /// Binds or clears a named render-owned UI shader layer for this widget subtree.
+    /// @param | self | LUiWidget | The widget instance.
+    /// @param | name | string | Layer name. Names are sorted deterministically when choosing the active layer.
+    /// @param | shader | LShader? | Shader created with `lurek.render.newShader(code, { target = "ui" })`, or nil to clear the layer.
+    /// @param | opts | table? | Reserved options table for future UI shader parameters.
+    t.set(
+        "setShaderLayer",
+        lua.create_function(
+            move |_,
+                  (_self, name, shader, _opts): (
+                LuaValue,
+                String,
+                Option<LuaAnyUserData>,
+                Option<LuaTable>,
+            )| {
+                if name.trim().is_empty() {
+                    return Err(LuaError::RuntimeError(
+                        "LUiWidget:setShaderLayer: name must not be empty".to_string(),
+                    ));
+                }
+                let shader_key = if let Some(shader_ud) = shader {
+                    let shader = shader_ud.borrow::<LuaShader>().map_err(|_| {
+                        LuaError::RuntimeError(
+                            "LUiWidget:setShaderLayer expects LShader from lurek.render.newShader"
+                                .to_string(),
+                        )
+                    })?;
+                    let key = shader.key;
+                    let st = shader.state.borrow();
+                    ensure_shader_target(&st, key, ShaderTarget::Ui, "LUiWidget:setShaderLayer")?;
+                    Some(key)
+                } else {
+                    None
+                };
+                let mut g = c.borrow_mut();
+                if let Some(widget) = g.widgets.get_mut(idx) {
+                    let layers = &mut widget.base_mut().shader_layers;
+                    if let Some(key) = shader_key {
+                        layers.insert(name, key);
+                    } else {
+                        layers.remove(&name);
+                    }
+                    g.mark_widget_dirty(false, false, false, true);
+                }
+                Ok(())
+            },
+        )?,
     )?;
     let c = ctx.clone();
     // -- containsPoint --
@@ -8397,12 +8496,23 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
     let c = ctx.clone();
+    let s_draw = state.clone();
     let cbs_draw = callbacks.clone();
     // -- draw --
-    /// Invokes custom draw callbacks for all widgets that have one registered.
+    /// Queues retained UI render commands, then invokes custom draw callbacks for widgets that registered one.
     tbl.set(
         "draw",
         lua.create_function(move |lua, ()| {
+            let commands = {
+                let font_key = {
+                    let st = s_draw.borrow();
+                    st.active_font.or(st.default_font)
+                };
+                font_key.map(|font_key| c.borrow_mut().build_render_commands(font_key))
+            };
+            if let Some(commands) = commands {
+                extend_ui_render_commands(&mut s_draw.borrow_mut(), commands);
+            }
             let widget_ids: Vec<usize> = cbs_draw.borrow().on_draw.keys().copied().collect();
             for widget_idx in widget_ids {
                 let (rx, ry, rw, rh) = {

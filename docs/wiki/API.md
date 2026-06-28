@@ -16,16 +16,16 @@ The Wiki does not duplicate the full API reference. Use it as a map to the offic
 
 ## Official API Sources
 
-- Full Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (9591 lines)
-- LuaCATS editor stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (34764 lines)
+- Full Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (9605 lines)
+- LuaCATS editor stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (34875 lines)
 - Runtime callbacks: [docs/api/callbacks.md](../blob/main/docs/api/callbacks.md)
 - Lureksome library API: [docs/api/lureksome.md](../blob/main/docs/api/lureksome.md)
 - Machine-readable Lua API data: [build/docs-data/lua_api.json](../blob/main/build/docs-data/lua_api.json)
 
 ## Coverage
 
-- 72 modules
-- 6401 functions and methods
+- 71 modules
+- 6427 functions and methods
 - 99.9% documented
 
 ## Module Map
@@ -90,7 +90,6 @@ Use the module guides for cookbook-level orientation, then open the full API ref
 | [lurek.save](https://lurek2d.github.io/lurek_2d/modules/save.html) | The save module is the persistence-lifecycle surface for users who want game state to be stored, versioned, and restored as a managed workflow instead of a raw file dump. |
 | [lurek.scene](https://lurek2d.github.io/lurek_2d/modules/scene.html) | The scene module is the high-level flow coordinator for users who want menus, gameplay states, overlays, pause layers, and transitions to behave like one ordered stack instead of a collection of unrelated toggles. |
 | [lurek.serialize](https://lurek2d.github.io/lurek_2d/modules/serialize.html) | The serialize module is the format-translation surface for users who want several external data formats to map into one shared runtime value model. |
-| [lurek.shader](https://lurek2d.github.io/lurek_2d/modules/shader.html) | WGSL is the only supported user shader language. |
 | [lurek.spine](https://lurek2d.github.io/lurek_2d/modules/spine.html) | The spine module is the skeletal-animation surface for users who want bone-based rigs, slots, skins, and timeline-driven pose changes inside the engine. |
 | [lurek.sprite](https://lurek2d.github.io/lurek_2d/modules/sprite.html) | The sprite module is the engine's textured-2D surface for users who want single sprites, sheets, atlases, scalable panels, and batched instances to share one coherent runtime model. |
 | [lurek.svg](https://lurek2d.github.io/lurek_2d/modules/svg.html) | The svg module is the engine surface for scalable SVG artwork, aimed at users who want SVG-style content to stay editable and resolution-independent for as long as possible. |

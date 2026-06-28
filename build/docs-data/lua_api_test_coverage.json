@@ -1,15 +1,15 @@
 {
   "meta": {
-    "generated": "2026-06-27T21:18:32.912204+00:00",
+    "generated": "2026-06-28T10:55:56.551306+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
-    "total_api_functions": 6405,
-    "marker_covered": 6377,
+    "total_api_functions": 6431,
+    "marker_covered": 6406,
     "describe_covered": 150,
     "describe_coverage_pct": 2.3,
-    "heuristic_covered": 3,
-    "total_covered": 6405,
+    "heuristic_covered": 0,
+    "total_covered": 6431,
     "coverage_pct": 100.0
   },
   "modules": {
@@ -20580,11 +20580,11 @@
       ]
     },
     "globe": {
-      "total": 114,
-      "marker_covered": 114,
+      "total": 116,
+      "marker_covered": 116,
       "describe_covered": 1,
       "heuristic_covered": 0,
-      "covered": 114,
+      "covered": 116,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.9,
       "describe_score": 0.009,
@@ -21452,6 +21452,24 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "LGlobe:setShader",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LGlobe:getShader",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "LGlobe:draw",
           "kind": "method",
           "marker_covered": true,
@@ -22130,9 +22148,9 @@
     },
     "image": {
       "total": 121,
-      "marker_covered": 118,
+      "marker_covered": 121,
       "describe_covered": 0,
-      "heuristic_covered": 3,
+      "heuristic_covered": 0,
       "covered": 121,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
@@ -22281,27 +22299,27 @@
         {
           "lua_name": "LImageShaderJob:poll",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LImageShaderJob:wait",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LImageShaderJob:cancel",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
@@ -29950,11 +29968,11 @@
       ]
     },
     "minimap": {
-      "total": 96,
-      "marker_covered": 96,
+      "total": 98,
+      "marker_covered": 98,
       "describe_covered": 1,
       "heuristic_covered": 0,
-      "covered": 96,
+      "covered": 98,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 1.0,
       "describe_score": 0.01,
@@ -30041,6 +30059,24 @@
         },
         {
           "lua_name": "LMinimap:setDisplaySize",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LMinimap:setShader",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LMinimap:getShader",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -32870,11 +32906,11 @@
       ]
     },
     "parallax": {
-      "total": 53,
-      "marker_covered": 53,
+      "total": 55,
+      "marker_covered": 55,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 53,
+      "covered": 55,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -33174,6 +33210,24 @@
         },
         {
           "lua_name": "LParallaxLayer:getDepth",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LParallaxLayer:setShader",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LParallaxLayer:getShader",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -42142,11 +42196,11 @@
       ]
     },
     "province": {
-      "total": 62,
-      "marker_covered": 62,
+      "total": 64,
+      "marker_covered": 64,
       "describe_covered": 1,
       "heuristic_covered": 0,
-      "covered": 62,
+      "covered": 64,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 1.6,
       "describe_score": 0.016,
@@ -42313,6 +42367,24 @@
         },
         {
           "lua_name": "LProvinceRegistry:getHeight",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProvinceRegistry:setShader",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProvinceRegistry:getShader",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -42719,11 +42791,11 @@
       ]
     },
     "raycaster": {
-      "total": 126,
-      "marker_covered": 126,
+      "total": 128,
+      "marker_covered": 128,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 126,
+      "covered": 128,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -42807,6 +42879,24 @@
         },
         {
           "lua_name": "lurek.raycaster.getLastBuildStats",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.raycaster.setShader",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.raycaster.getShader",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -43870,20 +43960,19 @@
       ]
     },
     "render": {
-      "total": 209,
-      "marker_covered": 209,
+      "total": 215,
+      "marker_covered": 215,
       "describe_covered": 2,
       "heuristic_covered": 0,
-      "covered": 209,
+      "covered": 215,
       "coverage_pct": 100.0,
-      "describe_coverage_pct": 1.0,
-      "describe_score": 0.01,
+      "describe_coverage_pct": 0.9,
+      "describe_score": 0.009,
       "uncovered": [],
       "test_files": [
         "tests/lua/unit/test_font_unit.lua",
         "tests/lua/unit/test_image_unit.lua",
         "tests/lua/unit/test_render_unit.lua",
-        "tests/lua/unit/test_shader_unit.lua",
         "tests/lua/unit/test_shape_unit.lua",
         "tests/lua/unit/test_sprite_unit.lua"
       ],
@@ -44369,6 +44458,15 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "lurek.render.applyShaderToCanvas",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "lurek.render.setCanvas",
           "kind": "function",
           "marker_covered": true,
@@ -44433,6 +44531,42 @@
         },
         {
           "lua_name": "lurek.render.getShader",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.render.setTextShader",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.render.getTextShader",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.render.setDebugShader",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.render.getDebugShader",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -45243,6 +45377,15 @@
         },
         {
           "lua_name": "LCanvas:getDimensions",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LCanvas:applyShader",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -47142,32 +47285,6 @@
         }
       ]
     },
-    "shader": {
-      "total": 1,
-      "marker_covered": 1,
-      "describe_covered": 0,
-      "heuristic_covered": 0,
-      "covered": 1,
-      "coverage_pct": 100.0,
-      "describe_coverage_pct": 0.0,
-      "describe_score": 0.0,
-      "uncovered": [],
-      "test_files": [
-        "tests/lua/unit/test_shader_unit.lua"
-      ],
-      "describe_files": [],
-      "functions": [
-        {
-          "lua_name": "lurek.shader.new",
-          "kind": "function",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        }
-      ]
-    },
     "spine": {
       "total": 44,
       "marker_covered": 44,
@@ -47582,11 +47699,11 @@
       ]
     },
     "sprite": {
-      "total": 76,
-      "marker_covered": 76,
+      "total": 79,
+      "marker_covered": 79,
       "describe_covered": 1,
       "heuristic_covered": 0,
-      "covered": 76,
+      "covered": 79,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 1.3,
       "describe_score": 0.013,
@@ -47771,6 +47888,33 @@
         },
         {
           "lua_name": "LSprite:getNormalIntensity",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LSprite:setShader",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LSprite:getShader",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LSprite:setShaderUniform",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -48798,14 +48942,14 @@
       ]
     },
     "terminal": {
-      "total": 97,
-      "marker_covered": 97,
+      "total": 99,
+      "marker_covered": 99,
       "describe_covered": 2,
       "heuristic_covered": 0,
-      "covered": 97,
+      "covered": 99,
       "coverage_pct": 100.0,
-      "describe_coverage_pct": 2.1,
-      "describe_score": 0.021,
+      "describe_coverage_pct": 2.0,
+      "describe_score": 0.02,
       "uncovered": [],
       "test_files": [
         "tests/lua/unit/test_terminal_unit.lua"
@@ -49230,6 +49374,24 @@
         },
         {
           "lua_name": "LTerminal:getRenderStats",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTerminal:setShader",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTerminal:getShader",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -51092,11 +51254,11 @@
       ]
     },
     "tilemap": {
-      "total": 125,
-      "marker_covered": 125,
+      "total": 129,
+      "marker_covered": 129,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 125,
+      "covered": 129,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -51613,6 +51775,42 @@
         },
         {
           "lua_name": "LTileMap:trySetTileTint",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileMap:setShader",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileMap:getShader",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileMap:setLayerShader",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileMap:getLayerShader",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -54017,11 +54215,11 @@
       ]
     },
     "ui": {
-      "total": 476,
-      "marker_covered": 476,
+      "total": 478,
+      "marker_covered": 478,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 476,
+      "covered": 478,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -55446,6 +55644,24 @@
         },
         {
           "lua_name": "LUiWidget:setOnDraw",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LUiWidget:setShader",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LUiWidget:setShaderLayer",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,

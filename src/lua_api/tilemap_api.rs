@@ -1,8 +1,11 @@
 //! Registers the `lurek.tilemap` Lua API for tilemap userdata, imports, one-based coordinates, and validation.
 
+use super::render_api::{ensure_shader_target, shader_key_from_userdata, LuaShader};
 use super::tilefield_api::{field_from_provider, LuaTileField};
 use super::tileset_api::{tileset_from_provider, LuaTileCatalog, LuaTileSet};
 use super::SharedState;
+use crate::render::renderer::RenderCommand;
+use crate::render::ShaderTarget;
 use crate::tilemap::autotile_sheet::{layout_name, AutoTileLayout, AutoTileSheet};
 use crate::tilemap::chunk::ChunkMap;
 use crate::tilemap::coords;
@@ -45,6 +48,20 @@ fn tilemap_import_error_table<'lua>(
     err.set("line", line)?;
     err.set("column", column)?;
     Ok(err)
+}
+
+fn extend_tilemap_render_commands(st: &mut SharedState, commands: Vec<RenderCommand>) {
+    let previous_shader = st.active_shader;
+    let changed_shader = commands
+        .iter()
+        .any(|command| matches!(command, RenderCommand::SetShader(_)));
+    st.render_commands.extend(commands);
+    if changed_shader {
+        if let Some(shader_key) = previous_shader {
+            st.render_commands
+                .push(RenderCommand::SetShader(Some(shader_key)));
+        }
+    }
 }
 
 fn tilemap_limits_from_table(opts: Option<&LuaTable>) -> LuaResult<TileMapLimits> {
@@ -821,6 +838,77 @@ impl LuaUserData for LuaTileMap {
                 Err(err) => Ok((false, Some(err.to_string()))),
             },
         );
+        // -- setShader --
+        /// Binds a tilemap-target shader to this map's generated render commands. Pass nil to clear.
+        /// @param | shader | LShader? | Shader created with `lurek.render.newShader(code, { target = "tilemap" })`.
+        methods.add_method_mut("setShader", |_, this, shader: Option<LuaAnyUserData>| {
+            match shader {
+                Some(shader_ud) => {
+                    let key = shader_key_from_userdata(&shader_ud)?;
+                    let st = this.state.borrow();
+                    ensure_shader_target(&st, key, ShaderTarget::Tilemap, "LTileMap:setShader")?;
+                    drop(st);
+                    this.inner.borrow_mut().set_shader(Some(key));
+                }
+                None => this.inner.borrow_mut().set_shader(None),
+            }
+            Ok(())
+        });
+        // -- getShader --
+        /// Returns the tilemap shader bound to this map, or nil when none is bound.
+        /// @return | LShader? | Bound shader handle.
+        methods.add_method("getShader", |_, this, ()| {
+            Ok(this.inner.borrow().get_shader().map(|key| LuaShader {
+                state: this.state.clone(),
+                key,
+            }))
+        });
+        // -- setLayerShader --
+        /// Binds a tilemap-target shader override to one layer. Pass nil to clear the layer override.
+        /// @param | layer | integer | Layer index (1-based).
+        /// @param | shader | LShader? | Shader created with `lurek.render.newShader(code, { target = "tilemap" })`.
+        methods.add_method_mut(
+            "setLayerShader",
+            |_, this, (layer, shader): (usize, Option<LuaAnyUserData>)| {
+                let layer_index = one_based_usize("layer", layer)?;
+                let key = match shader {
+                    Some(shader_ud) => {
+                        let key = shader_key_from_userdata(&shader_ud)?;
+                        let st = this.state.borrow();
+                        ensure_shader_target(
+                            &st,
+                            key,
+                            ShaderTarget::Tilemap,
+                            "LTileMap:setLayerShader",
+                        )?;
+                        Some(key)
+                    }
+                    None => None,
+                };
+                this.inner
+                    .borrow_mut()
+                    .set_layer_shader(layer_index, key)
+                    .map_err(|err| {
+                        LuaError::RuntimeError(format!("LTileMap:setLayerShader: {err}"))
+                    })?;
+                Ok(())
+            },
+        );
+        // -- getLayerShader --
+        /// Returns the shader override bound to one layer, or nil when the layer has no override.
+        /// @param | layer | integer | Layer index (1-based).
+        /// @return | LShader? | Bound layer shader handle.
+        methods.add_method("getLayerShader", |_, this, layer: usize| {
+            let layer_index = one_based_usize("layer", layer)?;
+            Ok(this
+                .inner
+                .borrow()
+                .get_layer_shader(layer_index)
+                .map(|key| LuaShader {
+                    state: this.state.clone(),
+                    key,
+                }))
+        });
         // -- render --
         /// Submits render commands for all visible tiles, optionally offset by a scroll position.
         /// @param | ox | number? | Horizontal scroll offset (default 0).
@@ -829,7 +917,7 @@ impl LuaUserData for LuaTileMap {
             let sx = ox.unwrap_or(0.0);
             let sy = oy.unwrap_or(0.0);
             let cmds = this.inner.borrow().build_render_commands(sx, sy);
-            this.state.borrow_mut().render_commands.extend(cmds);
+            extend_tilemap_render_commands(&mut this.state.borrow_mut(), cmds);
             Ok(())
         });
 
@@ -871,7 +959,7 @@ impl LuaUserData for LuaTileMap {
                     })
                     .map_err(LuaError::RuntimeError)?;
                 drop(state);
-                this.state.borrow_mut().render_commands.extend(commands);
+                extend_tilemap_render_commands(&mut this.state.borrow_mut(), commands);
                 Ok(())
             },
         );
@@ -918,7 +1006,7 @@ impl LuaUserData for LuaTileMap {
                     )
                     .map_err(LuaError::RuntimeError)?;
                 drop(state);
-                this.state.borrow_mut().render_commands.extend(commands);
+                extend_tilemap_render_commands(&mut this.state.borrow_mut(), commands);
                 Ok(())
             },
         );

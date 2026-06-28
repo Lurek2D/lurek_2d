@@ -18,7 +18,7 @@
 - Source path: `src/ui`
 - Binding: `src/lua_api/ui_api.rs`
 - Namespace: `lurek.ui`
-- Lua API surface: `106` functions, `42` types, `370` methods
+- Lua API surface: `106` functions, `42` types, `372` methods
 - User-facing: `true`
 - Plugin tier: `tier_1_plugin`
 
@@ -224,7 +224,7 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `lurek.ui.clear() -> integer`: Clears all retained UI widgets and transient UI state while keeping the active theme.
 - `lurek.ui.clearFocus() -> nil`: Clears keyboard focus from all widgets.
 - `lurek.ui.clearFont() -> nil`: Clears the global UI font override so the UI falls back to the active render font again.
-- `lurek.ui.draw() -> nil`: Invokes custom draw callbacks for all widgets that have one registered.
+- `lurek.ui.draw() -> nil`: Queues retained UI render commands, then invokes custom draw callbacks for widgets that registered one.
 - `lurek.ui.drawToImage(w, h) -> LImageData`: Renders the entire UI to an image buffer.
 - `lurek.ui.dropOn(target) -> boolean`: Drops the currently dragged widget onto a target widget.
 - `lurek.ui.endDrag() -> integer`: Ends the current drag operation without dropping.
@@ -1161,6 +1161,8 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `LUiWidget:setPadding(top, right?, bottom?, left?) -> nil`: Sets the inner padding of this widget. Accepts 1 to 4 values (top, right?, bottom?, left?) following CSS shorthand rules.
 - `LUiWidget:setPosition(x, y) -> nil`: Sets the local position of this widget relative to its parent.
 - `LUiWidget:setRole(role) -> nil`: Sets a semantic role string for this widget.
+- `LUiWidget:setShader(shader?, opts?) -> nil`: Binds or clears a render-owned UI shader for this widget subtree.
+- `LUiWidget:setShaderLayer(name, shader?, opts?) -> nil`: Binds or clears a named render-owned UI shader layer for this widget subtree.
 - `LUiWidget:setSize(w, h) -> nil`: Sets the width and height of this widget in pixels.
 - `LUiWidget:setStyleClass(class) -> boolean`: Sets the style class of this widget.
 - `LUiWidget:setTabIndex(value) -> nil`: Sets the tab-order index for this widget.
@@ -1228,6 +1230,7 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 | Current artifact | `tests/artifacts/current/ui/structured_widget_custom_surface.png` |
 | Current artifact | `tests/artifacts/current/ui/structured_widget_table.png` |
 | Current artifact | `tests/artifacts/current/ui/structured_widget_tree_view.png` |
+| Current artifact | `tests/artifacts/current/ui/ui_shader_binding_contract.txt` |
 | Current artifact | `tests/artifacts/current/ui/visual_widget_image.png` |
 | Current artifact | `tests/artifacts/current/ui/visual_widget_nine_patch.png` |
 | Baseline artifact | `tests/artifacts/baselines/ui/container_widget_inspector_panel.png` |
@@ -1262,4 +1265,6 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 
 ## Notes
 
-- No additional module-specific notes.
+- `LUiWidget:setShader` and `LUiWidget:setShaderLayer` accept only `ui` shaders created through `lurek.render.newShader`. UI stores `ShaderKey` bindings on retained widget state; WGSL validation, pipeline creation, fallback, and GPU execution remain owned by `render`.
+- `lurek.ui.draw()` queues retained widget render commands before invoking custom draw callbacks. Widget shader bindings affect that live render-command path and are inherited by child widgets until overridden by a child shader.
+- `lurek.ui.drawToImage` and `lurek.ui.renderToImage` remain deterministic software preview/export paths and do not execute GPU shaders.

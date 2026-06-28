@@ -1,0 +1,10 @@
+Shader API v2 per-target evidence
+constructor=lurek.render.newShader
+target=debugviz
+id=4294967308
+actual_target=debugviz
+diagnostics=validated for debugviz shader target
+render.setDebugShader.accepted=true
+render.getDebugShader.target=debugviz
+render.debug_rectangle.queued=true
+render.setDebugShader.cleared=true

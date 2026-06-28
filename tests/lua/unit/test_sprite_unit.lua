@@ -169,6 +169,56 @@ end)
 
 -- @describe sprite lit sprite normal map support
 describe("sprite lit sprite normal map support", function()
+    -- @covers LSprite:setShader
+    it("setShader binds and clears a sprite-target shader", function()
+        local sprite = lurek.sprite.newSprite(7, 10, 20)
+        local shader = lurek.render.newShader([[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0, color.a);
+}
+]], { target = "sprite" })
+        sprite:setShader(shader)
+        expect_equal(shader:getId(), sprite:getShader():getId())
+        sprite:setShader(nil)
+        expect_equal(nil, sprite:getShader())
+        expect_error(function()
+            sprite:setShader(lurek.render.newShader([[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return color;
+}
+]], { target = "draw" }))
+        end)
+    end)
+
+    -- @covers LSprite:getShader
+    it("getShader returns the bound sprite shader", function()
+        local sprite = lurek.sprite.newSprite(7, 10, 20)
+        local shader = lurek.render.newShader([[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0, color.a);
+}
+]], { target = "sprite" })
+        sprite:setShader(shader)
+        expect_equal(shader:getId(), sprite:getShader():getId())
+    end)
+
+    -- @covers LSprite:setShaderUniform
+    it("setShaderUniform forwards values to the bound sprite shader", function()
+        local sprite = lurek.sprite.newSprite(7, 10, 20)
+        local shader = lurek.render.newShader([[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0, color.a);
+}
+]], { target = "sprite" })
+        sprite:setShader(shader)
+        sprite:setShaderUniform("team_color", { 0.2, 0.6, 1.0, 1.0 })
+        expect_true(shader:hasUniform("team_color"))
+    end)
+
     -- @covers LSprite:hasNormalMap
     it("hasNormalMap reflects whether a sprite has normal map data", function()
         local sprite = lurek.sprite.newSprite(7, 10, 20)

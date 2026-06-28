@@ -1,0 +1,8 @@
+Shader API v2 per-target evidence
+constructor=lurek.render.newShader
+target=overlay
+id=4294967300
+actual_target=overlay
+diagnostics=validated for overlay shader target
+overlay.layer=overlay
+overlay.plan.shader=heat_haze

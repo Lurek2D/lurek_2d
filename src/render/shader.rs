@@ -65,6 +65,18 @@ pub enum ShaderTarget {
     Particle,
     /// Light-contribution shader.
     Light,
+    /// Textured sprite material shader.
+    Sprite,
+    /// Tilemap visual material shader for debug-color and textured tile draws.
+    Tilemap,
+    /// Map visualization shader for province and minimap command rendering.
+    MapViz,
+    /// Text glyph shader for font-atlas backed text rendering.
+    Text,
+    /// UI surface shader for terminal and widget-like render command groups.
+    Ui,
+    /// Debug visualization shader for non-gameplay diagnostic render command groups.
+    DebugViz,
 }
 
 impl ShaderTarget {
@@ -77,6 +89,12 @@ impl ShaderTarget {
             Self::Overlay => "overlay",
             Self::Particle => "particle",
             Self::Light => "light",
+            Self::Sprite => "sprite",
+            Self::Tilemap => "tilemap",
+            Self::MapViz => "mapviz",
+            Self::Text => "text",
+            Self::Ui => "ui",
+            Self::DebugViz => "debugviz",
         }
     }
 }
@@ -98,8 +116,18 @@ impl FromStr for ShaderTarget {
             "overlay" => Ok(Self::Overlay),
             "particle" | "particles" => Ok(Self::Particle),
             "light" => Ok(Self::Light),
+            "sprite" | "sprites" => Ok(Self::Sprite),
+            "tilemap" | "tilemaps" | "tile" | "tiles" => Ok(Self::Tilemap),
+            "mapviz" | "map" | "province" | "provinces" | "minimap" | "minimaps" => {
+                Ok(Self::MapViz)
+            }
+            "text" | "font" | "fonts" | "glyph" | "glyphs" => Ok(Self::Text),
+            "ui" | "widget" | "widgets" | "layout" | "terminal" | "terminals" => Ok(Self::Ui),
+            "debugviz" | "debug" | "debug_visualization" | "debug-visualization" => {
+                Ok(Self::DebugViz)
+            }
             other => Err(format!(
-                "unknown shader target '{other}', expected draw, postfx, image, overlay, particle, or light"
+                "unknown shader target '{other}', expected draw, postfx, image, overlay, particle, light, sprite, tilemap, mapviz, text, ui, or debugviz"
             )),
         }
     }
@@ -414,7 +442,13 @@ fn validate_target_input(
                 ))
             }
         },
-        ShaderTarget::PostFx | ShaderTarget::Image | ShaderTarget::Overlay => match location {
+        ShaderTarget::PostFx
+        | ShaderTarget::Image
+        | ShaderTarget::Overlay
+        | ShaderTarget::MapViz
+        | ShaderTarget::Text
+        | ShaderTarget::Ui
+        | ShaderTarget::DebugViz => match location {
             0 => {
                 validate_vec4_f32(module, ty)?;
                 ShaderFragmentInput::Color
@@ -438,6 +472,22 @@ fn validate_target_input(
             _ => {
                 return Err(format!(
                     "{} shader uses unsupported input @location({location}); expected color, uv, pixel, resolution, or texel size",
+                    target.as_str()
+                ))
+            }
+        },
+        ShaderTarget::Sprite | ShaderTarget::Tilemap => match location {
+            0 => {
+                validate_vec4_f32(module, ty)?;
+                ShaderFragmentInput::Color
+            }
+            1 => {
+                validate_vec2_f32(module, ty)?;
+                ShaderFragmentInput::Uv
+            }
+            _ => {
+                return Err(format!(
+                    "{} shader uses unsupported input @location({location}); expected sampled color at 0 and uv at 1",
                     target.as_str()
                 ))
             }

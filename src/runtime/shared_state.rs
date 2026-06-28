@@ -474,6 +474,10 @@ pub struct SharedState {
     pub shaders: SlotMap<ShaderKey, Shader>,
     /// Stores active_shader state.
     pub active_shader: Option<ShaderKey>,
+    /// Stores the active shader used only for font-atlas backed text draws.
+    pub active_text_shader: Option<ShaderKey>,
+    /// Stores the active shader used for explicit debug visualization draw command groups.
+    pub active_debug_shader: Option<ShaderKey>,
     /// Stores meshes state.
     pub meshes: SlotMap<MeshKey, Mesh>,
     /// Stores shapes state.
@@ -534,6 +538,8 @@ pub struct SharedState {
     pub auto_ui_update: bool,
     /// Stores raycaster_output state.
     pub raycaster_output: Option<RaycasterScene>,
+    /// Optional draw-target shader applied while presenting the last built raycaster scene.
+    pub raycaster_shader: Option<ShaderKey>,
     /// Stores resource_budget_bytes state.
     pub resource_budget_bytes: u64,
     /// Stores frame_profile state.
@@ -618,6 +624,8 @@ impl SharedState {
             default_filter: ("nearest".to_string(), "nearest".to_string(), 1),
             shaders: SlotMap::with_key(),
             active_shader: None,
+            active_text_shader: None,
+            active_debug_shader: None,
             meshes: SlotMap::with_key(),
             shapes: SlotMap::with_key(),
             keyboard: KeyboardState::new(),
@@ -648,6 +656,7 @@ impl SharedState {
             auto_ui_input: true,
             auto_ui_update: true,
             raycaster_output: None,
+            raycaster_shader: None,
             resource_budget_bytes: 0,
             frame_profile: FrameProfile::default(),
             frame_counter: 0,
@@ -866,6 +875,27 @@ impl SharedState {
                 report
                     .errors
                     .push("active_shader references a stale shader handle".to_string());
+            }
+        }
+        if let Some(key) = self.active_text_shader {
+            if !self.shaders.contains_key(key) {
+                report
+                    .errors
+                    .push("active_text_shader references a stale shader handle".to_string());
+            }
+        }
+        if let Some(key) = self.active_debug_shader {
+            if !self.shaders.contains_key(key) {
+                report
+                    .errors
+                    .push("active_debug_shader references a stale shader handle".to_string());
+            }
+        }
+        if let Some(key) = self.raycaster_shader {
+            if !self.shaders.contains_key(key) {
+                report
+                    .errors
+                    .push("raycaster_shader references a stale shader handle".to_string());
             }
         }
         if let Some(key) = self.active_font {

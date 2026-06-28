@@ -152,15 +152,18 @@ pub(crate) fn custom_fragment_call_args(
     inputs: &[ShaderFragmentInput],
     color_expr: &str,
     uv_expr: &str,
+    local_expr: &str,
+    resolution_expr: &str,
+    texel_expr: &str,
 ) -> String {
     inputs
         .iter()
         .map(|input| match input {
             ShaderFragmentInput::Color => color_expr,
             ShaderFragmentInput::Uv => uv_expr,
-            ShaderFragmentInput::PixelOrLocal
-            | ShaderFragmentInput::ResolutionOrWorld
-            | ShaderFragmentInput::TexelOrVelocity => "vec2<f32>(0.0, 0.0)",
+            ShaderFragmentInput::PixelOrLocal => local_expr,
+            ShaderFragmentInput::ResolutionOrWorld => resolution_expr,
+            ShaderFragmentInput::TexelOrVelocity => texel_expr,
             ShaderFragmentInput::Scalar0
             | ShaderFragmentInput::Scalar1
             | ShaderFragmentInput::Scalar2
@@ -220,8 +223,14 @@ pub fn build_custom_color_shader_source(
     uniform_signature: &[(String, ShaderUniformKind)],
 ) -> String {
     let uniform_decls = custom_uniform_declarations(uniform_signature, 1);
-    let fragment_call_args =
-        custom_fragment_call_args(shader.fragment_inputs(), "in.color", "in.uv");
+    let fragment_call_args = custom_fragment_call_args(
+        shader.fragment_inputs(),
+        "in.color",
+        "in.uv",
+        "in.local_pos",
+        "lurek.lurek_ScreenSize",
+        "1.0 / max(lurek.lurek_ScreenSize, vec2<f32>(1.0, 1.0))",
+    );
     format!(
         r#"
 struct VertexInput {{
@@ -232,6 +241,7 @@ struct VertexOutput {{
     @builtin(position) clip_position: vec4<f32>,
     @location(0) color: vec4<f32>,
     @location(1) uv: vec2<f32>,
+    @location(2) local_pos: vec2<f32>,
 }}
 struct LurekGlobals {{
     lurek_ScreenSize: vec2<f32>,
@@ -260,6 +270,7 @@ fn vs_main(in: VertexInput) -> VertexOutput {{
     );
     out.color = in.color;
     out.uv = vec2<f32>(0.0, 0.0);
+    out.local_pos = in.position;
     return out;
 }}
 {user_source}
@@ -564,8 +575,14 @@ pub fn build_custom_texture_shader_source(
     uniform_signature: &[(String, ShaderUniformKind)],
 ) -> String {
     let uniform_decls = custom_uniform_declarations(uniform_signature, 2);
-    let fragment_call_args =
-        custom_fragment_call_args(shader.fragment_inputs(), "sampled", "in.uv");
+    let fragment_call_args = custom_fragment_call_args(
+        shader.fragment_inputs(),
+        "sampled",
+        "in.uv",
+        "in.local_pos",
+        "lurek.lurek_ScreenSize",
+        "1.0 / max(lurek.lurek_ScreenSize, vec2<f32>(1.0, 1.0))",
+    );
     format!(
         r#"
 struct VertexInput {{
@@ -578,6 +595,7 @@ struct VertexOutput {{
     @builtin(position) clip_position: vec4<f32>,
     @location(0) color: vec4<f32>,
     @location(1) uv: vec2<f32>,
+    @location(2) local_pos: vec2<f32>,
 }}
 struct LurekGlobals {{
     lurek_ScreenSize: vec2<f32>,
@@ -606,6 +624,7 @@ fn vs_main(in: VertexInput) -> VertexOutput {{
     out.clip_position = vec4<f32>(ndc_x * w, ndc_y * w, 0.0, w);
     out.color = in.color;
     out.uv = in.uv;
+    out.local_pos = in.position;
     return out;
 }}
 {user_source}

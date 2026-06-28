@@ -1,0 +1,8 @@
+Shader API v2 per-target evidence
+constructor=lurek.render.newShader
+target=sprite
+id=4294967303
+actual_target=sprite
+diagnostics=validated for sprite shader target
+sprite.shader=sprite
+sprite.uniform.team_color=true

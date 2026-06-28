@@ -37,11 +37,11 @@ end
 
 ## Common Patterns
 
+- Start with `lurek.render.applyShaderToCanvas` when exploring this module.
 - Start with `lurek.render.applyTransform` when exploring this module.
 - Start with `lurek.render.arc` when exploring this module.
 - Start with `lurek.render.beginSortGroup` when exploring this module.
 - Start with `lurek.render.captureScreenshot` when exploring this module.
-- Start with `lurek.render.circle` when exploring this module.
 
 ## API Reference
 
@@ -89,6 +89,64 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - `SoftwareCaptureDiagnostics` records unsupported capture commands and bounded polygon fill behavior; software capture is evidence-oriented and does not promise pixel parity for GPU-only texture, shader, post-fx, layer, batch, or registered-resource commands.
 
 ## Functions
+
+### `lurek.render.applyShaderToCanvas`
+
+Queues a postfx shader pass that mutates a canvas render target after queued canvas draws in the current frame.
+
+```lua
+lurek.render.applyShaderToCanvas(canvas, shader, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `canvas` | [LCanvas](#lcanvas) | Canvas render target to process. |
+| `shader` | [LShader](#lshader) | Shader created with `lurek.render.newShader(code, { target = "postfx" })`. |
+| `opts?` | table | Reserved options table for future pass parameters. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LCanvas](#lcanvas) | The processed canvas handle. |
+
+**Example**
+
+```lua
+do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local code = [[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    let vignette = smoothstep(0.85, 0.2, distance(uv, vec2<f32>(0.5, 0.5)));
+    return vec4<f32>(color.rgb * (0.35 + vignette), color.a);
+}
+]]
+    local shader = lurek.render.newShader(code, { target = "postfx" })
+    local canvas = lurek.render.newCanvas(96, 96)
+    lurek.render.setCanvas(canvas)
+    lurek.render.rectangle("fill", 0, 0, 96, 96)
+    lurek.render.setCanvas(nil)
+    lurek.render.applyShaderToCanvas(canvas, shader)
+    lurek.render.draw(canvas, 120, 70)
+    example_print_log("canvas postfx shader target = " .. shader:getTarget())
+    render_log("queued render.applyShaderToCanvas")
+end
+```
+
+---
 
 ### `lurek.render.applyTransform`
 
@@ -1493,6 +1551,45 @@ end
 
 ---
 
+### `lurek.render.getDebugShader`
+
+Returns the active debug visualization shader, or nil if debug draws use the normal/default render shader path.
+
+```lua
+lurek.render.getDebugShader()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LShader](#lshader)? | The active debug visualization shader handle. |
+
+**Example**
+
+```lua
+do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(3) resolution: vec2<f32>) -> @location(0) vec4<f32> {
+    let scale = clamp(resolution.x / max(resolution.x, 1.0), 0.0, 1.0);
+    return vec4<f32>(color.rgb * vec3<f32>(1.0, scale, 0.35), color.a);
+}
+]], { target = "debugviz" })
+    lurek.render.setDebugShader(shader)
+    local active = lurek.render.getDebugShader()
+    lurek.render.line(8, 96, 128, 96)
+    render_log("active debug shader=" .. tostring(active and active:getTarget() or "nil"))
+    lurek.render.setDebugShader(nil)
+end
+```
+
+---
+
 ### `lurek.render.getDefaultFilter`
 
 Returns the current default texture filtering settings.
@@ -2382,6 +2479,43 @@ end
 
 ---
 
+### `lurek.render.getTextShader`
+
+Returns the active text shader, or nil if font-atlas text uses the default/fallback shader path.
+
+```lua
+lurek.render.getTextShader()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LShader](#lshader)? | The active text shader handle. |
+
+**Example**
+
+```lua
+do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0, color.a);
+}
+]], { target = "text" })
+    lurek.render.setTextShader(shader)
+    local active = lurek.render.getTextShader()
+    render_log("active text shader=" .. tostring(active and active:getTarget() or "nil"))
+    lurek.render.setTextShader(nil)
+end
+```
+
+---
+
 ### `lurek.render.getWidth`
 
 Returns the current window width in pixels.
@@ -3088,17 +3222,18 @@ end
 
 ### `lurek.render.newShader`
 
-Compiles a WGSL shader program from source code and returns a handle.
+Compiles a target-aware WGSL fragment shader through the render module and returns a shader handle.
 
 ```lua
-lurek.render.newShader(code)
+lurek.render.newShader(code, opts)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `code` | string | WGSL shader source code. |
+| `code` | string | WGSL fragment shader source. |
+| `opts?` | table | Options table with optional `target` string: draw, postfx, image, overlay, particle, light, sprite, tilemap, mapviz, text, ui, or debugviz. Defaults to draw. |
 
 **Returns**
 
@@ -4355,6 +4490,45 @@ end
 
 ---
 
+### `lurek.render.setDebugShader`
+
+Activates a debugviz-target WGSL shader for subsequent diagnostic/debug draw commands. Pass nil to restore the normal draw shader state.
+
+```lua
+lurek.render.setDebugShader(shader)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `shader?` | [LShader](#lshader) | Shader created with `lurek.render.newShader(code, { target = "debugviz" })`, or nil for default debug rendering. |
+
+**Example**
+
+```lua
+do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>, @location(2) pixel: vec2<f32>) -> @location(0) vec4<f32> {
+    let heat = vec3<f32>(uv.x, 0.2 + uv.y * 0.5, 1.0 - uv.x);
+    return vec4<f32>(mix(color.rgb, heat, 0.6 + pixel.x * 0.0), color.a);
+}
+]], { target = "debugviz" })
+    lurek.render.setDebugShader(shader)
+    lurek.render.rectangle("fill", 24, 24, 64, 20)
+    lurek.render.circle("line", 56, 56, 18)
+    lurek.render.setDebugShader(nil)
+    render_log("debug shader target=" .. shader:getTarget())
+end
+```
+
+---
+
 ### `lurek.render.setDefaultFilter`
 
 Sets the default texture filtering mode for newly created images.
@@ -4929,6 +5103,49 @@ end
 
 ---
 
+### `lurek.render.setTextShader`
+
+Activates a text-target WGSL shader for subsequent font-atlas text draws. Pass nil to restore default text rendering.
+
+```lua
+lurek.render.setTextShader(shader)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `shader?` | [LShader](#lshader) | Shader created with `lurek.render.newShader(code, { target = "text" })`, or nil for default. |
+
+**Example**
+
+```lua
+do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs(
+    @location(0) color: vec4<f32>,
+    @location(1) uv: vec2<f32>,
+    @location(2) pixel: vec2<f32>,
+    @location(3) resolution: vec2<f32>,
+    @location(4) texel: vec2<f32>
+) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb * vec3<f32>(0.7, 0.95, 1.2) + uv.xyx * 0.0 + pixel.xyx * 0.0 + resolution.xyx * texel.x * 0.0, color.a);
+}
+]], { target = "text" })
+    lurek.render.setTextShader(shader)
+    lurek.render.print("text shader", 24, 48)
+    lurek.render.setTextShader(nil)
+    render_log("text shader target=" .. shader:getTarget())
+end
+```
+
+---
+
 ### `lurek.render.setWireframe`
 
 Enables or disables wireframe rendering mode.
@@ -5174,6 +5391,63 @@ end
 *No documented fields for this handle.*
 
 ### Type Methods
+
+#### `LCanvas:applyShader`
+
+Queues a postfx shader pass that mutates this canvas render target after queued canvas draws in the current frame.
+
+```lua
+LCanvas:applyShader(shader, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `shader` | [LShader](#lshader) | Shader created with `lurek.render.newShader(code, { target = "postfx" })`. |
+| `opts?` | table | Reserved options table for future pass parameters. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LCanvas](#lcanvas) | This canvas handle. |
+
+**Example**
+
+```lua
+do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local code = [[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    let tint = vec3<f32>(uv.x, 0.4, 1.0 - uv.y);
+    return vec4<f32>(mix(color.rgb, tint, 0.35), color.a);
+}
+]]
+    local shader = lurek.render.newShader(code, { target = "postfx" })
+    local canvas = lurek.render.newCanvas(96, 96)
+    lurek.render.setCanvas(canvas)
+    lurek.render.circle("fill", 48, 48, 32)
+    lurek.render.setCanvas(nil)
+    canvas:applyShader(shader)
+    lurek.render.draw(canvas, 230, 70)
+    example_print_log("LCanvas shader target = " .. shader:getTarget())
+    render_log("queued LCanvas:applyShader")
+end
+```
+
+---
 
 #### `LCanvas:getDimensions`
 
@@ -8694,7 +8968,7 @@ do
     end
 
     local code = "@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }"
-    local shader = lurek.render.newShader(code)
+    local shader = lurek.render.newShader(code, { target = "draw" })
     local target = shader:getTarget()
     local id = shader:getId()
     example_print_log("shader target = " .. target .. " id=" .. tostring(id))

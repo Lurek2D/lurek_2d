@@ -8,7 +8,9 @@ use crate::image::Texture;
 use crate::image::TextureColorSpace;
 use crate::math::Rect;
 use crate::render::draw_layer::allocate_callback_id;
-use crate::render::renderer::{BevelStyle, GradientDirection, HexOrientation, PathSegment};
+use crate::render::renderer::{
+    BevelStyle, GradientDirection, HexOrientation, PathSegment, PostFxPass,
+};
 use crate::render::shape::{CompoundShape, ShapeCommand};
 use crate::render::{
     BlendMode, Canvas, CompareMode, DepthMode, DrawMode, Mesh, MeshDrawMode, MeshVertex,
@@ -23,6 +25,7 @@ use slotmap::Key;
 use std::cell::RefCell;
 use std::path::Path;
 use std::rc::Rc;
+use std::str::FromStr;
 /// Raw pixel buffer for CPU-side image manipulation before uploading to a GPU texture.
 pub struct LuaImageData {
     pub(crate) inner: ImageData,
@@ -480,6 +483,35 @@ impl LuaUserData for LuaCanvas {
             })?;
             Ok((c.width, c.height))
         });
+        // -- applyShader --
+        /// Queues a postfx shader pass that mutates this canvas render target after queued canvas draws in the current frame.
+        /// @param | shader | LShader | Shader created with `lurek.render.newShader(code, { target = "postfx" })`.
+        /// @param | opts | table? | Reserved options table for future pass parameters.
+        /// @return | LCanvas | This canvas handle.
+        methods.add_method(
+            "applyShader",
+            |_, this, (shader_ud, _opts): (LuaAnyUserData, Option<LuaTable>)| {
+                let shader_key = shader_key_from_userdata(&shader_ud)?;
+                let mut st = this.state.borrow_mut();
+                if !st.canvases.contains_key(this.key) {
+                    return Err(LuaError::RuntimeError(
+                        "LCanvas:applyShader: canvas handle is not valid".into(),
+                    ));
+                }
+                ensure_shader_target(&st, shader_key, ShaderTarget::PostFx, "LCanvas:applyShader")?;
+                let shader_id = shader_key.data().as_ffi() as usize;
+                st.render_commands.push(RenderCommand::ApplyShaderToCanvas {
+                    canvas_key: this.key,
+                    passes: vec![PostFxPass {
+                        effect_name: format!("canvas_shader_{shader_id}"),
+                        params: std::collections::HashMap::new(),
+                        shader_id: Some(shader_id),
+                        auto_uniforms: true,
+                    }],
+                });
+                Ok(this.clone())
+            },
+        );
         // -- release --
         /// Releases the canvas GPU resource. If this canvas is currently active, drawing reverts to the screen.
         /// @return | boolean | True if the canvas was still valid and was released.
@@ -1316,6 +1348,12 @@ impl LuaUserData for LuaShader {
                 if st.active_shader == Some(this.key) {
                     st.active_shader = None;
                 }
+                if st.active_text_shader == Some(this.key) {
+                    st.active_text_shader = None;
+                }
+                if st.active_debug_shader == Some(this.key) {
+                    st.active_debug_shader = None;
+                }
                 Ok(true)
             } else {
                 Ok(false)
@@ -1359,6 +1397,16 @@ pub(crate) fn ensure_shader_target(
         )));
     }
     Ok(())
+}
+fn parse_shader_target_opts(opts: Option<LuaTable>) -> LuaResult<ShaderTarget> {
+    let Some(opts) = opts else {
+        return Ok(ShaderTarget::Draw);
+    };
+    match opts.get::<_, Option<String>>("target")? {
+        Some(target) => ShaderTarget::from_str(&target)
+            .map_err(|err| LuaError::RuntimeError(format!("lurek.render.newShader: {err}"))),
+        None => Ok(ShaderTarget::Draw),
+    }
 }
 /// Rectangular sub-region of a texture, used for sprite sheets and atlas-based rendering.
 #[derive(Clone)]
@@ -3168,6 +3216,55 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
     let s = state.clone();
+    // -- applyShaderToCanvas --
+    /// Queues a postfx shader pass that mutates a canvas render target after queued canvas draws in the current frame.
+    /// @param | canvas | LCanvas | Canvas render target to process.
+    /// @param | shader | LShader | Shader created with `lurek.render.newShader(code, { target = "postfx" })`.
+    /// @param | opts | table? | Reserved options table for future pass parameters.
+    /// @return | LCanvas | The processed canvas handle.
+    graphics.set(
+        "applyShaderToCanvas",
+        lua.create_function(
+            move |_,
+                  (canvas_ud, shader_ud, _opts): (
+                LuaAnyUserData,
+                LuaAnyUserData,
+                Option<LuaTable>,
+            )| {
+                let canvas = canvas_ud.borrow::<LuaCanvas>()?;
+                let canvas_key = canvas.key;
+                drop(canvas);
+                let shader_key = shader_key_from_userdata(&shader_ud)?;
+                let mut st = s.borrow_mut();
+                if !st.canvases.contains_key(canvas_key) {
+                    return Err(LuaError::RuntimeError(
+                        "lurek.render.applyShaderToCanvas: canvas handle is not valid".into(),
+                    ));
+                }
+                ensure_shader_target(
+                    &st,
+                    shader_key,
+                    ShaderTarget::PostFx,
+                    "lurek.render.applyShaderToCanvas",
+                )?;
+                let shader_id = shader_key.data().as_ffi() as usize;
+                st.render_commands.push(RenderCommand::ApplyShaderToCanvas {
+                    canvas_key,
+                    passes: vec![PostFxPass {
+                        effect_name: format!("canvas_shader_{shader_id}"),
+                        params: std::collections::HashMap::new(),
+                        shader_id: Some(shader_id),
+                        auto_uniforms: true,
+                    }],
+                });
+                Ok(LuaCanvas {
+                    state: s.clone(),
+                    key: canvas_key,
+                })
+            },
+        )?,
+    )?;
+    let s = state.clone();
     // -- setCanvas --
     /// Redirects all subsequent drawing to the given canvas. Pass nil to draw to the screen again.
     /// @param | canvas | LCanvas? | Canvas to draw to, or nil for the main screen.
@@ -3305,13 +3402,15 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     let s = state.clone();
     // -- newShader --
-    /// Compiles a WGSL shader program from source code and returns a handle.
-    /// @param | code | string | WGSL shader source code.
+    /// Compiles a target-aware WGSL fragment shader through the render module and returns a shader handle.
+    /// @param | code | string | WGSL fragment shader source.
+    /// @param | opts | table? | Options table with optional `target` string: draw, postfx, image, overlay, particle, light, sprite, tilemap, mapviz, text, ui, or debugviz. Defaults to draw.
     /// @return | LShader | The compiled shader handle.
     graphics.set(
         "newShader",
-        lua.create_function(move |_, code: String| {
-            let shader = match Shader::new_for_target(code, ShaderTarget::Draw) {
+        lua.create_function(move |_, (code, opts): (String, Option<LuaTable>)| {
+            let target = parse_shader_target_opts(opts)?;
+            let shader = match Shader::new_for_target(code, target) {
                 Ok(shader) => shader,
                 Err(err) => {
                     let msg = format!("lurek.render.newShader: {}", err);
@@ -3369,6 +3468,113 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         lua.create_function(move |_, ()| {
             let st = s.borrow();
             match st.active_shader {
+                Some(key) => Ok(Some(LuaShader {
+                    state: s.clone(),
+                    key,
+                })),
+                None => Ok(None),
+            }
+        })?,
+    )?;
+    let s = state.clone();
+    // -- setTextShader --
+    /// Activates a text-target WGSL shader for subsequent font-atlas text draws. Pass nil to restore default text rendering.
+    /// @param | shader | LShader? | Shader created with `lurek.render.newShader(code, { target = "text" })`, or nil for default.
+    graphics.set(
+        "setTextShader",
+        lua.create_function(move |_, ud: Option<LuaAnyUserData>| {
+            let mut st = s.borrow_mut();
+            match ud {
+                Some(u) => {
+                    let sh = u.borrow::<LuaShader>()?;
+                    let key = sh.key;
+                    drop(sh);
+                    if !st.shaders.contains_key(key) {
+                        return Err(LuaError::RuntimeError(
+                            "lurek.render.setTextShader: shader handle is not valid".into(),
+                        ));
+                    }
+                    ensure_shader_target(
+                        &st,
+                        key,
+                        ShaderTarget::Text,
+                        "lurek.render.setTextShader",
+                    )?;
+                    st.active_text_shader = Some(key);
+                    st.render_commands
+                        .push(RenderCommand::SetTextShader(Some(key)));
+                }
+                None => {
+                    st.active_text_shader = None;
+                    st.render_commands.push(RenderCommand::SetTextShader(None));
+                }
+            }
+            Ok(())
+        })?,
+    )?;
+    let s = state.clone();
+    // -- getTextShader --
+    /// Returns the active text shader, or nil if font-atlas text uses the default/fallback shader path.
+    /// @return | LShader? | The active text shader handle.
+    graphics.set(
+        "getTextShader",
+        lua.create_function(move |_, ()| {
+            let st = s.borrow();
+            match st.active_text_shader {
+                Some(key) => Ok(Some(LuaShader {
+                    state: s.clone(),
+                    key,
+                })),
+                None => Ok(None),
+            }
+        })?,
+    )?;
+    let s = state.clone();
+    // -- setDebugShader --
+    /// Activates a debugviz-target WGSL shader for subsequent diagnostic/debug draw commands. Pass nil to restore the normal draw shader state.
+    /// @param | shader | LShader? | Shader created with `lurek.render.newShader(code, { target = "debugviz" })`, or nil for default debug rendering.
+    graphics.set(
+        "setDebugShader",
+        lua.create_function(move |_, ud: Option<LuaAnyUserData>| {
+            let mut st = s.borrow_mut();
+            match ud {
+                Some(u) => {
+                    let sh = u.borrow::<LuaShader>()?;
+                    let key = sh.key;
+                    drop(sh);
+                    if !st.shaders.contains_key(key) {
+                        return Err(LuaError::RuntimeError(
+                            "lurek.render.setDebugShader: shader handle is not valid".into(),
+                        ));
+                    }
+                    ensure_shader_target(
+                        &st,
+                        key,
+                        ShaderTarget::DebugViz,
+                        "lurek.render.setDebugShader",
+                    )?;
+                    st.active_debug_shader = Some(key);
+                    st.render_commands.push(RenderCommand::SetShader(Some(key)));
+                }
+                None => {
+                    st.active_debug_shader = None;
+                    let restore_shader = st.active_shader;
+                    st.render_commands
+                        .push(RenderCommand::SetShader(restore_shader));
+                }
+            }
+            Ok(())
+        })?,
+    )?;
+    let s = state.clone();
+    // -- getDebugShader --
+    /// Returns the active debug visualization shader, or nil if debug draws use the normal/default render shader path.
+    /// @return | LShader? | The active debug visualization shader handle.
+    graphics.set(
+        "getDebugShader",
+        lua.create_function(move |_, ()| {
+            let st = s.borrow();
+            match st.active_debug_shader {
                 Some(key) => Ok(Some(LuaShader {
                     state: s.clone(),
                     key,

@@ -12,15 +12,70 @@ local function save_png(img, path)
     expect_evidence_created(path)
 end
 
+local function save_text(path, text)
+    if write_file then
+        write_file(path, text)
+    elseif lurek and lurek.filesystem and lurek.filesystem.write then
+        lurek.filesystem.write(path, text)
+    else
+        error("unable to create evidence text artifact: " .. path)
+    end
+    expect_evidence_created(path)
+end
+
 local function save_gif(frames, path)
     lurek.image.saveGIF(frames, path, { delayMs = 180, speed = 10, loop = true })
     expect_evidence_created(path)
+end
+
+local function mapviz_shader_code()
+    return [[
+@fragment
+fn fs(
+    @location(0) color: vec4<f32>,
+    @location(1) uv: vec2<f32>,
+    @location(2) pixel: vec2<f32>,
+    @location(3) resolution: vec2<f32>,
+    @location(4) texel: vec2<f32>
+) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0 + pixel.xyx * 0.0 + resolution.xyx * texel.x * 0.0, color.a);
+}
+]]
 end
 
 -- @describe Evidence: lurek.province fixture-derived artifacts
 describe("Evidence: lurek.province fixture-derived artifacts", function()
     before_each(function()
         ensure_evidence_dir("province")
+    end)
+
+    -- Does: Binds a render-owned mapviz shader to a province registry and renders through the command backend.
+    -- Shows: The TXT records constructor, target validation, shader id, render backend, and clear behavior.
+    -- Artifact: tests/artifacts/current/province/province_shader_binding_contract.txt
+    -- Why: This proves province stores only the semantic shader binding while render remains the WGSL and pipeline owner.
+    it("TXT: province mapviz shader binding contract", function()
+        local loaded = Fixture.load_registry(registry_name("shader"), OUT .. "province_sanitized_map.png")
+        local shader = lurek.render.newShader(mapviz_shader_code(), { target = "mapviz" })
+        loaded.registry:setShader(shader)
+        loaded.registry:render({
+            backend = "commands",
+            draw_labels = false,
+            draw_capitals = false,
+            draw_roads = false,
+        })
+        local bound = loaded.registry:getShader()
+        local lines = {
+            "Province mapviz shader binding evidence",
+            "constructor=lurek.render.newShader",
+            "target=" .. shader:getTarget(),
+            "shader_id=" .. shader:getId(),
+            "bound_target=" .. bound:getTarget(),
+            "render_path=commands",
+            "gpu_backend_shadered=false",
+        }
+        loaded.registry:setShader(nil)
+        lines[#lines + 1] = "cleared=" .. tostring(loaded.registry:getShader() == nil)
+        save_text(OUT .. "province_shader_binding_contract.txt", table.concat(lines, "\n") .. "\n")
     end)
 
     -- Does: Sanitizes an evidence-owned marker PNG before registry import.

@@ -17,6 +17,7 @@ use super::tilemap_index::remove_pos_from_gid;
 use crate::log_msg;
 use crate::math::{Rect, Vec2};
 use crate::runtime::log_messages::{TM01_TILEMAP_INIT, TM02_TILESET_ADD, TM03_LAYER_ADD};
+use crate::runtime::resource_keys::ShaderKey;
 use crate::tileset::{AutoTileMode, TileSet};
 use std::cell::Cell;
 use std::collections::{BTreeSet, HashMap};
@@ -140,6 +141,10 @@ pub struct TileMap {
     tilesets: Vec<TileSet>,
     /// Ordered list of tile layers.
     layers: Vec<TileLayer>,
+    /// Optional shader bound to all tilemap render-command output.
+    shader: Option<ShaderKey>,
+    /// Optional shader override per layer, parallel to `layers`.
+    layer_shaders: Vec<Option<ShaderKey>>,
     /// Per-layer GID-to-position reverse index for fast `find_tiles_by_gid`.
     tile_type_index_cache: Vec<HashMap<u32, Vec<(u32, u32)>>>,
     /// Tracks which per-layer reverse indexes require a lazy rebuild before reads.
@@ -184,6 +189,8 @@ impl TileMap {
             orientation: MapOrientation::TopDown,
             tilesets: Vec::new(),
             layers: Vec::new(),
+            shader: None,
+            layer_shaders: Vec::new(),
             tile_type_index_cache: Vec::new(),
             tile_type_index_dirty: Vec::new(),
             index_policy: TileIndexPolicy::Lazy,
@@ -360,6 +367,7 @@ impl TileMap {
         log_msg!(debug, TM03_LAYER_ADD, "{}", name);
         self.layers
             .push(TileLayer::try_new(name, width, height, &self.limits)?);
+        self.layer_shaders.push(None);
         self.tile_type_index_cache.push(HashMap::new());
         self.tile_type_index_dirty.push(false);
         self.mark_anim_culling_dirty();
@@ -368,6 +376,36 @@ impl TileMap {
     /// Return the total number of layers.
     pub fn get_layer_count(&self) -> usize {
         self.layers.len()
+    }
+    /// Bind a tilemap-target shader to all generated render commands, or clear it with `None`.
+    pub fn set_shader(&mut self, shader: Option<ShaderKey>) {
+        self.shader = shader;
+    }
+    /// Return the shader bound to this tilemap, if any.
+    pub fn get_shader(&self) -> Option<ShaderKey> {
+        self.shader
+    }
+    /// Bind a tilemap-target shader override to a single layer.
+    pub fn set_layer_shader(
+        &mut self,
+        idx: usize,
+        shader: Option<ShaderKey>,
+    ) -> Result<(), TileMapError> {
+        if idx >= self.layers.len() {
+            return Err(self.invalid_layer_error(idx));
+        }
+        if let Some(layer_shader) = self.layer_shaders.get_mut(idx) {
+            *layer_shader = shader;
+        }
+        Ok(())
+    }
+    /// Return the shader override for a single layer.
+    pub fn get_layer_shader(&self, idx: usize) -> Option<ShaderKey> {
+        self.layer_shaders.get(idx).and_then(|shader| *shader)
+    }
+    /// Return the shader that should apply to a layer after resolving layer override and map default.
+    pub(crate) fn effective_layer_shader(&self, idx: usize) -> Option<ShaderKey> {
+        self.get_layer_shader(idx).or(self.shader)
     }
     /// Return the name of layer `idx`, or `None` when out of range.
     pub fn get_layer_name(&self, idx: usize) -> Option<&str> {

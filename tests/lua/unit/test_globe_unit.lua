@@ -11,6 +11,15 @@ do
 -- =========================================================================
 -- 1. Module existence
 -- =========================================================================
+local function mapviz_shader()
+    return lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb * vec3<f32>(1.0, uv.x, 1.0), color.a);
+}
+]], { target = "mapviz" })
+end
+
 -- @describe lurek.globe module exists
 describe("lurek.globe module exists", function()
 end)
@@ -34,6 +43,35 @@ describe("Globe creation", function()
     it("getName returns the globe name", function()
         local g = lurek.globe.new("named_globe")
         expect_equal("named_globe", g:getName())
+    end)
+
+    -- @covers LGlobe:setShader
+    it("binds only mapviz-target shaders to globe render commands", function()
+        local g = lurek.globe.new("shader_globe")
+        local shader = mapviz_shader()
+        g:setShader(shader)
+        expect_equal(shader:getId(), g:getShader():getId())
+        g:setShader(nil)
+        expect_equal(nil, g:getShader())
+        expect_error(function()
+            g:setShader(lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return color;
+}
+]], { target = "draw" }))
+        end)
+    end)
+
+    -- @covers LGlobe:getShader
+    it("returns the currently bound globe shader or nil", function()
+        local g = lurek.globe.new("shader_get_globe")
+        expect_equal(nil, g:getShader())
+        local shader = mapviz_shader()
+        g:setShader(shader)
+        expect_equal(shader:getId(), g:getShader():getId())
+        g:setShader(nil)
+        expect_equal(nil, g:getShader())
     end)
 
     -- @covers LGlobe:provinceCount

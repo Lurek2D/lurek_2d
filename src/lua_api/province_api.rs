@@ -1,6 +1,6 @@
 //! Registers the `lurek.province` Lua API for province maps, markers, tints, borders, and province registries.
 
-use super::render_api::LuaImage;
+use super::render_api::{ensure_shader_target, LuaImage, LuaShader};
 use super::SharedState;
 use crate::image::ProvinceGrid;
 use crate::image::TextureColorSpace;
@@ -20,6 +20,7 @@ use crate::province::{
     ProvinceMetadataImportOptions,
 };
 use crate::render::renderer::{RenderCommand, TextureData};
+use crate::render::ShaderTarget;
 use crate::runtime::shared_state::ProvinceSegmentTextureCache;
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -36,6 +37,34 @@ fn resolve_game_path(state: &Rc<RefCell<SharedState>>, path: &str) -> String {
     } else {
         st.game_dir.join(p).to_string_lossy().into_owned()
     }
+}
+
+fn extend_province_render_commands(st: &mut SharedState, commands: Vec<RenderCommand>) {
+    let previous_shader = st.active_shader;
+    let changed_shader = commands
+        .iter()
+        .any(|command| matches!(command, RenderCommand::SetShader(_)));
+    st.render_commands.extend(commands);
+    if changed_shader {
+        if let Some(shader_key) = previous_shader {
+            st.render_commands
+                .push(RenderCommand::SetShader(Some(shader_key)));
+        }
+    }
+}
+
+fn wrap_province_commands_with_shader(
+    shader: Option<crate::runtime::resource_keys::ShaderKey>,
+    commands: Vec<RenderCommand>,
+) -> Vec<RenderCommand> {
+    let Some(shader) = shader else {
+        return commands;
+    };
+    let mut wrapped = Vec::with_capacity(commands.len() + 2);
+    wrapped.push(RenderCommand::SetShader(Some(shader)));
+    wrapped.extend(commands);
+    wrapped.push(RenderCommand::SetShader(None));
+    wrapped
 }
 /// Parses optional marker sanitization settings from a Lua options table.
 fn marker_options_from_lua(opts: Option<&LuaTable>) -> MarkerSanitizeOptions {
@@ -509,6 +538,44 @@ impl LuaUserData for LuaProvinceRegistry {
         /// @return | integer | Grid height in cells.
         methods.add_method("getHeight", |_, this, ()| {
             this.with_registry(|r| r.height())
+        });
+        // -- setShader --
+        /// Binds or clears a `mapviz` shader for command-rendered province visualization.
+        /// @param | shader | LShader? | Shader created by `lurek.render.newShader(code, { target = "mapviz" })`, or nil to clear.
+        methods.add_method_mut("setShader", |_, this, shader: Option<LuaAnyUserData>| {
+            let shader_key = if let Some(shader_ud) = shader {
+                let key = shader_ud
+                    .borrow::<LuaShader>()
+                    .map_err(|_| {
+                        LuaError::RuntimeError(
+                        "LProvinceRegistry:setShader expects LShader from lurek.render.newShader"
+                            .to_string(),
+                    )
+                    })?
+                    .key;
+                let st = this.state.borrow();
+                ensure_shader_target(
+                    &st,
+                    key,
+                    ShaderTarget::MapViz,
+                    "LProvinceRegistry:setShader",
+                )?;
+                Some(key)
+            } else {
+                None
+            };
+            this.with_registry_mut(|r| r.set_shader(shader_key))?;
+            Ok(())
+        });
+        // -- getShader --
+        /// Returns the currently bound command-render province shader, or nil.
+        /// @return | LShader? | Bound shader handle.
+        methods.add_method("getShader", |_, this, ()| {
+            let key = this.with_registry(|r| r.get_shader())?;
+            Ok(key.map(|key| LuaShader {
+                key,
+                state: this.state.clone(),
+            }))
         });
         // -- getAt --
         /// Returns the province ID at the given grid cell coordinates. Returns 0 if the cell is unowned (sea, wasteland, etc.).
@@ -1691,9 +1758,13 @@ impl LuaUserData for LuaProvinceRegistry {
                 let st = this.state.borrow();
                 st.active_font.or(st.default_font)
             };
-            let cmds =
-                this.with_registry(|reg| generate_render_commands(reg, &options, font_key))?;
-            this.state.borrow_mut().render_commands.extend(cmds);
+            let cmds = this.with_registry(|reg| {
+                wrap_province_commands_with_shader(
+                    reg.get_shader(),
+                    generate_render_commands(reg, &options, font_key),
+                )
+            })?;
+            extend_province_render_commands(&mut this.state.borrow_mut(), cmds);
             Ok(())
         });
         // -- getChangesSince --

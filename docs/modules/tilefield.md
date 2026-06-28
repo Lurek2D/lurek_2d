@@ -4705,6 +4705,28 @@ LTileMap:getLayerParallax(idx)
 
 ---
 
+#### `LTileMap:getLayerShader`
+
+Returns the shader override bound to one layer, or nil when the layer has no override.
+
+```lua
+LTileMap:getLayerShader(layer)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LShader](render.md#lshader)? | Bound layer shader handle. |
+
+---
+
 #### `LTileMap:getLayerVisible`
 
 Returns whether a layer is currently visible.
@@ -4740,6 +4762,22 @@ LTileMap:getOrientation()
 | Type | Description |
 |------|-------------|
 | string | One of `"topdown"`, `"sideview"`, `"isometric"`, `"hexagonal"`. |
+
+---
+
+#### `LTileMap:getShader`
+
+Returns the tilemap shader bound to this map, or nil when none is bound.
+
+```lua
+LTileMap:getShader()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LShader](render.md#lshader)? | Bound shader handle. |
 
 ---
 
@@ -4982,6 +5020,23 @@ LTileMap:setLayerParallax(idx, px, py)
 
 ---
 
+#### `LTileMap:setLayerShader`
+
+Binds a tilemap-target shader override to one layer. Pass nil to clear the layer override.
+
+```lua
+LTileMap:setLayerShader(layer, shader)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `shader?` | [LShader](render.md#lshader) | Shader created with `lurek.render.newShader(code, { target = "tilemap" })`. |
+
+---
+
 #### `LTileMap:setLayerVisible`
 
 Sets whether a layer is drawn during rendering.
@@ -5012,6 +5067,22 @@ LTileMap:setOrientation(orientation)
 | Name | Type | Description |
 |------|------|-------------|
 | `orientation` | string | One of `"topdown"`, `"sideview"`, `"isometric"`, `"hexagonal"`. |
+
+---
+
+#### `LTileMap:setShader`
+
+Binds a tilemap-target shader to this map's generated render commands. Pass nil to clear.
+
+```lua
+LTileMap:setShader(shader)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `shader?` | [LShader](render.md#lshader) | Shader created with `lurek.render.newShader(code, { target = "tilemap" })`. |
 
 ---
 

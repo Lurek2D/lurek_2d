@@ -374,10 +374,9 @@ end)
 -- @describe lurek.particle rendering settings
 describe("lurek.particle rendering settings", function()
     -- @covers LParticleSystem:setShader
-    -- @covers LParticleSystem:getShader
     it("setShader binds and clears a particle-target shader", function()
         local ps = lurek.particle.newSystem()
-        local shader = lurek.shader.new([[
+        local shader = lurek.render.newShader([[
 @fragment
 fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>, @location(2) local_pos: vec2<f32>, @location(3) world_pos: vec2<f32>, @location(4) velocity: vec2<f32>, @location(5) age: f32, @location(6) lifetime: f32, @location(7) seed: f32) -> @location(0) vec4<f32> {
     return vec4<f32>(color.rgb + uv.xyx * 0.0 + local_pos.xyx * 0.0 + world_pos.xyx * 0.0 + velocity.xyx * 0.0 + vec3<f32>(age + lifetime + seed) * 0.0, color.a);
@@ -389,10 +388,23 @@ fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>, @location(
         expect_equal(nil, ps:getShader())
     end)
 
+    -- @covers LParticleSystem:getShader
+    it("getShader returns the bound particle shader", function()
+        local ps = lurek.particle.newSystem()
+        local shader = lurek.render.newShader([[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return color;
+}
+]], { target = "particle" })
+        ps:setShader(shader)
+        expect_equal(shader:getId(), ps:getShader():getId())
+    end)
+
     -- @covers LParticleSystem:setShaderUniform
     it("setShaderUniform forwards values to the bound shader", function()
         local ps = lurek.particle.newSystem()
-        local shader = lurek.shader.new([[
+        local shader = lurek.render.newShader([[
 @fragment
 fn fs_main(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
     return color;

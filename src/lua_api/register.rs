@@ -20,9 +20,9 @@ use super::{
     globe_api, grep_api, i18n_api, image_api, input_api, layout_api, learning_api, light_api,
     log_api, mapblock_api, math_api, minimap_api, mods_api, network_api, overlay_api, parallax_api,
     particle_api, pathfind_api, patterns_api, physics_api, procgen_api, province_api,
-    raycaster_api, render_api, repl_api, save_api, scene_api, serialize_api, shader_api,
-    sprite_api, svg_api, system_api, terminal_api, thread_api, tilefield_api, tilelight_api,
-    tilemap_api, tileset_api, timer_api, tween_api, ui_api, validator_api, window_api,
+    raycaster_api, render_api, repl_api, save_api, scene_api, serialize_api, sprite_api, svg_api,
+    system_api, terminal_api, thread_api, tilefield_api, tilelight_api, tilemap_api, tileset_api,
+    timer_api, tween_api, ui_api, validator_api, window_api,
 };
 use crate::runtime::config::ModulesConfig;
 use crate::runtime::SharedState;
@@ -77,7 +77,6 @@ static MODULES: &[ModuleEntry] = &[
     always!(math_api),
     always!(color_api),
     always!(system_api),
-    always!(shader_api),
     always!(svg_api),
     always!(font_api),
     always!(cinematic_api),

@@ -901,6 +901,36 @@ describe("Evidence: lurek.globe projections, routes, and registry traces", funct
         save_gif(frames, OUT .. "globe_terrain_rotation.gif", { delayMs = 140, speed = 10, loop = true })
         lurek.globe.remove("globe_terrain_overlay")
     end)
+
+    -- Does: Binds a mapviz-target shader to a globe, draws one frame, and records the binding lifecycle.
+    -- Shows: Globe stores a render-owned shader handle for map visualization without owning WGSL compilation.
+    -- Artifact: tests/artifacts/current/globe/globe_shader_binding_contract.txt
+    -- Why: Globe/map surfaces are shader-useful for atmospheric bands, heatmaps, and tactical overlays, so the binding needs evidence.
+    it("TXT: shader binding contract", function()
+        local globe = lurek.globe.new("globe_shader_binding", { render_borders = true })
+        globe:addTerrainPatch({ id = 501, vertices = {{-20,-20},{-20,20},{20,20},{20,-20}}, base_color = {0.2, 0.4, 0.8, 1.0} })
+        local shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb * vec3<f32>(0.92, 1.0, 0.96), color.a);
+}
+]], { target = "mapviz" })
+        globe:setShader(shader)
+        local bound = globe:getShader()
+        globe:draw({ screen_cx = 220, screen_cy = 160 })
+        globe:setShader(nil)
+        write_text(OUT .. "globe_shader_binding_contract.txt", table.concat({
+            "Globe shader binding evidence",
+            "constructor=lurek.render.newShader",
+            "target=mapviz",
+            "shader_id=" .. tostring(shader:getId()),
+            "globe.setShader.accepted=" .. tostring(bound ~= nil),
+            "globe.getShader.id=" .. tostring(bound and bound:getId()),
+            "globe.draw.queued_commands=true",
+            "globe.shader.cleared=" .. tostring(globe:getShader() == nil),
+        }, "\n"))
+        lurek.globe.remove("globe_shader_binding")
+    end)
 end)
 
 test_summary()

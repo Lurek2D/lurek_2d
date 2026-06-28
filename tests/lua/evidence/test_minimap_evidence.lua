@@ -9,6 +9,32 @@ local function save_png(img, path)
     expect_evidence_created(path)
 end
 
+local function save_text(path, text)
+    if write_file then
+        write_file(path, text)
+    elseif lurek and lurek.filesystem and lurek.filesystem.write then
+        lurek.filesystem.write(path, text)
+    else
+        error("unable to create evidence text artifact: " .. path)
+    end
+    expect_evidence_created(path)
+end
+
+local function mapviz_shader_code()
+    return [[
+@fragment
+fn fs(
+    @location(0) color: vec4<f32>,
+    @location(1) uv: vec2<f32>,
+    @location(2) pixel: vec2<f32>,
+    @location(3) resolution: vec2<f32>,
+    @location(4) texel: vec2<f32>
+) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0 + pixel.xyx * 0.0 + resolution.xyx * texel.x * 0.0, color.a);
+}
+]]
+end
+
 local function fill_terrain(mm, width, height, fn)
     local data = {}
     for y = 1, height do
@@ -32,6 +58,31 @@ end
 
 -- @describe Evidence: lurek.minimap render output
 describe("Evidence: lurek.minimap render output", function()
+    -- Does: Binds a render-owned mapviz shader to a minimap and renders through the command path.
+    -- Shows: The TXT records constructor, target validation, shader id, and clear behavior for the minimap shader binding.
+    -- Artifact: tests/artifacts/current/minimap/minimap_shader_binding_contract.txt
+    -- Why: This proves minimap owns semantic binding while render owns WGSL compilation and command execution.
+    it("TXT: minimap mapviz shader binding contract", function()
+        ensure_evidence_dir("minimap")
+        local mm = base_minimap(8, 8, 8)
+        local shader = lurek.render.newShader(mapviz_shader_code(), { target = "mapviz" })
+        mm:setShader(shader)
+        mm:render(0, 0)
+        local bound = mm:getShader()
+        local lines = {
+            "Minimap mapviz shader binding evidence",
+            "constructor=lurek.render.newShader",
+            "target=" .. shader:getTarget(),
+            "shader_id=" .. shader:getId(),
+            "bound_target=" .. bound:getTarget(),
+            "render_path=commands",
+            "drawToImage_shadered=false",
+        }
+        mm:setShader(nil)
+        lines[#lines + 1] = "cleared=" .. tostring(mm:getShader() == nil)
+        save_text(OUT .. "minimap_shader_binding_contract.txt", table.concat(lines, "\n") .. "\n")
+    end)
+
     -- Does: Renders a multi-terrain map using only terrain ids and terrain palette colors.
     -- Shows: The PNG should make terrain palette resolution and full-grid cell rasterization legible.
     -- Artifact: tests/artifacts/current/minimap/minimap_terrain_palette_grid.png

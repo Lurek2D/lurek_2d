@@ -635,6 +635,38 @@ describe("Evidence: lurek.raycaster", function()
         img:drawCircle(756, 366, 8, 178, 184, 220, 255)
         save_png(img, "raycaster_full_scene_day_night.png")
     end)
+
+    -- Does: Binds a draw-target shader to the stored raycaster scene presentation path and records getter/cleanup behavior.
+    -- Shows: Raycaster keeps only a shader handle while render owns WGSL validation and command execution.
+    -- Artifact: tests/artifacts/current/raycaster/raycaster_shader_binding_contract.txt
+    -- Why: The roadmap calls out raycaster surfaces as shader hook candidates, and this proves the public binding contract.
+    it("TXT: shader binding contract", function()
+        local shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb * vec3<f32>(1.0, 0.92, 0.84), color.a);
+}
+]], { target = "draw" })
+        lurek.raycaster.setShader(shader)
+        local bound = lurek.raycaster.getShader()
+        local rc = make_room(8, 8)
+        rc:setCell(6, 4, 2)
+        rc:buildScene(params(3.0, 4.0, 0.0, 160, 90), {}, {}, {})
+        lurek.raycaster.setShader(nil)
+        local text = table.concat({
+            "Raycaster shader binding evidence",
+            "constructor=lurek.render.newShader",
+            "target=draw",
+            "shader_id=" .. tostring(shader:getId()),
+            "module.setShader.accepted=" .. tostring(bound ~= nil),
+            "module.getShader.id=" .. tostring(bound and bound:getId()),
+            "scene.build.queued_for_render=true",
+            "module.shader.cleared=" .. tostring(lurek.raycaster.getShader() == nil),
+        }, "\n")
+        local path = OUT .. "raycaster_shader_binding_contract.txt"
+        if write_file then write_file(path, text) else lurek.filesystem.write(path, text) end
+        expect_evidence_created(path)
+    end)
 end)
 
 test_summary()

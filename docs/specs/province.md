@@ -15,7 +15,7 @@
 - Source path: `src/province`
 - Binding: `src/lua_api/province_api.rs`
 - Namespace: `lurek.province`
-- Lua API surface: `15` functions, `8` types, `47` methods
+- Lua API surface: `15` functions, `8` types, `49` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
@@ -270,6 +270,7 @@ This module primarily collaborates with `camera`, `image`, `pathfind`, `render`,
 - `LProvinceRegistry:getNeighbors(id) -> integer[]`: Returns a table of province IDs that share a border with the given province.
 - `LProvinceRegistry:getProvince(id) -> table`: Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state), centroid, and custom attributes.
 - `LProvinceRegistry:getRevision() -> integer`: Returns the current change revision counter. Incremented on every mutation (color, terrain, border, fog changes). Use with `getChangesSince` for incremental updates.
+- `LProvinceRegistry:getShader() -> LShader?`: Returns the currently bound command-render province shader, or nil.
 - `LProvinceRegistry:getWidth() -> integer`: Returns the width of the province grid in cells (pixels of the source PNG).
 - `LProvinceRegistry:importMetadataFromFiles(opts) -> table`: Bulk-imports province metadata (colors, capitals, labels, terrain) from external files (PNG color map, CSV color table, TOML province definitions, marker PNG). Returns a summary of how many provinces were mapped.
 - `LProvinceRegistry:isConnected(from_id, to_id) -> boolean`: Returns true when there is at least one pathfind graph route between two provinces.
@@ -292,6 +293,7 @@ This module primarily collaborates with `camera`, `image`, `pathfind`, `render`,
 - `LProvinceRegistry:setLabelText(id, text) -> boolean`: Sets the display name text for a province. Rendered on the map when `draw_labels` is enabled in `render` options.
 - `LProvinceRegistry:setMapMode(name) -> boolean`: Switches the active map mode to a previously registered mode name.
 - `LProvinceRegistry:setPoliticalColor(id, r, g, b, a?) -> boolean`: Sets the political map color for a province. Used in political map mode rendering and change tracking.
+- `LProvinceRegistry:setShader(shader?) -> nil`: Binds or clears a `mapviz` shader for command-rendered province visualization.
 - `LProvinceRegistry:setTerrainType(id, terrain_type) -> boolean`: Sets the terrain type index for a province. Terrain type controls which fill color or texture is used in terrain map mode.
 - `LProvinceRegistry:setVisibilityState(id, visibility_state) -> boolean`: Sets the render visibility state for a province. `0` = hidden (no fill/border/capital/label), `1` = discovered (gray fill only), `2+` = fully visible.
 - `LProvinceRegistry:totalAttrForOwner(owner_attr, owner_val, sum_attr) -> number`: Sums a numeric attribute for all provinces with matching owner value.
@@ -431,6 +433,7 @@ This module primarily collaborates with `camera`, `image`, `pathfind`, `render`,
 | Current artifact | `tests/artifacts/current/province/province_revision_timeline.gif` |
 | Current artifact | `tests/artifacts/current/province/province_route_trace.png` |
 | Current artifact | `tests/artifacts/current/province/province_sanitized_map.png` |
+| Current artifact | `tests/artifacts/current/province/province_shader_binding_contract.txt` |
 | Current artifact | `tests/artifacts/current/province/province_span_runs.png` |
 | Current artifact | `tests/artifacts/current/province/province_strategy_modes.png` |
 | Current artifact | `tests/artifacts/current/province/province_zoom_pick_view.png` |
@@ -453,3 +456,4 @@ This module primarily collaborates with `camera`, `image`, `pathfind`, `render`,
 - `province` owns topology as territory data, but `pathfind` owns reusable path search, weighted traversal, connectivity traversal, movement budgets, and reachability over that topology. Province route methods should stay thin adapters over pathfind graph traversal.
 - Flow simulation over graph nodes, items, queues, capacity, and supply/demand belongs to `flownet`/`lurek.graph`; province adjacency can feed it but should not implement transport semantics.
 - `province` may expose `fitCamera`, `screenToProvince`, and `zoomCameraAt` for strategy-map ergonomics, but generic viewport and zoom-anchor math belongs to `camera`.
+- `LProvinceRegistry:setShader(shaderOrNil)` accepts only `mapviz` shaders created by `lurek.render.newShader`. The registry stores the semantic shader binding, then the command backend wraps generated render commands in render-owned shader state. The specialized `backend = "gpu"` province map pipeline and segment raster cache do not yet execute custom user shaders; richer province-id and heatmap inputs belong in a later render-owned `DrawProvinceMap` shader contract.

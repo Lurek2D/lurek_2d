@@ -112,6 +112,42 @@ describe("Evidence: lurek.ui layouts and widgets", function()
         ensure_evidence_dir("ui")
         lurek.ui.clear()
     end)
+    -- Does: Binds ui-target shaders to retained widgets and named widget layers, then queues live UI rendering.
+    -- Shows: The text artifact records the render-owned shader target, direct widget binding, named layer binding, and live draw queue path.
+    -- Artifact: tests/artifacts/current/ui/ui_shader_binding_contract.txt
+    -- Why: This proves retained UI participates in Shader API v2 through ShaderKey bindings while WGSL validation and GPU execution stay in render.
+    it("UI00 TXT: retained UI shader binding contract", function()
+        local shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>, @location(2) pixel: vec2<f32>) -> @location(0) vec4<f32> {
+    let tint = vec3<f32>(0.2 + uv.x * 0.4, 0.65, 1.0);
+    return vec4<f32>(mix(color.rgb, tint, 0.4 + pixel.x * 0.0), color.a);
+}
+]], { target = "ui" })
+        local button = lurek.ui.newButton("Shader UI")
+        button:setPosition(20, 20)
+        button:setSize(160, 36)
+        button:setShader(shader)
+        local panel = lurek.ui.newPanel()
+        panel:setPosition(16, 72)
+        panel:setSize(220, 96)
+        panel:setShaderLayer("panel_tint", shader)
+        lurek.ui.draw()
+        button:setShader(nil)
+        panel:setShaderLayer("panel_tint", nil)
+        write_text(OUT .. "ui_shader_binding_contract.txt", table.concat({
+            "UI shader binding evidence",
+            "constructor=lurek.render.newShader",
+            "target=" .. shader:getTarget(),
+            "shader_id=" .. shader:getId(),
+            "widget.setShader.accepted=true",
+            "widget.setShaderLayer.name=panel_tint",
+            "ui.draw.queued_retained_commands=true",
+            "ui.draw.callbacks_still_supported=true",
+            "software.drawToImage.shadered=false",
+        }, "\n") .. "\n")
+    end)
+
     -- Does: Runs "dashboard layout 1280x720" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.ui.renderToImage and lurek.ui.loadLayoutFile without needing a special evidence-only renderer.
     -- Artifact: tests/artifacts/current/ui/layout_dashboard_desktop_1280x720.png

@@ -5,6 +5,7 @@
 
 use crate::color::Color;
 use crate::math::Vec2;
+use crate::runtime::resource_keys::ShaderKey;
 
 /// A single drawable texture instance with position, scale, rotation, and colour tint.
 pub struct Sprite {
@@ -22,6 +23,8 @@ pub struct Sprite {
     pub normal_map_texture_id: Option<usize>,
     /// Strength multiplier applied when the normal map is used for lit sprite shading.
     pub normal_intensity: f32,
+    /// Optional render-owned shader material applied by sprite workflows.
+    pub shader: Option<ShaderKey>,
 }
 /// Constructor and transform setters for Sprite.
 impl Sprite {
@@ -35,6 +38,7 @@ impl Sprite {
             color: Color::WHITE,
             normal_map_texture_id: None,
             normal_intensity: 1.0,
+            shader: None,
         }
     }
     /// Set the world-space position to (x, y).
@@ -82,5 +86,15 @@ impl Sprite {
     /// Return the intensity multiplier applied to the normal map.
     pub fn get_normal_intensity(&self) -> f32 {
         self.normal_intensity
+    }
+
+    /// Attach or clear the render-owned shader material for this sprite.
+    pub fn set_shader(&mut self, shader: Option<ShaderKey>) {
+        self.shader = shader;
+    }
+
+    /// Return the render-owned shader material bound to this sprite, if any.
+    pub fn get_shader(&self) -> Option<ShaderKey> {
+        self.shader
     }
 }

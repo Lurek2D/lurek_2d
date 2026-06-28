@@ -15,7 +15,7 @@
 - Source path: `src/render`
 - Binding: `src/lua_api/render_api.rs`
 - Namespace: `lurek.render`
-- Lua API surface: `118` functions, `14` types, `91` methods
+- Lua API surface: `123` functions, `14` types, `92` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -409,6 +409,7 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 
 ### Functions
 
+- `lurek.render.applyShaderToCanvas(canvas, shader, opts?) -> LCanvas`: Queues a postfx shader pass that mutates a canvas render target after queued canvas draws in the current frame.
 - `lurek.render.applyTransform(mat) -> nil`: Multiplies the current transformation matrix by a 3x3 matrix (9 values in row-major order).
 - `lurek.render.arc(mode, x, y, radius, angle1, angle2, segments?) -> nil`: Draws a filled or outlined circular arc segment.
 - `lurek.render.beginSortGroup(id) -> nil`: Begins a depth-sorted rendering group. Draw calls within this group are sorted by pushSortKey values.
@@ -441,6 +442,7 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - `lurek.render.getCanvasSize(canvas) -> number, number`: Returns the pixel dimensions of a canvas.
 - `lurek.render.getColor() -> number, number, number, number`: Returns the current drawing color.
 - `lurek.render.getColorMask() -> boolean, boolean, boolean, boolean`: Returns the current color write mask.
+- `lurek.render.getDebugShader() -> LShader?`: Returns the active debug visualization shader, or nil if debug draws use the normal/default render shader path.
 - `lurek.render.getDefaultFilter() -> string, string, number`: Returns the current default texture filtering settings.
 - `lurek.render.getDefaultFont(pointSize?, bold?) -> LFont`: Returns a built-in default font at the nearest available bundled point size.
 - `lurek.render.getDepthMode() -> string, boolean`: Returns the current depth comparison mode and write-enable flag.
@@ -462,6 +464,7 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - `lurek.render.getShader() -> LShader`: Returns the currently active shader, or nil if using the default.
 - `lurek.render.getStats() -> table`: Returns a table of rendering statistics for the current frame.
 - `lurek.render.getStencilMode() -> string, string, number`: Returns the current stencil action, compare mode, and reference value.
+- `lurek.render.getTextShader() -> LShader?`: Returns the active text shader, or nil if font-atlas text uses the default/fallback shader path.
 - `lurek.render.getWidth() -> number`: Returns the current window width in pixels.
 - `lurek.render.intersectScissor(x, y, w, h) -> nil`: Intersects the given rectangle with the current scissor, narrowing the drawable region.
 - `lurek.render.isBold() -> boolean`: Returns true if the current default font selection uses the bold variant.
@@ -478,7 +481,7 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - `lurek.render.newLayer(name, zOrder?) -> nil`: Creates a named rendering layer with an optional z-order for draw call organization.
 - `lurek.render.newMesh(verts, mode?) -> LMesh`: Creates a custom vertex mesh from an array of vertex data tables.
 - `lurek.render.newQuad(x, y, w, h, sw, sh) -> LQuad`: Creates a Quad defining a rectangular sub-region of a texture for sprite-sheet rendering.
-- `lurek.render.newShader(code) -> LShader`: Compiles a WGSL shader program from source code and returns a handle.
+- `lurek.render.newShader(code, opts?) -> LShader`: Compiles a target-aware WGSL fragment shader through the render module and returns a shader handle.
 - `lurek.render.newShape() -> LShape`: Creates a new retained compound shape for accumulating draw commands.
 - `lurek.render.newSpriteBatch(image, max?) -> LSpriteBatch`: Creates a batched sprite renderer for efficiently drawing many copies of the same texture.
 - `lurek.render.origin() -> nil`: Resets the current transformation matrix to the identity (no transform).
@@ -508,6 +511,7 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - `lurek.render.setCanvas(canvas?) -> nil`: Redirects all subsequent drawing to the given canvas. Pass nil to draw to the screen again.
 - `lurek.render.setColor(r, g, b, a?) -> nil`: Sets the active drawing color for all subsequent draw operations.
 - `lurek.render.setColorMask(r?, g?, b?, a?) -> nil`: Sets which color channels are written during draw calls. Call with no args to enable all.
+- `lurek.render.setDebugShader(shader?) -> nil`: Activates a debugviz-target WGSL shader for subsequent diagnostic/debug draw commands. Pass nil to restore the normal draw shader state.
 - `lurek.render.setDefaultFilter(min, mag, anisotropy?) -> nil`: Sets the default texture filtering mode for newly created images.
 - `lurek.render.setDefaultFont(pointSize?, bold?) -> LFont`: Selects a built-in default font by bundled point size and makes it the active render font.
 - `lurek.render.setDepthMode(mode, write?) -> nil`: Sets the depth comparison mode and whether depth writes are enabled.
@@ -522,6 +526,7 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - `lurek.render.setShader(shader?) -> nil`: Activates a shader for subsequent draw calls. Pass nil to restore the default shader.
 - `lurek.render.setStencilMode(action, compare?, value?) -> nil`: Sets the stencil write action, compare function, and reference value at once.
 - `lurek.render.setStencilTest(compare?, value?) -> nil`: Configures the stencil comparison test for subsequent draws. Pass nil to disable.
+- `lurek.render.setTextShader(shader?) -> nil`: Activates a text-target WGSL shader for subsequent font-atlas text draws. Pass nil to restore default text rendering.
 - `lurek.render.setWireframe(enabled) -> nil`: Enables or disables wireframe rendering mode.
 - `lurek.render.shear(kx, ky) -> nil`: Applies a shear (skew) to the current transformation matrix.
 - `lurek.render.stencil(action?, value?) -> nil`: Begins a stencil write pass with the given action and reference value.
@@ -550,6 +555,7 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 
 ##### Methods
 
+- `LCanvas:applyShader(shader, opts?) -> LCanvas`: Queues a postfx shader pass that mutates this canvas render target after queued canvas draws in the current frame.
 - `LCanvas:getDimensions() -> number, number`: Returns both width and height of this canvas.
 - `LCanvas:getHeight() -> number`: Returns the height of this canvas in pixels.
 - `LCanvas:getWidth() -> number`: Returns the width of this canvas in pixels.
@@ -820,16 +826,31 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 | Kind | Path |
 |---|---|
 | Evidence test | `tests/lua/evidence/test_render_evidence.lua` |
+| Evidence test | `tests/lua/evidence/test_render_shader_evidence.lua` |
 | Golden test | `tests/lua/golden/test_render_golden.lua` |
 | Current artifact | `tests/artifacts/current/render/render_advanced_vector_scene.png` |
 | Current artifact | `tests/artifacts/current/render/render_blend_alpha_scene.png` |
 | Current artifact | `tests/artifacts/current/render/render_canvas_composite_scene.png` |
+| Current artifact | `tests/artifacts/current/render/render_canvas_shader_pass_contract.txt` |
 | Current artifact | `tests/artifacts/current/render/render_layers_sort_group_scene.png` |
 | Current artifact | `tests/artifacts/current/render/render_mesh_custom_geometry.png` |
 | Current artifact | `tests/artifacts/current/render/render_obj_model_preview.png` |
 | Current artifact | `tests/artifacts/current/render/render_primitive_family_scene.png` |
 | Current artifact | `tests/artifacts/current/render/render_retained_shape_instances.png` |
 | Current artifact | `tests/artifacts/current/render/render_scissor_nested_clip.png` |
+| Current artifact | `tests/artifacts/current/render/render_shader_contract.txt` |
+| Current artifact | `tests/artifacts/current/render/render_shader_debugviz_contract.txt` |
+| Current artifact | `tests/artifacts/current/render/render_shader_draw_contract.txt` |
+| Current artifact | `tests/artifacts/current/render/render_shader_image_contract.txt` |
+| Current artifact | `tests/artifacts/current/render/render_shader_light_contract.txt` |
+| Current artifact | `tests/artifacts/current/render/render_shader_mapviz_contract.txt` |
+| Current artifact | `tests/artifacts/current/render/render_shader_overlay_contract.txt` |
+| Current artifact | `tests/artifacts/current/render/render_shader_particle_contract.txt` |
+| Current artifact | `tests/artifacts/current/render/render_shader_postfx_contract.txt` |
+| Current artifact | `tests/artifacts/current/render/render_shader_sprite_contract.txt` |
+| Current artifact | `tests/artifacts/current/render/render_shader_text_contract.txt` |
+| Current artifact | `tests/artifacts/current/render/render_shader_tilemap_contract.txt` |
+| Current artifact | `tests/artifacts/current/render/render_shader_ui_contract.txt` |
 | Current artifact | `tests/artifacts/current/render/render_shader_uniform_scene.png` |
 | Current artifact | `tests/artifacts/current/render/render_spritebatch_grid_scene.png` |
 | Current artifact | `tests/artifacts/current/render/render_stencil_portal_scene.png` |
@@ -861,3 +882,11 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - Public `lurek.render` behavior is Lua-first and should keep canonical coverage in `tests/lua/unit/`.
 - `src/render/mod.rs` stays export-only; implementation logic belongs in peer files.
 - Renderer reliability changes should prefer recoverable errors or skipped invalid draws over panics in frame submission.
+- Shader API:
+  `lurek.render.newShader(code, opts?)` is the canonical public constructor for WGSL fragment shaders. `opts.target` defaults to `draw` and may be `draw`, `postfx`, `image`, `overlay`, `particle`, `light`, `sprite`, `tilemap`, `mapviz`, `text`, `ui`, or `debugviz`. There is no public `lurek.shader` module; shaders are render resources bound by other modules through `LShader` handles.
+- Shader target contracts:
+  Fullscreen targets (`postfx`, `image`, `overlay`) share source color, uv, pixel position, resolution, and texel-size inputs; this is the intended contract for palette/LUT grading, heat haze and water distortion, CRT/retro passes, screen transitions such as wipe/dissolve/fade masks, and offline bitmap filters. `image` executes off-screen over RGBA8 `ImageData` and reads back a new `ImageData`. `particle` forwards color, uv, local/world position, velocity, normalized age, lifetime, seed, and sampled texture color. `light` forwards world/light position, normal-map contribution hint, normalized distance, radius, intensity, shadow factor, ambient color, and direction/spot data. `sprite` is a textured material target for sprite recolor, palette swap, team color, damage flash, and dissolve-style fragment effects. `tilemap` is a tile-visual material target for biome tinting, animated water/lava color, fog overlays, and atlas-tile recolor; its current contract exposes tile draw color and uv, with uv set to zero for debug-color primitives. `mapviz` is a command-render visualization target for province and minimap maps; it accepts color, uv, local/pixel position, screen resolution, and texel-size inputs, but province-id or minimap-cell semantic data is still module-owned and not yet forwarded as shader inputs. `text` is a font-atlas target for glyph color/alpha effects, gradient text, glow, outline-like tinting, scanline text, terminal CRT text, and SDF-like experiments; it is activated through `lurek.render.setTextShader` and affects render text commands without changing generic image/sprite draws. `ui` is a terminal/widget surface target for command groups such as `LTerminal:render` and retained widgets emitted by `lurek.ui.draw`; it accepts color, uv, local/pixel position, screen resolution, and texel-size inputs and is intended for CRT terminals, hover/highlight panels, masked UI surfaces, and full-surface UI tinting. `debugviz` is a diagnostic render-command target for non-gameplay overlays such as pathfinding cost fields, physics heatmaps, AI influence maps, flow fields, and runtime inspection layers; it uses the same color/uv/pixel/resolution/texel contract and is activated through `lurek.render.setDebugShader`. Runtime custom shaders are fragment-only; arbitrary user vertex and compute shaders are outside this API.
+- Canvas shader passes:
+  `LCanvas:applyShader(shader, opts?)` and `lurek.render.applyShaderToCanvas(canvas, shader, opts?)` accept `postfx` shaders and queue a render-owned GPU pass that mutates the canvas render target after its queued draws. The postfx contract is reused because canvas passes operate over a source texture; no separate `canvas` shader target exists until canvas-specific semantic inputs are required.
+- Shader ownership:
+  Feature modules such as `image`, `effect`, `overlay`, `particle`, `light`, `sprite`, `tilemap`, `province`, `minimap`, `terminal`, `ui`, `parallax`, `raycaster`, and `globe` may store shader handles and semantic binding choices, but WGSL validation, GPU modules, bind groups, pipeline selection, fallback, and frame execution stay in `render`.

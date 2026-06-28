@@ -1,0 +1,8 @@
+Shader API v2 per-target evidence
+constructor=lurek.render.newShader
+target=particle
+id=4294967301
+actual_target=particle
+diagnostics=validated for particle shader target
+particle.shader=particle
+particle.uniform.glow_amount=true

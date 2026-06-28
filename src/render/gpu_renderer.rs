@@ -1143,8 +1143,11 @@ impl GpuRenderer {
         let mut stencil_mode = GpuStencilMode::Disabled;
         let mut stencil_reference = 0u8;
         let mut active_shader: Option<ShaderKey> = None;
+        let mut active_text_shader: Option<ShaderKey> = None;
         let render_input_limits = RenderInputLimits::default();
         let mut pending_postfx: Vec<(u64, Vec<crate::render::renderer::PostFxPass>, u32, u32)> =
+            Vec::new();
+        let mut pending_canvas_postfx: Vec<(CanvasKey, Vec<crate::render::renderer::PostFxPass>)> =
             Vec::new();
         let mut pending_province_maps: Vec<PendingProvinceMapDraw> = Vec::new();
         for cmd in commands {
@@ -1717,7 +1720,7 @@ impl GpuRenderer {
                         current_blend_mode,
                         current_scissor,
                         color_mask_bits,
-                        active_shader,
+                        active_text_shader.or(active_shader),
                         stencil_mode,
                         stencil_reference,
                         canvases,
@@ -1767,7 +1770,7 @@ impl GpuRenderer {
                         current_blend_mode,
                         current_scissor,
                         color_mask_bits,
-                        active_shader,
+                        active_text_shader.or(active_shader),
                         stencil_mode,
                         stencil_reference,
                         canvases,
@@ -2243,7 +2246,7 @@ impl GpuRenderer {
                         current_blend_mode,
                         current_scissor,
                         color_mask_bits,
-                        active_shader,
+                        active_text_shader.or(active_shader),
                         stencil_mode,
                         stencil_reference,
                         canvases,
@@ -2566,6 +2569,9 @@ impl GpuRenderer {
                 RenderCommand::SetShader(shader) => {
                     active_shader = shader.filter(|key| shaders.contains_key(*key));
                 }
+                RenderCommand::SetTextShader(shader) => {
+                    active_text_shader = shader.filter(|key| shaders.contains_key(*key));
+                }
                 RenderCommand::DrawShape {
                     shape_key,
                     x,
@@ -2599,7 +2605,7 @@ impl GpuRenderer {
                         current_blend_mode,
                         current_scissor,
                         color_mask_bits,
-                        active_shader,
+                        active_text_shader.or(active_shader),
                         stencil_mode,
                         stencil_reference,
                         canvases,
@@ -3847,6 +3853,9 @@ impl GpuRenderer {
                 } => {
                     pending_postfx.push((*stack_id, passes.clone(), *width, *height));
                 }
+                RenderCommand::ApplyShaderToCanvas { canvas_key, passes } => {
+                    pending_canvas_postfx.push((*canvas_key, passes.clone()));
+                }
                 RenderCommand::DrawRichText {
                     font_key,
                     spans,
@@ -3864,7 +3873,7 @@ impl GpuRenderer {
                         current_blend_mode,
                         current_scissor,
                         color_mask_bits,
-                        active_shader,
+                        active_text_shader.or(active_shader),
                         stencil_mode,
                         stencil_reference,
                         canvases,
@@ -3911,7 +3920,7 @@ impl GpuRenderer {
                         current_blend_mode,
                         current_scissor,
                         color_mask_bits,
-                        active_shader,
+                        active_text_shader.or(active_shader),
                         stencil_mode,
                         stencil_reference,
                         canvases,
@@ -4269,6 +4278,39 @@ impl GpuRenderer {
             }
             if target == RenderTargetId::Screen {
                 screen_started = true;
+            }
+        }
+        if !pending_canvas_postfx.is_empty() {
+            if self.postfx_pipeline.is_none() {
+                self.postfx_pipeline = Some(crate::render::postfx_pipeline::PostFxPipeline::new(
+                    &self.device,
+                    self.surface_format,
+                ));
+            }
+            for (canvas_key, passes) in &pending_canvas_postfx {
+                let Some(canvas) = canvases.get(*canvas_key) else {
+                    self.render_diagnostics.record_missing_canvas();
+                    continue;
+                };
+                let Some(canvas_texture) = self.canvas_gpu_textures.get(*canvas_key) else {
+                    self.render_diagnostics.record_missing_canvas();
+                    continue;
+                };
+                if let Some(pipeline) = self.postfx_pipeline.as_mut() {
+                    pipeline.apply_in_place(
+                        &self.device,
+                        &self.queue,
+                        &mut encoder,
+                        &canvas_texture.view,
+                        passes,
+                        shaders,
+                        canvas.width,
+                        canvas.height,
+                        frame_time,
+                        frame_count,
+                    );
+                    self.canvas_needs_clear.insert(*canvas_key, false);
+                }
             }
         }
         if !screen_started {

@@ -16,7 +16,7 @@
 - Source path: `src/tilemap`
 - Binding: `src/lua_api/tilemap_api.rs`
 - Namespace: `lurek.tilemap`
-- Lua API surface: `14` functions, `11` types, `111` methods
+- Lua API surface: `14` functions, `11` types, `115` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
@@ -382,8 +382,10 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `LTileMap:getLayerName(idx) -> string`: Returns the name of a layer by index.
 - `LTileMap:getLayerOffset(idx) -> number`: Returns the pixel offset of a layer.
 - `LTileMap:getLayerParallax(idx) -> number`: Returns the parallax scroll factor of a layer.
+- `LTileMap:getLayerShader(layer) -> LShader?`: Returns the shader override bound to one layer, or nil when the layer has no override.
 - `LTileMap:getLayerVisible(idx) -> boolean`: Returns whether a layer is currently visible.
 - `LTileMap:getOrientation() -> string`: Returns the current map orientation as a string.
+- `LTileMap:getShader() -> LShader?`: Returns the tilemap shader bound to this map, or nil when none is bound.
 - `LTileMap:getTile(layer, x, y) -> integer`: Returns the tile GID at a specific grid position on a layer.
 - `LTileMap:getTileDimensions() -> integer`: Returns both tile width and height in pixels.
 - `LTileMap:getTileHeight() -> integer`: Returns the height of a single tile in pixels for this map.
@@ -397,8 +399,10 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `LTileMap:setLayerColor(idx, r, g, b, a) -> nil`: Sets the tint color for an entire layer.
 - `LTileMap:setLayerOffset(idx, ox, oy) -> nil`: Sets the pixel offset for a layer, shifting all tiles during rendering.
 - `LTileMap:setLayerParallax(idx, px, py) -> nil`: Sets the parallax scroll factor for a layer. Values less than 1 scroll slower than the camera.
+- `LTileMap:setLayerShader(layer, shader?) -> nil`: Binds a tilemap-target shader override to one layer. Pass nil to clear the layer override.
 - `LTileMap:setLayerVisible(idx, visible) -> nil`: Sets whether a layer is drawn during rendering.
 - `LTileMap:setOrientation(orientation) -> nil`: Sets the map orientation, affecting coordinate transforms and rendering.
+- `LTileMap:setShader(shader?) -> nil`: Binds a tilemap-target shader to this map's generated render commands. Pass nil to clear.
 - `LTileMap:setTile(layer, x, y, gid) -> nil`: Sets the tile GID at a specific grid position on a layer.
 - `LTileMap:setTileTint(layer, x, y, r, g, b, a) -> nil`: Overrides the color tint for a single tile at a given position.
 - `LTileMap:setViewport(x, y, w, h) -> nil`: Sets the visible area of the map for culling during rendering.
@@ -517,6 +521,7 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 | Current artifact | `tests/artifacts/current/tilemap/tilemap_isometric.png` |
 | Current artifact | `tests/artifacts/current/tilemap/tilemap_isometric_stacked_settlement.png` |
 | Current artifact | `tests/artifacts/current/tilemap/tilemap_layers.png` |
+| Current artifact | `tests/artifacts/current/tilemap/tilemap_shader_binding_contract.txt` |
 | Current artifact | `tests/artifacts/current/tilemap/tilemap_viewport.png` |
 | Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_autotile.png` |
 | Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_autotile_format_showcase.png` |
@@ -559,3 +564,5 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `LTileMap:worldToTile(...)` preserves legacy clamping semantics, while `LTileMap:tryWorldToTile(...)` returns `nil` for negative or non-finite world coordinates and should be preferred for picking front-ends.
 - Reverse tile-position indexing is lazy after large writes such as `fill(...)`; callers that need dense reverse lookups should use `tileTypeIndex(...)` or `findTilesByGid(...)` and can inspect `getDiagnostics().lazyIndexRebuilds`.
 - Diagnostics counters are part of the public debugging contract: invalid layer access, invalid coordinates, invalid coordinate queries, unknown gids, and lazy reverse-index rebuilds are observable through `LTileMap:getDiagnostics()`.
+- Tilemap shader bindings are visual-only render bindings. `LTileMap:setShader(shaderOrNil)` applies a `tilemap` target shader to generated tilemap render commands, while `LTileMap:setLayerShader(layer, shaderOrNil)` overrides one layer. Tilemap stores only `ShaderKey` handles and semantic layer choices; WGSL validation, GPU pipeline selection, and execution stay in `render`.
+- The current `tilemap` shader contract exposes draw color at `@location(0)` and uv at `@location(1)`. Textured tile visuals receive atlas uv; debug-color tile primitives receive zero uv until tilemap-specific vertex payloads are added.

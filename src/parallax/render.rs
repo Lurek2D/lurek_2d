@@ -19,7 +19,12 @@ impl ParallaxLayer {
             Some(b) => b,
             None => return Vec::new(),
         };
-        batch_to_render_commands(&batch)
+        let mut cmds = batch_to_render_commands(&batch);
+        if let Some(shader) = self.shader {
+            cmds.insert(0, RenderCommand::SetShader(Some(shader)));
+            cmds.push(RenderCommand::SetShader(None));
+        }
+        cmds
     }
 }
 /// Convert a `ParallaxDrawBatch` into a flat list of `RenderCommand` values ready for submission.

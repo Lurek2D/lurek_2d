@@ -1,8 +1,10 @@
 //! File: tests/rust/unit/tilemap_tests.rs
 
 use lurek2d::render::RenderCommand;
+use lurek2d::runtime::resource_keys::ShaderKey;
 use lurek2d::tilemap::*;
 use lurek2d::tileset::{AutoTileMode, TileAnimFrame, TileSet};
+use slotmap::KeyData;
 
 mod ldtk_tests {
     use super::*;
@@ -319,6 +321,53 @@ mod safety_tests {
             .build_render_commands(0.0, 0.0)
             .iter()
             .any(|cmd| matches!(cmd, RenderCommand::Circle { .. })));
+    }
+
+    #[test]
+    fn tilemap_shader_scope_wraps_generated_render_commands() {
+        let mut map = TileMap::try_new(16, 16, 8).unwrap();
+        map.try_add_layer("base", 1, 1).unwrap();
+        map.try_set_tile(0, 0, 0, 1).unwrap();
+        let shader = ShaderKey::from(KeyData::from_ffi(101));
+        map.set_shader(Some(shader));
+
+        let commands = map.build_render_commands(0.0, 0.0);
+
+        assert!(matches!(
+            commands.first(),
+            Some(RenderCommand::SetShader(Some(key))) if *key == shader
+        ));
+        assert!(commands
+            .iter()
+            .any(|command| matches!(command, RenderCommand::Rectangle { .. })));
+        assert!(matches!(
+            commands.last(),
+            Some(RenderCommand::SetShader(None))
+        ));
+    }
+
+    #[test]
+    fn tilemap_layer_shader_overrides_map_shader_scope() {
+        let mut map = TileMap::try_new(16, 16, 8).unwrap();
+        map.try_add_layer("base", 1, 1).unwrap();
+        map.try_add_layer("water", 1, 1).unwrap();
+        map.try_set_tile(0, 0, 0, 1).unwrap();
+        map.try_set_tile(1, 0, 0, 2).unwrap();
+        let map_shader = ShaderKey::from(KeyData::from_ffi(101));
+        let layer_shader = ShaderKey::from(KeyData::from_ffi(202));
+        map.set_shader(Some(map_shader));
+        map.set_layer_shader(1, Some(layer_shader)).unwrap();
+
+        let shader_starts = map
+            .build_render_commands(0.0, 0.0)
+            .into_iter()
+            .filter_map(|command| match command {
+                RenderCommand::SetShader(Some(key)) => Some(key),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+
+        assert_eq!(shader_starts, vec![map_shader, layer_shader]);
     }
 
     #[test]

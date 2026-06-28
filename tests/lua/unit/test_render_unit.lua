@@ -21,6 +21,64 @@ local function minimal_shader_code()
     return "@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }"
 end
 
+local function draw_shader_code()
+    return [[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + vec3<f32>(uv, 0.0), color.a);
+}
+]]
+end
+
+local function screen_shader_code()
+    return [[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>, @location(2) pixel: vec2<f32>, @location(3) resolution: vec2<f32>, @location(4) texel: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + texel.xyx * resolution.x * 0.001 + pixel.xyx * 0.0 + uv.xyx * 0.0, color.a);
+}
+]]
+end
+
+local function particle_shader_code()
+    return [[
+@fragment
+fn fs_main(
+    @location(0) color: vec4<f32>,
+    @location(1) uv: vec2<f32>,
+    @location(2) local_pos: vec2<f32>,
+    @location(3) world_pos: vec2<f32>,
+    @location(4) velocity: vec2<f32>,
+    @location(5) age: f32,
+    @location(6) lifetime: f32,
+    @location(7) seed: f32,
+    @location(8) sampled_color: vec4<f32>
+) -> @location(0) vec4<f32> {
+    return sampled_color + color * 0.0 + vec4<f32>(uv + local_pos * 0.0 + world_pos * 0.0 + velocity * 0.0, age + lifetime + seed, 0.0);
+}
+]]
+end
+
+local function light_shader_code()
+    return [[
+@fragment
+fn fs_main(
+    @location(0) color: vec4<f32>,
+    @location(1) uv: vec2<f32>,
+    @location(2) world_pos: vec2<f32>,
+    @location(3) light_pos: vec2<f32>,
+    @location(4) normal_hint: vec2<f32>,
+    @location(5) distance_norm: f32,
+    @location(6) radius: f32,
+    @location(7) intensity: f32,
+    @location(8) shadow_factor: f32,
+    @location(9) ambient_color: vec4<f32>,
+    @location(10) direction_spot: vec4<f32>
+) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb * intensity * shadow_factor + (uv + world_pos + light_pos + normal_hint).x * 0.0 + ambient_color.rgb * 0.0 + direction_spot.xyz * 0.0, color.a + distance_norm * 0.0 + radius * 0.0 + direction_spot.w * 0.0);
+}
+]]
+end
+
 local function simple_mesh()
     return lurek.render.newMesh({
         { 0, 0, 0, 0, 1, 1, 1, 1 },
@@ -805,13 +863,24 @@ describe("render strict: canvas and shader", function()
         expect_equal(7, h)
     end)
 
+    -- @covers lurek.render.applyShaderToCanvas
+    it("applyShaderToCanvas accepts postfx shaders and rejects draw shaders", function()
+        local canvas = lurek.render.newCanvas(8, 8)
+        local shader = lurek.render.newShader(screen_shader_code(), { target = "postfx" })
+        local returned = lurek.render.applyShaderToCanvas(canvas, shader)
+        expect_equal("LCanvas", returned:type())
+        expect_error(function()
+            lurek.render.applyShaderToCanvas(canvas, lurek.render.newShader(draw_shader_code()))
+        end)
+    end)
+
     -- @covers lurek.render.setShader
     it("setShader accepts draw shaders and rejects other targets", function()
         local draw_shader = lurek.render.newShader(minimal_shader_code())
         lurek.render.setShader(draw_shader)
         expect_type("userdata", lurek.render.getShader())
         expect_error(function()
-            lurek.render.setShader(lurek.shader.new([[
+            lurek.render.setShader(lurek.render.newShader([[
 @fragment
 fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
     return color;
@@ -825,9 +894,44 @@ fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
     end)
 
     -- @covers lurek.render.newShader
-    it("newShader compiles a minimal shader source", function()
-        local shader = lurek.render.newShader(minimal_shader_code())
-        expect_type("userdata", shader)
+    it("newShader compiles target-aware WGSL shaders", function()
+        expect_equal(nil, lurek.shader)
+        local shaders = {
+            lurek.render.newShader(draw_shader_code()),
+            lurek.render.newShader(draw_shader_code(), { target = "draw" }),
+            lurek.render.newShader(screen_shader_code(), { target = "postfx" }),
+            lurek.render.newShader(screen_shader_code(), { target = "image" }),
+            lurek.render.newShader(screen_shader_code(), { target = "overlay" }),
+            lurek.render.newShader(particle_shader_code(), { target = "particle" }),
+            lurek.render.newShader(light_shader_code(), { target = "light" }),
+            lurek.render.newShader(draw_shader_code(), { target = "sprite" }),
+            lurek.render.newShader(draw_shader_code(), { target = "tilemap" }),
+            lurek.render.newShader(screen_shader_code(), { target = "mapviz" }),
+            lurek.render.newShader(screen_shader_code(), { target = "text" }),
+            lurek.render.newShader(screen_shader_code(), { target = "ui" }),
+            lurek.render.newShader(screen_shader_code(), { target = "debugviz" }),
+        }
+        local targets = { "draw", "draw", "postfx", "image", "overlay", "particle", "light", "sprite", "tilemap", "mapviz", "text", "ui", "debugviz" }
+        for i, shader in ipairs(shaders) do
+            expect_type("userdata", shader)
+            expect_equal(targets[i], shader:getTarget())
+            expect_true(shader:getId() > 0)
+        end
+    end)
+
+    -- @covers LShader:getTarget
+    it("getTarget returns the render-created shader target", function()
+        local shader = lurek.render.newShader(draw_shader_code(), { target = "draw" })
+        expect_equal("draw", shader:getTarget())
+    end)
+
+    -- @covers LShader:getDiagnostics
+    it("getDiagnostics returns validation diagnostics", function()
+        local shader = lurek.render.newShader(draw_shader_code(), { target = "draw" })
+        local diagnostics = shader:getDiagnostics()
+        expect_type("table", diagnostics)
+        expect_true(#diagnostics >= 1)
+        expect_true(string.find(diagnostics[1], "draw") ~= nil)
     end)
 
     -- @covers lurek.render.getShader
@@ -836,6 +940,54 @@ fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
         lurek.render.setShader(shader)
         expect_type("userdata", lurek.render.getShader())
         lurek.render.setShader(nil)
+    end)
+
+    -- @covers lurek.render.setTextShader
+    it("setTextShader accepts text shaders and rejects other targets", function()
+        local shader = lurek.render.newShader(screen_shader_code(), { target = "text" })
+        lurek.render.setTextShader(shader)
+        lurek.render.print("shader text", 4, 8)
+        lurek.render.setTextShader(nil)
+        expect_error(function()
+            lurek.render.setTextShader(lurek.render.newShader(draw_shader_code(), { target = "draw" }))
+        end)
+    end)
+
+    -- @covers lurek.render.getTextShader
+    it("getTextShader returns the active text shader handle", function()
+        local shader = lurek.render.newShader(screen_shader_code(), { target = "text" })
+        expect_equal(nil, lurek.render.getTextShader())
+        lurek.render.setTextShader(shader)
+        expect_equal("text", lurek.render.getTextShader():getTarget())
+        lurek.render.setTextShader(nil)
+        expect_equal(nil, lurek.render.getTextShader())
+    end)
+
+    -- @covers lurek.render.setDebugShader
+    it("setDebugShader accepts debugviz shaders, rejects other targets, and restores draw shader state", function()
+        local draw_shader = lurek.render.newShader(draw_shader_code(), { target = "draw" })
+        local debug_shader = lurek.render.newShader(screen_shader_code(), { target = "debugviz" })
+        lurek.render.setShader(draw_shader)
+        lurek.render.setDebugShader(debug_shader)
+        lurek.render.rectangle("fill", 2, 3, 10, 8)
+        expect_equal("debugviz", lurek.render.getDebugShader():getTarget())
+        lurek.render.setDebugShader(nil)
+        expect_equal(nil, lurek.render.getDebugShader())
+        expect_equal("draw", lurek.render.getShader():getTarget())
+        expect_error(function()
+            lurek.render.setDebugShader(lurek.render.newShader(screen_shader_code(), { target = "overlay" }))
+        end)
+        lurek.render.setShader(nil)
+    end)
+
+    -- @covers lurek.render.getDebugShader
+    it("getDebugShader returns nil until a debug visualization shader is active", function()
+        expect_equal(nil, lurek.render.getDebugShader())
+        local shader = lurek.render.newShader(screen_shader_code(), { target = "debugviz" })
+        lurek.render.setDebugShader(shader)
+        expect_equal("debugviz", lurek.render.getDebugShader():getTarget())
+        lurek.render.setDebugShader(nil)
+        expect_equal(nil, lurek.render.getDebugShader())
     end)
 end)
 
@@ -1207,6 +1359,17 @@ describe("render strict: LCanvas methods", function()
         local w, h = canvas:getDimensions()
         expect_type("number", w)
         expect_type("number", h)
+    end)
+
+    -- @covers LCanvas:applyShader
+    it("LCanvas applyShader accepts postfx shaders and rejects draw shaders", function()
+        local canvas = lurek.render.newCanvas(8, 8)
+        local shader = lurek.render.newShader(screen_shader_code(), { target = "postfx" })
+        local returned = canvas:applyShader(shader)
+        expect_equal("LCanvas", returned:type())
+        expect_error(function()
+            canvas:applyShader(lurek.render.newShader(draw_shader_code()))
+        end)
     end)
 
     -- @covers LCanvas:release

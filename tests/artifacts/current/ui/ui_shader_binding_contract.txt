@@ -1,0 +1,9 @@
+UI shader binding evidence
+constructor=lurek.render.newShader
+target=ui
+shader_id=4294967297
+widget.setShader.accepted=true
+widget.setShaderLayer.name=panel_tint
+ui.draw.queued_retained_commands=true
+ui.draw.callbacks_still_supported=true
+software.drawToImage.shadered=false

@@ -1750,9 +1750,6 @@ lurek.scene.transitions = {}
 ---@class lurek.serialize
 lurek.serialize = {}
 
----@class lurek.shader
-lurek.shader = {}
-
 ---@class lurek.spine
 lurek.spine = {}
 
@@ -13849,6 +13846,10 @@ function LGlobe:getRegionAttr(id, key) end
 ---@return number[] Array table of province ids.
 function LGlobe:getSectorProvinces(sector) end
 
+--- Returns the mapviz-target shader bound to this globe, if any.
+---@return LShader? Bound shader handle, or nil.
+function LGlobe:getShader() end
+
 --- Reads a string attribute from a terrain patch.
 ---@param id number Terrain patch id.
 ---@param key string Attribute key.
@@ -14189,6 +14190,10 @@ function LGlobe:setRegionVisible(id, visible) end
 --- Sets globe rotation angle. This method is available to Lua scripts.
 ---@param deg number Rotation in degrees.
 function LGlobe:setRotation(deg) end
+
+--- Binds a mapviz-target shader to this globe's generated render commands. Pass nil to clear.
+---@param shader? LShader Shader created with `lurek.render.newShader(code, { target = "mapviz" })`, or nil to clear.
+function LGlobe:setShader(shader) end
 
 --- Sets a string attribute on a terrain patch.
 ---@param id number Terrain patch id.
@@ -19079,6 +19084,10 @@ function LMinimap:getPathCount() end
 ---@return number Ping count.
 function LMinimap:getPingCount() end
 
+--- Returns the currently bound command-render minimap shader, or nil.
+---@return LShader? Bound shader handle.
+function LMinimap:getShader() end
+
 --- Returns terrain type for a one-based grid cell.
 ---@param x number One-based grid x coordinate.
 ---@param y number One-based grid y coordinate.
@@ -19302,6 +19311,10 @@ function LMinimap:setObjectTypeVisible(type_idx, visible) end
 ---@param b number Blue channel.
 ---@param a? number Alpha channel, defaults to 1.0.
 function LMinimap:setOwnerColor(owner, r, g, b, a) end
+
+--- Binds or clears a `mapviz` shader for command-rendered minimap visualization.
+---@param shader? LShader Shader created by `lurek.render.newShader(code, { target = "mapviz" })`, or nil to clear.
+function LMinimap:setShader(shader) end
 
 --- Sets terrain type for a one-based grid cell.
 ---@param x number One-based grid x coordinate.
@@ -20450,6 +20463,10 @@ function LParallaxLayer:getOpacity() end
 ---@return number Y scroll factor.
 function LParallaxLayer:getScrollFactor() end
 
+--- Returns the draw-target shader bound to this parallax layer, if any.
+---@return LShader? Bound shader handle, or nil.
+function LParallaxLayer:getShader() end
+
 --- Returns telemetry for the current runtime camera and viewport.
 ---@return table Parallax layer telemetry fields.
 function LParallaxLayer:getStats() end
@@ -20533,6 +20550,10 @@ function LParallaxLayer:setScale(sx, sy) end
 ---@param x number X scroll factor.
 ---@param y number Y scroll factor.
 function LParallaxLayer:setScrollFactor(x, y) end
+
+--- Binds a draw-target shader to this parallax layer's generated render commands. Pass nil to clear.
+---@param shader? LShader Shader created with `lurek.render.newShader(code, { target = "draw" })`, or nil to clear.
+function LParallaxLayer:setShader(shader) end
 
 --- Sets tile size for tiling for this object.
 ---@param w number Tile width.
@@ -25665,6 +25686,10 @@ function LProvinceRegistry:getProvince(id) end
 ---@return number Current revision number.
 function LProvinceRegistry:getRevision() end
 
+--- Returns the currently bound command-render province shader, or nil.
+---@return LShader? Bound shader handle.
+function LProvinceRegistry:getShader() end
+
 --- Returns the width of the province grid in cells (pixels of the source PNG).
 ---@return number Grid width in cells.
 function LProvinceRegistry:getWidth() end
@@ -25800,6 +25825,10 @@ function LProvinceRegistry:setMapMode(name) end
 ---@param a? number Alpha component (default 1.0).
 ---@return boolean True if the province ID exists.
 function LProvinceRegistry:setPoliticalColor(id, r, g, b, a) end
+
+--- Binds or clears a `mapviz` shader for command-rendered province visualization.
+---@param shader? LShader Shader created by `lurek.render.newShader(code, { target = "mapviz" })`, or nil to clear.
+function LProvinceRegistry:setShader(shader) end
 
 --- Sets the terrain type index for a province. Terrain type controls which fill color or texture is used in terrain map mode.
 ---@param id number Province ID.
@@ -26635,6 +26664,10 @@ lurek.raycaster.drawLastScene = function(width, height) end
 ---@return LRaycasterGetLastBuildStatsResult Nil if no raycaster scene has been built yet; otherwise a stats table.
 lurek.raycaster.getLastBuildStats = function() end
 
+--- Returns the draw-target shader applied to the stored raycaster scene, or nil when default rendering is used.
+---@return LShader? Bound shader handle, or nil.
+lurek.raycaster.getShader = function() end
+
 --- Creates a new raycaster map with the given grid dimensions.
 ---@param w number Map width in cells.
 ---@param h number Map height in cells.
@@ -26697,6 +26730,16 @@ lurek.raycaster.pickScreenMultiLevelFromAdapter = function(sx, sy, params, level
 ---@param screenHeight number Screen height in pixels.
 ---@return number Projected column height in pixels.
 lurek.raycaster.projectColumn = function(distance, fov, screenHeight) end
+
+--- Binds a draw-target shader to the most recently built raycaster scene when it is presented by the renderer. Pass nil to clear.
+---@param shader? LShader Shader created with `lurek.render.newShader(code, { target = "draw" })`, or nil to clear.
+lurek.raycaster.setShader = function(shader) end
+
+--- Queues a postfx shader pass that mutates this canvas render target after queued canvas draws in the current frame.
+---@param shader LShader Shader created with `lurek.render.newShader(code, { target = "postfx" })`.
+---@param opts? table Reserved options table for future pass parameters.
+---@return LCanvas This canvas handle.
+function LCanvas:applyShader(shader, opts) end
 
 --- Returns both width and height of this canvas.
 ---@return number Width and height in pixels. (value 1).
@@ -27162,6 +27205,13 @@ function LSpriteBatch:type() end
 ---@return boolean True if the name matches.
 function LSpriteBatch:typeOf(name) end
 
+--- Queues a postfx shader pass that mutates a canvas render target after queued canvas draws in the current frame.
+---@param canvas LCanvas Canvas render target to process.
+---@param shader LShader Shader created with `lurek.render.newShader(code, { target = "postfx" })`.
+---@param opts? table Reserved options table for future pass parameters.
+---@return LCanvas The processed canvas handle.
+lurek.render.applyShaderToCanvas = function(canvas, shader, opts) end
+
 --- Multiplies the current transformation matrix by a 3x3 matrix (9 values in row-major order).
 ---@param mat table Flat table of 9 numbers representing a 3x3 transform matrix.
 lurek.render.applyTransform = function(mat) end
@@ -27389,6 +27439,10 @@ lurek.render.getColor = function() end
 ---@return boolean Red; green; blue; alpha channel write states. (value 4).
 lurek.render.getColorMask = function() end
 
+--- Returns the active debug visualization shader, or nil if debug draws use the normal/default render shader path.
+---@return LShader? The active debug visualization shader handle.
+lurek.render.getDebugShader = function() end
+
 --- Returns the current default texture filtering settings.
 ---@return string Min filter; mag filter; anisotropy level. (value 1).
 ---@return string Min filter; mag filter; anisotropy level. (value 2).
@@ -27495,6 +27549,10 @@ lurek.render.getStats = function() end
 ---@return number Action name; compare mode name; and reference value. (value 3).
 lurek.render.getStencilMode = function() end
 
+--- Returns the active text shader, or nil if font-atlas text uses the default/fallback shader path.
+---@return LShader? The active text shader handle.
+lurek.render.getTextShader = function() end
+
 --- Returns the current window width in pixels.
 ---@return number Window width.
 lurek.render.getWidth = function() end
@@ -27580,10 +27638,11 @@ lurek.render.newMesh = function(verts, mode) end
 ---@return LQuad The created quad.
 lurek.render.newQuad = function(x, y, w, h, sw, sh) end
 
---- Compiles a WGSL shader program from source code and returns a handle.
----@param code string WGSL shader source code.
+--- Compiles a target-aware WGSL fragment shader through the render module and returns a shader handle.
+---@param code string WGSL fragment shader source.
+---@param opts? table Options table with optional `target` string: draw, postfx, image, overlay, particle, light, sprite, tilemap, mapviz, text, ui, or debugviz. Defaults to draw.
 ---@return LShader The compiled shader handle.
-lurek.render.newShader = function(code) end
+lurek.render.newShader = function(code, opts) end
 
 --- Creates a new retained compound shape for accumulating draw commands.
 ---@return LShape The created shape handle.
@@ -27759,6 +27818,10 @@ lurek.render.setColor = function(r, g, b, a) end
 ---@param a? boolean Enable alpha channel.
 lurek.render.setColorMask = function(r, g, b, a) end
 
+--- Activates a debugviz-target WGSL shader for subsequent diagnostic/debug draw commands. Pass nil to restore the normal draw shader state.
+---@param shader? LShader Shader created with `lurek.render.newShader(code, { target = "debugviz" })`, or nil for default debug rendering.
+lurek.render.setDebugShader = function(shader) end
+
 --- Sets the default texture filtering mode for newly created images.
 ---@param min string Minification filter: "nearest" or "linear".
 ---@param mag string Magnification filter: "nearest" or "linear".
@@ -27828,6 +27891,10 @@ lurek.render.setStencilMode = function(action, compare, value) end
 ---@param compare? string Compare function: "equal", "notequal", "less", "greater", etc. Nil disables.
 ---@param value? number Reference value to compare against (default 1).
 lurek.render.setStencilTest = function(compare, value) end
+
+--- Activates a text-target WGSL shader for subsequent font-atlas text draws. Pass nil to restore default text rendering.
+---@param shader? LShader Shader created with `lurek.render.newShader(code, { target = "text" })`, or nil for default.
+lurek.render.setTextShader = function(shader) end
 
 --- Enables or disables wireframe rendering mode.
 ---@param enabled boolean True for wireframe, false for solid.
@@ -28533,12 +28600,6 @@ lurek.serialize.toToml = function(value) end
 ---@return string An error message describing the validation failure; or nil on success.
 lurek.serialize.validate = function(value, schema) end
 
---- Compiles a target-aware WGSL fragment shader and returns a shader handle.
----@param code string WGSL fragment shader source code.
----@param opts? table Options table with optional `target` string.
----@return LShader Compiled shader handle.
-lurek.shader.new = function(code, opts) end
-
 --- Registers a SkeletonAnimation object with this skeleton so it can be played by name.
 ---@param anim LSkeletonAnimation The animation userdata to register. Consumed by this call.
 function LSkeleton:addAnimation(anim) end
@@ -28824,6 +28885,10 @@ function LSprite:getNormalMap() end
 ---@return number World Y position.
 function LSprite:getPosition() end
 
+--- Returns the sprite material shader bound to this sprite, if any.
+---@return LShader? Bound shader or nil.
+function LSprite:getShader() end
+
 --- Returns whether the sprite currently has a normal map.
 ---@return boolean True when a normal map is assigned.
 function LSprite:hasNormalMap() end
@@ -28840,6 +28905,15 @@ function LSprite:setNormalMap(texture_id) end
 ---@param x number World X position.
 ---@param y number World Y position.
 function LSprite:setPosition(x, y) end
+
+--- Sets or clears the render-owned sprite material shader.
+---@param shader? LShader Sprite-target shader or nil to clear.
+function LSprite:setShader(shader) end
+
+--- Sends a uniform value to the shader bound to this sprite.
+---@param name string Uniform name.
+---@param value number|boolean|table Uniform value.
+function LSprite:setShaderUniform(name, value) end
 
 --- Returns the type name of this object.
 ---@return string Always `"LSprite"`.
@@ -29445,6 +29519,10 @@ function LTerminal:getFocused() end
 ---@return table Render stats keyed by stat name.
 function LTerminal:getRenderStats() end
 
+--- Returns the UI shader bound to this terminal, or nil when default terminal rendering is used.
+---@return LShader? Bound shader handle, if any.
+function LTerminal:getShader() end
+
 --- Returns the number of widgets currently attached to this terminal.
 ---@return number Widget count.
 function LTerminal:getWidgetCount() end
@@ -29510,6 +29588,10 @@ function LTerminal:setFocus(widget) end
 --- Selects the nearest built-in bitmap font by pixel height and refits the window to the terminal grid.
 ---@param height number Desired font height in pixels.
 function LTerminal:setFont(height) end
+
+--- Binds or clears a render-owned UI shader for this terminal's generated render commands.
+---@param shader? LShader Shader created with `lurek.render.newShader(code, { target = "ui" })`, or nil to clear.
+function LTerminal:setShader(shader) end
 
 --- Forwards a text input event to the terminal for character entry into focused widgets.
 ---@param text string The text characters entered.
@@ -31138,6 +31220,11 @@ function LTileMap:getLayerOffset(idx) end
 ---@return number Vertical parallax factor.
 function LTileMap:getLayerParallax(idx) end
 
+--- Returns the shader override bound to one layer, or nil when the layer has no override.
+---@param layer number Layer index (1-based).
+---@return LShader? Bound layer shader handle.
+function LTileMap:getLayerShader(layer) end
+
 --- Returns whether a layer is currently visible.
 ---@param idx number Layer index (1-based).
 ---@return boolean True if the layer is visible.
@@ -31146,6 +31233,10 @@ function LTileMap:getLayerVisible(idx) end
 --- Returns the current map orientation as a string.
 ---@return string One of `"topdown"`, `"sideview"`, `"isometric"`, `"hexagonal"`.
 function LTileMap:getOrientation() end
+
+--- Returns the tilemap shader bound to this map, or nil when none is bound.
+---@return LShader? Bound shader handle.
+function LTileMap:getShader() end
 
 --- Returns the tile GID at a specific grid position on a layer.
 ---@param layer number Layer index (1-based).
@@ -31220,6 +31311,11 @@ function LTileMap:setLayerOffset(idx, ox, oy) end
 ---@param py number Vertical parallax factor.
 function LTileMap:setLayerParallax(idx, px, py) end
 
+--- Binds a tilemap-target shader override to one layer. Pass nil to clear the layer override.
+---@param layer number Layer index (1-based).
+---@param shader? LShader Shader created with `lurek.render.newShader(code, { target = "tilemap" })`.
+function LTileMap:setLayerShader(layer, shader) end
+
 --- Sets whether a layer is drawn during rendering.
 ---@param idx number Layer index (1-based).
 ---@param visible boolean True to show, false to hide.
@@ -31228,6 +31324,10 @@ function LTileMap:setLayerVisible(idx, visible) end
 --- Sets the map orientation, affecting coordinate transforms and rendering.
 ---@param orientation string One of `"topdown"`, `"sideview"`, `"isometric"`, `"hexagonal"`.
 function LTileMap:setOrientation(orientation) end
+
+--- Binds a tilemap-target shader to this map's generated render commands. Pass nil to clear.
+---@param shader? LShader Shader created with `lurek.render.newShader(code, { target = "tilemap" })`.
+function LTileMap:setShader(shader) end
 
 --- Sets the tile GID at a specific grid position on a layer.
 ---@param layer number Layer index (1-based).
@@ -33897,6 +33997,17 @@ function LUiWidget:setPosition(x, y) end
 ---@param role string Semantic role name.
 function LUiWidget:setRole(role) end
 
+--- Binds or clears a render-owned UI shader for this widget subtree.
+---@param shader? LShader Shader created with `lurek.render.newShader(code, { target = "ui" })`, or nil to clear.
+---@param opts? table Reserved options table for future UI shader parameters.
+function LUiWidget:setShader(shader, opts) end
+
+--- Binds or clears a named render-owned UI shader layer for this widget subtree.
+---@param name string Layer name. Names are sorted deterministically when choosing the active layer.
+---@param shader? LShader Shader created with `lurek.render.newShader(code, { target = "ui" })`, or nil to clear the layer.
+---@param opts? table Reserved options table for future UI shader parameters.
+function LUiWidget:setShaderLayer(name, shader, opts) end
+
 --- Sets the width and height of this widget in pixels.
 ---@param w number Width in pixels.
 ---@param h number Height in pixels.
@@ -34011,7 +34122,7 @@ lurek.ui.clearFocus = function() end
 --- Clears the global UI font override so the UI falls back to the active render font again.
 lurek.ui.clearFont = function() end
 
---- Invokes custom draw callbacks for all widgets that have one registered.
+--- Queues retained UI render commands, then invokes custom draw callbacks for widgets that registered one.
 lurek.ui.draw = function() end
 
 --- Renders the entire UI to an image buffer.

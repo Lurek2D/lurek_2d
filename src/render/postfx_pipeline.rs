@@ -979,6 +979,52 @@ impl PostFxPipeline {
             }
         }
     }
+    /// Apply post-fx passes to a texture and copy the result back into the same target view.
+    ///
+    /// The source view is never bound as both sampled texture and render attachment in one pass;
+    /// the filtered result is written to a staging texture first and then copied back.
+    #[allow(clippy::too_many_arguments)]
+    pub fn apply_in_place(
+        &mut self,
+        device: &wgpu::Device,
+        queue: &wgpu::Queue,
+        encoder: &mut wgpu::CommandEncoder,
+        source_and_target_view: &wgpu::TextureView,
+        passes: &[crate::render::renderer::PostFxPass],
+        shaders: &SlotMap<ShaderKey, Shader>,
+        width: u32,
+        height: u32,
+        total_time: f32,
+        frame_count: u64,
+    ) {
+        let stage = PostFxTexture::new(
+            device,
+            width,
+            height,
+            "postfx_canvas_stage",
+            self.surface_format,
+        );
+        self.apply(
+            device,
+            queue,
+            encoder,
+            source_and_target_view,
+            &stage.view,
+            passes,
+            shaders,
+            width,
+            height,
+            total_time,
+            frame_count,
+        );
+        self.run_copy_pass(
+            device,
+            encoder,
+            queue,
+            PostFxSource::External(&stage.view),
+            source_and_target_view,
+        );
+    }
     /// Blit `source` to `dst_view` using the identity copy shader.
     fn run_copy_pass(
         &self,
