@@ -7,13 +7,6 @@
 
 --@api: lurek.repl.new
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LReplSession
     local repl = lurek.repl.new(8)
@@ -26,49 +19,28 @@ end
 
 --@api: LReplSession:eval
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LReplSession
     local repl = lurek.repl.new()
     repl:eval("local total = 2 + 2")
     local result = repl:eval("return total * 3")
-    example_print_log("eval result = " .. result)
-    example_print_log("history len = " .. repl:len())
+    lurek.log.info(tostring("eval result = " .. result))
+    lurek.log.info(tostring("history len = " .. repl:len()))
 end
 
 --@api: LReplSession:history
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local repl = lurek.repl.new()
     repl:eval("return 'first'")
     repl:eval("return 'second'")
     local hist = repl:history()
-    example_print_log("history entries = " .. #hist)
-    example_print_log("last entry = " .. hist[#hist])
+    lurek.log.info(tostring("history entries = " .. #hist))
+    lurek.log.info(tostring("last entry = " .. hist[#hist]))
 end
 
 --@api: LReplSession:complete
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LReplSession
     local repl = lurek.repl.new()
@@ -81,48 +53,27 @@ end
 
 --@api: LReplSession:clear
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local repl = lurek.repl.new()
     repl:eval("return 1")
     repl:eval("return 2")
     repl:clear()
-    example_print_log("after clear = " .. repl:len() .. " history=" .. #repl:history())
+    lurek.log.info(tostring("after clear = " .. repl:len() .. " history=" .. #repl:history()))
 end
 
 --@api: LReplSession:len
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local repl = lurek.repl.new()
     repl:eval("return 'a'")
     repl:eval("return 'b'")
-    example_print_log("len = " .. repl:len())
+    lurek.log.info(tostring("len = " .. repl:len()))
     repl:clear()
-    example_print_log("after clear = " .. repl:len())
+    lurek.log.info(tostring("after clear = " .. repl:len()))
 end
 
 --@api: LReplSession:type
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LReplSession
     local sess = lurek.repl.new()
@@ -135,13 +86,6 @@ end
 
 --@api: LReplSession:typeOf
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     ---@type LReplSession
     local sess = lurek.repl.new()

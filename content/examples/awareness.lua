@@ -452,9 +452,6 @@ end
 
 --@api: LTileAwareness:defineCategory
 do
-    local function example_log(message)
-        lurek.log.info("[awareness.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 5 })
     field:defineCategory("sound", { kind = "awareness" })
     local vis = lurek.awareness.newTileAwareness(field, { players = { "p1", "p2" } })
@@ -463,14 +460,11 @@ do
         return #vis:getCategories()
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 
 --@api: LTileAwareness:getCategory
 do
-    local function example_log(message)
-        lurek.log.info("[awareness.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 5 })
     field:defineCategory("sound", { kind = "awareness" })
     local vis = lurek.awareness.newTileAwareness(field, { players = { "p1", "p2" } })
@@ -479,14 +473,11 @@ do
         return vis:getCategory("sound").range
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 
 --@api: LTileAwareness:getCategories
 do
-    local function example_log(message)
-        lurek.log.info("[awareness.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 5 })
     field:defineCategory("sound", { kind = "awareness" })
     local vis = lurek.awareness.newTileAwareness(field, { players = { "p1", "p2" } })
@@ -495,14 +486,11 @@ do
         return vis:getCategories()[1]
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 
 --@api: LTileAwareness:isAware
 do
-    local function example_log(message)
-        lurek.log.info("[awareness.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 5 })
     field:defineCategory("sound", { kind = "awareness" })
     local vis = lurek.awareness.newTileAwareness(field, { players = { "p1", "p2" } })
@@ -512,14 +500,11 @@ do
         return vis:isAware("p1", 2, 2, 1, "sound")
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 
 --@api: LTileAwareness:share
 do
-    local function example_log(message)
-        lurek.log.info("[awareness.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 5 })
     field:defineCategory("sound", { kind = "awareness" })
     local vis = lurek.awareness.newTileAwareness(field, { players = { "p1", "p2" } })
@@ -530,14 +515,11 @@ do
         return vis:isAware("p2", 2, 2, 1, "sound")
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 
 --@api: LTileAwareness:clearShares
 do
-    local function example_log(message)
-        lurek.log.info("[awareness.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 5 })
     field:defineCategory("sound", { kind = "awareness" })
     local vis = lurek.awareness.newTileAwareness(field, { players = { "p1", "p2" } })
@@ -548,14 +530,11 @@ do
         return #vis:getCategories()
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end
 
 --@api: LTileAwareness:setTeam
 do
-    local function example_log(message)
-        lurek.log.info("[awareness.example] " .. tostring(message))
-    end
     local field = lurek.tilefield.new({ width = 5, height = 5 })
     field:defineCategory("sound", { kind = "awareness" })
     local vis = lurek.awareness.newTileAwareness(field, { players = { "p1", "p2" } })
@@ -566,5 +545,5 @@ do
         return vis:type()
     end)
     local status = ok and "ok" or "error"
-    example_log(status .. " " .. tostring(value))
+    lurek.log.info(status .. " " .. tostring(value))
 end

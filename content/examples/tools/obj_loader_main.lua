@@ -11,7 +11,8 @@ function lurek.init()
     model = lurek.render.loadObj("content/examples/assets/models/sample_sectoid.obj")
 end
 
-local function rebuild_mesh()
+function lurek.process(dt)
+    t = t + dt * 0.7
     local cam = {
         x = math.sin(t) * 4.0,
         y = 2.2,
@@ -23,11 +24,6 @@ local function rebuild_mesh()
     }
     local verts = model:projectToMesh(cam, 640, 480)
     mesh = lurek.render.newMesh(verts, "triangles")
-end
-
-function lurek.process(dt)
-    t = t + dt * 0.7
-    rebuild_mesh()
 end
 
 function lurek.draw()

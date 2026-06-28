@@ -27,49 +27,9 @@ local guards = {
     { x = 25.5, y = 15.5 },
 }
 
-local function rebake()
-    gm:clearSources()
-    gm:addSource(player.cx, player.cy)
-    gm:bake()
-end
-
-rebake()
-
--- Draw grid
-local function draw_grid()
-    for y = 1, H do
-        for x = 1, W do
-            local d = gm:distanceAt(x, y)
-            local t = math.min(d, 10)
-            local shade = math.floor(255 * (1 - t / 10))
-            local c = { r = shade / 255, g = 0, b = (255 - shade) / 255, a = 0.25 }
-            lurek.render.setColor(c.r, c.g, c.b, c.a)
-            lurek.render.rectangle("fill", (x - 1) * TILE, (y - 1) * TILE, TILE, TILE)
-        end
-    end
-end
-
--- Draw player
-local function draw_player()
-    lurek.render.setColor(1, 1, 0, 1)
-    lurek.render.circle("fill",
-        (player.x - 1) * TILE + TILE / 2,
-        (player.y - 1) * TILE + TILE / 2,
-        TILE / 2 - 2
-    )
-end
-
--- Draw guards
-local function draw_guards()
-    for _, g in ipairs(guards) do
-        lurek.render.setColor(1, 0.2, 0.2, 1)
-        lurek.render.circle("fill",
-            (g.x - 1) * TILE + TILE / 2,
-            (g.y - 1) * TILE + TILE / 2,
-            TILE / 2 - 4
-        )
-    end
-end
+gm:clearSources()
+gm:addSource(player.cx, player.cy)
+gm:bake()
 
 lurek.process(function(dt)
     -- Move player with arrow keys
@@ -85,7 +45,9 @@ lurek.process(function(dt)
     if ncx ~= player.cx or ncy ~= player.cy then
         player.cx = ncx
         player.cy = ncy
-        rebake()
+        gm:clearSources()
+        gm:addSource(player.cx, player.cy)
+        gm:bake()
     end
 
     -- Update guards: flee when close, idle otherwise
@@ -104,9 +66,32 @@ lurek.process(function(dt)
     -- Render
     lurek.render.setBackgroundColor(0.05, 0.05, 0.1)
     lurek.render.clear()
-    draw_grid()
-    draw_player()
-    draw_guards()
+
+    for y = 1, H do
+        for x = 1, W do
+            local d = gm:distanceAt(x, y)
+            local t = math.min(d, 10)
+            local shade = math.floor(255 * (1 - t / 10))
+            lurek.render.setColor(shade / 255, 0, (255 - shade) / 255, 0.25)
+            lurek.render.rectangle("fill", (x - 1) * TILE, (y - 1) * TILE, TILE, TILE)
+        end
+    end
+
+    lurek.render.setColor(1, 1, 0, 1)
+    lurek.render.circle("fill",
+        (player.x - 1) * TILE + TILE / 2,
+        (player.y - 1) * TILE + TILE / 2,
+        TILE / 2 - 2
+    )
+
+    for _, g in ipairs(guards) do
+        lurek.render.setColor(1, 0.2, 0.2, 1)
+        lurek.render.circle("fill",
+            (g.x - 1) * TILE + TILE / 2,
+            (g.y - 1) * TILE + TILE / 2,
+            TILE / 2 - 4
+        )
+    end
 
     lurek.render.setColor(1, 1, 1, 1)
     lurek.render.print(string.format("Player: (%d,%d)  Arrows to move", player.cx, player.cy), 4, 4)

@@ -3,14 +3,6 @@
 
 --- Data schema validation vs static project/file validation.
 
-local function example_print_log(...)
-    local parts = {}
-    for i = 1, select("#", ...) do
-        parts[i] = tostring(select(i, ...))
-    end
-    lurek.log.info(table.concat(parts, " "))
-end
-
 --@api: lurek.serialize.validate
 do
     local config = {
@@ -29,8 +21,8 @@ do
     }
 
     local ok, err = lurek.serialize.validate(config, schema)
-    example_print_log("config schema ok=" .. tostring(ok))
-    example_print_log("config schema err=" .. tostring(err))
+    lurek.log.info("config schema ok=" .. tostring(ok))
+    lurek.log.info("config schema err=" .. tostring(err))
 end
 
 --@api: lurek.validator.validateFile
@@ -39,9 +31,9 @@ do
 
     if ok then
         local report = report_or_err
-        example_print_log("main.lua static files_checked=" .. tostring(report.files_checked))
-        example_print_log("main.lua static errors=" .. tostring(report.error_count))
+        lurek.log.info("main.lua static files_checked=" .. tostring(report.files_checked))
+        lurek.log.info("main.lua static errors=" .. tostring(report.error_count))
     else
-        example_print_log("main.lua static validation skipped=" .. tostring(report_or_err))
+        lurek.log.info("main.lua static validation skipped=" .. tostring(report_or_err))
     end
 end

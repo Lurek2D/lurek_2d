@@ -7,14 +7,6 @@
 
 --@api: lurek.camera.new
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(320, 180)
     cam:setZoom(1.25)
@@ -25,14 +17,6 @@ end
 
 --@api: lurek.camera.newCamera
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.newCamera(1280, 720)
     cam:setViewport(0, 0, 1280, 720)
     cam:setPosition(640, 360)
@@ -43,14 +27,6 @@ end
 
 --@api: lurek.camera.newRig
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local rig = lurek.camera.newRig()
     rig:setPosition("main", 320, 180)
     rig:setZoom("main", 1.5)
@@ -61,14 +37,6 @@ end
 
 --@api: LCamera:setPosition
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(200, 150)
     cam:setTarget(260, 180)
@@ -80,14 +48,6 @@ end
 
 --@api: LCamera:getPosition
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(100, 50)
     cam:move(24, -8)
@@ -99,14 +59,6 @@ end
 
 --@api: LCamera:setZoom
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setZoom(2.0)
     cam:setPosition(480, 320)
@@ -118,14 +70,6 @@ end
 
 --@api: LCamera:getZoom
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setZoom(0.5)
     local z = cam:getZoom()
@@ -137,14 +81,6 @@ end
 
 --@api: LCamera:setRotation
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setRotation(math.pi / 4)
     cam:setPosition(600, 240)
@@ -155,14 +91,6 @@ end
 
 --@api: LCamera:getRotation
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setRotation(1.5)
     local r = cam:getRotation()
@@ -173,31 +101,15 @@ end
 
 --@api: LCamera:setViewport
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setViewport(0, 0, 400, 300)
     local x, y, w, h = cam:getViewport()
-    example_print_log("viewport x,y = " .. x .. ", " .. y)
-    example_print_log("viewport size = " .. w .. "x" .. h)
+    lurek.log.info(tostring("viewport x,y = " .. x .. ", " .. y))
+    lurek.log.info(tostring("viewport size = " .. w .. "x" .. h))
 end
 
 --@api: LCamera:getViewport
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setViewport(10, 10, 780, 580)
     local x, y, w, h = cam:getViewport()
@@ -208,14 +120,6 @@ end
 
 --@api: LCamera:getBounds
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setBounds(0, 0, 2000, 1500)
     local ok, bx, by, bw, bh = cam:getBounds()
@@ -227,14 +131,6 @@ end
 
 --@api: LCamera:hasBounds
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setBounds(0, 0, 1000, 1000)
     cam:setPosition(900, 900)
@@ -245,14 +141,6 @@ end
 
 --@api: LCamera:setBounds
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setBounds(0, 0, 3200, 2400)
     cam:setPosition(3100, 2300)
@@ -263,14 +151,6 @@ end
 
 --@api: LCamera:removeBounds
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setBounds(0, 0, 1000, 1000)
     lurek.log.info("bounds before remove=" .. tostring(cam:hasBounds()))
@@ -283,14 +163,6 @@ end
 
 --@api: LCamera:setTarget
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setTarget(500, 300)
     cam:setFollowSmooth(6.0)
@@ -302,14 +174,6 @@ end
 
 --@api: LCamera:getTarget
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setTarget(250, 125)
     local ok, tx, ty = cam:getTarget()
@@ -321,32 +185,16 @@ end
 
 --@api: LCamera:clearTarget
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setTarget(100, 100)
     cam:clearTarget()
     local ok = cam:getTarget()
-    example_print_log("target cleared")
-    example_print_log("has target = " .. tostring(ok))
+    lurek.log.info(tostring("target cleared"))
+    lurek.log.info(tostring("has target = " .. tostring(ok)))
 end
 
 --@api: LCamera:setFollowSmooth
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setFollowSmooth(5.0)
     cam:setTarget(600, 300)
@@ -357,14 +205,6 @@ end
 
 --@api: LCamera:getFollowSmooth
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setFollowSmooth(3.0)
     local s = cam:getFollowSmooth()
@@ -376,14 +216,6 @@ end
 
 --@api: LCamera:setFollowEasing
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setFollowEasing("quadOut")
     cam:setTarget(220, 140)
@@ -394,14 +226,6 @@ end
 
 --@api: LCamera:getFollowEasing
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setFollowEasing("linear")
     local e = cam:getFollowEasing()
@@ -413,31 +237,15 @@ end
 
 --@api: LCamera:setDeadZone
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setDeadZone(50, 30)
     local ok, w, h = cam:getDeadZone()
-    example_print_log("dead zone active = " .. tostring(ok))
-    example_print_log("dead zone = " .. tostring(w) .. "x" .. tostring(h))
+    lurek.log.info(tostring("dead zone active = " .. tostring(ok)))
+    lurek.log.info(tostring("dead zone = " .. tostring(w) .. "x" .. tostring(h)))
 end
 
 --@api: LCamera:getDeadZone
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setDeadZone(40, 20)
     local ok, w, h = cam:getDeadZone()
@@ -449,14 +257,6 @@ end
 
 --@api: LCamera:setLookAhead
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setLookAhead(1.5)
     cam:setTarget(420, 240)
@@ -467,14 +267,6 @@ end
 
 --@api: LCamera:getLookAhead
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setLookAhead(2.0)
     local la = cam:getLookAhead()
@@ -486,48 +278,24 @@ end
 
 --@api: LCamera:onWindowResize
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:onWindowResize(1920, 1080)
     local _, _, w, h = cam:getViewport()
-    example_print_log("resized to 1920x1080")
-    example_print_log("viewport size = " .. w .. "x" .. h)
+    lurek.log.info(tostring("resized to 1920x1080"))
+    lurek.log.info(tostring("viewport size = " .. w .. "x" .. h))
 end
 
 --@api: LCamera:onWindowResizeScaled
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:onWindowResizeScaled(800, 600, 1920, 1080, "letterbox")
     local x, y, w, h = cam:getViewport()
-    example_print_log("scaled resize applied")
-    example_print_log("viewport = " .. x .. "," .. y .. "," .. w .. "," .. h)
+    lurek.log.info(tostring("scaled resize applied"))
+    lurek.log.info(tostring("viewport = " .. x .. "," .. y .. "," .. w .. "," .. h))
 end
 
 --@api: LCamera:shake
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:shake(10.0, 0.5)
     cam:update(0.1)
@@ -539,33 +307,17 @@ end
 
 --@api: LCamera:update
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setTarget(200, 100)
     cam:setFollowSmooth(4.0)
     cam:update(0.016)
     local x, y = cam:getPosition()
-    example_print_log("camera updated")
-    example_print_log("position = " .. x .. ", " .. y)
+    lurek.log.info(tostring("camera updated"))
+    lurek.log.info(tostring("position = " .. x .. ", " .. y))
 end
 
 --@api: LCamera:toWorld
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(100, 100)
     local wx, wy = cam:toWorld(400, 300)
@@ -576,14 +328,6 @@ end
 
 --@api: LCamera:toScreen
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(100, 100)
     local sx, sy = cam:toScreen(500, 400)
@@ -594,14 +338,6 @@ end
 
 --@api: LCamera:getVisibleArea
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(400, 300)
     local x, y, w, h = cam:getVisibleArea()
@@ -613,14 +349,6 @@ end
 
 --@api: LCamera:lookAt
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:lookAt(500, 250)
     local x, y = cam:getPosition()
@@ -632,104 +360,56 @@ end
 
 --@api: LCamera:move
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(100, 100)
     cam:move(50, -25)
     local x, y = cam:getPosition()
-    example_print_log("moved to " .. x .. ", " .. y)
+    lurek.log.info(tostring("moved to " .. x .. ", " .. y))
 end
 
 --@api: LCamera:followPath
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     local points = { { 0, 0 }, { 400, 200 }, { 800, 0 } }
     cam:followPath(points, 3.0)
-    example_print_log("following path over 3s")
-    example_print_log("path progress = " .. tostring(cam:pathProgress()))
+    lurek.log.info(tostring("following path over 3s"))
+    lurek.log.info(tostring("path progress = " .. tostring(cam:pathProgress())))
 end
 
 --@api: LCamera:stopPath
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     local points = { { 0, 0 }, { 100, 100 } }
     cam:followPath(points, 2.0)
     cam:stopPath()
-    example_print_log("path stopped")
-    example_print_log("path progress = " .. tostring(cam:pathProgress()))
+    lurek.log.info(tostring("path stopped"))
+    lurek.log.info(tostring("path progress = " .. tostring(cam:pathProgress())))
 end
 
 --@api: LCamera:updatePath
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     local points = { { 0, 0 }, { 200, 200 } }
     cam:followPath(points, 2.0)
     cam:updatePath(0.5)
     local x, y = cam:getPosition()
-    example_print_log("path progress = " .. cam:pathProgress())
-    example_print_log("position = " .. x .. ", " .. y)
+    lurek.log.info(tostring("path progress = " .. cam:pathProgress()))
+    lurek.log.info(tostring("position = " .. x .. ", " .. y))
 end
 
 --@api: LCamera:pathProgress
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     local points = { { 0, 0 }, { 100, 100 } }
     cam:followPath(points, 1.0)
     cam:updatePath(0.5)
     local p = cam:pathProgress()
-    example_print_log("progress = " .. p)
-    example_print_log("progress halfway = " .. tostring(p > 0 and p < 1))
+    lurek.log.info(tostring("progress = " .. p))
+    lurek.log.info(tostring("progress halfway = " .. tostring(p > 0 and p < 1)))
 end
 
 --@api: LCamera:zoomTo
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:zoomTo(2.0, 1.0, "quadOut")
     cam:updateZoom(0.5)
@@ -740,14 +420,6 @@ end
 
 --@api: LCamera:stopZoom
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:zoomTo(3.0, 2.0, "linear")
     cam:updateZoom(0.5)
@@ -760,14 +432,6 @@ end
 
 --@api: LCamera:updateZoom
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:zoomTo(2.0, 1.0, "linear")
     local runningMid = cam:updateZoom(0.5)
@@ -779,14 +443,6 @@ end
 
 --@api: LCamera:setParallaxFactor
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setParallaxFactor("background", 0.5)
     cam:setParallaxFactor("foreground", 1.2)
@@ -798,14 +454,6 @@ end
 
 --@api: LCamera:getParallaxFactor
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setParallaxFactor("clouds", 0.3)
     local f = cam:getParallaxFactor("clouds")
@@ -816,67 +464,35 @@ end
 
 --@api: LCamera:clearParallaxFactors
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setParallaxFactor("fg", 1.2)
     cam:clearParallaxFactors()
-    example_print_log("parallax cleared")
-    example_print_log("fg parallax = " .. tostring(cam:getParallaxFactor("fg")))
+    lurek.log.info(tostring("parallax cleared"))
+    lurek.log.info(tostring("fg parallax = " .. tostring(cam:getParallaxFactor("fg"))))
 end
 
 --@api: LCamera:apply
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(400, 300)
     cam:apply()
     local x, y = cam:getPosition()
-    example_print_log("camera applied")
-    example_print_log("position = " .. x .. ", " .. y)
+    lurek.log.info(tostring("camera applied"))
+    lurek.log.info(tostring("position = " .. x .. ", " .. y))
 end
 
 --@api: LCamera:reset
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(500, 500)
     cam:setZoom(3.0)
     cam:reset()
-    example_print_log("camera reset command queued")
-    example_print_log("zoom still readable = " .. tostring(cam:getZoom()))
+    lurek.log.info(tostring("camera reset command queued"))
+    lurek.log.info(tostring("zoom still readable = " .. tostring(cam:getZoom())))
 end
 
 --@api: LCamera:attach
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(480, 270)
     cam:setZoom(1.5)
@@ -887,14 +503,6 @@ end
 
 --@api: LCamera:detach
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(480, 270)
     cam:attach()
@@ -905,14 +513,6 @@ end
 
 --@api: LCamera:zoomPulse
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:zoomPulse(0.2, 0.3)
     local before = cam:getEffectiveZoom()
@@ -927,14 +527,6 @@ end
 
 --@api: LCamera:startSway
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:startSway(3.0, 2.0, 1.5, 0.5)
     cam:update(0.1)
@@ -945,14 +537,6 @@ end
 
 --@api: LCamera:stopSway
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:startSway(2.0, 1.0, 1.0, 0.3)
     cam:update(0.1)
@@ -964,14 +548,6 @@ end
 
 --@api: LCamera:isSway
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:startSway(1.0, 1.0, 1.0, 0.5)
     cam:update(0.1)
@@ -982,14 +558,6 @@ end
 
 --@api: LCamera:startBreathing
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:startBreathing(0.02, 0.5)
     cam:update(0.1)
@@ -1000,14 +568,6 @@ end
 
 --@api: LCamera:stopBreathing
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:startBreathing(0.01, 0.3)
     cam:update(0.1)
@@ -1019,14 +579,6 @@ end
 
 --@api: LCamera:isBreathing
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:startBreathing(0.02, 0.5)
     cam:update(0.1)
@@ -1036,31 +588,15 @@ end
 
 --@api: LCamera:getEffectiveZoom
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setZoom(2.0)
     local ez = cam:getEffectiveZoom()
-    example_print_log("effective zoom = " .. ez)
-    example_print_log("base zoom = " .. tostring(cam:getZoom()))
+    lurek.log.info(tostring("effective zoom = " .. ez))
+    lurek.log.info(tostring("base zoom = " .. tostring(cam:getZoom())))
 end
 
 --@api: LCamera:getEffectOffset
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     local ox, oy = cam:getEffectOffset()
     cam:startSway(1.0, 0.5, 1.0, 0.5)
@@ -1072,31 +608,15 @@ end
 
 --@api: LCamera:getShakeOffset
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:shake(5.0, 0.5)
     cam:update(0.01)
     local sx, sy = cam:getShakeOffset()
-    example_print_log("shake = " .. sx .. ", " .. sy)
+    lurek.log.info(tostring("shake = " .. sx .. ", " .. sy))
 end
 
 --@api: LCamera:getRenderOffset
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     local rx, ry = cam:getRenderOffset()
     cam:shake(3.0, 0.2)
@@ -1108,31 +628,15 @@ end
 
 --@api: LCamera:setZoomConstraints
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setZoomConstraints(0.5, 4.0)
     local has_min, min_z, has_max, max_z = cam:getZoomConstraints()
-    example_print_log("has min/max = " .. tostring(has_min) .. "/" .. tostring(has_max))
-    example_print_log("zoom constrained to [" .. min_z .. ", " .. max_z .. "]")
+    lurek.log.info(tostring("has min/max = " .. tostring(has_min) .. "/" .. tostring(has_max)))
+    lurek.log.info(tostring("zoom constrained to [" .. min_z .. ", " .. max_z .. "]"))
 end
 
 --@api: LCamera:getZoomConstraints
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setZoomConstraints(0.25, 3.0)
     local _, mn, _, mx = cam:getZoomConstraints()
@@ -1143,14 +647,6 @@ end
 
 --@api: LCamera:setZoomDamping
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setZoomDamping(0.9)
     cam:zoomTo(2.0, 0.5, "linear")
@@ -1161,14 +657,6 @@ end
 
 --@api: LCamera:getZoomDamping
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setZoomDamping(0.8)
     local d = cam:getZoomDamping()
@@ -1180,48 +668,24 @@ end
 
 --@api: LCamera:setRotationConstraints
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setRotationConstraints(-0.5, 0.5)
     local has_min, min_r, has_max, max_r = cam:getRotationConstraints()
-    example_print_log("has min/max = " .. tostring(has_min) .. "/" .. tostring(has_max))
-    example_print_log("rotation constrained to [" .. min_r .. ", " .. max_r .. "]")
+    lurek.log.info(tostring("has min/max = " .. tostring(has_min) .. "/" .. tostring(has_max)))
+    lurek.log.info(tostring("rotation constrained to [" .. min_r .. ", " .. max_r .. "]"))
 end
 
 --@api: LCamera:getRotationConstraints
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setRotationConstraints(-1.0, 1.0)
     local has_min, mn, has_max, mx = cam:getRotationConstraints()
-    example_print_log("rotation min enabled = " .. tostring(has_min) .. " value = " .. mn)
-    example_print_log("rotation max enabled = " .. tostring(has_max) .. " value = " .. mx)
+    lurek.log.info(tostring("rotation min enabled = " .. tostring(has_min) .. " value = " .. mn))
+    lurek.log.info(tostring("rotation max enabled = " .. tostring(has_max) .. " value = " .. mx))
 end
 
 --@api: LCamera:setRotationDamping
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setRotationDamping(0.85)
     cam:setRotation(math.pi / 6)
@@ -1232,14 +696,6 @@ end
 
 --@api: LCamera:getRotationDamping
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setRotationDamping(0.7)
     local d = cam:getRotationDamping()
@@ -1251,14 +707,6 @@ end
 
 --@api: LCamera:presetTightFollow
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:presetTightFollow()
     cam:setTarget(180, 120)
@@ -1269,14 +717,6 @@ end
 
 --@api: LCamera:presetCinematicFollow
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:presetCinematicFollow()
     cam:setTarget(640, 240)
@@ -1287,14 +727,6 @@ end
 
 --@api: LCamera:presetBalancedFollow
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:presetBalancedFollow()
     cam:setTarget(420, 220)
@@ -1305,14 +737,6 @@ end
 
 --@api: LCamera:presetAggressiveFollow
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:presetAggressiveFollow()
     cam:setTarget(720, 260)
@@ -1323,14 +747,6 @@ end
 
 --@api: LCamera:type
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(200, 120)
     cam:setZoom(1.1)
@@ -1340,14 +756,6 @@ end
 
 --@api: LCamera:typeOf
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(200, 120)
     cam:setZoom(1.1)
@@ -1357,31 +765,15 @@ end
 
 --@api: LCameraRig:splitScreen
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local rig = lurek.camera.newRig()
     rig:setPosition("player1", 100, 100)
     rig:setPosition("player2", 500, 300)
     rig:splitScreen(1280, 720)
-    example_print_log("split screen layout applied")
+    lurek.log.info(tostring("split screen layout applied"))
 end
 
 --@api: LCameraRig:minimap
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local rig = lurek.camera.newRig()
     rig:setPosition("main", 400, 300)
     rig:minimap(1280, 720, 0.25)
@@ -1392,14 +784,6 @@ end
 
 --@api: LCameraRig:pictureInPicture
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local rig = lurek.camera.newRig()
     rig:setPosition("main", 200, 200)
     rig:pictureInPicture(1280, 720, 320, 180)
@@ -1410,14 +794,6 @@ end
 
 --@api: lurek.camera.newWalker
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map, {
         layer = 1,
@@ -1429,140 +805,76 @@ do
         x = 64,
         y = 64
     })
-    example_print_log("walker created = " .. tostring(walker ~= nil))
-    example_print_log("walker type = " .. walker:type())
+    lurek.log.info(tostring("walker created = " .. tostring(walker ~= nil)))
+    lurek.log.info(tostring("walker type = " .. walker:type()))
 end
 
 --@api: LCameraWalker:setPosition
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map)
     walker:setPosition(128, 96)
     local x, y = walker:getPosition()
-    example_print_log("walker pos = " .. x .. ", " .. y)
+    lurek.log.info(tostring("walker pos = " .. x .. ", " .. y))
 end
 
 --@api: LCameraWalker:getTilePosition
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map, { tile_w = 32, tile_h = 32 })
     walker:setTilePosition(3, 2)
     local tx, ty = walker:getTilePosition()
-    example_print_log("walker tile = " .. tx .. ", " .. ty)
+    lurek.log.info(tostring("walker tile = " .. tx .. ", " .. ty))
 end
 
 --@api: LCameraWalker:moveUp
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map, { speed = 50, x = 100, y = 100 })
     walker:moveUp(1.0)
     local _, y = walker:getPosition()
-    example_print_log("moved up, new y = " .. y)
+    lurek.log.info(tostring("moved up, new y = " .. y))
 end
 
 --@api: LCameraWalker:moveDown
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map, { speed = 50, x = 100, y = 100 })
     walker:moveDown(1.0)
     local _, y = walker:getPosition()
-    example_print_log("moved down, new y = " .. y)
+    lurek.log.info(tostring("moved down, new y = " .. y))
 end
 
 --@api: LCameraWalker:moveLeft
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map, { speed = 50, x = 100, y = 100 })
     walker:moveLeft(1.0)
     local x, _ = walker:getPosition()
-    example_print_log("moved left, new x = " .. x)
+    lurek.log.info(tostring("moved left, new x = " .. x))
 end
 
 --@api: LCameraWalker:moveRight
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map, { speed = 50, x = 100, y = 100 })
     walker:moveRight(1.0)
     local x, _ = walker:getPosition()
-    example_print_log("moved right, new x = " .. x)
+    lurek.log.info(tostring("moved right, new x = " .. x))
 end
 
 --@api: LCameraWalker:update
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map)
     walker:setPosition(50, 50)
     walker:update(0.016)  -- Update at ~60 FPS
     local x, y = walker:getPosition()
-    example_print_log("walker updated, pos = " .. x .. ", " .. y)
+    lurek.log.info(tostring("walker updated, pos = " .. x .. ", " .. y))
 end
 
 --@api: LCameraWalker:getCamera
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map)
     local cam = walker:getCamera()
@@ -1574,48 +886,24 @@ end
 
 --@api: LCameraWalker:getPosition
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map)
     walker:setPosition(96, 128)
     local x, y = walker:getPosition()
-    example_print_log("walker pos = " .. x .. ", " .. y)
+    lurek.log.info(tostring("walker pos = " .. x .. ", " .. y))
 end
 
 --@api: LCameraWalker:setTilePosition
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map, { tile_w = 32, tile_h = 32 })
     walker:setTilePosition(5, 4)
     local tx, ty = walker:getTilePosition()
-    example_print_log("walker tile = " .. tx .. ", " .. ty)
+    lurek.log.info(tostring("walker tile = " .. tx .. ", " .. ty))
 end
 
 --@api: LCameraWalker:type
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map)
     walker:setPosition(32, 48)
@@ -1626,14 +914,6 @@ end
 
 --@api: LCameraWalker:typeOf
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map)
     walker:setPosition(32, 48)
@@ -1643,14 +923,6 @@ end
 
 --@api: LCameraRig:setPosition
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local rig = lurek.camera.newRig()
     rig:setPosition("left", 100, 200)
     rig:setZoom("left", 1.2)
@@ -1661,67 +933,35 @@ end
 
 --@api: LCameraRig:setZoom
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local rig = lurek.camera.newRig()
     rig:setPosition("a", 0, 0)
     rig:setZoom("a", 1.5)
     local list = rig:names()
-    example_print_log("zoom set on camera a")
-    example_print_log("camera count = " .. tostring(#list))
+    lurek.log.info(tostring("zoom set on camera a"))
+    lurek.log.info(tostring("camera count = " .. tostring(#list)))
 end
 
 --@api: LCameraRig:setTarget
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local rig = lurek.camera.newRig()
     rig:setPosition("cam1", 0, 0)
     rig:setTarget("cam1", 400, 300)
-    example_print_log("target set on cam1")
-    example_print_log("rig has cam1 = " .. tostring(rig:has("cam1")))
+    lurek.log.info(tostring("target set on cam1"))
+    lurek.log.info(tostring("rig has cam1 = " .. tostring(rig:has("cam1"))))
 end
 
 --@api: LCameraRig:updateAll
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local rig = lurek.camera.newRig()
     rig:setPosition("a", 0, 0)
     rig:setTarget("a", 200, 200)
     rig:updateAll(0.016)
-    example_print_log("all cameras updated")
-    example_print_log("camera count = " .. tostring(#rig:names()))
+    lurek.log.info(tostring("all cameras updated"))
+    lurek.log.info(tostring("camera count = " .. tostring(#rig:names())))
 end
 
 --@api: LCameraRig:apply
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local rig = lurek.camera.newRig()
     rig:setPosition("main", 400, 300)
     local ok = rig:apply("main")
@@ -1732,48 +972,24 @@ end
 
 --@api: LCameraRig:getViewport
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local rig = lurek.camera.newRig()
     rig:setPosition("left", 0, 0)
     rig:splitScreen(800, 600)
     local has, x, y, w, h = rig:getViewport("left")
-    example_print_log("has=" .. tostring(has) .. " vp=" .. x .. "," .. y .. "," .. w .. "," .. h)
+    lurek.log.info(tostring("has=" .. tostring(has) .. " vp=" .. x .. "," .. y .. "," .. w .. "," .. h))
 end
 
 --@api: LCameraRig:names
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local rig = lurek.camera.newRig()
     rig:setPosition("p1", 0, 0)
     local list = rig:names()
-    example_print_log("cameras = " .. #list)
-    example_print_log("first name = " .. tostring(list[1]))
+    lurek.log.info(tostring("cameras = " .. #list))
+    lurek.log.info(tostring("first name = " .. tostring(list[1])))
 end
 
 --@api: LCameraRig:remove
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local rig = lurek.camera.newRig()
     rig:setPosition("temp", 0, 0)
     local ok = rig:remove("temp")
@@ -1784,14 +1000,6 @@ end
 
 --@api: LCameraRig:has
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local rig = lurek.camera.newRig()
     rig:setPosition("x", 0, 0)
     rig:setPosition("y", 64, 64)
@@ -1801,14 +1009,6 @@ end
 
 --@api: LCameraRig:type
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local rig = lurek.camera.newRig()
     rig:setPosition("debug", 0, 0)
     rig:setZoom("debug", 1.25)
@@ -1819,14 +1019,6 @@ end
 
 --@api: LCameraRig:typeOf
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local rig = lurek.camera.newRig()
     rig:setPosition("debug", 0, 0)
     rig:setTarget("debug", 64, 96)

@@ -7,209 +7,113 @@
 
 --@api: lurek.audio.newSource
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     local source_type = lurek.audio.getSourceType(src)
-    example_print_log("source created = " .. tostring(src ~= nil))
-    example_print_log("path = " .. path)
-    example_print_log("source type = " .. tostring(source_type))
+    lurek.log.info(tostring("source created = " .. tostring(src ~= nil)))
+    lurek.log.info(tostring("path = " .. path))
+    lurek.log.info(tostring("source type = " .. tostring(source_type)))
 end
 
 --@api: lurek.audio.play
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     lurek.audio.play(src)
-    example_print_log("play requested for = " .. path)
-    example_print_log("playing = " .. tostring(lurek.audio.isPlaying(src)))
+    lurek.log.info(tostring("play requested for = " .. path))
+    lurek.log.info(tostring("playing = " .. tostring(lurek.audio.isPlaying(src))))
 end
 
 --@api: lurek.audio.stop
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.play(src)
-    example_print_log("before stop playing = " .. tostring(lurek.audio.isPlaying(src)))
+    lurek.log.info(tostring("before stop playing = " .. tostring(lurek.audio.isPlaying(src))))
     lurek.audio.stop(src)
-    example_print_log("stopped = " .. tostring(lurek.audio.isStopped(src)))
+    lurek.log.info(tostring("stopped = " .. tostring(lurek.audio.isStopped(src))))
 end
 
 --@api: lurek.audio.setVolume
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
-    example_print_log("volume before = " .. tostring(lurek.audio.getVolume(src)))
+    lurek.log.info(tostring("volume before = " .. tostring(lurek.audio.getVolume(src))))
     lurek.audio.setVolume(src, 0.5)
-    example_print_log("volume after = " .. tostring(lurek.audio.getVolume(src)))
+    lurek.log.info(tostring("volume after = " .. tostring(lurek.audio.getVolume(src))))
 end
 
 --@api: lurek.audio.getVolume
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setVolume(src, 0.8)
     local vol = lurek.audio.getVolume(src)
-    example_print_log("configured volume = 0.8")
-    example_print_log("volume = " .. tostring(vol))
+    lurek.log.info(tostring("configured volume = 0.8"))
+    lurek.log.info(tostring("volume = " .. tostring(vol)))
 end
 
 --@api: lurek.audio.pause
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     lurek.audio.play(src)
-    example_print_log("playing before pause = " .. tostring(lurek.audio.isPlaying(src)))
+    lurek.log.info(tostring("playing before pause = " .. tostring(lurek.audio.isPlaying(src))))
     lurek.audio.pause(src)
-    example_print_log("paused = " .. tostring(lurek.audio.isPaused(src)))
+    lurek.log.info(tostring("paused = " .. tostring(lurek.audio.isPaused(src))))
 end
 
 --@api: lurek.audio.resume
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     lurek.audio.play(src)
     lurek.audio.pause(src)
-    example_print_log("paused before resume = " .. tostring(lurek.audio.isPaused(src)))
+    lurek.log.info(tostring("paused before resume = " .. tostring(lurek.audio.isPaused(src))))
     lurek.audio.resume(src)
-    example_print_log("playing after resume = " .. tostring(lurek.audio.isPlaying(src)))
+    lurek.log.info(tostring("playing after resume = " .. tostring(lurek.audio.isPlaying(src))))
 end
 
 --@api: lurek.audio.setPitch
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
-    example_print_log("pitch before = " .. tostring(lurek.audio.getPitch(src)))
+    lurek.log.info(tostring("pitch before = " .. tostring(lurek.audio.getPitch(src))))
     lurek.audio.setPitch(src, 1.5)
-    example_print_log("pitch after = " .. tostring(lurek.audio.getPitch(src)))
+    lurek.log.info(tostring("pitch after = " .. tostring(lurek.audio.getPitch(src))))
 end
 
 --@api: lurek.audio.getPitch
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setPitch(src, 0.8)
     local p = lurek.audio.getPitch(src)
-    example_print_log("configured pitch = 0.8")
-    example_print_log("pitch = " .. tostring(p))
+    lurek.log.info(tostring("configured pitch = 0.8"))
+    lurek.log.info(tostring("pitch = " .. tostring(p)))
 end
 
 --@api: lurek.audio.isPlaying
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
-    example_print_log("before play = " .. tostring(lurek.audio.isPlaying(src)))
+    lurek.log.info(tostring("before play = " .. tostring(lurek.audio.isPlaying(src))))
     lurek.audio.play(src)
-    example_print_log("after play = " .. tostring(lurek.audio.isPlaying(src)))
+    lurek.log.info(tostring("after play = " .. tostring(lurek.audio.isPlaying(src))))
 end
 
 --@api: lurek.audio.isPaused
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.play(src)
     lurek.audio.pause(src)
-    example_print_log("playing now = " .. tostring(lurek.audio.isPlaying(src)))
-    example_print_log("isPaused = " .. tostring(lurek.audio.isPaused(src)))
+    lurek.log.info(tostring("playing now = " .. tostring(lurek.audio.isPlaying(src))))
+    lurek.log.info(tostring("isPaused = " .. tostring(lurek.audio.isPaused(src))))
 end
 
 --@api: lurek.audio.isStopped
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     local stoppedBefore = lurek.audio.isStopped(src)
@@ -223,100 +127,52 @@ end
 
 --@api: lurek.audio.setLooping
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
-    example_print_log("looping before = " .. tostring(lurek.audio.isLooping(src)))
+    lurek.log.info(tostring("looping before = " .. tostring(lurek.audio.isLooping(src))))
     lurek.audio.setLooping(src, true)
-    example_print_log("looping after = " .. tostring(lurek.audio.isLooping(src)))
+    lurek.log.info(tostring("looping after = " .. tostring(lurek.audio.isLooping(src))))
 end
 
 --@api: lurek.audio.isLooping
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     lurek.audio.setLooping(src, true)
-    example_print_log("source type = " .. tostring(lurek.audio.getSourceType(src)))
-    example_print_log("isLooping = " .. tostring(lurek.audio.isLooping(src)))
+    lurek.log.info(tostring("source type = " .. tostring(lurek.audio.getSourceType(src))))
+    lurek.log.info(tostring("isLooping = " .. tostring(lurek.audio.isLooping(src))))
 end
 
 --@api: lurek.audio.playLooping
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     lurek.audio.playLooping(src)
-    example_print_log("playing = " .. tostring(lurek.audio.isPlaying(src)))
-    example_print_log("playing+looping = " .. tostring(lurek.audio.isPlaying(src) and lurek.audio.isLooping(src)))
+    lurek.log.info(tostring("playing = " .. tostring(lurek.audio.isPlaying(src))))
+    lurek.log.info(tostring("playing+looping = " .. tostring(lurek.audio.isPlaying(src) and lurek.audio.isLooping(src))))
 end
 
 --@api: lurek.audio.setPan
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
-    example_print_log("pan before = " .. tostring(lurek.audio.getPan(src)))
+    lurek.log.info(tostring("pan before = " .. tostring(lurek.audio.getPan(src))))
     lurek.audio.setPan(src, -0.5)
-    example_print_log("pan after = " .. tostring(lurek.audio.getPan(src)))
+    lurek.log.info(tostring("pan after = " .. tostring(lurek.audio.getPan(src))))
 end
 
 --@api: lurek.audio.getPan
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setPan(src, 0.7)
     local pan = lurek.audio.getPan(src)
-    example_print_log("configured pan = 0.7")
-    example_print_log("pan = " .. tostring(pan))
+    lurek.log.info(tostring("configured pan = 0.7"))
+    lurek.log.info(tostring("pan = " .. tostring(pan)))
 end
 
 --@api: lurek.audio.setMasterVolume
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local before = lurek.audio.getMasterVolume()
     lurek.audio.setMasterVolume(0.75)
     local quieter = lurek.audio.getMasterVolume()
@@ -328,14 +184,6 @@ end
 
 --@api: lurek.audio.getMasterVolume
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     lurek.audio.setMasterVolume(1.0)
     local mv = lurek.audio.getMasterVolume()
     lurek.audio.setMasterVolume(0.6)
@@ -347,14 +195,6 @@ end
 
 --@api: lurek.audio.getActiveSourceCount
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local count = lurek.audio.getActiveSourceCount()
     local total = lurek.audio.getSourceCount()
     local idle = total - count
@@ -364,14 +204,6 @@ end
 
 --@api: lurek.audio.getSourceCount
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local total = lurek.audio.getSourceCount()
     local active = lurek.audio.getActiveSourceCount()
     local idle = total - active
@@ -381,159 +213,87 @@ end
 
 --@api: lurek.audio.getSourceType
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     local stype = lurek.audio.getSourceType(src)
-    example_print_log("path = " .. path)
-    example_print_log("source type = " .. tostring(stype))
+    lurek.log.info(tostring("path = " .. path))
+    lurek.log.info(tostring("source type = " .. tostring(stype)))
 end
 
 --@api: lurek.audio.clone
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setVolume(src, 0.6)
     local copy = lurek.audio.clone(src)
-    example_print_log("original volume = " .. tostring(lurek.audio.getVolume(src)))
-    example_print_log("clone volume = " .. tostring(lurek.audio.getVolume(copy)))
+    lurek.log.info(tostring("original volume = " .. tostring(lurek.audio.getVolume(src))))
+    lurek.log.info(tostring("clone volume = " .. tostring(lurek.audio.getVolume(copy))))
 end
 
 --@api: lurek.audio.pauseAll
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.play(src)
     lurek.audio.pauseAll()
-    example_print_log("all paused")
-    example_print_log("sample source paused = " .. tostring(lurek.audio.isPaused(src)))
+    lurek.log.info(tostring("all paused"))
+    lurek.log.info(tostring("sample source paused = " .. tostring(lurek.audio.isPaused(src))))
 end
 
 --@api: lurek.audio.stopAll
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.play(src)
     lurek.audio.stopAll()
-    example_print_log("all stopped")
-    example_print_log("sample source stopped = " .. tostring(lurek.audio.isStopped(src)))
+    lurek.log.info(tostring("all stopped"))
+    lurek.log.info(tostring("sample source stopped = " .. tostring(lurek.audio.isStopped(src))))
 end
 
 --@api: lurek.audio.resumeAll
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     lurek.audio.play(src)
     lurek.audio.pauseAll()
     lurek.audio.resumeAll()
-    example_print_log("all resumed")
-    example_print_log("sample source playing = " .. tostring(lurek.audio.isPlaying(src)))
+    lurek.log.info(tostring("all resumed"))
+    lurek.log.info(tostring("sample source playing = " .. tostring(lurek.audio.isPlaying(src))))
 end
 
 --@api: lurek.audio.manager.pauseAll
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     lurek.audio.play(src)
     lurek.audio.manager.pauseAll()
-    example_print_log("manager.pauseAll called")
-    example_print_log("sample source paused = " .. tostring(lurek.audio.isPaused(src)))
+    lurek.log.info(tostring("manager.pauseAll called"))
+    lurek.log.info(tostring("sample source paused = " .. tostring(lurek.audio.isPaused(src))))
 end
 
 --@api: lurek.audio.manager.resumeAll
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     lurek.audio.play(src)
     lurek.audio.manager.pauseAll()
     lurek.audio.manager.resumeAll()
-    example_print_log("manager.resumeAll called")
-    example_print_log("sample source playing = " .. tostring(lurek.audio.isPlaying(src)))
+    lurek.log.info(tostring("manager.resumeAll called"))
+    lurek.log.info(tostring("sample source playing = " .. tostring(lurek.audio.isPlaying(src))))
 end
 
 --@api: lurek.audio.release
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     local before = lurek.audio.getSourceCount()
     lurek.audio.release(src)
-    example_print_log("source released")
-    example_print_log("source count before release = " .. tostring(before))
+    lurek.log.info(tostring("source released"))
+    lurek.log.info(tostring("source count before release = " .. tostring(before)))
 end
 
 --@api: lurek.audio.newBus
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local bus = lurek.audio.newBus("sfx")
     bus:setVolume(0.8)
     bus:setPitch(1.05)
@@ -544,52 +304,28 @@ end
 
 --@api: lurek.audio.setSourceBus
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     local bus = lurek.audio.newBus("effects")
     lurek.audio.setSourceBus(src, bus)
     local assigned = lurek.audio.getSourceBus(src)
-    example_print_log("bus assigned = " .. tostring(assigned ~= nil))
-    example_print_log("bus = " .. assigned:getName())
+    lurek.log.info(tostring("bus assigned = " .. tostring(assigned ~= nil)))
+    lurek.log.info(tostring("bus = " .. assigned:getName()))
 end
 
 --@api: lurek.audio.getSourceBus
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     local bus = lurek.audio.newBus("ui")
     lurek.audio.setSourceBus(src, bus)
     local assigned = lurek.audio.getSourceBus(src)
-    example_print_log("source bus exists = " .. tostring(assigned ~= nil))
-    example_print_log("source bus = " .. assigned:getName())
+    lurek.log.info(tostring("source bus exists = " .. tostring(assigned ~= nil)))
+    lurek.log.info(tostring("source bus = " .. assigned:getName()))
 end
 
 --@api: lurek.audio.getMaxSources
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local max = lurek.audio.getMaxSources()
     local total = lurek.audio.getSourceCount()
     local active = lurek.audio.getActiveSourceCount()
@@ -600,172 +336,92 @@ end
 
 --@api: lurek.audio.getDuration
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     local dur = lurek.audio.getDuration(src) or 0
-    example_print_log("path = " .. path)
-    example_print_log("duration = " .. tostring(dur) .. "s")
+    lurek.log.info(tostring("path = " .. path))
+    lurek.log.info(tostring("duration = " .. tostring(dur) .. "s"))
 end
 
 --@api: lurek.audio.tell
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     lurek.audio.play(src)
     local pos = lurek.audio.tell(src)
-    example_print_log("playing = " .. tostring(lurek.audio.isPlaying(src)))
-    example_print_log("position = " .. tostring(pos))
+    lurek.log.info(tostring("playing = " .. tostring(lurek.audio.isPlaying(src))))
+    lurek.log.info(tostring("position = " .. tostring(pos)))
 end
 
 --@api: lurek.audio.seek
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     lurek.audio.play(src)
     lurek.audio.seek(src, 5.0)
-    example_print_log("seek target = 5.0")
-    example_print_log("position after seek = " .. tostring(lurek.audio.tell(src)))
+    lurek.log.info(tostring("seek target = 5.0"))
+    lurek.log.info(tostring("position after seek = " .. tostring(lurek.audio.tell(src))))
 end
 
 --@api: lurek.audio.setLowpass
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     lurek.audio.setLowpass(src, 800)
-    example_print_log("lowpass set to 800 Hz")
-    example_print_log("lowpass = " .. tostring(lurek.audio.getLowpass(src)) .. " Hz")
+    lurek.log.info(tostring("lowpass set to 800 Hz"))
+    lurek.log.info(tostring("lowpass = " .. tostring(lurek.audio.getLowpass(src)) .. " Hz"))
 end
 
 --@api: lurek.audio.setHighpass
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setHighpass(src, 2000)
-    example_print_log("highpass set to 2000 Hz")
-    example_print_log("highpass = " .. tostring(lurek.audio.getHighpass(src)) .. " Hz")
+    lurek.log.info(tostring("highpass set to 2000 Hz"))
+    lurek.log.info(tostring("highpass = " .. tostring(lurek.audio.getHighpass(src)) .. " Hz"))
 end
 
 --@api: lurek.audio.getLowpass
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setLowpass(src, 500)
     local lp = lurek.audio.getLowpass(src)
-    example_print_log("configured lowpass = 500")
-    example_print_log("lowpass = " .. tostring(lp))
+    lurek.log.info(tostring("configured lowpass = 500"))
+    lurek.log.info(tostring("lowpass = " .. tostring(lp)))
 end
 
 --@api: lurek.audio.getHighpass
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setHighpass(src, 3000)
     local hp = lurek.audio.getHighpass(src)
-    example_print_log("configured highpass = 3000")
-    example_print_log("highpass = " .. tostring(hp))
+    lurek.log.info(tostring("configured highpass = 3000"))
+    lurek.log.info(tostring("highpass = " .. tostring(hp)))
 end
 
 --@api: lurek.audio.newBeatClock
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(120.0, { subdivision = 8, swing = 0.2, latency_ms = 5 })
     clock:start()
     clock:update(0.25)
-    example_print_log("beat clock beat = " .. tostring(clock:getBeat()))
-    example_print_log("beat clock bar = " .. tostring(clock:getBar()))
+    lurek.log.info(tostring("beat clock beat = " .. tostring(clock:getBeat())))
+    lurek.log.info(tostring("beat clock bar = " .. tostring(clock:getBar())))
 end
 
 --@api: lurek.audio.beatClockFromSource
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     lurek.audio.play(src)
     local clock = lurek.audio.beatClockFromSource(src, 128.0, { subdivision = 4 })
-    example_print_log("synced clock beat = " .. tostring(clock:getBeat()))
-    example_print_log("synced clock running = " .. tostring(clock:isRunning()))
+    lurek.log.info(tostring("synced clock beat = " .. tostring(clock:getBeat())))
+    lurek.log.info(tostring("synced clock running = " .. tostring(clock:isRunning())))
 end
 
 --@api: lurek.audio.judgeBeat
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(120.0, 4)
     local verdict, err = lurek.audio.judgeBeat(clock, 4, 0.0)
     local earlyVerdict, earlyErr = lurek.audio.judgeBeat(clock, 4, -0.04)
@@ -775,14 +431,6 @@ end
 
 --@api: LBeatClock:every
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(60.0, { subdivision = 4 })
     local hits = 0
     local every_h = clock:every(4, function() hits = hits + 1 end)
@@ -794,14 +442,6 @@ end
 
 --@api: LBeatClock:at
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(60.0, { subdivision = 4 })
     local chorusCue = 0
     local at_h = clock:at(1.0, function(beat) chorusCue = beat end)
@@ -813,14 +453,6 @@ end
 
 --@api: LBeatClock:pattern
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(60.0, { subdivision = 4 })
     local steps = {}
     local pattern_h = clock:pattern("x.x.", function(step) steps[#steps + 1] = step end)
@@ -832,14 +464,6 @@ end
 
 --@api: LBeatClock:cancel
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(60.0, { subdivision = 4 })
     local handle = clock:every(4, function() end)
     local cancelled = clock:cancel(handle)
@@ -851,14 +475,6 @@ end
 
 --@api: LBeatClock:cancelAll
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(60.0, { subdivision = 4 })
     clock:every(4, function() end)
     clock:pattern("x.x.", function() end)
@@ -871,14 +487,6 @@ end
 
 --@api: LBeatClock:beatTimeRemaining
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(120.0, 4)
     clock:start()
     clock:tick(0.125)
@@ -890,14 +498,6 @@ end
 
 --@api: LBeatClock:beatsPerBar
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(120.0, 4)
     clock:setBeatsPerBar(3)
     local barLen = clock:beatsPerBar()
@@ -909,14 +509,6 @@ end
 
 --@api: LBeatClock:bpm
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(120.0, 4)
     clock:setBpm(140.0)
     local bpm = clock:bpm()
@@ -927,32 +519,16 @@ end
 
 --@api: LBeatClock:drainFired
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(120.0, 4)
     clock:scheduleAt(1.0)
     clock:tick(0.6)
     clock:tick(0.6)
     local fired = clock:drainFired()
-    example_print_log("drainFired count = " .. tostring(#fired))
+    lurek.log.info(tostring("drainFired count = " .. tostring(#fired)))
 end
 
 --@api: LBeatClock:dump
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(120.0, 4)
     clock:start()
     local snap = clock:dump()
@@ -964,14 +540,6 @@ end
 
 --@api: LBeatClock:getBar
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(120.0, 4)
     clock:start()
     clock:tick(1.1)
@@ -983,14 +551,6 @@ end
 
 --@api: LBeatClock:getBeat
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(120.0, 4)
     clock:start()
     clock:tick(0.75)
@@ -1002,14 +562,6 @@ end
 
 --@api: LBeatClock:getBpm
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(120.0, 4)
     clock:setBpm(128.0)
     local bpm = clock:getBpm()
@@ -1020,14 +572,6 @@ end
 
 --@api: LBeatClock:getPhase
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(120.0, 4)
     clock:start()
     clock:tick(0.125)
@@ -1039,14 +583,6 @@ end
 
 --@api: LBeatClock:isOnBeat
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(120.0, 4)
     clock:start()
     clock:tick(0.5)
@@ -1058,14 +594,6 @@ end
 
 --@api: LBeatClock:isRunning
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(120.0, 4)
     clock:start()
     local running = clock:isRunning()
@@ -1077,48 +605,24 @@ end
 
 --@api: LBeatClock:nearestBeat
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(120.0, 4)
     clock:start()
     clock:tick(0.2)
     local beat, err = clock:nearestBeat(4)
-    example_print_log("nearestBeat = " .. tostring(beat) .. " err = " .. tostring(err))
+    lurek.log.info(tostring("nearestBeat = " .. tostring(beat) .. " err = " .. tostring(err)))
 end
 
 --@api: LBeatClock:position
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(120.0, 4)
     clock:start()
     clock:tick(0.5)
     local pos = clock:position()
-    example_print_log("position beat = " .. tostring(pos.beat) .. " bar = " .. tostring(pos.bar))
+    lurek.log.info(tostring("position beat = " .. tostring(pos.beat) .. " bar = " .. tostring(pos.bar)))
 end
 
 --@api: LBeatClock:quantise
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(120.0, 4)
     local q = clock:quantise(1.3, 0.25)
     local q2 = clock:quantise(2.62, 0.5)
@@ -1128,14 +632,6 @@ end
 
 --@api: LBeatClock:rampBpm
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(120.0, 4)
     clock:rampBpm(150.0, 0.5)
     clock:update(0.5)
@@ -1147,31 +643,15 @@ end
 
 --@api: LBeatClock:reset
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(120.0, 4)
     clock:start()
     clock:tick(1.0)
     clock:reset()
-    example_print_log("beat after reset = " .. tostring(clock:getBeat()))
+    lurek.log.info(tostring("beat after reset = " .. tostring(clock:getBeat())))
 end
 
 --@api: LBeatClock:scheduleAt
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(120.0, 4)
     local ok = clock:scheduleAt(2.0)
     clock:start()
@@ -1183,14 +663,6 @@ end
 
 --@api: LBeatClock:secondsPerBeat
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(120.0, 4)
     local spb = clock:secondsPerBeat()
     local twoBeats = spb * 2
@@ -1200,14 +672,6 @@ end
 
 --@api: LBeatClock:secondsToNextBeat
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(120.0, 4)
     clock:start()
     clock:tick(0.125)
@@ -1219,14 +683,6 @@ end
 
 --@api: LBeatClock:setBeatsPerBar
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(120.0, 4)
     clock:setBeatsPerBar(3)
     local beats = clock:beatsPerBar()
@@ -1238,14 +694,6 @@ end
 
 --@api: LBeatClock:setBpm
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(120.0, 4)
     clock:setBpm(90.0)
     local bpm = clock:getBpm()
@@ -1256,31 +704,15 @@ end
 
 --@api: LBeatClock:setSwing
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(120.0, 4)
     clock:setSwing(0.2)
     clock:start()
     clock:update(0.25)
-    example_print_log("phase after swing = " .. tostring(clock:getPhase(8)))
+    lurek.log.info(tostring("phase after swing = " .. tostring(clock:getPhase(8))))
 end
 
 --@api: LBeatClock:start
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(120.0, 4)
     clock:start()
     local running = clock:isRunning()
@@ -1291,14 +723,6 @@ end
 
 --@api: LBeatClock:stop
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(120.0, 4)
     clock:start()
     clock:stop()
@@ -1310,32 +734,16 @@ end
 
 --@api: LBeatClock:syncToSource
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     lurek.audio.play(src)
     local clock = lurek.audio.newBeatClock(120.0, 4)
     clock:syncToSource(src)
-    example_print_log("synced beat = " .. tostring(clock:getBeat()))
+    lurek.log.info(tostring("synced beat = " .. tostring(clock:getBeat())))
 end
 
 --@api: LBeatClock:tap
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(120.0, 4)
     local first = clock:tap(0.0)
     local second = clock:tap(0.5)
@@ -1346,14 +754,6 @@ end
 
 --@api: LBeatClock:tick
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(120.0, 4)
     clock:start()
     local crossings = clock:tick(0.5)
@@ -1364,14 +764,6 @@ end
 
 --@api: LBeatClock:type
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(120.0, 4)
     local bpm = clock:getBpm()
     local beat = clock:getBeat()
@@ -1381,14 +773,6 @@ end
 
 --@api: LBeatClock:typeOf
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(120.0, 4)
     local running = clock:isRunning()
     local bpm = clock:getBpm()
@@ -1398,14 +782,6 @@ end
 
 --@api: LBeatClock:update
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local clock = lurek.audio.newBeatClock(120.0, 4)
     clock:start()
     local events = clock:update(0.5)
@@ -1416,14 +792,6 @@ end
 
 --@api: lurek.audio.getJudgementWindows
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local windows = lurek.audio.getJudgementWindows()
     local perfect = windows.perfect or windows[1]
     local good = windows.good or windows[2]
@@ -1433,14 +801,6 @@ end
 
 --@api: lurek.audio.setJudgementWindows
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     lurek.audio.setJudgementWindows({ perfect = 0.03, good = 0.08, ok = 0.12 })
     local windows = lurek.audio.getJudgementWindows()
     local perfect = windows.perfect or windows[1]
@@ -1451,67 +811,35 @@ end
 
 --@api: lurek.audio.clearFilter
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setLowpass(src, 1000)
-    example_print_log("lowpass before clear = " .. tostring(lurek.audio.getLowpass(src)))
+    lurek.log.info(tostring("lowpass before clear = " .. tostring(lurek.audio.getLowpass(src))))
     lurek.audio.clearFilter(src)
-    example_print_log("filters cleared")
+    lurek.log.info(tostring("filters cleared"))
 end
 
 --@api: lurek.audio.fadeIn
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     lurek.audio.fadeIn(src, 2.0)
-    example_print_log("fade in requested = 2.0s")
-    example_print_log("fade in = " .. tostring(lurek.audio.getFadeIn(src)) .. "s")
+    lurek.log.info(tostring("fade in requested = 2.0s"))
+    lurek.log.info(tostring("fade in = " .. tostring(lurek.audio.getFadeIn(src)) .. "s"))
 end
 
 --@api: lurek.audio.getFadeIn
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     lurek.audio.fadeIn(src, 1.5)
     local fi = lurek.audio.getFadeIn(src)
-    example_print_log("configured fade in = 1.5")
-    example_print_log("fade in duration = " .. tostring(fi))
+    lurek.log.info(tostring("configured fade in = 1.5"))
+    lurek.log.info(tostring("fade in duration = " .. tostring(fi)))
 end
 
 --@api: lurek.audio.setListener2D
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     lurek.audio.setListener2D(400, 300)
     local x, y = lurek.audio.getListener2D()
     lurek.audio.setListener2D(512, 256)
@@ -1522,14 +850,6 @@ end
 
 --@api: lurek.audio.getListener2D
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     lurek.audio.setListener2D(100, 200)
     local x, y = lurek.audio.getListener2D()
     lurek.audio.setListener2D(0, 0)
@@ -1540,14 +860,6 @@ end
 
 --@api: lurek.audio.setListener
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     lurek.audio.setListener(0, 0, 0)
     local x, y, z = lurek.audio.getListener()
     lurek.audio.setListener(10, 5, 2)
@@ -1558,14 +870,6 @@ end
 
 --@api: lurek.audio.getListener
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     lurek.audio.setListener(10, 5, 0)
     local x, y, z = lurek.audio.getListener()
     lurek.audio.setListener(0, 0, 0)
@@ -1576,143 +880,79 @@ end
 
 --@api: lurek.audio.setPosition
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setPosition(src, 50, 20, 0)
     local x, y, z = lurek.audio.getPosition(src)
-    example_print_log("source positioned for spatial playback")
-    example_print_log("source pos = " .. x .. ", " .. y .. ", " .. z)
+    lurek.log.info(tostring("source positioned for spatial playback"))
+    lurek.log.info(tostring("source pos = " .. x .. ", " .. y .. ", " .. z))
 end
 
 --@api: lurek.audio.getPosition
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setPosition(src, 100, 0, 30)
     local x, y, z = lurek.audio.getPosition(src)
-    example_print_log("source position queried")
-    example_print_log("pos = " .. x .. ", " .. y .. ", " .. z)
+    lurek.log.info(tostring("source position queried"))
+    lurek.log.info(tostring("pos = " .. x .. ", " .. y .. ", " .. z))
 end
 
 --@api: lurek.audio.setVelocity
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setVelocity(src, 10, 0, 0)
     local vx, vy, vz = lurek.audio.getVelocity(src)
-    example_print_log("source velocity set for doppler")
-    example_print_log("velocity = " .. vx .. ", " .. vy .. ", " .. vz)
+    lurek.log.info(tostring("source velocity set for doppler"))
+    lurek.log.info(tostring("velocity = " .. vx .. ", " .. vy .. ", " .. vz))
 end
 
 --@api: lurek.audio.getVelocity
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setVelocity(src, 5, 3, 0)
     local vx, vy, vz = lurek.audio.getVelocity(src)
-    example_print_log("source velocity queried")
-    example_print_log("vel = " .. vx .. ", " .. vy .. ", " .. vz)
+    lurek.log.info(tostring("source velocity queried"))
+    lurek.log.info(tostring("vel = " .. vx .. ", " .. vy .. ", " .. vz))
 end
 
 --@api: lurek.audio.setOrientation
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setOrientation(src, 0, 0, -1, 0, 1, 0)
     local fx, fy, fz, ux, uy, uz = lurek.audio.getOrientation(src)
-    example_print_log("orientation applied")
-    example_print_log("forward = " .. fx .. ", " .. fy .. ", " .. fz)
-    example_print_log("up = " .. ux .. ", " .. uy .. ", " .. uz)
+    lurek.log.info(tostring("orientation applied"))
+    lurek.log.info(tostring("forward = " .. fx .. ", " .. fy .. ", " .. fz))
+    lurek.log.info(tostring("up = " .. ux .. ", " .. uy .. ", " .. uz))
 end
 
 --- Audio Examples Part 2: Orientation, distance models, MIDI, synthesis, DSP, bus effects, pool, offline
 
 --@api: lurek.audio.getOrientation
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setOrientation(src, 0, 0, -1, 0, 1, 0)
     local fx, fy, fz, ux, uy, uz = lurek.audio.getOrientation(src)
-    example_print_log("source type = " .. tostring(lurek.audio.getSourceType(src)))
-    example_print_log("forward = " .. fx .. ", " .. fy .. ", " .. fz)
-    example_print_log("up = " .. ux .. ", " .. uy .. ", " .. uz)
+    lurek.log.info(tostring("source type = " .. tostring(lurek.audio.getSourceType(src))))
+    lurek.log.info(tostring("forward = " .. fx .. ", " .. fy .. ", " .. fz))
+    lurek.log.info(tostring("up = " .. ux .. ", " .. uy .. ", " .. uz))
 end
 
 --@api: lurek.audio.setDopplerScale
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local before = lurek.audio.getDopplerScale()
     lurek.audio.setDopplerScale(1.5)
     local after = lurek.audio.getDopplerScale()
-    example_print_log("doppler scale before = " .. tostring(before))
-    example_print_log("doppler scale after = " .. tostring(after))
+    lurek.log.info(tostring("doppler scale before = " .. tostring(before)))
+    lurek.log.info(tostring("doppler scale after = " .. tostring(after)))
 end
 
 --@api: lurek.audio.getDopplerScale
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     lurek.audio.setDopplerScale(2.0)
     local ds = lurek.audio.getDopplerScale()
     lurek.audio.setDopplerScale(1.0)
@@ -1723,14 +963,6 @@ end
 
 --@api: lurek.audio.setDistanceModel
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local before = lurek.audio.getDistanceModel()
     lurek.audio.setDistanceModel("inverse")
     local inverse = lurek.audio.getDistanceModel()
@@ -1742,14 +974,6 @@ end
 
 --@api: lurek.audio.getDistanceModel
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     lurek.audio.setDistanceModel("linear")
     local model = lurek.audio.getDistanceModel()
     lurek.audio.setDistanceModel("inverse_clamped")
@@ -1760,14 +984,6 @@ end
 
 --@api: lurek.audio.setMeter
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local before = lurek.audio.getMeter()
     lurek.audio.setMeter(0.8)
     local after = lurek.audio.getMeter()
@@ -1779,14 +995,6 @@ end
 
 --@api: lurek.audio.getMeter
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     lurek.audio.setMeter(0.6)
     local lvl = lurek.audio.getMeter()
     lurek.audio.setMeter(0.1)
@@ -1797,31 +1005,20 @@ end
 
 --@api: lurek.audio.newMidiPlayer
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping lurek.audio.newMidiPlayer")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        local loaded = player:isLoaded()
+        local playing = player:isPlaying()
+        lurek.log.info("midi player created=" .. tostring(player ~= nil))
+        lurek.log.info("player type=" .. player:type() .. " loaded=" .. tostring(loaded) .. " playing=" .. tostring(playing))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    local loaded = player:isLoaded()
-    local playing = player:isPlaying()
-    lurek.log.info("midi player created=" .. tostring(player ~= nil))
-    lurek.log.info("player type=" .. player:type() .. " loaded=" .. tostring(loaded) .. " playing=" .. tostring(playing))
 end
 
 --@api: lurek.audio.newSoundData
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local sd = lurek.audio.newSoundData(44100, 44100, 1)
     local channels = sd:getChannelCount()
     local duration = sd:getDuration()
@@ -1832,83 +1029,58 @@ end
 
 --@api: lurek.audio.setMidiSoundFont
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping lurek.audio.setMidiSoundFont")
+    else
+        local path = "content/examples/assets/audio/sample_soundfont.sf2"
+        local ok = pcall(function()
+            lurek.audio.setMidiSoundFont(path)
+        end)
+        lurek.log.info(tostring("soundfont set = " .. tostring(ok and lurek.audio.hasMidiSoundFont())))
     end
-
-    local path = "content/examples/assets/audio/sample_soundfont.sf2"
-    local ok = pcall(function()
-        lurek.audio.setMidiSoundFont(path)
-    end)
-    example_print_log("soundfont set = " .. tostring(ok and lurek.audio.hasMidiSoundFont()))
 end
 
 --@api: lurek.audio.hasMidiSoundFont
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping lurek.audio.hasMidiSoundFont")
+    else
+        local has = lurek.audio.hasMidiSoundFont()
+        local player = lurek.audio.newMidiPlayer()
+        local loaded = player:isLoaded()
+        lurek.log.info("has soundfont=" .. tostring(has))
+        lurek.log.info("midi player loaded=" .. tostring(loaded) .. " type=" .. tostring(player:type()))
     end
-
-    local has = lurek.audio.hasMidiSoundFont()
-    local player = lurek.audio.newMidiPlayer()
-    local loaded = player:isLoaded()
-    lurek.log.info("has soundfont=" .. tostring(has))
-    lurek.log.info("midi player loaded=" .. tostring(loaded) .. " type=" .. tostring(player:type()))
 end
 
 --@api: lurek.audio.clearMidiSoundFont
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping lurek.audio.clearMidiSoundFont")
+    else
+        local before = lurek.audio.hasMidiSoundFont()
+        lurek.audio.clearMidiSoundFont()
+        local after = lurek.audio.hasMidiSoundFont()
+        local player = lurek.audio.newMidiPlayer()
+        lurek.log.info("soundfont before clear=" .. tostring(before))
+        lurek.log.info("soundfont after clear=" .. tostring(after) .. " player type=" .. player:type() .. " loaded=" .. tostring(player:isLoaded()))
     end
-
-    local before = lurek.audio.hasMidiSoundFont()
-    lurek.audio.clearMidiSoundFont()
-    local after = lurek.audio.hasMidiSoundFont()
-    local player = lurek.audio.newMidiPlayer()
-    lurek.log.info("soundfont before clear=" .. tostring(before))
-    lurek.log.info("soundfont after clear=" .. tostring(after) .. " player type=" .. player:type() .. " loaded=" .. tostring(player:isLoaded()))
 end
 
 --@api: lurek.audio.newDecoder
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path, 4096)
-    example_print_log("decoder created = " .. tostring(dec ~= nil))
-    example_print_log("sample rate = " .. tostring(dec:getSampleRate()))
-    example_print_log("channels = " .. tostring(dec:getChannelCount()))
+    lurek.log.info(tostring("decoder created = " .. tostring(dec ~= nil)))
+    lurek.log.info(tostring("sample rate = " .. tostring(dec:getSampleRate())))
+    lurek.log.info(tostring("channels = " .. tostring(dec:getChannelCount())))
 end
 
 --@api: lurek.audio.newQueueableSource
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local qid = lurek.audio.newQueueableSource(44100, 16, 1, 4)
     local free = lurek.audio.getFreeBufferCount(qid)
     local sd = lurek.audio.newSoundData(1024, 44100, 1)
@@ -1920,33 +1092,17 @@ end
 
 --@api: lurek.audio.queueSource
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local qid = lurek.audio.newQueueableSource(44100, 16, 1, 4)
     local sd = lurek.audio.newSoundData(1024, 44100, 1)
     local before = lurek.audio.getFreeBufferCount(qid)
     lurek.audio.queueSource(qid, sd)
     local after = lurek.audio.getFreeBufferCount(qid)
-    example_print_log("free buffers before queue = " .. tostring(before))
-    example_print_log("free buffers after queue = " .. tostring(after))
+    lurek.log.info(tostring("free buffers before queue = " .. tostring(before)))
+    lurek.log.info(tostring("free buffers after queue = " .. tostring(after)))
 end
 
 --@api: lurek.audio.getFreeBufferCount
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local qid = lurek.audio.newQueueableSource(44100, 16, 1, 4)
     local free = lurek.audio.getFreeBufferCount(qid)
     local sd = lurek.audio.newSoundData(1024, 44100, 1)
@@ -1958,32 +1114,16 @@ end
 
 --@api: lurek.audio.playQueueable
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local qid = lurek.audio.newQueueableSource(44100, 16, 1, 4)
     local sd = lurek.audio.newSoundData(1024, 44100, 1)
     lurek.audio.queueSource(qid, sd)
     lurek.audio.playQueueable(qid)
-    example_print_log("queueable source started")
-    example_print_log("free buffers after play = " .. tostring(lurek.audio.getFreeBufferCount(qid)))
+    lurek.log.info(tostring("queueable source started"))
+    lurek.log.info(tostring("free buffers after play = " .. tostring(lurek.audio.getFreeBufferCount(qid))))
 end
 
 --@api: lurek.audio.stopQueueable
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local qid = lurek.audio.newQueueableSource(44100, 16, 1, 4)
     local sd = lurek.audio.newSoundData(1024, 44100, 1)
     lurek.audio.queueSource(qid, sd)
@@ -1996,14 +1136,6 @@ end
 
 --@api: lurek.audio.getPlaybackDevices
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local devices = lurek.audio.getPlaybackDevices()
     local active = lurek.audio.getPlaybackDevice()
     local first = devices[1] or "none"
@@ -2013,14 +1145,6 @@ end
 
 --@api: lurek.audio.getPlaybackDevice
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local dev = lurek.audio.getPlaybackDevice()
     local devices = lurek.audio.getPlaybackDevices()
     local listed = #devices
@@ -2030,31 +1154,15 @@ end
 
 --@api: lurek.audio.setPlaybackDevice
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local devices = lurek.audio.getPlaybackDevices()
     local name = devices[1] or lurek.audio.getPlaybackDevice()
     lurek.audio.setPlaybackDevice(name)
-    example_print_log("requested device = " .. tostring(name))
-    example_print_log("active device = " .. tostring(lurek.audio.getPlaybackDevice()))
+    lurek.log.info(tostring("requested device = " .. tostring(name)))
+    lurek.log.info(tostring("active device = " .. tostring(lurek.audio.getPlaybackDevice())))
 end
 
 --@api: lurek.audio.create_bus
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     lurek.audio.create_bus("master_sfx", nil)
     lurek.audio.set_bus_volume("master_sfx", 0.65)
     local peak = lurek.audio.getBusPeak("master_sfx")
@@ -2065,14 +1173,6 @@ end
 
 --@api: lurek.audio.set_bus_volume
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     lurek.audio.create_bus("music_bus", nil)
     lurek.audio.set_bus_volume("music_bus", 0.7)
     local peak = lurek.audio.getBusPeak("music_bus")
@@ -2083,14 +1183,6 @@ end
 
 --@api: lurek.audio.add_effect
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     lurek.audio.create_bus("fx_bus", nil)
     local ok, eid = pcall(function() return lurek.audio.add_effect("fx_bus", "reverb", { value = 0.5 }) end)
     local peak = lurek.audio.getBusPeak("fx_bus")
@@ -2101,54 +1193,30 @@ end
 
 --@api: lurek.audio.remove_effect
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     lurek.audio.create_bus("temp_bus", nil)
     local ok_add, eid = pcall(function()
         return lurek.audio.add_effect("temp_bus", "lowpass", { value = 800 })
     end)
     local ok_remove = ok_add and type(lurek.audio.remove_effect) == "function"
         and lurek.audio.remove_effect("temp_bus", eid) or false
-    example_print_log("effect id = " .. tostring(ok_add and eid or "unavailable"))
-    example_print_log("removed = " .. tostring(ok_remove))
+    lurek.log.info(tostring("effect id = " .. tostring(ok_add and eid or "unavailable")))
+    lurek.log.info(tostring("removed = " .. tostring(ok_remove)))
 end
 
 --@api: lurek.audio.set_effect_param
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     lurek.audio.create_bus("eq_bus", nil)
     local ok_add, eid = pcall(function()
         return lurek.audio.add_effect("eq_bus", "highpass", { cutoff = 200 })
     end)
     local ok = ok_add and type(lurek.audio.set_effect_param) == "function"
         and lurek.audio.set_effect_param("eq_bus", eid, "cutoff", 500) or false
-    example_print_log("effect id = " .. tostring(ok_add and eid or "unavailable"))
-    example_print_log("param set = " .. tostring(ok))
+    lurek.log.info(tostring("effect id = " .. tostring(ok_add and eid or "unavailable")))
+    lurek.log.info(tostring("param set = " .. tostring(ok)))
 end
 
 --@api: lurek.audio.newSineWave
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local has_fn = type(lurek.audio.newSineWave) == "function"
     local sd = has_fn and lurek.audio.newSineWave(440, 1.0, 44100, 0.8) or nil
     local duration = sd and sd:getDuration() or 0
@@ -2159,14 +1227,6 @@ end
 
 --@api: lurek.audio.newSquareWave
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local has_fn = type(lurek.audio.newSquareWave) == "function"
     local sd = has_fn and lurek.audio.newSquareWave(220, 0.5, 44100, 0.6) or nil
     local duration = sd and sd:getDuration() or 0
@@ -2177,14 +1237,6 @@ end
 
 --@api: lurek.audio.newSawtoothWave
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local has_fn = type(lurek.audio.newSawtoothWave) == "function"
     local sd = has_fn and lurek.audio.newSawtoothWave(330, 0.5, 44100, 0.7) or nil
     local duration = sd and sd:getDuration() or 0
@@ -2195,14 +1247,6 @@ end
 
 --@api: lurek.audio.newTriangleWave
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local has_fn = type(lurek.audio.newTriangleWave) == "function"
     local sd = has_fn and lurek.audio.newTriangleWave(550, 0.5, 44100, 0.5) or nil
     local duration = sd and sd:getDuration() or 0
@@ -2213,14 +1257,6 @@ end
 
 --@api: lurek.audio.newWhiteNoise
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local has_fn = type(lurek.audio.newWhiteNoise) == "function"
     local sd = has_fn and lurek.audio.newWhiteNoise(1.0, 44100, 0.4, 12345) or nil
     local duration = sd and sd:getDuration() or 0
@@ -2231,94 +1267,54 @@ end
 
 --@api: lurek.audio.applyLowpass
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local has_wave = type(lurek.audio.newSineWave) == "function"
     local has_fn = type(lurek.audio.applyLowpass) == "function"
     local sd = has_wave and lurek.audio.newSineWave(1000, 0.5, 44100, 0.8) or nil
     if has_fn and sd then
         lurek.audio.applyLowpass(sd, 500)
     end
-    example_print_log("lowpass available = " .. tostring(has_fn))
-    example_print_log("lowpass applied at 500 Hz")
+    lurek.log.info(tostring("lowpass available = " .. tostring(has_fn)))
+    lurek.log.info(tostring("lowpass applied at 500 Hz"))
 end
 
 --@api: lurek.audio.applyHighpass
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local has_noise = type(lurek.audio.newWhiteNoise) == "function"
     local has_fn = type(lurek.audio.applyHighpass) == "function"
     local sd = has_noise and lurek.audio.newWhiteNoise(0.5, 44100, 0.6, 99) or nil
     if has_fn and sd then
         lurek.audio.applyHighpass(sd, 2000)
     end
-    example_print_log("highpass available = " .. tostring(has_fn))
-    example_print_log("highpass applied at 2000 Hz")
+    lurek.log.info(tostring("highpass available = " .. tostring(has_fn)))
+    lurek.log.info(tostring("highpass applied at 2000 Hz"))
 end
 
 --@api: lurek.audio.applyBandpass
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local has_noise = type(lurek.audio.newWhiteNoise) == "function"
     local has_fn = type(lurek.audio.applyBandpass) == "function"
     local sd = has_noise and lurek.audio.newWhiteNoise(0.5, 44100, 0.5, 42) or nil
     if has_fn and sd then
         lurek.audio.applyBandpass(sd, 300, 3000)
     end
-    example_print_log("bandpass available = " .. tostring(has_fn))
-    example_print_log("bandpass 300-3000 Hz applied")
+    lurek.log.info(tostring("bandpass available = " .. tostring(has_fn)))
+    lurek.log.info(tostring("bandpass 300-3000 Hz applied"))
 end
 
 --@api: lurek.audio.applyGain
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local has_wave = type(lurek.audio.newSineWave) == "function"
     local has_fn = type(lurek.audio.applyGain) == "function"
     local sd = has_wave and lurek.audio.newSineWave(440, 0.5, 44100, 0.3) or nil
     if has_fn and sd then
         lurek.audio.applyGain(sd, 2.0)
     end
-    example_print_log("gain available = " .. tostring(has_fn))
-    example_print_log("gain x2 applied")
+    lurek.log.info(tostring("gain available = " .. tostring(has_fn)))
+    lurek.log.info(tostring("gain x2 applied"))
 end
 
 --@api: lurek.audio.mixInto
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local has_wave = type(lurek.audio.newSineWave) == "function"
     local has_fn = type(lurek.audio.mixInto) == "function"
     local dest = has_wave and lurek.audio.newSineWave(440, 1.0, 44100, 0.5) or nil
@@ -2326,131 +1322,75 @@ do
     if has_fn and dest and src then
         lurek.audio.mixInto(dest, src)
     end
-    example_print_log("mixInto available = " .. tostring(has_fn))
-    example_print_log("mixed 880 Hz into 440 Hz")
+    lurek.log.info(tostring("mixInto available = " .. tostring(has_fn)))
+    lurek.log.info(tostring("mixed 880 Hz into 440 Hz"))
 end
 
 --@api: lurek.audio.saveWAV
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local has_wave = type(lurek.audio.newSineWave) == "function"
     local has_fn = type(lurek.audio.saveWAV) == "function"
     local sd = has_wave and lurek.audio.newSineWave(440, 1.0, 44100, 0.8) or nil
     if has_fn and sd then
         lurek.audio.saveWAV(sd, "save/test_tone.wav")
     end
-    example_print_log("saveWAV available = " .. tostring(has_fn))
-    example_print_log("saved WAV file")
+    lurek.log.info(tostring("saveWAV available = " .. tostring(has_fn)))
+    lurek.log.info(tostring("saved WAV file"))
 end
 
 --@api: lurek.audio.setStereoWidth
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     lurek.audio.setStereoWidth(src, 0.5)
-    example_print_log("configured stereo width = 0.5")
-    example_print_log("stereo width = " .. tostring(lurek.audio.getStereoWidth(src)))
+    lurek.log.info(tostring("configured stereo width = 0.5"))
+    lurek.log.info(tostring("stereo width = " .. tostring(lurek.audio.getStereoWidth(src))))
 end
 
 --@api: lurek.audio.getStereoWidth
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     lurek.audio.setStereoWidth(src, 0.8)
     local w = lurek.audio.getStereoWidth(src)
-    example_print_log("configured stereo width = 0.8")
-    example_print_log("width = " .. tostring(w))
+    lurek.log.info(tostring("configured stereo width = 0.8"))
+    lurek.log.info(tostring("width = " .. tostring(w)))
 end
 
 --@api: lurek.audio.setRandomPitch
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setRandomPitch(src, 0.9, 1.1)
-    example_print_log("random pitch range = 0.9 to 1.1")
-    example_print_log("source ready for varied playback")
+    lurek.log.info(tostring("random pitch range = 0.9 to 1.1"))
+    lurek.log.info(tostring("source ready for varied playback"))
 end
 
 --@api: lurek.audio.clearRandomPitch
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setRandomPitch(src, 0.8, 1.2)
     lurek.audio.clearRandomPitch(src)
-    example_print_log("random pitch cleared")
-    example_print_log("source pitch now follows explicit setPitch calls")
+    lurek.log.info(tostring("random pitch cleared"))
+    lurek.log.info(tostring("source pitch now follows explicit setPitch calls"))
 end
 
 --@api: lurek.audio.crossfade
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local p1 = "content/examples/assets/audio/sample_loop.wav"
     local p2 = "content/examples/assets/audio/sample_tone.wav"
     local from = lurek.audio.newSource(p1, "stream")
     local to = lurek.audio.newSource(p2, "stream")
     lurek.audio.play(from)
     lurek.audio.crossfade(from, to, 3.0)
-    example_print_log("from path = " .. p1)
-    example_print_log("to path = " .. p2)
-    example_print_log("crossfading over 3s")
+    lurek.log.info(tostring("from path = " .. p1))
+    lurek.log.info(tostring("to path = " .. p2))
+    lurek.log.info(tostring("crossfading over 3s"))
 end
 
 --@api: lurek.audio.getBusPeak
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     lurek.audio.create_bus("vu_bus", nil)
     local peak = lurek.audio.getBusPeak("vu_bus")
     local rms = lurek.audio.getBusRms("vu_bus")
@@ -2460,14 +1400,6 @@ end
 
 --@api: lurek.audio.getBusRms
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     lurek.audio.create_bus("rms_bus", nil)
     local rms = lurek.audio.getBusRms("rms_bus")
     local peak = lurek.audio.getBusPeak("rms_bus")
@@ -2477,14 +1409,6 @@ end
 
 --@api: lurek.audio.newPool
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local pool = lurek.audio.newPool(path, 8)
     local voices = pool:getVoiceCount()
@@ -2496,14 +1420,6 @@ end
 
 --@api: lurek.audio.processOffline
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local effects = {{ type = "lowpass", p1 = 1000 }, { type = "compressor", p1 = 0.8, p2 = 2.5, p3 = 0.1 }}
     local path_in = "content/examples/assets/audio/sample_tone.wav"
     local path_out = "save/processed.wav"
@@ -2511,88 +1427,56 @@ do
     if has_fn then
         lurek.audio.processOffline(path_in, path_out, effects)
     end
-    example_print_log("processOffline available = " .. tostring(has_fn))
-    example_print_log("input file = " .. path_in)
-    example_print_log("output file = " .. path_out)
-    example_print_log("offline processing done")
+    lurek.log.info(tostring("processOffline available = " .. tostring(has_fn)))
+    lurek.log.info(tostring("input file = " .. path_in))
+    lurek.log.info(tostring("output file = " .. path_out))
+    lurek.log.info(tostring("offline processing done"))
 end
 
 --@api: lurek.audio.normalizeFile
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path_in = "content/examples/assets/audio/sample_tone.wav"
     local path_out = "save/normalized.wav"
     local has_fn = type(lurek.audio.normalizeFile) == "function"
     if has_fn then
         lurek.audio.normalizeFile(path_in, path_out, 0.9)
     end
-    example_print_log("normalizeFile available = " .. tostring(has_fn))
-    example_print_log("input file = " .. path_in)
-    example_print_log("output file = " .. path_out)
-    example_print_log("normalized to 0.9 peak")
+    lurek.log.info(tostring("normalizeFile available = " .. tostring(has_fn)))
+    lurek.log.info(tostring("input file = " .. path_in))
+    lurek.log.info(tostring("output file = " .. path_out))
+    lurek.log.info(tostring("normalized to 0.9 peak"))
 end
 
 --@api: lurek.audio.waveformToPng
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path_in = "content/examples/assets/audio/sample_tone.wav"
     local path_out = "save/waveform.png"
     local has_fn = type(lurek.audio.waveformToPng) == "function"
     if has_fn then
         lurek.audio.waveformToPng(path_in, path_out, 800, 200)
     end
-    example_print_log("waveformToPng available = " .. tostring(has_fn))
-    example_print_log("input file = " .. path_in)
-    example_print_log("output file = " .. path_out)
-    example_print_log("waveform image saved")
+    lurek.log.info(tostring("waveformToPng available = " .. tostring(has_fn)))
+    lurek.log.info(tostring("input file = " .. path_in))
+    lurek.log.info(tostring("output file = " .. path_out))
+    lurek.log.info(tostring("waveform image saved"))
 end
 
 --@api: lurek.audio.spectrogramToPng
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path_in = "content/examples/assets/audio/sample_tone.wav"
     local path_out = "save/spectrogram.png"
     local has_fn = type(lurek.audio.spectrogramToPng) == "function"
     if has_fn then
         lurek.audio.spectrogramToPng(path_in, path_out, 800, 400)
     end
-    example_print_log("spectrogramToPng available = " .. tostring(has_fn))
-    example_print_log("input file = " .. path_in)
-    example_print_log("output file = " .. path_out)
-    example_print_log("spectrogram image saved")
+    lurek.log.info(tostring("spectrogramToPng available = " .. tostring(has_fn)))
+    lurek.log.info(tostring("input file = " .. path_in))
+    lurek.log.info(tostring("output file = " .. path_out))
+    lurek.log.info(tostring("spectrogram image saved"))
 end
 
 --@api: LSource:play
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     src:play()
@@ -2606,66 +1490,34 @@ end
 
 --@api: LSource:stop
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     src:play()
     src:stop()
-    example_print_log("stopped = " .. tostring(src:isStopped()))
+    lurek.log.info(tostring("stopped = " .. tostring(src:isStopped())))
 end
 
 --@api: LSource:pause
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     src:play()
     src:pause()
-    example_print_log("paused = " .. tostring(src:isPaused()))
+    lurek.log.info(tostring("paused = " .. tostring(src:isPaused())))
 end
 
 --@api: LSource:resume
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     src:play()
     src:pause()
     src:resume()
-    example_print_log("resumed = " .. tostring(src:isPlaying()))
+    lurek.log.info(tostring("resumed = " .. tostring(src:isPlaying())))
 end
 
 --@api: LSource:setVolume
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     src:setVolume(0.4)
@@ -2677,31 +1529,15 @@ end
 
 --@api: LSource:getVolume
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     src:setVolume(0.9)
     local v = src:getVolume()
-    example_print_log("volume = " .. v)
+    lurek.log.info(tostring("volume = " .. v))
 end
 
 --@api: LSource:setPitch
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     src:setPitch(1.5)
@@ -2713,31 +1549,15 @@ end
 
 --@api: LSource:getPitch
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     src:setPitch(0.7)
     local p = src:getPitch()
-    example_print_log("pitch = " .. p)
+    lurek.log.info(tostring("pitch = " .. p))
 end
 
 --@api: LSource:setLooping
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     src:setLooping(true)
@@ -2749,14 +1569,6 @@ end
 
 --@api: LSource:isLooping
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     src:setLooping(true)
@@ -2768,14 +1580,6 @@ end
 
 --@api: LSource:isPlaying
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     src:play()
@@ -2787,31 +1591,15 @@ end
 
 --@api: LSource:isPaused
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     src:play()
     src:pause()
-    example_print_log("paused = " .. tostring(src:isPaused()))
+    lurek.log.info(tostring("paused = " .. tostring(src:isPaused())))
 end
 
 --@api: LSource:isStopped
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     local stoppedBefore = src:isStopped()
@@ -2824,14 +1612,6 @@ end
 
 --@api: LSource:setPan
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     src:setPan(-0.8)
@@ -2843,48 +1623,24 @@ end
 
 --@api: LSource:getPan
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     src:setPan(0.5)
     local pan = src:getPan()
-    example_print_log("pan = " .. pan)
+    lurek.log.info(tostring("pan = " .. pan))
 end
 
 --@api: LSource:clone
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     src:setVolume(0.3)
     local copy = src:clone()
-    example_print_log("clone volume = " .. copy:getVolume())
+    lurek.log.info(tostring("clone volume = " .. copy:getVolume()))
 end
 
 --@api: LSource:getType
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     local sourceKind = src:getType()
@@ -2895,14 +1651,6 @@ end
 
 --@api: LSource:getDuration
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     local dur = src:getDuration()
@@ -2913,48 +1661,24 @@ end
 
 --@api: LSource:tell
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     src:play()
     local pos = src:tell()
-    example_print_log("position = " .. pos)
+    lurek.log.info(tostring("position = " .. pos))
 end
 
 --@api: LSource:seek
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     src:play()
     src:seek(10.0)
-    example_print_log("seeked to " .. src:tell())
+    lurek.log.info(tostring("seeked to " .. src:tell()))
 end
 
 --@api: LSource:setLowpass
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     src:setLowpass(600)
@@ -2966,14 +1690,6 @@ end
 
 --@api: LSource:setHighpass
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     src:setHighpass(1500)
@@ -2985,65 +1701,33 @@ end
 
 --@api: LSource:getLowpass
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     src:setLowpass(400)
     local lp = src:getLowpass()
-    example_print_log("lowpass = " .. lp)
+    lurek.log.info(tostring("lowpass = " .. lp))
 end
 
 --@api: LSource:getHighpass
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     src:setHighpass(4000)
     local hp = src:getHighpass()
-    example_print_log("highpass = " .. hp)
+    lurek.log.info(tostring("highpass = " .. hp))
 end
 
 --@api: LSource:clearFilter
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     src:setLowpass(800)
     src:clearFilter()
-    example_print_log("filters cleared")
+    lurek.log.info(tostring("filters cleared"))
 end
 
 --@api: LSource:fadeIn
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     src:fadeIn(2.5)
@@ -3055,31 +1739,15 @@ end
 
 --@api: LSource:getFadeIn
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     src:fadeIn(1.0)
     local fi = src:getFadeIn()
-    example_print_log("fade in = " .. fi)
+    lurek.log.info(tostring("fade in = " .. fi))
 end
 
 --@api: LSource:type
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     local typeName = src:type()
@@ -3090,14 +1758,6 @@ end
 
 --@api: LSource:typeOf
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     local isSource = src:typeOf("LSource")
@@ -3108,14 +1768,6 @@ end
 
 --@api: LBus:getName
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local bus = lurek.audio.newBus("gameplay")
     local name = bus:getName()
     local typeName = bus:type()
@@ -3125,14 +1777,6 @@ end
 
 --@api: LBus:setVolume
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local bus = lurek.audio.newBus("sfx")
     bus:setVolume(0.6)
     local low = bus:getVolume()
@@ -3143,14 +1787,6 @@ end
 
 --@api: LBus:getVolume
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local bus = lurek.audio.newBus("music")
     bus:setVolume(0.8)
     local chapterVolume = bus:getVolume()
@@ -3162,14 +1798,6 @@ end
 
 --@api: LBus:setPitch
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local bus = lurek.audio.newBus("fx")
     bus:setPitch(1.2)
     local high = bus:getPitch()
@@ -3180,14 +1808,6 @@ end
 
 --@api: LBus:getPitch
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local bus = lurek.audio.newBus("ambient")
     bus:setPitch(0.9)
     local rainyPitch = bus:getPitch()
@@ -3199,14 +1819,6 @@ end
 
 --@api: LBus:pause
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local bus = lurek.audio.newBus("dialog")
     bus:pause()
     local paused = bus:isPaused()
@@ -3217,14 +1829,6 @@ end
 
 --@api: LBus:resume
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local bus = lurek.audio.newBus("world")
     bus:pause()
     bus:resume()
@@ -3236,14 +1840,6 @@ end
 
 --@api: LBus:isPaused
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local bus = lurek.audio.newBus("ui")
     bus:pause()
     local paused = bus:isPaused()
@@ -3254,14 +1850,6 @@ end
 
 --@api: LBus:type
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local bus = lurek.audio.newBus("test")
     local typeName = bus:type()
     local isBus = bus:typeOf("LBus")
@@ -3271,14 +1859,6 @@ end
 
 --@api: LBus:typeOf
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local bus = lurek.audio.newBus("check")
     local isBus = bus:typeOf("LBus")
     local typeName = bus:type()
@@ -3288,14 +1868,6 @@ end
 
 --@api: LBus:setDuckTarget
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local music = lurek.audio.newBus("bg_music")
     local voice = lurek.audio.newBus("voice_over")
     music:setVolume(0.8)
@@ -3308,14 +1880,6 @@ end
 
 --@api: LBus:clearDuck
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local bus = lurek.audio.newBus("narrator")
     bus:setDuckTarget("bg_music", 0.2)
     local wasBus = bus:typeOf("LBus")
@@ -3327,14 +1891,6 @@ end
 
 --@api: LBus:getPeak
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local bus = lurek.audio.newBus("meter_bus")
     bus:setVolume(0.75)
     local peak = bus:getPeak()
@@ -3345,974 +1901,816 @@ end
 
 --@api: LMidiPlayer:load
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:load")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        local path = "content/examples/assets/audio/sample_midi.mid"
+        local loaded = player:load(path)
+        local ready = player:isLoaded()
+        local tempo = player:getTempo()
+        lurek.log.info("boss music load requested=" .. tostring(loaded))
+        lurek.log.info("boss music ready=" .. tostring(ready) .. " tempo=" .. tostring(tempo))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    local path = "content/examples/assets/audio/sample_midi.mid"
-    local loaded = player:load(path)
-    local ready = player:isLoaded()
-    local tempo = player:getTempo()
-    lurek.log.info("boss music load requested=" .. tostring(loaded))
-    lurek.log.info("boss music ready=" .. tostring(ready) .. " tempo=" .. tostring(tempo))
 end
 
 --@api: LMidiPlayer:loadData
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:loadData")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        local data = string.char(77,84,104,100,0,0,0,6,0,0,0,1,0,96,77,84,114,107,0,0,0,4,0,255,47,0)
+        local loaded = player:loadData(data)
+        local ready = player:isLoaded()
+        local ticksPerBeat = player:getTicksPerBeat()
+        lurek.log.info("cutscene midi bytes accepted=" .. tostring(loaded))
+        lurek.log.info("cutscene midi ready=" .. tostring(ready) .. " ppqn=" .. tostring(ticksPerBeat))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    local data = string.char(77,84,104,100,0,0,0,6,0,0,0,1,0,96,77,84,114,107,0,0,0,4,0,255,47,0)
-    local loaded = player:loadData(data)
-    local ready = player:isLoaded()
-    local ticksPerBeat = player:getTicksPerBeat()
-    lurek.log.info("cutscene midi bytes accepted=" .. tostring(loaded))
-    lurek.log.info("cutscene midi ready=" .. tostring(ready) .. " ppqn=" .. tostring(ticksPerBeat))
 end
 
 --@api: LMidiPlayer:isLoaded
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:isLoaded")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        local path = "content/examples/assets/audio/sample_midi.mid"
+        local beforeLoad = player:isLoaded()
+        local requested = player:load(path)
+        local afterLoad = player:isLoaded()
+        lurek.log.info("midi loaded before request=" .. tostring(beforeLoad))
+        lurek.log.info("midi load requested=" .. tostring(requested) .. " loaded now=" .. tostring(afterLoad))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    local path = "content/examples/assets/audio/sample_midi.mid"
-    local beforeLoad = player:isLoaded()
-    local requested = player:load(path)
-    local afterLoad = player:isLoaded()
-    lurek.log.info("midi loaded before request=" .. tostring(beforeLoad))
-    lurek.log.info("midi load requested=" .. tostring(requested) .. " loaded now=" .. tostring(afterLoad))
 end
 
 --@api: LMidiPlayer:getFilePath
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:getFilePath")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        local path = "content/examples/assets/audio/sample_midi.mid"
+        local loaded = player:load(path)
+        local filePath = player:getFilePath()
+        local ready = player:isLoaded()
+        lurek.log.info("setlist entry loaded=" .. tostring(loaded))
+        lurek.log.info("active midi path=" .. tostring(filePath) .. " ready=" .. tostring(ready))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    local path = "content/examples/assets/audio/sample_midi.mid"
-    local loaded = player:load(path)
-    local filePath = player:getFilePath()
-    local ready = player:isLoaded()
-    lurek.log.info("setlist entry loaded=" .. tostring(loaded))
-    lurek.log.info("active midi path=" .. tostring(filePath) .. " ready=" .. tostring(ready))
 end
 
 --@api: LMidiPlayer:setSoundFont
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:setSoundFont")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        local sf_path = "content/examples/assets/audio/sample_soundfont.sf2"
+        local applied = pcall(function() player:setSoundFont(sf_path) end)
+        local soundFont = player:getSoundFontPath()
+        local playerType = player:type()
+        lurek.log.info("custom soundfont applied=" .. tostring(applied))
+        lurek.log.info("midi player type=" .. tostring(playerType) .. " soundfont=" .. tostring(soundFont))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    local sf_path = "content/examples/assets/audio/sample_soundfont.sf2"
-    local applied = pcall(function() player:setSoundFont(sf_path) end)
-    local soundFont = player:getSoundFontPath()
-    local playerType = player:type()
-    lurek.log.info("custom soundfont applied=" .. tostring(applied))
-    lurek.log.info("midi player type=" .. tostring(playerType) .. " soundfont=" .. tostring(soundFont))
 end
 
 --@api: LMidiPlayer:getSoundFontPath
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:getSoundFontPath")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        local sf_path = "content/examples/assets/audio/sample_soundfont.sf2"
+        local ok = pcall(function() player:setSoundFont(sf_path) end)
+        local p = ok and player:getSoundFontPath() or nil
+        lurek.log.info(tostring("soundfont = " .. tostring(p)))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    local sf_path = "content/examples/assets/audio/sample_soundfont.sf2"
-    local ok = pcall(function() player:setSoundFont(sf_path) end)
-    local p = ok and player:getSoundFontPath() or nil
-    example_print_log("soundfont = " .. tostring(p))
 end
 
 --@api: LMidiPlayer:useDefaultSoundFont
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:useDefaultSoundFont")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        local before = player:getSoundFontPath()
+        player:useDefaultSoundFont()
+        local after = player:getSoundFontPath()
+        local typeName = player:type()
+        lurek.log.info("soundfont before reset=" .. tostring(before))
+        lurek.log.info("soundfont after reset=" .. tostring(after) .. " type=" .. tostring(typeName))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    local before = player:getSoundFontPath()
-    player:useDefaultSoundFont()
-    local after = player:getSoundFontPath()
-    local typeName = player:type()
-    lurek.log.info("soundfont before reset=" .. tostring(before))
-    lurek.log.info("soundfont after reset=" .. tostring(after) .. " type=" .. tostring(typeName))
 end
 
 --@api: LMidiPlayer:play
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:play")
+    else
+        local path = "content/examples/assets/audio/sample_midi.mid"
+        local player = lurek.audio.newMidiPlayer()
+        local loaded = player:load(path)
+        player:play()
+        local playing = player:isPlaying()
+        local paused = player:isPaused()
+        lurek.log.info("combat cue loaded=" .. tostring(loaded))
+        lurek.log.info("combat cue playing=" .. tostring(playing) .. " paused=" .. tostring(paused))
     end
-
-    local path = "content/examples/assets/audio/sample_midi.mid"
-    local player = lurek.audio.newMidiPlayer()
-    local loaded = player:load(path)
-    player:play()
-    local playing = player:isPlaying()
-    local paused = player:isPaused()
-    lurek.log.info("combat cue loaded=" .. tostring(loaded))
-    lurek.log.info("combat cue playing=" .. tostring(playing) .. " paused=" .. tostring(paused))
 end
 
 --@api: LMidiPlayer:pause
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:pause")
+    else
+        local path = "content/examples/assets/audio/sample_midi.mid"
+        local player = lurek.audio.newMidiPlayer(path)
+        player:play()
+        player:pause()
+        lurek.log.info(tostring("midi paused = " .. tostring(player:isPaused())))
     end
-
-    local path = "content/examples/assets/audio/sample_midi.mid"
-    local player = lurek.audio.newMidiPlayer(path)
-    player:play()
-    player:pause()
-    example_print_log("midi paused = " .. tostring(player:isPaused()))
 end
 
 --- Audio Examples Part 4: LMidiPlayer (cont.), LSoundPool, LDecoder methods
 
 --@api: LMidiPlayer:stop
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:stop")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        local path = "content/examples/assets/audio/sample_midi.mid"
+        player:load(path)
+        player:play()
+        player:seek(4.0)
+        player:stop()
+        local playing = player:isPlaying()
+        local position = player:tell()
+        lurek.log.info("combat cue stopped=" .. tostring(not playing))
+        lurek.log.info("combat cue reset to=" .. tostring(position))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    local path = "content/examples/assets/audio/sample_midi.mid"
-    player:load(path)
-    player:play()
-    player:seek(4.0)
-    player:stop()
-    local playing = player:isPlaying()
-    local position = player:tell()
-    lurek.log.info("combat cue stopped=" .. tostring(not playing))
-    lurek.log.info("combat cue reset to=" .. tostring(position))
 end
 
 --@api: LMidiPlayer:isPlaying
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:isPlaying")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        local path = "content/examples/assets/audio/sample_midi.mid"
+        player:load(path)
+        local beforePlay = player:isPlaying()
+        player:play()
+        local afterPlay = player:isPlaying()
+        lurek.log.info("midi playing before start=" .. tostring(beforePlay))
+        lurek.log.info("midi playing after start=" .. tostring(afterPlay))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    local path = "content/examples/assets/audio/sample_midi.mid"
-    player:load(path)
-    local beforePlay = player:isPlaying()
-    player:play()
-    local afterPlay = player:isPlaying()
-    lurek.log.info("midi playing before start=" .. tostring(beforePlay))
-    lurek.log.info("midi playing after start=" .. tostring(afterPlay))
 end
 
 --@api: LMidiPlayer:isPaused
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:isPaused")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        local path = "content/examples/assets/audio/sample_midi.mid"
+        player:load(path)
+        local beforePause = player:isPaused()
+        player:play()
+        player:pause()
+        local afterPause = player:isPaused()
+        lurek.log.info("midi paused before request=" .. tostring(beforePause))
+        lurek.log.info("midi paused after request=" .. tostring(afterPause))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    local path = "content/examples/assets/audio/sample_midi.mid"
-    player:load(path)
-    local beforePause = player:isPaused()
-    player:play()
-    player:pause()
-    local afterPause = player:isPaused()
-    lurek.log.info("midi paused before request=" .. tostring(beforePause))
-    lurek.log.info("midi paused after request=" .. tostring(afterPause))
 end
 
 --@api: LMidiPlayer:seek
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:seek")
+    else
+        local path = "content/examples/assets/audio/sample_midi.mid"
+        local player = lurek.audio.newMidiPlayer(path)
+        player:play()
+        player:seek(5.0)
+        lurek.log.info(tostring("seeked to " .. player:tell()))
     end
-
-    local path = "content/examples/assets/audio/sample_midi.mid"
-    local player = lurek.audio.newMidiPlayer(path)
-    player:play()
-    player:seek(5.0)
-    example_print_log("seeked to " .. player:tell())
 end
 
 --@api: LMidiPlayer:tell
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:tell")
+    else
+        local path = "content/examples/assets/audio/sample_midi.mid"
+        local player = lurek.audio.newMidiPlayer(path)
+        player:play()
+        local pos = player:tell()
+        lurek.log.info(tostring("position = " .. pos))
     end
-
-    local path = "content/examples/assets/audio/sample_midi.mid"
-    local player = lurek.audio.newMidiPlayer(path)
-    player:play()
-    local pos = player:tell()
-    example_print_log("position = " .. pos)
 end
 
 --@api: LMidiPlayer:getDuration
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:getDuration")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        local path = "content/examples/assets/audio/sample_midi.mid"
+        local loaded = player:load(path)
+        local duration = player:getDuration()
+        local noteCount = player:getNoteCount()
+        lurek.log.info("level midi loaded=" .. tostring(loaded))
+        lurek.log.info("level midi duration=" .. tostring(duration) .. " notes=" .. tostring(noteCount))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    local path = "content/examples/assets/audio/sample_midi.mid"
-    local loaded = player:load(path)
-    local duration = player:getDuration()
-    local noteCount = player:getNoteCount()
-    lurek.log.info("level midi loaded=" .. tostring(loaded))
-    lurek.log.info("level midi duration=" .. tostring(duration) .. " notes=" .. tostring(noteCount))
 end
 
 --@api: LMidiPlayer:setLooping
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:setLooping")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        local path = "content/examples/assets/audio/sample_midi.mid"
+        player:load(path)
+        player:setLooping(true)
+        local looped = player:isLooping()
+        player:setLooping(false)
+        lurek.log.info("menu theme looping on=" .. tostring(looped))
+        lurek.log.info("menu theme looping off=" .. tostring(player:isLooping()))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    local path = "content/examples/assets/audio/sample_midi.mid"
-    player:load(path)
-    player:setLooping(true)
-    local looped = player:isLooping()
-    player:setLooping(false)
-    lurek.log.info("menu theme looping on=" .. tostring(looped))
-    lurek.log.info("menu theme looping off=" .. tostring(player:isLooping()))
 end
 
 --@api: LMidiPlayer:isLooping
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:isLooping")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        local path = "content/examples/assets/audio/sample_midi.mid"
+        player:load(path)
+        local before = player:isLooping()
+        player:setLooping(true)
+        local after = player:isLooping()
+        lurek.log.info("looping before toggle=" .. tostring(before))
+        lurek.log.info("looping after toggle=" .. tostring(after))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    local path = "content/examples/assets/audio/sample_midi.mid"
-    player:load(path)
-    local before = player:isLooping()
-    player:setLooping(true)
-    local after = player:isLooping()
-    lurek.log.info("looping before toggle=" .. tostring(before))
-    lurek.log.info("looping after toggle=" .. tostring(after))
 end
 
 --@api: LMidiPlayer:setVolume
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:setVolume")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        player:setVolume(0.7)
+        local baseVolume = player:getVolume()
+        player:setVolume(0.35)
+        local quietVolume = player:getVolume()
+        lurek.log.info("midi mix base volume=" .. tostring(baseVolume))
+        lurek.log.info("midi mix quiet volume=" .. tostring(quietVolume))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    player:setVolume(0.7)
-    local baseVolume = player:getVolume()
-    player:setVolume(0.35)
-    local quietVolume = player:getVolume()
-    lurek.log.info("midi mix base volume=" .. tostring(baseVolume))
-    lurek.log.info("midi mix quiet volume=" .. tostring(quietVolume))
 end
 
 --@api: LMidiPlayer:getVolume
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:getVolume")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        player:setVolume(0.5)
+        local introVolume = player:getVolume()
+        player:setVolume(0.8)
+        local bossVolume = player:getVolume()
+        lurek.log.info("intro cue volume=" .. tostring(introVolume))
+        lurek.log.info("boss cue volume=" .. tostring(bossVolume))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    player:setVolume(0.5)
-    local introVolume = player:getVolume()
-    player:setVolume(0.8)
-    local bossVolume = player:getVolume()
-    lurek.log.info("intro cue volume=" .. tostring(introVolume))
-    lurek.log.info("boss cue volume=" .. tostring(bossVolume))
 end
 
 --@api: LMidiPlayer:setBus
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:setBus")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        local bus = lurek.audio.newBus("midi_bus")
+        player:setBus(bus)
+        local assigned = player:getBus()
+        local typeName = bus:type()
+        lurek.log.info("midi bus assigned=" .. tostring(assigned and assigned:getName() or nil))
+        lurek.log.info("assigned bus type=" .. tostring(typeName))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    local bus = lurek.audio.newBus("midi_bus")
-    player:setBus(bus)
-    local assigned = player:getBus()
-    local typeName = bus:type()
-    lurek.log.info("midi bus assigned=" .. tostring(assigned and assigned:getName() or nil))
-    lurek.log.info("assigned bus type=" .. tostring(typeName))
 end
 
 --@api: LMidiPlayer:getBus
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:getBus")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        local bus = lurek.audio.newBus("midi_out")
+        player:setBus(bus)
+        local b = player:getBus()
+        lurek.log.info(tostring("bus = " .. b:getName()))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    local bus = lurek.audio.newBus("midi_out")
-    player:setBus(bus)
-    local b = player:getBus()
-    example_print_log("bus = " .. b:getName())
 end
 
 --@api: LMidiPlayer:setTempo
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:setTempo")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        player:setTempo(140)
+        local combatTempo = player:getTempo()
+        player:setTempo(90)
+        local stealthTempo = player:getTempo()
+        lurek.log.info("combat tempo=" .. tostring(combatTempo))
+        lurek.log.info("stealth tempo=" .. tostring(stealthTempo))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    player:setTempo(140)
-    local combatTempo = player:getTempo()
-    player:setTempo(90)
-    local stealthTempo = player:getTempo()
-    lurek.log.info("combat tempo=" .. tostring(combatTempo))
-    lurek.log.info("stealth tempo=" .. tostring(stealthTempo))
 end
 
 --@api: LMidiPlayer:getTempo
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:getTempo")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        player:setTempo(120)
+        local normalTempo = player:getTempo()
+        player:setTempo(150)
+        local alertTempo = player:getTempo()
+        lurek.log.info("normal exploration tempo=" .. tostring(normalTempo))
+        lurek.log.info("alert tempo=" .. tostring(alertTempo))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    player:setTempo(120)
-    local normalTempo = player:getTempo()
-    player:setTempo(150)
-    local alertTempo = player:getTempo()
-    lurek.log.info("normal exploration tempo=" .. tostring(normalTempo))
-    lurek.log.info("alert tempo=" .. tostring(alertTempo))
 end
 
 --@api: LMidiPlayer:getOriginalTempo
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:getOriginalTempo")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        local path = "content/examples/assets/audio/sample_midi.mid"
+        local loaded = player:load(path)
+        local originalTempo = player:getOriginalTempo()
+        local currentTempo = player:getTempo()
+        lurek.log.info("score loaded=" .. tostring(loaded))
+        lurek.log.info("original tempo=" .. tostring(originalTempo) .. " current tempo=" .. tostring(currentTempo))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    local path = "content/examples/assets/audio/sample_midi.mid"
-    local loaded = player:load(path)
-    local originalTempo = player:getOriginalTempo()
-    local currentTempo = player:getTempo()
-    lurek.log.info("score loaded=" .. tostring(loaded))
-    lurek.log.info("original tempo=" .. tostring(originalTempo) .. " current tempo=" .. tostring(currentTempo))
 end
 
 --@api: LMidiPlayer:setTempoScale
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:setTempoScale")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        player:setTempoScale(1.5)
+        local fastScale = player:getTempoScale()
+        player:setTempoScale(0.75)
+        local slowScale = player:getTempoScale()
+        lurek.log.info("chase scale=" .. tostring(fastScale))
+        lurek.log.info("dialogue scale=" .. tostring(slowScale))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    player:setTempoScale(1.5)
-    local fastScale = player:getTempoScale()
-    player:setTempoScale(0.75)
-    local slowScale = player:getTempoScale()
-    lurek.log.info("chase scale=" .. tostring(fastScale))
-    lurek.log.info("dialogue scale=" .. tostring(slowScale))
 end
 
 --@api: LMidiPlayer:getTempoScale
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:getTempoScale")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        player:setTempoScale(0.8)
+        local dampedScale = player:getTempoScale()
+        player:setTempoScale(1.2)
+        local boostedScale = player:getTempoScale()
+        lurek.log.info("damped scale=" .. tostring(dampedScale))
+        lurek.log.info("boosted scale=" .. tostring(boostedScale))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    player:setTempoScale(0.8)
-    local dampedScale = player:getTempoScale()
-    player:setTempoScale(1.2)
-    local boostedScale = player:getTempoScale()
-    lurek.log.info("damped scale=" .. tostring(dampedScale))
-    lurek.log.info("boosted scale=" .. tostring(boostedScale))
 end
 
 --@api: LMidiPlayer:getTicksPerBeat
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:getTicksPerBeat")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        local path = "content/examples/assets/audio/sample_midi.mid"
+        local loaded = player:load(path)
+        local ticksPerBeat = player:getTicksPerBeat()
+        local trackCount = player:getTrackCount()
+        lurek.log.info("timing map loaded=" .. tostring(loaded))
+        lurek.log.info("ticks per beat=" .. tostring(ticksPerBeat) .. " tracks=" .. tostring(trackCount))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    local path = "content/examples/assets/audio/sample_midi.mid"
-    local loaded = player:load(path)
-    local ticksPerBeat = player:getTicksPerBeat()
-    local trackCount = player:getTrackCount()
-    lurek.log.info("timing map loaded=" .. tostring(loaded))
-    lurek.log.info("ticks per beat=" .. tostring(ticksPerBeat) .. " tracks=" .. tostring(trackCount))
 end
 
 --@api: LMidiPlayer:setChannelVolume
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:setChannelVolume")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        player:setChannelVolume(1, 0.8)
+        local melodyVolume = player:getChannelVolume(1)
+        player:setChannelVolume(10, 0.35)
+        local drumsVolume = player:getChannelVolume(10)
+        lurek.log.info("melody channel volume=" .. tostring(melodyVolume))
+        lurek.log.info("drums channel volume=" .. tostring(drumsVolume))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    player:setChannelVolume(1, 0.8)
-    local melodyVolume = player:getChannelVolume(1)
-    player:setChannelVolume(10, 0.35)
-    local drumsVolume = player:getChannelVolume(10)
-    lurek.log.info("melody channel volume=" .. tostring(melodyVolume))
-    lurek.log.info("drums channel volume=" .. tostring(drumsVolume))
 end
 
 --@api: LMidiPlayer:getChannelVolume
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:getChannelVolume")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        player:setChannelVolume(2, 0.6)
+        local bassVolume = player:getChannelVolume(2)
+        player:setChannelVolume(4, 0.25)
+        local padVolume = player:getChannelVolume(4)
+        lurek.log.info("bass channel volume=" .. tostring(bassVolume))
+        lurek.log.info("pad channel volume=" .. tostring(padVolume))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    player:setChannelVolume(2, 0.6)
-    local bassVolume = player:getChannelVolume(2)
-    player:setChannelVolume(4, 0.25)
-    local padVolume = player:getChannelVolume(4)
-    lurek.log.info("bass channel volume=" .. tostring(bassVolume))
-    lurek.log.info("pad channel volume=" .. tostring(padVolume))
 end
 
 --@api: LMidiPlayer:setChannelMuted
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:setChannelMuted")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        player:setChannelMuted(10, true)
+        local drumsMuted = player:isChannelMuted(10)
+        player:setChannelMuted(10, false)
+        local drumsRestored = player:isChannelMuted(10)
+        lurek.log.info("drums muted for pause menu=" .. tostring(drumsMuted))
+        lurek.log.info("drums restored after menu=" .. tostring(not drumsRestored))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    player:setChannelMuted(10, true)
-    local drumsMuted = player:isChannelMuted(10)
-    player:setChannelMuted(10, false)
-    local drumsRestored = player:isChannelMuted(10)
-    lurek.log.info("drums muted for pause menu=" .. tostring(drumsMuted))
-    lurek.log.info("drums restored after menu=" .. tostring(not drumsRestored))
 end
 
 --@api: LMidiPlayer:isChannelMuted
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:isChannelMuted")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        player:setChannelMuted(3, true)
+        local stringsMuted = player:isChannelMuted(3)
+        player:setChannelMuted(3, false)
+        local stringsRestored = player:isChannelMuted(3)
+        lurek.log.info("strings muted=" .. tostring(stringsMuted))
+        lurek.log.info("strings muted after restore=" .. tostring(stringsRestored))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    player:setChannelMuted(3, true)
-    local stringsMuted = player:isChannelMuted(3)
-    player:setChannelMuted(3, false)
-    local stringsRestored = player:isChannelMuted(3)
-    lurek.log.info("strings muted=" .. tostring(stringsMuted))
-    lurek.log.info("strings muted after restore=" .. tostring(stringsRestored))
 end
 
 --@api: LMidiPlayer:setChannelInstrument
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:setChannelInstrument")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        player:setChannelInstrument(1, 25)
+        local guitarProgram = player:getChannelInstrument(1)
+        player:setChannelInstrument(2, 48)
+        local stringsProgram = player:getChannelInstrument(2)
+        lurek.log.info("melody program=" .. tostring(guitarProgram))
+        lurek.log.info("support program=" .. tostring(stringsProgram))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    player:setChannelInstrument(1, 25)
-    local guitarProgram = player:getChannelInstrument(1)
-    player:setChannelInstrument(2, 48)
-    local stringsProgram = player:getChannelInstrument(2)
-    lurek.log.info("melody program=" .. tostring(guitarProgram))
-    lurek.log.info("support program=" .. tostring(stringsProgram))
 end
 
 --@api: LMidiPlayer:getChannelInstrument
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:getChannelInstrument")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        player:setChannelInstrument(2, 48)
+        local stringsProgram = player:getChannelInstrument(2)
+        player:setChannelInstrument(10, 0)
+        local drumsProgram = player:getChannelInstrument(10)
+        lurek.log.info("strings program=" .. tostring(stringsProgram))
+        lurek.log.info("drums program=" .. tostring(drumsProgram))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    player:setChannelInstrument(2, 48)
-    local stringsProgram = player:getChannelInstrument(2)
-    player:setChannelInstrument(10, 0)
-    local drumsProgram = player:getChannelInstrument(10)
-    lurek.log.info("strings program=" .. tostring(stringsProgram))
-    lurek.log.info("drums program=" .. tostring(drumsProgram))
 end
 
 --@api: LMidiPlayer:getChannelCount
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:getChannelCount")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        local path = "content/examples/assets/audio/sample_midi.mid"
+        local loaded = player:load(path)
+        local channelCount = player:getChannelCount()
+        local noteCount = player:getNoteCount()
+        lurek.log.info("arrangement loaded=" .. tostring(loaded))
+        lurek.log.info("channel count=" .. tostring(channelCount) .. " note count=" .. tostring(noteCount))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    local path = "content/examples/assets/audio/sample_midi.mid"
-    local loaded = player:load(path)
-    local channelCount = player:getChannelCount()
-    local noteCount = player:getNoteCount()
-    lurek.log.info("arrangement loaded=" .. tostring(loaded))
-    lurek.log.info("channel count=" .. tostring(channelCount) .. " note count=" .. tostring(noteCount))
 end
 
 --@api: LMidiPlayer:soloChannel
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:soloChannel")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        player:soloChannel(1)
+        local leadMuted = player:isChannelMuted(1)
+        local supportMuted = player:isChannelMuted(2)
+        local drumsMuted = player:isChannelMuted(10)
+        lurek.log.info("lead muted while soloed=" .. tostring(leadMuted))
+        lurek.log.info("support muted=" .. tostring(supportMuted) .. " drums muted=" .. tostring(drumsMuted))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    player:soloChannel(1)
-    local leadMuted = player:isChannelMuted(1)
-    local supportMuted = player:isChannelMuted(2)
-    local drumsMuted = player:isChannelMuted(10)
-    lurek.log.info("lead muted while soloed=" .. tostring(leadMuted))
-    lurek.log.info("support muted=" .. tostring(supportMuted) .. " drums muted=" .. tostring(drumsMuted))
 end
 
 --@api: LMidiPlayer:unsoloAll
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:unsoloAll")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        player:soloChannel(1)
+        player:unsoloAll()
+        local leadMuted = player:isChannelMuted(1)
+        local supportMuted = player:isChannelMuted(2)
+        lurek.log.info("lead muted after unsolo=" .. tostring(leadMuted))
+        lurek.log.info("support muted after unsolo=" .. tostring(supportMuted))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    player:soloChannel(1)
-    player:unsoloAll()
-    local leadMuted = player:isChannelMuted(1)
-    local supportMuted = player:isChannelMuted(2)
-    lurek.log.info("lead muted after unsolo=" .. tostring(leadMuted))
-    lurek.log.info("support muted after unsolo=" .. tostring(supportMuted))
 end
 
 --@api: LMidiPlayer:getTrackCount
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:getTrackCount")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        local path = "content/examples/assets/audio/sample_midi.mid"
+        local loaded = player:load(path)
+        local trackCount = player:getTrackCount()
+        local filePath = player:getFilePath()
+        lurek.log.info("track metadata loaded=" .. tostring(loaded))
+        lurek.log.info("track count=" .. tostring(trackCount) .. " file=" .. tostring(filePath))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    local path = "content/examples/assets/audio/sample_midi.mid"
-    local loaded = player:load(path)
-    local trackCount = player:getTrackCount()
-    local filePath = player:getFilePath()
-    lurek.log.info("track metadata loaded=" .. tostring(loaded))
-    lurek.log.info("track count=" .. tostring(trackCount) .. " file=" .. tostring(filePath))
 end
 
 --@api: LMidiPlayer:getTrackName
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:getTrackName")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        local path = "content/examples/assets/audio/sample_midi.mid"
+        player:load(path)
+        local firstTrack = player:getTrackName(1)
+        local secondTrack = player:getTrackName(2)
+        lurek.log.info("track 1 name=" .. tostring(firstTrack))
+        lurek.log.info("track 2 name=" .. tostring(secondTrack))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    local path = "content/examples/assets/audio/sample_midi.mid"
-    player:load(path)
-    local firstTrack = player:getTrackName(1)
-    local secondTrack = player:getTrackName(2)
-    lurek.log.info("track 1 name=" .. tostring(firstTrack))
-    lurek.log.info("track 2 name=" .. tostring(secondTrack))
 end
 
 --@api: LMidiPlayer:setTrackMuted
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:setTrackMuted")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        local path = "content/examples/assets/audio/sample_midi.mid"
+        player:load(path)
+        player:setTrackMuted(1, true)
+        local introMuted = player:isTrackMuted(1)
+        player:setTrackMuted(1, false)
+        local introRestored = player:isTrackMuted(1)
+        lurek.log.info("intro track muted=" .. tostring(introMuted))
+        lurek.log.info("intro track muted after restore=" .. tostring(introRestored))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    local path = "content/examples/assets/audio/sample_midi.mid"
-    player:load(path)
-    player:setTrackMuted(1, true)
-    local introMuted = player:isTrackMuted(1)
-    player:setTrackMuted(1, false)
-    local introRestored = player:isTrackMuted(1)
-    lurek.log.info("intro track muted=" .. tostring(introMuted))
-    lurek.log.info("intro track muted after restore=" .. tostring(introRestored))
 end
 
 --@api: LMidiPlayer:isTrackMuted
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:isTrackMuted")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        local path = "content/examples/assets/audio/sample_midi.mid"
+        player:load(path)
+        player:setTrackMuted(2, true)
+        local percussionMuted = player:isTrackMuted(2)
+        player:setTrackMuted(2, false)
+        local percussionRestored = player:isTrackMuted(2)
+        lurek.log.info("percussion track muted=" .. tostring(percussionMuted))
+        lurek.log.info("percussion track muted after restore=" .. tostring(percussionRestored))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    local path = "content/examples/assets/audio/sample_midi.mid"
-    player:load(path)
-    player:setTrackMuted(2, true)
-    local percussionMuted = player:isTrackMuted(2)
-    player:setTrackMuted(2, false)
-    local percussionRestored = player:isTrackMuted(2)
-    lurek.log.info("percussion track muted=" .. tostring(percussionMuted))
-    lurek.log.info("percussion track muted after restore=" .. tostring(percussionRestored))
 end
 
 --@api: LMidiPlayer:getNoteCount
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:getNoteCount")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        local path = "content/examples/assets/audio/sample_midi.mid"
+        local loaded = player:load(path)
+        local noteCount = player:getNoteCount()
+        local duration = player:getDuration()
+        lurek.log.info("chart loaded=" .. tostring(loaded))
+        lurek.log.info("note count=" .. tostring(noteCount) .. " duration=" .. tostring(duration))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    local path = "content/examples/assets/audio/sample_midi.mid"
-    local loaded = player:load(path)
-    local noteCount = player:getNoteCount()
-    local duration = player:getDuration()
-    lurek.log.info("chart loaded=" .. tostring(loaded))
-    lurek.log.info("note count=" .. tostring(noteCount) .. " duration=" .. tostring(duration))
 end
 
 --@api: LMidiPlayer:setOnNoteOn
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:setOnNoteOn")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        local previewNotes = 0
+        player:setOnNoteOn(function(ch, note, vel)
+            previewNotes = previewNotes + 1
+            lurek.log.info("preview note on ch=" .. tostring(ch) .. " note=" .. tostring(note) .. " vel=" .. tostring(vel))
+        end)
+        local typeName = player:type()
+        player:setOnNoteOn(nil)
+        lurek.log.info("preview note callback count=" .. tostring(previewNotes))
+        lurek.log.info("midi player type=" .. tostring(typeName))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    local previewNotes = 0
-    player:setOnNoteOn(function(ch, note, vel)
-        previewNotes = previewNotes + 1
-        lurek.log.info("preview note on ch=" .. tostring(ch) .. " note=" .. tostring(note) .. " vel=" .. tostring(vel))
-    end)
-    local typeName = player:type()
-    player:setOnNoteOn(nil)
-    lurek.log.info("preview note callback count=" .. tostring(previewNotes))
-    lurek.log.info("midi player type=" .. tostring(typeName))
 end
 
 --@api: LMidiPlayer:setOnNoteOff
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:setOnNoteOff")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        local releasedNotes = 0
+        player:setOnNoteOff(function(ch, note)
+            releasedNotes = releasedNotes + 1
+            lurek.log.info("preview note off ch=" .. tostring(ch) .. " note=" .. tostring(note))
+        end)
+        local isMidiPlayer = player:typeOf("LMidiPlayer")
+        player:setOnNoteOff(nil)
+        lurek.log.info("released preview notes=" .. tostring(releasedNotes))
+        lurek.log.info("callback owner is midi player=" .. tostring(isMidiPlayer))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    local releasedNotes = 0
-    player:setOnNoteOff(function(ch, note)
-        releasedNotes = releasedNotes + 1
-        lurek.log.info("preview note off ch=" .. tostring(ch) .. " note=" .. tostring(note))
-    end)
-    local isMidiPlayer = player:typeOf("LMidiPlayer")
-    player:setOnNoteOff(nil)
-    lurek.log.info("released preview notes=" .. tostring(releasedNotes))
-    lurek.log.info("callback owner is midi player=" .. tostring(isMidiPlayer))
 end
 
 --@api: LMidiPlayer:setOnEnd
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:setOnEnd")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        local completed = false
+        player:setOnEnd(function()
+            completed = true
+            lurek.log.info("midi playback ended")
+        end)
+        local startPosition = player:tell()
+        player:setOnEnd(nil)
+        lurek.log.info("ending callback armed at position=" .. tostring(startPosition))
+        lurek.log.info("ending callback fired=" .. tostring(completed))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    local completed = false
-    player:setOnEnd(function()
-        completed = true
-        lurek.log.info("midi playback ended")
-    end)
-    local startPosition = player:tell()
-    player:setOnEnd(nil)
-    lurek.log.info("ending callback armed at position=" .. tostring(startPosition))
-    lurek.log.info("ending callback fired=" .. tostring(completed))
 end
 
 --@api: LMidiPlayer:getSampleRate
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:getSampleRate")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        local defaultRate = player:getSampleRate()
+        player:setSampleRate(48000)
+        local upgradedRate = player:getSampleRate()
+        lurek.log.info("default midi render rate=" .. tostring(defaultRate))
+        lurek.log.info("upgraded midi render rate=" .. tostring(upgradedRate))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    local defaultRate = player:getSampleRate()
-    player:setSampleRate(48000)
-    local upgradedRate = player:getSampleRate()
-    lurek.log.info("default midi render rate=" .. tostring(defaultRate))
-    lurek.log.info("upgraded midi render rate=" .. tostring(upgradedRate))
 end
 
 --@api: LMidiPlayer:setSampleRate
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:setSampleRate")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        player:setSampleRate(48000)
+        local hdRate = player:getSampleRate()
+        player:setSampleRate(22050)
+        local fallbackRate = player:getSampleRate()
+        lurek.log.info("hd render rate=" .. tostring(hdRate))
+        lurek.log.info("fallback render rate=" .. tostring(fallbackRate))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    player:setSampleRate(48000)
-    local hdRate = player:getSampleRate()
-    player:setSampleRate(22050)
-    local fallbackRate = player:getSampleRate()
-    lurek.log.info("hd render rate=" .. tostring(hdRate))
-    lurek.log.info("fallback render rate=" .. tostring(fallbackRate))
 end
 
 --@api: LMidiPlayer:getChannels
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:getChannels")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        local defaultChannels = player:getChannels()
+        player:setChannels(1)
+        local monoChannels = player:getChannels()
+        lurek.log.info("default output channels=" .. tostring(defaultChannels))
+        lurek.log.info("preview mono channels=" .. tostring(monoChannels))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    local defaultChannels = player:getChannels()
-    player:setChannels(1)
-    local monoChannels = player:getChannels()
-    lurek.log.info("default output channels=" .. tostring(defaultChannels))
-    lurek.log.info("preview mono channels=" .. tostring(monoChannels))
 end
 
 --@api: LMidiPlayer:setChannels
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:setChannels")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        player:setChannels(2)
+        local stereoChannels = player:getChannels()
+        player:setChannels(1)
+        local monoChannels = player:getChannels()
+        lurek.log.info("stereo output channels=" .. tostring(stereoChannels))
+        lurek.log.info("mono output channels=" .. tostring(monoChannels))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    player:setChannels(2)
-    local stereoChannels = player:getChannels()
-    player:setChannels(1)
-    local monoChannels = player:getChannels()
-    lurek.log.info("stereo output channels=" .. tostring(stereoChannels))
-    lurek.log.info("mono output channels=" .. tostring(monoChannels))
 end
 
 --@api: LMidiPlayer:type
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:type")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        local typeName = player:type()
+        local isMidiPlayer = player:typeOf("LMidiPlayer")
+        local isObject = player:typeOf("LObject")
+        lurek.log.info("midi player type=" .. tostring(typeName))
+        lurek.log.info("is midi player=" .. tostring(isMidiPlayer) .. " is object=" .. tostring(isObject))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    local typeName = player:type()
-    local isMidiPlayer = player:typeOf("LMidiPlayer")
-    local isObject = player:typeOf("LObject")
-    lurek.log.info("midi player type=" .. tostring(typeName))
-    lurek.log.info("is midi player=" .. tostring(isMidiPlayer) .. " is object=" .. tostring(isObject))
 end
 
 --@api: LMidiPlayer:typeOf
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
+    if type(lurek.audio.newMidiPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping LMidiPlayer:typeOf")
+    else
+        local player = lurek.audio.newMidiPlayer()
+        local isMidiPlayer = player:typeOf("LMidiPlayer")
+        local isBus = player:typeOf("LBus")
+        local typeName = player:type()
+        lurek.log.info("is LMidiPlayer=" .. tostring(isMidiPlayer))
+        lurek.log.info("is LBus=" .. tostring(isBus) .. " type=" .. tostring(typeName))
     end
-
-    local player = lurek.audio.newMidiPlayer()
-    local isMidiPlayer = player:typeOf("LMidiPlayer")
-    local isBus = player:typeOf("LBus")
-    local typeName = player:type()
-    lurek.log.info("is LMidiPlayer=" .. tostring(isMidiPlayer))
-    lurek.log.info("is LBus=" .. tostring(isBus) .. " type=" .. tostring(typeName))
 end
 
 --@api: LSoundPool:play
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local pool = lurek.audio.newPool(path, 4)
     pool:setVolume(0.7)
@@ -4324,31 +2722,15 @@ end
 
 --@api: LSoundPool:stopAll
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local pool = lurek.audio.newPool(path, 4)
     pool:play()
     pool:stopAll()
-    example_print_log("all voices stopped")
+    lurek.log.info(tostring("all voices stopped"))
 end
 
 --@api: LSoundPool:setVolume
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local pool = lurek.audio.newPool(path, 4)
     pool:setVolume(0.5)
@@ -4361,31 +2743,15 @@ end
 
 --@api: LSoundPool:setBus
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local pool = lurek.audio.newPool(path, 4)
     lurek.audio.newBus("pool_bus")
     pool:setBus("pool_bus")
-    example_print_log("pool routed to pool_bus")
+    lurek.log.info(tostring("pool routed to pool_bus"))
 end
 
 --@api: LSoundPool:release
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local pool = lurek.audio.newPool(path, 4)
     local firstVoice = pool:play()
@@ -4398,14 +2764,6 @@ end
 
 --@api: LSoundPool:getVoiceCount
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local pool = lurek.audio.newPool(path, 8)
     local reservedVoices = pool:getVoiceCount()
@@ -4417,14 +2775,6 @@ end
 
 --@api: LSoundPool:type
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local pool = lurek.audio.newPool(path, 2)
     local typeName = pool:type()
@@ -4436,14 +2786,6 @@ end
 
 --@api: LSoundPool:typeOf
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_click.wav"
     local pool = lurek.audio.newPool(path, 2)
     local isPool = pool:typeOf("LSoundPool")
@@ -4455,14 +2797,6 @@ end
 
 --@api: LDecoder:decode
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path, 4096)
     local chunk = dec:decode()
@@ -4477,14 +2811,6 @@ end
 
 --@api: LDecoder:getChannelCount
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path)
     local channels = dec:getChannelCount()
@@ -4496,14 +2822,6 @@ end
 
 --@api: LDecoder:getBitDepth
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path)
     local bitDepth = dec:getBitDepth()
@@ -4515,14 +2833,6 @@ end
 
 --@api: LDecoder:getSampleRate
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path)
     local sampleRate = dec:getSampleRate()
@@ -4534,14 +2844,6 @@ end
 
 --@api: LDecoder:getDuration
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path)
     local duration = dec:getDuration()
@@ -4553,14 +2855,6 @@ end
 
 --@api: LDecoder:seek
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path)
     local canSeek = dec:isSeekable()
@@ -4573,48 +2867,24 @@ end
 
 --@api: LDecoder:rewind
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path)
     dec:seek(5.0)
     dec:rewind()
-    example_print_log("rewound to " .. dec:tell())
+    lurek.log.info(tostring("rewound to " .. dec:tell()))
 end
 
 --@api: LDecoder:tell
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path)
     dec:seek(3.0)
     local pos = dec:tell()
-    example_print_log("position = " .. pos)
+    lurek.log.info(tostring("position = " .. pos))
 end
 
 --@api: LDecoder:isSeekable
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path)
     local seekable = dec:isSeekable()
@@ -4626,14 +2896,6 @@ end
 
 --@api: LDecoder:release
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path)
     local duration = dec:getDuration()
@@ -4646,14 +2908,6 @@ end
 
 --@api: LDecoder:type
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path)
     local typeName = dec:type()
@@ -4665,14 +2919,6 @@ end
 
 --@api: LDecoder:typeOf
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path)
     local isDecoder = dec:typeOf("LDecoder")
@@ -4684,14 +2930,6 @@ end
 
 --@api: LSoundData:getSampleCount
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local sd = lurek.audio.newSoundData(44100, 44100, 1)
     local sampleCount = sd:getSampleCount()
     local duration = sd:getDuration()
@@ -4702,14 +2940,6 @@ end
 
 --@api: LSoundData:getSampleRate
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local sd = lurek.audio.newSoundData(22050, 22050, 1)
     local sampleRate = sd:getSampleRate()
     local duration = sd:getDuration()
@@ -4720,14 +2950,6 @@ end
 
 --@api: LSoundData:getChannelCount
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local sd = lurek.audio.newSoundData(44100, 44100, 2)
     local channels = sd:getChannelCount()
     local sampleRate = sd:getSampleRate()
@@ -4738,14 +2960,6 @@ end
 
 --@api: LSoundData:getDuration
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local sd = lurek.audio.newSoundData(44100, 44100, 1)
     local duration = sd:getDuration()
     local sampleCount = sd:getSampleCount()
@@ -4756,14 +2970,6 @@ end
 
 --@api: LSoundData:getBitDepth
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local sd = lurek.audio.newSoundData(44100, 44100, 1)
     local bitDepth = sd:getBitDepth()
     local channels = sd:getChannelCount()
@@ -4774,14 +2980,6 @@ end
 
 --@api: LSoundData:getSample
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local sd = lurek.audio.newSoundData(32, 44100, 1)
     sd:setSample(0, 1.0)
     sd:setSample(1, -0.5)
@@ -4793,14 +2991,6 @@ end
 
 --@api: LSoundData:drawWaveform
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local sd = lurek.audio.newSoundData(128, 44100, 1)
     for i = 0, 127 do
         local sample = (i % 16) / 15.0
@@ -4808,19 +2998,11 @@ do
     end
     local img = lurek.image.newImageData(400, 100)
     sd:drawWaveform(img, 0, 0, 400, 100, 0, 255, 0, 255)
-    example_print_log("waveform drawn to image")
+    lurek.log.info(tostring("waveform drawn to image"))
 end
 
 --@api: LSoundData:setSample
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local sd = lurek.audio.newSoundData(100, 44100, 1)
     sd:setSample(0, 0.5)
     sd:setSample(50, -0.3)
@@ -4832,14 +3014,6 @@ end
 
 --@api: LSoundData:type
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local sd = lurek.audio.newSoundData(100, 44100, 1)
     local typeName = sd:type()
     local isSoundData = sd:typeOf("LSoundData")
@@ -4850,14 +3024,6 @@ end
 
 --@api: LSoundData:typeOf
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local sd = lurek.audio.newSoundData(100, 44100, 1)
     local isSoundData = sd:typeOf("LSoundData")
     local isDecoder = sd:typeOf("LDecoder")
@@ -4868,14 +3034,6 @@ end
 
 --@api: lurek.audio.newSynthWave
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local has_fn = type(lurek.audio.newSynthWave) == "function"
     local soundData = has_fn and lurek.audio.newSynthWave("sine", 440, 0.5, 44100, 0.8) or nil
     local sampleCount = soundData and soundData:getSampleCount() or 0
@@ -4886,14 +3044,6 @@ end
 
 --@api: lurek.audio.setMuted
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local wasMuted = lurek.audio.isMuted()
     lurek.audio.setMuted(true)
     local pauseMenuMuted = lurek.audio.isMuted()
@@ -4905,52 +3055,28 @@ end
 
 --@api: lurek.audio.isMuted
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local muted = lurek.audio.isMuted()
-    example_print_log("audio is muted = " .. tostring(muted))
+    lurek.log.info(tostring("audio is muted = " .. tostring(muted)))
     if not muted then
         lurek.audio.setMuted(true)
-        example_print_log("now muted = " .. tostring(lurek.audio.isMuted()))
+        lurek.log.info(tostring("now muted = " .. tostring(lurek.audio.isMuted())))
     end
 end
 
 --@api: lurek.audio.stopMusic
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local src = lurek.audio.newSource("content/examples/assets/audio/sample_loop.wav", "stream")
     lurek.audio.play(src)
-    example_print_log("music playing = " .. tostring(lurek.audio.isPlaying(src)))
+    lurek.log.info(tostring("music playing = " .. tostring(lurek.audio.isPlaying(src))))
     lurek.audio.stopMusic(0.5)
-    example_print_log("music stopped with fade")
+    lurek.log.info(tostring("music stopped with fade"))
 end
 
 --@api: lurek.audio.playSfx
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local opts = { volume = 0.8, loop = false }
     local sfx = lurek.audio.playSfx("content/examples/assets/audio/sample_click.wav", opts)
-    example_print_log("sfx played = " .. tostring(sfx ~= nil))
-    example_print_log("sfx type = " .. sfx:type())
-    example_print_log("volume = " .. tostring(sfx:getVolume()))
+    lurek.log.info(tostring("sfx played = " .. tostring(sfx ~= nil)))
+    lurek.log.info(tostring("sfx type = " .. sfx:type()))
+    lurek.log.info(tostring("volume = " .. tostring(sfx:getVolume())))
 end

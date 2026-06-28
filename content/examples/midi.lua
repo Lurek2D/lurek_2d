@@ -4,78 +4,70 @@
 
 --@api: lurek.midi.newPlayer
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    local path = "content/examples/assets/audio/sample_midi.mid"
-    local player = lurek.midi.newPlayer(path)
-    example_print_log("type = " .. player:type())
-    example_print_log("loaded = " .. tostring(player:isLoaded()))
-    example_print_log("path = " .. tostring(player:getFilePath()))
+    if type(lurek.midi) ~= "table" or type(lurek.midi.newPlayer) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping lurek.midi.newPlayer")
+    else
+        local path = "content/examples/assets/audio/sample_midi.mid"
+        local player = lurek.midi.newPlayer(path)
+        lurek.log.info(tostring("type = " .. player:type()))
+        lurek.log.info(tostring("loaded = " .. tostring(player:isLoaded())))
+        lurek.log.info(tostring("path = " .. tostring(player:getFilePath())))
+    end
 end
 
 --@api: lurek.midi.loadSoundFont
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    local path = "content/examples/assets/audio/sample_soundfont.sf2"
-    local ok, err = pcall(function()
-        local loaded = lurek.midi.loadSoundFont(path)
-        example_print_log("loaded = " .. tostring(loaded))
-        example_print_log("has soundfont = " .. tostring(lurek.midi.hasSoundFont()))
-    end)
-    if not ok then example_print_log("loadSoundFont skipped: " .. tostring(err)) end
+    if type(lurek.midi) ~= "table" or type(lurek.midi.loadSoundFont) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping lurek.midi.loadSoundFont")
+    else
+        local path = "content/examples/assets/audio/sample_soundfont.sf2"
+        local ok, err = pcall(function()
+            local loaded = lurek.midi.loadSoundFont(path)
+            lurek.log.info(tostring("loaded = " .. tostring(loaded)))
+            lurek.log.info(tostring("has soundfont = " .. tostring(lurek.midi.hasSoundFont())))
+        end)
+        if not ok then lurek.log.info(tostring("loadSoundFont skipped: " .. tostring(err))) end
+    end
 end
 
 --@api: lurek.midi.hasSoundFont
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    local path = "content/examples/assets/audio/sample_soundfont.sf2"
-    lurek.midi.clearSoundFont()
-    example_print_log("before load = " .. tostring(lurek.midi.hasSoundFont()))
-    local ok, err = pcall(function()
-        lurek.midi.loadSoundFont(path)
-    end)
-    example_print_log("load ok = " .. tostring(ok))
-    if not ok then example_print_log("loadSoundFont skipped: " .. tostring(err)) end
-    example_print_log("after load = " .. tostring(lurek.midi.hasSoundFont()))
-    lurek.midi.clearSoundFont()
+    if type(lurek.midi) ~= "table" or type(lurek.midi.hasSoundFont) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping lurek.midi.hasSoundFont")
+    else
+        local path = "content/examples/assets/audio/sample_soundfont.sf2"
+        lurek.midi.clearSoundFont()
+        lurek.log.info(tostring("before load = " .. tostring(lurek.midi.hasSoundFont())))
+        local ok, err = pcall(function()
+            lurek.midi.loadSoundFont(path)
+        end)
+        lurek.log.info(tostring("load ok = " .. tostring(ok)))
+        if not ok then lurek.log.info(tostring("loadSoundFont skipped: " .. tostring(err))) end
+        lurek.log.info(tostring("after load = " .. tostring(lurek.midi.hasSoundFont())))
+        lurek.midi.clearSoundFont()
+    end
 end
 
 --@api: lurek.midi.clearSoundFont
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    local path = "content/examples/assets/audio/sample_soundfont.sf2"
-    local ok, err = pcall(function()
-        lurek.midi.loadSoundFont(path)
-    end)
-    if not ok then example_print_log("loadSoundFont skipped: " .. tostring(err)) end
-    example_print_log("before clear = " .. tostring(lurek.midi.hasSoundFont()))
-    lurek.midi.clearSoundFont()
-    example_print_log("after clear = " .. tostring(lurek.midi.hasSoundFont()))
+    if type(lurek.midi) ~= "table" or type(lurek.midi.clearSoundFont) ~= "function" then
+        lurek.log.info("midi API unavailable in this runtime")
+        lurek.log.info("skipping lurek.midi.clearSoundFont")
+    else
+        local path = "content/examples/assets/audio/sample_soundfont.sf2"
+        local ok, err = pcall(function()
+            lurek.midi.loadSoundFont(path)
+        end)
+        if not ok then lurek.log.info(tostring("loadSoundFont skipped: " .. tostring(err))) end
+        lurek.log.info(tostring("before clear = " .. tostring(lurek.midi.hasSoundFont())))
+        lurek.midi.clearSoundFont()
+        lurek.log.info(tostring("after clear = " .. tostring(lurek.midi.hasSoundFont())))
+    end
 end

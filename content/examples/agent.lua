@@ -8,14 +8,6 @@
 
 --@api: lurek.agent.new
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local agent = lurek.agent.new({
         url          = "http://127.0.0.1:9/api/generate",
         model        = "offline-test-model",
@@ -31,21 +23,13 @@ do
             seed        = 42,
         },
     })
-    example_print_log("Agent created:", agent)
+    lurek.log.info("Agent created:" .. " " .. tostring(agent))
 end
 
 -- ─── lurek.agent.newManager ──────────────────────────────────────────────────
 
 --@api: lurek.agent.newManager
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local manager = lurek.agent.newManager()
     local writer = lurek.agent.new({ name = "writer" })
     local designer = lurek.agent.new({ name = "designer" })
@@ -58,14 +42,6 @@ end
 
 --@api: lurek.agent.newSystem
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local system = lurek.agent.newSystem({
         system_prompt = "You are a multi-agent game orchestrator. Respond concisely.",
     })
@@ -81,14 +57,6 @@ end
 
 --@api: LAgent:setName
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local agent = lurek.agent.new({})
     agent:setName("npc_writer")
     agent:setDescription("Writes short ambient barks for townsfolk.")
@@ -102,14 +70,6 @@ end
 
 --@api: LAgent:setDescription
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local agent = lurek.agent.new({})
     agent:setDescription("Specialises in writing NPC dialogue with emotional depth.")
     agent:setName("dialogue_director")
@@ -123,14 +83,6 @@ end
 
 --@api: LAgent:setModel
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local agent = lurek.agent.new({ model = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M" })
     agent:setModel("SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M")
     agent:setFormat("json")
@@ -144,14 +96,6 @@ end
 
 --@api: LAgent:setUrl
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local agent = lurek.agent.new({})
     agent:setUrl("http://127.0.0.1:9/api/generate")
     agent:setName("remote_writer")
@@ -165,14 +109,6 @@ end
 
 --@api: LAgent:setTimeout
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local agent = lurek.agent.new({})
     agent:setTimeout(90)
     agent:setName("long_form_writer")
@@ -187,14 +123,6 @@ end
 
 --@api: LAgent:getName
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local agent = lurek.agent.new({})
     agent:setName("planner")
     local name = agent:getName()
@@ -208,14 +136,6 @@ end
 
 --@api: LAgent:getDescription
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local agent = lurek.agent.new({})
     agent:setDescription("Plans tasks.")
     local desc = agent:getDescription()
@@ -229,14 +149,6 @@ end
 
 --@api: LAgent:getModel
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local agent = lurek.agent.new({ model = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M" })
     agent:setFormat("json")
     local model = agent:getModel()
@@ -249,14 +161,6 @@ end
 
 --@api: LAgent:getUrl
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local agent = lurek.agent.new({
         url = "http://127.0.0.1:9/api/generate",
         model = "offline-test-model",
@@ -274,14 +178,6 @@ end
 
 --@api: LAgent:getFormat
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local agent = lurek.agent.new({ format = "json" })
     agent:setName("schema_writer")
     local format = agent:getFormat()
@@ -294,14 +190,6 @@ end
 
 --@api: LAgent:hasSkill
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local agent = lurek.agent.new({})
     agent:addSkill("location", "The player is in the Darkwood forest.")
     agent:addSkill("weather", "Rain muffles footsteps and darkens the trail.")
@@ -315,14 +203,6 @@ end
 
 --@api: LAgent:skillCount
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local agent = lurek.agent.new({})
     agent:addSkill("s1", "Context A.")
     agent:addSkill("s2", "Context B.")
@@ -336,20 +216,12 @@ end
 
 --@api: LAgent:listSkills
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local agent = lurek.agent.new({})
     agent:addSkill("combat",    "Turn-based combat.")
     agent:addSkill("inventory", "Inventory management.")
     local names = agent:listSkills()
     for _, name in ipairs(names) do
-        example_print_log("Skill:", name)
+        lurek.log.info("Skill:" .. " " .. tostring(name))
     end
 end
 
@@ -357,14 +229,6 @@ end
 
 --@api: LAgent:addSkill
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local agent = lurek.agent.new({})
     agent:addSkill("location", "The player is currently in the Darkwood forest.")
     agent:addSkill("time",     "It is midnight in the game world.")
@@ -378,14 +242,6 @@ end
 
 --@api: LAgent:clearSkills
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local agent = lurek.agent.new({})
     agent:addSkill("temp", "Some context.")
     local before = agent:skillCount()
@@ -400,14 +256,6 @@ end
 
 --@api: LAgent:setOption
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local agent = lurek.agent.new({})
     agent:setOption("temperature", 0.4)
     agent:setOption("seed", 1234)
@@ -422,14 +270,6 @@ end
 
 --@api: LAgent:setFormat
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local agent = lurek.agent.new({})
     agent:setFormat("text")
     agent:setName("narration_writer")
@@ -443,14 +283,6 @@ end
 
 --@api: LAgent:setMaxRetries
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local agent = lurek.agent.new({})
     agent:setMaxRetries(3)
     agent:setName("resilient_writer")
@@ -465,14 +297,6 @@ end
 
 --@api: LAgent:setContextSize
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local agent = lurek.agent.new({})
     agent:setContextSize(8192)
     agent:setName("lore_keeper")
@@ -487,14 +311,6 @@ end
 
 --@api: LAgent:setTemperature
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local agent = lurek.agent.new({})
     agent:setTemperature(0.9)
     agent:setName("bark_writer")
@@ -509,14 +325,6 @@ end
 
 --@api: LAgent:prompt
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local agent = lurek.agent.new({
         url    = "http://127.0.0.1:9/api/generate",
         model  = "offline-test-model",
@@ -525,29 +333,20 @@ do
         format = "json",
     })
 
-    -- Async — must call agent:update() in the game loop to receive callbacks.
     local id = agent:prompt("Describe what the player sees when entering the forest.", function(success, data, err_info)
         if success then
-            example_print_log("Response:", data.description or data.response)
+            lurek.log.info(tostring("Response:") .. " " .. tostring(data.description or data.response))
         else
-            example_print_log("Error [" .. err_info.code .. "]:", err_info.message)
+            lurek.log.info(tostring("Error [" .. err_info.code .. "]:") .. " " .. tostring(err_info.message))
         end
     end)
-    example_print_log("Prompt dispatched, id =", id)
+    lurek.log.info(tostring("Prompt dispatched, id =") .. " " .. tostring(id))
 end
 
 -- ─── LAgent:promptBatch ──────────────────────────────────────────────────────
 
 --@api: LAgent:promptBatch
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local agent = lurek.agent.new({
         url    = "http://127.0.0.1:9/api/generate",
         model  = "offline-test-model",
@@ -563,27 +362,19 @@ do
     }, function(results)
         for i, res in ipairs(results) do
             if res.success then
-                example_print_log("Result " .. i .. ":", res.data.description)
+                lurek.log.info(tostring("Result " .. i .. ":") .. " " .. tostring(res.data.description))
             else
-                example_print_log("Task " .. i .. " failed [" .. res.error.code .. "]:", res.error.message)
+                lurek.log.info(tostring("Task " .. i .. " failed [" .. res.error.code .. "]:") .. " " .. tostring(res.error.message))
             end
         end
     end)
-    example_print_log("Batch dispatched, id =", id)
+    lurek.log.info(tostring("Batch dispatched, id =") .. " " .. tostring(id))
 end
 
 -- ─── LAgent:cancel ───────────────────────────────────────────────────────────
 
 --@api: LAgent:cancel
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local agent = lurek.agent.new({
         url = "http://127.0.0.1:9/api/generate",
         model = "offline-test-model",
@@ -594,23 +385,15 @@ do
     local id = agent:prompt("Long-running request.", function() end)
     agent:cancel(id)
     local pending_after = agent:pendingCount()
-    example_print_log("Pending before cancel:", pending_before)
-    example_print_log("Request cancelled, id =", id)
-    example_print_log("Pending after cancel:", pending_after)
+    lurek.log.info(tostring("Pending before cancel:") .. " " .. tostring(pending_before))
+    lurek.log.info(tostring("Request cancelled, id =") .. " " .. tostring(id))
+    lurek.log.info(tostring("Pending after cancel:") .. " " .. tostring(pending_after))
 end
 
 -- ─── LAgent:pendingCount ─────────────────────────────────────────────────────
 
 --@api: LAgent:pendingCount
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local agent = lurek.agent.new({})
     agent:setName("quest_writer")
     local beforeUpdate = agent:pendingCount()
@@ -622,14 +405,6 @@ end
 
 --@api: LAgent:getDiagnostics
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local agent = lurek.agent.new({})
     local diagnostics = agent:getDiagnostics()
     lurek.log.info("agent in_flight=" .. tostring(diagnostics.in_flight))
@@ -641,14 +416,6 @@ end
 
 --@api: LAgent:update
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local agent = lurek.agent.new({})
     agent:setName("ambient_writer")
     local before = agent:pendingCount()
@@ -662,14 +429,6 @@ end
 
 --@api: LAgent:evalCode
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local agent = lurek.agent.new({})
     local ok = agent:evalCode("local hp = 12 + 8; _G.agent_eval_hp = hp")
     local queueDepth = agent:pendingCount()
@@ -682,14 +441,6 @@ end
 
 --@api: LAgentManager:runAll
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local manager = lurek.agent.newManager()
 
     local writer   = lurek.agent.new({ url = "http://127.0.0.1:9/api/generate", model = "offline-test-model", timeout = 1, max_retries = 0, format = "json" })
@@ -700,24 +451,16 @@ do
         { agent = designer, instruction = "Design the boss arena layout."  },
     }, function(results)
         for i, res in ipairs(results) do
-            example_print_log("Task " .. i, res.success and tostring(res.data) or res.error.message)
+            lurek.log.info(tostring("Task " .. i) .. " " .. tostring(res.success and tostring(res.data) or res.error.message))
         end
     end)
-    example_print_log("Manager batch dispatched, id =", id)
+    lurek.log.info(tostring("Manager batch dispatched, id =") .. " " .. tostring(id))
 end
 
 -- ─── LAgentManager:update ────────────────────────────────────────────────────
 
 --@api: LAgentManager:update
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local manager = lurek.agent.newManager()
     local writer = lurek.agent.new({ name = "writer" })
     local critic = lurek.agent.new({ name = "critic" })
@@ -730,61 +473,37 @@ end
 
 --@api: LAISystem:addAgent
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local system = lurek.agent.newSystem({ system_prompt = "You are a game design AI." })
 
     local npc = lurek.agent.new({ url = "http://127.0.0.1:9/api/generate", model = "offline-test-model", timeout = 1, max_retries = 0, format = "json" })
     npc:setDescription("Writes NPC dialogue with emotional depth and regional accents.")
 
     system:addAgent("npc_writer", npc)
-    example_print_log("Agent 'npc_writer' added to system.")
+    lurek.log.info(tostring("Agent 'npc_writer' added to system."))
 end
 
 -- ─── LAISystem:removeAgent ───────────────────────────────────────────────────
 
 --@api: LAISystem:removeAgent
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local system = lurek.agent.newSystem({})
     local agent  = lurek.agent.new({})
     system:addAgent("temp_agent", agent)
     local removed = system:removeAgent("temp_agent")
-    example_print_log("Agent removed:", removed)
+    lurek.log.info(tostring("Agent removed:") .. " " .. tostring(removed))
 end
 
 -- ─── LAISystem:listAgents ────────────────────────────────────────────────────
 
 --@api: LAISystem:listAgents
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local system = lurek.agent.newSystem({})
     local a = lurek.agent.new({})
     system:addAgent("writer",   a)
     system:addAgent("designer", a)
     local names = system:listAgents()
     for _, name in ipairs(names) do
-        example_print_log("Registered agent:", name)
+        lurek.log.info(tostring("Registered agent:") .. " " .. tostring(name))
     end
 end
 
@@ -792,52 +511,28 @@ end
 
 --@api: LAISystem:hasAgent
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local system = lurek.agent.newSystem({})
     local agent  = lurek.agent.new({})
     system:addAgent("planner", agent)
-    example_print_log("Has 'planner':", system:hasAgent("planner"))
-    example_print_log("Has 'ghost':",   system:hasAgent("ghost"))
+    lurek.log.info(tostring("Has 'planner':") .. " " .. tostring(system:hasAgent("planner")))
+    lurek.log.info(tostring("Has 'ghost':") .. " " .. tostring(system:hasAgent("ghost")))
 end
 
 -- ─── LAISystem:agentCount ────────────────────────────────────────────────────
 
 --@api: LAISystem:agentCount
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local system = lurek.agent.newSystem({})
     local agent  = lurek.agent.new({})
     system:addAgent("a1", agent)
     system:addAgent("a2", agent)
-    example_print_log("Agent count:", system:agentCount())
+    lurek.log.info(tostring("Agent count:") .. " " .. tostring(system:agentCount()))
 end
 
 -- ─── LAISystem:addInstruction ────────────────────────────────────────────────
 
 --@api: LAISystem:addInstruction
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local system = lurek.agent.newSystem({})
     system:addInstruction("art_style", "Use a 16-bit pixel art visual style. Palettes are limited to 16 colours per sprite.")
     system:addInstruction("tone",      "Keep all responses concise and in present tense.")
@@ -851,14 +546,6 @@ end
 
 --@api: LAISystem:removeInstruction
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local system = lurek.agent.newSystem({})
     system:addInstruction("debug_hint", "Temporary debug context.")
     local removed = system:removeInstruction("debug_hint")
@@ -872,14 +559,6 @@ end
 
 --@api: LAISystem:hasInstruction
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local system = lurek.agent.newSystem({})
     system:addInstruction("tone", "Be concise.")
     system:addInstruction("art_style", "Use pixel art silhouettes.")
@@ -893,14 +572,6 @@ end
 
 --@api: LAISystem:instructionCount
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local system = lurek.agent.newSystem({})
     system:addInstruction("tone",      "Be concise.")
     system:addInstruction("art_style", "Use pixel art.")
@@ -914,20 +585,12 @@ end
 
 --@api: LAISystem:listInstructions
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local system = lurek.agent.newSystem({})
     system:addInstruction("tone",      "Be concise.")
     system:addInstruction("art_style", "Use pixel art.")
     local keys = system:listInstructions()
     for _, key in ipairs(keys) do
-        example_print_log("Instruction key:", key)
+        lurek.log.info(tostring("Instruction key:") .. " " .. tostring(key))
     end
 end
 
@@ -935,14 +598,6 @@ end
 
 --@api: LAISystem:addSkill
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local system = lurek.agent.newSystem({})
     -- Lurek auto-injects this skill when the user prompt contains any listed keyword.
     system:addSkill(
@@ -955,21 +610,13 @@ do
         { "combat", "attack", "damage", "enemy", "boss" },
         "Combat uses turn-based resolution with action points (AP) per entity."
     )
-    example_print_log("System skills added.")
+    lurek.log.info(tostring("System skills added."))
 end
 
 -- ─── LAISystem:removeSkill ───────────────────────────────────────────────────
 
 --@api: LAISystem:removeSkill
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local system = lurek.agent.newSystem({})
     system:addSkill("temp_skill", { "test" }, "Temporary.")
     local removed = system:removeSkill("temp_skill")
@@ -983,14 +630,6 @@ end
 
 --@api: LAISystem:hasSkill
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local system = lurek.agent.newSystem({})
     system:addSkill("combat_rules", { "combat", "attack" }, "Turn-based combat.")
     system:addSkill("stealth_rules", { "stealth", "noise" }, "Noise raises patrol suspicion.")
@@ -1004,14 +643,6 @@ end
 
 --@api: LAISystem:skillCount
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local system = lurek.agent.newSystem({})
     system:addSkill("combat_rules",   { "combat" },        "Turn-based combat.")
     system:addSkill("pixel_art_rules", { "sprite", "tile" }, "16 colours max.")
@@ -1025,14 +656,6 @@ end
 
 --@api: LAISystem:buildContext
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local system = lurek.agent.newSystem({ system_prompt = "You are a game AI." })
     system:addInstruction("art_style", "Use pixel art, 16 colours max.")
     system:addSkill("combat_rules", { "combat", "attack" }, "Turn-based combat with AP.")
@@ -1046,19 +669,11 @@ do
         "Design an attack animation for the boss.",
         { agent = "npc_writer", instructions = { "art_style" } }
     )
-    example_print_log("Context preview:\n", ctx)
+    lurek.log.info(tostring("Context preview:\n") .. " " .. tostring(ctx))
 end
 
 --@api: LAISystem:buildContextReport
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local system = lurek.agent.newSystem({ system_prompt = "base context" })
     system:addInstruction("safety", "be safe")
     system:addSkill("math", { "matrix" }, "help with math")
@@ -1074,14 +689,6 @@ end
 
 --@api: LAISystem:prompt
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local system = lurek.agent.newSystem({ system_prompt = "You are a game design AI." })
     system:addInstruction("art_style", "Use 16-bit pixel art.")
     system:addSkill("pixel_art_rules", { "sprite", "texture" }, "Max 16 colours per tile.")
@@ -1103,28 +710,20 @@ do
         "Design a player sprite for the main character.",
         function(success, data, err_info)
             if success then
-                example_print_log("Design:", data.description)
+                lurek.log.info(tostring("Design:") .. " " .. tostring(data.description))
             else
-                example_print_log("Error:", err_info.message)
+                lurek.log.info(tostring("Error:") .. " " .. tostring(err_info.message))
             end
         end,
         { instructions = { "art_style" } }
     )
-    example_print_log("System prompt dispatched, id =", id)
+    lurek.log.info(tostring("System prompt dispatched, id =") .. " " .. tostring(id))
 end
 
 -- ─── LAISystem:runAll ────────────────────────────────────────────────────────
 
 --@api: LAISystem:runAll
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local system = lurek.agent.newSystem({ system_prompt = "You are a game AI team." })
     system:addInstruction("art_style", "16-bit pixel art.")
 
@@ -1142,24 +741,16 @@ do
         { agent = "designer", instruction = "Design the boss arena.", instructions = { "art_style" } },
     }, function(results)
         for i, res in ipairs(results) do
-            example_print_log("Task " .. i, res.success and tostring(res.data) or res.error.message)
+            lurek.log.info(tostring("Task " .. i) .. " " .. tostring(res.success and tostring(res.data) or res.error.message))
         end
     end)
-    example_print_log("System runAll dispatched, id =", id)
+    lurek.log.info(tostring("System runAll dispatched, id =") .. " " .. tostring(id))
 end
 
 -- ─── LAISystem:update ────────────────────────────────────────────────────────
 
 --@api: LAISystem:update
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local system = lurek.agent.newSystem({})
     system:addInstruction("combat", "Prioritise concise combat advice.")
     system:addSkill("boss_phase", { "boss", "phase" }, "Mention boss phase changes explicitly.")
@@ -1173,14 +764,6 @@ end
 
 --@api: LAISystem:getDiagnostics
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local system = lurek.agent.newSystem({})
     local diagnostics = system:getDiagnostics()
     lurek.log.info("system in_flight=" .. tostring(diagnostics.in_flight))
@@ -1192,14 +775,6 @@ end
 
 --@api: lurek.agent.newOllama
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local ollama = lurek.agent.newOllama({
         url = "http://127.0.0.1:9",
         healthcheck_timeout_ms = 100,
@@ -1215,14 +790,6 @@ end
 
 --@api: LOllamaManager:isRunning
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local ollama  = lurek.agent.newOllama({
         url = "http://127.0.0.1:9",
         healthcheck_timeout_ms = 100,
@@ -1238,14 +805,6 @@ end
 
 --@api: LOllamaManager:version
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local ollama = lurek.agent.newOllama({
         url = "http://127.0.0.1:9",
         healthcheck_timeout_ms = 100,
@@ -1263,14 +822,6 @@ end
 
 --@api: LOllamaManager:baseUrl
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local ollama = lurek.agent.newOllama({
         url = "http://127.0.0.1:9",
         healthcheck_timeout_ms = 100,
@@ -1286,14 +837,6 @@ end
 
 --@api: LOllamaManager:listModels
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local ollama = lurek.agent.newOllama({
         url = "http://127.0.0.1:9",
         healthcheck_timeout_ms = 100,
@@ -1301,7 +844,7 @@ do
     })
     local models = ollama:listModels()
     for _, m in ipairs(models) do
-        example_print_log(m.name, string.format("%.1f GB", m.size_gb))
+        lurek.log.info(tostring(m.name) .. " " .. tostring(string.format("%.1f GB", m.size_gb)))
     end
 end
 
@@ -1309,14 +852,6 @@ end
 
 --@api: LOllamaManager:modelNames
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local ollama = lurek.agent.newOllama({
         url = "http://127.0.0.1:9",
         healthcheck_timeout_ms = 100,
@@ -1324,7 +859,7 @@ do
     })
     local names  = ollama:modelNames()
     for _, name in ipairs(names) do
-        example_print_log("Available model:", name)
+        lurek.log.info(tostring("Available model:") .. " " .. tostring(name))
     end
 end
 
@@ -1332,14 +867,6 @@ end
 
 --@api: LOllamaManager:hasModel
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local ollama = lurek.agent.newOllama({
         url = "http://127.0.0.1:9",
         healthcheck_timeout_ms = 100,
@@ -1355,14 +882,6 @@ end
 
 --@api: LOllamaManager:start
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local ollama = lurek.agent.newOllama({
         url = "http://127.0.0.1:9",
         healthcheck_timeout_ms = 100,
@@ -1379,14 +898,6 @@ end
 
 --@api: LOllamaManager:stop
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local ollama = lurek.agent.newOllama({
         url = "http://127.0.0.1:9",
         healthcheck_timeout_ms = 100,
@@ -1404,14 +915,6 @@ end
 
 --@api: LOllamaManager:restart
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local ollama = lurek.agent.newOllama({
         url = "http://127.0.0.1:9",
         healthcheck_timeout_ms = 100,
@@ -1428,14 +931,6 @@ end
 
 --@api: LOllamaManager:pullModel
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local ollama = lurek.agent.newOllama({
         url = "http://127.0.0.1:9",
         healthcheck_timeout_ms = 100,
@@ -1443,31 +938,23 @@ do
     })
     local id     = ollama:pullModel("SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M", function(success, err_msg)
         if success then
-            example_print_log("Model downloaded successfully.")
+            lurek.log.info(tostring("Model downloaded successfully."))
         else
-            example_print_log("Pull failed:", err_msg)
+            lurek.log.info(tostring("Pull failed:") .. " " .. tostring(err_msg))
         end
     end)
-    example_print_log("Pull started, callback id =", id)
+    lurek.log.info(tostring("Pull started, callback id =") .. " " .. tostring(id))
 end
 
 --@api: LOllamaManager:cancelPull
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local ollama = lurek.agent.newOllama({
         url = "http://127.0.0.1:9",
         healthcheck_timeout_ms = 100,
         healthcheck_poll_ms = 25,
     })
     local id = ollama:pullModel("llama3", function(success, err_msg)
-        example_print_log("cancelPull callback", tostring(success), tostring(err_msg))
+        lurek.log.info(tostring("cancelPull callback") .. " " .. tostring(tostring(success)) .. " " .. tostring(tostring(err_msg)))
     end)
     local ok = ollama:cancelPull(id)
     lurek.log.info("cancel pull id=" .. tostring(id))
@@ -1478,14 +965,6 @@ end
 
 --@api: LOllamaManager:deleteModel
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local ollama = lurek.agent.newOllama({
         url = "http://127.0.0.1:9",
         healthcheck_timeout_ms = 100,
@@ -1505,14 +984,6 @@ end
 
 --@api: LOllamaManager:pendingCount
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local ollama = lurek.agent.newOllama({
         url = "http://127.0.0.1:9",
         healthcheck_timeout_ms = 100,
@@ -1528,14 +999,6 @@ end
 
 --@api: LOllamaManager:getDiagnostics
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local ollama = lurek.agent.newOllama({
         url = "http://127.0.0.1:9",
         healthcheck_timeout_ms = 100,
@@ -1551,14 +1014,6 @@ end
 
 --@api: LOllamaManager:update
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local ollama = lurek.agent.newOllama({
         url = "http://127.0.0.1:9",
         healthcheck_timeout_ms = 100,
@@ -1576,14 +1031,6 @@ end
 
 --@api: lurek.agent.configure
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     lurek.agent.configure({
         provider = "ollama",
         base_url = "http://127.0.0.1:9",
@@ -1597,58 +1044,34 @@ end
 
 --@api: lurek.agent.complete
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local ok, reply = pcall(function()
         return lurek.agent.complete("Hello, world!")
     end)
-    example_print_log("complete ok:", ok)
-    example_print_log("Reply:", reply)
+    lurek.log.info(tostring("complete ok:") .. " " .. tostring(ok))
+    lurek.log.info(tostring("Reply:") .. " " .. tostring(reply))
 end
 
 -- ─── lurek.agent.completeAsync ───────────────────────────────────────────────
 
 --@api: lurek.agent.completeAsync
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local ok, err = pcall(function()
         local id = lurek.agent.completeAsync("What is Lua?", function(text, async_err)
             if async_err then
-                example_print_log("Error:", async_err)
+                lurek.log.info(tostring("Error:") .. " " .. tostring(async_err))
             else
-                example_print_log("Async reply:", text)
+                lurek.log.info(tostring("Async reply:") .. " " .. tostring(text))
             end
         end)
-        example_print_log("completeAsync id:", id)
+        lurek.log.info(tostring("completeAsync id:") .. " " .. tostring(id))
         lurek.agent.update()
     end)
-    example_print_log("completeAsync ok:", ok)
-    if not ok then example_print_log("completeAsync error:", err) end
+    lurek.log.info(tostring("completeAsync ok:") .. " " .. tostring(ok))
+    if not ok then lurek.log.info(tostring("completeAsync error:") .. " " .. tostring(err)) end
 end
 
 --@api: lurek.agent.update
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local pending_before = lurek.agent.pendingCount()
     lurek.agent.update()
     local pending_after = lurek.agent.pendingCount()
@@ -1659,14 +1082,6 @@ end
 
 --@api: lurek.agent.pendingCount
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local pending = lurek.agent.pendingCount()
     lurek.agent.update()
     local pending_after_update = lurek.agent.pendingCount()
@@ -1677,14 +1092,6 @@ end
 
 --@api: lurek.agent.getDiagnostics
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local diagnostics = lurek.agent.getDiagnostics()
     lurek.log.info("module in_flight=" .. tostring(diagnostics.in_flight))
     lurek.log.info("module queued=" .. tostring(diagnostics.queued))
@@ -1694,14 +1101,6 @@ end
 
 --@api: lurek.agent.cancel
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local pending_before = lurek.agent.pendingCount()
     lurek.agent.cancel(999999)
     local pending_after = lurek.agent.pendingCount()
@@ -1714,14 +1113,6 @@ end
 
 --@api: lurek.agent.newChat
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local chat = lurek.agent.newChat()
     chat:setSystemPrompt("You are a quest hint assistant.")
     chat:addMessage("user", "Summarise the current quest in one sentence.")
@@ -1735,14 +1126,6 @@ end
 
 --@api: LAgentChat:setSystemPrompt
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local chat = lurek.agent.newChat()
     chat:setSystemPrompt("You are a helpful assistant.")
     chat:addMessage("user", "Explain the stamina system.")
@@ -1757,14 +1140,6 @@ end
 
 --@api: LAgentChat:addMessage
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local chat = lurek.agent.newChat()
     chat:addMessage("user", "Tell me a joke.")
     chat:addMessage("assistant", "Parries are no laughing matter.")
@@ -1778,35 +1153,19 @@ end
 
 --@api: LAgentChat:complete
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local chat = lurek.agent.newChat()
     chat:addMessage("user", "Hi!")
     local ok, reply = pcall(function()
         return chat:complete()
     end)
-    example_print_log("chat complete ok:", ok)
-    example_print_log("Chat reply:", reply)
+    lurek.log.info(tostring("chat complete ok:") .. " " .. tostring(ok))
+    lurek.log.info(tostring("Chat reply:") .. " " .. tostring(reply))
 end
 
 -- ─── LAgentChat:clear ────────────────────────────────────────────────────────
 
 --@api: LAgentChat:clear
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local chat = lurek.agent.newChat()
     chat:addMessage("user", "Hello")
     chat:addMessage("assistant", "Hi there.")
@@ -1822,14 +1181,6 @@ end
 
 --@api: LAgentChat:getHistory
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local chat = lurek.agent.newChat()
     chat:addMessage("system", "You are a merchant helper.")
     chat:addMessage("user", "What does this potion do?")
@@ -1845,14 +1196,6 @@ end
 
 --@api: lurek.agent.newTemplate
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local tmpl = lurek.agent.newTemplate("Hello, {name}!")
     local rendered = tmpl:render({ name = "Rhea" })
     local rendered_again = tmpl:render({ name = "Milo" })
@@ -1865,14 +1208,6 @@ end
 
 --@api: LAgentTemplate:render
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local tmpl = lurek.agent.newTemplate("Hello, {name}! You are {age} years old.")
     local first = tmpl:render({ name = "Alice", age = "30" })
     local second = tmpl:render({ name = "Borin", age = "52" })
@@ -1886,52 +1221,28 @@ end
 
 --@api: lurek.agent.completeJson
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local ok, result = pcall(function()
         return lurek.agent.completeJson("List three colors as JSON.")
     end)
-    example_print_log("completeJson ok:", ok)
-    example_print_log("JSON result:", result)
+    lurek.log.info(tostring("completeJson ok:") .. " " .. tostring(ok))
+    lurek.log.info(tostring("JSON result:") .. " " .. tostring(result))
 end
 
 -- ─── lurek.agent.embed ───────────────────────────────────────────────────────
 
 --@api: lurek.agent.embed
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local ok, vec = pcall(function()
         return lurek.agent.embed("Semantic embedding test.")
     end)
-    example_print_log("embed ok:", ok)
-    example_print_log("Embedding dimensions:", ok and #vec or 0)
+    lurek.log.info(tostring("embed ok:") .. " " .. tostring(ok))
+    lurek.log.info(tostring("Embedding dimensions:") .. " " .. tostring(ok and #vec or 0))
 end
 
 -- ─── lurek.agent.isAvailable ─────────────────────────────────────────────────
 
 --@api: lurek.agent.isAvailable
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local available = lurek.agent.isAvailable()
     local pending = lurek.agent.pendingCount()
     lurek.agent.update()
@@ -1944,14 +1255,6 @@ end
 
 --@api: lurek.agent.listModels
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local models = lurek.agent.listModels()
     local first_model = models[1] or "none"
     local model_count = #models
@@ -1963,14 +1266,6 @@ end
 
 --@api: lurek.agent.newWorkingMemory
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local wm = lurek.agent.newWorkingMemory(16)
     wm:push("quest", "Find the moon shard")
     local capacity = wm:capacity()
@@ -1984,14 +1279,6 @@ end
 
 --@api: LWorkingMemory:push
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local wm = lurek.agent.newWorkingMemory(8)
     wm:push("last_action", "jump")
     wm:push("last_room", "tower_top")
@@ -2006,14 +1293,6 @@ end
 
 --@api: LWorkingMemory:get
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local wm = lurek.agent.newWorkingMemory(8)
     wm:push("hp", 100)
     wm:push("mana", 35)
@@ -2029,14 +1308,6 @@ end
 
 --@api: LWorkingMemory:forget
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local wm = lurek.agent.newWorkingMemory(8)
     wm:push("temp", "value")
     wm:push("stable", "keep")
@@ -2053,33 +1324,17 @@ end
 
 --@api: LWorkingMemory:getRecent
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local wm = lurek.agent.newWorkingMemory(8)
     wm:push("a", 1)
     wm:push("b", 2)
     local recent = wm:getRecent(2)
-    example_print_log("Recent entries:", #recent)
+    lurek.log.info(tostring("Recent entries:") .. " " .. tostring(#recent))
 end
 
 -- ─── LWorkingMemory:len ──────────────────────────────────────────────────────
 
 --@api: LWorkingMemory:len
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local wm = lurek.agent.newWorkingMemory(8)
     wm:push("x", 42)
     wm:push("y", 84)
@@ -2094,14 +1349,6 @@ end
 
 --@api: LWorkingMemory:capacity
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local wm = lurek.agent.newWorkingMemory(32)
     wm:push("objective", "Escort the caravan")
     local capacity = wm:capacity()
@@ -2115,14 +1362,6 @@ end
 
 --@api: lurek.agent.newEpisodicMemory
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local em = lurek.agent.newEpisodicMemory()
     em:record(1, { event = "spawn", zone = "village" })
     local results = em:query({ event = "spawn" })
@@ -2136,14 +1375,6 @@ end
 
 --@api: LEpisodicMemory:record
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local em = lurek.agent.newEpisodicMemory()
     em:record(100, { event = "player_hit", damage = 10 })
     em:record(140, { event = "player_heal", amount = 6 })
@@ -2158,14 +1389,6 @@ end
 
 --@api: LEpisodicMemory:query
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local em = lurek.agent.newEpisodicMemory()
     em:record(1, { type = "kill" })
     em:record(2, { type = "kill" })
@@ -2182,33 +1405,17 @@ end
 
 --@api: LEpisodicMemory:forgetBefore
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local em = lurek.agent.newEpisodicMemory()
     em:record(10, { note = "old" })
     em:record(200, { note = "new" })
     em:forgetBefore(100)
-    example_print_log("Episodes after prune:", em:len())
+    lurek.log.info(tostring("Episodes after prune:") .. " " .. tostring(em:len()))
 end
 
 -- ─── LEpisodicMemory:len ─────────────────────────────────────────────────────
 
 --@api: LEpisodicMemory:len
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local em = lurek.agent.newEpisodicMemory()
     em:record(1, { x = 1 })
     em:record(2, { x = 2 })
@@ -2223,14 +1430,6 @@ end
 
 --@api: lurek.agent.newSemanticMemory
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local sm = lurek.agent.newSemanticMemory()
     sm:learn("capital_of_france", { value = "Paris" })
     local fact = sm:recall("capital_of_france")
@@ -2244,14 +1443,6 @@ end
 
 --@api: LSemanticMemory:learn
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local sm = lurek.agent.newSemanticMemory()
     sm:learn("capital_of_france", { value = "Paris" })
     sm:learn("capital_of_poland", { value = "Warsaw" })
@@ -2267,14 +1458,6 @@ end
 
 --@api: LSemanticMemory:recall
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local sm = lurek.agent.newSemanticMemory()
     sm:learn("color", { hex = "#FF0000" })
     local fact = sm:recall("color")
@@ -2289,14 +1472,6 @@ end
 
 --@api: LSemanticMemory:forget
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local sm = lurek.agent.newSemanticMemory()
     sm:learn("temp_fact", { value = 42 })
     sm:learn("keep_fact", { value = 7 })
@@ -2312,33 +1487,17 @@ end
 
 --@api: LSemanticMemory:query
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local sm = lurek.agent.newSemanticMemory()
     sm:learn("fact_a", { category = "geo" })
     sm:learn("fact_b", { category = "geo" })
     local geo_facts = sm:query({ category = "geo" })
-    example_print_log("Geo facts:", #geo_facts)
+    lurek.log.info(tostring("Geo facts:") .. " " .. tostring(#geo_facts))
 end
 
 -- ─── LSemanticMemory:len ─────────────────────────────────────────────────────
 
 --@api: LSemanticMemory:len
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local sm = lurek.agent.newSemanticMemory()
     sm:learn("k", { v = 1 })
     sm:learn("m", { v = 2 })
@@ -2353,14 +1512,6 @@ end
 
 --@api: lurek.agent.newAgentMemory
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local mem = lurek.agent.newAgentMemory({ working_capacity = 32, persist_path = nil })
     local working = mem:working()
     local episodic = mem:episodic()
@@ -2374,14 +1525,6 @@ end
 
 --@api: LAgentMemory:working
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local mem = lurek.agent.newAgentMemory({ working_capacity = 8 })
     local wm = mem:working()
     wm:push("stance", "defensive")
@@ -2396,14 +1539,6 @@ end
 
 --@api: LAgentMemory:episodic
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local mem = lurek.agent.newAgentMemory({ working_capacity = 8 })
     local em = mem:episodic()
     em:record(10, { event = "quest_started" })
@@ -2418,14 +1553,6 @@ end
 
 --@api: LAgentMemory:semantic
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local mem = lurek.agent.newAgentMemory({ working_capacity = 8 })
     local sm = mem:semantic()
     sm:learn("faction", { name = "Wardens" })
@@ -2440,14 +1567,6 @@ end
 
 --@api: LAgentMemory:save
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local mem = lurek.agent.newAgentMemory({ persist_path = "work/agent_mem_example.json" })
     mem:working():push("checkpoint", "harbor_gate")
     mem:semantic():learn("region", { name = "Salt Coast" })
@@ -2462,14 +1581,6 @@ end
 
 --@api: LAgentMemory:load
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local source = lurek.agent.newAgentMemory({ persist_path = "work/agent_mem_example.json" })
     source:working():push("checkpoint", "harbor_gate")
     source:semantic():learn("region", { name = "Salt Coast" })
@@ -2484,14 +1595,6 @@ end
 
 --@api: LAgentMemory:getDiagnostics
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
     local mem = lurek.agent.newAgentMemory({ working_capacity = 6 })
     local diagnostics = mem:getDiagnostics()
     lurek.log.info("memory working_entries=" .. tostring(diagnostics.working_entries))

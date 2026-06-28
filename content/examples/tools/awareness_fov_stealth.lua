@@ -28,11 +28,6 @@ for y = 1, H do
     end
 end
 
-local function is_wall(x, y)
-    if x < 1 or y < 1 or x > W or y > H then return true end
-    return walls[y][x]
-end
-
 -- FOV — dimensions must match map
 local fov = lurek.awareness.newFov({
     width  = W,
@@ -40,7 +35,10 @@ local fov = lurek.awareness.newFov({
     range  = RANGE,
     light_walls = true,
 })
-fov:setBlocker(is_wall)
+fov:setBlocker(function(x, y)
+    if x < 1 or y < 1 or x > W or y > H then return true end
+    return walls[y][x]
+end)
 
 -- Guard patrol waypoints
 local patrol = { {5,5},{5,15},{25,15},{25,5} }
@@ -51,36 +49,6 @@ local player = { x=15, y=10 }
 local detected = false
 local detect_timer = 0.0
 
-local function move_guard(dt)
-    local target = patrol[guard.wp]
-    local dx = target[1] - guard.wx
-    local dy = target[2] - guard.wy
-    local dist = math.sqrt(dx*dx + dy*dy)
-    if dist < 0.1 then
-        guard.wp = guard.wp % #patrol + 1
-        return
-    end
-    guard.facing_x = dx / dist
-    guard.facing_y = dy / dist
-    guard.wx = guard.wx + (dx/dist) * guard.speed * dt
-    guard.wy = guard.wy + (dy/dist) * guard.speed * dt
-    guard.x = math.floor(guard.wx + 0.5)
-    guard.y = math.floor(guard.wy + 0.5)
-end
-
-local function color_for_tile(x, y)
-    if is_wall(x, y) then
-        return { r=0.3, g=0.3, b=0.3, a=1 }
-    end
-    if fov:isVisible(x, y) then
-        return { r=0.9, g=0.9, b=0.4, a=0.6 }
-    end
-    if fov:isExplored(x, y) then
-        return { r=0.2, g=0.5, b=0.2, a=0.5 }
-    end
-    return { r=0.05, g=0.05, b=0.05, a=1 }
-end
-
 lurek.process(function(dt)
     -- Move player
     if lurek.input.keyboard.isDown("right") then player.x = math.min(player.x+1, W-1) end
@@ -88,7 +56,20 @@ lurek.process(function(dt)
     if lurek.input.keyboard.isDown("down")  then player.y = math.min(player.y+1, H-1) end
     if lurek.input.keyboard.isDown("up")    then player.y = math.max(player.y-1, 2)   end
 
-    move_guard(dt)
+    local target = patrol[guard.wp]
+    local dx = target[1] - guard.wx
+    local dy = target[2] - guard.wy
+    local dist = math.sqrt(dx*dx + dy*dy)
+    if dist < 0.1 then
+        guard.wp = guard.wp % #patrol + 1
+    else
+        guard.facing_x = dx / dist
+        guard.facing_y = dy / dist
+        guard.wx = guard.wx + (dx/dist) * guard.speed * dt
+        guard.wy = guard.wy + (dy/dist) * guard.speed * dt
+        guard.x = math.floor(guard.wx + 0.5)
+        guard.y = math.floor(guard.wy + 0.5)
+    end
 
     -- Recompute FOV from guard position
     fov:compute(guard.x, guard.y)
@@ -108,8 +89,15 @@ lurek.process(function(dt)
     lurek.render.clear()
     for y = 1, H do
         for x = 1, W do
-            local c = color_for_tile(x, y)
-            lurek.render.setColor(c.r, c.g, c.b, c.a)
+            if walls[y][x] then
+                lurek.render.setColor(0.3, 0.3, 0.3, 1)
+            elseif fov:isVisible(x, y) then
+                lurek.render.setColor(0.9, 0.9, 0.4, 0.6)
+            elseif fov:isExplored(x, y) then
+                lurek.render.setColor(0.2, 0.5, 0.2, 0.5)
+            else
+                lurek.render.setColor(0.05, 0.05, 0.05, 1)
+            end
             lurek.render.rectangle("fill", (x-1)*TILE, (y-1)*TILE, TILE, TILE)
         end
     end

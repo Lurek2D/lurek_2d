@@ -8,109 +8,67 @@
 
 --@api: lurek.pipeline.newPipeline
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("build")
 
     pipe:setErrorMode("continue")
     pipe:addStep(lurek.pipeline.newStep("compile", function(ctx) ctx.compiled = true end))
-    example_print_log("name = " .. pipe:getName())
-    example_print_log("step count = " .. pipe:getStepCount())
-    example_print_log("mode = " .. pipe:getErrorMode())
+    lurek.log.info(tostring("name = " .. pipe:getName()))
+    lurek.log.info(tostring("step count = " .. pipe:getStepCount()))
+    lurek.log.info(tostring("mode = " .. pipe:getErrorMode()))
 end
 
 --@api: LPipeline:getName
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("build")
 
     local before = pipe:getName()
     pipe:setName("deploy")
 
-    example_print_log("before = " .. before)
-    example_print_log("name = " .. pipe:getName())
-    example_print_log("type = " .. pipe:type())
+    lurek.log.info(tostring("before = " .. before))
+    lurek.log.info(tostring("name = " .. pipe:getName()))
+    lurek.log.info(tostring("type = " .. pipe:type()))
 end
 
 --@api: LPipeline:setName
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("build")
 
-    example_print_log("before rename = " .. pipe:getName())
+    lurek.log.info(tostring("before rename = " .. pipe:getName()))
     pipe:setName("deploy")
     pipe:addStep(lurek.pipeline.newStep("publish", function(ctx) ctx.published = true end))
 
-    example_print_log("renamed = " .. pipe:getName())
-    example_print_log("steps = " .. pipe:getStepCount())
+    lurek.log.info(tostring("renamed = " .. pipe:getName()))
+    lurek.log.info(tostring("steps = " .. pipe:getStepCount()))
 end
 
 --@api: lurek.pipeline.newStep
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local step = lurek.pipeline.newStep("compile", function(ctx)
         ctx.compiled = true
     end)
 
-    example_print_log("step name = " .. step:getName())
-    example_print_log("type = " .. step:type())
+    lurek.log.info(tostring("step name = " .. step:getName()))
+    lurek.log.info(tostring("type = " .. step:type()))
 end
 
 --@api: LPipelineStep:getName
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local step = lurek.pipeline.newStep("compile", function(ctx)
         ctx.compiled = true
     end)
 
     step:setTag("build")
-    example_print_log("step name = " .. step:getName())
-    example_print_log("tag = " .. step:getTag())
+    lurek.log.info(tostring("step name = " .. step:getName()))
+    lurek.log.info(tostring("tag = " .. step:getTag()))
 end
 
 --@api: LPipeline:addStep
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("hello")
     local greet = lurek.pipeline.newStep("greet", function(ctx)
@@ -126,19 +84,12 @@ do
 
     local result = pipe:run({})
 
-    example_print_log("success = " .. tostring(result.success))
-    example_print_log("completed = " .. #result.completed)
+    lurek.log.info(tostring("success = " .. tostring(result.success)))
+    lurek.log.info(tostring("completed = " .. #result.completed))
 end
 
 --@api: LPipelineStep:dependsOn
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local fetch = lurek.pipeline.newStep("fetch", function(ctx)
         ctx.data = { 1, 2, 3 }
@@ -150,19 +101,12 @@ do
 
     parse:dependsOn("fetch")
 
-    example_print_log("parse deps = " .. parse:getDependencyCount())
-    example_print_log("first dep = " .. parse:getDependencies()[1])
+    lurek.log.info(tostring("parse deps = " .. parse:getDependencyCount()))
+    lurek.log.info(tostring("first dep = " .. parse:getDependencies()[1]))
 end
 
 --@api: LPipelineStep:getDependencies
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local report = lurek.pipeline.newStep("report", function(ctx)
         ctx.reported = ctx.total
@@ -172,19 +116,12 @@ do
 
     local deps = report:getDependencies()
 
-    example_print_log("dependency count = " .. #deps)
-    example_print_log("depends on = " .. deps[1])
+    lurek.log.info(tostring("dependency count = " .. #deps))
+    lurek.log.info(tostring("depends on = " .. deps[1]))
 end
 
 --@api: LPipelineStep:getDependencyCount
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local parse = lurek.pipeline.newStep("parse", function(ctx)
         ctx.total = 6
@@ -192,18 +129,11 @@ do
 
     parse:dependsOn("fetch")
 
-    example_print_log("parse deps = " .. parse:getDependencyCount())
+    lurek.log.info(tostring("parse deps = " .. parse:getDependencyCount()))
 end
 
 --@api: LPipeline:getResult
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("results")
 
@@ -215,19 +145,12 @@ do
 
     local result = pipe:getResult()
 
-    example_print_log("success = " .. tostring(result.success))
-    example_print_log("completed = " .. table.concat(result.completed, ", "))
+    lurek.log.info(tostring("success = " .. tostring(result.success)))
+    lurek.log.info(tostring("completed = " .. table.concat(result.completed, ", ")))
 end
 
 --@api: LPipeline:getStepCount
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("query")
 
@@ -235,18 +158,11 @@ do
     pipe:addStep(lurek.pipeline.newStep("beta", function() end))
     pipe:addStep(lurek.pipeline.newStep("gamma", function() end))
 
-    example_print_log("step count = " .. pipe:getStepCount())
+    lurek.log.info(tostring("step count = " .. pipe:getStepCount()))
 end
 
 --@api: LPipeline:getSteps
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("query")
 
@@ -261,20 +177,13 @@ do
         seen[steps[i]:getName()] = true
     end
 
-    example_print_log("step count = " .. #steps)
-    example_print_log("has alpha = " .. tostring(seen.alpha == true))
-    example_print_log("has beta = " .. tostring(seen.beta == true))
+    lurek.log.info(tostring("step count = " .. #steps))
+    lurek.log.info(tostring("has alpha = " .. tostring(seen.alpha == true)))
+    lurek.log.info(tostring("has beta = " .. tostring(seen.beta == true)))
 end
 
 --@api: LPipeline:getStep
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("query")
 
@@ -283,18 +192,11 @@ do
 
     local found = pipe:getStep("beta")
 
-    example_print_log("found = " .. (found and found:getName() or "nil"))
+    lurek.log.info(tostring("found = " .. (found and found:getName() or "nil")))
 end
 
 --@api: LPipeline:removeStep
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("remove")
 
@@ -304,19 +206,12 @@ do
 
     pipe:removeStep("b")
 
-    example_print_log("after remove = " .. pipe:getStepCount())
-    example_print_log("has b = " .. tostring(pipe:getStep("b") ~= nil))
+    lurek.log.info(tostring("after remove = " .. pipe:getStepCount()))
+    lurek.log.info(tostring("has b = " .. tostring(pipe:getStep("b") ~= nil)))
 end
 
 --@api: LPipeline:clear
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("remove")
 
@@ -326,18 +221,11 @@ do
 
     pipe:clear()
 
-    example_print_log("after clear = " .. pipe:getStepCount())
+    lurek.log.info(tostring("after clear = " .. pipe:getStepCount()))
 end
 
 --@api: LPipeline:getExecutionOrder
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("order")
     local load = lurek.pipeline.newStep("load", function() end)
@@ -353,18 +241,11 @@ do
 
     local order, err = pipe:getExecutionOrder()
 
-    example_print_log(order and ("order = " .. table.concat(order, " -> ")) or ("error = " .. tostring(err)))
+    lurek.log.info(tostring(order and ("order = " .. table.concat(order, " -> ")) or ("error = " .. tostring(err))))
 end
 
 --@api: LPipeline:getParallelGroups
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("parallel")
     local fetchUsers = lurek.pipeline.newStep("fetch_users", function() end)
@@ -381,19 +262,12 @@ do
     local groups, err = pipe:getParallelGroups()
     local firstGroupSize = groups and groups[1] and #groups[1] or 0
 
-    example_print_log(err and ("error = " .. err) or ("tiers = " .. #groups))
-    example_print_log("first tier size = " .. firstGroupSize)
+    lurek.log.info(tostring(err and ("error = " .. err) or ("tiers = " .. #groups)))
+    lurek.log.info(tostring("first tier size = " .. firstGroupSize))
 end
 
 --@api: LPipeline:validate
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("validate")
     local a = lurek.pipeline.newStep("a", function() end)
@@ -406,19 +280,12 @@ do
 
     local valid, errors = pipe:validate()
 
-    example_print_log("valid = " .. tostring(valid))
-    example_print_log("error count = " .. #errors)
+    lurek.log.info(tostring("valid = " .. tostring(valid)))
+    lurek.log.info(tostring("error count = " .. #errors))
 end
 
 --@api: LPipeline:setErrorMode
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("error-mode")
 
@@ -432,40 +299,26 @@ do
 
     local result = pipe:run({})
 
-    example_print_log("mode = " .. pipe:getErrorMode())
-    example_print_log("failed = " .. #result.failed)
-    example_print_log("completed = " .. #result.completed)
+    lurek.log.info(tostring("mode = " .. pipe:getErrorMode()))
+    lurek.log.info(tostring("failed = " .. #result.failed))
+    lurek.log.info(tostring("completed = " .. #result.completed))
 end
 
 --@api: LPipeline:getErrorMode
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("error-mode")
 
-    example_print_log("default mode = " .. pipe:getErrorMode())
+    lurek.log.info(tostring("default mode = " .. pipe:getErrorMode()))
     pipe:setErrorMode("continue")
     pipe:addStep(lurek.pipeline.newStep("noop", function() end))
 
-    example_print_log("mode = " .. pipe:getErrorMode())
-    example_print_log("steps = " .. pipe:getStepCount())
+    lurek.log.info(tostring("mode = " .. pipe:getErrorMode()))
+    lurek.log.info(tostring("steps = " .. pipe:getStepCount()))
 end
 
 --@api: LPipeline:toAscii
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("graph")
     local init = lurek.pipeline.newStep("init", function() end)
@@ -479,18 +332,11 @@ do
     pipe:addStep(process)
     pipe:addStep(finish)
 
-    example_print_log(pipe:toAscii())
+    lurek.log.info(tostring(pipe:toAscii()))
 end
 
 --@api: LPipeline:toTable
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("serialize")
 
@@ -499,20 +345,13 @@ do
 
     local tbl = pipe:toTable()
 
-    example_print_log("table name = " .. tbl.name)
-    example_print_log("error mode = " .. tbl.errorMode)
-    example_print_log("step count = " .. #tbl.steps)
+    lurek.log.info(tostring("table name = " .. tbl.name))
+    lurek.log.info(tostring("error mode = " .. tbl.errorMode))
+    lurek.log.info(tostring("step count = " .. #tbl.steps))
 end
 
 --@api: lurek.pipeline.fromTable
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.fromTable({
         name = "from-table",
@@ -536,19 +375,12 @@ do
 
     local result = pipe:run({})
 
-    example_print_log("steps = " .. pipe:getStepCount())
-    example_print_log("success = " .. tostring(result.success))
+    lurek.log.info(tostring("steps = " .. pipe:getStepCount()))
+    lurek.log.info(tostring("success = " .. tostring(result.success)))
 end
 
 --@api: LPipeline:reset
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("rerun")
 
@@ -563,58 +395,37 @@ do
     pipe:reset()
     pipe:run(secondContext)
 
-    example_print_log("first = " .. tostring(firstContext.n))
-    example_print_log("second = " .. tostring(secondContext.n))
+    lurek.log.info(tostring("first = " .. tostring(firstContext.n)))
+    lurek.log.info(tostring("second = " .. tostring(secondContext.n)))
 end
 
 --@api: LPipeline:type
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("typed")
 
     pipe:addStep(lurek.pipeline.newStep("inspect", function(ctx) ctx.typed = true end))
-    example_print_log("type = " .. pipe:type())
-    example_print_log("is LPipeline = " .. tostring(pipe:typeOf("LPipeline")))
-    example_print_log("steps = " .. pipe:getStepCount())
+    lurek.log.info(tostring("type = " .. pipe:type()))
+    lurek.log.info(tostring("is LPipeline = " .. tostring(pipe:typeOf("LPipeline"))))
+    lurek.log.info(tostring("steps = " .. pipe:getStepCount()))
 end
 
 --@api: LPipeline:typeOf
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("typed")
 
     local is_pipeline = pipe:typeOf("LPipeline")
     local is_object = pipe:typeOf("LObject")
-    example_print_log("is LPipeline = " .. tostring(is_pipeline))
-    example_print_log("is Object = " .. tostring(is_object))
-    example_print_log("type = " .. pipe:type())
+    lurek.log.info(tostring("is LPipeline = " .. tostring(is_pipeline)))
+    lurek.log.info(tostring("is Object = " .. tostring(is_object)))
+    lurek.log.info(tostring("type = " .. pipe:type()))
 end
 
 --- Pipeline Module Part 2: step config, async execution, callbacks, sub-pipelines, branching, tags
 
 --@api: LPipelineStep:setCallback
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local step = lurek.pipeline.newStep("conditional")
 
@@ -632,19 +443,12 @@ do
 
     local result = pipe:run(context)
 
-    example_print_log("completed = " .. #result.completed)
-    example_print_log("ran = " .. tostring(context.ran == true))
+    lurek.log.info(tostring("completed = " .. #result.completed))
+    lurek.log.info(tostring("ran = " .. tostring(context.ran == true)))
 end
 
 --@api: LPipelineStep:setCondition
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local step = lurek.pipeline.newStep("conditional")
 
@@ -662,19 +466,12 @@ do
 
     local result = pipe:run(context)
 
-    example_print_log("skipped = " .. #result.skipped)
-    example_print_log("ran = " .. tostring(context.ran == true))
+    lurek.log.info(tostring("skipped = " .. #result.skipped))
+    lurek.log.info(tostring("ran = " .. tostring(context.ran == true)))
 end
 
 --@api: LPipelineStep:setRetryCount
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local attempts = 0
     local step = lurek.pipeline.newStep("flaky", function()
@@ -690,19 +487,12 @@ do
     pipe:addStep(step)
     pipe:run({})
 
-    example_print_log("retry count = " .. step:getRetryCount())
-    example_print_log("attempt = " .. step:getAttempt())
+    lurek.log.info(tostring("retry count = " .. step:getRetryCount()))
+    lurek.log.info(tostring("attempt = " .. step:getAttempt()))
 end
 
 --@api: LPipelineStep:getRetryCount
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local attempts = 0
     local step = lurek.pipeline.newStep("flaky", function()
@@ -718,18 +508,11 @@ do
     pipe:addStep(step)
     pipe:run({})
 
-    example_print_log("retry count = " .. step:getRetryCount())
+    lurek.log.info(tostring("retry count = " .. step:getRetryCount()))
 end
 
 --@api: LPipelineStep:setRetryDelay
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local attempts = 0
     local step = lurek.pipeline.newStep("flaky", function()
@@ -745,19 +528,12 @@ do
     pipe:addStep(step)
     pipe:run({})
 
-    example_print_log("attempt = " .. step:getAttempt())
-    example_print_log("retry count = " .. step:getRetryCount())
+    lurek.log.info(tostring("attempt = " .. step:getAttempt()))
+    lurek.log.info(tostring("retry count = " .. step:getRetryCount()))
 end
 
 --@api: LPipelineStep:getAttempt
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local attempts = 0
     local step = lurek.pipeline.newStep("flaky", function()
@@ -773,18 +549,11 @@ do
     pipe:addStep(step)
     pipe:run({})
 
-    example_print_log("attempt = " .. step:getAttempt())
+    lurek.log.info(tostring("attempt = " .. step:getAttempt()))
 end
 
 --@api: LPipelineStep:setDelay
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local step = lurek.pipeline.newStep("delayed", function(ctx)
         ctx.time = "after delay"
@@ -792,18 +561,11 @@ do
 
     step:setDelay(0.5)
 
-    example_print_log("delay = " .. step:getDelay())
+    lurek.log.info(tostring("delay = " .. step:getDelay()))
 end
 
 --@api: LPipelineStep:getDelay
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local step = lurek.pipeline.newStep("delayed", function(ctx)
         ctx.time = "after delay"
@@ -811,18 +573,11 @@ do
 
     step:setDelay(0.5)
 
-    example_print_log("delay = " .. step:getDelay())
+    lurek.log.info(tostring("delay = " .. step:getDelay()))
 end
 
 --@api: LPipelineStep:setTimeout
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local step = lurek.pipeline.newStep("slow", function()
         return "done"
@@ -830,18 +585,11 @@ do
 
     step:setTimeout(5.0)
 
-    example_print_log("timeout = " .. step:getTimeout())
+    lurek.log.info(tostring("timeout = " .. step:getTimeout()))
 end
 
 --@api: LPipelineStep:getTimeout
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local step = lurek.pipeline.newStep("slow", function()
         return "done"
@@ -849,18 +597,11 @@ do
 
     step:setTimeout(5.0)
 
-    example_print_log("timeout = " .. step:getTimeout())
+    lurek.log.info(tostring("timeout = " .. step:getTimeout()))
 end
 
 --@api: LPipelineStep:setOptional
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("optional")
     local optionalStep = lurek.pipeline.newStep("optional-step", function()
@@ -879,20 +620,13 @@ do
 
     local result = pipe:run({})
 
-    example_print_log("optional = " .. tostring(optionalStep:isOptional()))
-    example_print_log("failed = " .. #result.failed)
-    example_print_log("completed = " .. #result.completed)
+    lurek.log.info(tostring("optional = " .. tostring(optionalStep:isOptional())))
+    lurek.log.info(tostring("failed = " .. #result.failed))
+    lurek.log.info(tostring("completed = " .. #result.completed))
 end
 
 --@api: LPipelineStep:isOptional
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local step = lurek.pipeline.newStep("optional-step", function()
         error("this is fine")
@@ -900,18 +634,11 @@ do
 
     step:setOptional(true)
 
-    example_print_log("optional = " .. tostring(step:isOptional()))
+    lurek.log.info(tostring("optional = " .. tostring(step:isOptional())))
 end
 
 --@api: LPipelineStep:setTag
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("tags")
     local loadA = lurek.pipeline.newStep("load_a", function() end)
@@ -926,19 +653,12 @@ do
     pipe:addStep(loadB)
     pipe:addStep(compute)
 
-    example_print_log("s1 tag = " .. loadA:getTag())
-    example_print_log("io steps = " .. #pipe:getStepsByTag("io"))
+    lurek.log.info(tostring("s1 tag = " .. loadA:getTag()))
+    lurek.log.info(tostring("io steps = " .. #pipe:getStepsByTag("io")))
 end
 
 --@api: LPipelineStep:getTag
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local step = lurek.pipeline.newStep("load_a", function() end)
 
@@ -946,19 +666,12 @@ do
 
     local pipe = lurek.pipeline.newPipeline("tags")
     pipe:addStep(step)
-    example_print_log("tag = " .. step:getTag())
-    example_print_log("io steps = " .. #pipe:getStepsByTag("io"))
+    lurek.log.info(tostring("tag = " .. step:getTag()))
+    lurek.log.info(tostring("io steps = " .. #pipe:getStepsByTag("io")))
 end
 
 --@api: LPipeline:getStepsByTag
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("tags")
     local loadA = lurek.pipeline.newStep("load_a", function() end)
@@ -973,38 +686,24 @@ do
     pipe:addStep(loadB)
     pipe:addStep(compute)
 
-    example_print_log("io steps = " .. #pipe:getStepsByTag("io"))
-    example_print_log("cpu steps = " .. #pipe:getStepsByTag("cpu"))
+    lurek.log.info(tostring("io steps = " .. #pipe:getStepsByTag("io")))
+    lurek.log.info(tostring("cpu steps = " .. #pipe:getStepsByTag("cpu")))
 end
 
 --@api: LPipelineStep:setData
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local step = lurek.pipeline.newStep("meta", function() end)
 
     step:setData("version", "1.2.0")
     step:setData("author", "engine")
 
-    example_print_log("version = " .. step:getData("version"))
-    example_print_log("author = " .. step:getData("author"))
+    lurek.log.info(tostring("version = " .. step:getData("version")))
+    lurek.log.info(tostring("author = " .. step:getData("author")))
 end
 
 --@api: LPipelineStep:getData
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local step = lurek.pipeline.newStep("meta", function() end)
 
@@ -1013,51 +712,34 @@ do
 
     local pipe = lurek.pipeline.newPipeline("meta")
     pipe:addStep(step)
-    example_print_log("version = " .. step:getData("version"))
-    example_print_log("author = " .. step:getData("author"))
-    example_print_log("steps = " .. pipe:getStepCount())
+    lurek.log.info(tostring("version = " .. step:getData("version")))
+    lurek.log.info(tostring("author = " .. step:getData("author")))
+    lurek.log.info(tostring("steps = " .. pipe:getStepCount()))
 end
 
 --@api: LPipelineStep:setState
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local step = lurek.pipeline.newStep("stateful")
     step:setState({ visits = 1 })
-    example_print_log("state visits = " .. tostring(step:getState().visits))
+    local name = step:getName()
+    lurek.log.info("step = " .. name)
+    lurek.log.info(tostring("state visits = " .. tostring(step:getState().visits)))
 end
 
 --@api: LPipelineStep:getState
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local step = lurek.pipeline.newStep("stateful")
     local state = step:getState()
     state.visits = (state.visits or 0) + 1
-    example_print_log("state visits = " .. tostring(step:getState().visits))
+    local status = step:getStatus()
+    lurek.log.info("status = " .. status)
+    lurek.log.info(tostring("state visits = " .. tostring(step:getState().visits)))
 end
 
 --@api: LPipelineStep:connectOutput
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local source = lurek.pipeline.newStep("score", function()
         return { output1 = { value = 9 } }
@@ -1072,36 +754,22 @@ do
     local pipe = lurek.pipeline.newPipeline("slot-routing")
     pipe:addStep(source):addStep(target)
     pipe:run({})
-    example_print_log("links = " .. #source:getOutputLinks())
-    example_print_log("target status = " .. target:getStatus())
+    lurek.log.info(tostring("links = " .. #source:getOutputLinks()))
+    lurek.log.info(tostring("target status = " .. target:getStatus()))
 end
 
 --@api: LPipelineStep:getOutputLinks
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local step = lurek.pipeline.newStep("source")
     step:connectOutput(2, "target", 4, nil, false)
     local links = step:getOutputLinks()
-    example_print_log("output = " .. tostring(links[1].output))
-    example_print_log("target = " .. tostring(links[1].target))
+    lurek.log.info(tostring("output = " .. tostring(links[1].output)))
+    lurek.log.info(tostring("target = " .. tostring(links[1].target)))
 end
 
 --@api: LPipelineStep:setAsync
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local step = lurek.pipeline.newStep("async-step", function(ctx)
         ctx.progress = 1
@@ -1109,18 +777,11 @@ do
 
     step:setAsync(true)
 
-    example_print_log("is async = " .. tostring(step:isAsync()))
+    lurek.log.info(tostring("is async = " .. tostring(step:isAsync())))
 end
 
 --@api: LPipelineStep:isAsync
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local step = lurek.pipeline.newStep("async-step", function(ctx)
         ctx.progress = 1
@@ -1128,18 +789,11 @@ do
 
     step:setAsync(true)
 
-    example_print_log("is async = " .. tostring(step:isAsync()))
+    lurek.log.info(tostring("is async = " .. tostring(step:isAsync())))
 end
 
 --@api: LPipelineStep:setOnError
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local errorMsg = ""
     local step = lurek.pipeline.newStep("risky", function()
@@ -1154,19 +808,12 @@ do
     pipe:addStep(step)
     pipe:run({})
 
-    example_print_log("error = " .. tostring(step:getError()))
-    example_print_log("callback = " .. errorMsg)
+    lurek.log.info(tostring("error = " .. tostring(step:getError())))
+    lurek.log.info(tostring("callback = " .. errorMsg))
 end
 
 --@api: LPipelineStep:getError
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local step = lurek.pipeline.newStep("risky", function()
         error("something broke")
@@ -1178,18 +825,11 @@ do
     pipe:addStep(step)
     pipe:run({})
 
-    example_print_log("step error = " .. tostring(step:getError()))
+    lurek.log.info(tostring("step error = " .. tostring(step:getError())))
 end
 
 --@api: LPipelineStep:getStatus
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("status")
     local step = lurek.pipeline.newStep("work", function(ctx)
@@ -1198,20 +838,13 @@ do
 
     pipe:addStep(step)
 
-    example_print_log("before run = " .. step:getStatus())
+    lurek.log.info(tostring("before run = " .. step:getStatus()))
     pipe:run({})
-    example_print_log("after run = " .. step:getStatus())
+    lurek.log.info(tostring("after run = " .. step:getStatus()))
 end
 
 --@api: LPipelineStep:getDuration
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("status")
     local step = lurek.pipeline.newStep("work", function(ctx)
@@ -1221,18 +854,11 @@ do
     pipe:addStep(step)
     pipe:run({})
 
-    example_print_log("duration = " .. tostring(step:getDuration()))
+    lurek.log.info(tostring("duration = " .. tostring(step:getDuration())))
 end
 
 --@api: LPipeline:runAsync
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("async-pipe")
     local phase1 = lurek.pipeline.newStep("phase1", function(ctx)
@@ -1256,19 +882,12 @@ do
 
     local stored = pipe:getContext()
 
-    example_print_log("phase = " .. tostring(stored.phase))
-    example_print_log("complete = " .. tostring(pipe:isComplete()))
+    lurek.log.info(tostring("phase = " .. tostring(stored.phase)))
+    lurek.log.info(tostring("complete = " .. tostring(pipe:isComplete())))
 end
 
 --@api: LPipeline:update
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("async-pipe")
     local step = lurek.pipeline.newStep("phase1", function()
@@ -1281,19 +900,12 @@ do
     pipe:runAsync({})
     pipe:update(1 / 60)
 
-    example_print_log("running = " .. tostring(pipe:isRunning()))
-    example_print_log("status = " .. step:getStatus())
+    lurek.log.info(tostring("running = " .. tostring(pipe:isRunning())))
+    lurek.log.info(tostring("status = " .. step:getStatus()))
 end
 
 --@api: LPipeline:isRunning
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("async-pipe")
     local step = lurek.pipeline.newStep("phase1", function()
@@ -1305,18 +917,11 @@ do
 
     pipe:runAsync({})
 
-    example_print_log("running = " .. tostring(pipe:isRunning()))
+    lurek.log.info(tostring("running = " .. tostring(pipe:isRunning())))
 end
 
 --@api: LPipeline:isComplete
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("async-pipe")
     local step = lurek.pipeline.newStep("phase1", function(ctx)
@@ -1329,18 +934,11 @@ do
     pipe:runAsync({})
     pipe:update(1 / 60)
 
-    example_print_log("complete = " .. tostring(pipe:isComplete()))
+    lurek.log.info(tostring("complete = " .. tostring(pipe:isComplete())))
 end
 
 --@api: LPipeline:cancel
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("cancel")
     local hold = lurek.pipeline.newStep("hold", function()
@@ -1360,19 +958,12 @@ do
 
     local result = pipe:getResult()
 
-    example_print_log("cancelled = " .. #result.cancelled)
-    example_print_log("hold status = " .. hold:getStatus())
+    lurek.log.info(tostring("cancelled = " .. #result.cancelled))
+    lurek.log.info(tostring("hold status = " .. hold:getStatus()))
 end
 
 --@api: LPipeline:onProgress
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("callbacks")
     local progressLog = {}
@@ -1388,19 +979,12 @@ do
     end)
     pipe:run({})
 
-    example_print_log("progress count = " .. #progressLog)
-    example_print_log("progress = " .. table.concat(progressLog, ", "))
+    lurek.log.info(tostring("progress count = " .. #progressLog))
+    lurek.log.info(tostring("progress = " .. table.concat(progressLog, ", ")))
 end
 
 --@api: LPipeline:onEvent
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("callbacks")
     local eventCount = 0
@@ -1413,19 +997,12 @@ do
     end)
     pipe:run({})
 
-    example_print_log("event count = " .. eventCount)
-    example_print_log("last event = " .. lastEvent)
+    lurek.log.info(tostring("event count = " .. eventCount))
+    lurek.log.info(tostring("last event = " .. lastEvent))
 end
 
 --@api: LPipeline:setOnComplete
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("lifecycle")
     local summary = ""
@@ -1436,18 +1013,11 @@ do
     end)
     pipe:run({})
 
-    example_print_log("complete = " .. summary)
+    lurek.log.info(tostring("complete = " .. summary))
 end
 
 --@api: LPipeline:setOnStepComplete
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("lifecycle")
     local completedSteps = {}
@@ -1458,19 +1028,12 @@ do
     end)
     pipe:run({})
 
-    example_print_log("completed count = " .. #completedSteps)
-    example_print_log("completed = " .. table.concat(completedSteps, ", "))
+    lurek.log.info(tostring("completed count = " .. #completedSteps))
+    lurek.log.info(tostring("completed = " .. table.concat(completedSteps, ", ")))
 end
 
 --@api: LPipeline:setOnStepError
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("lifecycle")
     local failedSteps = {}
@@ -1484,19 +1047,12 @@ do
     end)
     pipe:run({})
 
-    example_print_log("failed count = " .. #failedSteps)
-    example_print_log("failed = " .. table.concat(failedSteps, ", "))
+    lurek.log.info(tostring("failed count = " .. #failedSteps))
+    lurek.log.info(tostring("failed = " .. table.concat(failedSteps, ", ")))
 end
 
 --@api: LPipeline:addSubPipeline
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local sub = lurek.pipeline.newPipeline("sub")
 
@@ -1516,19 +1072,12 @@ do
 
     local order, err = main:getExecutionOrder()
 
-    example_print_log("steps = " .. main:getStepCount())
-    example_print_log(order and ("order = " .. table.concat(order, " -> ")) or ("error = " .. tostring(err)))
+    lurek.log.info(tostring("steps = " .. main:getStepCount()))
+    lurek.log.info(tostring(order and ("order = " .. table.concat(order, " -> ")) or ("error = " .. tostring(err))))
 end
 
 --@api: LPipeline:addConditional
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("conditional")
 
@@ -1550,18 +1099,11 @@ do
 
     pipe:run(context)
 
-    example_print_log("upgraded = " .. tostring(context.upgraded == true))
+    lurek.log.info(tostring("upgraded = " .. tostring(context.upgraded == true)))
 end
 
 --@api: LPipeline:addBranch
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pipe = lurek.pipeline.newPipeline("branch")
 
@@ -1586,18 +1128,11 @@ do
 
     pipe:run(context)
 
-    example_print_log("parser = " .. tostring(context.parser))
+    lurek.log.info(tostring("parser = " .. tostring(context.parser)))
 end
 
 --@api: LPipelineStep:type
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local step = lurek.pipeline.newStep("typed", function() end)
     step:setTag("introspection")
@@ -1612,13 +1147,6 @@ end
 
 --@api: LPipelineStep:typeOf
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local step = lurek.pipeline.newStep("typed", function() end)
     step:setTag("introspection")
@@ -1634,13 +1162,6 @@ end
 
 --@api: LPipeline:getContext
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pl = lurek.pipeline.newPipeline("my_pipeline")
     local context = { debug = false }
@@ -1658,19 +1179,12 @@ do
 
     local stored = pl:getContext()
 
-    example_print_log("loaded = " .. tostring(stored.loaded == true))
-    example_print_log("result = " .. tostring(stored.result))
+    lurek.log.info(tostring("loaded = " .. tostring(stored.loaded == true)))
+    lurek.log.info(tostring("result = " .. tostring(stored.result)))
 end
 
 --@api: LPipeline:run
 do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
     local pl = lurek.pipeline.newPipeline("my_pipeline")
     local context = { debug = false }
@@ -1684,6 +1198,6 @@ do
 
     local result = pl:run(context)
 
-    example_print_log("success = " .. tostring(result.success))
-    example_print_log("result = " .. tostring(context.result))
+    lurek.log.info(tostring("success = " .. tostring(result.success)))
+    lurek.log.info(tostring("result = " .. tostring(context.result)))
 end
