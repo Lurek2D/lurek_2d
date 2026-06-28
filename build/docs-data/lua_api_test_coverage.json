@@ -1,15 +1,15 @@
 {
   "meta": {
-    "generated": "2026-06-28T18:54:47.583239+00:00",
+    "generated": "2026-06-28T21:27:45.111731+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
-    "total_api_functions": 6381,
-    "marker_covered": 6356,
+    "total_api_functions": 6410,
+    "marker_covered": 6383,
     "describe_covered": 150,
-    "describe_coverage_pct": 2.4,
+    "describe_coverage_pct": 2.3,
     "heuristic_covered": 0,
-    "total_covered": 6381,
+    "total_covered": 6410,
     "coverage_pct": 100.0
   },
   "modules": {
@@ -31528,11 +31528,11 @@
       ]
     },
     "overlay": {
-      "total": 101,
-      "marker_covered": 101,
+      "total": 106,
+      "marker_covered": 106,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 101,
+      "covered": 106,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -31672,6 +31672,51 @@
         },
         {
           "lua_name": "LOverlay:getRenderPlan",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LOverlay:setStatusEffect",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LOverlay:setStatusIntensity",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LOverlay:clearStatusEffect",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LOverlay:getStatusEffect",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LOverlay:getStatusEffects",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -34024,7 +34069,8 @@
       "describe_score": 0.0,
       "uncovered": [],
       "test_files": [
-        "tests/lua/unit/test_pathfind_unit.lua"
+        "tests/lua/unit/test_pathfind_unit.lua",
+        "tests/lua/unit/test_physics_unit.lua"
       ],
       "describe_files": [],
       "functions": [
@@ -38171,17 +38217,18 @@
       ]
     },
     "physics": {
-      "total": 218,
-      "marker_covered": 218,
+      "total": 242,
+      "marker_covered": 242,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 218,
+      "covered": 242,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
       "uncovered": [],
       "test_files": [
         "tests/lua/unit/test_collision_unit.lua",
+        "tests/lua/unit/test_pathfind_unit.lua",
         "tests/lua/unit/test_physics_unit.lua"
       ],
       "describe_files": [],
@@ -38611,6 +38658,60 @@
         },
         {
           "lua_name": "LWorld:getStats",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LWorld:sampleFlow",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LWorld:addFlowField",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LWorld:removeFlowField",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LWorld:getFlowField",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LWorld:clearFlowFields",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LWorld:drawFlowDebug",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -39241,6 +39342,132 @@
         },
         {
           "lua_name": "LWorld:typeOf",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LFlowField:getId",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LFlowField:setEnabled",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LFlowField:isEnabled",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LFlowField:setStrength",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LFlowField:getStrength",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LFlowField:setWidth",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LFlowField:setPoints",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LFlowField:setLayerMask",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LFlowField:getLayerMask",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LFlowField:setApplication",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LFlowField:setCombine",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LFlowField:destroy",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LFlowField:type",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LFlowField:typeOf",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -39889,6 +40116,42 @@
         },
         {
           "lua_name": "LBody:setGravityScale",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LBody:setFlowScale",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LBody:setAirScale",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LBody:setWaterScale",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LBody:setFlowCrossSection",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,

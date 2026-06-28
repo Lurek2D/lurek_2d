@@ -771,6 +771,22 @@ LBody:isValid()
 
 ---
 
+#### `LBody:setAirScale`
+
+Sets the extra multiplier used only for `air` flow fields.
+
+```lua
+LBody:setAirScale(scale)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `scale` | number | Non-negative air multiplier. |
+
+---
+
 #### `LBody:setAngle`
 
 Sets the body's rotation angle directly.
@@ -864,6 +880,38 @@ LBody:setFixedRotation(fixed)
 | Name | Type | Description |
 |------|------|-------------|
 | `fixed` | boolean | True to prevent rotation. |
+
+---
+
+#### `LBody:setFlowCrossSection`
+
+Sets the drag cross-section factor used by drag-style flow application.
+
+```lua
+LBody:setFlowCrossSection(crossSection)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `crossSection` | number | Positive cross-section multiplier. |
+
+---
+
+#### `LBody:setFlowScale`
+
+Sets the global multiplier applied to all flow-field influences on this body.
+
+```lua
+LBody:setFlowScale(scale)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `scale` | number | Non-negative flow multiplier. |
 
 ---
 
@@ -1042,6 +1090,22 @@ LBody:setVelocity(vx, vy)
 |------|------|-------------|
 | `vx` | number | Velocity X component. |
 | `vy` | number | Velocity Y component. |
+
+---
+
+#### `LBody:setWaterScale`
+
+Sets the extra multiplier used only for `water` flow fields.
+
+```lua
+LBody:setWaterScale(scale)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `scale` | number | Non-negative water multiplier. |
 
 ---
 
@@ -5908,6 +5972,28 @@ LWorld:addFixture(bodyId, shapeType, density, friction, restitution, sensor, ...
 
 ---
 
+#### `LWorld:addFlowField`
+
+Creates one authored flow field and returns a handle for later mutation.
+
+```lua
+LWorld:addFlowField(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts` | table | Flow field authoring table. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LFlowField](physics.md#lflowfield) | New flow field handle. |
+
+---
+
 #### `LWorld:addFrictionJoint`
 
 Creates a friction joint that applies resistance to relative motion between two bodies.
@@ -6277,6 +6363,16 @@ LWorld:clearEndContact()
 
 ---
 
+#### `LWorld:clearFlowFields`
+
+Disables every authored flow field in the world.
+
+```lua
+LWorld:clearFlowFields()
+```
+
+---
+
 #### `LWorld:clearGravityVectors`
 
 Removes all additive gravity vectors from the world.
@@ -6336,6 +6432,23 @@ LWorld:drawDebug(target, r, g, b, a)
 | `g?` | number | Green channel (0-255, default 255). |
 | `b?` | number | Blue channel (0-255, default 0). |
 | `a?` | number | Alpha channel (0-255, default 255). |
+
+---
+
+#### `LWorld:drawFlowDebug`
+
+Draws flow-field centerlines and sampled arrows into an ImageData target.
+
+```lua
+LWorld:drawFlowDebug(target, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `target` | [LImageData](render.md#limagedata) | Mutable target image. |
+| `opts?` | table | Optional table with `arrowSpacing`. |
 
 ---
 
@@ -6634,6 +6747,28 @@ LWorld:getEndContactEvents()
 | Type | Description |
 |------|-------------|
 | LWorldGetEndContactEventsResult | Array of {bodyA, bodyB} tables. |
+
+---
+
+#### `LWorld:getFlowField`
+
+Returns one flow field table by id, or nil when missing.
+
+```lua
+LWorld:getFlowField(id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Flow field id. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table? | Flow field descriptor table with geometry, strength, application, combine, and layer-mask fields. |
 
 ---
 
@@ -7206,6 +7341,28 @@ LWorld:raycastClosest(x, y, dx, dy, maxDist, filter)
 
 ---
 
+#### `LWorld:removeFlowField`
+
+Disables one flow field by id.
+
+```lua
+LWorld:removeFlowField(id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Flow field id. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the field existed and was active. |
+
+---
+
 #### `LWorld:removeGravityVector`
 
 Removes one additive gravity vector so it no longer affects future steps.
@@ -7245,6 +7402,30 @@ Fully resets the world to its post-construction state.
 ```lua
 LWorld:resetWorld()
 ```
+
+---
+
+#### `LWorld:sampleFlow`
+
+Samples combined flow at a world position.
+
+```lua
+LWorld:sampleFlow(x, y, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | World-space x position. |
+| `y` | number | World-space y position. |
+| `opts?` | table | Optional table with `layerMask`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Flow sample table with `vx`, `vy`, `magnitude`, `intensity`, and `sources`. |
 
 ---
 

@@ -1,20 +1,20 @@
 {
   "meta": {
-    "generated": "2026-06-28T18:53:40.773141+00:00",
+    "generated": "2026-06-28T21:26:43.260825+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "rust_items": 3098,
-      "rust_modules": 723,
+      "rust_items": 3119,
+      "rust_modules": 725,
       "rust_tests": 498,
       "lua_tests": 284
     }
   },
   "rust_api": {
     "summary": {
-      "total_items": 3098,
-      "documented": 3094,
-      "modules": 723
+      "total_items": 3119,
+      "documented": 3115,
+      "modules": 725
     },
     "modules": {
       "agent::chat": {
@@ -12927,75 +12927,75 @@
             "kind": "struct",
             "description": "Snapshot of overlay runtime state for telemetry, debugging, and dashboard surfaces.",
             "file": "src/overlay/controller.rs",
-            "line": 63
+            "line": 66
           },
           {
             "name": "OverlayAccessibilityPolicy",
             "kind": "struct",
             "description": "Accessibility policy applied to flash, shake, lightning, and grain-heavy overlays.",
             "file": "src/overlay/controller.rs",
-            "line": 112
+            "line": 119
           },
           {
             "name": "OverlayImageLimits",
             "kind": "struct",
             "description": "Maximum debug-image allocation sizes accepted by overlay helper methods.",
             "file": "src/overlay/controller.rs",
-            "line": 175
+            "line": 182
           },
           {
             "name": "OverlayLimits",
             "kind": "struct",
             "description": "Runtime limits enforced by the overlay controller.",
             "file": "src/overlay/controller.rs",
-            "line": 202
+            "line": 209
           },
           {
             "name": "OverlayShaderPolicy",
             "kind": "struct",
             "description": "Validation policy for optional custom overlay shader names.",
             "file": "src/overlay/controller.rs",
-            "line": 233
+            "line": 240
           },
           {
             "name": "OverlayDiagnostics",
             "kind": "struct",
             "description": "Diagnostic counters collected by permissive overlay operations.",
             "file": "src/overlay/controller.rs",
-            "line": 290
+            "line": 297
           },
           {
             "name": "OverlayRenderLayer",
             "kind": "enum",
             "description": "One overlay layer classification used by render responsibility reporting.",
             "file": "src/overlay/controller.rs",
-            "line": 311
+            "line": 318
           },
           {
             "name": "OverlayRenderPlan",
             "kind": "struct",
             "description": "Reporting object that separates actively rendered layers from active externally handled layers.",
             "file": "src/overlay/controller.rs",
-            "line": 360
+            "line": 376
           },
           {
             "name": "OverlayError",
             "kind": "enum",
             "description": "Structured overlay validation and safety failures.",
             "file": "src/overlay/controller.rs",
-            "line": 369
+            "line": 385
           },
           {
             "name": "Overlay",
             "kind": "struct",
             "description": "Owns every screen-space overlay state block applied on top of world rendering.",
             "file": "src/overlay/controller.rs",
-            "line": 499
+            "line": 515
           }
         ]
       },
       "overlay": {
-        "module_doc": "This module re-exports the screen-overlay subsystem for ambient tint, weather, water, transitions, and controller state. It is the navigation map for long-lived overlay data, timed screen effects, and renderer-facing overlay ownership. `controller.rs` owns the main `Overlay` runtime, while `ambient.rs`, `weather.rs`, and `water.rs` hold state blocks. `screen_effects.rs` and `transition.rs` cover timed flashes, shakes, fades, and full-screen transition playback models. `atmosphere.rs` groups clouds, fog, haze, vignette, grain, and lightning so callers can compose atmospheric layers. Change this file when public overlay exports move; change sibling files when overlay simulation or render data changes.",
+        "module_doc": "This module re-exports the screen-overlay subsystem for ambient tint, weather, water, transitions, and controller state. It is the navigation map for long-lived overlay data, timed screen effects, and renderer-facing overlay ownership. `controller.rs` owns the main `Overlay` runtime, while `ambient.rs`, `weather.rs`, and `water.rs` hold state blocks. `screen_effects.rs` and `transition.rs` cover timed flashes, shakes, fades, and full-screen transition playback models. `atmosphere.rs` groups clouds, fog, haze, vignette, grain, and lightning so callers can compose atmospheric layers. `status.rs` owns stacked player-state overlays such as frozen, poison, and danger feedback recipes. Change this file when public overlay exports move; change sibling files when overlay simulation or render data changes.",
         "source_file": "src/overlay/mod.rs",
         "items": [
           {
@@ -13003,49 +13003,56 @@
             "kind": "mod",
             "description": "Ambient color state derived from time-of-day settings.",
             "file": "src/overlay/mod.rs",
-            "line": 9
+            "line": 10
           },
           {
             "name": "atmosphere",
             "kind": "mod",
             "description": "Atmospheric overlay states such as clouds, fog, and lightning.",
             "file": "src/overlay/mod.rs",
-            "line": 11
+            "line": 12
           },
           {
             "name": "controller",
             "kind": "mod",
             "description": "Screen overlay controller for weather, flashes, fades, and haze.",
             "file": "src/overlay/mod.rs",
-            "line": 13
+            "line": 14
+          },
+          {
+            "name": "status",
+            "kind": "mod",
+            "description": "Status-overlay stack state for HUD and fullscreen danger treatments.",
+            "file": "src/overlay/mod.rs",
+            "line": 16
           },
           {
             "name": "screen_effects",
             "kind": "mod",
             "description": "Screen-space flash, shake, and fade state types.",
             "file": "src/overlay/mod.rs",
-            "line": 15
+            "line": 18
           },
           {
             "name": "transition",
             "kind": "mod",
             "description": "Full-screen transition effects and playback state.",
             "file": "src/overlay/mod.rs",
-            "line": 17
+            "line": 20
           },
           {
             "name": "water",
             "kind": "mod",
             "description": "Water distortion overlay state and update helpers.",
             "file": "src/overlay/mod.rs",
-            "line": 19
+            "line": 22
           },
           {
             "name": "weather",
             "kind": "mod",
             "description": "Weather particle types and simulation state.",
             "file": "src/overlay/mod.rs",
-            "line": 21
+            "line": 24
           }
         ]
       },
@@ -13073,6 +13080,61 @@
             "description": "Tracks a timed fade toward a target alpha value.",
             "file": "src/overlay/screen_effects.rs",
             "line": 72
+          }
+        ]
+      },
+      "overlay::status": {
+        "module_doc": "Owns the status-overlay stack used for designer-controlled HUD and fullscreen danger effects. It keeps intensity normalization, fade timing, texture/shader metadata, and ordering rules in one place. The file stores overlay-layer state only; Lua registration, render command emission, and post-fx execution live elsewhere. Use this file when status-layer semantics change; weather, ambient, and transient flash/fade effects live in sibling overlay files.",
+        "source_file": "src/overlay/status.rs",
+        "items": [
+          {
+            "name": "STATUS_INTENSITY_MAX",
+            "kind": "const",
+            "description": "Public designer-facing maximum intensity value accepted by status helpers.",
+            "file": "src/overlay/status.rs",
+            "line": 9
+          },
+          {
+            "name": "normalize_status_intensity",
+            "kind": "fn",
+            "description": "Normalizes public status intensity input into the internal `0.0..=1.0` range.",
+            "file": "src/overlay/status.rs",
+            "line": 12
+          },
+          {
+            "name": "StatusLayerTarget",
+            "kind": "enum",
+            "description": "Declares where a status layer conceptually belongs in the frame.",
+            "file": "src/overlay/status.rs",
+            "line": 34
+          },
+          {
+            "name": "StatusCompositeMode",
+            "kind": "enum",
+            "description": "Declares how a status layer should blend relative to sibling status layers.",
+            "file": "src/overlay/status.rs",
+            "line": 48
+          },
+          {
+            "name": "StatusVisualRecipe",
+            "kind": "struct",
+            "description": "Visual recipe metadata owned by one status layer.",
+            "file": "src/overlay/status.rs",
+            "line": 60
+          },
+          {
+            "name": "StatusOverlayLayer",
+            "kind": "struct",
+            "description": "One authored status layer inside the overlay-owned stack.",
+            "file": "src/overlay/status.rs",
+            "line": 77
+          },
+          {
+            "name": "StatusOverlayStack",
+            "kind": "struct",
+            "description": "Overlay-owned stack of independently faded status layers.",
+            "file": "src/overlay/status.rs",
+            "line": 252
           }
         ]
       },
@@ -15059,11 +15121,18 @@
             "line": 41
           },
           {
+            "name": "BodyFlowInfluence",
+            "kind": "struct",
+            "description": "Per-body coefficients controlling how authored flow fields affect this body.",
+            "file": "src/physics/body.rs",
+            "line": 50
+          },
+          {
             "name": "Body",
             "kind": "struct",
-            "description": "Data-only description of a physics body passed to `World` for simulation. # Fields - `position`: world-space body center. - `velocity`: linear velocity in world units per second. - `mass`: body mass in kilograms. - `body_type`: simulation role used by the solver. - `shape`: primary primitive shape used for broad behavior. - `restitution`: bounce coefficient. - `layer`: collision layer membership mask. - `mask`: collision interaction mask. - `width`: cached AABB-equivalent width. - `height`: cached AABB-equivalent height. - `friction`: surface friction coefficient. - `angle`: rotation in radians. - `angular_velocity`: rotational velocity in radians per second. - `shape_ext`: optional extended polygon/edge/chain geometry.",
+            "description": "Data-only description of a physics body passed to `World` for simulation. # Fields - `position`: world-space body center. - `velocity`: linear velocity in world units per second. - `mass`: body mass in kilograms. - `body_type`: simulation role used by the solver. - `shape`: primary primitive shape used for broad behavior. - `restitution`: bounce coefficient. - `layer`: collision layer membership mask. - `mask`: collision interaction mask. - `width`: cached AABB-equivalent width. - `height`: cached AABB-equivalent height. - `friction`: surface friction coefficient. - `angle`: rotation in radians. - `angular_velocity`: rotational velocity in radians per second. - `shape_ext`: optional extended polygon/edge/chain geometry. - `flow_influence`: authored coefficients used when flow fields affect the body.",
             "file": "src/physics/body.rs",
-            "line": 63
+            "line": 94
           }
         ]
       },
@@ -15127,6 +15196,89 @@
           }
         ]
       },
+      "physics::flow": {
+        "module_doc": "Owns authored flow-field definitions, validation, and deterministic sampling for the physics subsystem. It keeps geometry math, medium/application metadata, and overlap contribution data outside the main world step owner. The file samples vector fields only; body iteration, Rapier mutation, and Lua registration live in neighboring physics files. Use this file when stream geometry or combination semantics change; world storage and debug drawing stay elsewhere.",
+        "source_file": "src/physics/flow.rs",
+        "items": [
+          {
+            "name": "FlowFieldId",
+            "kind": "type",
+            "description": "Stable id used to address one authored flow field.",
+            "file": "src/physics/flow.rs",
+            "line": 11
+          },
+          {
+            "name": "FlowMedium",
+            "kind": "enum",
+            "description": "Medium classification used by per-body response scaling.",
+            "file": "src/physics/flow.rs",
+            "line": 15
+          },
+          {
+            "name": "FlowCombineMode",
+            "kind": "enum",
+            "description": "How overlapping fields should be combined.",
+            "file": "src/physics/flow.rs",
+            "line": 30
+          },
+          {
+            "name": "FlowApplicationMode",
+            "kind": "enum",
+            "description": "How the sampled flow vector should influence bodies.",
+            "file": "src/physics/flow.rs",
+            "line": 39
+          },
+          {
+            "name": "FlowFalloff",
+            "kind": "enum",
+            "description": "Distance-to-edge falloff curve for one flow field.",
+            "file": "src/physics/flow.rs",
+            "line": 48
+          },
+          {
+            "name": "FlowDirectionMode",
+            "kind": "enum",
+            "description": "Direction-selection strategy for one authored field.",
+            "file": "src/physics/flow.rs",
+            "line": 59
+          },
+          {
+            "name": "FlowGeometry",
+            "kind": "enum",
+            "description": "Geometry variants supported by the flow-field sampler.",
+            "file": "src/physics/flow.rs",
+            "line": 74
+          },
+          {
+            "name": "FlowContribution",
+            "kind": "struct",
+            "description": "One field-level contribution inside a sampled overlap result.",
+            "file": "src/physics/flow.rs",
+            "line": 90
+          },
+          {
+            "name": "FlowSample",
+            "kind": "struct",
+            "description": "Sample result returned by `World::sample_flow`.",
+            "file": "src/physics/flow.rs",
+            "line": 107
+          },
+          {
+            "name": "FlowField",
+            "kind": "struct",
+            "description": "One authored flow field stored by the physics world.",
+            "file": "src/physics/flow.rs",
+            "line": 122
+          },
+          {
+            "name": "combine_contributions",
+            "kind": "fn",
+            "description": "Combines contributions that share one overlap sample into a final vector.",
+            "file": "src/physics/flow.rs",
+            "line": 331
+          }
+        ]
+      },
       "physics::limits": {
         "module_doc": "Owns physics behavior with explicit state, validation, and crate-local integration boundaries. Centers the implementation around PhysicsLimits, default, validate_finite, with helpers kept close to their invariants. Defines how limits data is validated, transformed, or stored before neighboring systems use it. Owns physics behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on limits behavior while Lua registration stays elsewhere.",
         "source_file": "src/physics/limits.rs",
@@ -15141,7 +15293,7 @@
         ]
       },
       "physics": {
-        "module_doc": "This module re-exports the physics subsystem surface for bodies, shapes, zones, world stepping, and helpers. It keeps navigation explicit by mapping which sibling files own body descriptors, geometry, debug output, or zones. Public exports here route callers toward `World` for simulation and `Body` or `Shape` for authored physics state. `collision.rs` and `collision_helpers.rs` own contact payloads and lightweight overlap checks outside full stepping. `body.rs`, `shape.rs`, and `zone.rs` define the core authored inputs that later feed the runtime world owner. Change this file when the public physics symbol map moves; change siblings when simulation data rules change.",
+        "module_doc": "This module re-exports the physics subsystem surface for bodies, shapes, zones, world stepping, and helpers. It keeps navigation explicit by mapping which sibling files own body descriptors, geometry, debug output, or zones. Public exports here route callers toward `World` for simulation and `Body` or `Shape` for authored physics state. `collision.rs` and `collision_helpers.rs` own contact payloads and lightweight overlap checks outside full stepping. `body.rs`, `shape.rs`, and `zone.rs` define the core authored inputs that later feed the runtime world owner. `flow.rs` owns path and volume flow-field definitions sampled by `world.rs` during stepping. Change this file when the public physics symbol map moves; change siblings when simulation data rules change.",
         "source_file": "src/physics/mod.rs",
         "items": [
           {
@@ -15149,77 +15301,84 @@
             "kind": "mod",
             "description": "Rigid body management and handle types.",
             "file": "src/physics/mod.rs",
-            "line": 9
+            "line": 10
           },
           {
             "name": "collision",
             "kind": "mod",
             "description": "Collision query and contact result types.",
             "file": "src/physics/mod.rs",
-            "line": 11
+            "line": 12
           },
           {
             "name": "collision_helpers",
             "kind": "mod",
             "description": "AABB, circle, and point-AABB collision helpers.",
             "file": "src/physics/mod.rs",
-            "line": 13
+            "line": 14
           },
           {
             "name": "error",
             "kind": "mod",
             "description": "Shared typed physics errors.",
             "file": "src/physics/mod.rs",
-            "line": 15
+            "line": 16
+          },
+          {
+            "name": "flow",
+            "kind": "mod",
+            "description": "Authored flow-field definitions and samplers.",
+            "file": "src/physics/mod.rs",
+            "line": 18
           },
           {
             "name": "limits",
             "kind": "mod",
             "description": "Shared sizing and validation limits.",
             "file": "src/physics/mod.rs",
-            "line": 17
+            "line": 20
           },
           {
             "name": "render",
             "kind": "mod",
             "description": "Debug render helpers for physics shapes.",
             "file": "src/physics/mod.rs",
-            "line": 19
+            "line": 22
           },
           {
             "name": "shape",
             "kind": "mod",
             "description": "Shape definitions for bodies and standalone queries.",
             "file": "src/physics/mod.rs",
-            "line": 21
+            "line": 24
           },
           {
             "name": "terrain",
             "kind": "mod",
             "description": "Static terrain tile-map. This module is publicly re-exported.",
             "file": "src/physics/mod.rs",
-            "line": 23
+            "line": 26
           },
           {
             "name": "types",
             "kind": "mod",
             "description": "Core type definitions for the physics subsystem.",
             "file": "src/physics/mod.rs",
-            "line": 25
+            "line": 28
           },
           {
             "name": "world",
             "kind": "mod",
             "description": "Physics world, stepping, bodies, and raycasting.",
             "file": "src/physics/mod.rs",
-            "line": 27
+            "line": 30
           },
           {
             "name": "zone",
             "kind": "mod",
             "description": "Spatial trigger zones with gravity and event tracking.",
             "file": "src/physics/mod.rs",
-            "line": 31
+            "line": 34
           }
         ]
       },
@@ -15297,70 +15456,70 @@
             "kind": "const",
             "description": "Number of low-bit collision groups controlled by the world-level collision matrix.",
             "file": "src/physics/world.rs",
-            "line": 32
+            "line": 36
           },
           {
             "name": "BodyContact",
             "kind": "struct",
             "description": "A pair of body ids that have started or are overlapping. # Fields - `body_a`: first body id. - `body_b`: second body id.",
             "file": "src/physics/world.rs",
-            "line": 86
+            "line": 90
           },
           {
             "name": "RaycastHit",
             "kind": "struct",
             "description": "The closest raycast intersection result. # Fields - `body_id`: body hit by the ray. - `point`: world-space hit point. - `normal`: outward hit normal. - `toi`: parametric distance along the cast.",
             "file": "src/physics/world.rs",
-            "line": 99
+            "line": 103
           },
           {
             "name": "ContactInfo",
             "kind": "struct",
             "description": "Contact information between two bodies. # Fields - `body_a`: first body id. - `body_b`: second body id. - `normal_x`: contact normal x component. - `normal_y`: contact normal y component. - `is_touching`: whether the bodies are currently touching.",
             "file": "src/physics/world.rs",
-            "line": 117
+            "line": 121
           },
           {
             "name": "PhysicsShapeSnapshot",
             "kind": "struct",
             "description": "Snapshot of a physics shape used for debug rendering. # Fields - `x`: world-space x center. - `y`: world-space y center. - `half_w`: half-width for box-like shapes. - `half_h`: half-height for box-like shapes. - `angle`: rotation in radians. - `is_static`: whether the source body is static. - `is_sleeping`: whether the source body is sleeping. - `is_sensor`: whether the source collider is a sensor. - `is_circle`: whether the shape should be rendered as a circle. - `hull_verts`: polygon hull vertices for non-rectangular shapes.",
             "file": "src/physics/world.rs",
-            "line": 141
+            "line": 145
           },
           {
             "name": "PhysicsQueryFilter",
             "kind": "struct",
             "description": "Optional filters applied to physics spatial queries. # Fields - `layer`: optional query-side collision layer mask. - `mask`: optional query-side collision mask. - `groups`: optional 16-group query-side membership mask. - `include_sensors`: whether sensor colliders should be returned.",
             "file": "src/physics/world.rs",
-            "line": 170
+            "line": 174
           },
           {
             "name": "GravityVector",
             "kind": "struct",
             "description": "Additive directional gravity vector applied to matching dynamic bodies before the solver step. # Fields - `id`: stable gravity vector identifier. - `gx`: x acceleration in world units per second squared. - `gy`: y acceleration in world units per second squared. - `layer_mask`: body layer mask; bodies with `body.layer & layer_mask == 0` are skipped. - `enabled`: whether the vector participates in the next step.",
             "file": "src/physics/world.rs",
-            "line": 199
+            "line": 203
           },
           {
             "name": "PhysicsDiagnostics",
             "kind": "struct",
-            "description": "Runtime diagnostics recorded by the physics world across steps and strict mutators. # Fields - `skipped_steps`: invalid or empty `step` calls rejected before rapier. - `clamped_steps`: `step` calls whose dt was reduced to the configured ceiling. - `invalid_operations`: strict helper failures observed through legacy wrappers. - `last_bodies_scanned`: body slots examined during the most recent step. - `last_colliders_rebuilt`: collider rebuilds triggered during the most recent step. - `last_zone_checks`: body-zone containment checks performed during the most recent step. - `last_contacts`: contact events emitted during the most recent step. - `last_synced_bodies`: body mirrors pushed into rapier during the most recent step.",
+            "description": "Runtime diagnostics recorded by the physics world across steps and strict mutators. # Fields - `skipped_steps`: invalid or empty `step` calls rejected before rapier. - `clamped_steps`: `step` calls whose dt was reduced to the configured ceiling. - `invalid_operations`: strict helper failures observed through legacy wrappers. - `last_bodies_scanned`: body slots examined during the most recent step. - `last_colliders_rebuilt`: collider rebuilds triggered during the most recent step. - `last_zone_checks`: body-zone containment checks performed during the most recent step. - `last_flow_samples`: field samples evaluated during the most recent step. - `last_flow_affected_bodies`: dynamic bodies that received non-zero flow influence during the most recent step. - `last_contacts`: contact events emitted during the most recent step. - `last_synced_bodies`: body mirrors pushed into rapier during the most recent step.",
             "file": "src/physics/world.rs",
-            "line": 222
+            "line": 228
           },
           {
             "name": "PhysicsWorldStats",
             "kind": "struct",
-            "description": "Lightweight world diagnostics for Lua/editor tooling. # Fields - `bodies`: active body count. - `body_slots`: total allocated body slots. - `colliders`: active collider count. - `joints`: active joint count. - `joint_slots`: total allocated joint slots. - `zones`: active zone count. - `gravity_vectors`: active additive gravity vector count. - `sleeping_bodies`: active bodies currently sleeping. - `skipped_steps`: invalid or empty `step` calls rejected before rapier. - `clamped_steps`: `step` calls whose dt was reduced to the configured ceiling. - `invalid_operations`: strict helper failures observed through legacy wrappers. - `bodies_scanned`: body slots examined during the most recent step. - `colliders_rebuilt`: collider rebuilds triggered during the most recent step. - `zone_checks`: body-zone containment checks performed during the most recent step. - `contacts`: contact events emitted during the most recent step. - `synced_bodies`: body mirrors pushed into rapier during the most recent step.",
+            "description": "Lightweight world diagnostics for Lua/editor tooling. # Fields - `bodies`: active body count. - `body_slots`: total allocated body slots. - `colliders`: active collider count. - `joints`: active joint count. - `joint_slots`: total allocated joint slots. - `zones`: active zone count. - `gravity_vectors`: active additive gravity vector count. - `flow_fields`: active flow-field count. - `sleeping_bodies`: active bodies currently sleeping. - `skipped_steps`: invalid or empty `step` calls rejected before rapier. - `clamped_steps`: `step` calls whose dt was reduced to the configured ceiling. - `invalid_operations`: strict helper failures observed through legacy wrappers. - `bodies_scanned`: body slots examined during the most recent step. - `colliders_rebuilt`: collider rebuilds triggered during the most recent step. - `zone_checks`: body-zone containment checks performed during the most recent step. - `flow_samples`: flow-field samples evaluated during the most recent step. - `flow_affected_bodies`: dynamic bodies that received non-zero flow influence during the most recent step. - `contacts`: contact events emitted during the most recent step. - `synced_bodies`: body mirrors pushed into rapier during the most recent step.",
             "file": "src/physics/world.rs",
-            "line": 259
+            "line": 272
           },
           {
             "name": "World",
             "kind": "struct",
-            "description": "Full rapier2d-backed simulation world. # Fields - `bodies`: Lua-visible body mirrors. - `body_handles`: rapier rigid body handles for each slot. - `body_active`: active/tombstoned body slot state. - `collider_handles`: primary collider per body. - `extra_collider_handles`: additional colliders per body. - `collider_to_body`: reverse collider-to-body lookup. - `cached_shapes`: cached shape descriptors for rebuild detection. - `cached_restitutions`: cached restitution values per body. - `cached_layers`: cached layer/mask pairs per body. - `collision_group_masks`: world-level 16-group collision matrix rows. - `cached_frictions`: cached friction values per body. - `pipeline`: rapier simulation pipeline. - `gravity`: world gravity vector. - `params`: integration parameters. - `islands`: rapier island manager. - `broad_phase`: rapier broad phase. - `narrow_phase`: rapier narrow phase. - `rbodies`: rapier rigid body storage. - `rcolliders`: rapier collider storage. - `impulse_joints`: rapier impulse joint storage. - `multibody_joints`: rapier multibody joint storage. - `ccd_solver`: rapier CCD solver. - `joint_handles`: rapier impulse joint handles by slot. - `joint_active`: active/tombstoned joint slot state. - `collision_events`: buffered overlap/contact events. - `begin_contact_events`: body pairs that started touching this step. - `end_contact_events`: body pairs that stopped touching this step. - `event_handler`: local rapier event collector. - `joint_types`: joint type labels by stable joint id. - `mouse_joint_anchors`: mouse-joint anchor body lookup. - `pixels_per_meter`: pixels-to-meter conversion ratio. - `joint_break_forces`: optional joint break thresholds. - `one_way_normals`: one-way platform normals by body id. - `body_dirty_sync`: explicit mirror-to-rapier sync flags for dynamic bodies. - `body_base_gravity_scales`: gravity scales restored after temporary zone overrides. - `body_base_linear_damping`: linear damping restored after temporary zone overrides. - `body_base_angular_damping`: angular damping restored after temporary zone overrides. - `body_mass_overrides`: explicit mass values authored through `setMass`. - `zones`: registered physics zones. - `gravity_vectors`: additive world gravity vectors. - `gravity_vector_id_counter`: next stable additive gravity vector id. - `zone_id_counter`: next stable zone id. - `zone_tracker`: body/zone membership tracker. - `zone_events`: buffered zone enter/leave events. - `limits`: shared safety ceilings for strict helpers and bounded stepping. - `diagnostics`: cumulative and per-step instrumentation counters. - `rebuild_scratch`: reusable body-id buffer for collider rebuild scans. - `sync_scratch`: reusable mirror-state buffer for rapier sync. - `sorted_zone_indices`: reusable priority-order buffer for zones. - `default_gravity`: gravity captured at construction for full reset semantics. # Fields See inline field docs below for the authoritative per-field details.",
+            "description": "Full rapier2d-backed simulation world. # Fields - `bodies`: Lua-visible body mirrors. - `body_handles`: rapier rigid body handles for each slot. - `body_active`: active/tombstoned body slot state. - `collider_handles`: primary collider per body. - `extra_collider_handles`: additional colliders per body. - `collider_to_body`: reverse collider-to-body lookup. - `cached_shapes`: cached shape descriptors for rebuild detection. - `cached_restitutions`: cached restitution values per body. - `cached_layers`: cached layer/mask pairs per body. - `collision_group_masks`: world-level 16-group collision matrix rows. - `cached_frictions`: cached friction values per body. - `pipeline`: rapier simulation pipeline. - `gravity`: world gravity vector. - `params`: integration parameters. - `islands`: rapier island manager. - `broad_phase`: rapier broad phase. - `narrow_phase`: rapier narrow phase. - `rbodies`: rapier rigid body storage. - `rcolliders`: rapier collider storage. - `impulse_joints`: rapier impulse joint storage. - `multibody_joints`: rapier multibody joint storage. - `ccd_solver`: rapier CCD solver. - `joint_handles`: rapier impulse joint handles by slot. - `joint_active`: active/tombstoned joint slot state. - `collision_events`: buffered overlap/contact events. - `begin_contact_events`: body pairs that started touching this step. - `end_contact_events`: body pairs that stopped touching this step. - `event_handler`: local rapier event collector. - `joint_types`: joint type labels by stable joint id. - `mouse_joint_anchors`: mouse-joint anchor body lookup. - `pixels_per_meter`: pixels-to-meter conversion ratio. - `joint_break_forces`: optional joint break thresholds. - `one_way_normals`: one-way platform normals by body id. - `body_dirty_sync`: explicit mirror-to-rapier sync flags for dynamic bodies. - `body_base_gravity_scales`: gravity scales restored after temporary zone overrides. - `body_base_linear_damping`: linear damping restored after temporary zone overrides. - `body_base_angular_damping`: angular damping restored after temporary zone overrides. - `body_mass_overrides`: explicit mass values authored through `setMass`. - `zones`: registered physics zones. - `gravity_vectors`: additive world gravity vectors. - `flow_fields`: authored flow fields sampled before the solver step. - `gravity_vector_id_counter`: next stable additive gravity vector id. - `zone_id_counter`: next stable zone id. - `flow_field_id_counter`: next stable flow-field id. - `zone_tracker`: body/zone membership tracker. - `zone_events`: buffered zone enter/leave events. - `limits`: shared safety ceilings for strict helpers and bounded stepping. - `diagnostics`: cumulative and per-step instrumentation counters. - `rebuild_scratch`: reusable body-id buffer for collider rebuild scans. - `sync_scratch`: reusable mirror-state buffer for rapier sync. - `sorted_zone_indices`: reusable priority-order buffer for zones. - `default_gravity`: gravity captured at construction for full reset semantics. # Fields See inline field docs below for the authoritative per-field details.",
             "file": "src/physics/world.rs",
-            "line": 347
+            "line": 368
           }
         ]
       },

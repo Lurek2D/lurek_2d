@@ -3,6 +3,7 @@
 //! `controller.rs` owns the main `Overlay` runtime, while `ambient.rs`, `weather.rs`, and `water.rs` hold state blocks.
 //! `screen_effects.rs` and `transition.rs` cover timed flashes, shakes, fades, and full-screen transition playback models.
 //! `atmosphere.rs` groups clouds, fog, haze, vignette, grain, and lightning so callers can compose atmospheric layers.
+//! `status.rs` owns stacked player-state overlays such as frozen, poison, and danger feedback recipes.
 //! Change this file when public overlay exports move; change sibling files when overlay simulation or render data changes.
 
 /// Ambient color state derived from time-of-day settings.
@@ -11,6 +12,8 @@ pub mod ambient;
 pub mod atmosphere;
 /// Screen overlay controller for weather, flashes, fades, and haze.
 pub mod controller;
+/// Status-overlay stack state for HUD and fullscreen danger treatments.
+pub mod status;
 /// Screen-space flash, shake, and fade state types.
 pub mod screen_effects;
 /// Full-screen transition effects and playback state.
@@ -27,6 +30,10 @@ pub use atmosphere::{
 pub use controller::{
     Overlay, OverlayAccessibilityPolicy, OverlayDiagnostics, OverlayError, OverlayImageLimits,
     OverlayLimits, OverlayRenderLayer, OverlayRenderPlan, OverlayShaderPolicy, OverlayStats,
+};
+pub use status::{
+    normalize_status_intensity, StatusCompositeMode, StatusLayerTarget, StatusOverlayLayer,
+    StatusOverlayStack, StatusVisualRecipe, STATUS_INTENSITY_MAX,
 };
 pub use screen_effects::{FadeState, FlashState, ShakeState};
 pub use transition::{ScreenTransition, TransitionKind};

@@ -8,6 +8,7 @@
 - Manages override zones, raycast queries, and destructible static terrain.
 - Provides a 16-group world collision matrix layered over per-body layer/mask filters.
 - Provides post-step contact events and colorized visual debug overlays.
+- Supports authored flow fields for wind, water, conveyor, and magic-current style motion that can be sampled or applied during stepping.
 
 ## Summary
 
@@ -15,6 +16,7 @@
 - Bodies, colliders, forces, terrain, joints, sensors, and collision layers all belong to the same simulation step, which keeps movement and contact rules coherent across the engine.
 - The module supports dynamic, static, kinematic, and sensor-style roles so projects can mix actors, level geometry, triggers, platforms, and detection-only regions inside one physical space without switching subsystems.
 - Practical physics also depends on querying the world, not only advancing it. Raycasts, overlap checks, sweep-style tests, and contact inspection let gameplay ask what was hit, what overlaps, and why motion changed.
+- Flow fields extend that world model with continuous directional media. They let scripts describe rectangles, circular fans, and polyline tubes that contribute acceleration or drag-like target velocity behavior without inventing a second movement subsystem outside the physics step.
 - Shape support, terrain integration, and joints give the system expressive range for characters, bullets, walls, pickups, hazards, linked mechanisms, and authored environment collision.
 - Alpha-mask shape inference gives tools and scripts a pragmatic bridge from sprite or image assets to plausible collision geometry: circle-like masks become circles, filled masks become rectangles, and irregular masks become bounded convex polygons.
 - Contact data is one of the main user-facing outputs because systems often need normals, hit points, and begin or end state changes to react meaningfully.
@@ -34,7 +36,12 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 ## Notes
 
-- No additional module-specific notes.
+- Flow-field contract:
+  Authored flow fields live on the world, respect layer masks, can overlap additively, and may be sampled directly from Lua for AI, VFX, UI previews, or debugging. The physics world remains the source of truth for how those currents affect bodies during stepping.
+- Body-influence contract:
+  Bodies expose per-body flow coefficients so gameplay can scale all flow, air-only flow, water-only flow, and drag cross-section without forking world behavior. Those coefficients are body metadata, not separate force emitters.
+- Debug contract:
+  Physics debug rendering includes authored flow guides through `drawFlowDebug` so tools and examples can inspect centerlines, coverage bounds, and sampled arrows using the same world-owned data that stepping uses.
 
 ## Architecture Links
 

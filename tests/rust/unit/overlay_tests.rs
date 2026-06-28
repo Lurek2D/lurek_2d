@@ -2,7 +2,8 @@
 
 use lurek2d::color::Color;
 use lurek2d::overlay::{
-    Overlay, OverlayAccessibilityPolicy, OverlayError, OverlayRenderLayer, WeatherType,
+    Overlay, OverlayAccessibilityPolicy, OverlayError, OverlayRenderLayer, StatusOverlayLayer,
+    WeatherType,
 };
 
 fn plan_has_layer(plan: &[OverlayRenderLayer], layer: OverlayRenderLayer) -> bool {
@@ -163,6 +164,29 @@ mod render_plan_tests {
             &plan.externally_handled,
             OverlayRenderLayer::FilmGrain
         ));
+    }
+
+    #[test]
+    fn status_layers_report_direct_and_postfx_work() {
+        let mut overlay = Overlay::new(320, 240);
+        let mut frozen = StatusOverlayLayer::new("frozen", "frozen");
+        frozen.visual.color = Some([0.7, 0.9, 1.0, 0.25]);
+        frozen.visual.shader_effect = Some("grayscale".to_string());
+        frozen.visual.shader_strength = 0.8;
+        frozen.set_intensity_public(7.0);
+        overlay.status_stack.upsert(frozen);
+
+        overlay.update(0.25);
+        let plan = overlay.render_plan();
+        assert!(plan_has_layer(
+            &plan.rendered,
+            OverlayRenderLayer::StatusColorWash
+        ));
+        assert!(plan_has_layer(
+            &plan.externally_handled,
+            OverlayRenderLayer::StatusPostFx
+        ));
+        assert_eq!(overlay.build_postfx_passes().len(), 1);
     }
 }
 

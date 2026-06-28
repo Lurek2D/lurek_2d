@@ -2074,6 +2074,16 @@ end
 
 ---
 
+#### `LFlowField:destroy`
+
+Disables this flow field.
+
+```lua
+LFlowField:destroy()
+```
+
+---
+
 #### `LFlowField:getCostToTarget`
 
 Returns integration cost to the target from a one-based grid cell.
@@ -2198,6 +2208,54 @@ end
 
 ---
 
+#### `LFlowField:getId`
+
+Returns this flow field id.
+
+```lua
+LFlowField:getId()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Stable flow field id. |
+
+---
+
+#### `LFlowField:getLayerMask`
+
+Returns this flow field layer mask.
+
+```lua
+LFlowField:getLayerMask()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Layer bitmask. |
+
+---
+
+#### `LFlowField:getStrength`
+
+Returns this flow field strength.
+
+```lua
+LFlowField:getStrength()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Strength value. |
+
+---
+
 #### `LFlowField:getTargets`
 
 Returns target cells for this flow field.
@@ -2262,6 +2320,134 @@ do
     lurek.log.info("calculated_after = " .. tostring(ff:isCalculated()))
 end
 ```
+
+---
+
+#### `LFlowField:isEnabled`
+
+Returns whether this flow field is enabled.
+
+```lua
+LFlowField:isEnabled()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when enabled. |
+
+---
+
+#### `LFlowField:setApplication`
+
+Sets the body-application mode used during stepping.
+
+```lua
+LFlowField:setApplication(mode)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `mode` | string | `acceleration` or `targetVelocityDrag`. |
+
+---
+
+#### `LFlowField:setCombine`
+
+Sets how this field combines with overlapping fields.
+
+```lua
+LFlowField:setCombine(mode)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `mode` | string | `additive` or `additiveClamped`. |
+
+---
+
+#### `LFlowField:setEnabled`
+
+Enables or disables this flow field.
+
+```lua
+LFlowField:setEnabled(enabled)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `enabled` | boolean | True to enable, false to disable. |
+
+---
+
+#### `LFlowField:setLayerMask`
+
+Sets the body-layer mask that this field affects.
+
+```lua
+LFlowField:setLayerMask(mask)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `mask` | number | Layer bitmask. |
+
+---
+
+#### `LFlowField:setPoints`
+
+Replaces the polyline points of a path-shaped flow field.
+
+```lua
+LFlowField:setPoints(points)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `points` | table | Array of `{ x, y }` point tables. |
+
+---
+
+#### `LFlowField:setStrength`
+
+Sets this flow field strength.
+
+```lua
+LFlowField:setStrength(strength)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `strength` | number | Strength in world units per second. |
+
+---
+
+#### `LFlowField:setWidth`
+
+Sets the width of a path-shaped flow field.
+
+```lua
+LFlowField:setWidth(width)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `width` | number | Tube width in world units. |
 
 ---
 

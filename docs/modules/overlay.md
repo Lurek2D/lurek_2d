@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Manages screen-space weather, fog, camera shakes, and screen flashes. - Supports wave distortion and transition wipes.
+Manages screen-space weather, fog, camera shakes, and screen flashes. - Supports wave distortion and transition wipes. - Owns designer-authored status overlays that can stack color washes, fullscreen textures, and routed post-fx presets.
 
 ## Summary
 
@@ -10,6 +10,7 @@ Manages screen-space weather, fog, camera shakes, and screen flashes. - Supports
 - It groups full-screen and near-full-screen effects that are too global to belong to an individual sprite but too specialized to live as loose render hacks.
 - This matters for fog washes, rain veils, damage flashes, atmospheric tinting, transition masks, and similar treatments that need their own timing and configuration rules.
 - Weather, ambient mood, distortion-style effects, and transition controllers all belong here because they usually evolve over time rather than acting like static post-process toggles.
+- Status overlays also belong here when gameplay needs controllable danger or condition feedback such as frozen, poison, low-health, blindness, radiation, or burn states to fade, stack, and report diagnostics consistently.
 - That temporal behavior is the key reason the module exists: these effects are often stateful and orchestrated, not just one-frame visual filters.
 - The same subsystem can therefore own persistent environmental treatment and short-lived screen transitions without burying either concern inside unrelated render code.
 - Layer-wide control is important because these treatments often need coordinated fade-in, fade-out, stacking, and override rules when several moods or transitions compete for the screen at once.
@@ -139,6 +140,36 @@ do
     lurek.log.info("LOverlay:clear before=" .. tostring(ov:isActive()))
     ov:clear()
     lurek.log.info("LOverlay:clear after=" .. tostring(ov:isActive()))
+end
+```
+
+---
+
+#### `LOverlay:clearStatusEffect`
+
+Starts fading out one status layer.
+
+```lua
+LOverlay:clearStatusEffect(kind, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `kind` | string | Status kind or layer id. |
+| `opts?` | table | Optional fade-out override table. |
+
+**Example**
+
+```lua
+do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setStatusEffect("poison", { intensity = 5.0, fadeIn = 0.01 })
+    ov:update(0.05)
+    ov:clearStatusEffect("poison", { fadeOut = 0.01 })
+    ov:update(0.05)
+    lurek.log.info("[overlay.example] poison removed=" .. tostring(ov:getStatusEffect("poison") == nil))
 end
 ```
 
@@ -861,7 +892,7 @@ LOverlay:getStats()
 
 | Type | Description |
 |------|-------------|
-| table | Overlay telemetry fields. |
+| LOverlayGetStatsResult | Overlay telemetry fields. |
 
 **Example**
 
@@ -876,6 +907,70 @@ do
     local stats = ov:getStats()
     lurek.log.info("overlay stats size=" .. stats.width .. "x" .. stats.height)
     lurek.log.info("overlay stats effects=" .. stats.active_effects .. " weather=" .. tostring(stats.weather_enabled))
+end
+```
+
+---
+
+#### `LOverlay:getStatusEffect`
+
+Returns one status layer table or nil.
+
+```lua
+LOverlay:getStatusEffect(kind)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `kind` | string | Status kind or layer id. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table? | Layer table when present. |
+
+**Example**
+
+```lua
+do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setStatusEffect("burning", { intensity = 6.0, fadeIn = 0.01 })
+    ov:update(0.05)
+    local layer = ov:getStatusEffect("burning")
+    lurek.log.info("[overlay.example] burning shader=" .. tostring(layer.shader))
+end
+```
+
+---
+
+#### `LOverlay:getStatusEffects`
+
+Returns all current status layers sorted by priority.
+
+```lua
+LOverlay:getStatusEffects()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of status layer tables. |
+
+**Example**
+
+```lua
+do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setStatusEffect("lowhealth", { intensity = 3.0, priority = 0, fadeIn = 0.01 })
+    ov:setStatusEffect("burning", { intensity = 5.0, priority = 5, fadeIn = 0.01 })
+    ov:update(0.05)
+    local layers = ov:getStatusEffects()
+    lurek.log.info("[overlay.example] status count=" .. tostring(#layers))
+    lurek.log.info("[overlay.example] front layer=" .. tostring(layers[#layers] and layers[#layers].id or "nil"))
 end
 ```
 
@@ -2198,6 +2293,73 @@ fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
 ]], { target = "overlay" })
     ov:setShaderLayer("heat_haze", shader)
     lurek.log.info("[overlay.example] layer shader=" .. tostring(ov:getShaderLayer("heat_haze") ~= nil))
+end
+```
+
+---
+
+#### `LOverlay:setStatusEffect`
+
+Creates or updates one overlay-owned status layer such as `frozen`, `poison`, or `lowHealth`.
+
+```lua
+LOverlay:setStatusEffect(kind, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `kind` | string | Status kind name. |
+| `opts` | table | Status options such as intensity, fade, texture, shader, and color. |
+
+**Example**
+
+```lua
+do
+    local ov = lurek.overlay.new(800, 600)
+    local texture = lurek.image.newImageData(8, 8)
+    texture:fill(220, 240, 255, 255)
+    ov:setStatusEffect("frozen", {
+        intensity = 7.0,
+        fadeIn = 0.05,
+        color = { 0.65, 0.85, 1.0, 0.25 },
+        texture = texture,
+        textureOpacity = 0.5,
+        shader = "grayscale",
+        shaderStrength = 0.75,
+    })
+    ov:update(0.1)
+    lurek.log.info("[overlay.example] status active=" .. tostring(ov:getStatusEffect("frozen") ~= nil))
+end
+```
+
+---
+
+#### `LOverlay:setStatusIntensity`
+
+Updates one existing status intensity or creates a preset-backed layer when it is missing.
+
+```lua
+LOverlay:setStatusIntensity(kind, intensity)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `kind` | string | Status kind name. |
+| `intensity` | number | Intensity in `0..1` or `1..10`. |
+
+**Example**
+
+```lua
+do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setStatusIntensity("lowhealth", 4.0)
+    ov:update(0.1)
+    local layer = ov:getStatusEffect("lowhealth")
+    lurek.log.info("[overlay.example] lowhealth intensity=" .. string.format("%.2f", layer.intensity))
 end
 ```
 

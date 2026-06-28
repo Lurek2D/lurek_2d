@@ -2564,3 +2564,420 @@ do
     lurek.physics.attachShape(body, shape)
     lurek.log.info("[physics] first vertex=" .. tostring(first.x) .. "," .. tostring(first.y) .. " count=" .. tostring(#vertices))
 end
+
+--@api: LWorld:sampleFlow
+do
+    local world = lurek.physics.newWorld(0, 0)
+    world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 120,
+        h = 60,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        strength = 30,
+    })
+    local sample = world:sampleFlow(20, 20)
+    lurek.log.info("[physics] flow sample=" .. string.format("%.2f,%.2f", sample.vx, sample.vy))
+end
+
+--@api: LWorld:addFlowField
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        name = "river_lane",
+        geometry = "path",
+        points = {
+            { x = 0, y = 0 },
+            { x = 80, y = 0 },
+        },
+        width = 24,
+        strength = 45,
+    })
+    lurek.log.info("[physics] flow field id=" .. tostring(field:getId()))
+end
+
+--@api: LWorld:removeFlowField
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 32,
+        h = 32,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        strength = 20,
+    })
+    lurek.log.info("[physics] removed=" .. tostring(world:removeFlowField(field:getId())))
+end
+
+--@api: LWorld:getFlowField
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        name = "fan",
+        geometry = "circle",
+        x = 64,
+        y = 64,
+        radius = 32,
+        direction = "radialOut",
+        strength = 35,
+    })
+    local info = world:getFlowField(field:getId())
+    lurek.log.info("[physics] flow geometry=" .. tostring(info.geometry) .. " strength=" .. tostring(info.strength))
+end
+
+--@api: LWorld:clearFlowFields
+do
+    local world = lurek.physics.newWorld(0, 0)
+    world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 20,
+        h = 20,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        strength = 15,
+    })
+    world:clearFlowFields()
+    lurek.log.info("[physics] flow count after clear=" .. tostring(world:getStats().flowFields))
+end
+
+--@api: LWorld:drawFlowDebug
+do
+    local world = lurek.physics.newWorld(0, 0)
+    world:addFlowField({
+        geometry = "rect",
+        x = 10,
+        y = 10,
+        w = 30,
+        h = 20,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        strength = 25,
+    })
+    local img = lurek.image.newImageData(64, 64)
+    world:drawFlowDebug(img, { arrowSpacing = 16 })
+    local _, _, _, a = img:getPixel(10, 10)
+    lurek.log.info("[physics] flow debug alpha=" .. tostring(a))
+end
+
+--@api: LFlowField:getId
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 24,
+        h = 24,
+        direction = "explicit",
+        directionVector = { x = 0, y = 1 },
+        strength = 18,
+    })
+    lurek.log.info("[physics] flow id=" .. tostring(field:getId()))
+end
+
+--@api: LFlowField:setEnabled
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 24,
+        h = 24,
+        direction = "explicit",
+        directionVector = { x = 0, y = 1 },
+        strength = 18,
+    })
+    field:setEnabled(false)
+    lurek.log.info("[physics] enabled after set=" .. tostring(field:isEnabled()))
+end
+
+--@api: LFlowField:isEnabled
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 24,
+        h = 24,
+        direction = "explicit",
+        directionVector = { x = 0, y = 1 },
+        strength = 18,
+    })
+    lurek.log.info("[physics] flow enabled=" .. tostring(field:isEnabled()))
+end
+
+--@api: LFlowField:setStrength
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 24,
+        h = 24,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        strength = 10,
+    })
+    field:setStrength(55)
+    lurek.log.info("[physics] flow strength now=" .. tostring(field:getStrength()))
+end
+
+--@api: LFlowField:getStrength
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 24,
+        h = 24,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        strength = 22,
+    })
+    lurek.log.info("[physics] getStrength=" .. tostring(field:getStrength()))
+end
+
+--@api: LFlowField:setWidth
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        geometry = "path",
+        points = {
+            { x = 0, y = 0 },
+            { x = 48, y = 0 },
+        },
+        width = 10,
+        strength = 20,
+    })
+    field:setWidth(18)
+    lurek.log.info("[physics] path width=" .. tostring(world:getFlowField(field:getId()).width))
+end
+
+--@api: LFlowField:setPoints
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        geometry = "path",
+        points = {
+            { x = 0, y = 0 },
+            { x = 20, y = 0 },
+        },
+        width = 8,
+        strength = 20,
+    })
+    field:setPoints({
+        { x = 0, y = 0 },
+        { x = 0, y = 40 },
+        { x = 16, y = 56 },
+    })
+    lurek.log.info("[physics] path points=" .. tostring(#world:getFlowField(field:getId()).points))
+end
+
+--@api: LFlowField:setLayerMask
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 24,
+        h = 24,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        strength = 20,
+    })
+    field:setLayerMask(0x8)
+    lurek.log.info("[physics] layer mask=" .. tostring(field:getLayerMask()))
+end
+
+--@api: LFlowField:getLayerMask
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 24,
+        h = 24,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        strength = 20,
+        layerMask = 0x4,
+    })
+    lurek.log.info("[physics] getLayerMask=" .. tostring(field:getLayerMask()))
+end
+
+--@api: LFlowField:setApplication
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 24,
+        h = 24,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        strength = 20,
+    })
+    field:setApplication("targetVelocityDrag")
+    lurek.log.info("[physics] application=" .. tostring(world:getFlowField(field:getId()).application))
+end
+
+--@api: LFlowField:setCombine
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 24,
+        h = 24,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        strength = 20,
+    })
+    field:setCombine("additiveClamped")
+    lurek.log.info("[physics] combine=" .. tostring(world:getFlowField(field:getId()).combine))
+end
+
+--@api: LFlowField:destroy
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 24,
+        h = 24,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        strength = 20,
+    })
+    field:destroy()
+    lurek.log.info("[physics] destroyed flow=" .. tostring(world:getFlowField(field:getId()) == nil))
+end
+
+--@api: LFlowField:type
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 24,
+        h = 24,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        strength = 20,
+    })
+    lurek.log.info("[physics] flow type=" .. tostring(field:type()))
+end
+
+--@api: LFlowField:typeOf
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 24,
+        h = 24,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        strength = 20,
+    })
+    lurek.log.info("[physics] flow typeOf=" .. tostring(field:typeOf("LFlowField")))
+end
+
+--@api: LBody:setFlowScale
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(20, 20, 8, "dynamic")
+    body:setFlowScale(0.5)
+    world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 80,
+        h = 80,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        strength = 50,
+    })
+    world:step(1 / 60)
+    lurek.log.info("[physics] flowScale vx=" .. tostring(select(1, body:getVelocity())))
+end
+
+--@api: LBody:setAirScale
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(20, 20, 8, "dynamic")
+    body:setAirScale(0.25)
+    world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 80,
+        h = 80,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        strength = 50,
+        medium = "air",
+    })
+    world:step(1 / 60)
+    lurek.log.info("[physics] airScale vx=" .. tostring(select(1, body:getVelocity())))
+end
+
+--@api: LBody:setWaterScale
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(20, 20, 8, "dynamic")
+    body:setWaterScale(1.5)
+    world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 80,
+        h = 80,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        strength = 50,
+        medium = "water",
+    })
+    world:step(1 / 60)
+    lurek.log.info("[physics] waterScale vx=" .. tostring(select(1, body:getVelocity())))
+end
+
+--@api: LBody:setFlowCrossSection
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(20, 20, 8, "dynamic")
+    body:setFlowCrossSection(2.0)
+    world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 80,
+        h = 80,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        medium = "water",
+        application = "targetVelocityDrag",
+        strength = 50,
+        drag = 2.0,
+    })
+    world:step(1 / 60)
+    lurek.log.info("[physics] flowCrossSection vx=" .. tostring(select(1, body:getVelocity())))
+end

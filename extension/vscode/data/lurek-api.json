@@ -45651,6 +45651,78 @@
           "objectType": "LBody"
         },
         {
+          "name": "setFlowScale",
+          "fullPath": "LBody:setFlowScale",
+          "signature": "(scale)",
+          "description": "Sets the global multiplier applied to all flow-field influences on this body.",
+          "parameters": [
+            {
+              "name": "scale",
+              "type": "number",
+              "description": "Non-negative flow multiplier.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBody"
+        },
+        {
+          "name": "setAirScale",
+          "fullPath": "LBody:setAirScale",
+          "signature": "(scale)",
+          "description": "Sets the extra multiplier used only for `air` flow fields.",
+          "parameters": [
+            {
+              "name": "scale",
+              "type": "number",
+              "description": "Non-negative air multiplier.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBody"
+        },
+        {
+          "name": "setWaterScale",
+          "fullPath": "LBody:setWaterScale",
+          "signature": "(scale)",
+          "description": "Sets the extra multiplier used only for `water` flow fields.",
+          "parameters": [
+            {
+              "name": "scale",
+              "type": "number",
+              "description": "Non-negative water multiplier.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBody"
+        },
+        {
+          "name": "setFlowCrossSection",
+          "fullPath": "LBody:setFlowCrossSection",
+          "signature": "(cross_section)",
+          "description": "Sets the drag cross-section factor used by drag-style flow application.",
+          "parameters": [
+            {
+              "name": "crossSection",
+              "type": "number",
+              "description": "Positive cross-section multiplier.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBody"
+        },
+        {
           "name": "isFixedRotation",
           "fullPath": "LBody:isFixedRotation",
           "signature": "()",
@@ -67611,6 +67683,216 @@
               "name": "name",
               "type": "string",
               "description": "String value for `name`.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LFlowField"
+        },
+        {
+          "name": "getId",
+          "fullPath": "LFlowField:getId",
+          "signature": "()",
+          "description": "Returns this flow field id.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LFlowField"
+        },
+        {
+          "name": "setEnabled",
+          "fullPath": "LFlowField:setEnabled",
+          "signature": "(enabled)",
+          "description": "Enables or disables this flow field.",
+          "parameters": [
+            {
+              "name": "enabled",
+              "type": "boolean",
+              "description": "True to enable, false to disable.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LFlowField"
+        },
+        {
+          "name": "isEnabled",
+          "fullPath": "LFlowField:isEnabled",
+          "signature": "()",
+          "description": "Returns whether this flow field is enabled.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LFlowField"
+        },
+        {
+          "name": "setStrength",
+          "fullPath": "LFlowField:setStrength",
+          "signature": "(strength)",
+          "description": "Sets this flow field strength.",
+          "parameters": [
+            {
+              "name": "strength",
+              "type": "number",
+              "description": "Strength in world units per second.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LFlowField"
+        },
+        {
+          "name": "getStrength",
+          "fullPath": "LFlowField:getStrength",
+          "signature": "()",
+          "description": "Returns this flow field strength.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LFlowField"
+        },
+        {
+          "name": "setWidth",
+          "fullPath": "LFlowField:setWidth",
+          "signature": "(width)",
+          "description": "Sets the width of a path-shaped flow field.",
+          "parameters": [
+            {
+              "name": "width",
+              "type": "number",
+              "description": "Tube width in world units.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LFlowField"
+        },
+        {
+          "name": "setPoints",
+          "fullPath": "LFlowField:setPoints",
+          "signature": "(points)",
+          "description": "Replaces the polyline points of a path-shaped flow field.",
+          "parameters": [
+            {
+              "name": "points",
+              "type": "table",
+              "description": "Array of `{ x, y }` point tables.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LFlowField"
+        },
+        {
+          "name": "setLayerMask",
+          "fullPath": "LFlowField:setLayerMask",
+          "signature": "(mask)",
+          "description": "Sets the body-layer mask that this field affects.",
+          "parameters": [
+            {
+              "name": "mask",
+              "type": "integer",
+              "description": "Layer bitmask.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LFlowField"
+        },
+        {
+          "name": "getLayerMask",
+          "fullPath": "LFlowField:getLayerMask",
+          "signature": "()",
+          "description": "Returns this flow field layer mask.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LFlowField"
+        },
+        {
+          "name": "setApplication",
+          "fullPath": "LFlowField:setApplication",
+          "signature": "(mode)",
+          "description": "Sets the body-application mode used during stepping.",
+          "parameters": [
+            {
+              "name": "mode",
+              "type": "string",
+              "description": "`acceleration` or `targetVelocityDrag`.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LFlowField"
+        },
+        {
+          "name": "setCombine",
+          "fullPath": "LFlowField:setCombine",
+          "signature": "(mode)",
+          "description": "Sets how this field combines with overlapping fields.",
+          "parameters": [
+            {
+              "name": "mode",
+              "type": "string",
+              "description": "`additive` or `additiveClamped`.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LFlowField"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LFlowField:destroy",
+          "signature": "()",
+          "description": "Disables this flow field.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LFlowField"
+        },
+        {
+          "name": "type",
+          "fullPath": "LFlowField:type",
+          "signature": "()",
+          "description": "Returns the type name of this object.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LFlowField"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LFlowField:typeOf",
+          "signature": "(name)",
+          "description": "Returns whether this object matches the requested type name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to compare against.",
               "optional": false
             }
           ],
@@ -108795,6 +109077,107 @@
           "fullPath": "LOverlay:getRenderPlan",
           "signature": "()",
           "description": "Returns the current render responsibility plan for active overlay layers.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LOverlay"
+        },
+        {
+          "name": "setStatusEffect",
+          "fullPath": "LOverlay:setStatusEffect",
+          "signature": "(kind, opts)",
+          "description": "Creates or updates one overlay-owned status layer such as `frozen`, `poison`, or `lowHealth`.",
+          "parameters": [
+            {
+              "name": "kind",
+              "type": "string",
+              "description": "Status kind name.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Status options such as intensity, fade, texture, shader, and color.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LOverlay"
+        },
+        {
+          "name": "setStatusIntensity",
+          "fullPath": "LOverlay:setStatusIntensity",
+          "signature": "(kind, intensity)",
+          "description": "Updates one existing status intensity or creates a preset-backed layer when it is missing.",
+          "parameters": [
+            {
+              "name": "kind",
+              "type": "string",
+              "description": "Status kind name.",
+              "optional": false
+            },
+            {
+              "name": "intensity",
+              "type": "number",
+              "description": "Intensity in `0..1` or `1..10`.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LOverlay"
+        },
+        {
+          "name": "clearStatusEffect",
+          "fullPath": "LOverlay:clearStatusEffect",
+          "signature": "(kind, [opts])",
+          "description": "Starts fading out one status layer.",
+          "parameters": [
+            {
+              "name": "kind",
+              "type": "string",
+              "description": "Status kind or layer id.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional fade-out override table.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LOverlay"
+        },
+        {
+          "name": "getStatusEffect",
+          "fullPath": "LOverlay:getStatusEffect",
+          "signature": "(kind)",
+          "description": "Returns one status layer table or nil.",
+          "parameters": [
+            {
+              "name": "kind",
+              "type": "string",
+              "description": "Status kind or layer id.",
+              "optional": false
+            }
+          ],
+          "returns": "table?",
+          "returnType": "table?",
+          "isMethod": true,
+          "objectType": "LOverlay"
+        },
+        {
+          "name": "getStatusEffects",
+          "fullPath": "LOverlay:getStatusEffects",
+          "signature": "()",
+          "description": "Returns all current status layers sorted by priority.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -179360,6 +179743,125 @@
           "parameters": [],
           "returns": "table",
           "returnType": "table",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "sampleFlow",
+          "fullPath": "LWorld:sampleFlow",
+          "signature": "(x, y, [opts])",
+          "description": "Samples combined flow at a world position.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "World-space x position.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "World-space y position.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional table with `layerMask`.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "addFlowField",
+          "fullPath": "LWorld:addFlowField",
+          "signature": "(opts)",
+          "description": "Creates one authored flow field and returns a handle for later mutation.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Flow field authoring table.",
+              "optional": false
+            }
+          ],
+          "returns": "LFlowField",
+          "returnType": "LFlowField",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "removeFlowField",
+          "fullPath": "LWorld:removeFlowField",
+          "signature": "(id)",
+          "description": "Disables one flow field by id.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Flow field id.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "getFlowField",
+          "fullPath": "LWorld:getFlowField",
+          "signature": "(id)",
+          "description": "Returns one flow field table by id, or nil when missing.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Flow field id.",
+              "optional": false
+            }
+          ],
+          "returns": "table?",
+          "returnType": "table?",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "clearFlowFields",
+          "fullPath": "LWorld:clearFlowFields",
+          "signature": "()",
+          "description": "Disables every authored flow field in the world.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "drawFlowDebug",
+          "fullPath": "LWorld:drawFlowDebug",
+          "signature": "(target, [opts])",
+          "description": "Draws flow-field centerlines and sampled arrows into an ImageData target.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "LImageData",
+              "description": "Mutable target image.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional table with `arrowSpacing`.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": true,
           "objectType": "LWorld"
         },

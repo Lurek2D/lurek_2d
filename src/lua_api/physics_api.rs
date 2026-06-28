@@ -5,8 +5,9 @@ use crate::image::ImageData;
 use crate::math::Vec2;
 use crate::physics::world::{BodyContact, COLLISION_GROUP_COUNT};
 use crate::physics::{
-    AlphaShapeOptions, Body, BodyId, BodyType, PhysicsQueryFilter, PhysicsWorldStats, PhysicsZone,
-    RaycastHit, Shape, TerrainMap, World,
+    AlphaShapeOptions, Body, BodyId, BodyType, FlowApplicationMode, FlowCombineMode,
+    FlowDirectionMode, FlowFalloff, FlowField, FlowGeometry, FlowMedium, FlowSample,
+    PhysicsQueryFilter, PhysicsWorldStats, PhysicsZone, RaycastHit, Shape, TerrainMap, World,
 };
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -39,6 +40,160 @@ fn lua_collision_group(method: &str, group: i64) -> LuaResult<usize> {
         ));
     }
     Ok(group as usize)
+}
+
+fn parse_flow_medium(value: Option<String>) -> LuaResult<FlowMedium> {
+    match value
+        .unwrap_or_else(|| "air".to_string())
+        .trim()
+        .to_ascii_lowercase()
+        .as_str()
+    {
+        "air" => Ok(FlowMedium::Air),
+        "water" => Ok(FlowMedium::Water),
+        "conveyor" => Ok(FlowMedium::Conveyor),
+        "magic" => Ok(FlowMedium::Magic),
+        "custom" => Ok(FlowMedium::Custom),
+        other => Err(physics_runtime_error(
+            "addFlowField",
+            format!("invalid flow medium '{}'", other),
+        )),
+    }
+}
+
+fn parse_flow_application(value: Option<String>) -> LuaResult<FlowApplicationMode> {
+    match value
+        .unwrap_or_else(|| "acceleration".to_string())
+        .trim()
+        .to_ascii_lowercase()
+        .as_str()
+    {
+        "acceleration" => Ok(FlowApplicationMode::Acceleration),
+        "targetvelocitydrag" | "target_velocity_drag" => {
+            Ok(FlowApplicationMode::TargetVelocityDrag)
+        }
+        other => Err(physics_runtime_error(
+            "addFlowField",
+            format!("invalid flow application '{}'", other),
+        )),
+    }
+}
+
+fn parse_flow_combine(value: Option<String>) -> LuaResult<FlowCombineMode> {
+    match value
+        .unwrap_or_else(|| "additive".to_string())
+        .trim()
+        .to_ascii_lowercase()
+        .as_str()
+    {
+        "additive" => Ok(FlowCombineMode::Additive),
+        "additiveclamped" | "additive_clamped" => Ok(FlowCombineMode::AdditiveClamped),
+        other => Err(physics_runtime_error(
+            "addFlowField",
+            format!("invalid flow combine mode '{}'", other),
+        )),
+    }
+}
+
+fn parse_flow_falloff(value: Option<String>) -> LuaResult<FlowFalloff> {
+    match value
+        .unwrap_or_else(|| "smoothstep".to_string())
+        .trim()
+        .to_ascii_lowercase()
+        .as_str()
+    {
+        "constant" => Ok(FlowFalloff::Constant),
+        "linear" => Ok(FlowFalloff::Linear),
+        "smoothstep" => Ok(FlowFalloff::Smoothstep),
+        other => Err(physics_runtime_error(
+            "addFlowField",
+            format!("invalid flow falloff '{}'", other),
+        )),
+    }
+}
+
+fn parse_flow_direction(opts: &LuaTable) -> LuaResult<FlowDirectionMode> {
+    let value = opts
+        .get::<_, Option<String>>("direction")?
+        .unwrap_or_else(|| "alongPath".to_string());
+    match value.trim().to_ascii_lowercase().as_str() {
+        "alongpath" | "along_path" => Ok(FlowDirectionMode::AlongPath),
+        "againstpath" | "against_path" => Ok(FlowDirectionMode::AgainstPath),
+        "radialout" | "radial_out" => Ok(FlowDirectionMode::RadialOut),
+        "radialin" | "radial_in" => Ok(FlowDirectionMode::RadialIn),
+        "explicit" => {
+            let dir_tbl: LuaTable = opts.get("directionVector").map_err(|_| {
+                physics_runtime_error(
+                    "addFlowField",
+                    "direction='explicit' requires directionVector = { x = ..., y = ... }",
+                )
+            })?;
+            let x: f32 = dir_tbl.get("x")?;
+            let y: f32 = dir_tbl.get("y")?;
+            Ok(FlowDirectionMode::Explicit { x, y })
+        }
+        other => Err(physics_runtime_error(
+            "addFlowField",
+            format!("invalid flow direction '{}'", other),
+        )),
+    }
+}
+
+fn parse_flow_points(tbl: LuaTable) -> LuaResult<Vec<Vec2>> {
+    let mut points = Vec::new();
+    for index in 1..=tbl.raw_len() {
+        let row: LuaTable = tbl.raw_get(index)?;
+        let x: f32 = row.get("x")?;
+        let y: f32 = row.get("y")?;
+        points.push(Vec2::new(x, y));
+    }
+    Ok(points)
+}
+
+fn flow_field_from_lua(opts: LuaTable) -> LuaResult<FlowField> {
+    let geometry_name = opts
+        .get::<_, Option<String>>("geometry")?
+        .unwrap_or_else(|| "path".to_string())
+        .trim()
+        .to_ascii_lowercase();
+    let geometry = match geometry_name.as_str() {
+        "rect" | "rectangle" => FlowGeometry::UniformRect {
+            x: opts.get("x")?,
+            y: opts.get("y")?,
+            w: opts.get("w")?,
+            h: opts.get("h")?,
+        },
+        "circle" | "fan" => FlowGeometry::CircleFan {
+            cx: opts.get("x")?,
+            cy: opts.get("y")?,
+            radius: opts.get("radius")?,
+            inner_radius: opts.get::<_, Option<f32>>("innerRadius")?.unwrap_or(0.0),
+        },
+        "path" | "polyline" => FlowGeometry::PolylineTube {
+            points: parse_flow_points(opts.get("points")?)?,
+            width: opts.get("width")?,
+        },
+        other => {
+            return Err(physics_runtime_error(
+                "addFlowField",
+                format!("invalid flow geometry '{}'", other),
+            ))
+        }
+    };
+    let mut field = FlowField::new(0, geometry);
+    field.name = opts.get::<_, Option<String>>("name")?;
+    field.medium = parse_flow_medium(opts.get::<_, Option<String>>("medium")?)?;
+    field.strength = opts.get::<_, Option<f32>>("strength")?.unwrap_or(field.strength);
+    field.direction = parse_flow_direction(&opts)?;
+    field.falloff = parse_flow_falloff(opts.get::<_, Option<String>>("falloff")?)?;
+    field.combine = parse_flow_combine(opts.get::<_, Option<String>>("combine")?)?;
+    field.application = parse_flow_application(opts.get::<_, Option<String>>("application")?)?;
+    field.priority = opts.get::<_, Option<i32>>("priority")?.unwrap_or(0);
+    field.layer_mask = opts.get::<_, Option<u32>>("layerMask")?.unwrap_or(u32::MAX);
+    field.max_accel = opts.get::<_, Option<f32>>("maxAccel")?;
+    field.drag = opts.get::<_, Option<f32>>("drag")?.unwrap_or(1.0);
+    field.validate().map_err(|err| physics_runtime_error("addFlowField", err))?;
+    Ok(field)
 }
 
 fn lua_collision_group_mask(method: &str, mask: u32) -> LuaResult<u32> {
@@ -212,6 +367,7 @@ fn stats_to_table<'lua>(lua: &'lua Lua, stats: PhysicsWorldStats) -> LuaResult<L
     tbl.set("jointSlots", stats.joint_slots)?;
     tbl.set("zones", stats.zones)?;
     tbl.set("gravityVectors", stats.gravity_vectors)?;
+    tbl.set("flowFields", stats.flow_fields)?;
     tbl.set("sleepingBodies", stats.sleeping_bodies)?;
     tbl.set("skippedSteps", stats.skipped_steps)?;
     tbl.set("clampedSteps", stats.clamped_steps)?;
@@ -221,6 +377,10 @@ fn stats_to_table<'lua>(lua: &'lua Lua, stats: PhysicsWorldStats) -> LuaResult<L
     tbl.set("collidersRebuilt", stats.colliders_rebuilt)?;
     /// Number of zone overlap checks performed by the last simulation step.
     tbl.set("zoneChecks", stats.zone_checks)?;
+    /// Number of flow-field samples evaluated during the last simulation step.
+    tbl.set("flowSamples", stats.flow_samples)?;
+    /// Number of bodies that received non-zero flow influence during the last simulation step.
+    tbl.set("flowAffectedBodies", stats.flow_affected_bodies)?;
     /// Number of active contacts reported by the physics world.
     tbl.set("contacts", stats.contacts)?;
     /// Number of body transforms synchronized back to runtime state.
@@ -240,6 +400,103 @@ fn gravity_vector_to_table<'lua>(
     tbl.set("gy", vector.gy)?;
     tbl.set("layerMask", vector.layer_mask)?;
     tbl.set("enabled", vector.enabled)?;
+    Ok(tbl)
+}
+
+fn flow_sample_to_table<'lua>(lua: &'lua Lua, sample: &FlowSample) -> LuaResult<LuaTable<'lua>> {
+    let tbl = lua.create_table()?;
+    tbl.set("vx", sample.vx)?;
+    tbl.set("vy", sample.vy)?;
+    tbl.set("magnitude", sample.magnitude)?;
+    tbl.set("intensity", sample.intensity)?;
+    let sources = lua.create_table()?;
+    for (index, contribution) in sample.contributions.iter().enumerate() {
+        let entry = lua.create_table()?;
+        entry.set("id", contribution.field_id)?;
+        entry.set("vx", contribution.vx)?;
+        entry.set("vy", contribution.vy)?;
+        entry.set("magnitude", contribution.magnitude)?;
+        sources.set(index + 1, entry)?;
+    }
+    tbl.set("sources", sources)?;
+    Ok(tbl)
+}
+
+fn flow_field_to_table<'lua>(lua: &'lua Lua, field: &FlowField) -> LuaResult<LuaTable<'lua>> {
+    let tbl = lua.create_table()?;
+    tbl.set("id", field.id)?;
+    tbl.set("enabled", field.enabled)?;
+    tbl.set("name", field.name.clone())?;
+    tbl.set(
+        "medium",
+        match field.medium {
+            FlowMedium::Air => "air",
+            FlowMedium::Water => "water",
+            FlowMedium::Conveyor => "conveyor",
+            FlowMedium::Magic => "magic",
+            FlowMedium::Custom => "custom",
+        },
+    )?;
+    tbl.set("strength", field.strength)?;
+    tbl.set(
+        "application",
+        match field.application {
+            FlowApplicationMode::Acceleration => "acceleration",
+            FlowApplicationMode::TargetVelocityDrag => "targetVelocityDrag",
+        },
+    )?;
+    tbl.set(
+        "combine",
+        match field.combine {
+            FlowCombineMode::Additive => "additive",
+            FlowCombineMode::AdditiveClamped => "additiveClamped",
+        },
+    )?;
+    tbl.set(
+        "falloff",
+        match field.falloff {
+            FlowFalloff::Constant => "constant",
+            FlowFalloff::Linear => "linear",
+            FlowFalloff::Smoothstep => "smoothstep",
+        },
+    )?;
+    tbl.set("priority", field.priority)?;
+    tbl.set("layerMask", field.layer_mask)?;
+    tbl.set("maxAccel", field.max_accel)?;
+    tbl.set("drag", field.drag)?;
+    match &field.geometry {
+        FlowGeometry::UniformRect { x, y, w, h } => {
+            tbl.set("geometry", "rect")?;
+            tbl.set("x", *x)?;
+            tbl.set("y", *y)?;
+            tbl.set("w", *w)?;
+            tbl.set("h", *h)?;
+        }
+        FlowGeometry::CircleFan {
+            cx,
+            cy,
+            radius,
+            inner_radius,
+        } => {
+            tbl.set("geometry", "circle")?;
+            tbl.set("x", *cx)?;
+            tbl.set("y", *cy)?;
+            tbl.set("radius", *radius)?;
+            tbl.set("innerRadius", *inner_radius)?;
+        }
+        FlowGeometry::PolylineTube { points, width } => {
+            tbl.set("geometry", "path")?;
+            tbl.set("width", *width)?;
+            let points_tbl = lua.create_table()?;
+            for (index, point) in points.iter().enumerate() {
+                let row = lua.create_table()?;
+                row.set("x", point.x)?;
+                row.set("y", point.y)?;
+                points_tbl.set(index + 1, row)?;
+            }
+            tbl.set("points", points_tbl)?;
+        }
+    }
     Ok(tbl)
 }
 
@@ -656,11 +913,88 @@ impl LuaUserData for LuaWorld {
         /// @field | jointSlots | integer | Total allocated joint slots, including inactive tombstones.
         /// @field | zones | integer | Number of active physics zones.
         /// @field | gravityVectors | integer | Number of active additive gravity vectors.
+        /// @field | flowFields | integer | Number of active authored flow fields.
         /// @field | sleepingBodies | integer | Number of active bodies currently sleeping.
+        /// @field | flowSamples | integer | Number of flow-field samples evaluated during the last simulation step.
+        /// @field | flowAffectedBodies | integer | Number of bodies influenced by non-zero flow during the last simulation step.
         methods.add_method("getStats", |lua, this, ()| {
             let stats = this.world.borrow().get_stats();
             stats_to_table(lua, stats)
         });
+        // -- sampleFlow --
+        /// Samples combined flow at a world position.
+        /// @param | x | number | World-space x position.
+        /// @param | y | number | World-space y position.
+        /// @param | opts | table? | Optional table with `layerMask`.
+        /// @return | table | Flow sample table with `vx`, `vy`, `magnitude`, `intensity`, and `sources`.
+        methods.add_method(
+            "sampleFlow",
+            |lua, this, (x, y, opts): (f32, f32, Option<LuaTable>)| {
+                let layer_mask = match opts {
+                    Some(table) => table.get::<_, Option<u32>>("layerMask")?,
+                    None => None,
+                };
+                let sample = this.world.borrow().sample_flow(x, y, layer_mask);
+                flow_sample_to_table(lua, &sample)
+            },
+        );
+        // -- addFlowField --
+        /// Creates one authored flow field and returns a handle for later mutation.
+        /// @param | opts | table | Flow field authoring table.
+        /// @return | LFlowField | New flow field handle.
+        methods.add_method_mut("addFlowField", |_, this, opts: LuaTable| {
+            let field = flow_field_from_lua(opts)?;
+            let id = this
+                .world
+                .borrow_mut()
+                .try_add_flow_field(field)
+                .map_err(|err| physics_runtime_error("addFlowField", err))?;
+            Ok(LuaFlowField {
+                world: Rc::clone(&this.world),
+                id,
+            })
+        });
+        // -- removeFlowField --
+        /// Disables one flow field by id.
+        /// @param | id | integer | Flow field id.
+        /// @return | boolean | True when the field existed and was active.
+        methods.add_method("removeFlowField", |_, this, id: usize| {
+            Ok(this.world.borrow_mut().remove_flow_field(id))
+        });
+        // -- getFlowField --
+        /// Returns one flow field table by id, or nil when missing.
+        /// @param | id | integer | Flow field id.
+        /// @return | table? | Flow field descriptor table with geometry, strength, application, combine, and layer-mask fields.
+        methods.add_method("getFlowField", |lua, this, id: usize| {
+            match this.world.borrow().flow_field(id) {
+                Some(field) => Ok(Some(flow_field_to_table(lua, field)?)),
+                None => Ok(None),
+            }
+        });
+        // -- clearFlowFields --
+        /// Disables every authored flow field in the world.
+        methods.add_method("clearFlowFields", |_, this, ()| {
+            this.world.borrow_mut().clear_flow_fields();
+            Ok(())
+        });
+        // -- drawFlowDebug --
+        /// Draws flow-field centerlines and sampled arrows into an ImageData target.
+        /// @param | target | LImageData | Mutable target image.
+        /// @param | opts | table? | Optional table with `arrowSpacing`.
+        methods.add_method(
+            "drawFlowDebug",
+            |_, this, (target, opts): (mlua::AnyUserData, Option<LuaTable>)| {
+                let arrow_spacing = match opts {
+                    Some(table) => table.get::<_, Option<u32>>("arrowSpacing")?.unwrap_or(24),
+                    None => 24,
+                };
+                let mut target_ref = target.borrow_mut::<crate::image::ImageData>()?;
+                this.world
+                    .borrow()
+                    .draw_flow_debug_to_image(&mut target_ref, arrow_spacing);
+                Ok(())
+            },
+        );
         // -- destroyBody --
         /// Removes a body from the world by its ID, along with all attached fixtures and joints.
         /// @param | id | integer | The body ID to destroy.
@@ -1688,6 +2022,174 @@ impl LuaUserData for LuaWorld {
         });
     }
 }
+/// A mutable handle to one authored flow field stored inside a physics world.
+#[derive(Clone)]
+pub struct LuaFlowField {
+    world: Rc<RefCell<World>>,
+    id: usize,
+}
+impl LuaUserData for LuaFlowField {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- getId --
+        /// Returns this flow field id.
+        /// @return | integer | Stable flow field id.
+        methods.add_method("getId", |_, this, ()| Ok(this.id));
+        // -- setEnabled --
+        /// Enables or disables this flow field.
+        /// @param | enabled | boolean | True to enable, false to disable.
+        methods.add_method("setEnabled", |_, this, enabled: bool| {
+            let mut world = this.world.borrow_mut();
+            let field = world
+                .flow_field_slot_mut(this.id)
+                .ok_or_else(|| physics_runtime_error("setEnabled", "flow field is not active"))?;
+            field.enabled = enabled;
+            Ok(())
+        });
+        // -- isEnabled --
+        /// Returns whether this flow field is enabled.
+        /// @return | boolean | True when enabled.
+        methods.add_method("isEnabled", |_, this, ()| {
+            Ok(this
+                .world
+                .borrow()
+                .flow_field_slot(this.id)
+                .map(|field| field.enabled)
+                .unwrap_or(false))
+        });
+        // -- setStrength --
+        /// Sets this flow field strength.
+        /// @param | strength | number | Strength in world units per second.
+        methods.add_method("setStrength", |_, this, strength: f32| {
+            let mut world = this.world.borrow_mut();
+            let field = world
+                .flow_field_slot_mut(this.id)
+                .ok_or_else(|| physics_runtime_error("setStrength", "flow field is not active"))?;
+            field.strength = strength;
+            field
+                .validate()
+                .map_err(|err| physics_runtime_error("setStrength", err))?;
+            Ok(())
+        });
+        // -- getStrength --
+        /// Returns this flow field strength.
+        /// @return | number | Strength value.
+        methods.add_method("getStrength", |_, this, ()| {
+            Ok(this
+                .world
+                .borrow()
+                .flow_field_slot(this.id)
+                .map(|field| field.strength)
+                .unwrap_or(0.0))
+        });
+        // -- setWidth --
+        /// Sets the width of a path-shaped flow field.
+        /// @param | width | number | Tube width in world units.
+        methods.add_method("setWidth", |_, this, width: f32| {
+            let mut world = this.world.borrow_mut();
+            let field = world
+                .flow_field_slot_mut(this.id)
+                .ok_or_else(|| physics_runtime_error("setWidth", "flow field is not active"))?;
+            match &mut field.geometry {
+                FlowGeometry::PolylineTube { width: current, .. } => *current = width,
+                _ => {
+                    return Err(physics_runtime_error(
+                        "setWidth",
+                        "width is only supported for path geometry",
+                    ))
+                }
+            }
+            field
+                .validate()
+                .map_err(|err| physics_runtime_error("setWidth", err))?;
+            Ok(())
+        });
+        // -- setPoints --
+        /// Replaces the polyline points of a path-shaped flow field.
+        /// @param | points | table | Array of `{ x, y }` point tables.
+        methods.add_method("setPoints", |_, this, points: LuaTable| {
+            let mut world = this.world.borrow_mut();
+            let field = world
+                .flow_field_slot_mut(this.id)
+                .ok_or_else(|| physics_runtime_error("setPoints", "flow field is not active"))?;
+            match &mut field.geometry {
+                FlowGeometry::PolylineTube { points: current, .. } => {
+                    *current = parse_flow_points(points)?
+                }
+                _ => {
+                    return Err(physics_runtime_error(
+                        "setPoints",
+                        "points are only supported for path geometry",
+                    ))
+                }
+            }
+            field
+                .validate()
+                .map_err(|err| physics_runtime_error("setPoints", err))?;
+            Ok(())
+        });
+        // -- setLayerMask --
+        /// Sets the body-layer mask that this field affects.
+        /// @param | mask | integer | Layer bitmask.
+        methods.add_method("setLayerMask", |_, this, mask: u32| {
+            let mut world = this.world.borrow_mut();
+            let field = world
+                .flow_field_slot_mut(this.id)
+                .ok_or_else(|| physics_runtime_error("setLayerMask", "flow field is not active"))?;
+            field.layer_mask = mask;
+            Ok(())
+        });
+        // -- getLayerMask --
+        /// Returns this flow field layer mask.
+        /// @return | integer | Layer bitmask.
+        methods.add_method("getLayerMask", |_, this, ()| {
+            Ok(this
+                .world
+                .borrow()
+                .flow_field_slot(this.id)
+                .map(|field| field.layer_mask)
+                .unwrap_or(0))
+        });
+        // -- setApplication --
+        /// Sets the body-application mode used during stepping.
+        /// @param | mode | string | `acceleration` or `targetVelocityDrag`.
+        methods.add_method("setApplication", |_, this, mode: String| {
+            let mut world = this.world.borrow_mut();
+            let field = world
+                .flow_field_slot_mut(this.id)
+                .ok_or_else(|| physics_runtime_error("setApplication", "flow field is not active"))?;
+            field.application = parse_flow_application(Some(mode))?;
+            Ok(())
+        });
+        // -- setCombine --
+        /// Sets how this field combines with overlapping fields.
+        /// @param | mode | string | `additive` or `additiveClamped`.
+        methods.add_method("setCombine", |_, this, mode: String| {
+            let mut world = this.world.borrow_mut();
+            let field = world
+                .flow_field_slot_mut(this.id)
+                .ok_or_else(|| physics_runtime_error("setCombine", "flow field is not active"))?;
+            field.combine = parse_flow_combine(Some(mode))?;
+            Ok(())
+        });
+        // -- destroy --
+        /// Disables this flow field.
+        methods.add_method("destroy", |_, this, ()| {
+            this.world.borrow_mut().remove_flow_field(this.id);
+            Ok(())
+        });
+        // -- type --
+        /// Returns the type name of this object.
+        /// @return | string | `LFlowField`.
+        methods.add_method("type", |_, _, ()| Ok("LFlowField"));
+        // -- typeOf --
+        /// Returns whether this object matches the requested type name.
+        /// @param | name | string | Type name to compare against.
+        /// @return | boolean | True for `LFlowField` and `LObject`.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LFlowField" || name == "LObject")
+        });
+    }
+}
 /// A physics zone that applies area-based effects (gravity overrides, damping) to bodies within its bounds.
 #[derive(Clone)]
 pub struct LuaZone {
@@ -2395,6 +2897,74 @@ impl LuaUserData for LuaBody {
         /// @param | scale | number | Gravity scale factor.
         methods.add_method("setGravityScale", |_, this, scale: f32| {
             this.world.borrow_mut().set_gravity_scale(this.id.0, scale);
+            Ok(())
+        });
+        // -- setFlowScale --
+        /// Sets the global multiplier applied to all flow-field influences on this body.
+        /// @param | scale | number | Non-negative flow multiplier.
+        methods.add_method("setFlowScale", |_, this, scale: f32| {
+            if !scale.is_finite() || scale < 0.0 {
+                return Err(physics_runtime_error(
+                    "setFlowScale",
+                    "scale must be finite and >= 0",
+                ));
+            }
+            let mut world = this.world.borrow_mut();
+            let body = world
+                .get_body_mut(this.id.0)
+                .ok_or_else(|| physics_runtime_error("setFlowScale", "body is not active"))?;
+            body.flow_influence.flow_scale = scale;
+            Ok(())
+        });
+        // -- setAirScale --
+        /// Sets the extra multiplier used only for `air` flow fields.
+        /// @param | scale | number | Non-negative air multiplier.
+        methods.add_method("setAirScale", |_, this, scale: f32| {
+            if !scale.is_finite() || scale < 0.0 {
+                return Err(physics_runtime_error(
+                    "setAirScale",
+                    "scale must be finite and >= 0",
+                ));
+            }
+            let mut world = this.world.borrow_mut();
+            let body = world
+                .get_body_mut(this.id.0)
+                .ok_or_else(|| physics_runtime_error("setAirScale", "body is not active"))?;
+            body.flow_influence.air_scale = scale;
+            Ok(())
+        });
+        // -- setWaterScale --
+        /// Sets the extra multiplier used only for `water` flow fields.
+        /// @param | scale | number | Non-negative water multiplier.
+        methods.add_method("setWaterScale", |_, this, scale: f32| {
+            if !scale.is_finite() || scale < 0.0 {
+                return Err(physics_runtime_error(
+                    "setWaterScale",
+                    "scale must be finite and >= 0",
+                ));
+            }
+            let mut world = this.world.borrow_mut();
+            let body = world
+                .get_body_mut(this.id.0)
+                .ok_or_else(|| physics_runtime_error("setWaterScale", "body is not active"))?;
+            body.flow_influence.water_scale = scale;
+            Ok(())
+        });
+        // -- setFlowCrossSection --
+        /// Sets the drag cross-section factor used by drag-style flow application.
+        /// @param | crossSection | number | Positive cross-section multiplier.
+        methods.add_method("setFlowCrossSection", |_, this, cross_section: f32| {
+            if !cross_section.is_finite() || cross_section <= 0.0 {
+                return Err(physics_runtime_error(
+                    "setFlowCrossSection",
+                    "crossSection must be finite and > 0",
+                ));
+            }
+            let mut world = this.world.borrow_mut();
+            let body = world
+                .get_body_mut(this.id.0)
+                .ok_or_else(|| physics_runtime_error("setFlowCrossSection", "body is not active"))?;
+            body.flow_influence.cross_section = cross_section;
             Ok(())
         });
         // -- isFixedRotation --

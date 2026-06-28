@@ -44,6 +44,36 @@ pub enum BodyShape {
     /// Circle of the given radius.
     Circle { radius: f32 },
 }
+
+/// Per-body coefficients controlling how authored flow fields affect this body.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct BodyFlowInfluence {
+    /// Enables or disables flow-field participation for this body.
+    pub enabled: bool,
+    /// Global multiplier applied to all sampled flow vectors.
+    pub flow_scale: f32,
+    /// Extra multiplier applied only to `FlowMedium::Air`.
+    pub air_scale: f32,
+    /// Extra multiplier applied only to `FlowMedium::Water`.
+    pub water_scale: f32,
+    /// Cross-section factor used by drag-style flow application.
+    pub cross_section: f32,
+    /// Wakes sleeping bodies when sampled flow becomes non-zero.
+    pub wake_on_flow: bool,
+}
+
+impl Default for BodyFlowInfluence {
+    fn default() -> Self {
+        Self {
+            enabled: true,
+            flow_scale: 1.0,
+            air_scale: 1.0,
+            water_scale: 1.0,
+            cross_section: 1.0,
+            wake_on_flow: false,
+        }
+    }
+}
 /// Data-only description of a physics body passed to `World` for simulation.
 /// # Fields
 /// - `position`: world-space body center.
@@ -60,6 +90,7 @@ pub enum BodyShape {
 /// - `angle`: rotation in radians.
 /// - `angular_velocity`: rotational velocity in radians per second.
 /// - `shape_ext`: optional extended polygon/edge/chain geometry.
+/// - `flow_influence`: authored coefficients used when flow fields affect the body.
 pub struct Body {
     /// World-space position.
     pub position: Vec2,
@@ -89,6 +120,8 @@ pub struct Body {
     pub angular_velocity: f32,
     /// Extended shape for polygon, edge, and chain bodies.
     pub shape_ext: Option<Shape>,
+    /// Per-body flow-field response coefficients.
+    pub flow_influence: BodyFlowInfluence,
 }
 /// Construction and geometric helpers for `Body`.
 impl Body {
@@ -116,6 +149,7 @@ impl Body {
             angle: 0.0,
             angular_velocity: 0.0,
             shape_ext,
+            flow_influence: BodyFlowInfluence::default(),
         }
     }
 
@@ -237,6 +271,22 @@ impl Body {
             self.mass,
             self.friction,
             self.restitution,
+        )?;
+        validate_finite(
+            "flow_influence.flow_scale",
+            f64::from(self.flow_influence.flow_scale),
+        )?;
+        validate_finite(
+            "flow_influence.air_scale",
+            f64::from(self.flow_influence.air_scale),
+        )?;
+        validate_finite(
+            "flow_influence.water_scale",
+            f64::from(self.flow_influence.water_scale),
+        )?;
+        validate_positive(
+            "flow_influence.cross_section",
+            f64::from(self.flow_influence.cross_section),
         )?;
         if let Some(shape) = &self.shape_ext {
             match shape {

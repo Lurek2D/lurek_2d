@@ -1,13 +1,18 @@
 //! Registers the `lurek.overlay` Lua API for overlay controllers, transitions, telemetry, and validated options.
 
-use super::render_api::{ensure_shader_target, shader_key_from_userdata, LuaShader};
+use super::render_api::{
+    ensure_shader_target, shader_key_from_userdata, LuaImage, LuaShader,
+};
 use super::SharedState;
+use crate::effect::PostFxEffectType;
+use crate::image::{ImageData, Texture, TextureColorSpace};
 use crate::overlay::{
-    Overlay, OverlayAccessibilityPolicy, ScreenTransition, TransitionKind, WeatherType,
+    Overlay, OverlayAccessibilityPolicy, ScreenTransition, StatusCompositeMode,
+    StatusLayerTarget, StatusOverlayLayer, TransitionKind, WeatherType, STATUS_INTENSITY_MAX,
 };
 use crate::render::renderer::{PostFxPass, RenderCommand};
 use crate::render::ShaderTarget;
-use crate::runtime::resource_keys::ShaderKey;
+use crate::runtime::resource_keys::{ShaderKey, TextureKey};
 use mlua::prelude::*;
 use slotmap::Key;
 use std::cell::RefCell;
@@ -62,6 +67,193 @@ fn positive_u32(api: &str, arg_name: &str, value: u32) -> LuaResult<u32> {
             "{api}: {arg_name} must be > 0"
         )))
     }
+}
+
+fn table_to_color(api: &str, field: &str, table: &LuaTable) -> LuaResult<[f32; 4]> {
+    Ok([
+        unit_f32(api, &format!("{field}.r"), table.get::<_, Option<f32>>(1)?.unwrap_or(0.0))?,
+        unit_f32(api, &format!("{field}.g"), table.get::<_, Option<f32>>(2)?.unwrap_or(0.0))?,
+        unit_f32(api, &format!("{field}.b"), table.get::<_, Option<f32>>(3)?.unwrap_or(0.0))?,
+        unit_f32(api, &format!("{field}.a"), table.get::<_, Option<f32>>(4)?.unwrap_or(1.0))?,
+    ])
+}
+
+fn parse_status_target(value: Option<String>) -> LuaResult<StatusLayerTarget> {
+    match value
+        .unwrap_or_else(|| "hudFront".to_string())
+        .trim()
+        .to_ascii_lowercase()
+        .as_str()
+    {
+        "sceneonly" | "scene_only" => Ok(StatusLayerTarget::SceneOnly),
+        "hudback" | "hud_back" => Ok(StatusLayerTarget::HudBack),
+        "hudfront" | "hud_front" => Ok(StatusLayerTarget::HudFront),
+        "fullscreentop" | "full_screen_top" => Ok(StatusLayerTarget::FullScreenTop),
+        other => Err(LuaError::RuntimeError(format!(
+            "status target must be one of sceneOnly, hudBack, hudFront, fullScreenTop; got '{}'",
+            other
+        ))),
+    }
+}
+
+fn parse_status_composite(value: Option<String>) -> LuaResult<StatusCompositeMode> {
+    match value
+        .unwrap_or_else(|| "alphaBlend".to_string())
+        .trim()
+        .to_ascii_lowercase()
+        .as_str()
+    {
+        "alphablend" | "alpha_blend" => Ok(StatusCompositeMode::AlphaBlend),
+        "additive" => Ok(StatusCompositeMode::Additive),
+        "additiveclamp" | "additive_clamp" => Ok(StatusCompositeMode::AdditiveClamp),
+        other => Err(LuaError::RuntimeError(format!(
+            "status composite must be one of alphaBlend, additive, additiveClamp; got '{}'",
+            other
+        ))),
+    }
+}
+
+fn texture_from_lua_value(
+    state: &Rc<RefCell<SharedState>>,
+    api_name: &str,
+    value: LuaValue,
+) -> LuaResult<Option<(TextureKey, (u32, u32))>> {
+    match value {
+        LuaValue::Nil => Ok(None),
+        LuaValue::String(path_str) => {
+            let path = path_str.to_str().map_err(|err| {
+                LuaError::RuntimeError(format!("{api_name}: invalid texture path: {err}"))
+            })?;
+            let mut st = state.borrow_mut();
+            let full_path = st.game_dir.join(path.to_string());
+            let texture = Texture::load_with_color_space(
+                &full_path,
+                &mut st.textures,
+                TextureColorSpace::Srgb,
+            )
+            .map_err(|err| LuaError::RuntimeError(format!("{api_name}: {err}")))?;
+            st.clear_released_texture_handle(texture.key.data().as_ffi());
+            Ok(Some((texture.key, (texture.width, texture.height))))
+        }
+        LuaValue::UserData(ud) => {
+            if let Ok(image) = ud.borrow::<LuaImage>() {
+                let st = state.borrow();
+                let texture = st.textures.get(image.key).ok_or_else(|| {
+                    LuaError::RuntimeError(format!(
+                        "{api_name}: image handle is not valid or was released"
+                    ))
+                })?;
+                return Ok(Some((image.key, (texture.width, texture.height))));
+            }
+            if let Ok(image_data) = ud.borrow::<ImageData>() {
+                let pixels = image_data.as_bytes().to_vec();
+                let (width, height) = image_data.dimensions();
+                let mut st = state.borrow_mut();
+                let texture = Texture::from_rgba_with_color_space(
+                    width,
+                    height,
+                    pixels,
+                    &mut st.textures,
+                    TextureColorSpace::Srgb,
+                )
+                .map_err(|err| LuaError::RuntimeError(format!("{api_name}: {err}")))?;
+                st.clear_released_texture_handle(texture.key.data().as_ffi());
+                return Ok(Some((texture.key, (texture.width, texture.height))));
+            }
+            Err(LuaError::RuntimeError(format!(
+                "{api_name}: texture must be a path string, LImage, or LImageData"
+            )))
+        }
+        other => Err(LuaError::RuntimeError(format!(
+            "{api_name}: texture must be a path string, LImage, or LImageData, got {}",
+            other.type_name()
+        ))),
+    }
+}
+
+fn apply_status_preset(layer: &mut StatusOverlayLayer) {
+    match layer.kind.as_str() {
+        "frozen" => {
+            layer.visual.color = Some([0.72, 0.88, 1.0, 0.18]);
+            layer.visual.shader_effect = Some("grayscale".to_string());
+            layer.visual.shader_strength = 0.9;
+            layer.visual.texture_opacity = 0.95;
+        }
+        "poison" => {
+            layer.visual.color = Some([0.25, 0.82, 0.28, 0.16]);
+            layer.visual.shader_effect = Some("chromatic".to_string());
+            layer.visual.shader_strength = 2.0;
+        }
+        "burning" => {
+            layer.visual.color = Some([0.95, 0.38, 0.12, 0.16]);
+            layer.visual.shader_effect = Some("noise".to_string());
+            layer.visual.shader_strength = 0.4;
+        }
+        "lowhealth" | "low_health" => {
+            layer.visual.color = Some([0.92, 0.1, 0.12, 0.2]);
+            layer.visual.shader_effect = Some("vignette".to_string());
+            layer.visual.shader_strength = 0.85;
+        }
+        "radiation" => {
+            layer.visual.color = Some([0.4, 0.9, 0.28, 0.14]);
+            layer.visual.shader_effect = Some("scanlines".to_string());
+            layer.visual.shader_strength = 0.45;
+        }
+        "blind" => {
+            layer.visual.color = Some([0.0, 0.0, 0.0, 0.35]);
+            layer.visual.shader_effect = Some("vignette".to_string());
+            layer.visual.shader_strength = 1.0;
+        }
+        _ => {}
+    }
+}
+
+fn status_layer_to_table<'lua>(
+    lua: &'lua Lua,
+    layer: &StatusOverlayLayer,
+) -> LuaResult<LuaTable<'lua>> {
+    let table = lua.create_table()?;
+    table.set("id", layer.id.clone())?;
+    table.set("kind", layer.kind.clone())?;
+    table.set("enabled", layer.enabled)?;
+    table.set("intensity", layer.intensity_01 * STATUS_INTENSITY_MAX)?;
+    table.set("intensity01", layer.intensity_01)?;
+    table.set("targetIntensity", layer.target_intensity_01 * STATUS_INTENSITY_MAX)?;
+    table.set("targetIntensity01", layer.target_intensity_01)?;
+    table.set("fadeIn", layer.fade_in)?;
+    table.set("fadeOut", layer.fade_out)?;
+    table.set("duration", layer.duration)?;
+    table.set("elapsed", layer.elapsed)?;
+    table.set("priority", layer.priority)?;
+    table.set(
+        "target",
+        match layer.target {
+            StatusLayerTarget::SceneOnly => "sceneOnly",
+            StatusLayerTarget::HudBack => "hudBack",
+            StatusLayerTarget::HudFront => "hudFront",
+            StatusLayerTarget::FullScreenTop => "fullScreenTop",
+        },
+    )?;
+    table.set(
+        "composite",
+        match layer.composite {
+            StatusCompositeMode::AlphaBlend => "alphaBlend",
+            StatusCompositeMode::Additive => "additive",
+            StatusCompositeMode::AdditiveClamp => "additiveClamp",
+        },
+    )?;
+    if let Some(color) = layer.visual.color {
+        let color_tbl = lua.create_table()?;
+        for (index, value) in color.into_iter().enumerate() {
+            color_tbl.set(index + 1, value)?;
+        }
+        table.set("color", color_tbl)?;
+    }
+    table.set("hasTexture", layer.visual.texture_key.is_some())?;
+    table.set("textureOpacity", layer.visual.texture_opacity)?;
+    table.set("shader", layer.visual.shader_effect.clone())?;
+    table.set("shaderStrength", layer.visual.shader_strength)?;
+    Ok(table)
 }
 
 /// Lua-side handle for screen overlay, ambient, weather, and transition visual state.
@@ -227,6 +419,11 @@ impl LuaUserData for LuaOverlay {
         // -- getStats --
         /// Returns a telemetry snapshot for dashboard and debug workflows.
         /// @return | table | Overlay telemetry fields.
+        /// @field | width | integer | Overlay width in pixels.
+        /// @field | height | integer | Overlay height in pixels.
+        /// @field | active_effects | integer | Count of currently active overlay subsystems.
+        /// @field | status_layers | integer | Count of authored status layers stored in the overlay stack.
+        /// @field | active_status_layers | integer | Count of status layers currently contributing visible work.
         methods.add_method("getStats", |lua, this, ()| {
             let stats = this.inner.stats();
             let table = lua.create_table()?;
@@ -252,11 +449,14 @@ impl LuaUserData for LuaOverlay {
             table.set("invalid_shader_rejections", stats.invalid_shader_rejections)?;
             table.set("debug_image_rejections", stats.debug_image_rejections)?;
             table.set("external_render_layers", stats.external_render_layers)?;
+            table.set("status_layers", stats.status_layers)?;
+            table.set("active_status_layers", stats.active_status_layers)?;
             Ok(table)
         });
         // -- getRenderPlan --
         /// Returns the current render responsibility plan for active overlay layers.
         /// @return | table | Table with `rendered`, `externally_handled`, and `shader` string arrays.
+        /// `rendered` may include `status_color_wash` and `status_texture`; `externally_handled` may include `status_postfx`.
         methods.add_method("getRenderPlan", |lua, this, ()| {
             let plan = this.inner.render_plan();
             let table = lua.create_table()?;
@@ -283,6 +483,161 @@ impl LuaUserData for LuaOverlay {
                 shader_index += 1;
             }
             table.set("shader", shader_layers)?;
+            Ok(table)
+        });
+        // -- setStatusEffect --
+        /// Creates or updates one overlay-owned status layer such as `frozen`, `poison`, or `lowHealth`.
+        /// @param | kind | string | Status kind name.
+        /// @param | opts | table | Status options such as intensity, fade, texture, shader, and color.
+        methods.add_method_mut("setStatusEffect", |_, this, (kind, opts): (String, LuaTable)| {
+            let kind_name = kind.trim().to_ascii_lowercase();
+            if kind_name.is_empty() {
+                return Err(LuaError::RuntimeError(
+                    "LOverlay:setStatusEffect: kind must not be empty".into(),
+                ));
+            }
+            let layer_id = opts
+                .get::<_, Option<String>>("id")?
+                .unwrap_or_else(|| kind_name.clone());
+            let mut layer = this
+                .inner
+                .status_stack
+                .layer(&layer_id)
+                .cloned()
+                .unwrap_or_else(|| {
+                    let mut layer = StatusOverlayLayer::new(layer_id.clone(), kind_name.clone());
+                    apply_status_preset(&mut layer);
+                    layer
+                });
+            layer.kind = kind_name;
+            if let Some(value) = opts.get::<_, Option<f32>>("intensity")? {
+                layer.set_intensity_public(value);
+            } else if layer.target_intensity_01 <= 0.0 && layer.intensity_01 <= 0.0 {
+                layer.set_intensity_public(STATUS_INTENSITY_MAX);
+            }
+            if let Some(value) = opts.get::<_, Option<f32>>("fadeIn")? {
+                layer.fade_in = non_negative_f32("LOverlay:setStatusEffect", "fadeIn", value)?;
+            }
+            if let Some(value) = opts.get::<_, Option<f32>>("fadeOut")? {
+                layer.fade_out = non_negative_f32("LOverlay:setStatusEffect", "fadeOut", value)?;
+            }
+            if let Some(value) = opts.get::<_, Option<f32>>("duration")? {
+                layer.duration = Some(non_negative_f32("LOverlay:setStatusEffect", "duration", value)?);
+            }
+            if let Some(value) = opts.get::<_, Option<i32>>("priority")? {
+                layer.priority = value;
+            }
+            if let Some(target) = opts.get::<_, Option<String>>("target")? {
+                layer.target = parse_status_target(Some(target))?;
+            }
+            if let Some(composite) = opts.get::<_, Option<String>>("composite")? {
+                layer.composite = parse_status_composite(Some(composite))?;
+            }
+            if let Some(color_table) = opts.get::<_, Option<LuaTable>>("color")? {
+                layer.visual.color = Some(table_to_color(
+                    "LOverlay:setStatusEffect",
+                    "color",
+                    &color_table,
+                )?);
+            }
+            let texture_value = opts.raw_get::<_, LuaValue>("texture")?;
+            if !matches!(texture_value, LuaValue::Nil) {
+                let texture = texture_from_lua_value(
+                    &this.state,
+                    "LOverlay:setStatusEffect",
+                    texture_value,
+                )?;
+                layer.visual.texture_key = texture.map(|(key, _)| key);
+                layer.visual.texture_size = texture.map(|(_, size)| size);
+            }
+            if let Some(value) = opts.get::<_, Option<f32>>("textureOpacity")? {
+                layer.visual.texture_opacity =
+                    unit_f32("LOverlay:setStatusEffect", "textureOpacity", value)?;
+            }
+            if let Some(shader_name) = opts.get::<_, Option<String>>("shader")? {
+                let shader_name = shader_name.trim().to_ascii_lowercase();
+                let shader_valid = shader_name == "blur_h"
+                    || shader_name == "blur_v"
+                    || PostFxEffectType::from_name(&shader_name).is_some();
+                if !shader_valid {
+                    return Err(LuaError::RuntimeError(format!(
+                        "LOverlay:setStatusEffect: unsupported built-in post-fx '{}'",
+                        shader_name
+                    )));
+                }
+                layer.visual.shader_effect = Some(shader_name);
+            }
+            if let Some(value) = opts.get::<_, Option<f32>>("shaderStrength")? {
+                layer.visual.shader_strength =
+                    non_negative_f32("LOverlay:setStatusEffect", "shaderStrength", value)?;
+            }
+            this.inner.status_stack.upsert(layer);
+            Ok(())
+        });
+        // -- setStatusIntensity --
+        /// Updates one existing status intensity or creates a preset-backed layer when it is missing.
+        /// @param | kind | string | Status kind name.
+        /// @param | intensity | number | Intensity in `0..1` or `1..10`.
+        methods.add_method_mut("setStatusIntensity", |_, this, (kind, intensity): (String, f32)| {
+            let kind_name = kind.trim().to_ascii_lowercase();
+            if kind_name.is_empty() {
+                return Err(LuaError::RuntimeError(
+                    "LOverlay:setStatusIntensity: kind must not be empty".into(),
+                ));
+            }
+            let mut layer = this
+                .inner
+                .status_stack
+                .layer(&kind_name)
+                .cloned()
+                .unwrap_or_else(|| {
+                    let mut layer = StatusOverlayLayer::new(kind_name.clone(), kind_name.clone());
+                    apply_status_preset(&mut layer);
+                    layer
+                });
+            layer.set_intensity_public(intensity);
+            this.inner.status_stack.upsert(layer);
+            Ok(())
+        });
+        // -- clearStatusEffect --
+        /// Starts fading out one status layer.
+        /// @param | kind | string | Status kind or layer id.
+        /// @param | opts | table? | Optional fade-out override table.
+        methods.add_method_mut(
+            "clearStatusEffect",
+            |_, this, (kind, opts): (String, Option<LuaTable>)| {
+                let fade_out = match opts {
+                    Some(table) => table.get::<_, Option<f32>>("fadeOut")?,
+                    None => None,
+                };
+                this.inner.status_stack.clear_layer(&kind, fade_out);
+                Ok(())
+            },
+        );
+        // -- getStatusEffect --
+        /// Returns one status layer table or nil.
+        /// @param | kind | string | Status kind or layer id.
+        /// @return | table? | Layer table when present.
+        methods.add_method("getStatusEffect", |lua, this, kind: String| {
+            match this.inner.status_stack.layer(&kind) {
+                Some(layer) => Ok(Some(status_layer_to_table(lua, layer)?)),
+                None => Ok(None),
+            }
+        });
+        // -- getStatusEffects --
+        /// Returns all current status layers sorted by priority.
+        /// @return | table | Array of status layer tables.
+        methods.add_method("getStatusEffects", |lua, this, ()| {
+            let table = lua.create_table()?;
+            for (index, layer) in this
+                .inner
+                .status_stack
+                .active_layers_sorted()
+                .into_iter()
+                .enumerate()
+            {
+                table.set(index + 1, status_layer_to_table(lua, layer)?)?;
+            }
             Ok(table)
         });
         // -- clear --
@@ -846,7 +1201,7 @@ impl LuaUserData for LuaOverlay {
         /// Queues renderer commands for the overlay's current visual state.
         methods.add_method("render", |_, this, ()| {
             let mut cmds = this.inner.build_render_commands();
-            let mut shader_passes = Vec::new();
+            let mut shader_passes = this.inner.build_postfx_passes();
             if let Some(key) = this.shader {
                 shader_passes.push(overlay_shader_pass(
                     format!("overlay_shader_{}", shader_id_from_key(key)),

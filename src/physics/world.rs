@@ -16,6 +16,10 @@
 
 use super::body::{Body, BodyShape, BodyType};
 use super::error::PhysicsError;
+use super::flow::{
+    combine_contributions, FlowApplicationMode, FlowCombineMode, FlowField, FlowFieldId,
+    FlowMedium, FlowSample,
+};
 use super::limits::{validate_finite, validate_positive, PhysicsLimits};
 use super::shape::Shape;
 use super::types::BodyId;
@@ -216,6 +220,8 @@ pub struct GravityVector {
 /// - `last_bodies_scanned`: body slots examined during the most recent step.
 /// - `last_colliders_rebuilt`: collider rebuilds triggered during the most recent step.
 /// - `last_zone_checks`: body-zone containment checks performed during the most recent step.
+/// - `last_flow_samples`: field samples evaluated during the most recent step.
+/// - `last_flow_affected_bodies`: dynamic bodies that received non-zero flow influence during the most recent step.
 /// - `last_contacts`: contact events emitted during the most recent step.
 /// - `last_synced_bodies`: body mirrors pushed into rapier during the most recent step.
 #[derive(Debug, Clone, Copy, Default)]
@@ -232,6 +238,10 @@ pub struct PhysicsDiagnostics {
     pub last_colliders_rebuilt: usize,
     /// Body-zone containment checks performed during the most recent step.
     pub last_zone_checks: usize,
+    /// Flow-field samples evaluated during the most recent step.
+    pub last_flow_samples: usize,
+    /// Dynamic bodies that received non-zero flow influence during the most recent step.
+    pub last_flow_affected_bodies: usize,
     /// Contact events emitted during the most recent step.
     pub last_contacts: usize,
     /// Body mirrors pushed into rapier during the most recent step.
@@ -246,6 +256,7 @@ pub struct PhysicsDiagnostics {
 /// - `joint_slots`: total allocated joint slots.
 /// - `zones`: active zone count.
 /// - `gravity_vectors`: active additive gravity vector count.
+/// - `flow_fields`: active flow-field count.
 /// - `sleeping_bodies`: active bodies currently sleeping.
 /// - `skipped_steps`: invalid or empty `step` calls rejected before rapier.
 /// - `clamped_steps`: `step` calls whose dt was reduced to the configured ceiling.
@@ -253,6 +264,8 @@ pub struct PhysicsDiagnostics {
 /// - `bodies_scanned`: body slots examined during the most recent step.
 /// - `colliders_rebuilt`: collider rebuilds triggered during the most recent step.
 /// - `zone_checks`: body-zone containment checks performed during the most recent step.
+/// - `flow_samples`: flow-field samples evaluated during the most recent step.
+/// - `flow_affected_bodies`: dynamic bodies that received non-zero flow influence during the most recent step.
 /// - `contacts`: contact events emitted during the most recent step.
 /// - `synced_bodies`: body mirrors pushed into rapier during the most recent step.
 #[derive(Debug, Clone, Copy, Default)]
@@ -271,6 +284,8 @@ pub struct PhysicsWorldStats {
     pub zones: usize,
     /// Active additive gravity vector count.
     pub gravity_vectors: usize,
+    /// Active authored flow-field count.
+    pub flow_fields: usize,
     /// Active bodies currently sleeping.
     pub sleeping_bodies: usize,
     /// Invalid or empty `step` calls rejected before rapier.
@@ -285,6 +300,10 @@ pub struct PhysicsWorldStats {
     pub colliders_rebuilt: usize,
     /// Body-zone containment checks performed during the most recent step.
     pub zone_checks: usize,
+    /// Flow-field samples evaluated during the most recent step.
+    pub flow_samples: usize,
+    /// Dynamic bodies that received non-zero flow influence during the most recent step.
+    pub flow_affected_bodies: usize,
     /// Contact events emitted during the most recent step.
     pub contacts: usize,
     /// Body mirrors pushed into rapier during the most recent step.
@@ -332,8 +351,10 @@ pub struct PhysicsWorldStats {
 /// - `body_mass_overrides`: explicit mass values authored through `setMass`.
 /// - `zones`: registered physics zones.
 /// - `gravity_vectors`: additive world gravity vectors.
+/// - `flow_fields`: authored flow fields sampled before the solver step.
 /// - `gravity_vector_id_counter`: next stable additive gravity vector id.
 /// - `zone_id_counter`: next stable zone id.
+/// - `flow_field_id_counter`: next stable flow-field id.
 /// - `zone_tracker`: body/zone membership tracker.
 /// - `zone_events`: buffered zone enter/leave events.
 /// - `limits`: shared safety ceilings for strict helpers and bounded stepping.
@@ -423,10 +444,14 @@ pub struct World {
     zones: Vec<PhysicsZone>,
     /// Additive world gravity vectors applied when no non-additive zone override is active.
     gravity_vectors: Vec<GravityVector>,
+    /// Authored flow fields sampled and applied before the solver step.
+    flow_fields: Vec<FlowField>,
     /// Monotonically increasing id for additive gravity vectors.
     gravity_vector_id_counter: usize,
     /// Monotonically increasing id for zones.
     zone_id_counter: usize,
+    /// Monotonically increasing id for flow fields.
+    flow_field_id_counter: usize,
     /// Tracks which bodies are inside each zone.
     zone_tracker: ZoneTracker,
     /// Zone enter/exit events emitted last step.
@@ -640,6 +665,97 @@ impl World {
             }
         }
     }
+
+    /// Draws flow-field centerlines, bounds, and sampled arrows into an RGBA image target.
+    pub fn draw_flow_debug_to_image(
+        &self,
+        img: &mut crate::image::ImageData,
+        arrow_spacing: u32,
+    ) {
+        let spacing = arrow_spacing.max(12) as usize;
+        for field in self.flow_fields.iter().filter(|field| field.enabled) {
+            match &field.geometry {
+                super::flow::FlowGeometry::UniformRect { x, y, w, h } => {
+                    let x0 = x.round() as i32;
+                    let y0 = y.round() as i32;
+                    let x1 = (*x + *w).round() as i32;
+                    let y1 = (*y + *h).round() as i32;
+                    img.draw_line(x0, y0, x1, y0, 90, 220, 255, 220);
+                    img.draw_line(x1, y0, x1, y1, 90, 220, 255, 220);
+                    img.draw_line(x1, y1, x0, y1, 90, 220, 255, 220);
+                    img.draw_line(x0, y1, x0, y0, 90, 220, 255, 220);
+                }
+                super::flow::FlowGeometry::CircleFan {
+                    cx,
+                    cy,
+                    radius,
+                    inner_radius,
+                } => {
+                    img.draw_circle(
+                        cx.round() as i32,
+                        cy.round() as i32,
+                        radius.round().max(1.0) as u32,
+                        90,
+                        220,
+                        255,
+                        220,
+                    );
+                    if *inner_radius > 0.0 {
+                        img.draw_circle(
+                            cx.round() as i32,
+                            cy.round() as i32,
+                            inner_radius.round().max(1.0) as u32,
+                            60,
+                            140,
+                            170,
+                            180,
+                        );
+                    }
+                }
+                super::flow::FlowGeometry::PolylineTube { points, width } => {
+                    for segment_index in 0..points.len().saturating_sub(1) {
+                        let start = points[segment_index];
+                        let end = points[segment_index + 1];
+                        img.draw_line(
+                            start.x.round() as i32,
+                            start.y.round() as i32,
+                            end.x.round() as i32,
+                            end.y.round() as i32,
+                            90,
+                            220,
+                            255,
+                            220,
+                        );
+                        img.draw_circle(
+                            start.x.round() as i32,
+                            start.y.round() as i32,
+                            width.round().max(1.0) as u32,
+                            30,
+                            110,
+                            140,
+                            60,
+                        );
+                    }
+                }
+            }
+        }
+        for y in (spacing / 2..img.height() as usize).step_by(spacing) {
+            for x in (spacing / 2..img.width() as usize).step_by(spacing) {
+                let sample = self.sample_flow(x as f32, y as f32, None);
+                if sample.magnitude <= 1.0e-3 {
+                    continue;
+                }
+                let dir_x = sample.vx / sample.magnitude;
+                let dir_y = sample.vy / sample.magnitude;
+                let arrow_len = (sample.intensity * spacing as f32 * 0.8).max(6.0);
+                let x0 = x as i32;
+                let y0 = y as i32;
+                let x1 = (x as f32 + dir_x * arrow_len).round() as i32;
+                let y1 = (y as f32 + dir_y * arrow_len).round() as i32;
+                img.draw_line(x0, y0, x1, y1, 255, 200, 70, 220);
+            }
+        }
+    }
     /// Return a snapshot of all body shapes suitable for debug rendering.
     pub fn extract_shape_snapshots(&self) -> Vec<PhysicsShapeSnapshot> {
         let mut out = Vec::with_capacity(self.bodies.len());
@@ -754,8 +870,10 @@ impl World {
             body_mass_overrides: Vec::new(),
             zones: Vec::new(),
             gravity_vectors: Vec::new(),
+            flow_fields: Vec::new(),
             gravity_vector_id_counter: 0,
             zone_id_counter: 0,
+            flow_field_id_counter: 0,
             zone_tracker: ZoneTracker::new(),
             zone_events: Vec::new(),
             limits: PhysicsLimits::default(),
@@ -1501,6 +1619,8 @@ impl World {
         self.diagnostics.last_bodies_scanned = 0;
         self.diagnostics.last_colliders_rebuilt = 0;
         self.diagnostics.last_zone_checks = 0;
+        self.diagnostics.last_flow_samples = 0;
+        self.diagnostics.last_flow_affected_bodies = 0;
         self.diagnostics.last_contacts = 0;
         self.diagnostics.last_synced_bodies = 0;
         if !dt.is_finite() || dt <= 0.0 {
@@ -1587,6 +1707,7 @@ impl World {
             self.diagnostics.last_synced_bodies += 1;
         }
         self.apply_zone_forces(effective_dt);
+        self.apply_flow_forces(effective_dt);
         let event_col = LocalEventCollector::new();
         self.pipeline.step(
             self.gravity,
@@ -1871,6 +1992,96 @@ impl World {
             .find(|vector| vector.id == id && vector.enabled)
     }
 
+    /// Registers one flow field and returns its stable id.
+    pub fn try_add_flow_field(&mut self, mut field: FlowField) -> Result<FlowFieldId, PhysicsError> {
+        field.validate()?;
+        let id = self.flow_field_id_counter;
+        self.flow_field_id_counter += 1;
+        field.id = id;
+        self.flow_fields.push(field);
+        Ok(id)
+    }
+
+    /// Registers one flow field; returns `0` when validation fails.
+    pub fn add_flow_field(&mut self, field: FlowField) -> FlowFieldId {
+        match self.try_add_flow_field(field) {
+            Ok(id) => id,
+            Err(_) => {
+                self.record_invalid_operation();
+                0
+            }
+        }
+    }
+
+    /// Returns one immutable flow field by id.
+    pub fn flow_field(&self, id: FlowFieldId) -> Option<&FlowField> {
+        self.flow_fields
+            .iter()
+            .find(|field| field.id == id && field.enabled)
+    }
+
+    /// Returns one immutable authored flow field by id, even when disabled.
+    pub(crate) fn flow_field_slot(&self, id: FlowFieldId) -> Option<&FlowField> {
+        self.flow_fields.iter().find(|field| field.id == id)
+    }
+
+    /// Returns one mutable flow field by id.
+    pub fn flow_field_mut(&mut self, id: FlowFieldId) -> Option<&mut FlowField> {
+        self.flow_fields
+            .iter_mut()
+            .find(|field| field.id == id && field.enabled)
+    }
+
+    /// Returns one mutable authored flow field by id, even when disabled.
+    pub(crate) fn flow_field_slot_mut(&mut self, id: FlowFieldId) -> Option<&mut FlowField> {
+        self.flow_fields.iter_mut().find(|field| field.id == id)
+    }
+
+    /// Disables one flow field by id.
+    pub fn remove_flow_field(&mut self, id: FlowFieldId) -> bool {
+        if let Some(field) = self.flow_fields.iter_mut().find(|field| field.id == id) {
+            let was_enabled = field.enabled;
+            field.enabled = false;
+            return was_enabled;
+        }
+        false
+    }
+
+    /// Disables every registered flow field.
+    pub fn clear_flow_fields(&mut self) {
+        for field in &mut self.flow_fields {
+            field.enabled = false;
+        }
+    }
+
+    /// Samples combined flow at one world position using an optional layer mask.
+    pub fn sample_flow(&self, x: f32, y: f32, layer_mask: Option<u32>) -> FlowSample {
+        self.sample_flow_filtered(x, y, layer_mask.unwrap_or(u32::MAX))
+    }
+
+    fn sample_flow_filtered(&self, x: f32, y: f32, layer_mask: u32) -> FlowSample {
+        let mut contributions = Vec::new();
+        let mut combine_mode = FlowCombineMode::Additive;
+        let mut clamp_limit: Option<f32> = None;
+        for field in &self.flow_fields {
+            if !field.enabled || field.layer_mask & layer_mask == 0 {
+                continue;
+            }
+            if let Some(contribution) = field.sample(x, y) {
+                if matches!(field.combine, FlowCombineMode::AdditiveClamped) {
+                    combine_mode = FlowCombineMode::AdditiveClamped;
+                    clamp_limit = Some(
+                        clamp_limit
+                            .unwrap_or(0.0)
+                            .max(field.max_accel.unwrap_or(field.strength)),
+                    );
+                }
+                contributions.push(contribution);
+            }
+        }
+        combine_contributions(contributions, combine_mode, clamp_limit)
+    }
+
     fn apply_acceleration(rb: &mut RigidBody, ax: f32, ay: f32) {
         rb.add_force(Vector::new(rb.mass() * ax, rb.mass() * ay), true);
     }
@@ -2028,6 +2239,74 @@ impl World {
             self.zone_events.extend(events);
         }
     }
+
+    /// Applies authored flow fields to dynamic bodies before the solver step.
+    pub fn apply_flow_forces(&mut self, _dt: f32) {
+        if self.flow_fields.iter().all(|field| !field.enabled) {
+            return;
+        }
+        let n = self.bodies.len();
+        for body_id in 0..n {
+            if !self.has_body(body_id) {
+                continue;
+            }
+            let body = &self.bodies[body_id];
+            if body.body_type != BodyType::Dynamic || !body.flow_influence.enabled {
+                continue;
+            }
+            let handle = self.body_handles[body_id];
+            let mut affected = false;
+            for field in &self.flow_fields {
+                if !field.enabled || field.layer_mask & body.layer == 0 {
+                    continue;
+                }
+                let Some(contribution) = field.sample(body.position.x, body.position.y) else {
+                    continue;
+                };
+                self.diagnostics.last_flow_samples += 1;
+                let medium_scale = flow_medium_scale(field.medium, body.flow_influence);
+                let scale = (body.flow_influence.flow_scale * medium_scale).max(0.0);
+                if scale <= 0.0 {
+                    continue;
+                }
+                if let Some(rb) = self.rbodies.get_mut(handle) {
+                    if rb.is_sleeping() {
+                        if body.flow_influence.wake_on_flow {
+                            rb.wake_up(true);
+                        } else {
+                            continue;
+                        }
+                    }
+                    let scaled_vx = contribution.vx * scale;
+                    let scaled_vy = contribution.vy * scale;
+                    match field.application {
+                        FlowApplicationMode::Acceleration => {
+                            let (ax, ay) = clamp_vector_to_limit(
+                                scaled_vx,
+                                scaled_vy,
+                                field.max_accel,
+                            );
+                            Self::apply_acceleration(rb, ax, ay);
+                        }
+                        FlowApplicationMode::TargetVelocityDrag => {
+                            let flow_v = Vector::new(scaled_vx, scaled_vy);
+                            let current = rb.linvel();
+                            let coeff = field.drag.max(0.0) * body.flow_influence.cross_section;
+                            let mut ax = (flow_v.x - current.x) * coeff;
+                            let mut ay = (flow_v.y - current.y) * coeff;
+                            (ax, ay) = clamp_vector_to_limit(ax, ay, field.max_accel);
+                            Self::apply_acceleration(rb, ax, ay);
+                        }
+                    }
+                    affected = true;
+                }
+            }
+            if affected {
+                self.diagnostics.last_flow_affected_bodies += 1;
+            }
+        }
+    }
+
     /// Run up to `max_steps` fixed substeps using `step_dt`; return steps taken and leftover dt.
     pub fn step_fixed(&mut self, accumulated_dt: f32, step_dt: f32, max_steps: u32) -> (u32, f32) {
         if !accumulated_dt.is_finite() || accumulated_dt <= 0.0 {
@@ -2366,8 +2645,10 @@ impl World {
         self.body_mass_overrides.clear();
         self.zones.clear();
         self.gravity_vectors.clear();
+        self.flow_fields.clear();
         self.gravity_vector_id_counter = 0;
         self.zone_id_counter = 0;
+        self.flow_field_id_counter = 0;
         self.zone_tracker.clear();
         self.zone_events.clear();
         self.rebuild_scratch.clear();
@@ -3257,6 +3538,7 @@ impl World {
             joint_slots: self.joint_handles.len(),
             zones: self.zones.len(),
             gravity_vectors: self.gravity_vectors.iter().filter(|v| v.enabled).count(),
+            flow_fields: self.flow_fields.iter().filter(|field| field.enabled).count(),
             sleeping_bodies,
             skipped_steps: self.diagnostics.skipped_steps,
             clamped_steps: self.diagnostics.clamped_steps,
@@ -3264,6 +3546,8 @@ impl World {
             bodies_scanned: self.diagnostics.last_bodies_scanned,
             colliders_rebuilt: self.diagnostics.last_colliders_rebuilt,
             zone_checks: self.diagnostics.last_zone_checks,
+            flow_samples: self.diagnostics.last_flow_samples,
+            flow_affected_bodies: self.diagnostics.last_flow_affected_bodies,
             contacts: self.diagnostics.last_contacts,
             synced_bodies: self.diagnostics.last_synced_bodies,
         }
@@ -3275,4 +3559,24 @@ impl World {
             .map(|(x, y, w, h, bt)| self.add_body(Body::new(x, y, w, h, bt)).0)
             .collect()
     }
+}
+
+fn flow_medium_scale(medium: FlowMedium, influence: super::body::BodyFlowInfluence) -> f32 {
+    match medium {
+        FlowMedium::Air => influence.air_scale,
+        FlowMedium::Water => influence.water_scale,
+        FlowMedium::Conveyor | FlowMedium::Magic | FlowMedium::Custom => 1.0,
+    }
+}
+
+fn clamp_vector_to_limit(vx: f32, vy: f32, limit: Option<f32>) -> (f32, f32) {
+    let Some(limit) = limit else {
+        return (vx, vy);
+    };
+    let magnitude = (vx * vx + vy * vy).sqrt();
+    if magnitude <= 1.0e-6 || magnitude <= limit {
+        return (vx, vy);
+    }
+    let scale = limit / magnitude;
+    (vx * scale, vy * scale)
 }

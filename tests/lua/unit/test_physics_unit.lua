@@ -430,6 +430,34 @@ describe("body userdata methods", function()
         expect_near(0.5, body:getGravityScale(), 0.01)
     end)
 
+    -- @covers LBody:setFlowScale
+    -- @covers LBody:setAirScale
+    -- @covers LBody:setWaterScale
+    -- @covers LBody:setFlowCrossSection
+    it("body flow coefficients can be configured from Lua", function()
+        local world = new_world(0, 0)
+        local body = world:newCircleBody(20, 20, 8, "dynamic")
+        body:setFlowScale(0.75)
+        body:setAirScale(0.5)
+        body:setWaterScale(1.25)
+        body:setFlowCrossSection(2.0)
+        world:addFlowField({
+            geometry = "rect",
+            x = 0,
+            y = 0,
+            w = 100,
+            h = 100,
+            direction = "explicit",
+            directionVector = { x = 1, y = 0 },
+            medium = "water",
+            application = "targetVelocityDrag",
+            strength = 90,
+            drag = 2.0,
+        })
+        world:step(1 / 60)
+        expect_true(select(1, body:getVelocity()) > 0)
+    end)
+
     -- @covers LBody:getId
     it("getId returns a numeric body identifier", function()
         expect_type("number", new_dynamic_body(new_world(0, 0)):getId())
@@ -662,6 +690,168 @@ describe("world userdata methods", function()
         stats = world:getStats()
         expect_equal(0, stats.bodies)
         expect_equal(1, stats.bodySlots)
+    end)
+
+    -- @covers LWorld:addFlowField
+    -- @covers LWorld:getFlowField
+    -- @covers LWorld:sampleFlow
+    -- @covers LFlowField:getId
+    it("flow fields can be authored and sampled from world space", function()
+        local world = new_world(0, 0)
+        local field = world:addFlowField({
+            name = "wind_lane",
+            geometry = "path",
+            points = {
+                { x = 0, y = 0 },
+                { x = 100, y = 0 },
+            },
+            width = 20,
+            strength = 40,
+            direction = "alongPath",
+            layerMask = 0x2,
+        })
+        local info = world:getFlowField(field:getId())
+        local sample = world:sampleFlow(40, 0, { layerMask = 0x2 })
+        expect_equal("wind_lane", info.name)
+        expect_equal("path", info.geometry)
+        expect_true(sample.vx > 0)
+        expect_equal(1, #sample.sources)
+    end)
+
+    -- @covers LWorld:getStats
+    it("getStats reports flow diagnostics after the simulation step", function()
+        local world = new_world(0, 0)
+        local body = world:newCircleBody(30, 30, 8, "dynamic")
+        world:addFlowField({
+            geometry = "rect",
+            x = 0,
+            y = 0,
+            w = 120,
+            h = 120,
+            direction = "explicit",
+            directionVector = { x = 1, y = 0 },
+            strength = 60,
+        })
+        world:step(1 / 60)
+        local stats = world:getStats()
+        expect_equal(1, stats.flowFields)
+        expect_true(stats.flowSamples > 0)
+        expect_true(stats.flowAffectedBodies > 0)
+        expect_true(select(1, body:getVelocity()) > 0)
+    end)
+
+    -- @covers LWorld:removeFlowField
+    -- @covers LWorld:clearFlowFields
+    it("removeFlowField and clearFlowFields disable authored flow fields", function()
+        local world = new_world(0, 0)
+        local first = world:addFlowField({
+            geometry = "rect",
+            x = 0,
+            y = 0,
+            w = 40,
+            h = 40,
+            direction = "explicit",
+            directionVector = { x = 1, y = 0 },
+            strength = 20,
+        })
+        local second = world:addFlowField({
+            geometry = "circle",
+            x = 60,
+            y = 60,
+            radius = 20,
+            direction = "radialOut",
+            strength = 30,
+        })
+        expect_true(world:removeFlowField(first:getId()))
+        expect_equal(nil, world:getFlowField(first:getId()))
+        world:clearFlowFields()
+        expect_equal(nil, world:getFlowField(second:getId()))
+        expect_equal(0, world:getStats().flowFields)
+    end)
+
+    -- @covers LWorld:drawFlowDebug
+    it("drawFlowDebug renders authored field guides into an image target", function()
+        local world = new_world(0, 0)
+        world:addFlowField({
+            geometry = "rect",
+            x = 8,
+            y = 8,
+            w = 24,
+            h = 16,
+            direction = "explicit",
+            directionVector = { x = 1, y = 0 },
+            strength = 25,
+        })
+        local img = lurek.image.newImageData(64, 64)
+        world:drawFlowDebug(img, { arrowSpacing = 16 })
+        local _, _, _, alpha = img:getPixel(8, 8)
+        expect_true(alpha > 0)
+    end)
+
+    -- @covers LFlowField:setEnabled
+    -- @covers LFlowField:isEnabled
+    -- @covers LFlowField:setStrength
+    -- @covers LFlowField:getStrength
+    -- @covers LFlowField:setLayerMask
+    -- @covers LFlowField:getLayerMask
+    -- @covers LFlowField:setApplication
+    -- @covers LFlowField:setCombine
+    -- @covers LFlowField:destroy
+    -- @covers LFlowField:type
+    -- @covers LFlowField:typeOf
+    it("flow field handles can mutate runtime authoring state", function()
+        local world = new_world(0, 0)
+        local field = world:addFlowField({
+            geometry = "rect",
+            x = 0,
+            y = 0,
+            w = 40,
+            h = 40,
+            direction = "explicit",
+            directionVector = { x = 0, y = 1 },
+            strength = 20,
+        })
+        field:setEnabled(false)
+        expect_false(field:isEnabled())
+        field:setEnabled(true)
+        field:setStrength(55)
+        field:setLayerMask(0x8)
+        field:setApplication("targetVelocityDrag")
+        field:setCombine("additiveClamped")
+        local info = world:getFlowField(field:getId())
+        expect_near(55, field:getStrength(), 0.0001)
+        expect_equal(0x8, field:getLayerMask())
+        expect_equal("targetVelocityDrag", info.application)
+        expect_equal("additiveClamped", info.combine)
+        expect_equal("LFlowField", field:type())
+        expect_true(field:typeOf("LFlowField"))
+        field:destroy()
+        expect_equal(nil, world:getFlowField(info.id))
+    end)
+
+    -- @covers LFlowField:setWidth
+    -- @covers LFlowField:setPoints
+    it("path flow field handles can reshape their polyline geometry", function()
+        local world = new_world(0, 0)
+        local field = world:addFlowField({
+            geometry = "path",
+            points = {
+                { x = 0, y = 0 },
+                { x = 32, y = 0 },
+            },
+            width = 12,
+            strength = 25,
+        })
+        field:setWidth(18)
+        field:setPoints({
+            { x = 0, y = 0 },
+            { x = 0, y = 48 },
+            { x = 16, y = 64 },
+        })
+        local info = world:getFlowField(field:getId())
+        expect_equal(18, info.width)
+        expect_equal(3, #info.points)
+        expect_equal(48, info.points[2].y)
     end)
 
     -- @covers LWorld:addGravityVector

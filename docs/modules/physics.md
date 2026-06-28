@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Simulates 2D bodies under dynamic, static, kinematic, or sensor behaviors. - Supports shapes, continuous detection, and motorized mechanical joints. - Can infer approximate collision shapes from image alpha masks for asset-driven colliders. - Manages override zones, raycast queries, and destructible static terrain. - Provides a 16-group world collision matrix layered over per-body layer/mask filters. - Provides post-step contact events and colorized visual debug overlays.
+Simulates 2D bodies under dynamic, static, kinematic, or sensor behaviors. - Supports shapes, continuous detection, and motorized mechanical joints. - Can infer approximate collision shapes from image alpha masks for asset-driven colliders. - Manages override zones, raycast queries, and destructible static terrain. - Provides a 16-group world collision matrix layered over per-body layer/mask filters. - Provides post-step contact events and colorized visual debug overlays. - Supports authored flow fields for wind, water, conveyor, and magic-current style motion that can be sampled or applied during stepping.
 
 ## Summary
 
@@ -10,6 +10,7 @@ Simulates 2D bodies under dynamic, static, kinematic, or sensor behaviors. - Sup
 - Bodies, colliders, forces, terrain, joints, sensors, and collision layers all belong to the same simulation step, which keeps movement and contact rules coherent across the engine.
 - The module supports dynamic, static, kinematic, and sensor-style roles so projects can mix actors, level geometry, triggers, platforms, and detection-only regions inside one physical space without switching subsystems.
 - Practical physics also depends on querying the world, not only advancing it. Raycasts, overlap checks, sweep-style tests, and contact inspection let gameplay ask what was hit, what overlaps, and why motion changed.
+- Flow fields extend that world model with continuous directional media. They let scripts describe rectangles, circular fans, and polyline tubes that contribute acceleration or drag-like target velocity behavior without inventing a second movement subsystem outside the physics step.
 - Shape support, terrain integration, and joints give the system expressive range for characters, bullets, walls, pickups, hazards, linked mechanisms, and authored environment collision.
 - Alpha-mask shape inference gives tools and scripts a pragmatic bridge from sprite or image assets to plausible collision geometry: circle-like masks become circles, filled masks become rectangles, and irregular masks become bounded convex polygons.
 - Contact data is one of the main user-facing outputs because systems often need normals, hit points, and begin or end state changes to react meaningfully.
@@ -891,6 +892,7 @@ end
 ## Types
 
 - [LBody](#lbody)
+- [LFlowField](#lflowfield)
 - [LImageData](#limagedata)
 - [LPhysicsShape](#lphysicsshape)
 - [LTerrain](#lterrain)
@@ -1801,6 +1803,45 @@ end
 
 ---
 
+#### `LBody:setAirScale`
+
+Sets the extra multiplier used only for `air` flow fields.
+
+```lua
+LBody:setAirScale(scale)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `scale` | number | Non-negative air multiplier. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(20, 20, 8, "dynamic")
+    body:setAirScale(0.25)
+    world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 80,
+        h = 80,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        strength = 50,
+        medium = "air",
+    })
+    world:step(1 / 60)
+    lurek.log.info("[physics] airScale vx=" .. tostring(select(1, body:getVelocity())))
+end
+```
+
+---
+
 #### `LBody:setAngle`
 
 Sets the body's rotation angle directly.
@@ -1973,6 +2014,85 @@ do
     player:setFixedRotation(true)
     lurek.log.info("fixed_rotation=" .. tostring(player:isFixedRotation()))
     lurek.log.info("angle=" .. tostring(player:getAngle()))
+end
+```
+
+---
+
+#### `LBody:setFlowCrossSection`
+
+Sets the drag cross-section factor used by drag-style flow application.
+
+```lua
+LBody:setFlowCrossSection(crossSection)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `crossSection` | number | Positive cross-section multiplier. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(20, 20, 8, "dynamic")
+    body:setFlowCrossSection(2.0)
+    world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 80,
+        h = 80,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        medium = "water",
+        application = "targetVelocityDrag",
+        strength = 50,
+        drag = 2.0,
+    })
+    world:step(1 / 60)
+    lurek.log.info("[physics] flowCrossSection vx=" .. tostring(select(1, body:getVelocity())))
+end
+```
+
+---
+
+#### `LBody:setFlowScale`
+
+Sets the global multiplier applied to all flow-field influences on this body.
+
+```lua
+LBody:setFlowScale(scale)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `scale` | number | Non-negative flow multiplier. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(20, 20, 8, "dynamic")
+    body:setFlowScale(0.5)
+    world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 80,
+        h = 80,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        strength = 50,
+    })
+    world:step(1 / 60)
+    lurek.log.info("[physics] flowScale vx=" .. tostring(select(1, body:getVelocity())))
 end
 ```
 
@@ -2301,6 +2421,45 @@ end
 
 ---
 
+#### `LBody:setWaterScale`
+
+Sets the extra multiplier used only for `water` flow fields.
+
+```lua
+LBody:setWaterScale(scale)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `scale` | number | Non-negative water multiplier. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(20, 20, 8, "dynamic")
+    body:setWaterScale(1.5)
+    world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 80,
+        h = 80,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        strength = 50,
+        medium = "water",
+    })
+    world:step(1 / 60)
+    lurek.log.info("[physics] waterScale vx=" .. tostring(select(1, body:getVelocity())))
+end
+```
+
+---
+
 #### `LBody:sleep`
 
 Forces the body into sleep state, pausing its simulation until disturbed.
@@ -2414,6 +2573,679 @@ do
     body:wakeUp()
     lurek.log.info("sleeping=" .. tostring(body:isSleeping()))
     lurek.log.info("allowed=" .. tostring(body:isSleepingAllowed()))
+end
+```
+
+---
+
+## LFlowField
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LFlowField:calculate`
+
+Calculates a flow field toward one target cell.
+
+```lua
+LFlowField:calculate(tx, ty, unit_size)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tx` | number | One-based target column. |
+| `ty` | number | One-based target row. |
+| `unit_size?` | number | Unit footprint in cells (default 1). |
+
+---
+
+#### `LFlowField:calculateMulti`
+
+Calculates a flow field toward multiple target cells.
+
+```lua
+LFlowField:calculateMulti(targets, unit_size)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `targets` | table | Array of `{x, y}` target tables. |
+| `unit_size?` | number | Unit footprint in cells (default 1). |
+
+---
+
+#### `LFlowField:destroy`
+
+Disables this flow field.
+
+```lua
+LFlowField:destroy()
+```
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 24,
+        h = 24,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        strength = 20,
+    })
+    field:destroy()
+    lurek.log.info("[physics] destroyed flow=" .. tostring(world:getFlowField(field:getId()) == nil))
+end
+```
+
+---
+
+#### `LFlowField:getCostToTarget`
+
+Returns integration cost to the target from a one-based grid cell.
+
+```lua
+LFlowField:getCostToTarget(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Integration cost to the nearest target. |
+
+---
+
+#### `LFlowField:getDirection`
+
+Returns flow direction vector at a one-based grid cell.
+
+```lua
+LFlowField:getDirection(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Direction X component. |
+| number | Direction Y component. |
+
+---
+
+#### `LFlowField:getDirectionAngle`
+
+Returns flow direction angle at a one-based grid cell.
+
+```lua
+LFlowField:getDirectionAngle(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Direction angle in radians. |
+
+---
+
+#### `LFlowField:getId`
+
+Returns this flow field id.
+
+```lua
+LFlowField:getId()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Stable flow field id. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 24,
+        h = 24,
+        direction = "explicit",
+        directionVector = { x = 0, y = 1 },
+        strength = 18,
+    })
+    lurek.log.info("[physics] flow id=" .. tostring(field:getId()))
+end
+```
+
+---
+
+#### `LFlowField:getLayerMask`
+
+Returns this flow field layer mask.
+
+```lua
+LFlowField:getLayerMask()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Layer bitmask. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 24,
+        h = 24,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        strength = 20,
+        layerMask = 0x4,
+    })
+    lurek.log.info("[physics] getLayerMask=" .. tostring(field:getLayerMask()))
+end
+```
+
+---
+
+#### `LFlowField:getStrength`
+
+Returns this flow field strength.
+
+```lua
+LFlowField:getStrength()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Strength value. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 24,
+        h = 24,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        strength = 22,
+    })
+    lurek.log.info("[physics] getStrength=" .. tostring(field:getStrength()))
+end
+```
+
+---
+
+#### `LFlowField:getTargets`
+
+Returns target cells for this flow field.
+
+```lua
+LFlowField:getTargets()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| LFlowFieldGetTargetsResult | Array table of target point tables. |
+
+---
+
+#### `LFlowField:isCalculated`
+
+Returns whether the flow field has been calculated.
+
+```lua
+LFlowField:isCalculated()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when calculated. |
+
+---
+
+#### `LFlowField:isEnabled`
+
+Returns whether this flow field is enabled.
+
+```lua
+LFlowField:isEnabled()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when enabled. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 24,
+        h = 24,
+        direction = "explicit",
+        directionVector = { x = 0, y = 1 },
+        strength = 18,
+    })
+    lurek.log.info("[physics] flow enabled=" .. tostring(field:isEnabled()))
+end
+```
+
+---
+
+#### `LFlowField:setApplication`
+
+Sets the body-application mode used during stepping.
+
+```lua
+LFlowField:setApplication(mode)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `mode` | string | `acceleration` or `targetVelocityDrag`. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 24,
+        h = 24,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        strength = 20,
+    })
+    field:setApplication("targetVelocityDrag")
+    lurek.log.info("[physics] application=" .. tostring(world:getFlowField(field:getId()).application))
+end
+```
+
+---
+
+#### `LFlowField:setCombine`
+
+Sets how this field combines with overlapping fields.
+
+```lua
+LFlowField:setCombine(mode)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `mode` | string | `additive` or `additiveClamped`. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 24,
+        h = 24,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        strength = 20,
+    })
+    field:setCombine("additiveClamped")
+    lurek.log.info("[physics] combine=" .. tostring(world:getFlowField(field:getId()).combine))
+end
+```
+
+---
+
+#### `LFlowField:setEnabled`
+
+Enables or disables this flow field.
+
+```lua
+LFlowField:setEnabled(enabled)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `enabled` | boolean | True to enable, false to disable. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 24,
+        h = 24,
+        direction = "explicit",
+        directionVector = { x = 0, y = 1 },
+        strength = 18,
+    })
+    field:setEnabled(false)
+    lurek.log.info("[physics] enabled after set=" .. tostring(field:isEnabled()))
+end
+```
+
+---
+
+#### `LFlowField:setLayerMask`
+
+Sets the body-layer mask that this field affects.
+
+```lua
+LFlowField:setLayerMask(mask)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `mask` | number | Layer bitmask. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 24,
+        h = 24,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        strength = 20,
+    })
+    field:setLayerMask(0x8)
+    lurek.log.info("[physics] layer mask=" .. tostring(field:getLayerMask()))
+end
+```
+
+---
+
+#### `LFlowField:setPoints`
+
+Replaces the polyline points of a path-shaped flow field.
+
+```lua
+LFlowField:setPoints(points)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `points` | table | Array of `{ x, y }` point tables. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        geometry = "path",
+        points = {
+            { x = 0, y = 0 },
+            { x = 20, y = 0 },
+        },
+        width = 8,
+        strength = 20,
+    })
+    field:setPoints({
+        { x = 0, y = 0 },
+        { x = 0, y = 40 },
+        { x = 16, y = 56 },
+    })
+    lurek.log.info("[physics] path points=" .. tostring(#world:getFlowField(field:getId()).points))
+end
+```
+
+---
+
+#### `LFlowField:setStrength`
+
+Sets this flow field strength.
+
+```lua
+LFlowField:setStrength(strength)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `strength` | number | Strength in world units per second. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 24,
+        h = 24,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        strength = 10,
+    })
+    field:setStrength(55)
+    lurek.log.info("[physics] flow strength now=" .. tostring(field:getStrength()))
+end
+```
+
+---
+
+#### `LFlowField:setWidth`
+
+Sets the width of a path-shaped flow field.
+
+```lua
+LFlowField:setWidth(width)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `width` | number | Tube width in world units. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        geometry = "path",
+        points = {
+            { x = 0, y = 0 },
+            { x = 48, y = 0 },
+        },
+        width = 10,
+        strength = 20,
+    })
+    field:setWidth(18)
+    lurek.log.info("[physics] path width=" .. tostring(world:getFlowField(field:getId()).width))
+end
+```
+
+---
+
+#### `LFlowField:steer`
+
+Returns a steering velocity for a world position using the flow field.
+
+```lua
+LFlowField:steer(wx, wy, speed, tw, th)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `wx` | number | World X position. |
+| `wy` | number | World Y position. |
+| `speed` | number | Movement speed scalar. |
+| `tw` | number | Tile width in world units. |
+| `th` | number | Tile height in world units. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Steered X velocity. |
+| number | Steered Y velocity. |
+
+---
+
+#### `LFlowField:type`
+
+Returns the Lua-visible type name for this flow field handle.
+
+```lua
+LFlowField:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LFlowField](#lflowfield)`. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 24,
+        h = 24,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        strength = 20,
+    })
+    lurek.log.info("[physics] flow type=" .. tostring(field:type()))
+end
+```
+
+---
+
+#### `LFlowField:typeOf`
+
+Returns whether this flow field handle matches a supported type name.
+
+```lua
+LFlowField:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | String value for `name`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches this handle. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 24,
+        h = 24,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        strength = 20,
+    })
+    lurek.log.info("[physics] flow typeOf=" .. tostring(field:typeOf("LFlowField")))
 end
 ```
 
@@ -4308,6 +5140,47 @@ end
 
 ---
 
+#### `LWorld:addFlowField`
+
+Creates one authored flow field and returns a handle for later mutation.
+
+```lua
+LWorld:addFlowField(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts` | table | Flow field authoring table. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LFlowField](#lflowfield) | New flow field handle. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        name = "river_lane",
+        geometry = "path",
+        points = {
+            { x = 0, y = 0 },
+            { x = 80, y = 0 },
+        },
+        width = 24,
+        strength = 45,
+    })
+    lurek.log.info("[physics] flow field id=" .. tostring(field:getId()))
+end
+```
+
+---
+
 #### `LWorld:addFrictionJoint`
 
 Creates a friction joint that applies resistance to relative motion between two bodies.
@@ -4923,6 +5796,36 @@ end
 
 ---
 
+#### `LWorld:clearFlowFields`
+
+Disables every authored flow field in the world.
+
+```lua
+LWorld:clearFlowFields()
+```
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 20,
+        h = 20,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        strength = 15,
+    })
+    world:clearFlowFields()
+    lurek.log.info("[physics] flow count after clear=" .. tostring(world:getStats().flowFields))
+end
+```
+
+---
+
 #### `LWorld:clearGravityVectors`
 
 Removes all additive gravity vectors from the world.
@@ -5034,6 +5937,45 @@ do
     local img = lurek.image.newImageData(800, 600)
     local ok, err = pcall(function() world:drawDebug(img, 0, 255, 0, 200) end)
     if ok then lurek.log.info("image", img:type()) else lurek.log.info("drawDebug skipped: " .. tostring(err)) end
+end
+```
+
+---
+
+#### `LWorld:drawFlowDebug`
+
+Draws flow-field centerlines and sampled arrows into an ImageData target.
+
+```lua
+LWorld:drawFlowDebug(target, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `target` | [LImageData](#limagedata) | Mutable target image. |
+| `opts?` | table | Optional table with `arrowSpacing`. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    world:addFlowField({
+        geometry = "rect",
+        x = 10,
+        y = 10,
+        w = 30,
+        h = 20,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        strength = 25,
+    })
+    local img = lurek.image.newImageData(64, 64)
+    world:drawFlowDebug(img, { arrowSpacing = 16 })
+    local _, _, _, a = img:getPixel(10, 10)
+    lurek.log.info("[physics] flow debug alpha=" .. tostring(a))
 end
 ```
 
@@ -5584,6 +6526,47 @@ do
         end
     end
     lurek.log.info("count=" .. tostring(count))
+end
+```
+
+---
+
+#### `LWorld:getFlowField`
+
+Returns one flow field table by id, or nil when missing.
+
+```lua
+LWorld:getFlowField(id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Flow field id. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table? | Flow field descriptor table with geometry, strength, application, combine, and layer-mask fields. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        name = "fan",
+        geometry = "circle",
+        x = 64,
+        y = 64,
+        radius = 32,
+        direction = "radialOut",
+        strength = 35,
+    })
+    local info = world:getFlowField(field:getId())
+    lurek.log.info("[physics] flow geometry=" .. tostring(info.geometry) .. " strength=" .. tostring(info.strength))
 end
 ```
 
@@ -6551,6 +7534,47 @@ end
 
 ---
 
+#### `LWorld:removeFlowField`
+
+Disables one flow field by id.
+
+```lua
+LWorld:removeFlowField(id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Flow field id. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the field existed and was active. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local field = world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 32,
+        h = 32,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        strength = 20,
+    })
+    lurek.log.info("[physics] removed=" .. tostring(world:removeFlowField(field:getId())))
+end
+```
+
+---
+
 #### `LWorld:removeGravityVector`
 
 Removes one additive gravity vector so it no longer affects future steps.
@@ -6634,6 +7658,50 @@ do
     lurek.log.info("reset bodies=" .. world:getBodyCount() .. " joints=" .. world:jointCount())
     lurek.log.info("reset gravity=" .. gx .. "," .. gy)
     lurek.log.info("reset meter=" .. world:getMeter() .. " iterations=" .. world:getSolverIterations())
+end
+```
+
+---
+
+#### `LWorld:sampleFlow`
+
+Samples combined flow at a world position.
+
+```lua
+LWorld:sampleFlow(x, y, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | World-space x position. |
+| `y` | number | World-space y position. |
+| `opts?` | table | Optional table with `layerMask`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Flow sample table with `vx`, `vy`, `magnitude`, `intensity`, and `sources`. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    world:addFlowField({
+        geometry = "rect",
+        x = 0,
+        y = 0,
+        w = 120,
+        h = 60,
+        direction = "explicit",
+        directionVector = { x = 1, y = 0 },
+        strength = 30,
+    })
+    local sample = world:sampleFlow(20, 20)
+    lurek.log.info("[physics] flow sample=" .. string.format("%.2f,%.2f", sample.vx, sample.vy))
 end
 ```
 

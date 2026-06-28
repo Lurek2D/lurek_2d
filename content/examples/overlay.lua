@@ -1181,3 +1181,60 @@ do
     ov:setShaderLayer("heat_haze", nil)
     lurek.log.info("[overlay.example] heat_haze target=" .. target)
 end
+
+--@api: LOverlay:setStatusEffect
+do
+    local ov = lurek.overlay.new(800, 600)
+    local texture = lurek.image.newImageData(8, 8)
+    texture:fill(220, 240, 255, 255)
+    ov:setStatusEffect("frozen", {
+        intensity = 7.0,
+        fadeIn = 0.05,
+        color = { 0.65, 0.85, 1.0, 0.25 },
+        texture = texture,
+        textureOpacity = 0.5,
+        shader = "grayscale",
+        shaderStrength = 0.75,
+    })
+    ov:update(0.1)
+    lurek.log.info("[overlay.example] status active=" .. tostring(ov:getStatusEffect("frozen") ~= nil))
+end
+
+--@api: LOverlay:setStatusIntensity
+do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setStatusIntensity("lowhealth", 4.0)
+    ov:update(0.1)
+    local layer = ov:getStatusEffect("lowhealth")
+    lurek.log.info("[overlay.example] lowhealth intensity=" .. string.format("%.2f", layer.intensity))
+end
+
+--@api: LOverlay:clearStatusEffect
+do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setStatusEffect("poison", { intensity = 5.0, fadeIn = 0.01 })
+    ov:update(0.05)
+    ov:clearStatusEffect("poison", { fadeOut = 0.01 })
+    ov:update(0.05)
+    lurek.log.info("[overlay.example] poison removed=" .. tostring(ov:getStatusEffect("poison") == nil))
+end
+
+--@api: LOverlay:getStatusEffect
+do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setStatusEffect("burning", { intensity = 6.0, fadeIn = 0.01 })
+    ov:update(0.05)
+    local layer = ov:getStatusEffect("burning")
+    lurek.log.info("[overlay.example] burning shader=" .. tostring(layer.shader))
+end
+
+--@api: LOverlay:getStatusEffects
+do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setStatusEffect("lowhealth", { intensity = 3.0, priority = 0, fadeIn = 0.01 })
+    ov:setStatusEffect("burning", { intensity = 5.0, priority = 5, fadeIn = 0.01 })
+    ov:update(0.05)
+    local layers = ov:getStatusEffects()
+    lurek.log.info("[overlay.example] status count=" .. tostring(#layers))
+    lurek.log.info("[overlay.example] front layer=" .. tostring(layers[#layers] and layers[#layers].id or "nil"))
+end

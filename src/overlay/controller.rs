@@ -17,11 +17,14 @@ use super::atmosphere::{
     CloudState, FilmGrainState, FogState, HeatHazeState, LightningState, VignetteState,
 };
 use super::screen_effects::{FadeState, FlashState, ShakeState};
+use super::status::StatusOverlayStack;
 use super::water::WaterOverlayState;
 use super::weather::{WeatherParticle, WeatherProfile, WeatherState, WeatherType};
 use crate::image::ImageData;
 use crate::log_msg;
+use crate::render::renderer::{DrawMode, PostFxPass, RenderCommand};
 use crate::runtime::log_messages::{OV01, OV02, OV03};
+use std::collections::HashMap;
 use std::error::Error;
 use std::fmt;
 
@@ -105,6 +108,10 @@ pub struct OverlayStats {
     pub debug_image_rejections: usize,
     /// Count of active layers currently reported as externally rendered.
     pub external_render_layers: usize,
+    /// Count of authored status layers tracked by the overlay.
+    pub status_layers: usize,
+    /// Count of currently active status layers contributing visible output.
+    pub active_status_layers: usize,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -333,6 +340,12 @@ pub enum OverlayRenderLayer {
     Water,
     /// Custom shader-driven overlay.
     CustomShader,
+    /// Direct fullscreen color-wash status layer.
+    StatusColorWash,
+    /// Fullscreen texture-driven status layer.
+    StatusTexture,
+    /// Status layer that requests renderer-owned post-fx work.
+    StatusPostFx,
 }
 
 impl OverlayRenderLayer {
@@ -351,6 +364,9 @@ impl OverlayRenderLayer {
             Self::FilmGrain => "film_grain",
             Self::Water => "water",
             Self::CustomShader => "custom_shader",
+            Self::StatusColorWash => "status_color_wash",
+            Self::StatusTexture => "status_texture",
+            Self::StatusPostFx => "status_postfx",
         }
     }
 }
@@ -525,6 +541,8 @@ pub struct Overlay {
     pub lightning: LightningState,
     /// Water distortion overlay configuration and timer.
     pub water: WaterOverlayState,
+    /// Layered status overlays such as frozen, poison, or low-health feedback.
+    pub status_stack: StatusOverlayStack,
     /// Optional custom overlay shader name.
     pub custom_shader: Option<String>,
     /// Accessibility and reduced-motion policy applied to active effects.
@@ -558,6 +576,7 @@ impl Overlay {
             film_grain: FilmGrainState::default(),
             lightning: LightningState::default(),
             water: WaterOverlayState::default(),
+            status_stack: StatusOverlayStack::default(),
             custom_shader: None,
             accessibility_policy: OverlayAccessibilityPolicy::default(),
             limits: OverlayLimits::default(),
@@ -937,6 +956,10 @@ impl Overlay {
             self.water.time = next_water_time;
             changed += 1;
         }
+        for (index, layer) in self.status_stack.layers.iter_mut().enumerate() {
+            changed += sanitize_status_layer(layer, index);
+        }
+        self.status_stack.layers.retain(|layer| !layer.id.is_empty());
 
         let mut accessibility_changes = 0usize;
         if self.flash.color[3] > self.accessibility_policy.max_flash_alpha {
@@ -1064,6 +1087,7 @@ impl Overlay {
             }
         }
         self.water.update(dt);
+        self.status_stack.update(dt);
     }
 
     /// Advances particle spawn and movement for the active weather mode.
@@ -1290,6 +1314,11 @@ impl Overlay {
             || self.film_grain.enabled
             || self.lightning.active
             || self.water.enabled
+            || self
+                .status_stack
+                .layers
+                .iter()
+                .any(|layer| layer.is_live())
             || self.custom_shader.is_some()
     }
 
@@ -1307,6 +1336,7 @@ impl Overlay {
         self.film_grain = FilmGrainState::default();
         self.lightning = LightningState::default();
         self.water = WaterOverlayState::default();
+        self.status_stack = StatusOverlayStack::default();
         self.custom_shader = None;
         self.diagnostics = OverlayDiagnostics::default();
         self.time_since_last_flash = f32::INFINITY;
@@ -1422,6 +1452,30 @@ impl Overlay {
             plan.externally_handled
                 .push(OverlayRenderLayer::CustomShader);
         }
+        let mut has_status_color = false;
+        let mut has_status_texture = false;
+        let mut has_status_postfx = false;
+        for layer in self.status_stack.active_layers_sorted() {
+            if layer.color_alpha() > 0.0 {
+                has_status_color = true;
+            }
+            if layer.texture_alpha() > 0.0 {
+                has_status_texture = true;
+            }
+            if layer.shader_amount() > 0.0 {
+                has_status_postfx = true;
+            }
+        }
+        if has_status_color {
+            plan.rendered.push(OverlayRenderLayer::StatusColorWash);
+        }
+        if has_status_texture {
+            plan.rendered.push(OverlayRenderLayer::StatusTexture);
+        }
+        if has_status_postfx {
+            plan.externally_handled
+                .push(OverlayRenderLayer::StatusPostFx);
+        }
         plan
     }
 
@@ -1473,6 +1527,12 @@ impl Overlay {
     pub fn stats(&self) -> OverlayStats {
         let sanitized = self.sanitized_clone();
         let plan = sanitized.render_plan_inner();
+        let active_status_layers = sanitized
+            .status_stack
+            .layers
+            .iter()
+            .filter(|layer| layer.is_active())
+            .count();
         let mut active_effects = 0_u32;
         for enabled in [
             sanitized.weather.enabled,
@@ -1487,6 +1547,7 @@ impl Overlay {
             sanitized.film_grain.enabled,
             sanitized.lightning.active,
             sanitized.water.enabled,
+            active_status_layers > 0,
             sanitized.custom_shader.is_some(),
         ] {
             if enabled {
@@ -1516,12 +1577,13 @@ impl Overlay {
             invalid_shader_rejections: self.diagnostics.invalid_shader_rejections,
             debug_image_rejections: self.diagnostics.debug_image_rejections,
             external_render_layers: plan.externally_handled.len(),
+            status_layers: sanitized.status_stack.layers.len(),
+            active_status_layers,
         }
     }
 
     /// Builds render commands for currently active full-screen overlay layers.
-    pub fn build_render_commands(&self) -> Vec<crate::render::renderer::RenderCommand> {
-        use crate::render::renderer::{DrawMode, RenderCommand};
+    pub fn build_render_commands(&self) -> Vec<RenderCommand> {
         let sanitized = self.sanitized_clone();
         let mut cmds = Vec::with_capacity(8);
         let width = sanitized.width as f32;
@@ -1572,7 +1634,83 @@ impl Overlay {
                 h: height,
             });
         }
+        for layer in sanitized.status_stack.active_layers_sorted() {
+            if let Some(color) = layer.visual.color {
+                let alpha = layer.color_alpha();
+                if alpha > 0.0 {
+                    cmds.push(RenderCommand::SetColor(color[0], color[1], color[2], alpha));
+                    cmds.push(RenderCommand::Rectangle {
+                        mode: DrawMode::Fill,
+                        x: 0.0,
+                        y: 0.0,
+                        w: width,
+                        h: height,
+                    });
+                }
+            }
+            if let Some(texture_key) = layer.visual.texture_key {
+                let alpha = layer.texture_alpha();
+                if alpha > 0.0 {
+                    if let Some((tex_w, tex_h)) = layer.visual.texture_size {
+                        let scale_x = width / tex_w.max(1) as f32;
+                        let scale_y = height / tex_h.max(1) as f32;
+                        cmds.push(RenderCommand::SetColor(1.0, 1.0, 1.0, alpha));
+                        cmds.push(RenderCommand::DrawImageEx {
+                            texture_key,
+                            x: 0.0,
+                            y: 0.0,
+                            rotation: 0.0,
+                            sx: scale_x,
+                            sy: scale_y,
+                            ox: 0.0,
+                            oy: 0.0,
+                            effect: None,
+                        });
+                    }
+                }
+            }
+        }
         cmds
+    }
+
+    /// Builds built-in post-fx passes requested by active status layers.
+    pub fn build_postfx_passes(&self) -> Vec<PostFxPass> {
+        let sanitized = self.sanitized_clone();
+        let mut passes = Vec::new();
+        for layer in sanitized.status_stack.active_layers_sorted() {
+            let Some(effect_name) = layer.visual.shader_effect.as_deref() else {
+                continue;
+            };
+            let amount = layer.shader_amount();
+            if amount <= 0.0 {
+                continue;
+            }
+            let mut params = HashMap::new();
+            match effect_name {
+                "chromatic" => {
+                    params.insert("offset".to_string(), amount.clamp(0.0, 32.0));
+                }
+                "blur_h" | "blur_v" => {
+                    params.insert("radius".to_string(), amount.clamp(0.0, 64.0));
+                    params.insert("strength".to_string(), amount.clamp(0.0, 8.0));
+                }
+                "waterdistort" => {
+                    params.insert("amplitude".to_string(), (amount * 0.01).clamp(0.0, 1.0));
+                    params.insert("frequency".to_string(), 10.0 + amount * 10.0);
+                    params.insert("speed".to_string(), 1.0 + amount);
+                }
+                _ => {
+                    params.insert("strength".to_string(), amount.clamp(0.0, 8.0));
+                }
+            }
+            passes.push(PostFxPass {
+                effect_name: effect_name.to_string(),
+                params,
+                shader_id: None,
+                auto_uniforms: true,
+            });
+        }
+        passes
     }
 
     /// Renders a debug image showing current flash, shake, and fade state.
@@ -1919,6 +2057,97 @@ fn sanitize_weather_particle(particle: &mut WeatherParticle) -> usize {
     if next_alpha != particle.alpha || !particle.alpha.is_finite() {
         particle.alpha = next_alpha;
         changed += 1;
+    }
+    changed
+}
+
+fn sanitize_status_layer(layer: &mut super::status::StatusOverlayLayer, index: usize) -> usize {
+    let mut changed = 0usize;
+    let fallback_id = format!("status_{index}");
+    let trimmed_id = layer.id.trim().to_ascii_lowercase();
+    if trimmed_id.is_empty() {
+        if layer.id != fallback_id {
+            layer.id = fallback_id;
+            changed += 1;
+        }
+    } else if trimmed_id != layer.id {
+        layer.id = trimmed_id;
+        changed += 1;
+    }
+    let trimmed_kind = layer.kind.trim().to_ascii_lowercase();
+    if trimmed_kind.is_empty() {
+        if layer.kind != "custom" {
+            layer.kind = "custom".to_string();
+            changed += 1;
+        }
+    } else if trimmed_kind != layer.kind {
+        layer.kind = trimmed_kind;
+        changed += 1;
+    }
+    let next_intensity = finite_or(layer.intensity_01, 0.0).clamp(0.0, 1.0);
+    if next_intensity != layer.intensity_01 || !layer.intensity_01.is_finite() {
+        layer.intensity_01 = next_intensity;
+        changed += 1;
+    }
+    let next_target = finite_or(layer.target_intensity_01, 0.0).clamp(0.0, 1.0);
+    if next_target != layer.target_intensity_01 || !layer.target_intensity_01.is_finite() {
+        layer.target_intensity_01 = next_target;
+        changed += 1;
+    }
+    let next_fade_in = sanitize_duration(layer.fade_in, 0.2);
+    if next_fade_in != layer.fade_in || !layer.fade_in.is_finite() {
+        layer.fade_in = next_fade_in;
+        changed += 1;
+    }
+    let next_fade_out = sanitize_duration(layer.fade_out, 0.35);
+    if next_fade_out != layer.fade_out || !layer.fade_out.is_finite() {
+        layer.fade_out = next_fade_out;
+        changed += 1;
+    }
+    let next_elapsed = non_negative_or(layer.elapsed, 0.0);
+    if next_elapsed != layer.elapsed || !layer.elapsed.is_finite() {
+        layer.elapsed = next_elapsed;
+        changed += 1;
+    }
+    if let Some(duration) = layer.duration {
+        let next_duration = if duration.is_finite() && duration >= 0.0 {
+            duration
+        } else {
+            0.0
+        };
+        if next_duration != duration || !duration.is_finite() {
+            layer.duration = Some(next_duration);
+            changed += 1;
+        }
+    }
+    if let Some(color) = layer.visual.color {
+        let (sanitized, color_changes) = sanitize_color(color, [0.0, 0.0, 0.0, 0.0]);
+        if sanitized != color {
+            layer.visual.color = Some(sanitized);
+        }
+        changed += color_changes;
+    }
+    let next_texture_opacity = clamp_unit(layer.visual.texture_opacity);
+    if next_texture_opacity != layer.visual.texture_opacity || !layer.visual.texture_opacity.is_finite()
+    {
+        layer.visual.texture_opacity = next_texture_opacity;
+        changed += 1;
+    }
+    let next_shader_strength = non_negative_or(layer.visual.shader_strength, 1.0);
+    if next_shader_strength != layer.visual.shader_strength || !layer.visual.shader_strength.is_finite()
+    {
+        layer.visual.shader_strength = next_shader_strength;
+        changed += 1;
+    }
+    if let Some(effect) = &mut layer.visual.shader_effect {
+        let trimmed = effect.trim().to_ascii_lowercase();
+        if trimmed.is_empty() {
+            layer.visual.shader_effect = None;
+            changed += 1;
+        } else if trimmed != *effect {
+            *effect = trimmed;
+            changed += 1;
+        }
     }
     changed
 }

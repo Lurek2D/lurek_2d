@@ -6,6 +6,7 @@
 
 - Manages screen-space weather, fog, camera shakes, and screen flashes.
 - Supports wave distortion and transition wipes.
+- Owns designer-authored status overlays that can stack color washes, fullscreen textures, and routed post-fx presets.
 
 ## General Info
 
@@ -13,7 +14,7 @@
 - Source path: `src/overlay`
 - Binding: `src/lua_api/overlay_api.rs`
 - Namespace: `lurek.overlay`
-- Lua API surface: `2` functions, `3` types, `99` methods
+- Lua API surface: `2` functions, `4` types, `104` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
@@ -23,6 +24,7 @@
 - It groups full-screen and near-full-screen effects that are too global to belong to an individual sprite but too specialized to live as loose render hacks.
 - This matters for fog washes, rain veils, damage flashes, atmospheric tinting, transition masks, and similar treatments that need their own timing and configuration rules.
 - Weather, ambient mood, distortion-style effects, and transition controllers all belong here because they usually evolve over time rather than acting like static post-process toggles.
+- Status overlays also belong here when gameplay needs controllable danger or condition feedback such as frozen, poison, low-health, blindness, radiation, or burn states to fade, stack, and report diagnostics consistently.
 - That temporal behavior is the key reason the module exists: these effects are often stateful and orchestrated, not just one-frame visual filters.
 - The same subsystem can therefore own persistent environmental treatment and short-lived screen transitions without burying either concern inside unrelated render code.
 - Layer-wide control is important because these treatments often need coordinated fade-in, fade-out, stacking, and override rules when several moods or transitions compete for the screen at once.
@@ -86,6 +88,7 @@ This module primarily collaborates with `color`, `image`, `render`, `runtime`. I
 - `controller.rs` owns the main `Overlay` runtime, while `ambient.rs`, `weather.rs`, and `water.rs` hold state blocks.
 - `screen_effects.rs` and `transition.rs` cover timed flashes, shakes, fades, and full-screen transition playback models.
 - `atmosphere.rs` groups clouds, fog, haze, vignette, grain, and lightning so callers can compose atmospheric layers.
+- `status.rs` owns stacked player-state overlays such as frozen, poison, and danger feedback recipes.
 - Change this file when public overlay exports move; change sibling files when overlay simulation or render data changes.
 
 ### screen_effects.rs
@@ -94,6 +97,13 @@ This module primarily collaborates with `color`, `image`, `render`, `runtime`. I
 - It keeps timing, activation flags, colors, alphas, offsets, and a deterministic shake PRNG local to one owner.
 - The only behavior here is the shake sampler, leaving frame-by-frame orchestration to the overlay controller.
 - Open this file when timed overlay state semantics change; transition playback and controller updates live in siblings.
+
+### status.rs
+
+- Owns the status-overlay stack used for designer-controlled HUD and fullscreen danger effects.
+- It keeps intensity normalization, fade timing, texture/shader metadata, and ordering rules in one place.
+- The file stores overlay-layer state only; Lua registration, render command emission, and post-fx execution live elsewhere.
+- Use this file when status-layer semantics change; weather, ambient, and transient flash/fade effects live in sibling overlay files.
 
 ### transition.rs
 
@@ -150,6 +160,7 @@ This module primarily collaborates with `color`, `image`, `render`, `runtime`. I
 ##### Methods
 
 - `LOverlay:clear() -> nil`: Clears active overlay effects and resets transient state.
+- `LOverlay:clearStatusEffect(kind, opts?) -> nil`: Starts fading out one status layer.
 - `LOverlay:drawToImage(w, h) -> Image`: Renders overlay state into an image object of the requested size.
 - `LOverlay:fade(r, g, b, a?, dur?) -> nil`: Starts a fade overlay with optional alpha and duration.
 - `LOverlay:flash(r, g, b, a?, dur?) -> nil`: Starts a short flash overlay with optional alpha and duration.
@@ -173,6 +184,8 @@ This module primarily collaborates with `color`, `image`, `render`, `runtime`. I
 - `LOverlay:getShaderLayer(layer) -> LShader?`: Returns a shader bound to one overlay layer, if present.
 - `LOverlay:getShakeOffset() -> number`: Returns the current screen shake offset.
 - `LOverlay:getStats() -> table`: Returns a telemetry snapshot for dashboard and debug workflows.
+- `LOverlay:getStatusEffect(kind) -> table?`: Returns one status layer table or nil.
+- `LOverlay:getStatusEffects() -> table`: Returns all current status layers sorted by priority.
 - `LOverlay:getTimeOfDay() -> number`: Returns the overlay time-of-day value.
 - `LOverlay:getVignetteStrength() -> number`: Returns overlay vignette strength.
 - `LOverlay:getWater() -> table`: Returns a table describing the current water effect settings.
@@ -216,6 +229,8 @@ This module primarily collaborates with `color`, `image`, `render`, `runtime`. I
 - `LOverlay:setLightningColor(r, g, b, a?) -> nil`: Sets overlay lightning RGBA color.
 - `LOverlay:setShader(shader?) -> nil`: Sets or clears the shader used for custom overlay rendering.
 - `LOverlay:setShaderLayer(layer, shader?) -> nil`: Sets or clears an overlay-layer shader binding.
+- `LOverlay:setStatusEffect(kind, opts) -> nil`: Creates or updates one overlay-owned status layer such as `frozen`, `poison`, or `lowHealth`.
+- `LOverlay:setStatusIntensity(kind, intensity) -> nil`: Updates one existing status intensity or creates a preset-backed layer when it is missing.
 - `LOverlay:setTimeOfDay(v) -> nil`: Sets the overlay time-of-day value used by ambient effects.
 - `LOverlay:setVignetteEnabled(v) -> nil`: Enables or disables overlay vignette rendering.
 - `LOverlay:setVignetteStrength(v) -> nil`: Sets overlay vignette strength. This method is available to Lua scripts.
@@ -237,6 +252,22 @@ This module primarily collaborates with `color`, `image`, `render`, `runtime`. I
 - `LOverlay:type() -> string`: Returns the Lua-visible type name for this overlay handle.
 - `LOverlay:typeOf(name) -> boolean`: Returns whether this overlay handle matches a supported type name.
 - `LOverlay:update(dt) -> nil`: Advances overlay timers and animated effect state.
+
+#### LOverlayGetStatsResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `active_effects` (`integer`): Count of currently active overlay subsystems.
+- `active_status_layers` (`integer`): Count of status layers currently contributing visible work.
+- `height` (`integer`): Overlay height in pixels.
+- `status_layers` (`integer`): Count of authored status layers stored in the overlay stack.
+- `width` (`integer`): Overlay width in pixels.
+
+##### Methods
+
+- No documented methods.
 
 #### LOverlayGetWaterResult Type
 
@@ -297,7 +328,11 @@ This module primarily collaborates with `color`, `image`, `render`, `runtime`. I
 
 - Ownership boundary:
   `overlay` owns scene-wide screen presentation policy and temporal orchestration: weather, ambient tint, flash, fade, shake, lightning, accessibility, layer ordering, and diagnostics. It may request post-fx work through explicit descriptors, but it must not own shader catalogs, post-fx stack ordering, or capture lifecycle; those belong to `effect` and `render`.
+- Status stack contract:
+  Status layers are overlay-owned descriptors with stable ids, normalized intensity, fade in/out timing, priority ordering, optional fullscreen texture metadata, and optional built-in post-fx names. Lua should treat them as authored presentation state, not as ad hoc one-frame shader toggles.
 - Render boundary:
   Direct overlay commands are suitable for simple color/shape layers. Shader-backed treatments such as heat haze, water distortion, film grain, cloud shadows, CRT, pixelate, upscale/downscale, or full-frame grading should route through post-fx descriptors and renderer execution.
+- Routing boundary:
+  A status layer may contribute direct fullscreen color or texture work and may also request a built-in post-fx pass such as grayscale, vignette, blur, chromatic offset, scanlines, or noise. Overlay decides which parts are directly rendered versus delegated to renderer-managed post-fx execution.
 - World boundary:
   Overlay is screen-space after the world. World-space effects such as sparks behind an isometric wall, dust at a tile collision, or object-local trails belong to `particle`/`scene`/`tilemap` depth ordering, not overlay.

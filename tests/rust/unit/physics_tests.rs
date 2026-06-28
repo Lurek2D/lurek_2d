@@ -902,3 +902,96 @@ mod zone_boundary_tests {
         assert!(err.to_string().contains("radius"));
     }
 }
+
+mod flow_field_tests {
+    use super::*;
+    use lurek2d::math::Vec2;
+
+    fn sample_path_field(points: &[(f32, f32)], strength: f32) -> FlowField {
+        let mut field = FlowField::new(
+            0,
+            FlowGeometry::PolylineTube {
+                points: points
+                    .iter()
+                    .map(|(x, y)| Vec2::new(*x, *y))
+                    .collect(),
+                width: 24.0,
+            },
+        );
+        field.strength = strength;
+        field.direction = FlowDirectionMode::AlongPath;
+        field
+    }
+
+    #[test]
+    fn opposing_path_fields_cancel_when_sampled() {
+        let mut world = World::new(0.0, 0.0);
+        world
+            .try_add_flow_field(sample_path_field(&[(0.0, 0.0), (100.0, 0.0)], 120.0))
+            .unwrap();
+        world
+            .try_add_flow_field(sample_path_field(&[(100.0, 0.0), (0.0, 0.0)], 120.0))
+            .unwrap();
+
+        let sample = world.sample_flow(50.0, 0.0, None);
+        assert!(sample.vx.abs() < 1.0e-3);
+        assert!(sample.magnitude < 1.0e-3);
+        assert_eq!(sample.contributions.len(), 2);
+    }
+
+    #[test]
+    fn acceleration_flow_changes_dynamic_body_velocity() {
+        let mut world = World::new(0.0, 0.0);
+        let body = world.add_body(Body::new(10.0, 10.0, 8.0, 8.0, BodyType::Dynamic));
+        let mut field = FlowField::new(
+            0,
+            FlowGeometry::UniformRect {
+                x: 0.0,
+                y: 0.0,
+                w: 100.0,
+                h: 100.0,
+            },
+        );
+        field.direction = FlowDirectionMode::Explicit { x: 1.0, y: 0.0 };
+        field.strength = 80.0;
+        world.try_add_flow_field(field).unwrap();
+
+        world.step(1.0 / 60.0);
+
+        let velocity = world.get_body(body.0).unwrap().velocity;
+        assert!(velocity.x > 0.0);
+        let stats = world.get_stats();
+        assert_eq!(stats.flow_fields, 1);
+        assert!(stats.flow_samples > 0);
+        assert!(stats.flow_affected_bodies > 0);
+    }
+
+    #[test]
+    fn water_drag_respects_body_water_scale() {
+        let mut world = World::new(0.0, 0.0);
+        let body = world.add_body(Body::new(20.0, 20.0, 8.0, 8.0, BodyType::Dynamic));
+        world.get_body_mut(body.0).unwrap().flow_influence.water_scale = 0.0;
+        let mut field = FlowField::new(
+            0,
+            FlowGeometry::UniformRect {
+                x: 0.0,
+                y: 0.0,
+                w: 100.0,
+                h: 100.0,
+            },
+        );
+        field.medium = FlowMedium::Water;
+        field.application = FlowApplicationMode::TargetVelocityDrag;
+        field.direction = FlowDirectionMode::Explicit { x: 1.0, y: 0.0 };
+        field.strength = 60.0;
+        field.drag = 2.5;
+        world.try_add_flow_field(field).unwrap();
+
+        world.step(1.0 / 60.0);
+        assert!(world.get_body(body.0).unwrap().velocity.x.abs() < 1.0e-5);
+
+        world.get_body_mut(body.0).unwrap().flow_influence.water_scale = 1.0;
+        world.step(1.0 / 60.0);
+        assert!(world.get_body(body.0).unwrap().velocity.x > 0.0);
+    }
+}

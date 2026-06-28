@@ -792,6 +792,14 @@ LNinePatchGetSlicesResult = {}
 ---@field y number Y.
 LObjModelProjectToMeshResult = {}
 
+---@class LOverlayGetStatsResult
+---@field active_effects number Count of currently active overlay subsystems.
+---@field active_status_layers number Count of status layers currently contributing visible work.
+---@field height number Overlay height in pixels.
+---@field status_layers number Count of authored status layers stored in the overlay stack.
+---@field width number Overlay width in pixels.
+LOverlayGetStatsResult = {}
+
 ---@class LOverlayGetWaterResult
 ---@field amplitude number Wave amplitude.
 ---@field depth_b number Depth blue component.
@@ -1525,6 +1533,9 @@ LWorldGetEndContactEventsResult = {}
 ---@field bodies number Number of active body slots.
 ---@field bodySlots number Total allocated body slots, including inactive tombstones.
 ---@field colliders number Number of active Rapier colliders.
+---@field flowAffectedBodies number Number of bodies influenced by non-zero flow during the last simulation step.
+---@field flowFields number Number of active authored flow fields.
+---@field flowSamples number Number of flow-field samples evaluated during the last simulation step.
 ---@field gravityVectors number Number of active additive gravity vectors.
 ---@field jointSlots number Total allocated joint slots, including inactive tombstones.
 ---@field joints number Number of active joint slots.
@@ -2672,6 +2683,10 @@ LWeightedRandom = {}
 --- A handle to a single physics body in the world, providing per-body manipulation methods.
 ---@class LBody
 LBody = {}
+
+--- A mutable handle to one authored flow field stored inside a physics world.
+---@class LFlowField
+LFlowField = {}
 
 --- A standalone collision shape with material properties, to be attached to bodies via `attachShape`.
 ---@class LPhysicsShape
@@ -19752,6 +19767,11 @@ lurek.network.unpackSnapshot = function(data) end
 --- Clears active overlay effects and resets transient state.
 function LOverlay:clear() end
 
+--- Starts fading out one status layer.
+---@param kind string Status kind or layer id.
+---@param opts? table Optional fade-out override table.
+function LOverlay:clearStatusEffect(kind, opts) end
+
 --- Renders overlay state into an image object of the requested size.
 ---@param w number Target image width in pixels.
 ---@param h number Target image height in pixels.
@@ -19863,8 +19883,17 @@ function LOverlay:getShaderLayer(layer) end
 function LOverlay:getShakeOffset() end
 
 --- Returns a telemetry snapshot for dashboard and debug workflows.
----@return table Overlay telemetry fields.
+---@return LOverlayGetStatsResult Overlay telemetry fields.
 function LOverlay:getStats() end
+
+--- Returns one status layer table or nil.
+---@param kind string Status kind or layer id.
+---@return table? Layer table when present.
+function LOverlay:getStatusEffect(kind) end
+
+--- Returns all current status layers sorted by priority.
+---@return table Array of status layer tables.
+function LOverlay:getStatusEffects() end
 
 --- Returns the overlay time-of-day value.
 ---@return number Current time-of-day value.
@@ -20045,6 +20074,16 @@ function LOverlay:setShader(shader) end
 ---@param layer string Layer name such as `heat_haze`, `water`, or `fog`.
 ---@param shader? LShader Overlay-target shader or nil to clear.
 function LOverlay:setShaderLayer(layer, shader) end
+
+--- Creates or updates one overlay-owned status layer such as `frozen`, `poison`, or `lowHealth`.
+---@param kind string Status kind name.
+---@param opts table Status options such as intensity, fade, texture, shader, and color.
+function LOverlay:setStatusEffect(kind, opts) end
+
+--- Updates one existing status intensity or creates a preset-backed layer when it is missing.
+---@param kind string Status kind name.
+---@param intensity number Intensity in `0..1` or `1..10`.
+function LOverlay:setStatusIntensity(kind, intensity) end
 
 --- Sets the overlay time-of-day value used by ambient effects.
 ---@param v number Time-of-day value stored on the overlay ambient state.
@@ -23402,6 +23441,10 @@ function LBody:isSleepingAllowed() end
 ---@return boolean True if the body has not been destroyed.
 function LBody:isValid() end
 
+--- Sets the extra multiplier used only for `air` flow fields.
+---@param scale number Non-negative air multiplier.
+function LBody:setAirScale(scale) end
+
 --- Sets the body's rotation angle directly.
 ---@param angle number New angle in radians.
 function LBody:setAngle(angle) end
@@ -23425,6 +23468,14 @@ function LBody:setCollisionGroup(group) end
 --- Locks or unlocks the body's rotation. Useful for player characters.
 ---@param fixed boolean True to prevent rotation.
 function LBody:setFixedRotation(fixed) end
+
+--- Sets the drag cross-section factor used by drag-style flow application.
+---@param crossSection number Positive cross-section multiplier.
+function LBody:setFlowCrossSection(crossSection) end
+
+--- Sets the global multiplier applied to all flow-field influences on this body.
+---@param scale number Non-negative flow multiplier.
+function LBody:setFlowScale(scale) end
 
 --- Sets the body's friction coefficient.
 ---@param friction number New friction value (0 = ice, 1 = rubber).
@@ -23472,6 +23523,10 @@ function LBody:setType(bodyType) end
 ---@param vy number Velocity Y component.
 function LBody:setVelocity(vx, vy) end
 
+--- Sets the extra multiplier used only for `water` flow fields.
+---@param scale number Non-negative water multiplier.
+function LBody:setWaterScale(scale) end
+
 --- Forces the body into sleep state, pausing its simulation until disturbed.
 function LBody:sleep() end
 
@@ -23486,6 +23541,62 @@ function LBody:typeOf(name) end
 
 --- Wakes the body from sleep, making it active in the simulation again.
 function LBody:wakeUp() end
+
+--- Disables this flow field.
+function LFlowField:destroy() end
+
+--- Returns this flow field id.
+---@return number Stable flow field id.
+function LFlowField:getId() end
+
+--- Returns this flow field layer mask.
+---@return number Layer bitmask.
+function LFlowField:getLayerMask() end
+
+--- Returns this flow field strength.
+---@return number Strength value.
+function LFlowField:getStrength() end
+
+--- Returns whether this flow field is enabled.
+---@return boolean True when enabled.
+function LFlowField:isEnabled() end
+
+--- Sets the body-application mode used during stepping.
+---@param mode string `acceleration` or `targetVelocityDrag`.
+function LFlowField:setApplication(mode) end
+
+--- Sets how this field combines with overlapping fields.
+---@param mode string `additive` or `additiveClamped`.
+function LFlowField:setCombine(mode) end
+
+--- Enables or disables this flow field.
+---@param enabled boolean True to enable, false to disable.
+function LFlowField:setEnabled(enabled) end
+
+--- Sets the body-layer mask that this field affects.
+---@param mask number Layer bitmask.
+function LFlowField:setLayerMask(mask) end
+
+--- Replaces the polyline points of a path-shaped flow field.
+---@param points table Array of `{ x, y }` point tables.
+function LFlowField:setPoints(points) end
+
+--- Sets this flow field strength.
+---@param strength number Strength in world units per second.
+function LFlowField:setStrength(strength) end
+
+--- Sets the width of a path-shaped flow field.
+---@param width number Tube width in world units.
+function LFlowField:setWidth(width) end
+
+--- Returns the type name of this object.
+---@return string `LFlowField`.
+function LFlowField:type() end
+
+--- Returns whether this object matches the requested type name.
+---@param name string Type name to compare against.
+---@return boolean True for `LFlowField` and `LObject`.
+function LFlowField:typeOf(name) end
 
 --- No-op placeholder for API consistency. Shapes are freed when no longer referenced.
 function LPhysicsShape:destroy() end
@@ -23641,6 +23752,11 @@ function LWorld:addDistanceJoint(bodyA, bodyB, anchorAX, anchorAY, anchorBX, anc
 ---@return number The fixture index on the body.
 function LWorld:addFixture(bodyId, shapeType, density, friction, restitution, sensor, ...) end
 
+--- Creates one authored flow field and returns a handle for later mutation.
+---@param opts table Flow field authoring table.
+---@return LFlowField New flow field handle.
+function LWorld:addFlowField(opts) end
+
 --- Creates a friction joint that applies resistance to relative motion between two bodies.
 ---@param bodyA number First body ID.
 ---@param bodyB number Second body ID.
@@ -23761,6 +23877,9 @@ function LWorld:clearBodyOneWay(id) end
 --- Removes the end-contact callback so it is no longer called.
 function LWorld:clearEndContact() end
 
+--- Disables every authored flow field in the world.
+function LWorld:clearFlowFields() end
+
 --- Removes all additive gravity vectors from the world.
 function LWorld:clearGravityVectors() end
 
@@ -23779,6 +23898,11 @@ function LWorld:destroyJoint(jointId) end
 ---@param b? number Blue channel (0-255, default 0).
 ---@param a? number Alpha channel (0-255, default 255).
 function LWorld:drawDebug(target, r, g, b, a) end
+
+--- Draws flow-field centerlines and sampled arrows into an ImageData target.
+---@param target LImageData Mutable target image.
+---@param opts? table Optional table with `arrowSpacing`.
+function LWorld:drawFlowDebug(target, opts) end
 
 --- Returns how many fixtures (colliders) are attached to a body.
 ---@param bodyId number The body to query.
@@ -23852,6 +23976,11 @@ function LWorld:getContacts() end
 --- Returns contact-end events from the last step (pairs of bodies that stopped touching).
 ---@return LWorldGetEndContactEventsResult Array of {bodyA, bodyB} tables.
 function LWorld:getEndContactEvents() end
+
+--- Returns one flow field table by id, or nil when missing.
+---@param id number Flow field id.
+---@return table? Flow field descriptor table with geometry, strength, application, combine, and layer-mask fields.
+function LWorld:getFlowField(id) end
 
 --- Returns the current world gravity vector.
 ---@return number Gravity X component in world units per second squared.
@@ -24015,6 +24144,11 @@ function LWorld:raycastAll(x, y, dx, dy, maxDist, filter) end
 ---@return LWorldRaycastClosestResult Hit info {bodyId, x, y, normalX, normalY, toi} or nil if no hit.
 function LWorld:raycastClosest(x, y, dx, dy, maxDist, filter) end
 
+--- Disables one flow field by id.
+---@param id number Flow field id.
+---@return boolean True when the field existed and was active.
+function LWorld:removeFlowField(id) end
+
 --- Removes one additive gravity vector so it no longer affects future steps.
 ---@param id number Gravity vector ID returned by addGravityVector.
 ---@return boolean True if an active vector was removed.
@@ -24025,6 +24159,13 @@ function LWorld:resetCollisionGroups() end
 
 --- Fully resets the world to its post-construction state.
 function LWorld:resetWorld() end
+
+--- Samples combined flow at a world position.
+---@param x number World-space x position.
+---@param y number World-space y position.
+---@param opts? table Optional table with `layerMask`.
+---@return table Flow sample table with `vx`, `vy`, `magnitude`, `intensity`, and `sources`.
+function LWorld:sampleFlow(x, y, opts) end
 
 --- Registers a callback function invoked whenever two bodies begin touching.
 ---@param callback function Called with (bodyIdA, bodyIdB) on each new contact.

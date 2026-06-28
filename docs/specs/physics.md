@@ -10,6 +10,7 @@
 - Manages override zones, raycast queries, and destructible static terrain.
 - Provides a 16-group world collision matrix layered over per-body layer/mask filters.
 - Provides post-step contact events and colorized visual debug overlays.
+- Supports authored flow fields for wind, water, conveyor, and magic-current style motion that can be sampled or applied during stepping.
 
 ## General Info
 
@@ -17,7 +18,7 @@
 - Source path: `src/physics`
 - Binding: `src/lua_api/physics_api.rs`
 - Namespace: `lurek.physics`
-- Lua API surface: `23` functions, `17` types, `195` methods
+- Lua API surface: `23` functions, `18` types, `219` methods
 - User-facing: `true`
 - Plugin tier: `tier_2_plugin`
 
@@ -27,6 +28,7 @@
 - Bodies, colliders, forces, terrain, joints, sensors, and collision layers all belong to the same simulation step, which keeps movement and contact rules coherent across the engine.
 - The module supports dynamic, static, kinematic, and sensor-style roles so projects can mix actors, level geometry, triggers, platforms, and detection-only regions inside one physical space without switching subsystems.
 - Practical physics also depends on querying the world, not only advancing it. Raycasts, overlap checks, sweep-style tests, and contact inspection let gameplay ask what was hit, what overlaps, and why motion changed.
+- Flow fields extend that world model with continuous directional media. They let scripts describe rectangles, circular fans, and polyline tubes that contribute acceleration or drag-like target velocity behavior without inventing a second movement subsystem outside the physics step.
 - Shape support, terrain integration, and joints give the system expressive range for characters, bullets, walls, pickups, hazards, linked mechanisms, and authored environment collision.
 - Alpha-mask shape inference gives tools and scripts a pragmatic bridge from sprite or image assets to plausible collision geometry: circle-like masks become circles, filled masks become rectangles, and irregular masks become bounded convex polygons.
 - Contact data is one of the main user-facing outputs because systems often need normals, hit points, and begin or end state changes to react meaningfully.
@@ -94,6 +96,13 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - Keeps public crate helpers focused on error behavior while Lua registration stays elsewhere.
 - Documents the boundary where physics code accepts inputs, reports errors, or updates state.
 
+### flow.rs
+
+- Owns authored flow-field definitions, validation, and deterministic sampling for the physics subsystem.
+- It keeps geometry math, medium/application metadata, and overlap contribution data outside the main world step owner.
+- The file samples vector fields only; body iteration, Rapier mutation, and Lua registration live in neighboring physics files.
+- Use this file when stream geometry or combination semantics change; world storage and debug drawing stay elsewhere.
+
 ### limits.rs
 
 - Owns physics behavior with explicit state, validation, and crate-local integration boundaries.
@@ -109,6 +118,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - Public exports here route callers toward `World` for simulation and `Body` or `Shape` for authored physics state.
 - `collision.rs` and `collision_helpers.rs` own contact payloads and lightweight overlap checks outside full stepping.
 - `body.rs`, `shape.rs`, and `zone.rs` define the core authored inputs that later feed the runtime world owner.
+- `flow.rs` owns path and volume flow-field definitions sampled by `world.rs` during stepping.
 - Change this file when the public physics symbol map moves; change siblings when simulation data rules change.
 
 ### render.rs
@@ -258,12 +268,15 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LBody:isSleeping() -> boolean`: Returns whether this body is currently in the sleeping (inactive) state.
 - `LBody:isSleepingAllowed() -> boolean`: Returns whether the body is allowed to enter sleep state when at rest.
 - `LBody:isValid() -> boolean`: Returns whether this body handle still points to an active body.
+- `LBody:setAirScale(scale) -> nil`: Sets the extra multiplier used only for `air` flow fields.
 - `LBody:setAngle(angle) -> nil`: Sets the body's rotation angle directly.
 - `LBody:setAngularDamping(damping) -> nil`: Sets the angular damping factor (higher = rotation decays faster).
 - `LBody:setAngularVelocity(omega) -> nil`: Sets the body's angular velocity directly.
 - `LBody:setBullet(bullet) -> nil`: Enables or disables continuous collision detection to prevent fast-moving tunneling.
 - `LBody:setCollisionGroup(group) -> nil`: Assigns the body to one collision group and opens its local mask to the 16 group bits.
 - `LBody:setFixedRotation(fixed) -> nil`: Locks or unlocks the body's rotation. Useful for player characters.
+- `LBody:setFlowCrossSection(crossSection) -> nil`: Sets the drag cross-section factor used by drag-style flow application.
+- `LBody:setFlowScale(scale) -> nil`: Sets the global multiplier applied to all flow-field influences on this body.
 - `LBody:setFriction(friction) -> nil`: Sets the body's friction coefficient.
 - `LBody:setGravityScale(scale) -> nil`: Sets a per-body gravity scale multiplier (0 = no gravity, 2 = double gravity, -1 = inverted).
 - `LBody:setLayer(layer) -> nil`: Sets the body's collision layer bitmask (which layers this body belongs to).
@@ -275,10 +288,36 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LBody:setSleepingAllowed(allowed) -> nil`: Controls whether the body can enter sleep state. Disable for bodies that must stay active.
 - `LBody:setType(bodyType) -> nil`: Changes the body's type at runtime.
 - `LBody:setVelocity(vx, vy) -> nil`: Directly sets the body's linear velocity.
+- `LBody:setWaterScale(scale) -> nil`: Sets the extra multiplier used only for `water` flow fields.
 - `LBody:sleep() -> nil`: Forces the body into sleep state, pausing its simulation until disturbed.
 - `LBody:type() -> string`: Returns the type name of this object ("LBody").
 - `LBody:typeOf(name) -> boolean`: Checks if this object is of a given type name.
 - `LBody:wakeUp() -> nil`: Wakes the body from sleep, making it active in the simulation again.
+
+#### LFlowField Type
+
+- A mutable handle to one authored flow field stored inside a physics world.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LFlowField:destroy() -> nil`: Disables this flow field.
+- `LFlowField:getId() -> integer`: Returns this flow field id.
+- `LFlowField:getLayerMask() -> integer`: Returns this flow field layer mask.
+- `LFlowField:getStrength() -> number`: Returns this flow field strength.
+- `LFlowField:isEnabled() -> boolean`: Returns whether this flow field is enabled.
+- `LFlowField:setApplication(mode) -> nil`: Sets the body-application mode used during stepping.
+- `LFlowField:setCombine(mode) -> nil`: Sets how this field combines with overlapping fields.
+- `LFlowField:setEnabled(enabled) -> nil`: Enables or disables this flow field.
+- `LFlowField:setLayerMask(mask) -> nil`: Sets the body-layer mask that this field affects.
+- `LFlowField:setPoints(points) -> nil`: Replaces the polyline points of a path-shaped flow field.
+- `LFlowField:setStrength(strength) -> nil`: Sets this flow field strength.
+- `LFlowField:setWidth(width) -> nil`: Sets the width of a path-shaped flow field.
+- `LFlowField:type() -> string`: Returns the type name of this object.
+- `LFlowField:typeOf(name) -> boolean`: Returns whether this object matches the requested type name.
 
 #### LPhysicsGetCollisionsResult Type
 
@@ -367,6 +406,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 - `LWorld:addDistanceJoint(bodyA, bodyB, anchorAX, anchorAY, anchorBX, anchorBY, length) -> integer`: Creates a distance joint that keeps two bodies at a fixed distance apart, like a rigid rod.
 - `LWorld:addFixture(bodyId, shapeType, density, friction, restitution, sensor, ...) -> integer`: Attaches a new collider shape to an existing body with material properties.
+- `LWorld:addFlowField(opts) -> LFlowField`: Creates one authored flow field and returns a handle for later mutation.
 - `LWorld:addFrictionJoint(bodyA, bodyB, anchorX, anchorY, maxForce, maxTorque) -> integer`: Creates a friction joint that applies resistance to relative motion between two bodies.
 - `LWorld:addGearJoint(bodyA, bodyB, anchorX, anchorY) -> integer`: Creates a gear joint that synchronizes rotation between two bodies at an anchor.
 - `LWorld:addGravityVector(gx, gy, layerMask?) -> integer`: Adds an extra directional gravity vector that is summed with world gravity when no non-additive zone override is active.
@@ -384,10 +424,12 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:clearBodyData(id) -> nil`: Removes and releases the Lua data attached to a body.
 - `LWorld:clearBodyOneWay(id) -> nil`: Removes the one-way platform behavior from a body, making it block from all directions.
 - `LWorld:clearEndContact() -> nil`: Removes the end-contact callback so it is no longer called.
+- `LWorld:clearFlowFields() -> nil`: Disables every authored flow field in the world.
 - `LWorld:clearGravityVectors() -> nil`: Removes all additive gravity vectors from the world.
 - `LWorld:destroyBody(id) -> nil`: Removes a body from the world by its ID, along with all attached fixtures and joints.
 - `LWorld:destroyJoint(jointId) -> nil`: Removes a joint from the world, disconnecting the two bodies it linked.
 - `LWorld:drawDebug(target, r?, g?, b?, a?) -> nil`: Renders a debug visualization of all physics bodies onto a software ImageData target.
+- `LWorld:drawFlowDebug(target, opts?) -> nil`: Draws flow-field centerlines and sampled arrows into an ImageData target.
 - `LWorld:fixtureCount(bodyId) -> integer`: Returns how many fixtures (colliders) are attached to a body.
 - `LWorld:getBeginContactEvents() -> table`: Returns contact-begin events from the last step (pairs of bodies that started touching).
 - `LWorld:getBodyAtPoint(x, y, filter?) -> integer`: Returns the body ID at a specific world point, or nil if no body is there.
@@ -403,6 +445,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:getCollisionPair(groupA, groupB) -> boolean`: Returns whether collisions are enabled between two world-level collision groups.
 - `LWorld:getContacts() -> table`: Returns all currently active contact manifolds with normals and touching state.
 - `LWorld:getEndContactEvents() -> table`: Returns contact-end events from the last step (pairs of bodies that stopped touching).
+- `LWorld:getFlowField(id) -> table?`: Returns one flow field table by id, or nil when missing.
 - `LWorld:getGravity() -> number`: Returns the current world gravity vector.
 - `LWorld:getGravityVector(id) -> table?`: Returns an additive gravity vector by ID, or nil when no active vector exists.
 - `LWorld:getJointBodies(jointId) -> integer`: Returns the two body IDs connected by a joint.
@@ -429,9 +472,11 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:raycast(x1, y1, x2, y2, filter?) -> table`: Casts a ray from point (x1,y1) to (x2,y2) and returns the first body hit, or nil.
 - `LWorld:raycastAll(x, y, dx, dy, maxDist, filter?) -> table`: Casts a directional ray and returns all bodies hit within max distance as a table of results.
 - `LWorld:raycastClosest(x, y, dx, dy, maxDist, filter?) -> table`: Casts a directional ray from a point and returns the closest hit within max distance.
+- `LWorld:removeFlowField(id) -> boolean`: Disables one flow field by id.
 - `LWorld:removeGravityVector(id) -> boolean`: Removes one additive gravity vector so it no longer affects future steps.
 - `LWorld:resetCollisionGroups() -> nil`: Restores all 16 collision groups so every group can collide with every other group.
 - `LWorld:resetWorld() -> nil`: Fully resets the world to its post-construction state.
+- `LWorld:sampleFlow(x, y, opts?) -> table`: Samples combined flow at a world position.
 - `LWorld:setBeginContact(callback) -> nil`: Registers a callback function invoked whenever two bodies begin touching.
 - `LWorld:setBodyCCD(id, enabled) -> nil`: Enables or disables continuous collision detection (bullet mode) on a body to prevent tunneling.
 - `LWorld:setBodyData(id, value) -> nil`: Attaches arbitrary Lua data to a body ID for later retrieval (e.g. entity reference, tag).
@@ -541,6 +586,9 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `bodies` (`integer`): Number of active body slots.
 - `bodySlots` (`integer`): Total allocated body slots, including inactive tombstones.
 - `colliders` (`integer`): Number of active Rapier colliders.
+- `flowAffectedBodies` (`integer`): Number of bodies influenced by non-zero flow during the last simulation step.
+- `flowFields` (`integer`): Number of active authored flow fields.
+- `flowSamples` (`integer`): Number of flow-field samples evaluated during the last simulation step.
 - `gravityVectors` (`integer`): Number of active additive gravity vectors.
 - `jointSlots` (`integer`): Total allocated joint slots, including inactive tombstones.
 - `joints` (`integer`): Number of active joint slots.
@@ -659,4 +707,9 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 ## Notes
 
-- No additional module-specific notes.
+- Flow-field contract:
+  Authored flow fields live on the world, respect layer masks, can overlap additively, and may be sampled directly from Lua for AI, VFX, UI previews, or debugging. The physics world remains the source of truth for how those currents affect bodies during stepping.
+- Body-influence contract:
+  Bodies expose per-body flow coefficients so gameplay can scale all flow, air-only flow, water-only flow, and drag cross-section without forking world behavior. Those coefficients are body metadata, not separate force emitters.
+- Debug contract:
+  Physics debug rendering includes authored flow guides through `drawFlowDebug` so tools and examples can inspect centerlines, coverage bounds, and sampled arrows using the same world-owned data that stepping uses.
