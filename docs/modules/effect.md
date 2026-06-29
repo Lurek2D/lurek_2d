@@ -123,7 +123,7 @@ lurek.effect.newCustomEffect(shader)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `shader` | [LShader](#lshader)|number | Postfx-target shader handle or legacy shader id. |
+| `shader` | [LShader](render.md#lshader)|number | Postfx-target shader handle or legacy shader id. |
 
 **Returns**
 
@@ -235,7 +235,7 @@ lurek.effect.newPass(shader)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `shader` | [LShader](#lshader)|number | Postfx-target shader handle or legacy shader id. |
+| `shader` | [LShader](render.md#lshader)|number | Postfx-target shader handle or legacy shader id. |
 
 **Returns**
 
@@ -379,7 +379,6 @@ end
 - [LImageEffect](#limageeffect)
 - [LPostFxEffect](#lpostfxeffect)
 - [LPostFxStack](#lpostfxstack)
-- [LShader](#lshader)
 
 ## LImageEffect
 
@@ -2247,154 +2246,5 @@ do
     lurek.log.info("is stack=" .. tostring(is_stack) .. " type=" .. type_name)
 end
 ```
-
----
-
-## LShader
-
-### Type Fields
-
-*No documented fields for this handle.*
-
-### Type Methods
-
-#### `LShader:getDiagnostics`
-
-Returns shader validation diagnostics.
-
-```lua
-LShader:getDiagnostics()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| table | Array of diagnostic strings. |
-
----
-
-#### `LShader:getId`
-
-Returns the internal numeric handle ID for this shader.
-
-```lua
-LShader:getId()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Opaque shader handle identifier. |
-
----
-
-#### `LShader:getTarget`
-
-Returns the target this shader was validated for.
-
-```lua
-LShader:getTarget()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| string | Shader target name. |
-
----
-
-#### `LShader:hasUniform`
-
-Checks whether this shader declares a uniform with the given name.
-
-```lua
-LShader:hasUniform(name)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `name` | string | Uniform name to check. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True if the uniform exists. |
-
----
-
-#### `LShader:release`
-
-Releases the shader resource. If active, the default shader is restored.
-
-```lua
-LShader:release()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True if the shader was valid and was released. |
-
----
-
-#### `LShader:send`
-
-Sends a uniform value to this shader by name. Supported types: number, boolean, or table (vec2/vec3/vec4).
-
-```lua
-LShader:send(name, value)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `name` | string | Uniform variable name declared in the shader. |
-| `value` | number|boolean|table | The value to send. |
-
----
-
-#### `LShader:type`
-
-Returns the type name string for this shader object.
-
-```lua
-LShader:type()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| string | Always "[LShader](#lshader)". |
-
----
-
-#### `LShader:typeOf`
-
-Checks whether this object matches the given type name.
-
-```lua
-LShader:typeOf(name)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `name` | string | Type name to check ("Shader" or "Object"). |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True if the name matches. |
 
 ---

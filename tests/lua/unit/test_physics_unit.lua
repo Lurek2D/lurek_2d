@@ -695,7 +695,7 @@ describe("world userdata methods", function()
     -- @covers LWorld:addFlowField
     -- @covers LWorld:getFlowField
     -- @covers LWorld:sampleFlow
-    -- @covers LFlowField:getId
+    -- @covers LFlowStream:getId
     it("flow fields can be authored and sampled from world space", function()
         local world = new_world(0, 0)
         local field = world:addFlowField({
@@ -788,17 +788,17 @@ describe("world userdata methods", function()
         expect_true(alpha > 0)
     end)
 
-    -- @covers LFlowField:setEnabled
-    -- @covers LFlowField:isEnabled
-    -- @covers LFlowField:setStrength
-    -- @covers LFlowField:getStrength
-    -- @covers LFlowField:setLayerMask
-    -- @covers LFlowField:getLayerMask
-    -- @covers LFlowField:setApplication
-    -- @covers LFlowField:setCombine
-    -- @covers LFlowField:destroy
-    -- @covers LFlowField:type
-    -- @covers LFlowField:typeOf
+    -- @covers LFlowStream:setEnabled
+    -- @covers LFlowStream:isEnabled
+    -- @covers LFlowStream:setStrength
+    -- @covers LFlowStream:getStrength
+    -- @covers LFlowStream:setLayerMask
+    -- @covers LFlowStream:getLayerMask
+    -- @covers LFlowStream:setApplication
+    -- @covers LFlowStream:setCombine
+    -- @covers LFlowStream:destroy
+    -- @covers LFlowStream:type
+    -- @covers LFlowStream:typeOf
     it("flow field handles can mutate runtime authoring state", function()
         local world = new_world(0, 0)
         local field = world:addFlowField({
@@ -823,14 +823,14 @@ describe("world userdata methods", function()
         expect_equal(0x8, field:getLayerMask())
         expect_equal("targetVelocityDrag", info.application)
         expect_equal("additiveClamped", info.combine)
-        expect_equal("LFlowField", field:type())
-        expect_true(field:typeOf("LFlowField"))
+        expect_equal("LFlowStream", field:type())
+        expect_true(field:typeOf("LFlowStream"))
         field:destroy()
         expect_equal(nil, world:getFlowField(info.id))
     end)
 
-    -- @covers LFlowField:setWidth
-    -- @covers LFlowField:setPoints
+    -- @covers LFlowStream:setWidth
+    -- @covers LFlowStream:setPoints
     it("path flow field handles can reshape their polyline geometry", function()
         local world = new_world(0, 0)
         local field = world:addFlowField({
@@ -1469,6 +1469,7 @@ describe("world userdata methods", function()
         body:setLayer(0x2)
         world:step(1 / 60)
         expect_type("table", world:queryAABB(0, 0, 8, 8))
+        expect_equal(0, #world:queryAABB(0, 0, 8, 8, { excludeBody = body:getId() }))
         expect_equal(0, #world:queryAABB(0, 0, 8, 8, { layer = 0x1, mask = 0x4 }))
         expect_equal(1, #world:queryAABB(0, 0, 8, 8, { layer = 0x1, mask = 0x2 }))
 
@@ -1493,6 +1494,7 @@ describe("world userdata methods", function()
         else
             expect_nil(hit)
         end
+        expect_nil(world:raycastClosest(0, 2, 1, 0, 10, { excludeBody = body:getId() }))
         expect_nil(world:raycastClosest(0, 2, 1, 0, 10, { layer = 0x1, mask = 0x4 }))
     end)
 
@@ -1508,6 +1510,7 @@ describe("world userdata methods", function()
         else
             expect_nil(hit)
         end
+        expect_nil(world:raycast(0, 0, 10, 0, { excludeBody = body:getId() }))
         expect_nil(world:raycast(0, 0, 10, 0, { layer = 0x1, mask = 0x4 }))
     end)
 
@@ -1526,6 +1529,104 @@ describe("world userdata methods", function()
         expect_equal(0, #world:raycastAll(50, 200, 1, 0, 600, { layer = 0x1, mask = 0x4 }))
     end)
 
+    -- @covers LWorld:castBeam
+    it("castBeam returns trace data for piercing beams and rejects thick mode for now", function()
+        local world = new_world(0, 0)
+        local shooter = world:newCircleBody(20, 0, 2, "dynamic")
+        shooter:setLayer(0x2)
+        local targets = {}
+        for i = 1, 3 do
+            local body = world:newCircleBody(40 + i * 30, 0, 4, "static")
+            body:setLayer(0x2)
+            targets[i] = body
+        end
+        world:step(1 / 60)
+
+        local trace = world:castBeam(20, 0, 1, 0, 220, {
+            mode = "pierce",
+            maxHits = 2,
+            excludeBody = shooter:getId(),
+            layer = 0x1,
+            mask = 0x2,
+        })
+        expect_type("table", trace)
+        expect_equal(2, #trace.hits)
+        expect_equal(1, #trace.segments)
+        expect_false(trace.reachedMaxRange)
+        expect_equal(targets[1]:getId(), trace.hits[1].bodyId)
+        expect_equal(targets[2]:getId(), trace.hits[2].bodyId)
+        expect_true(trace.hits[1].distance < trace.hits[2].distance)
+        expect_equal(1, trace.hits[1].segmentIndex)
+        expect_equal(targets[2]:getId(), trace.segments[1].blockedBy)
+        expect_error(function()
+            world:castBeam(20, 0, 1, 0, 220, { thickness = 4 })
+        end)
+    end)
+
+    -- @covers LWorld:beamClosest
+    it("beamClosest can skip sensors while allowing the shooter body to be excluded", function()
+        local world = new_world(0, 0)
+        local shooter = world:newCircleBody(10, 5, 2, "dynamic")
+        shooter:setLayer(0x2)
+        local sensor = world:newCircleBody(30, 5, 3, "sensor")
+        sensor:setLayer(0x2)
+        local target = world:newCircleBody(50, 5, 4, "static")
+        target:setLayer(0x2)
+        world:step(1 / 60)
+
+        local hit = world:beamClosest(10, 5, 1, 0, 120, {
+            layer = 0x1,
+            mask = 0x2,
+            excludeBody = shooter:getId(),
+            includeSensors = false,
+        })
+        expect_type("table", hit)
+        expect_equal(target:getId(), hit.bodyId)
+        expect_equal(1, hit.segmentIndex)
+        local sensor_hit = world:beamClosest(10, 5, 1, 0, 120, {
+            layer = 0x1,
+            mask = 0x2,
+            excludeBody = shooter:getId(),
+            includeSensors = true,
+        })
+        expect_type("table", sensor_hit)
+        expect_equal(sensor:getId(), sensor_hit.bodyId)
+        expect_nil(world:beamClosest(10, 5, 1, 0, 120, {
+            layer = 0x1,
+            mask = 0x4,
+            excludeBody = shooter:getId(),
+        }))
+    end)
+
+    -- @covers LWorld:beamAll
+    it("beamAll respects world collision groups and stays in deterministic distance order", function()
+        local world = new_world(0, 0)
+        local ids = {}
+        for i = 1, 3 do
+            local body = world:newCircleBody(40 + i * 30, 10, 4, "static")
+            body:setCollisionGroup(i)
+            ids[i] = body:getId()
+        end
+        world:setCollisionPair(0, 1, false)
+        world:step(1 / 60)
+
+        local hits = world:beamAll(30, 10, 1, 0, 160, { group = 0 })
+        expect_type("table", hits)
+        expect_equal(2, #hits)
+        expect_equal(ids[2], hits[1].bodyId)
+        expect_equal(ids[3], hits[2].bodyId)
+        expect_true(hits[1].distance < hits[2].distance)
+
+        local groups_world = new_world(0, 0)
+        local grouped = groups_world:newCircleBody(60, 10, 4, "static")
+        grouped:setCollisionGroup(1)
+        groups_world:step(1 / 60)
+        expect_equal(1, #groups_world:beamAll(30, 10, 1, 0, 80, { groups = 0x2 }))
+        groups_world:setCollisionPair(1, 1, false)
+        groups_world:step(1 / 60)
+        expect_equal(0, #groups_world:beamAll(30, 10, 1, 0, 80, { groups = 0x2 }))
+    end)
+
     -- @covers LWorld:getBodyAtPoint
     it("getBodyAtPoint returns a body at a covered coordinate", function()
         local world = new_world(0, 0)
@@ -1538,6 +1639,7 @@ describe("world userdata methods", function()
         else
             expect_nil(at)
         end
+        expect_nil(world:getBodyAtPoint(2, 2, { excludeBody = body:getId() }))
         expect_nil(world:getBodyAtPoint(2, 2, { layer = 0x1, mask = 0x4 }))
     end)
 

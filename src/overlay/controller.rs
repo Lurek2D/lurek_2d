@@ -959,7 +959,9 @@ impl Overlay {
         for (index, layer) in self.status_stack.layers.iter_mut().enumerate() {
             changed += sanitize_status_layer(layer, index);
         }
-        self.status_stack.layers.retain(|layer| !layer.id.is_empty());
+        self.status_stack
+            .layers
+            .retain(|layer| !layer.id.is_empty());
 
         let mut accessibility_changes = 0usize;
         if self.flash.color[3] > self.accessibility_policy.max_flash_alpha {
@@ -1314,11 +1316,7 @@ impl Overlay {
             || self.film_grain.enabled
             || self.lightning.active
             || self.water.enabled
-            || self
-                .status_stack
-                .layers
-                .iter()
-                .any(|layer| layer.is_live())
+            || self.status_stack.layers.iter().any(|layer| layer.is_live())
             || self.custom_shader.is_some()
     }
 
@@ -2128,13 +2126,15 @@ fn sanitize_status_layer(layer: &mut super::status::StatusOverlayLayer, index: u
         changed += color_changes;
     }
     let next_texture_opacity = clamp_unit(layer.visual.texture_opacity);
-    if next_texture_opacity != layer.visual.texture_opacity || !layer.visual.texture_opacity.is_finite()
+    if next_texture_opacity != layer.visual.texture_opacity
+        || !layer.visual.texture_opacity.is_finite()
     {
         layer.visual.texture_opacity = next_texture_opacity;
         changed += 1;
     }
     let next_shader_strength = non_negative_or(layer.visual.shader_strength, 1.0);
-    if next_shader_strength != layer.visual.shader_strength || !layer.visual.shader_strength.is_finite()
+    if next_shader_strength != layer.visual.shader_strength
+        || !layer.visual.shader_strength.is_finite()
     {
         layer.visual.shader_strength = next_shader_strength;
         changed += 1;

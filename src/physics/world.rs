@@ -3,7 +3,7 @@
 //! Stepping syncs scripted state into Rapier, runs the solver pipeline, then writes motion back into body mirrors.
 //! Collision handling buffers begin and end contact pairs plus overlap events so gameplay reads post-step results.
 //! Contact and stats helpers summarize active manifolds, sleeping bodies, collider counts, and joint counts.
-//! Spatial query helpers provide filtered raycasts, AABB scans, and point tests against the same world state.
+//! Spatial query helpers provide filtered raycasts, instant beam traces, AABB scans, and point tests.
 //! Fixture APIs let one body carry multiple colliders, while rebuild paths refresh filters and materials after edits.
 //! Joint APIs create revolute, rope, prismatic, weld, wheel, friction, motor, and mouse constraints with stable ids.
 //! Joint utilities also expose motor speeds, limits, break thresholds, connected bodies, and explicit destruction paths.
@@ -110,6 +110,84 @@ pub struct RaycastHit {
     /// Parametric distance along the ray.
     pub toi: f32,
 }
+/// Beam hit collection mode for instant gameplay beams.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BeamHitMode {
+    /// Stop at the first hit and return one blocking segment.
+    Closest,
+    /// Return every hit in distance order and keep the visible segment at max range.
+    All,
+    /// Return hits in distance order until `max_hits` is reached.
+    Pierce {
+        /// Maximum number of hits to collect before the beam stops.
+        max_hits: usize,
+    },
+}
+/// Options controlling one instant beam query.
+/// # Fields
+/// - `max_distance`: maximum beam travel distance in world units.
+/// - `thickness`: beam radius in world units; only `0.0` is currently supported.
+/// - `hit_mode`: how many hits to collect.
+/// - `filter`: collision and sensor filtering shared with other physics queries.
+#[derive(Debug, Clone, Copy)]
+pub struct BeamOptions {
+    /// Maximum beam travel distance in world units.
+    pub max_distance: f32,
+    /// Beam radius in world units. Values greater than zero are reserved for shape casts.
+    pub thickness: f32,
+    /// Hit collection mode for this beam.
+    pub hit_mode: BeamHitMode,
+    /// Collision and sensor filtering for the beam query.
+    pub filter: PhysicsQueryFilter,
+}
+/// One beam hit ready for gameplay or debug rendering.
+/// # Fields
+/// - `body_id`: body hit by the beam.
+/// - `point`: world-space hit point.
+/// - `normal`: outward surface normal.
+/// - `distance`: beam travel distance from the origin to the hit point.
+/// - `segment_index`: 1-based segment index for reflected or chained traces.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct BeamHit {
+    /// Body id that was hit.
+    pub body_id: BodyId,
+    /// World-space hit point.
+    pub point: (f32, f32),
+    /// Outward surface normal at the hit point.
+    pub normal: (f32, f32),
+    /// Beam travel distance from the origin to the hit point.
+    pub distance: f32,
+    /// 1-based segment index within the trace.
+    pub segment_index: usize,
+}
+/// One visible segment of a beam trace.
+/// # Fields
+/// - `from`: segment start in world space.
+/// - `to`: segment end in world space.
+/// - `blocked_by`: body that stopped this segment, if any.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct BeamSegment {
+    /// Segment start in world space.
+    pub from: (f32, f32),
+    /// Segment end in world space.
+    pub to: (f32, f32),
+    /// Body that stopped this segment, if any.
+    pub blocked_by: Option<BodyId>,
+}
+/// Full instant beam query result.
+/// # Fields
+/// - `hits`: ordered hit results.
+/// - `segments`: ordered beam segments for gameplay and rendering.
+/// - `reached_max_range`: whether the trace extended to the requested max range.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct BeamTrace {
+    /// Ordered hit results.
+    pub hits: Vec<BeamHit>,
+    /// Ordered beam segments.
+    pub segments: Vec<BeamSegment>,
+    /// True when the trace extended to the requested max range.
+    pub reached_max_range: bool,
+}
 /// Contact information between two bodies.
 /// # Fields
 /// - `body_a`: first body id.
@@ -170,6 +248,7 @@ pub struct PhysicsShapeSnapshot {
 /// - `mask`: optional query-side collision mask.
 /// - `groups`: optional 16-group query-side membership mask.
 /// - `include_sensors`: whether sensor colliders should be returned.
+/// - `exclude_body`: optional body whose colliders should be excluded.
 #[derive(Debug, Clone, Copy)]
 pub struct PhysicsQueryFilter {
     /// Query collision layer membership. `None` leaves groups unrestricted.
@@ -180,6 +259,8 @@ pub struct PhysicsQueryFilter {
     pub groups: Option<u32>,
     /// Include sensor colliders in query results.
     pub include_sensors: bool,
+    /// Exclude every collider attached to this body from the query.
+    pub exclude_body: Option<BodyId>,
 }
 /// Default query filters preserve the historical "hit everything" behavior.
 impl Default for PhysicsQueryFilter {
@@ -189,6 +270,7 @@ impl Default for PhysicsQueryFilter {
             mask: None,
             groups: None,
             include_sensors: true,
+            exclude_body: None,
         }
     }
 }
@@ -667,11 +749,7 @@ impl World {
     }
 
     /// Draws flow-field centerlines, bounds, and sampled arrows into an RGBA image target.
-    pub fn draw_flow_debug_to_image(
-        &self,
-        img: &mut crate::image::ImageData,
-        arrow_spacing: u32,
-    ) {
+    pub fn draw_flow_debug_to_image(&self, img: &mut crate::image::ImageData, arrow_spacing: u32) {
         let spacing = arrow_spacing.max(12) as usize;
         for field in self.flow_fields.iter().filter(|field| field.enabled) {
             match &field.geometry {
@@ -931,9 +1009,13 @@ impl World {
         } else {
             None
         };
+        let exclude_rigid_body = filter
+            .exclude_body
+            .and_then(|body_id| self.active_body_handle(body_id.raw()));
         QueryFilter {
             flags,
             groups,
+            exclude_rigid_body,
             ..QueryFilter::default()
         }
     }
@@ -1993,7 +2075,10 @@ impl World {
     }
 
     /// Registers one flow field and returns its stable id.
-    pub fn try_add_flow_field(&mut self, mut field: FlowField) -> Result<FlowFieldId, PhysicsError> {
+    pub fn try_add_flow_field(
+        &mut self,
+        mut field: FlowField,
+    ) -> Result<FlowFieldId, PhysicsError> {
         field.validate()?;
         let id = self.flow_field_id_counter;
         self.flow_field_id_counter += 1;
@@ -2281,11 +2366,8 @@ impl World {
                     let scaled_vy = contribution.vy * scale;
                     match field.application {
                         FlowApplicationMode::Acceleration => {
-                            let (ax, ay) = clamp_vector_to_limit(
-                                scaled_vx,
-                                scaled_vy,
-                                field.max_accel,
-                            );
+                            let (ax, ay) =
+                                clamp_vector_to_limit(scaled_vx, scaled_vy, field.max_accel);
                             Self::apply_acceleration(rb, ax, ay);
                         }
                         FlowApplicationMode::TargetVelocityDrag => {
@@ -2957,6 +3039,209 @@ impl World {
             self.query_filter(filter),
         )
     }
+    fn beam_endpoint(x1: f32, y1: f32, unit_dir: Vector, distance: f32) -> (f32, f32) {
+        (x1 + unit_dir.x * distance, y1 + unit_dir.y * distance)
+    }
+
+    fn beam_hit_from_raycast(hit: RaycastHit, segment_index: usize) -> BeamHit {
+        BeamHit {
+            body_id: hit.body_id,
+            point: hit.point,
+            normal: hit.normal,
+            distance: hit.toi,
+            segment_index,
+        }
+    }
+
+    fn beam_trace_to_max_range(
+        x1: f32,
+        y1: f32,
+        end_point: (f32, f32),
+        hits: Vec<BeamHit>,
+    ) -> BeamTrace {
+        BeamTrace {
+            hits,
+            segments: vec![BeamSegment {
+                from: (x1, y1),
+                to: end_point,
+                blocked_by: None,
+            }],
+            reached_max_range: true,
+        }
+    }
+
+    fn validate_beam_options(
+        &self,
+        x1: f32,
+        y1: f32,
+        dx: f32,
+        dy: f32,
+        options: BeamOptions,
+    ) -> Result<Vector, PhysicsError> {
+        validate_finite("x", f64::from(x1))?;
+        validate_finite("y", f64::from(y1))?;
+        validate_finite("dx", f64::from(dx))?;
+        validate_finite("dy", f64::from(dy))?;
+        validate_positive("max_distance", f64::from(options.max_distance))?;
+        validate_finite("thickness", f64::from(options.thickness))?;
+        if options.thickness < 0.0 {
+            return Err(PhysicsError::ValueOutOfRange {
+                field: "thickness",
+                min: 0.0,
+                max: f64::from(f32::MAX),
+                value: f64::from(options.thickness),
+            });
+        }
+        if options.thickness > 0.0 {
+            return Err(PhysicsError::InvalidMode {
+                context: "physics beam thickness",
+                value: options.thickness.to_string(),
+                expected: "0 until thick-beam shape casting support lands",
+            });
+        }
+        if let BeamHitMode::Pierce { max_hits } = options.hit_mode {
+            if max_hits == 0 || max_hits > self.limits.max_bodies {
+                return Err(PhysicsError::ValueOutOfRange {
+                    field: "max_hits",
+                    min: 1.0,
+                    max: self.limits.max_bodies as f64,
+                    value: max_hits as f64,
+                });
+            }
+        }
+        let dir_len = (dx * dx + dy * dy).sqrt();
+        if dir_len < 1e-6 {
+            return Err(PhysicsError::DegenerateGeometry {
+                context: "physics beam",
+                detail: "direction must be non-zero",
+            });
+        }
+        Ok(Vector::new(dx / dir_len, dy / dir_len))
+    }
+
+    /// Cast an instant gameplay beam and return hit plus segment data.
+    ///
+    /// This best-effort wrapper returns an empty trace when validation fails. Use
+    /// `try_cast_beam` when the caller needs the exact error.
+    pub fn cast_beam(&self, x1: f32, y1: f32, dx: f32, dy: f32, options: BeamOptions) -> BeamTrace {
+        self.try_cast_beam(x1, y1, dx, dy, options)
+            .unwrap_or_default()
+    }
+
+    /// Cast an instant gameplay beam and return hit plus segment data.
+    pub fn try_cast_beam(
+        &self,
+        x1: f32,
+        y1: f32,
+        dx: f32,
+        dy: f32,
+        options: BeamOptions,
+    ) -> Result<BeamTrace, PhysicsError> {
+        let unit_dir = self.validate_beam_options(x1, y1, dx, dy, options)?;
+        let end_point = Self::beam_endpoint(x1, y1, unit_dir, options.max_distance);
+        match options.hit_mode {
+            BeamHitMode::Closest => {
+                if let Some(hit) = self.raycast_closest_filtered(
+                    x1,
+                    y1,
+                    dx,
+                    dy,
+                    options.max_distance,
+                    options.filter,
+                ) {
+                    let beam_hit = Self::beam_hit_from_raycast(hit, 1);
+                    Ok(BeamTrace {
+                        hits: vec![beam_hit],
+                        segments: vec![BeamSegment {
+                            from: (x1, y1),
+                            to: hit.point,
+                            blocked_by: Some(hit.body_id),
+                        }],
+                        reached_max_range: false,
+                    })
+                } else {
+                    Ok(Self::beam_trace_to_max_range(x1, y1, end_point, Vec::new()))
+                }
+            }
+            BeamHitMode::All => {
+                let hits = self
+                    .raycast_all_filtered(x1, y1, dx, dy, options.max_distance, options.filter)
+                    .into_iter()
+                    .map(|hit| Self::beam_hit_from_raycast(hit, 1))
+                    .collect();
+                Ok(Self::beam_trace_to_max_range(x1, y1, end_point, hits))
+            }
+            BeamHitMode::Pierce { max_hits } => {
+                let hits =
+                    self.raycast_all_filtered(x1, y1, dx, dy, options.max_distance, options.filter);
+                let truncated = hits.len() > max_hits;
+                let mut beam_hits = Vec::with_capacity(hits.len().min(max_hits));
+                for hit in hits.into_iter().take(max_hits) {
+                    beam_hits.push(Self::beam_hit_from_raycast(hit, 1));
+                }
+                if truncated {
+                    let last_hit = beam_hits
+                        .last()
+                        .copied()
+                        .expect("pierce hit list should not be empty");
+                    Ok(BeamTrace {
+                        hits: beam_hits,
+                        segments: vec![BeamSegment {
+                            from: (x1, y1),
+                            to: last_hit.point,
+                            blocked_by: Some(last_hit.body_id),
+                        }],
+                        reached_max_range: false,
+                    })
+                } else {
+                    Ok(Self::beam_trace_to_max_range(x1, y1, end_point, beam_hits))
+                }
+            }
+        }
+    }
+
+    /// Return only the closest instant beam hit.
+    ///
+    /// This best-effort wrapper returns `None` when validation fails. Use
+    /// `try_cast_beam_closest` when the caller needs the exact error.
+    pub fn cast_beam_closest(
+        &self,
+        x1: f32,
+        y1: f32,
+        dx: f32,
+        dy: f32,
+        max_distance: f32,
+        filter: PhysicsQueryFilter,
+    ) -> Option<BeamHit> {
+        self.try_cast_beam_closest(x1, y1, dx, dy, max_distance, filter)
+            .unwrap_or(None)
+    }
+
+    /// Return only the closest instant beam hit.
+    pub fn try_cast_beam_closest(
+        &self,
+        x1: f32,
+        y1: f32,
+        dx: f32,
+        dy: f32,
+        max_distance: f32,
+        filter: PhysicsQueryFilter,
+    ) -> Result<Option<BeamHit>, PhysicsError> {
+        let trace = self.try_cast_beam(
+            x1,
+            y1,
+            dx,
+            dy,
+            BeamOptions {
+                max_distance,
+                thickness: 0.0,
+                hit_mode: BeamHitMode::Closest,
+                filter,
+            },
+        )?;
+        Ok(trace.hits.into_iter().next())
+    }
+
     /// Cast a ray from `(x1,y1)` in direction `(dx,dy)` up to `max_dist`; return closest hit.
     pub fn raycast_closest(
         &self,
@@ -3538,7 +3823,11 @@ impl World {
             joint_slots: self.joint_handles.len(),
             zones: self.zones.len(),
             gravity_vectors: self.gravity_vectors.iter().filter(|v| v.enabled).count(),
-            flow_fields: self.flow_fields.iter().filter(|field| field.enabled).count(),
+            flow_fields: self
+                .flow_fields
+                .iter()
+                .filter(|field| field.enabled)
+                .count(),
             sleeping_bodies,
             skipped_steps: self.diagnostics.skipped_steps,
             clamped_steps: self.diagnostics.clamped_steps,

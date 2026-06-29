@@ -26,7 +26,7 @@ pub mod shape;
 pub mod terrain;
 /// Core type definitions for the physics subsystem.
 pub mod types;
-/// Physics world, stepping, bodies, and raycasting.
+/// Physics world, stepping, bodies, raycasting, and instant beam queries.
 pub mod world;
 
 pub use types::BodyId;
@@ -38,16 +38,15 @@ pub use collision_helpers::{test_aabb, test_circle_aabb, test_circles, test_poin
 pub use error::PhysicsError;
 pub use flow::{
     combine_contributions, FlowApplicationMode, FlowCombineMode, FlowContribution,
-    FlowDirectionMode, FlowFalloff, FlowField, FlowFieldId, FlowGeometry, FlowMedium,
-    FlowSample,
+    FlowDirectionMode, FlowFalloff, FlowField, FlowFieldId, FlowGeometry, FlowMedium, FlowSample,
 };
 pub use limits::PhysicsLimits;
 pub use shape::{AlphaShapeOptions, Shape, StandaloneShape};
 pub use terrain::TerrainMap;
 pub use world::BodyContact as CollisionEvent;
 pub use world::{
-    ContactInfo, GravityVector, PhysicsQueryFilter, PhysicsShapeSnapshot, PhysicsWorldStats,
-    RaycastHit, World,
+    BeamHit, BeamHitMode, BeamOptions, BeamSegment, BeamTrace, ContactInfo, GravityVector,
+    PhysicsQueryFilter, PhysicsShapeSnapshot, PhysicsWorldStats, RaycastHit, World,
 };
 pub use zone::{
     PhysicsZone, ZoneBoundary, ZoneEvent, ZoneEventKind, ZoneGravityFalloff, ZoneGravityMode,

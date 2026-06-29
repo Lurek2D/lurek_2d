@@ -182,7 +182,11 @@ impl StatusOverlayLayer {
         } else {
             self.fade_out
         };
-        let step = if fade <= 1.0e-4 { 1.0 } else { (dt / fade).clamp(0.0, 1.0) };
+        let step = if fade <= 1.0e-4 {
+            1.0
+        } else {
+            (dt / fade).clamp(0.0, 1.0)
+        };
         self.intensity_01 = current + (target - current) * step;
         if self.intensity_01 <= 1.0e-4 && target <= 0.0 {
             self.intensity_01 = 0.0;
@@ -295,8 +299,11 @@ impl StatusOverlayStack {
 
     /// Returns active layers sorted from back to front.
     pub fn active_layers_sorted(&self) -> Vec<&StatusOverlayLayer> {
-        let mut layers: Vec<&StatusOverlayLayer> =
-            self.layers.iter().filter(|layer| layer.is_active()).collect();
+        let mut layers: Vec<&StatusOverlayLayer> = self
+            .layers
+            .iter()
+            .filter(|layer| layer.is_active())
+            .collect();
         layers.sort_by(|left, right| {
             left.priority
                 .cmp(&right.priority)

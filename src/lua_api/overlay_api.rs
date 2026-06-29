@@ -1,14 +1,12 @@
 //! Registers the `lurek.overlay` Lua API for overlay controllers, transitions, telemetry, and validated options.
 
-use super::render_api::{
-    ensure_shader_target, shader_key_from_userdata, LuaImage, LuaShader,
-};
+use super::render_api::{ensure_shader_target, shader_key_from_userdata, LuaImage, LuaShader};
 use super::SharedState;
 use crate::effect::PostFxEffectType;
 use crate::image::{ImageData, Texture, TextureColorSpace};
 use crate::overlay::{
-    Overlay, OverlayAccessibilityPolicy, ScreenTransition, StatusCompositeMode,
-    StatusLayerTarget, StatusOverlayLayer, TransitionKind, WeatherType, STATUS_INTENSITY_MAX,
+    Overlay, OverlayAccessibilityPolicy, ScreenTransition, StatusCompositeMode, StatusLayerTarget,
+    StatusOverlayLayer, TransitionKind, WeatherType, STATUS_INTENSITY_MAX,
 };
 use crate::render::renderer::{PostFxPass, RenderCommand};
 use crate::render::ShaderTarget;
@@ -71,10 +69,26 @@ fn positive_u32(api: &str, arg_name: &str, value: u32) -> LuaResult<u32> {
 
 fn table_to_color(api: &str, field: &str, table: &LuaTable) -> LuaResult<[f32; 4]> {
     Ok([
-        unit_f32(api, &format!("{field}.r"), table.get::<_, Option<f32>>(1)?.unwrap_or(0.0))?,
-        unit_f32(api, &format!("{field}.g"), table.get::<_, Option<f32>>(2)?.unwrap_or(0.0))?,
-        unit_f32(api, &format!("{field}.b"), table.get::<_, Option<f32>>(3)?.unwrap_or(0.0))?,
-        unit_f32(api, &format!("{field}.a"), table.get::<_, Option<f32>>(4)?.unwrap_or(1.0))?,
+        unit_f32(
+            api,
+            &format!("{field}.r"),
+            table.get::<_, Option<f32>>(1)?.unwrap_or(0.0),
+        )?,
+        unit_f32(
+            api,
+            &format!("{field}.g"),
+            table.get::<_, Option<f32>>(2)?.unwrap_or(0.0),
+        )?,
+        unit_f32(
+            api,
+            &format!("{field}.b"),
+            table.get::<_, Option<f32>>(3)?.unwrap_or(0.0),
+        )?,
+        unit_f32(
+            api,
+            &format!("{field}.a"),
+            table.get::<_, Option<f32>>(4)?.unwrap_or(1.0),
+        )?,
     ])
 }
 
@@ -125,7 +139,7 @@ fn texture_from_lua_value(
                 LuaError::RuntimeError(format!("{api_name}: invalid texture path: {err}"))
             })?;
             let mut st = state.borrow_mut();
-            let full_path = st.game_dir.join(path.to_string());
+            let full_path = st.game_dir.join(path);
             let texture = Texture::load_with_color_space(
                 &full_path,
                 &mut st.textures,
@@ -218,7 +232,10 @@ fn status_layer_to_table<'lua>(
     table.set("enabled", layer.enabled)?;
     table.set("intensity", layer.intensity_01 * STATUS_INTENSITY_MAX)?;
     table.set("intensity01", layer.intensity_01)?;
-    table.set("targetIntensity", layer.target_intensity_01 * STATUS_INTENSITY_MAX)?;
+    table.set(
+        "targetIntensity",
+        layer.target_intensity_01 * STATUS_INTENSITY_MAX,
+    )?;
     table.set("targetIntensity01", layer.target_intensity_01)?;
     table.set("fadeIn", layer.fade_in)?;
     table.set("fadeOut", layer.fade_out)?;
@@ -489,116 +506,129 @@ impl LuaUserData for LuaOverlay {
         /// Creates or updates one overlay-owned status layer such as `frozen`, `poison`, or `lowHealth`.
         /// @param | kind | string | Status kind name.
         /// @param | opts | table | Status options such as intensity, fade, texture, shader, and color.
-        methods.add_method_mut("setStatusEffect", |_, this, (kind, opts): (String, LuaTable)| {
-            let kind_name = kind.trim().to_ascii_lowercase();
-            if kind_name.is_empty() {
-                return Err(LuaError::RuntimeError(
-                    "LOverlay:setStatusEffect: kind must not be empty".into(),
-                ));
-            }
-            let layer_id = opts
-                .get::<_, Option<String>>("id")?
-                .unwrap_or_else(|| kind_name.clone());
-            let mut layer = this
-                .inner
-                .status_stack
-                .layer(&layer_id)
-                .cloned()
-                .unwrap_or_else(|| {
-                    let mut layer = StatusOverlayLayer::new(layer_id.clone(), kind_name.clone());
-                    apply_status_preset(&mut layer);
-                    layer
-                });
-            layer.kind = kind_name;
-            if let Some(value) = opts.get::<_, Option<f32>>("intensity")? {
-                layer.set_intensity_public(value);
-            } else if layer.target_intensity_01 <= 0.0 && layer.intensity_01 <= 0.0 {
-                layer.set_intensity_public(STATUS_INTENSITY_MAX);
-            }
-            if let Some(value) = opts.get::<_, Option<f32>>("fadeIn")? {
-                layer.fade_in = non_negative_f32("LOverlay:setStatusEffect", "fadeIn", value)?;
-            }
-            if let Some(value) = opts.get::<_, Option<f32>>("fadeOut")? {
-                layer.fade_out = non_negative_f32("LOverlay:setStatusEffect", "fadeOut", value)?;
-            }
-            if let Some(value) = opts.get::<_, Option<f32>>("duration")? {
-                layer.duration = Some(non_negative_f32("LOverlay:setStatusEffect", "duration", value)?);
-            }
-            if let Some(value) = opts.get::<_, Option<i32>>("priority")? {
-                layer.priority = value;
-            }
-            if let Some(target) = opts.get::<_, Option<String>>("target")? {
-                layer.target = parse_status_target(Some(target))?;
-            }
-            if let Some(composite) = opts.get::<_, Option<String>>("composite")? {
-                layer.composite = parse_status_composite(Some(composite))?;
-            }
-            if let Some(color_table) = opts.get::<_, Option<LuaTable>>("color")? {
-                layer.visual.color = Some(table_to_color(
-                    "LOverlay:setStatusEffect",
-                    "color",
-                    &color_table,
-                )?);
-            }
-            let texture_value = opts.raw_get::<_, LuaValue>("texture")?;
-            if !matches!(texture_value, LuaValue::Nil) {
-                let texture = texture_from_lua_value(
-                    &this.state,
-                    "LOverlay:setStatusEffect",
-                    texture_value,
-                )?;
-                layer.visual.texture_key = texture.map(|(key, _)| key);
-                layer.visual.texture_size = texture.map(|(_, size)| size);
-            }
-            if let Some(value) = opts.get::<_, Option<f32>>("textureOpacity")? {
-                layer.visual.texture_opacity =
-                    unit_f32("LOverlay:setStatusEffect", "textureOpacity", value)?;
-            }
-            if let Some(shader_name) = opts.get::<_, Option<String>>("shader")? {
-                let shader_name = shader_name.trim().to_ascii_lowercase();
-                let shader_valid = shader_name == "blur_h"
-                    || shader_name == "blur_v"
-                    || PostFxEffectType::from_name(&shader_name).is_some();
-                if !shader_valid {
-                    return Err(LuaError::RuntimeError(format!(
-                        "LOverlay:setStatusEffect: unsupported built-in post-fx '{}'",
-                        shader_name
-                    )));
+        methods.add_method_mut(
+            "setStatusEffect",
+            |_, this, (kind, opts): (String, LuaTable)| {
+                let kind_name = kind.trim().to_ascii_lowercase();
+                if kind_name.is_empty() {
+                    return Err(LuaError::RuntimeError(
+                        "LOverlay:setStatusEffect: kind must not be empty".into(),
+                    ));
                 }
-                layer.visual.shader_effect = Some(shader_name);
-            }
-            if let Some(value) = opts.get::<_, Option<f32>>("shaderStrength")? {
-                layer.visual.shader_strength =
-                    non_negative_f32("LOverlay:setStatusEffect", "shaderStrength", value)?;
-            }
-            this.inner.status_stack.upsert(layer);
-            Ok(())
-        });
+                let layer_id = opts
+                    .get::<_, Option<String>>("id")?
+                    .unwrap_or_else(|| kind_name.clone());
+                let mut layer = this
+                    .inner
+                    .status_stack
+                    .layer(&layer_id)
+                    .cloned()
+                    .unwrap_or_else(|| {
+                        let mut layer =
+                            StatusOverlayLayer::new(layer_id.clone(), kind_name.clone());
+                        apply_status_preset(&mut layer);
+                        layer
+                    });
+                layer.kind = kind_name;
+                if let Some(value) = opts.get::<_, Option<f32>>("intensity")? {
+                    layer.set_intensity_public(value);
+                } else if layer.target_intensity_01 <= 0.0 && layer.intensity_01 <= 0.0 {
+                    layer.set_intensity_public(STATUS_INTENSITY_MAX);
+                }
+                if let Some(value) = opts.get::<_, Option<f32>>("fadeIn")? {
+                    layer.fade_in = non_negative_f32("LOverlay:setStatusEffect", "fadeIn", value)?;
+                }
+                if let Some(value) = opts.get::<_, Option<f32>>("fadeOut")? {
+                    layer.fade_out =
+                        non_negative_f32("LOverlay:setStatusEffect", "fadeOut", value)?;
+                }
+                if let Some(value) = opts.get::<_, Option<f32>>("duration")? {
+                    layer.duration = Some(non_negative_f32(
+                        "LOverlay:setStatusEffect",
+                        "duration",
+                        value,
+                    )?);
+                }
+                if let Some(value) = opts.get::<_, Option<i32>>("priority")? {
+                    layer.priority = value;
+                }
+                if let Some(target) = opts.get::<_, Option<String>>("target")? {
+                    layer.target = parse_status_target(Some(target))?;
+                }
+                if let Some(composite) = opts.get::<_, Option<String>>("composite")? {
+                    layer.composite = parse_status_composite(Some(composite))?;
+                }
+                if let Some(color_table) = opts.get::<_, Option<LuaTable>>("color")? {
+                    layer.visual.color = Some(table_to_color(
+                        "LOverlay:setStatusEffect",
+                        "color",
+                        &color_table,
+                    )?);
+                }
+                let texture_value = opts.raw_get::<_, LuaValue>("texture")?;
+                if !matches!(texture_value, LuaValue::Nil) {
+                    let texture = texture_from_lua_value(
+                        &this.state,
+                        "LOverlay:setStatusEffect",
+                        texture_value,
+                    )?;
+                    layer.visual.texture_key = texture.map(|(key, _)| key);
+                    layer.visual.texture_size = texture.map(|(_, size)| size);
+                }
+                if let Some(value) = opts.get::<_, Option<f32>>("textureOpacity")? {
+                    layer.visual.texture_opacity =
+                        unit_f32("LOverlay:setStatusEffect", "textureOpacity", value)?;
+                }
+                if let Some(shader_name) = opts.get::<_, Option<String>>("shader")? {
+                    let shader_name = shader_name.trim().to_ascii_lowercase();
+                    let shader_valid = shader_name == "blur_h"
+                        || shader_name == "blur_v"
+                        || PostFxEffectType::from_name(&shader_name).is_some();
+                    if !shader_valid {
+                        return Err(LuaError::RuntimeError(format!(
+                            "LOverlay:setStatusEffect: unsupported built-in post-fx '{}'",
+                            shader_name
+                        )));
+                    }
+                    layer.visual.shader_effect = Some(shader_name);
+                }
+                if let Some(value) = opts.get::<_, Option<f32>>("shaderStrength")? {
+                    layer.visual.shader_strength =
+                        non_negative_f32("LOverlay:setStatusEffect", "shaderStrength", value)?;
+                }
+                this.inner.status_stack.upsert(layer);
+                Ok(())
+            },
+        );
         // -- setStatusIntensity --
         /// Updates one existing status intensity or creates a preset-backed layer when it is missing.
         /// @param | kind | string | Status kind name.
         /// @param | intensity | number | Intensity in `0..1` or `1..10`.
-        methods.add_method_mut("setStatusIntensity", |_, this, (kind, intensity): (String, f32)| {
-            let kind_name = kind.trim().to_ascii_lowercase();
-            if kind_name.is_empty() {
-                return Err(LuaError::RuntimeError(
-                    "LOverlay:setStatusIntensity: kind must not be empty".into(),
-                ));
-            }
-            let mut layer = this
-                .inner
-                .status_stack
-                .layer(&kind_name)
-                .cloned()
-                .unwrap_or_else(|| {
-                    let mut layer = StatusOverlayLayer::new(kind_name.clone(), kind_name.clone());
-                    apply_status_preset(&mut layer);
-                    layer
-                });
-            layer.set_intensity_public(intensity);
-            this.inner.status_stack.upsert(layer);
-            Ok(())
-        });
+        methods.add_method_mut(
+            "setStatusIntensity",
+            |_, this, (kind, intensity): (String, f32)| {
+                let kind_name = kind.trim().to_ascii_lowercase();
+                if kind_name.is_empty() {
+                    return Err(LuaError::RuntimeError(
+                        "LOverlay:setStatusIntensity: kind must not be empty".into(),
+                    ));
+                }
+                let mut layer = this
+                    .inner
+                    .status_stack
+                    .layer(&kind_name)
+                    .cloned()
+                    .unwrap_or_else(|| {
+                        let mut layer =
+                            StatusOverlayLayer::new(kind_name.clone(), kind_name.clone());
+                        apply_status_preset(&mut layer);
+                        layer
+                    });
+                layer.set_intensity_public(intensity);
+                this.inner.status_stack.upsert(layer);
+                Ok(())
+            },
+        );
         // -- clearStatusEffect --
         /// Starts fading out one status layer.
         /// @param | kind | string | Status kind or layer id.

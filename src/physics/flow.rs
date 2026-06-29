@@ -295,9 +295,7 @@ impl FlowField {
             vx: vector.x,
             vy: vector.y,
             magnitude: vector.length(),
-            reference_strength: self
-                .max_accel
-                .unwrap_or(self.strength.max(1.0e-4)),
+            reference_strength: self.max_accel.unwrap_or(self.strength.max(1.0e-4)),
         })
     }
 
@@ -312,8 +310,12 @@ impl FlowField {
             FlowDirectionMode::Explicit { x, y } => normalized_or_none(Vec2::new(x, y)),
             FlowDirectionMode::AlongPath => tangent.and_then(normalized_or_none),
             FlowDirectionMode::AgainstPath => tangent.and_then(|value| normalized_or_none(-value)),
-            FlowDirectionMode::RadialOut => normalized_or_none(Vec2::new(x - center.x, y - center.y)),
-            FlowDirectionMode::RadialIn => normalized_or_none(Vec2::new(center.x - x, center.y - y)),
+            FlowDirectionMode::RadialOut => {
+                normalized_or_none(Vec2::new(x - center.x, y - center.y))
+            }
+            FlowDirectionMode::RadialIn => {
+                normalized_or_none(Vec2::new(center.x - x, center.y - y))
+            }
         }
     }
 

@@ -1498,6 +1498,32 @@ LWindowGetModeResult = {}
 ---@field scale_y number Scale y.
 LWindowGetScaleInfoResult = {}
 
+---@class LWorldBeamAllResult
+---@field bodyId number BodyId.
+---@field distance number Beam travel distance to the hit.
+---@field normalX number Surface normal X.
+---@field normalY number Surface normal Y.
+---@field segmentIndex number 1-based segment index inside the trace.
+---@field x number Hit point X.
+---@field y number Hit point Y.
+LWorldBeamAllResult = {}
+
+---@class LWorldBeamClosestResult
+---@field bodyId number BodyId.
+---@field distance number Beam travel distance to the hit.
+---@field normalX number Surface normal X.
+---@field normalY number Surface normal Y.
+---@field segmentIndex number 1-based segment index inside the trace.
+---@field x number Hit point X.
+---@field y number Hit point Y.
+LWorldBeamClosestResult = {}
+
+---@class LWorldCastBeamResult
+---@field hits table[] Array of hit tables {bodyId, x, y, normalX, normalY, distance, segmentIndex}.
+---@field reachedMaxRange boolean True when the beam extended to the requested range.
+---@field segments table[] Array of segment tables {x1, y1, x2, y2, blockedBy}.
+LWorldCastBeamResult = {}
+
 ---@class LWorldGetBeginContactEventsResult
 ---@field bodyA number BodyA.
 ---@field bodyB number BodyB.
@@ -2685,8 +2711,8 @@ LWeightedRandom = {}
 LBody = {}
 
 --- A mutable handle to one authored flow field stored inside a physics world.
----@class LFlowField
-LFlowField = {}
+---@class LFlowStream
+LFlowStream = {}
 
 --- A standalone collision shape with material properties, to be attached to bodies via `attachShape`.
 ---@class LPhysicsShape
@@ -23543,60 +23569,60 @@ function LBody:typeOf(name) end
 function LBody:wakeUp() end
 
 --- Disables this flow field.
-function LFlowField:destroy() end
+function LFlowStream:destroy() end
 
 --- Returns this flow field id.
 ---@return number Stable flow field id.
-function LFlowField:getId() end
+function LFlowStream:getId() end
 
 --- Returns this flow field layer mask.
 ---@return number Layer bitmask.
-function LFlowField:getLayerMask() end
+function LFlowStream:getLayerMask() end
 
 --- Returns this flow field strength.
 ---@return number Strength value.
-function LFlowField:getStrength() end
+function LFlowStream:getStrength() end
 
 --- Returns whether this flow field is enabled.
 ---@return boolean True when enabled.
-function LFlowField:isEnabled() end
+function LFlowStream:isEnabled() end
 
 --- Sets the body-application mode used during stepping.
 ---@param mode string `acceleration` or `targetVelocityDrag`.
-function LFlowField:setApplication(mode) end
+function LFlowStream:setApplication(mode) end
 
 --- Sets how this field combines with overlapping fields.
 ---@param mode string `additive` or `additiveClamped`.
-function LFlowField:setCombine(mode) end
+function LFlowStream:setCombine(mode) end
 
 --- Enables or disables this flow field.
 ---@param enabled boolean True to enable, false to disable.
-function LFlowField:setEnabled(enabled) end
+function LFlowStream:setEnabled(enabled) end
 
 --- Sets the body-layer mask that this field affects.
 ---@param mask number Layer bitmask.
-function LFlowField:setLayerMask(mask) end
+function LFlowStream:setLayerMask(mask) end
 
 --- Replaces the polyline points of a path-shaped flow field.
 ---@param points table Array of `{ x, y }` point tables.
-function LFlowField:setPoints(points) end
+function LFlowStream:setPoints(points) end
 
 --- Sets this flow field strength.
 ---@param strength number Strength in world units per second.
-function LFlowField:setStrength(strength) end
+function LFlowStream:setStrength(strength) end
 
 --- Sets the width of a path-shaped flow field.
 ---@param width number Tube width in world units.
-function LFlowField:setWidth(width) end
+function LFlowStream:setWidth(width) end
 
 --- Returns the type name of this object.
----@return string `LFlowField`.
-function LFlowField:type() end
+---@return string `LFlowStream`.
+function LFlowStream:type() end
 
 --- Returns whether this object matches the requested type name.
 ---@param name string Type name to compare against.
----@return boolean True for `LFlowField` and `LObject`.
-function LFlowField:typeOf(name) end
+---@return boolean True for `LFlowStream` and `LObject`.
+function LFlowStream:typeOf(name) end
 
 --- No-op placeholder for API consistency. Shapes are freed when no longer referenced.
 function LPhysicsShape:destroy() end
@@ -23754,7 +23780,7 @@ function LWorld:addFixture(bodyId, shapeType, density, friction, restitution, se
 
 --- Creates one authored flow field and returns a handle for later mutation.
 ---@param opts table Flow field authoring table.
----@return LFlowField New flow field handle.
+---@return LFlowStream New flow field handle.
 function LWorld:addFlowField(opts) end
 
 --- Creates a friction joint that applies resistance to relative motion between two bodies.
@@ -23860,6 +23886,36 @@ function LWorld:addWheelJoint(bodyA, bodyB, anchorX, anchorY, axisX, axisY) end
 ---@return LZone The zone handle.
 function LWorld:addZone(x, y, w, h) end
 
+--- Returns all instant beam hits in deterministic distance order.
+---@param x number Beam origin X.
+---@param y number Beam origin Y.
+---@param dx number Beam direction X (does not need to be normalized).
+---@param dy number Beam direction Y.
+---@param range number Maximum beam travel distance. Must be finite and > 0.
+---@param filter? table Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}. `includeSensors` defaults to true.
+---@return LWorldBeamAllResult Array of hit tables {bodyId, x, y, normalX, normalY, distance, segmentIndex}.
+function LWorld:beamAll(x, y, dx, dy, range, filter) end
+
+--- Returns only the closest instant beam hit, or nil if nothing blocks the beam.
+---@param x number Beam origin X.
+---@param y number Beam origin Y.
+---@param dx number Beam direction X (does not need to be normalized).
+---@param dy number Beam direction Y.
+---@param range number Maximum beam travel distance. Must be finite and > 0.
+---@param filter? table Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}. `includeSensors` defaults to true.
+---@return LWorldBeamClosestResult Hit info {bodyId, x, y, normalX, normalY, distance, segmentIndex} or nil if no hit.
+function LWorld:beamClosest(x, y, dx, dy, range, filter) end
+
+--- Casts an instant beam and returns hit plus segment data for gameplay or rendering.
+---@param x number Beam origin X.
+---@param y number Beam origin Y.
+---@param dx number Beam direction X (does not need to be normalized).
+---@param dy number Beam direction Y.
+---@param range number Maximum beam travel distance. Must be finite and > 0.
+---@param opts? table Optional beam options: {mode?, maxHits?, thickness?, layer?, mask?, group?, groups?, includeSensors?, excludeBody?}. `mode` accepts `closest`, `all`, or `pierce` and defaults to `closest`. `includeSensors` defaults to true. `thickness` must be `0` until thick beam support lands.
+---@return LWorldCastBeamResult Trace table {hits, segments, reachedMaxRange}.
+function LWorld:castBeam(x, y, dx, dy, range, opts) end
+
 --- Removes bodies, joints, terrain colliders, and zones while preserving world-level settings.
 function LWorld:clear() end
 
@@ -23916,7 +23972,7 @@ function LWorld:getBeginContactEvents() end
 --- Returns the body ID at a specific world point, or nil if no body is there.
 ---@param x number Query point X.
 ---@param y number Query point Y.
----@param filter? table Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}.
+---@param filter? table Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}.
 ---@return number Body ID at the point, or nil.
 function LWorld:getBodyAtPoint(x, y, filter) end
 
@@ -24111,7 +24167,7 @@ function LWorld:newPolygonBody(x, y, vertices, bodyType) end
 ---@param y number Query rectangle top Y.
 ---@param w number Query rectangle width.
 ---@param h number Query rectangle height.
----@param filter? table Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}.
+---@param filter? table Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}.
 ---@return number[] Body ID numbers found in the region.
 function LWorld:queryAABB(x, y, w, h, filter) end
 
@@ -24120,7 +24176,7 @@ function LWorld:queryAABB(x, y, w, h, filter) end
 ---@param y1 number Ray origin Y.
 ---@param x2 number Ray end X.
 ---@param y2 number Ray end Y.
----@param filter? table Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}.
+---@param filter? table Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}.
 ---@return LWorldRaycastResult Hit info {bodyId, x, y, normalX, normalY, toi} or nil if no hit.
 function LWorld:raycast(x1, y1, x2, y2, filter) end
 
@@ -24130,7 +24186,7 @@ function LWorld:raycast(x1, y1, x2, y2, filter) end
 ---@param dx number Ray direction X.
 ---@param dy number Ray direction Y.
 ---@param maxDist number Maximum ray travel distance.
----@param filter? table Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}.
+---@param filter? table Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}.
 ---@return LWorldRaycastAllResult Array of hit tables {bodyId, x, y, normalX, normalY, toi}.
 function LWorld:raycastAll(x, y, dx, dy, maxDist, filter) end
 
@@ -24140,7 +24196,7 @@ function LWorld:raycastAll(x, y, dx, dy, maxDist, filter) end
 ---@param dx number Ray direction X (does not need to be normalized).
 ---@param dy number Ray direction Y.
 ---@param maxDist number Maximum ray travel distance.
----@param filter? table Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}.
+---@param filter? table Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}.
 ---@return LWorldRaycastClosestResult Hit info {bodyId, x, y, normalX, normalY, toi} or nil if no hit.
 function LWorld:raycastClosest(x, y, dx, dy, maxDist, filter) end
 

@@ -18,7 +18,7 @@
 - Source path: `src/physics`
 - Binding: `src/lua_api/physics_api.rs`
 - Namespace: `lurek.physics`
-- Lua API surface: `23` functions, `18` types, `219` methods
+- Lua API surface: `23` functions, `21` types, `222` methods
 - User-facing: `true`
 - Plugin tier: `tier_2_plugin`
 
@@ -164,7 +164,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - Stepping syncs scripted state into Rapier, runs the solver pipeline, then writes motion back into body mirrors.
 - Collision handling buffers begin and end contact pairs plus overlap events so gameplay reads post-step results.
 - Contact and stats helpers summarize active manifolds, sleeping bodies, collider counts, and joint counts.
-- Spatial query helpers provide filtered raycasts, AABB scans, and point tests against the same world state.
+- Spatial query helpers provide filtered raycasts, instant beam traces, AABB scans, and point tests.
 - Fixture APIs let one body carry multiple colliders, while rebuild paths refresh filters and materials after edits.
 - Joint APIs create revolute, rope, prismatic, weld, wheel, friction, motor, and mouse constraints with stable ids.
 - Joint utilities also expose motor speeds, limits, break thresholds, connected bodies, and explicit destruction paths.
@@ -294,7 +294,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LBody:typeOf(name) -> boolean`: Checks if this object is of a given type name.
 - `LBody:wakeUp() -> nil`: Wakes the body from sleep, making it active in the simulation again.
 
-#### LFlowField Type
+#### LFlowStream Type
 
 - A mutable handle to one authored flow field stored inside a physics world.
 
@@ -304,20 +304,20 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 ##### Methods
 
-- `LFlowField:destroy() -> nil`: Disables this flow field.
-- `LFlowField:getId() -> integer`: Returns this flow field id.
-- `LFlowField:getLayerMask() -> integer`: Returns this flow field layer mask.
-- `LFlowField:getStrength() -> number`: Returns this flow field strength.
-- `LFlowField:isEnabled() -> boolean`: Returns whether this flow field is enabled.
-- `LFlowField:setApplication(mode) -> nil`: Sets the body-application mode used during stepping.
-- `LFlowField:setCombine(mode) -> nil`: Sets how this field combines with overlapping fields.
-- `LFlowField:setEnabled(enabled) -> nil`: Enables or disables this flow field.
-- `LFlowField:setLayerMask(mask) -> nil`: Sets the body-layer mask that this field affects.
-- `LFlowField:setPoints(points) -> nil`: Replaces the polyline points of a path-shaped flow field.
-- `LFlowField:setStrength(strength) -> nil`: Sets this flow field strength.
-- `LFlowField:setWidth(width) -> nil`: Sets the width of a path-shaped flow field.
-- `LFlowField:type() -> string`: Returns the type name of this object.
-- `LFlowField:typeOf(name) -> boolean`: Returns whether this object matches the requested type name.
+- `LFlowStream:destroy() -> nil`: Disables this flow field.
+- `LFlowStream:getId() -> integer`: Returns this flow field id.
+- `LFlowStream:getLayerMask() -> integer`: Returns this flow field layer mask.
+- `LFlowStream:getStrength() -> number`: Returns this flow field strength.
+- `LFlowStream:isEnabled() -> boolean`: Returns whether this flow field is enabled.
+- `LFlowStream:setApplication(mode) -> nil`: Sets the body-application mode used during stepping.
+- `LFlowStream:setCombine(mode) -> nil`: Sets how this field combines with overlapping fields.
+- `LFlowStream:setEnabled(enabled) -> nil`: Enables or disables this flow field.
+- `LFlowStream:setLayerMask(mask) -> nil`: Sets the body-layer mask that this field affects.
+- `LFlowStream:setPoints(points) -> nil`: Replaces the polyline points of a path-shaped flow field.
+- `LFlowStream:setStrength(strength) -> nil`: Sets this flow field strength.
+- `LFlowStream:setWidth(width) -> nil`: Sets the width of a path-shaped flow field.
+- `LFlowStream:type() -> string`: Returns the type name of this object.
+- `LFlowStream:typeOf(name) -> boolean`: Returns whether this object matches the requested type name.
 
 #### LPhysicsGetCollisionsResult Type
 
@@ -406,7 +406,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 - `LWorld:addDistanceJoint(bodyA, bodyB, anchorAX, anchorAY, anchorBX, anchorBY, length) -> integer`: Creates a distance joint that keeps two bodies at a fixed distance apart, like a rigid rod.
 - `LWorld:addFixture(bodyId, shapeType, density, friction, restitution, sensor, ...) -> integer`: Attaches a new collider shape to an existing body with material properties.
-- `LWorld:addFlowField(opts) -> LFlowField`: Creates one authored flow field and returns a handle for later mutation.
+- `LWorld:addFlowField(opts) -> LFlowStream`: Creates one authored flow field and returns a handle for later mutation.
 - `LWorld:addFrictionJoint(bodyA, bodyB, anchorX, anchorY, maxForce, maxTorque) -> integer`: Creates a friction joint that applies resistance to relative motion between two bodies.
 - `LWorld:addGearJoint(bodyA, bodyB, anchorX, anchorY) -> integer`: Creates a gear joint that synchronizes rotation between two bodies at an anchor.
 - `LWorld:addGravityVector(gx, gy, layerMask?) -> integer`: Adds an extra directional gravity vector that is summed with world gravity when no non-additive zone override is active.
@@ -419,6 +419,9 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:addWeldJoint(bodyA, bodyB, anchorX, anchorY) -> integer`: Creates a weld joint that rigidly connects two bodies at an anchor point (no relative movement).
 - `LWorld:addWheelJoint(bodyA, bodyB, anchorX, anchorY, axisX, axisY) -> integer`: Creates a wheel joint simulating a suspension: allows rotation and linear movement along an axis.
 - `LWorld:addZone(x, y, w, h) -> LZone`: Creates a rectangular physics zone for area-based effects (custom gravity, damping overrides).
+- `LWorld:beamAll(x, y, dx, dy, range, filter?) -> table`: Returns all instant beam hits in deterministic distance order.
+- `LWorld:beamClosest(x, y, dx, dy, range, filter?) -> table`: Returns only the closest instant beam hit, or nil if nothing blocks the beam.
+- `LWorld:castBeam(x, y, dx, dy, range, opts?) -> table`: Casts an instant beam and returns hit plus segment data for gameplay or rendering.
 - `LWorld:clear() -> nil`: Removes bodies, joints, terrain colliders, and zones while preserving world-level settings.
 - `LWorld:clearBeginContact() -> nil`: Removes the begin-contact callback so it is no longer called.
 - `LWorld:clearBodyData(id) -> nil`: Removes and releases the Lua data attached to a body.
@@ -505,6 +508,56 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:type() -> string`: Returns the type name of this object ("LWorld").
 - `LWorld:typeOf(name) -> boolean`: Checks if this object is of a given type name. Supports inheritance (always matches "Object").
 - `LWorld:wakeUpBody(id) -> nil`: Forces a sleeping body to wake up and participate in simulation again.
+
+#### LWorldBeamAllResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `bodyId` (`integer`): BodyId.
+- `distance` (`number`): Beam travel distance to the hit.
+- `normalX` (`number`): Surface normal X.
+- `normalY` (`number`): Surface normal Y.
+- `segmentIndex` (`integer`): 1-based segment index inside the trace.
+- `x` (`number`): Hit point X.
+- `y` (`number`): Hit point Y.
+
+##### Methods
+
+- No documented methods.
+
+#### LWorldBeamClosestResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `bodyId` (`integer`): BodyId.
+- `distance` (`number`): Beam travel distance to the hit.
+- `normalX` (`number`): Surface normal X.
+- `normalY` (`number`): Surface normal Y.
+- `segmentIndex` (`integer`): 1-based segment index inside the trace.
+- `x` (`number`): Hit point X.
+- `y` (`number`): Hit point Y.
+
+##### Methods
+
+- No documented methods.
+
+#### LWorldCastBeamResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `hits` (`table[]`): Array of hit tables {bodyId, x, y, normalX, normalY, distance, segmentIndex}.
+- `reachedMaxRange` (`boolean`): True when the beam extended to the requested range.
+- `segments` (`table[]`): Array of segment tables {x1, y1, x2, y2, blockedBy}.
+
+##### Methods
+
+- No documented methods.
 
 #### LWorldGetBeginContactEventsResult Type
 
@@ -707,6 +760,8 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 ## Notes
 
+- Beam query contract:
+  `LWorld:castBeam`, `LWorld:beamClosest`, and `LWorld:beamAll` are instant spatial queries, not projectile-body simulation. They share the same layer, mask, group, sensor, and `excludeBody` filtering semantics as the raycast family so gameplay can switch between projectiles and hitscan without inventing parallel collision policy. The current release ships the thin-beam path (`thickness = 0`) and leaves thick beam shape-casting as the explicit follow-up; calling `thickness > 0` fails fast so scripts do not assume wide-beam support yet.
 - Flow-field contract:
   Authored flow fields live on the world, respect layer masks, can overlap additively, and may be sampled directly from Lua for AI, VFX, UI previews, or debugging. The physics world remains the source of truth for how those currents affect bodies during stepping.
 - Body-influence contract:

@@ -1,15 +1,15 @@
 {
   "meta": {
-    "generated": "2026-06-28T21:27:45.111731+00:00",
+    "generated": "2026-06-28T22:15:28.286533+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
-    "total_api_functions": 6410,
-    "marker_covered": 6383,
+    "total_api_functions": 6413,
+    "marker_covered": 6388,
     "describe_covered": 150,
     "describe_coverage_pct": 2.3,
     "heuristic_covered": 0,
-    "total_covered": 6410,
+    "total_covered": 6413,
     "coverage_pct": 100.0
   },
   "modules": {
@@ -34069,8 +34069,7 @@
       "describe_score": 0.0,
       "uncovered": [],
       "test_files": [
-        "tests/lua/unit/test_pathfind_unit.lua",
-        "tests/lua/unit/test_physics_unit.lua"
+        "tests/lua/unit/test_pathfind_unit.lua"
       ],
       "describe_files": [],
       "functions": [
@@ -38217,18 +38216,17 @@
       ]
     },
     "physics": {
-      "total": 242,
-      "marker_covered": 242,
+      "total": 245,
+      "marker_covered": 245,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 242,
+      "covered": 245,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
       "uncovered": [],
       "test_files": [
         "tests/lua/unit/test_collision_unit.lua",
-        "tests/lua/unit/test_pathfind_unit.lua",
         "tests/lua/unit/test_physics_unit.lua"
       ],
       "describe_files": [],
@@ -39062,6 +39060,33 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "LWorld:castBeam",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LWorld:beamClosest",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LWorld:beamAll",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "LWorld:getCollisionEvents",
           "kind": "method",
           "marker_covered": true,
@@ -39350,7 +39375,7 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "LFlowField:getId",
+          "lua_name": "LFlowStream:getId",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -39359,7 +39384,7 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "LFlowField:setEnabled",
+          "lua_name": "LFlowStream:setEnabled",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -39368,7 +39393,7 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "LFlowField:isEnabled",
+          "lua_name": "LFlowStream:isEnabled",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -39377,7 +39402,7 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "LFlowField:setStrength",
+          "lua_name": "LFlowStream:setStrength",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -39386,7 +39411,7 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "LFlowField:getStrength",
+          "lua_name": "LFlowStream:getStrength",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -39395,7 +39420,7 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "LFlowField:setWidth",
+          "lua_name": "LFlowStream:setWidth",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -39404,7 +39429,7 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "LFlowField:setPoints",
+          "lua_name": "LFlowStream:setPoints",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -39413,7 +39438,7 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "LFlowField:setLayerMask",
+          "lua_name": "LFlowStream:setLayerMask",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -39422,7 +39447,7 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "LFlowField:getLayerMask",
+          "lua_name": "LFlowStream:getLayerMask",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -39431,7 +39456,7 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "LFlowField:setApplication",
+          "lua_name": "LFlowStream:setApplication",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -39440,7 +39465,7 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "LFlowField:setCombine",
+          "lua_name": "LFlowStream:setCombine",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -39449,7 +39474,7 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "LFlowField:destroy",
+          "lua_name": "LFlowStream:destroy",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -39458,7 +39483,7 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "LFlowField:type",
+          "lua_name": "LFlowStream:type",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -39467,7 +39492,7 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "LFlowField:typeOf",
+          "lua_name": "LFlowStream:typeOf",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,

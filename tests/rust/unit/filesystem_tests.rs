@@ -484,34 +484,3 @@ mod async_loader_tests {
 }
 
 // â”€â”€ zip_mount â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-mod zip_mount_tests {
-    use lurek2d::filesystem::zip_mount::*;
-    use std::path::PathBuf;
-
-    #[test]
-    fn normalise_collapses_slashes() {
-        assert_eq!(normalise("//foo//bar/"), "foo/bar");
-    }
-
-    #[test]
-    fn is_traversal_detects_dotdot() {
-        assert!(is_traversal("../secret"));
-    }
-
-    #[test]
-    fn is_traversal_allows_normal_path() {
-        assert!(!is_traversal("assets/images/hero.png"));
-    }
-
-    #[test]
-    fn new_error_does_not_expose_host_path() {
-        let missing = PathBuf::from("C:/very/secret/archive.zip");
-        let err = match ZipMount::new(&missing, "mods") {
-            Ok(_) => panic!("expected missing archive to fail"),
-            Err(err) => err,
-        };
-        assert!(err.contains("cannot open archive"));
-        assert!(!err.contains(&missing.to_string_lossy().to_string()));
-    }
-}

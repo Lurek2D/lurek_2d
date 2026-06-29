@@ -78,7 +78,7 @@ lurek.parallax.newPresetLayer(preset_name, img_ud)
 | Name | Type | Description |
 |------|------|-------------|
 | `preset_name` | string | Preset name: `far`, `mid`, or `fog`. |
-| `img_ud` | [LImage](#limage) | Image handle from `lurek.render.newImage`. |
+| `img_ud` | [LImage](render.md#limage) | Image handle from `lurek.render.newImage`. |
 
 **Returns**
 
@@ -149,136 +149,8 @@ end
 
 ## Types
 
-- [LImage](#limage)
 - [LParallaxLayer](#lparallaxlayer)
 - [LParallaxSet](#lparallaxset)
-
-## LImage
-
-### Type Fields
-
-*No documented fields for this handle.*
-
-### Type Methods
-
-#### `LImage:getDimensions`
-
-Returns both width and height of this image.
-
-```lua
-LImage:getDimensions()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Width and height in pixels. (value 1). |
-| number | Width and height in pixels. (value 2). |
-
----
-
-#### `LImage:getHeight`
-
-Returns the height of this image in pixels.
-
-```lua
-LImage:getHeight()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Height in pixels. |
-
----
-
-#### `LImage:getId`
-
-Returns the internal numeric handle ID for this image.
-
-```lua
-LImage:getId()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Opaque image handle identifier. |
-
----
-
-#### `LImage:getWidth`
-
-Returns the width of this image in pixels.
-
-```lua
-LImage:getWidth()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Width in pixels. |
-
----
-
-#### `LImage:release`
-
-Releases the GPU memory for this image. The handle becomes invalid after this call.
-
-```lua
-LImage:release()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True if the image was still valid and was released. |
-
----
-
-#### `LImage:type`
-
-Returns the type name string for this image object.
-
-```lua
-LImage:type()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| string | Always "[LImage](#limage)". |
-
----
-
-#### `LImage:typeOf`
-
-Checks whether this object matches the given type name.
-
-```lua
-LImage:typeOf(name)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `name` | string | Type name to check ("Image" or "Object"). |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True if the name matches. |
-
----
 
 ## LParallaxLayer
 

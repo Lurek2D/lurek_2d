@@ -5,9 +5,10 @@ use crate::image::ImageData;
 use crate::math::Vec2;
 use crate::physics::world::{BodyContact, COLLISION_GROUP_COUNT};
 use crate::physics::{
-    AlphaShapeOptions, Body, BodyId, BodyType, FlowApplicationMode, FlowCombineMode,
-    FlowDirectionMode, FlowFalloff, FlowField, FlowGeometry, FlowMedium, FlowSample,
-    PhysicsQueryFilter, PhysicsWorldStats, PhysicsZone, RaycastHit, Shape, TerrainMap, World,
+    AlphaShapeOptions, BeamHit, BeamHitMode, BeamOptions, BeamSegment, BeamTrace, Body, BodyId,
+    BodyType, FlowApplicationMode, FlowCombineMode, FlowDirectionMode, FlowFalloff, FlowField,
+    FlowGeometry, FlowMedium, FlowSample, PhysicsQueryFilter, PhysicsWorldStats, PhysicsZone,
+    RaycastHit, Shape, TerrainMap, World,
 };
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -183,7 +184,9 @@ fn flow_field_from_lua(opts: LuaTable) -> LuaResult<FlowField> {
     let mut field = FlowField::new(0, geometry);
     field.name = opts.get::<_, Option<String>>("name")?;
     field.medium = parse_flow_medium(opts.get::<_, Option<String>>("medium")?)?;
-    field.strength = opts.get::<_, Option<f32>>("strength")?.unwrap_or(field.strength);
+    field.strength = opts
+        .get::<_, Option<f32>>("strength")?
+        .unwrap_or(field.strength);
     field.direction = parse_flow_direction(&opts)?;
     field.falloff = parse_flow_falloff(opts.get::<_, Option<String>>("falloff")?)?;
     field.combine = parse_flow_combine(opts.get::<_, Option<String>>("combine")?)?;
@@ -192,7 +195,9 @@ fn flow_field_from_lua(opts: LuaTable) -> LuaResult<FlowField> {
     field.layer_mask = opts.get::<_, Option<u32>>("layerMask")?.unwrap_or(u32::MAX);
     field.max_accel = opts.get::<_, Option<f32>>("maxAccel")?;
     field.drag = opts.get::<_, Option<f32>>("drag")?.unwrap_or(1.0);
-    field.validate().map_err(|err| physics_runtime_error("addFlowField", err))?;
+    field
+        .validate()
+        .map_err(|err| physics_runtime_error("addFlowField", err))?;
     Ok(field)
 }
 
@@ -250,6 +255,47 @@ fn raycast_hit_to_table<'lua>(lua: &'lua Lua, hit: &RaycastHit) -> LuaResult<Lua
     Ok(tbl)
 }
 
+/// Serializes a beam hit into the Lua table shape exposed by the bindings.
+fn beam_hit_to_table<'lua>(lua: &'lua Lua, hit: &BeamHit) -> LuaResult<LuaTable<'lua>> {
+    let tbl = lua.create_table()?;
+    tbl.set("bodyId", hit.body_id)?;
+    tbl.set("x", hit.point.0)?;
+    tbl.set("y", hit.point.1)?;
+    tbl.set("normalX", hit.normal.0)?;
+    tbl.set("normalY", hit.normal.1)?;
+    tbl.set("distance", hit.distance)?;
+    tbl.set("segmentIndex", hit.segment_index)?;
+    Ok(tbl)
+}
+
+/// Serializes a beam segment into the Lua table shape exposed by the bindings.
+fn beam_segment_to_table<'lua>(lua: &'lua Lua, segment: &BeamSegment) -> LuaResult<LuaTable<'lua>> {
+    let tbl = lua.create_table()?;
+    tbl.set("x1", segment.from.0)?;
+    tbl.set("y1", segment.from.1)?;
+    tbl.set("x2", segment.to.0)?;
+    tbl.set("y2", segment.to.1)?;
+    tbl.set("blockedBy", segment.blocked_by)?;
+    Ok(tbl)
+}
+
+/// Serializes a beam trace into the Lua table shape exposed by the bindings.
+fn beam_trace_to_table<'lua>(lua: &'lua Lua, trace: &BeamTrace) -> LuaResult<LuaTable<'lua>> {
+    let tbl = lua.create_table()?;
+    let hits = lua.create_table()?;
+    for (i, hit) in trace.hits.iter().enumerate() {
+        hits.set(i + 1, beam_hit_to_table(lua, hit)?)?;
+    }
+    let segments = lua.create_table()?;
+    for (i, segment) in trace.segments.iter().enumerate() {
+        segments.set(i + 1, beam_segment_to_table(lua, segment)?)?;
+    }
+    tbl.set("hits", hits)?;
+    tbl.set("segments", segments)?;
+    tbl.set("reachedMaxRange", trace.reached_max_range)?;
+    Ok(tbl)
+}
+
 /// Parses an optional Lua query-filter table.
 fn query_filter_from_lua(method: &str, value: Option<LuaValue>) -> LuaResult<PhysicsQueryFilter> {
     let mut filter = PhysicsQueryFilter::default();
@@ -289,7 +335,60 @@ fn query_filter_from_lua(method: &str, value: Option<LuaValue>) -> LuaResult<Phy
     if let Some(include_sensors) = tbl.get::<_, Option<bool>>("includeSensors")? {
         filter.include_sensors = include_sensors;
     }
+    filter.exclude_body = tbl.get::<_, Option<BodyId>>("excludeBody")?;
     Ok(filter)
+}
+
+fn beam_options_from_lua(
+    method: &str,
+    max_distance: f32,
+    value: Option<LuaValue>,
+) -> LuaResult<BeamOptions> {
+    let filter = query_filter_from_lua(method, value.clone())?;
+    let mut thickness = 0.0f32;
+    let mut mode = BeamHitMode::Closest;
+    if let Some(LuaValue::Table(tbl)) = value {
+        if let Some(raw_thickness) = tbl.get::<_, Option<f32>>("thickness")? {
+            if !raw_thickness.is_finite() || raw_thickness < 0.0 {
+                return Err(physics_runtime_error(
+                    method,
+                    "thickness must be finite and >= 0",
+                ));
+            }
+            if raw_thickness > 0.0 {
+                return Err(physics_runtime_error(
+                    method,
+                    "thickness > 0 is not implemented yet; thick beams require shape casting",
+                ));
+            }
+            thickness = raw_thickness;
+        }
+        let mode_name = tbl
+            .get::<_, Option<String>>("mode")?
+            .unwrap_or_else(|| "closest".to_string());
+        mode = match mode_name.trim().to_ascii_lowercase().as_str() {
+            "closest" => BeamHitMode::Closest,
+            "all" => BeamHitMode::All,
+            "pierce" => BeamHitMode::Pierce {
+                max_hits: tbl.get::<_, Option<usize>>("maxHits")?.unwrap_or(8),
+            },
+            other => {
+                return Err(physics_runtime_error(
+                    method,
+                    format!(
+                        "invalid beam mode '{}': expected closest, all, or pierce",
+                        other
+                    ),
+                ))
+            }
+        };
+    }
+    Ok(BeamOptions {
+        max_distance,
+        thickness,
+        hit_mode: mode,
+        filter,
+    })
 }
 
 fn alpha_shape_options_from_lua(opts: Option<LuaTable>) -> LuaResult<AlphaShapeOptions> {
@@ -941,7 +1040,7 @@ impl LuaUserData for LuaWorld {
         // -- addFlowField --
         /// Creates one authored flow field and returns a handle for later mutation.
         /// @param | opts | table | Flow field authoring table.
-        /// @return | LFlowField | New flow field handle.
+        /// @return | LFlowStream | New flow field handle.
         methods.add_method_mut("addFlowField", |_, this, opts: LuaTable| {
             let field = flow_field_from_lua(opts)?;
             let id = this
@@ -1551,7 +1650,7 @@ impl LuaUserData for LuaWorld {
         /// @param | y1 | number | Ray origin Y.
         /// @param | x2 | number | Ray end X.
         /// @param | y2 | number | Ray end Y.
-        /// @param | filter | table? | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}.
+        /// @param | filter | table? | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}.
         /// @return | table | Hit info {bodyId, x, y, normalX, normalY, toi} or nil if no hit.
         /// @field | bodyId | integer | BodyId.
         /// @field | x | number | X.
@@ -1578,7 +1677,7 @@ impl LuaUserData for LuaWorld {
         /// @param | dx | number | Ray direction X (does not need to be normalized).
         /// @param | dy | number | Ray direction Y.
         /// @param | maxDist | number | Maximum ray travel distance.
-        /// @param | filter | table? | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}.
+        /// @param | filter | table? | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}.
         /// @return | table | Hit info {bodyId, x, y, normalX, normalY, toi} or nil if no hit.
         /// @field | bodyId | integer | BodyId.
         /// @field | x | number | X.
@@ -1610,7 +1709,7 @@ impl LuaUserData for LuaWorld {
         /// @param | dx | number | Ray direction X.
         /// @param | dy | number | Ray direction Y.
         /// @param | maxDist | number | Maximum ray travel distance.
-        /// @param | filter | table? | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}.
+        /// @param | filter | table? | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}.
         /// @return | table | Array of hit tables {bodyId, x, y, normalX, normalY, toi}.
         /// @field | bodyId | integer | BodyId.
         /// @field | x | number | X.
@@ -1642,7 +1741,7 @@ impl LuaUserData for LuaWorld {
         /// @param | y | number | Query rectangle top Y.
         /// @param | w | number | Query rectangle width.
         /// @param | h | number | Query rectangle height.
-        /// @param | filter | table? | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}.
+        /// @param | filter | table? | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}.
         /// @return | integer[] | Body ID numbers found in the region.
         methods.add_method("queryAABB", |lua, this, args: LuaMultiValue| {
             let vals: Vec<LuaValue> = args.into_iter().collect();
@@ -1657,7 +1756,7 @@ impl LuaUserData for LuaWorld {
         /// Returns the body ID at a specific world point, or nil if no body is there.
         /// @param | x | number | Query point X.
         /// @param | y | number | Query point Y.
-        /// @param | filter | table? | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}.
+        /// @param | filter | table? | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}.
         /// @return | integer | Body ID at the point, or nil.
         methods.add_method("getBodyAtPoint", |lua, this, args: LuaMultiValue| {
             let vals: Vec<LuaValue> = args.into_iter().collect();
@@ -1665,6 +1764,113 @@ impl LuaUserData for LuaWorld {
             let y = required_f32(lua, &vals, 1, "y")?;
             let filter = query_filter_from_lua("getBodyAtPoint", vals.get(2).cloned())?;
             Ok(this.world.borrow().get_body_at_point_filtered(x, y, filter))
+        });
+        // -- castBeam --
+        /// Casts an instant beam and returns hit plus segment data for gameplay or rendering.
+        /// @param | x | number | Beam origin X.
+        /// @param | y | number | Beam origin Y.
+        /// @param | dx | number | Beam direction X (does not need to be normalized).
+        /// @param | dy | number | Beam direction Y.
+        /// @param | range | number | Maximum beam travel distance. Must be finite and > 0.
+        /// @param | opts | table? | Optional beam options: {mode?, maxHits?, thickness?, layer?, mask?, group?, groups?, includeSensors?, excludeBody?}. `mode` accepts `closest`, `all`, or `pierce` and defaults to `closest`. `includeSensors` defaults to true. `thickness` must be `0` until thick beam support lands.
+        /// @return | table | Trace table {hits, segments, reachedMaxRange}.
+        /// @field | hits | table[] | Array of hit tables {bodyId, x, y, normalX, normalY, distance, segmentIndex}.
+        /// @field | segments | table[] | Array of segment tables {x1, y1, x2, y2, blockedBy}.
+        /// @field | reachedMaxRange | boolean | True when the beam extended to the requested range.
+        methods.add_method("castBeam", |lua, this, args: LuaMultiValue| {
+            let vals: Vec<LuaValue> = args.into_iter().collect();
+            let x = required_f32(lua, &vals, 0, "x")?;
+            let y = required_f32(lua, &vals, 1, "y")?;
+            let dx = required_f32(lua, &vals, 2, "dx")?;
+            let dy = required_f32(lua, &vals, 3, "dy")?;
+            let range = required_f32(lua, &vals, 4, "range")?;
+            let options = beam_options_from_lua("castBeam", range, vals.get(5).cloned())?;
+            let trace = this
+                .world
+                .borrow()
+                .try_cast_beam(x, y, dx, dy, options)
+                .map_err(|err| physics_runtime_error("castBeam", err))?;
+            Ok(LuaValue::Table(beam_trace_to_table(lua, &trace)?))
+        });
+        // -- beamClosest --
+        /// Returns only the closest instant beam hit, or nil if nothing blocks the beam.
+        /// @param | x | number | Beam origin X.
+        /// @param | y | number | Beam origin Y.
+        /// @param | dx | number | Beam direction X (does not need to be normalized).
+        /// @param | dy | number | Beam direction Y.
+        /// @param | range | number | Maximum beam travel distance. Must be finite and > 0.
+        /// @param | filter | table? | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}. `includeSensors` defaults to true.
+        /// @return | table | Hit info {bodyId, x, y, normalX, normalY, distance, segmentIndex} or nil if no hit.
+        /// @field | bodyId | integer | BodyId.
+        /// @field | x | number | Hit point X.
+        /// @field | y | number | Hit point Y.
+        /// @field | normalX | number | Surface normal X.
+        /// @field | normalY | number | Surface normal Y.
+        /// @field | distance | number | Beam travel distance to the hit.
+        /// @field | segmentIndex | integer | 1-based segment index inside the trace.
+        methods.add_method("beamClosest", |lua, this, args: LuaMultiValue| {
+            let vals: Vec<LuaValue> = args.into_iter().collect();
+            let x = required_f32(lua, &vals, 0, "x")?;
+            let y = required_f32(lua, &vals, 1, "y")?;
+            let dx = required_f32(lua, &vals, 2, "dx")?;
+            let dy = required_f32(lua, &vals, 3, "dy")?;
+            let range = required_f32(lua, &vals, 4, "range")?;
+            let filter = query_filter_from_lua("beamClosest", vals.get(5).cloned())?;
+            match this
+                .world
+                .borrow()
+                .try_cast_beam_closest(x, y, dx, dy, range, filter)
+                .map_err(|err| physics_runtime_error("beamClosest", err))?
+            {
+                Some(hit) => Ok(LuaValue::Table(beam_hit_to_table(lua, &hit)?)),
+                None => Ok(LuaValue::Nil),
+            }
+        });
+        // -- beamAll --
+        /// Returns all instant beam hits in deterministic distance order.
+        /// @param | x | number | Beam origin X.
+        /// @param | y | number | Beam origin Y.
+        /// @param | dx | number | Beam direction X (does not need to be normalized).
+        /// @param | dy | number | Beam direction Y.
+        /// @param | range | number | Maximum beam travel distance. Must be finite and > 0.
+        /// @param | filter | table? | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}. `includeSensors` defaults to true.
+        /// @return | table | Array of hit tables {bodyId, x, y, normalX, normalY, distance, segmentIndex}.
+        /// @field | bodyId | integer | BodyId.
+        /// @field | x | number | Hit point X.
+        /// @field | y | number | Hit point Y.
+        /// @field | normalX | number | Surface normal X.
+        /// @field | normalY | number | Surface normal Y.
+        /// @field | distance | number | Beam travel distance to the hit.
+        /// @field | segmentIndex | integer | 1-based segment index inside the trace.
+        methods.add_method("beamAll", |lua, this, args: LuaMultiValue| {
+            let vals: Vec<LuaValue> = args.into_iter().collect();
+            let x = required_f32(lua, &vals, 0, "x")?;
+            let y = required_f32(lua, &vals, 1, "y")?;
+            let dx = required_f32(lua, &vals, 2, "dx")?;
+            let dy = required_f32(lua, &vals, 3, "dy")?;
+            let range = required_f32(lua, &vals, 4, "range")?;
+            let filter = query_filter_from_lua("beamAll", vals.get(5).cloned())?;
+            let trace = this
+                .world
+                .borrow()
+                .try_cast_beam(
+                    x,
+                    y,
+                    dx,
+                    dy,
+                    BeamOptions {
+                        max_distance: range,
+                        thickness: 0.0,
+                        hit_mode: BeamHitMode::All,
+                        filter,
+                    },
+                )
+                .map_err(|err| physics_runtime_error("beamAll", err))?;
+            let result = lua.create_table()?;
+            for (i, hit) in trace.hits.iter().enumerate() {
+                result.set(i + 1, beam_hit_to_table(lua, hit)?)?;
+            }
+            Ok(result)
         });
         // -- getCollisionEvents --
         /// Returns all collision events from the last step as a table of {bodyA, bodyB} pairs.
@@ -2112,9 +2318,9 @@ impl LuaUserData for LuaFlowField {
                 .flow_field_slot_mut(this.id)
                 .ok_or_else(|| physics_runtime_error("setPoints", "flow field is not active"))?;
             match &mut field.geometry {
-                FlowGeometry::PolylineTube { points: current, .. } => {
-                    *current = parse_flow_points(points)?
-                }
+                FlowGeometry::PolylineTube {
+                    points: current, ..
+                } => *current = parse_flow_points(points)?,
                 _ => {
                     return Err(physics_runtime_error(
                         "setPoints",
@@ -2154,9 +2360,9 @@ impl LuaUserData for LuaFlowField {
         /// @param | mode | string | `acceleration` or `targetVelocityDrag`.
         methods.add_method("setApplication", |_, this, mode: String| {
             let mut world = this.world.borrow_mut();
-            let field = world
-                .flow_field_slot_mut(this.id)
-                .ok_or_else(|| physics_runtime_error("setApplication", "flow field is not active"))?;
+            let field = world.flow_field_slot_mut(this.id).ok_or_else(|| {
+                physics_runtime_error("setApplication", "flow field is not active")
+            })?;
             field.application = parse_flow_application(Some(mode))?;
             Ok(())
         });
@@ -2179,14 +2385,14 @@ impl LuaUserData for LuaFlowField {
         });
         // -- type --
         /// Returns the type name of this object.
-        /// @return | string | `LFlowField`.
-        methods.add_method("type", |_, _, ()| Ok("LFlowField"));
+        /// @return | string | `LFlowStream`.
+        methods.add_method("type", |_, _, ()| Ok("LFlowStream"));
         // -- typeOf --
         /// Returns whether this object matches the requested type name.
         /// @param | name | string | Type name to compare against.
-        /// @return | boolean | True for `LFlowField` and `LObject`.
+        /// @return | boolean | True for `LFlowStream` and `LObject`.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LFlowField" || name == "LObject")
+            Ok(name == "LFlowStream" || name == "LObject")
         });
     }
 }
@@ -2961,9 +3167,9 @@ impl LuaUserData for LuaBody {
                 ));
             }
             let mut world = this.world.borrow_mut();
-            let body = world
-                .get_body_mut(this.id.0)
-                .ok_or_else(|| physics_runtime_error("setFlowCrossSection", "body is not active"))?;
+            let body = world.get_body_mut(this.id.0).ok_or_else(|| {
+                physics_runtime_error("setFlowCrossSection", "body is not active")
+            })?;
             body.flow_influence.cross_section = cross_section;
             Ok(())
         });

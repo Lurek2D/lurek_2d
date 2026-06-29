@@ -656,7 +656,7 @@ lurek.physics.shapeFromImage(image, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `image` | [LImageData](#limagedata) | Source image; pixels with alpha above threshold are treated as solid. |
+| `image` | [LImageData](render.md#limagedata) | Source image; pixels with alpha above threshold are treated as solid. |
 | `opts?` | table | Optional keys: alphaThreshold, maxVertices, circleAspectTolerance, circleFillTolerance, rectangleFillThreshold. |
 
 **Returns**
@@ -892,8 +892,7 @@ end
 ## Types
 
 - [LBody](#lbody)
-- [LFlowField](#lflowfield)
-- [LImageData](#limagedata)
+- [LFlowStream](#lflowstream)
 - [LPhysicsShape](#lphysicsshape)
 - [LTerrain](#lterrain)
 - [LWorld](#lworld)
@@ -2578,7 +2577,7 @@ end
 
 ---
 
-## LFlowField
+## LFlowStream
 
 ### Type Fields
 
@@ -2586,47 +2585,12 @@ end
 
 ### Type Methods
 
-#### `LFlowField:calculate`
-
-Calculates a flow field toward one target cell.
-
-```lua
-LFlowField:calculate(tx, ty, unit_size)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `tx` | number | One-based target column. |
-| `ty` | number | One-based target row. |
-| `unit_size?` | number | Unit footprint in cells (default 1). |
-
----
-
-#### `LFlowField:calculateMulti`
-
-Calculates a flow field toward multiple target cells.
-
-```lua
-LFlowField:calculateMulti(targets, unit_size)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `targets` | table | Array of `{x, y}` target tables. |
-| `unit_size?` | number | Unit footprint in cells (default 1). |
-
----
-
-#### `LFlowField:destroy`
+#### `LFlowStream:destroy`
 
 Disables this flow field.
 
 ```lua
-LFlowField:destroy()
+LFlowStream:destroy()
 ```
 
 **Example**
@@ -2651,82 +2615,12 @@ end
 
 ---
 
-#### `LFlowField:getCostToTarget`
-
-Returns integration cost to the target from a one-based grid cell.
-
-```lua
-LFlowField:getCostToTarget(x, y)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `x` | number | One-based column. |
-| `y` | number | One-based row. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Integration cost to the nearest target. |
-
----
-
-#### `LFlowField:getDirection`
-
-Returns flow direction vector at a one-based grid cell.
-
-```lua
-LFlowField:getDirection(x, y)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `x` | number | One-based column. |
-| `y` | number | One-based row. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Direction X component. |
-| number | Direction Y component. |
-
----
-
-#### `LFlowField:getDirectionAngle`
-
-Returns flow direction angle at a one-based grid cell.
-
-```lua
-LFlowField:getDirectionAngle(x, y)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `x` | number | One-based column. |
-| `y` | number | One-based row. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Direction angle in radians. |
-
----
-
-#### `LFlowField:getId`
+#### `LFlowStream:getId`
 
 Returns this flow field id.
 
 ```lua
-LFlowField:getId()
+LFlowStream:getId()
 ```
 
 **Returns**
@@ -2756,12 +2650,12 @@ end
 
 ---
 
-#### `LFlowField:getLayerMask`
+#### `LFlowStream:getLayerMask`
 
 Returns this flow field layer mask.
 
 ```lua
-LFlowField:getLayerMask()
+LFlowStream:getLayerMask()
 ```
 
 **Returns**
@@ -2792,12 +2686,12 @@ end
 
 ---
 
-#### `LFlowField:getStrength`
+#### `LFlowStream:getStrength`
 
 Returns this flow field strength.
 
 ```lua
-LFlowField:getStrength()
+LFlowStream:getStrength()
 ```
 
 **Returns**
@@ -2827,44 +2721,12 @@ end
 
 ---
 
-#### `LFlowField:getTargets`
-
-Returns target cells for this flow field.
-
-```lua
-LFlowField:getTargets()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| LFlowFieldGetTargetsResult | Array table of target point tables. |
-
----
-
-#### `LFlowField:isCalculated`
-
-Returns whether the flow field has been calculated.
-
-```lua
-LFlowField:isCalculated()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True when calculated. |
-
----
-
-#### `LFlowField:isEnabled`
+#### `LFlowStream:isEnabled`
 
 Returns whether this flow field is enabled.
 
 ```lua
-LFlowField:isEnabled()
+LFlowStream:isEnabled()
 ```
 
 **Returns**
@@ -2894,12 +2756,12 @@ end
 
 ---
 
-#### `LFlowField:setApplication`
+#### `LFlowStream:setApplication`
 
 Sets the body-application mode used during stepping.
 
 ```lua
-LFlowField:setApplication(mode)
+LFlowStream:setApplication(mode)
 ```
 
 **Parameters**
@@ -2930,12 +2792,12 @@ end
 
 ---
 
-#### `LFlowField:setCombine`
+#### `LFlowStream:setCombine`
 
 Sets how this field combines with overlapping fields.
 
 ```lua
-LFlowField:setCombine(mode)
+LFlowStream:setCombine(mode)
 ```
 
 **Parameters**
@@ -2966,12 +2828,12 @@ end
 
 ---
 
-#### `LFlowField:setEnabled`
+#### `LFlowStream:setEnabled`
 
 Enables or disables this flow field.
 
 ```lua
-LFlowField:setEnabled(enabled)
+LFlowStream:setEnabled(enabled)
 ```
 
 **Parameters**
@@ -3002,12 +2864,12 @@ end
 
 ---
 
-#### `LFlowField:setLayerMask`
+#### `LFlowStream:setLayerMask`
 
 Sets the body-layer mask that this field affects.
 
 ```lua
-LFlowField:setLayerMask(mask)
+LFlowStream:setLayerMask(mask)
 ```
 
 **Parameters**
@@ -3038,12 +2900,12 @@ end
 
 ---
 
-#### `LFlowField:setPoints`
+#### `LFlowStream:setPoints`
 
 Replaces the polyline points of a path-shaped flow field.
 
 ```lua
-LFlowField:setPoints(points)
+LFlowStream:setPoints(points)
 ```
 
 **Parameters**
@@ -3077,12 +2939,12 @@ end
 
 ---
 
-#### `LFlowField:setStrength`
+#### `LFlowStream:setStrength`
 
 Sets this flow field strength.
 
 ```lua
-LFlowField:setStrength(strength)
+LFlowStream:setStrength(strength)
 ```
 
 **Parameters**
@@ -3113,12 +2975,12 @@ end
 
 ---
 
-#### `LFlowField:setWidth`
+#### `LFlowStream:setWidth`
 
 Sets the width of a path-shaped flow field.
 
 ```lua
-LFlowField:setWidth(width)
+LFlowStream:setWidth(width)
 ```
 
 **Parameters**
@@ -3148,46 +3010,19 @@ end
 
 ---
 
-#### `LFlowField:steer`
+#### `LFlowStream:type`
 
-Returns a steering velocity for a world position using the flow field.
-
-```lua
-LFlowField:steer(wx, wy, speed, tw, th)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `wx` | number | World X position. |
-| `wy` | number | World Y position. |
-| `speed` | number | Movement speed scalar. |
-| `tw` | number | Tile width in world units. |
-| `th` | number | Tile height in world units. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Steered X velocity. |
-| number | Steered Y velocity. |
-
----
-
-#### `LFlowField:type`
-
-Returns the Lua-visible type name for this flow field handle.
+Returns the type name of this object.
 
 ```lua
-LFlowField:type()
+LFlowStream:type()
 ```
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LFlowField](#lflowfield)`. |
+| string | `[LFlowStream](#lflowstream)`. |
 
 **Example**
 
@@ -3210,25 +3045,25 @@ end
 
 ---
 
-#### `LFlowField:typeOf`
+#### `LFlowStream:typeOf`
 
-Returns whether this flow field handle matches a supported type name.
+Returns whether this object matches the requested type name.
 
 ```lua
-LFlowField:typeOf(name)
+LFlowStream:typeOf(name)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | String value for `name`. |
+| `name` | string | Type name to compare against. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| boolean | True when the supplied type name matches this handle. |
+| boolean | True for `[LFlowStream](#lflowstream)` and `LObject`. |
 
 **Example**
 
@@ -3245,933 +3080,9 @@ do
         directionVector = { x = 1, y = 0 },
         strength = 20,
     })
-    lurek.log.info("[physics] flow typeOf=" .. tostring(field:typeOf("LFlowField")))
+    lurek.log.info("[physics] flow typeOf=" .. tostring(field:typeOf("LFlowStream")))
 end
 ```
-
----
-
-## LImageData
-
-### Type Fields
-
-*No documented fields for this handle.*
-
-### Type Methods
-
-#### `LImageData:alphaMask`
-
-Multiplies this image alpha channel by a factor in place.
-
-```lua
-LImageData:alphaMask(factor)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `factor` | number | Alpha multiplier. |
-
----
-
-#### `LImageData:applyEffect`
-
-Applies a named image effect in place, or returns a new image when the effect changes size.
-
-```lua
-LImageData:applyEffect(name, opts)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `name` | string | Effect name. |
-| `opts?` | table | Effect options such as `factor`, `amount`, `radius`, `levels`, `region`, or `color`. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| [LImageData](#limagedata) | nil | New image for size-changing effects, otherwise nil. |
-
----
-
-#### `LImageData:applyEffects`
-
-Applies a sequence of named effects in order.
-
-```lua
-LImageData:applyEffects(effects, opts)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `effects` | table | Array of effect names or `{name=..., opts=...}` tables. |
-| `opts?` | table | Default options used by string entries. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| [LImageData](#limagedata) | nil | Last new image returned by a size-changing effect, otherwise nil. |
-
----
-
-#### `LImageData:applyMask`
-
-Multiplies this image alpha by another image's alpha channel.
-
-```lua
-LImageData:applyMask(mask)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `mask` | [LImageData](#limagedata) | Same-sized alpha mask image. |
-
----
-
-#### `LImageData:applyPaletteLut`
-
-Applies a palette lookup table to this image in place.
-
-```lua
-LImageData:applyPaletteLut(lut_ud)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `lut_ud` | [LPaletteLUT](image.md#lpalettelut) | Palette lookup table handle. |
-
----
-
-#### `LImageData:applyShader`
-
-Applies an offline image shader and returns the processed image.
-
-```lua
-LImageData:applyShader(shader, opts)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `shader` | [LShader](render.md#lshader) | Image-target shader. |
-| `opts?` | table | Optional processing options. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| [LImageData](#limagedata) | Processed image. |
-
----
-
-#### `LImageData:blit`
-
-Copies a source image into this image at a destination coordinate.
-
-```lua
-LImageData:blit(src_ud, dst_x, dst_y)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `src_ud` | [LImageData](#limagedata) | Source image data handle. |
-| `dst_x` | number | Destination x coordinate. |
-| `dst_y` | number | Destination y coordinate. |
-
----
-
-#### `LImageData:blur`
-
-Returns a blurred copy of this image.
-
-```lua
-LImageData:blur(radius)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `radius` | number | Blur radius. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| [LImageData](#limagedata) | Blurred image data handle. |
-
----
-
-#### `LImageData:brightness`
-
-Applies a brightness factor to this image in place.
-
-```lua
-LImageData:brightness(factor)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `factor` | number | Brightness multiplier or adjustment factor. |
-
----
-
-#### `LImageData:clone`
-
-Returns a deep copy of this image data.
-
-```lua
-LImageData:clone()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| [LImageData](#limagedata) | Copied image data. |
-
----
-
-#### `LImageData:contrast`
-
-Applies a contrast factor to this image in place.
-
-```lua
-LImageData:contrast(factor)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `factor` | number | Contrast factor. |
-
----
-
-#### `LImageData:convolve`
-
-Applies a convolution kernel and returns the filtered image.
-
-```lua
-LImageData:convolve(kernel_t, ksize)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `kernel_t` | table | Array table of numeric kernel weights. |
-| `ksize` | number | Kernel width and height. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| [LImageData](#limagedata) | Convolved image data handle. |
-
----
-
-#### `LImageData:copyRegion`
-
-Copies a rectangular region into a new image.
-
-```lua
-LImageData:copyRegion(x, y, w, h)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `x` | number | Source x coordinate. |
-| `y` | number | Source y coordinate. |
-| `w` | number | Region width. |
-| `h` | number | Region height. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| [LImageData](#limagedata) | Copied region. |
-
----
-
-#### `LImageData:crop`
-
-Returns a cropped image region. This method is available to Lua scripts.
-
-```lua
-LImageData:crop(x, y, w, h)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `x` | number | Source x coordinate. |
-| `y` | number | Source y coordinate. |
-| `w` | number | Crop width. |
-| `h` | number | Crop height. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| [LImageData](#limagedata) | Cropped image data handle. |
-
----
-
-#### `LImageData:diff`
-
-Computes a difference metric against another image.
-
-```lua
-LImageData:diff(other_ud)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `other_ud` | [LImageData](#limagedata) | Image data handle to compare with this image. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Difference score. |
-
----
-
-#### `LImageData:drawCircle`
-
-Draws a filled circle into this image.
-
-```lua
-LImageData:drawCircle(cx, cy, radius, r, g, b, a)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `cx` | number | Circle center x coordinate. |
-| `cy` | number | Circle center y coordinate. |
-| `radius` | number | Circle radius. |
-| `r` | number | Red channel. |
-| `g` | number | Green channel. |
-| `b` | number | Blue channel. |
-| `a` | number | Alpha channel. |
-
----
-
-#### `LImageData:drawLine`
-
-Draws a line into this image. This method is available to Lua scripts.
-
-```lua
-LImageData:drawLine(x0, y0, x1, y1, r, g, b, a)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `x0` | number | Start x coordinate. |
-| `y0` | number | Start y coordinate. |
-| `x1` | number | End x coordinate. |
-| `y1` | number | End y coordinate. |
-| `r` | number | Red channel. |
-| `g` | number | Green channel. |
-| `b` | number | Blue channel. |
-| `a` | number | Alpha channel. |
-
----
-
-#### `LImageData:drawRect`
-
-Draws a filled rectangle into this image.
-
-```lua
-LImageData:drawRect(x, y, w, h, r, g, b, a)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `x` | number | Rectangle x coordinate. |
-| `y` | number | Rectangle y coordinate. |
-| `w` | number | Rectangle width. |
-| `h` | number | Rectangle height. |
-| `r` | number | Red channel. |
-| `g` | number | Green channel. |
-| `b` | number | Blue channel. |
-| `a` | number | Alpha channel. |
-
----
-
-#### `LImageData:encode`
-
-Encodes image data in a supported format.
-
-```lua
-LImageData:encode(format)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `format` | string | Format name; currently `png`. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| string | Encoded image bytes. |
-
----
-
-#### `LImageData:fill`
-
-Fills the whole image with one RGBA color.
-
-```lua
-LImageData:fill(r, g, b, a)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `r` | number | Red channel. |
-| `g` | number | Green channel. |
-| `b` | number | Blue channel. |
-| `a` | number | Alpha channel. |
-
----
-
-#### `LImageData:flipHorizontal`
-
-Flips this image horizontally in place.
-
-```lua
-LImageData:flipHorizontal()
-```
-
----
-
-#### `LImageData:flipVertical`
-
-Flips this image vertically in place.
-
-```lua
-LImageData:flipVertical()
-```
-
----
-
-#### `LImageData:gamma`
-
-Applies gamma correction to this image in place.
-
-```lua
-LImageData:gamma(gamma)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `gamma` | number | Gamma value. |
-
----
-
-#### `LImageData:getDimensions`
-
-Returns image dimensions. This method is available to Lua scripts.
-
-```lua
-LImageData:getDimensions()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Width in pixels. |
-| number | Height in pixels. |
-
----
-
-#### `LImageData:getHeight`
-
-Returns image height. This method is available to Lua scripts.
-
-```lua
-LImageData:getHeight()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Height in pixels. |
-
----
-
-#### `LImageData:getPixel`
-
-Returns RGBA channels at a pixel coordinate.
-
-```lua
-LImageData:getPixel(x, y)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `x` | number | X coordinate. |
-| `y` | number | Y coordinate. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Red channel. |
-| number | Green channel. |
-| number | Blue channel. |
-| number | Alpha channel. |
-
----
-
-#### `LImageData:getRawBytes`
-
-Returns raw image bytes as a Lua string.
-
-```lua
-LImageData:getRawBytes()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| string | Raw image byte string. |
-
----
-
-#### `LImageData:getRegion`
-
-Returns an image region when the requested rectangle is inside bounds.
-
-```lua
-LImageData:getRegion(x, y, w, h)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `x` | number | Region x coordinate. |
-| `y` | number | Region y coordinate. |
-| `w` | number | Region width. |
-| `h` | number | Region height. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| [LImageData](#limagedata) | nil | `[LImageData](#limagedata)` handle, or nil when the region is out of bounds. |
-
----
-
-#### `LImageData:getString`
-
-Returns raw image bytes as a Lua string.
-
-```lua
-LImageData:getString()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| string | Raw image byte string. |
-
----
-
-#### `LImageData:getWidth`
-
-Returns image width. This method is available to Lua scripts.
-
-```lua
-LImageData:getWidth()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Width in pixels. |
-
----
-
-#### `LImageData:grayscale`
-
-Converts this image to grayscale in place.
-
-```lua
-LImageData:grayscale()
-```
-
----
-
-#### `LImageData:invert`
-
-Inverts image color channels in place.
-
-```lua
-LImageData:invert()
-```
-
----
-
-#### `LImageData:mapPixel`
-
-Applies a Lua callback to every pixel and replaces each pixel with returned RGBA values.
-
-```lua
-LImageData:mapPixel(func)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `func` | function | Callback receiving `(x, y, r, g, b, a)` and returning replacement channels. |
-
----
-
-#### `LImageData:mapPixels`
-
-Applies a Lua callback to every pixel and replaces each pixel with returned RGBA values.
-
-```lua
-LImageData:mapPixels(func)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `func` | function | Callback receiving `(x, y, r, g, b, a)` and returning replacement channels. |
-
----
-
-#### `LImageData:noise`
-
-Adds noise to this image in place. This method is available to Lua scripts.
-
-```lua
-LImageData:noise(amount)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `amount` | number | Noise amount. |
-
----
-
-#### `LImageData:paste`
-
-Pastes a source image into this image at unsigned destination coordinates.
-
-```lua
-LImageData:paste(src_ud, dx, dy)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `src_ud` | [LImageData](#limagedata) | Source image data handle. |
-| `dx` | number | Destination x coordinate. |
-| `dy` | number | Destination y coordinate. |
-
----
-
-#### `LImageData:posterize`
-
-Reduces image colors to a fixed number of levels in place.
-
-```lua
-LImageData:posterize(levels)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `levels` | number | Number of posterization levels. |
-
----
-
-#### `LImageData:resize`
-
-Returns a resized image using an optional named filter.
-
-```lua
-LImageData:resize(width, height, filter)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `width` | number | Output width. |
-| `height` | number | Output height. |
-| `filter` | string | Optional filter name, defaulting to `bilinear`. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| [LImageData](#limagedata) | nil | Resized `[LImageData](#limagedata)` handle, or nil when resizing fails. |
-
----
-
-#### `LImageData:resizeNearest`
-
-Returns a resized image using nearest-neighbor sampling.
-
-```lua
-LImageData:resizeNearest(new_w, new_h)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `new_w` | number | Output width. |
-| `new_h` | number | Output height. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| [LImageData](#limagedata) | Resized image data handle. |
-
----
-
-#### `LImageData:rotate90cw`
-
-Returns a new image rotated ninety degrees clockwise.
-
-```lua
-LImageData:rotate90cw()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| [LImageData](#limagedata) | Rotated image data handle. |
-
----
-
-#### `LImageData:saturation`
-
-Applies a saturation factor to this image in place.
-
-```lua
-LImageData:saturation(factor)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `factor` | number | Saturation factor. |
-
----
-
-#### `LImageData:sepia`
-
-Applies a sepia filter to this image in place.
-
-```lua
-LImageData:sepia()
-```
-
----
-
-#### `LImageData:setPixel`
-
-Sets RGBA channels at a pixel coordinate.
-
-```lua
-LImageData:setPixel(x, y, r, g, b, a)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `x` | number | X coordinate. |
-| `y` | number | Y coordinate. |
-| `r` | number | Red channel. |
-| `g` | number | Green channel. |
-| `b` | number | Blue channel. |
-| `a` | number | Alpha channel. |
-
----
-
-#### `LImageData:setRawData`
-
-Replaces the image byte buffer with raw bytes.
-
-```lua
-LImageData:setRawData(bytes)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `bytes` | string | Raw byte string matching the image storage size. |
-
----
-
-#### `LImageData:sharpen`
-
-Returns a sharpened copy of this image.
-
-```lua
-LImageData:sharpen()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| [LImageData](#limagedata) | Sharpened image data handle. |
-
----
-
-#### `LImageData:threshold`
-
-Applies a threshold filter to this image in place.
-
-```lua
-LImageData:threshold(value)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `value` | number | Threshold channel value. |
-
----
-
-#### `LImageData:tint`
-
-Blends this image toward a tint color in place.
-
-```lua
-LImageData:tint(tr, tg, tb, factor)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `tr` | number | Tint red channel. |
-| `tg` | number | Tint green channel. |
-| `tb` | number | Tint blue channel. |
-| `factor` | number | Tint blend factor. |
-
----
-
-#### `LImageData:transform`
-
-Returns a transformed image, currently supporting high-quality resize through `width`, `height`, and `filter`.
-
-```lua
-LImageData:transform(opts)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `opts?` | table | Transform options. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| [LImageData](#limagedata) | Transformed image. |
-
----
-
-#### `LImageData:type`
-
-Returns the Lua-visible type name for this image data handle.
-
-```lua
-LImageData:type()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| string | The string `[LImageData](#limagedata)`. |
-
----
-
-#### `LImageData:typeOf`
-
-Returns whether this image data handle matches the `[LImageData](#limagedata)` type name.
-
-```lua
-LImageData:typeOf(name)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `name` | string | Type name to compare against `[LImageData](#limagedata)` or `Object`. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True when the supplied type name matches. |
 
 ---
 
@@ -5158,7 +4069,7 @@ LWorld:addFlowField(opts)
 
 | Type | Description |
 |------|-------------|
-| [LFlowField](#lflowfield) | New flow field handle. |
+| [LFlowStream](#lflowstream) | New flow field handle. |
 
 **Example**
 
@@ -5654,6 +4565,168 @@ end
 
 ---
 
+#### `LWorld:beamAll`
+
+Returns all instant beam hits in deterministic distance order.
+
+```lua
+LWorld:beamAll(x, y, dx, dy, range, filter)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Beam origin X. |
+| `y` | number | Beam origin Y. |
+| `dx` | number | Beam direction X (does not need to be normalized). |
+| `dy` | number | Beam direction Y. |
+| `range` | number | Maximum beam travel distance. Must be finite and > 0. |
+| `filter?` | table | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}. `includeSensors` defaults to true. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| LWorldBeamAllResult | Array of hit tables {bodyId, x, y, normalX, normalY, distance, segmentIndex}. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    for i = 1, 3 do
+        local body = world:newCircleBody(90 + i * 45, 320, 10, "static")
+        body:setLayer(0x2)
+    end
+    local hits = world:beamAll(60, 320, 1, 0, 240, { layer = 0x1, mask = 0x2 })
+    lurek.log.info("beam_all_count=" .. tostring(#hits))
+    if hits[1] then
+        lurek.log.info("beam_all_first=" .. tostring(hits[1].bodyId) .. " " .. tostring(hits[1].distance))
+    end
+    if hits[2] then
+        lurek.log.info("beam_all_second=" .. tostring(hits[2].bodyId) .. " " .. tostring(hits[2].distance))
+    end
+end
+```
+
+---
+
+#### `LWorld:beamClosest`
+
+Returns only the closest instant beam hit, or nil if nothing blocks the beam.
+
+```lua
+LWorld:beamClosest(x, y, dx, dy, range, filter)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Beam origin X. |
+| `y` | number | Beam origin Y. |
+| `dx` | number | Beam direction X (does not need to be normalized). |
+| `dy` | number | Beam direction Y. |
+| `range` | number | Maximum beam travel distance. Must be finite and > 0. |
+| `filter?` | table | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}. `includeSensors` defaults to true. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| LWorldBeamClosestResult | Hit info {bodyId, x, y, normalX, normalY, distance, segmentIndex} or nil if no hit. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local shooter = world:newCircleBody(50, 260, 8, "dynamic")
+    shooter:setLayer(0x2)
+    local target = world:newCircleBody(190, 260, 14, "static")
+    target:setLayer(0x2)
+    local hit = world:beamClosest(50, 260, 1, 0, 240, {
+        excludeBody = shooter:getId(),
+        layer = 0x1,
+        mask = 0x2,
+    })
+    if hit then
+        lurek.log.info("beam_closest_body=" .. tostring(hit.bodyId))
+        lurek.log.info("beam_closest_point=" .. tostring(hit.x) .. " " .. tostring(hit.y))
+        lurek.log.info("beam_closest_distance=" .. tostring(hit.distance))
+    else
+        lurek.log.info("beam_closest_body=" .. tostring(nil))
+    end
+end
+```
+
+---
+
+#### `LWorld:castBeam`
+
+Casts an instant beam and returns hit plus segment data for gameplay or rendering.
+
+```lua
+LWorld:castBeam(x, y, dx, dy, range, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Beam origin X. |
+| `y` | number | Beam origin Y. |
+| `dx` | number | Beam direction X (does not need to be normalized). |
+| `dy` | number | Beam direction Y. |
+| `range` | number | Maximum beam travel distance. Must be finite and > 0. |
+| `opts?` | table | Optional beam options: {mode?, maxHits?, thickness?, layer?, mask?, group?, groups?, includeSensors?, excludeBody?}. `mode` accepts `closest`, `all`, or `pierce` and defaults to `closest`. `includeSensors` defaults to true. `thickness` must be `0` until thick beam support lands. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| LWorldCastBeamResult | Trace table {hits, segments, reachedMaxRange}. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local shooter = world:newCircleBody(40, 120, 8, "dynamic")
+    shooter:setLayer(0x2)
+    for i = 1, 3 do
+        local body = world:newCircleBody(110 + i * 30, 120, 10, "static")
+        body:setLayer(0x2)
+    end
+    local trace = world:castBeam(40, 120, 1, 0, 220, {
+        mode = "pierce",
+        maxHits = 2,
+        excludeBody = shooter:getId(),
+        layer = 0x1,
+        mask = 0x2,
+    })
+    local thick_ok = pcall(function()
+        world:castBeam(40, 120, 1, 0, 220, { thickness = 6 })
+    end)
+    lurek.log.info("beam_hits=" .. tostring(#trace.hits))
+    lurek.log.info("beam_segments=" .. tostring(#trace.segments))
+    lurek.log.info("beam_reached_max=" .. tostring(trace.reachedMaxRange))
+    if trace.hits[1] then
+        lurek.log.info("beam_first=" .. tostring(trace.hits[1].bodyId) .. " " .. tostring(trace.hits[1].distance))
+    end
+    if trace.hits[2] then
+        lurek.log.info("beam_second=" .. tostring(trace.hits[2].bodyId) .. " " .. tostring(trace.hits[2].distance))
+    end
+    lurek.log.info("beam_thick_supported=" .. tostring(thick_ok))
+end
+```
+
+---
+
 #### `LWorld:clear`
 
 Removes bodies, joints, terrain colliders, and zones while preserving world-level settings.
@@ -5921,7 +4994,7 @@ LWorld:drawDebug(target, r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | [LImageData](#limagedata) | The image to draw debug shapes onto. |
+| `target` | [LImageData](render.md#limagedata) | The image to draw debug shapes onto. |
 | `r?` | number | Red channel (0-255, default 0). |
 | `g?` | number | Green channel (0-255, default 255). |
 | `b?` | number | Blue channel (0-255, default 0). |
@@ -5954,7 +5027,7 @@ LWorld:drawFlowDebug(target, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | [LImageData](#limagedata) | Mutable target image. |
+| `target` | [LImageData](render.md#limagedata) | Mutable target image. |
 | `opts?` | table | Optional table with `arrowSpacing`. |
 
 **Example**
@@ -6069,7 +5142,7 @@ LWorld:getBodyAtPoint(x, y, filter)
 |------|------|-------------|
 | `x` | number | Query point X. |
 | `y` | number | Query point Y. |
-| `filter?` | table | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}. |
+| `filter?` | table | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}. |
 
 **Returns**
 
@@ -7370,7 +6443,7 @@ LWorld:queryAABB(x, y, w, h, filter)
 | `y` | number | Query rectangle top Y. |
 | `w` | number | Query rectangle width. |
 | `h` | number | Query rectangle height. |
-| `filter?` | table | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}. |
+| `filter?` | table | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}. |
 
 **Returns**
 
@@ -7414,7 +6487,7 @@ LWorld:raycast(x1, y1, x2, y2, filter)
 | `y1` | number | Ray origin Y. |
 | `x2` | number | Ray end X. |
 | `y2` | number | Ray end Y. |
-| `filter?` | table | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}. |
+| `filter?` | table | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}. |
 
 **Returns**
 
@@ -7460,7 +6533,7 @@ LWorld:raycastAll(x, y, dx, dy, maxDist, filter)
 | `dx` | number | Ray direction X. |
 | `dy` | number | Ray direction Y. |
 | `maxDist` | number | Maximum ray travel distance. |
-| `filter?` | table | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}. |
+| `filter?` | table | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}. |
 
 **Returns**
 
@@ -7505,7 +6578,7 @@ LWorld:raycastClosest(x, y, dx, dy, maxDist, filter)
 | `dx` | number | Ray direction X (does not need to be normalized). |
 | `dy` | number | Ray direction Y. |
 | `maxDist` | number | Maximum ray travel distance. |
-| `filter?` | table | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}. |
+| `filter?` | table | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}. |
 
 **Returns**
 

@@ -507,28 +507,11 @@ def build_page(
     # Rust file descriptions are intentionally kept out of Lua module docs.
     examples = load_examples(module)
 
-    # Which classes belong to this module? Prefer classes referenced by this
-    # module's examples and docs.
-    relevant_classes = set()
-    for key in examples:
-        # e.g. LImage:draw -> LImage
-        m = re.match(r'(L\w+)[:.]', key)
-        if m:
-            relevant_classes.add(m.group(1))
-
-    for f in module_fns.get(api_module, []):
-        entry_desc, params, returns = doc_to_parts(f.get("doc_lines", []))
-        for text in [entry_desc] + params + returns:
-            for token in re.findall(r"\bL[A-Z][A-Za-z0-9_]*\b", text or ""):
-                if token in class_methods:
-                    relevant_classes.add(token)
-
-    for cls in module_classes.get(api_module, []):
-        relevant_classes.add(cls)
-
-    # Keep only documented userdata types that actually expose fields or methods.
-    relevant_classes = {
-        cls for cls in relevant_classes
+    # Module pages document only userdata owned by that module. Foreign
+    # userdata may still appear in signatures/descriptions, but should link
+    # back to the owning module instead of being rendered inline here.
+    owned_classes = {
+        cls for cls in module_classes.get(api_module, [])
         if class_methods.get(cls) or class_fields.get(cls)
     }
 
@@ -565,11 +548,11 @@ def build_page(
     out.append("- This page is the generated API reference for this module.")
     out.append("")
 
-    if not unique_fns and not relevant_classes and not module_enums.get(api_module):
+    if not unique_fns and not owned_classes and not module_enums.get(api_module):
         out.append("*No public API documented yet.*")
         return sanitize_page_text("\n".join(out))
 
-    local_types = set(relevant_classes)
+    local_types = set(owned_classes)
 
     out.append("## Functions")
     out.append("")
@@ -632,15 +615,15 @@ def build_page(
 
     out.append("## Types")
     out.append("")
-    if relevant_classes:
-        for cls in sorted(relevant_classes):
+    if owned_classes:
+        for cls in sorted(owned_classes):
             out.append(f"- [{cls}](#{_type_anchor(cls)})")
     else:
         out.append("*No Lua userdata types detected for this module.*")
     out.append("")
 
     # Type-level blocks.
-    for cls in sorted(relevant_classes):
+    for cls in sorted(owned_classes):
         out.append(f"## {cls}")
         out.append("")
 

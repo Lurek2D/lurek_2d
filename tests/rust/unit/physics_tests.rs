@@ -263,6 +263,7 @@ mod world_tests {
             mask: Some(0x2),
             groups: None,
             include_sensors: false,
+            exclude_body: None,
         };
         assert_eq!(
             w.query_aabb_filtered(-10.0, -10.0, 60.0, 20.0, filter),
@@ -911,10 +912,7 @@ mod flow_field_tests {
         let mut field = FlowField::new(
             0,
             FlowGeometry::PolylineTube {
-                points: points
-                    .iter()
-                    .map(|(x, y)| Vec2::new(*x, *y))
-                    .collect(),
+                points: points.iter().map(|(x, y)| Vec2::new(*x, *y)).collect(),
                 width: 24.0,
             },
         );
@@ -970,7 +968,11 @@ mod flow_field_tests {
     fn water_drag_respects_body_water_scale() {
         let mut world = World::new(0.0, 0.0);
         let body = world.add_body(Body::new(20.0, 20.0, 8.0, 8.0, BodyType::Dynamic));
-        world.get_body_mut(body.0).unwrap().flow_influence.water_scale = 0.0;
+        world
+            .get_body_mut(body.0)
+            .unwrap()
+            .flow_influence
+            .water_scale = 0.0;
         let mut field = FlowField::new(
             0,
             FlowGeometry::UniformRect {
@@ -990,7 +992,11 @@ mod flow_field_tests {
         world.step(1.0 / 60.0);
         assert!(world.get_body(body.0).unwrap().velocity.x.abs() < 1.0e-5);
 
-        world.get_body_mut(body.0).unwrap().flow_influence.water_scale = 1.0;
+        world
+            .get_body_mut(body.0)
+            .unwrap()
+            .flow_influence
+            .water_scale = 1.0;
         world.step(1.0 / 60.0);
         assert!(world.get_body(body.0).unwrap().velocity.x > 0.0);
     }

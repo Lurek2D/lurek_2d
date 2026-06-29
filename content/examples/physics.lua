@@ -1346,7 +1346,7 @@ do
     lurek.log.info("has_joint_after_destroy=" .. tostring(world:hasJoint(jid)))
 end
 
---- Physics Module Part 4: raycasting, AABB queries, contacts, collision events
+--- Physics Module Part 4: raycasting, instant beams, AABB queries, contacts, collision events
 
 --@api: LWorld:raycast
 do
@@ -1392,6 +1392,78 @@ do
     lurek.log.info("count=" .. tostring(#hits))
     if hits[1] then
         lurek.log.info("first=" .. tostring(hits[1].bodyId) .. " " .. tostring(hits[1].x) .. " " .. tostring(hits[1].y))
+    end
+end
+
+--@api: LWorld:castBeam
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local shooter = world:newCircleBody(40, 120, 8, "dynamic")
+    shooter:setLayer(0x2)
+    for i = 1, 3 do
+        local body = world:newCircleBody(110 + i * 30, 120, 10, "static")
+        body:setLayer(0x2)
+    end
+    local trace = world:castBeam(40, 120, 1, 0, 220, {
+        mode = "pierce",
+        maxHits = 2,
+        excludeBody = shooter:getId(),
+        layer = 0x1,
+        mask = 0x2,
+    })
+    local thick_ok = pcall(function()
+        world:castBeam(40, 120, 1, 0, 220, { thickness = 6 })
+    end)
+    lurek.log.info("beam_hits=" .. tostring(#trace.hits))
+    lurek.log.info("beam_segments=" .. tostring(#trace.segments))
+    lurek.log.info("beam_reached_max=" .. tostring(trace.reachedMaxRange))
+    if trace.hits[1] then
+        lurek.log.info("beam_first=" .. tostring(trace.hits[1].bodyId) .. " " .. tostring(trace.hits[1].distance))
+    end
+    if trace.hits[2] then
+        lurek.log.info("beam_second=" .. tostring(trace.hits[2].bodyId) .. " " .. tostring(trace.hits[2].distance))
+    end
+    lurek.log.info("beam_thick_supported=" .. tostring(thick_ok))
+end
+
+--@api: LWorld:beamClosest
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local shooter = world:newCircleBody(50, 260, 8, "dynamic")
+    shooter:setLayer(0x2)
+    local target = world:newCircleBody(190, 260, 14, "static")
+    target:setLayer(0x2)
+    local hit = world:beamClosest(50, 260, 1, 0, 240, {
+        excludeBody = shooter:getId(),
+        layer = 0x1,
+        mask = 0x2,
+    })
+    if hit then
+        lurek.log.info("beam_closest_body=" .. tostring(hit.bodyId))
+        lurek.log.info("beam_closest_point=" .. tostring(hit.x) .. " " .. tostring(hit.y))
+        lurek.log.info("beam_closest_distance=" .. tostring(hit.distance))
+    else
+        lurek.log.info("beam_closest_body=" .. tostring(nil))
+    end
+end
+
+--@api: LWorld:beamAll
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    for i = 1, 3 do
+        local body = world:newCircleBody(90 + i * 45, 320, 10, "static")
+        body:setLayer(0x2)
+    end
+    local hits = world:beamAll(60, 320, 1, 0, 240, { layer = 0x1, mask = 0x2 })
+    lurek.log.info("beam_all_count=" .. tostring(#hits))
+    if hits[1] then
+        lurek.log.info("beam_all_first=" .. tostring(hits[1].bodyId) .. " " .. tostring(hits[1].distance))
+    end
+    if hits[2] then
+        lurek.log.info("beam_all_second=" .. tostring(hits[2].bodyId) .. " " .. tostring(hits[2].distance))
     end
 end
 
@@ -2666,7 +2738,7 @@ do
     lurek.log.info("[physics] flow debug alpha=" .. tostring(a))
 end
 
---@api: LFlowField:getId
+--@api: LFlowStream:getId
 do
     local world = lurek.physics.newWorld(0, 0)
     local field = world:addFlowField({
@@ -2682,7 +2754,7 @@ do
     lurek.log.info("[physics] flow id=" .. tostring(field:getId()))
 end
 
---@api: LFlowField:setEnabled
+--@api: LFlowStream:setEnabled
 do
     local world = lurek.physics.newWorld(0, 0)
     local field = world:addFlowField({
@@ -2699,7 +2771,7 @@ do
     lurek.log.info("[physics] enabled after set=" .. tostring(field:isEnabled()))
 end
 
---@api: LFlowField:isEnabled
+--@api: LFlowStream:isEnabled
 do
     local world = lurek.physics.newWorld(0, 0)
     local field = world:addFlowField({
@@ -2715,7 +2787,7 @@ do
     lurek.log.info("[physics] flow enabled=" .. tostring(field:isEnabled()))
 end
 
---@api: LFlowField:setStrength
+--@api: LFlowStream:setStrength
 do
     local world = lurek.physics.newWorld(0, 0)
     local field = world:addFlowField({
@@ -2732,7 +2804,7 @@ do
     lurek.log.info("[physics] flow strength now=" .. tostring(field:getStrength()))
 end
 
---@api: LFlowField:getStrength
+--@api: LFlowStream:getStrength
 do
     local world = lurek.physics.newWorld(0, 0)
     local field = world:addFlowField({
@@ -2748,7 +2820,7 @@ do
     lurek.log.info("[physics] getStrength=" .. tostring(field:getStrength()))
 end
 
---@api: LFlowField:setWidth
+--@api: LFlowStream:setWidth
 do
     local world = lurek.physics.newWorld(0, 0)
     local field = world:addFlowField({
@@ -2764,7 +2836,7 @@ do
     lurek.log.info("[physics] path width=" .. tostring(world:getFlowField(field:getId()).width))
 end
 
---@api: LFlowField:setPoints
+--@api: LFlowStream:setPoints
 do
     local world = lurek.physics.newWorld(0, 0)
     local field = world:addFlowField({
@@ -2784,7 +2856,7 @@ do
     lurek.log.info("[physics] path points=" .. tostring(#world:getFlowField(field:getId()).points))
 end
 
---@api: LFlowField:setLayerMask
+--@api: LFlowStream:setLayerMask
 do
     local world = lurek.physics.newWorld(0, 0)
     local field = world:addFlowField({
@@ -2801,7 +2873,7 @@ do
     lurek.log.info("[physics] layer mask=" .. tostring(field:getLayerMask()))
 end
 
---@api: LFlowField:getLayerMask
+--@api: LFlowStream:getLayerMask
 do
     local world = lurek.physics.newWorld(0, 0)
     local field = world:addFlowField({
@@ -2818,7 +2890,7 @@ do
     lurek.log.info("[physics] getLayerMask=" .. tostring(field:getLayerMask()))
 end
 
---@api: LFlowField:setApplication
+--@api: LFlowStream:setApplication
 do
     local world = lurek.physics.newWorld(0, 0)
     local field = world:addFlowField({
@@ -2835,7 +2907,7 @@ do
     lurek.log.info("[physics] application=" .. tostring(world:getFlowField(field:getId()).application))
 end
 
---@api: LFlowField:setCombine
+--@api: LFlowStream:setCombine
 do
     local world = lurek.physics.newWorld(0, 0)
     local field = world:addFlowField({
@@ -2852,7 +2924,7 @@ do
     lurek.log.info("[physics] combine=" .. tostring(world:getFlowField(field:getId()).combine))
 end
 
---@api: LFlowField:destroy
+--@api: LFlowStream:destroy
 do
     local world = lurek.physics.newWorld(0, 0)
     local field = world:addFlowField({
@@ -2869,7 +2941,7 @@ do
     lurek.log.info("[physics] destroyed flow=" .. tostring(world:getFlowField(field:getId()) == nil))
 end
 
---@api: LFlowField:type
+--@api: LFlowStream:type
 do
     local world = lurek.physics.newWorld(0, 0)
     local field = world:addFlowField({
@@ -2885,7 +2957,7 @@ do
     lurek.log.info("[physics] flow type=" .. tostring(field:type()))
 end
 
---@api: LFlowField:typeOf
+--@api: LFlowStream:typeOf
 do
     local world = lurek.physics.newWorld(0, 0)
     local field = world:addFlowField({
@@ -2898,7 +2970,7 @@ do
         directionVector = { x = 1, y = 0 },
         strength = 20,
     })
-    lurek.log.info("[physics] flow typeOf=" .. tostring(field:typeOf("LFlowField")))
+    lurek.log.info("[physics] flow typeOf=" .. tostring(field:typeOf("LFlowStream")))
 end
 
 --@api: LBody:setFlowScale

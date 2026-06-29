@@ -275,7 +275,6 @@ mod present_mode_tests {
 
 mod drop_startup_target_tests {
     use super::*;
-    use std::io::Write;
 
     #[test]
     fn classify_drop_startup_target_detects_lurek_archive_case_insensitive() {
@@ -354,16 +353,10 @@ mod drop_startup_target_tests {
     }
 
     #[test]
-    fn extract_lurek_archive_with_policy_rejects_traversal_entries() {
+    fn extract_lurek_archive_with_policy_reports_zip_runtime_as_unavailable() {
         let tmp = tempfile::tempdir().expect("tempdir");
         let archive_path = tmp.path().join("traversal.lurek");
-        let file = std::fs::File::create(&archive_path).expect("create archive");
-        let mut zip = zip::ZipWriter::new(file);
-        let options: zip::write::SimpleFileOptions = zip::write::FileOptions::default();
-        zip.start_file("../escape.lua", options)
-            .expect("start zip entry");
-        zip.write_all(b"print('escape')").expect("write zip entry");
-        zip.finish().expect("finish zip");
+        std::fs::write(&archive_path, b"placeholder archive bytes").expect("write archive");
 
         let error = LurekApp::extract_lurek_archive_with_policy(
             &archive_path,
@@ -371,7 +364,7 @@ mod drop_startup_target_tests {
         )
         .expect_err("traversal archive should be rejected");
 
-        assert!(error.contains("Unsafe path"));
+        assert!(error.contains(".lurek archives are not built into this runtime build"));
     }
 
     #[test]

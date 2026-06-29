@@ -12,10 +12,10 @@ pub mod ambient;
 pub mod atmosphere;
 /// Screen overlay controller for weather, flashes, fades, and haze.
 pub mod controller;
-/// Status-overlay stack state for HUD and fullscreen danger treatments.
-pub mod status;
 /// Screen-space flash, shake, and fade state types.
 pub mod screen_effects;
+/// Status-overlay stack state for HUD and fullscreen danger treatments.
+pub mod status;
 /// Full-screen transition effects and playback state.
 pub mod transition;
 /// Water distortion overlay state and update helpers.
@@ -31,11 +31,11 @@ pub use controller::{
     Overlay, OverlayAccessibilityPolicy, OverlayDiagnostics, OverlayError, OverlayImageLimits,
     OverlayLimits, OverlayRenderLayer, OverlayRenderPlan, OverlayShaderPolicy, OverlayStats,
 };
+pub use screen_effects::{FadeState, FlashState, ShakeState};
 pub use status::{
     normalize_status_intensity, StatusCompositeMode, StatusLayerTarget, StatusOverlayLayer,
     StatusOverlayStack, StatusVisualRecipe, STATUS_INTENSITY_MAX,
 };
-pub use screen_effects::{FadeState, FlashState, ShakeState};
 pub use transition::{ScreenTransition, TransitionKind};
 pub use water::WaterOverlayState;
 pub use weather::{

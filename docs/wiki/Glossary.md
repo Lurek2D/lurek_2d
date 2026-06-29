@@ -124,7 +124,7 @@ The glossary collects terms that appear across module and API pages.
 - `LFileHandle` ([lurek.filesystem](https://lurek2d.github.io/lurek_2d/modules/filesystem.html)) - Lua-side handle for a mutable file stream opened through GameFS.
 - `LFileWatcher` ([lurek.devtools](https://lurek2d.github.io/lurek_2d/modules/devtools.html)) - Lua-side file watcher with an optional change callback.
 - `LFlowField` ([lurek.pathfind](https://lurek2d.github.io/lurek_2d/modules/pathfind.html)) - Lua-side wrapper for a flow field over a navigation grid.
-- `LFlowField` ([lurek.physics](https://lurek2d.github.io/lurek_2d/modules/physics.html)) - A mutable handle to one authored flow field stored inside a physics world.
+- `LFlowStream` ([lurek.physics](https://lurek2d.github.io/lurek_2d/modules/physics.html)) - A mutable handle to one authored flow field stored inside a physics world.
 - `LFont` ([lurek.font](https://lurek2d.github.io/lurek_2d/modules/font.html)) - Lua-visible font handle storing the slot key and cached metadata.
 - `LFont` ([lurek.render](https://lurek2d.github.io/lurek_2d/modules/render.html)) - Bitmap font handle for measuring and rendering text.
 - `LFov` ([lurek.awareness](https://lurek2d.github.io/lurek_2d/modules/awareness.html)) - Lua-side wrapper for a tile-grid recursive-shadowcasting FOV.

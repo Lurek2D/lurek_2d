@@ -1,6 +1,6 @@
 {
   "version": "auto-generated",
-  "generated": "2026-06-28",
+  "generated": "2026-06-29",
   "modules": [
     {
       "name": "agent",
@@ -67690,21 +67690,27 @@
           "returnType": "boolean",
           "isMethod": true,
           "objectType": "LFlowField"
-        },
+        }
+      ]
+    },
+    {
+      "name": "LFlowStream",
+      "description": "A mutable handle to one authored flow field stored inside a physics world.",
+      "methods": [
         {
           "name": "getId",
-          "fullPath": "LFlowField:getId",
+          "fullPath": "LFlowStream:getId",
           "signature": "()",
           "description": "Returns this flow field id.",
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
           "isMethod": true,
-          "objectType": "LFlowField"
+          "objectType": "LFlowStream"
         },
         {
           "name": "setEnabled",
-          "fullPath": "LFlowField:setEnabled",
+          "fullPath": "LFlowStream:setEnabled",
           "signature": "(enabled)",
           "description": "Enables or disables this flow field.",
           "parameters": [
@@ -67718,22 +67724,22 @@
           "returns": "nil",
           "returnType": "nil",
           "isMethod": true,
-          "objectType": "LFlowField"
+          "objectType": "LFlowStream"
         },
         {
           "name": "isEnabled",
-          "fullPath": "LFlowField:isEnabled",
+          "fullPath": "LFlowStream:isEnabled",
           "signature": "()",
           "description": "Returns whether this flow field is enabled.",
           "parameters": [],
           "returns": "boolean",
           "returnType": "boolean",
           "isMethod": true,
-          "objectType": "LFlowField"
+          "objectType": "LFlowStream"
         },
         {
           "name": "setStrength",
-          "fullPath": "LFlowField:setStrength",
+          "fullPath": "LFlowStream:setStrength",
           "signature": "(strength)",
           "description": "Sets this flow field strength.",
           "parameters": [
@@ -67747,22 +67753,22 @@
           "returns": "nil",
           "returnType": "nil",
           "isMethod": true,
-          "objectType": "LFlowField"
+          "objectType": "LFlowStream"
         },
         {
           "name": "getStrength",
-          "fullPath": "LFlowField:getStrength",
+          "fullPath": "LFlowStream:getStrength",
           "signature": "()",
           "description": "Returns this flow field strength.",
           "parameters": [],
           "returns": "number",
           "returnType": "number",
           "isMethod": true,
-          "objectType": "LFlowField"
+          "objectType": "LFlowStream"
         },
         {
           "name": "setWidth",
-          "fullPath": "LFlowField:setWidth",
+          "fullPath": "LFlowStream:setWidth",
           "signature": "(width)",
           "description": "Sets the width of a path-shaped flow field.",
           "parameters": [
@@ -67776,11 +67782,11 @@
           "returns": "nil",
           "returnType": "nil",
           "isMethod": true,
-          "objectType": "LFlowField"
+          "objectType": "LFlowStream"
         },
         {
           "name": "setPoints",
-          "fullPath": "LFlowField:setPoints",
+          "fullPath": "LFlowStream:setPoints",
           "signature": "(points)",
           "description": "Replaces the polyline points of a path-shaped flow field.",
           "parameters": [
@@ -67794,11 +67800,11 @@
           "returns": "nil",
           "returnType": "nil",
           "isMethod": true,
-          "objectType": "LFlowField"
+          "objectType": "LFlowStream"
         },
         {
           "name": "setLayerMask",
-          "fullPath": "LFlowField:setLayerMask",
+          "fullPath": "LFlowStream:setLayerMask",
           "signature": "(mask)",
           "description": "Sets the body-layer mask that this field affects.",
           "parameters": [
@@ -67812,22 +67818,22 @@
           "returns": "nil",
           "returnType": "nil",
           "isMethod": true,
-          "objectType": "LFlowField"
+          "objectType": "LFlowStream"
         },
         {
           "name": "getLayerMask",
-          "fullPath": "LFlowField:getLayerMask",
+          "fullPath": "LFlowStream:getLayerMask",
           "signature": "()",
           "description": "Returns this flow field layer mask.",
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
           "isMethod": true,
-          "objectType": "LFlowField"
+          "objectType": "LFlowStream"
         },
         {
           "name": "setApplication",
-          "fullPath": "LFlowField:setApplication",
+          "fullPath": "LFlowStream:setApplication",
           "signature": "(mode)",
           "description": "Sets the body-application mode used during stepping.",
           "parameters": [
@@ -67841,11 +67847,11 @@
           "returns": "nil",
           "returnType": "nil",
           "isMethod": true,
-          "objectType": "LFlowField"
+          "objectType": "LFlowStream"
         },
         {
           "name": "setCombine",
-          "fullPath": "LFlowField:setCombine",
+          "fullPath": "LFlowStream:setCombine",
           "signature": "(mode)",
           "description": "Sets how this field combines with overlapping fields.",
           "parameters": [
@@ -67859,33 +67865,33 @@
           "returns": "nil",
           "returnType": "nil",
           "isMethod": true,
-          "objectType": "LFlowField"
+          "objectType": "LFlowStream"
         },
         {
           "name": "destroy",
-          "fullPath": "LFlowField:destroy",
+          "fullPath": "LFlowStream:destroy",
           "signature": "()",
           "description": "Disables this flow field.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
           "isMethod": true,
-          "objectType": "LFlowField"
+          "objectType": "LFlowStream"
         },
         {
           "name": "type",
-          "fullPath": "LFlowField:type",
+          "fullPath": "LFlowStream:type",
           "signature": "()",
           "description": "Returns the type name of this object.",
           "parameters": [],
           "returns": "string",
           "returnType": "string",
           "isMethod": true,
-          "objectType": "LFlowField"
+          "objectType": "LFlowStream"
         },
         {
           "name": "typeOf",
-          "fullPath": "LFlowField:typeOf",
+          "fullPath": "LFlowStream:typeOf",
           "signature": "(name)",
           "description": "Returns whether this object matches the requested type name.",
           "parameters": [
@@ -67899,7 +67905,7 @@
           "returns": "boolean",
           "returnType": "boolean",
           "isMethod": true,
-          "objectType": "LFlowField"
+          "objectType": "LFlowStream"
         }
       ]
     },
@@ -179789,8 +179795,8 @@
               "optional": false
             }
           ],
-          "returns": "LFlowField",
-          "returnType": "LFlowField",
+          "returns": "LFlowStream",
+          "returnType": "LFlowStream",
           "isMethod": true,
           "objectType": "LWorld"
         },
@@ -180958,7 +180964,7 @@
             {
               "name": "filter",
               "type": "table",
-              "description": "Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}.",
+              "description": "Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}.",
               "optional": true
             }
           ],
@@ -181006,7 +181012,7 @@
             {
               "name": "filter",
               "type": "table",
-              "description": "Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}.",
+              "description": "Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}.",
               "optional": true
             }
           ],
@@ -181054,7 +181060,7 @@
             {
               "name": "filter",
               "type": "table",
-              "description": "Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}.",
+              "description": "Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}.",
               "optional": true
             }
           ],
@@ -181096,7 +181102,7 @@
             {
               "name": "filter",
               "type": "table",
-              "description": "Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}.",
+              "description": "Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}.",
               "optional": true
             }
           ],
@@ -181126,12 +181132,156 @@
             {
               "name": "filter",
               "type": "table",
-              "description": "Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}.",
+              "description": "Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}.",
               "optional": true
             }
           ],
           "returns": "integer",
           "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "castBeam",
+          "fullPath": "LWorld:castBeam",
+          "signature": "(...)",
+          "description": "Casts an instant beam and returns hit plus segment data for gameplay or rendering.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "Beam origin X.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Beam origin Y.",
+              "optional": false
+            },
+            {
+              "name": "dx",
+              "type": "number",
+              "description": "Beam direction X (does not need to be normalized).",
+              "optional": false
+            },
+            {
+              "name": "dy",
+              "type": "number",
+              "description": "Beam direction Y.",
+              "optional": false
+            },
+            {
+              "name": "range",
+              "type": "number",
+              "description": "Maximum beam travel distance. Must be finite and > 0.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional beam options: {mode?, maxHits?, thickness?, layer?, mask?, group?, groups?, includeSensors?, excludeBody?}. `mode` accepts `closest`, `all`, or `pierce` and defaults to `closest`. `includeSensors` defaults to true. `thickness` must be `0` until thick beam support lands.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "beamClosest",
+          "fullPath": "LWorld:beamClosest",
+          "signature": "(...)",
+          "description": "Returns only the closest instant beam hit, or nil if nothing blocks the beam.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "Beam origin X.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Beam origin Y.",
+              "optional": false
+            },
+            {
+              "name": "dx",
+              "type": "number",
+              "description": "Beam direction X (does not need to be normalized).",
+              "optional": false
+            },
+            {
+              "name": "dy",
+              "type": "number",
+              "description": "Beam direction Y.",
+              "optional": false
+            },
+            {
+              "name": "range",
+              "type": "number",
+              "description": "Maximum beam travel distance. Must be finite and > 0.",
+              "optional": false
+            },
+            {
+              "name": "filter",
+              "type": "table",
+              "description": "Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}. `includeSensors` defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "beamAll",
+          "fullPath": "LWorld:beamAll",
+          "signature": "(...)",
+          "description": "Returns all instant beam hits in deterministic distance order.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "Beam origin X.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Beam origin Y.",
+              "optional": false
+            },
+            {
+              "name": "dx",
+              "type": "number",
+              "description": "Beam direction X (does not need to be normalized).",
+              "optional": false
+            },
+            {
+              "name": "dy",
+              "type": "number",
+              "description": "Beam direction Y.",
+              "optional": false
+            },
+            {
+              "name": "range",
+              "type": "number",
+              "description": "Maximum beam travel distance. Must be finite and > 0.",
+              "optional": false
+            },
+            {
+              "name": "filter",
+              "type": "table",
+              "description": "Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}. `includeSensors` defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LWorld"
         },

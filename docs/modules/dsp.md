@@ -73,7 +73,7 @@ lurek.dsp.analyzeFft(sd, size)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sd` | [LSoundData](#lsounddata) | The sound data to analyze. |
+| `sd` | [LSoundData](audio.md#lsounddata) | The sound data to analyze. |
 | `size` | number | Number of frequency bins to compute (capped at 512). |
 
 **Returns**
@@ -109,7 +109,7 @@ lurek.dsp.analyzePeak(sd)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sd` | [LSoundData](#lsounddata) | The sound data to analyze. |
+| `sd` | [LSoundData](audio.md#lsounddata) | The sound data to analyze. |
 
 **Returns**
 
@@ -145,7 +145,7 @@ lurek.dsp.analyzeRms(sd)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sd` | [LSoundData](#lsounddata) | The sound data to analyze. |
+| `sd` | [LSoundData](audio.md#lsounddata) | The sound data to analyze. |
 
 **Returns**
 
@@ -181,7 +181,7 @@ lurek.dsp.applyBandpass(sd_ud, low_hz, high_hz)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sd_ud` | [LSoundData](#lsounddata) | The sound data to process. |
+| `sd_ud` | [LSoundData](audio.md#lsounddata) | The sound data to process. |
 | `low_hz` | number | Lower cutoff frequency in Hz. |
 | `high_hz` | number | Upper cutoff frequency in Hz. |
 
@@ -213,7 +213,7 @@ lurek.dsp.applyGain(sd_ud, gain)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sd_ud` | [LSoundData](#lsounddata) | The sound data to process. |
+| `sd_ud` | [LSoundData](audio.md#lsounddata) | The sound data to process. |
 | `gain` | number | Gain multiplier (1.0 = unity, >1.0 = louder, <1.0 = quieter). |
 
 **Example**
@@ -243,7 +243,7 @@ lurek.dsp.applyHighpass(sd_ud, cutoff_hz)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sd_ud` | [LSoundData](#lsounddata) | The sound data to process. |
+| `sd_ud` | [LSoundData](audio.md#lsounddata) | The sound data to process. |
 | `cutoff_hz` | number | Highpass cutoff frequency in Hz. |
 
 **Example**
@@ -273,7 +273,7 @@ lurek.dsp.applyLowpass(sd_ud, cutoff_hz)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sd_ud` | [LSoundData](#lsounddata) | The sound data to process. |
+| `sd_ud` | [LSoundData](audio.md#lsounddata) | The sound data to process. |
 | `cutoff_hz` | number | Lowpass cutoff frequency in Hz. |
 
 **Example**
@@ -508,7 +508,7 @@ lurek.dsp.newSawtoothWave(freq, duration, sample_rate, amplitude)
 
 | Type | Description |
 |------|-------------|
-| [LSoundData](#lsounddata) | Generated audio buffer. |
+| [LSoundData](audio.md#lsounddata) | Generated audio buffer. |
 
 **Example**
 
@@ -546,7 +546,7 @@ lurek.dsp.newSineWave(freq, duration, sample_rate, amplitude)
 
 | Type | Description |
 |------|-------------|
-| [LSoundData](#lsounddata) | Generated audio buffer. |
+| [LSoundData](audio.md#lsounddata) | Generated audio buffer. |
 
 **Example**
 
@@ -619,7 +619,7 @@ lurek.dsp.newSquareWave(freq, duration, sample_rate, amplitude)
 
 | Type | Description |
 |------|-------------|
-| [LSoundData](#lsounddata) | Generated audio buffer. |
+| [LSoundData](audio.md#lsounddata) | Generated audio buffer. |
 
 **Example**
 
@@ -659,7 +659,7 @@ lurek.dsp.newSynthWave(waveform, freq, duration, sample_rate, amplitude, adsr)
 
 | Type | Description |
 |------|-------------|
-| [LSoundData](#lsounddata) | Generated synthesized sound buffer. |
+| [LSoundData](audio.md#lsounddata) | Generated synthesized sound buffer. |
 
 **Example**
 
@@ -735,7 +735,7 @@ lurek.dsp.newTriangleWave(freq, duration, sample_rate, amplitude)
 
 | Type | Description |
 |------|-------------|
-| [LSoundData](#lsounddata) | Generated audio buffer. |
+| [LSoundData](audio.md#lsounddata) | Generated audio buffer. |
 
 **Example**
 
@@ -811,7 +811,7 @@ lurek.dsp.newWhiteNoise(duration, sample_rate, amplitude, seed)
 
 | Type | Description |
 |------|-------------|
-| [LSoundData](#lsounddata) | Generated noise buffer. |
+| [LSoundData](audio.md#lsounddata) | Generated noise buffer. |
 
 **Example**
 
@@ -1083,7 +1083,6 @@ end
 - [LDspGraph](#ldspgraph)
 - [LDspNode](#ldspnode)
 - [LLevelDetector](#lleveldetector)
-- [LSoundData](#lsounddata)
 - [LSpectrumAnalyzer](#lspectrumanalyzer)
 - [LSynthesizer](#lsynthesizer)
 - [LWaveform](#lwaveform)
@@ -1108,7 +1107,7 @@ LAdsrEnvelope:apply(sound_data_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sound_data_ud` | [LSoundData](#lsounddata) | Sound buffer to shape in-place. |
+| `sound_data_ud` | [LSoundData](audio.md#lsounddata) | Sound buffer to shape in-place. |
 
 **Example**
 
@@ -1401,13 +1400,13 @@ LDspGraph:process(sound_data_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sound_data_ud` | [LSoundData](#lsounddata) | Input sound buffer. |
+| `sound_data_ud` | [LSoundData](audio.md#lsounddata) | Input sound buffer. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LSoundData](#lsounddata) | Processed sound buffer output. |
+| [LSoundData](audio.md#lsounddata) | Processed sound buffer output. |
 
 **Example**
 
@@ -1608,7 +1607,7 @@ LLevelDetector:process(sound_data_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sound_data_ud` | [LSoundData](#lsounddata) | Sound buffer to analyze. |
+| `sound_data_ud` | [LSoundData](audio.md#lsounddata) | Sound buffer to analyze. |
 
 **Returns**
 
@@ -1719,195 +1718,6 @@ end
 
 ---
 
-## LSoundData
-
-### Type Fields
-
-*No documented fields for this handle.*
-
-### Type Methods
-
-#### `LSoundData:drawWaveform`
-
-Draws this sound buffer as a waveform into an image buffer.
-
-```lua
-LSoundData:drawWaveform(target, x, y, w, h, r, g, b, a)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `target` | [LImageData](render.md#limagedata) | Target image to draw into. |
-| `x` | number | Left pixel coordinate. |
-| `y` | number | Top pixel coordinate. |
-| `w` | number | Waveform width in pixels. |
-| `h` | number | Waveform height in pixels. |
-| `r` | number | Red channel from 0 to 255. |
-| `g` | number | Green channel from 0 to 255. |
-| `b` | number | Blue channel from 0 to 255. |
-| `a` | number | Alpha channel from 0 to 255. |
-
----
-
-#### `LSoundData:getBitDepth`
-
-Returns the sample bit depth of this sound buffer.
-
-```lua
-LSoundData:getBitDepth()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Bit depth per sample. |
-
----
-
-#### `LSoundData:getChannelCount`
-
-Returns the number of audio channels stored in this sound buffer.
-
-```lua
-LSoundData:getChannelCount()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Channel count. |
-
----
-
-#### `LSoundData:getDuration`
-
-Returns the approximate playback duration of this sound buffer.
-
-```lua
-LSoundData:getDuration()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Duration in seconds. |
-
----
-
-#### `LSoundData:getSample`
-
-Returns the sample value at the given zero-based sample index.
-
-```lua
-LSoundData:getSample(index)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `index` | number | Zero-based sample index. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Sample value at the requested index. |
-
----
-
-#### `LSoundData:getSampleCount`
-
-Returns the total number of samples stored in this sound buffer.
-
-```lua
-LSoundData:getSampleCount()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Total sample count. |
-
----
-
-#### `LSoundData:getSampleRate`
-
-Returns the playback sample rate of this sound buffer.
-
-```lua
-LSoundData:getSampleRate()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Sample rate in Hz. |
-
----
-
-#### `LSoundData:setSample`
-
-Overwrites the sample value at the given zero-based sample index.
-
-```lua
-LSoundData:setSample(index, value)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `index` | number | Zero-based sample index. |
-| `value` | number | New sample value. |
-
----
-
-#### `LSoundData:type`
-
-Returns the type name of this object for runtime type-checking.
-
-```lua
-LSoundData:type()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| string | Always returns "[LSoundData](#lsounddata)". |
-
----
-
-#### `LSoundData:typeOf`
-
-Checks whether this object matches the given type name.
-
-```lua
-LSoundData:typeOf(name)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `name` | string | Type name to check (e.g. "[LSoundData](#lsounddata)" or "Object"). |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True if this object matches the given type. |
-
----
-
 ## LSpectrumAnalyzer
 
 ### Type Fields
@@ -1928,7 +1738,7 @@ LSpectrumAnalyzer:analyze(sound_data_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sound_data_ud` | [LSoundData](#lsounddata) | Sound buffer to analyze. |
+| `sound_data_ud` | [LSoundData](audio.md#lsounddata) | Sound buffer to analyze. |
 
 **Returns**
 
@@ -2009,7 +1819,7 @@ LSynthesizer:generate(freq, duration, sample_rate, amplitude)
 
 | Type | Description |
 |------|-------------|
-| [LSoundData](#lsounddata) | Generated sound buffer. |
+| [LSoundData](audio.md#lsounddata) | Generated sound buffer. |
 
 **Example**
 
@@ -2050,7 +1860,7 @@ LSynthesizer:render(freq, duration, sample_rate, amplitude)
 
 | Type | Description |
 |------|-------------|
-| [LSoundData](#lsounddata) | Generated sound buffer. |
+| [LSoundData](audio.md#lsounddata) | Generated sound buffer. |
 
 **Example**
 
@@ -2156,7 +1966,7 @@ LWaveform:render(freq, duration, sample_rate, amplitude)
 
 | Type | Description |
 |------|-------------|
-| [LSoundData](#lsounddata) | Generated mono sound buffer. |
+| [LSoundData](audio.md#lsounddata) | Generated mono sound buffer. |
 
 **Example**
 
