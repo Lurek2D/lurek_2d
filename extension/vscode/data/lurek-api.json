@@ -45415,6 +45415,93 @@
           "objectType": "LBody"
         },
         {
+          "name": "setMirror",
+          "fullPath": "LBody:setMirror",
+          "signature": "(mirror)",
+          "description": "Enables or disables mirror-style beam reflection on this body.",
+          "parameters": [
+            {
+              "name": "mirror",
+              "type": "boolean",
+              "description": "True to let reflective beam traces bounce from this body.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBody"
+        },
+        {
+          "name": "isMirror",
+          "fullPath": "LBody:isMirror",
+          "signature": "()",
+          "description": "Returns whether this body acts as a reflective mirror for beam traces.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LBody"
+        },
+        {
+          "name": "setBeamReflectivity",
+          "fullPath": "LBody:setBeamReflectivity",
+          "signature": "(reflectivity)",
+          "description": "Sets the energy multiplier used when a reflective beam bounces from this body.",
+          "parameters": [
+            {
+              "name": "reflectivity",
+              "type": "number",
+              "description": "Beam reflection multiplier in the range 0..1.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBody"
+        },
+        {
+          "name": "getBeamReflectivity",
+          "fullPath": "LBody:getBeamReflectivity",
+          "signature": "()",
+          "description": "Returns the energy multiplier used when a reflective beam bounces from this body.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LBody"
+        },
+        {
+          "name": "setProjectileReflectivity",
+          "fullPath": "LBody:setProjectileReflectivity",
+          "signature": "(reflectivity)",
+          "description": "Sets the gameplay projectile reflectivity hint stored on this body.",
+          "parameters": [
+            {
+              "name": "reflectivity",
+              "type": "number",
+              "description": "Projectile reflection multiplier in the range 0..1.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBody"
+        },
+        {
+          "name": "getProjectileReflectivity",
+          "fullPath": "LBody:getProjectileReflectivity",
+          "signature": "()",
+          "description": "Returns the gameplay projectile reflectivity hint stored on this body.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LBody"
+        },
+        {
           "name": "getLayer",
           "fullPath": "LBody:getLayer",
           "signature": "()",
@@ -181234,7 +181321,7 @@
             {
               "name": "opts",
               "type": "table",
-              "description": "Optional beam options: {mode?, maxHits?, thickness?, layer?, mask?, group?, groups?, includeSensors?, excludeBody?}. `mode` accepts `closest`, `all`, or `pierce` and defaults to `closest`. `includeSensors` defaults to true. `thickness` must be `0` until thick beam support lands.",
+              "description": "Optional beam options: {mode?, maxHits?, thickness?, reflect?, maxBounces?, energy?, minEnergy?, layer?, mask?, group?, groups?, includeSensors?, excludeBody?}. `mode` accepts `closest`, `all`, or `pierce` and defaults to `closest`. Reflection currently requires `mode = \"closest\"`. `reflect` defaults to false. `maxBounces` defaults to 8, `energy` defaults to 1.0, and `minEnergy` defaults to 0.0. `includeSensors` defaults to true. `thickness` must be `0` until thick beam support lands.",
               "optional": true
             }
           ],
@@ -181336,6 +181423,42 @@
           ],
           "returns": "table",
           "returnType": "table",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "reflectBodyVelocity",
+          "fullPath": "LWorld:reflectBodyVelocity",
+          "signature": "(body_id, normal_x, normal_y, coefficient)",
+          "description": "Reflects a body's current velocity around a supplied world-space surface normal.",
+          "parameters": [
+            {
+              "name": "bodyId",
+              "type": "integer",
+              "description": "Body ID to update.",
+              "optional": false
+            },
+            {
+              "name": "normalX",
+              "type": "number",
+              "description": "Surface normal X component in world space.",
+              "optional": false
+            },
+            {
+              "name": "normalY",
+              "type": "number",
+              "description": "Surface normal Y component in world space.",
+              "optional": false
+            },
+            {
+              "name": "coefficient",
+              "type": "number",
+              "description": "Speed multiplier applied after the reflection in the range 0..1.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LWorld"
         },

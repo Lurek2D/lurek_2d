@@ -1519,7 +1519,7 @@ LWorldBeamAllResult = {}
 LWorldBeamClosestResult = {}
 
 ---@class LWorldCastBeamResult
----@field hits table[] Array of hit tables {bodyId, x, y, normalX, normalY, distance, segmentIndex}.
+---@field hits table[] Array of hit tables {bodyId, x, y, normalX, normalY, distance, segmentIndex, reflected, incomingDirX, incomingDirY, outgoingDirX?, outgoingDirY?, reflectivity}.
 ---@field reachedMaxRange boolean True when the beam extended to the requested range.
 ---@field segments table[] Array of segment tables {x1, y1, x2, y2, blockedBy}.
 LWorldCastBeamResult = {}
@@ -23381,6 +23381,10 @@ function LBody:getAngularDamping() end
 ---@return number Angular velocity in radians per second.
 function LBody:getAngularVelocity() end
 
+--- Returns the energy multiplier used when a reflective beam bounces from this body.
+---@return number Beam reflection multiplier in the range 0..1.
+function LBody:getBeamReflectivity() end
+
 --- Returns the single 0..15 collision group for this body, or nil for multi-group masks.
 ---@return number? Collision group index, or nil.
 function LBody:getCollisionGroup() end
@@ -23422,6 +23426,10 @@ function LBody:getMass() end
 ---@return number Y coordinate.
 function LBody:getPosition() end
 
+--- Returns the gameplay projectile reflectivity hint stored on this body.
+---@return number Projectile reflection multiplier in the range 0..1.
+function LBody:getProjectileReflectivity() end
+
 --- Returns the body's restitution (bounciness) value.
 ---@return number Restitution (0 = no bounce, 1 = perfectly elastic).
 function LBody:getRestitution() end
@@ -23455,6 +23463,10 @@ function LBody:isBullet() end
 ---@return boolean True if rotation is fixed.
 function LBody:isFixedRotation() end
 
+--- Returns whether this body acts as a reflective mirror for beam traces.
+---@return boolean True when beam reflection is enabled for this body.
+function LBody:isMirror() end
+
 --- Returns whether this body is currently in the sleeping (inactive) state.
 ---@return boolean True if sleeping.
 function LBody:isSleeping() end
@@ -23482,6 +23494,10 @@ function LBody:setAngularDamping(damping) end
 --- Sets the body's angular velocity directly.
 ---@param omega number Angular velocity in radians per second.
 function LBody:setAngularVelocity(omega) end
+
+--- Sets the energy multiplier used when a reflective beam bounces from this body.
+---@param reflectivity number Beam reflection multiplier in the range 0..1.
+function LBody:setBeamReflectivity(reflectivity) end
 
 --- Enables or disables continuous collision detection to prevent fast-moving tunneling. Use it for small, fast bodies such as bullets and shrapnel, not every body in the scene.
 ---@param bullet boolean True to enable CCD.
@@ -23527,10 +23543,18 @@ function LBody:setMask(mask) end
 ---@param mass number New mass value.
 function LBody:setMass(mass) end
 
+--- Enables or disables mirror-style beam reflection on this body.
+---@param mirror boolean True to let reflective beam traces bounce from this body.
+function LBody:setMirror(mirror) end
+
 --- Teleports the body to a new world-space position (does not apply physics forces).
 ---@param x number New X position.
 ---@param y number New Y position.
 function LBody:setPosition(x, y) end
+
+--- Sets the gameplay projectile reflectivity hint stored on this body.
+---@param reflectivity number Projectile reflection multiplier in the range 0..1.
+function LBody:setProjectileReflectivity(reflectivity) end
 
 --- Sets the body's restitution (bounciness) value.
 ---@param restitution number New restitution (0Ä‚ËĂ˘â€šÂ¬Ă˘â‚¬Ĺ›1).
@@ -23912,7 +23936,7 @@ function LWorld:beamClosest(x, y, dx, dy, range, filter) end
 ---@param dx number Beam direction X (does not need to be normalized).
 ---@param dy number Beam direction Y.
 ---@param range number Maximum beam travel distance. Must be finite and > 0.
----@param opts? table Optional beam options: {mode?, maxHits?, thickness?, layer?, mask?, group?, groups?, includeSensors?, excludeBody?}. `mode` accepts `closest`, `all`, or `pierce` and defaults to `closest`. `includeSensors` defaults to true. `thickness` must be `0` until thick beam support lands.
+---@param opts? table Optional beam options: {mode?, maxHits?, thickness?, reflect?, maxBounces?, energy?, minEnergy?, layer?, mask?, group?, groups?, includeSensors?, excludeBody?}. `mode` accepts `closest`, `all`, or `pierce` and defaults to `closest`. Reflection currently requires `mode = "closest"`. `reflect` defaults to false. `maxBounces` defaults to 8, `energy` defaults to 1.0, and `minEnergy` defaults to 0.0. `includeSensors` defaults to true. `thickness` must be `0` until thick beam support lands.
 ---@return LWorldCastBeamResult Trace table {hits, segments, reachedMaxRange}.
 function LWorld:castBeam(x, y, dx, dy, range, opts) end
 
@@ -24214,6 +24238,14 @@ function LWorld:raycastAll(x, y, dx, dy, maxDist, filter) end
 ---@param filter? table Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}.
 ---@return LWorldRaycastClosestResult Hit info {bodyId, x, y, normalX, normalY, toi} or nil if no hit.
 function LWorld:raycastClosest(x, y, dx, dy, maxDist, filter) end
+
+--- Reflects a body's current velocity around a supplied world-space surface normal.
+---@param bodyId number Body ID to update.
+---@param normalX number Surface normal X component in world space.
+---@param normalY number Surface normal Y component in world space.
+---@param coefficient number Speed multiplier applied after the reflection in the range 0..1.
+---@return boolean True when the body velocity was updated, false for inactive bodies, zero-speed bodies, or degenerate normals.
+function LWorld:reflectBodyVelocity(bodyId, normalX, normalY, coefficient) end
 
 --- Disables one flow field by id.
 ---@param id number Flow field id.

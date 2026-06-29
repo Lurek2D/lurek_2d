@@ -82,6 +82,9 @@ impl Default for BodyFlowInfluence {
 /// - `body_type`: simulation role used by the solver.
 /// - `shape`: primary primitive shape used for broad behavior.
 /// - `restitution`: bounce coefficient.
+/// - `reflective`: whether gameplay beam tracing should treat the body as a mirror surface.
+/// - `beam_reflectivity`: energy multiplier applied after a beam reflection.
+/// - `projectile_reflectivity`: gameplay reflectivity hint for projectile ricochets.
 /// - `layer`: collision layer membership mask.
 /// - `mask`: collision interaction mask.
 /// - `width`: cached AABB-equivalent width.
@@ -105,6 +108,12 @@ pub struct Body {
     pub shape: BodyShape,
     /// Coefficient of restitution (bounciness) in 0.0..=1.0.
     pub restitution: f32,
+    /// True when gameplay beam queries should reflect from this body.
+    pub reflective: bool,
+    /// Energy multiplier applied to reflected beams in 0.0..=1.0.
+    pub beam_reflectivity: f32,
+    /// Gameplay reflectivity hint for projectile ricochets in 0.0..=1.0.
+    pub projectile_reflectivity: f32,
     /// Bitmask for this body's collision category.
     pub layer: u32,
     /// Bitmask of which categories this body collides with.
@@ -144,6 +153,9 @@ impl Body {
             body_type,
             shape,
             restitution: 0.3,
+            reflective: false,
+            beam_reflectivity: 1.0,
+            projectile_reflectivity: 1.0,
             layer: 1,
             mask: 1,
             width: w,
@@ -174,19 +186,28 @@ impl Body {
         mass: f32,
         friction: f32,
         restitution: f32,
+        beam_reflectivity: f32,
+        projectile_reflectivity: f32,
     ) -> Result<(), PhysicsError> {
         if body_type == BodyType::Dynamic {
             validate_positive("mass", f64::from(mass))?;
         }
         validate_range("friction", f64::from(friction), 0.0, 1.0)?;
         validate_range("restitution", f64::from(restitution), 0.0, 1.0)?;
+        validate_range("beam_reflectivity", f64::from(beam_reflectivity), 0.0, 1.0)?;
+        validate_range(
+            "projectile_reflectivity",
+            f64::from(projectile_reflectivity),
+            0.0,
+            1.0,
+        )?;
         Ok(())
     }
 
     fn validate_common(x: f32, y: f32, body_type: BodyType) -> Result<(), PhysicsError> {
         validate_finite("x", f64::from(x))?;
         validate_finite("y", f64::from(y))?;
-        Self::validate_material_defaults(body_type, 1.0, 0.5, 0.3)
+        Self::validate_material_defaults(body_type, 1.0, 0.5, 0.3, 1.0, 1.0)
     }
 
     fn polygon_area2(vertices: &[Vec2]) -> f32 {
@@ -275,6 +296,8 @@ impl Body {
             self.mass,
             self.friction,
             self.restitution,
+            self.beam_reflectivity,
+            self.projectile_reflectivity,
         )?;
         validate_finite(
             "flow_influence.flow_scale",

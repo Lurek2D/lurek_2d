@@ -46,8 +46,7 @@ pub use terrain::TerrainMap;
 pub use world::BodyContact as CollisionEvent;
 pub use world::{
     BeamHit, BeamHitMode, BeamOptions, BeamSegment, BeamTrace, ContactInfo, GravityVector,
-    PhysicsQueryFilter, PhysicsShapeSnapshot, PhysicsWorldStats, RaycastHit, ShapeSweepHit,
-    World,
+    PhysicsQueryFilter, PhysicsShapeSnapshot, PhysicsWorldStats, RaycastHit, ShapeSweepHit, World,
 };
 pub use zone::{
     PhysicsZone, ZoneBoundary, ZoneEvent, ZoneEventKind, ZoneGravityFalloff, ZoneGravityMode,

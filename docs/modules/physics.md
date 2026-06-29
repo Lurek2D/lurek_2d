@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Simulates 2D bodies under dynamic, static, kinematic, or sensor behaviors. - Supports shapes, continuous detection, and motorized mechanical joints. - Supports bullet-mode CCD bodies and swept circle queries for fast projectile work. - Can infer approximate collision shapes from image alpha masks for asset-driven colliders. - Manages override zones, raycast queries, and destructible static terrain. - Provides a 16-group world collision matrix layered over per-body layer/mask filters. - Provides post-step contact events and colorized visual debug overlays. - Supports authored flow fields for wind, water, conveyor, and magic-current style motion that can be sampled or applied during stepping.
+Simulates 2D bodies under dynamic, static, kinematic, or sensor behaviors. - Supports shapes, continuous detection, and motorized mechanical joints. - Supports bullet-mode CCD bodies and swept circle queries for fast projectile work. - Supports mirror-style beam reflection and explicit projectile-velocity ricochet helpers. - Can infer approximate collision shapes from image alpha masks for asset-driven colliders. - Manages override zones, raycast queries, and destructible static terrain. - Provides a 16-group world collision matrix layered over per-body layer/mask filters. - Provides post-step contact events and colorized visual debug overlays. - Supports authored flow fields for wind, water, conveyor, and magic-current style motion that can be sampled or applied during stepping.
 
 ## Summary
 
@@ -10,6 +10,7 @@ Simulates 2D bodies under dynamic, static, kinematic, or sensor behaviors. - Sup
 - Bodies, colliders, forces, terrain, joints, sensors, and collision layers all belong to the same simulation step, which keeps movement and contact rules coherent across the engine.
 - The module supports dynamic, static, kinematic, and sensor-style roles so projects can mix actors, level geometry, triggers, platforms, and detection-only regions inside one physical space without switching subsystems.
 - Practical physics also depends on querying the world, not only advancing it. Raycasts, overlap checks, sweep-style tests, and contact inspection let gameplay ask what was hit, what overlaps, and why motion changed.
+- Reflective query paths now extend that spatial role. Scripts can mark bodies as mirrors, trace deterministic multi-segment beams through those surfaces, and reflect projectile velocities from supplied contact normals without confusing gameplay reflection with rigid-body restitution.
 - Flow fields extend that world model with continuous directional media. They let scripts describe rectangles, circular fans, and polyline tubes that contribute acceleration or drag-like target velocity behavior without inventing a second movement subsystem outside the physics step.
 - Shape support, terrain integration, and joints give the system expressive range for characters, bullets, walls, pickups, hazards, linked mechanisms, and authored environment collision.
 - Alpha-mask shape inference gives tools and scripts a pragmatic bridge from sprite or image assets to plausible collision geometry: circle-like masks become circles, filled masks become rectangles, and irregular masks become bounded convex polygons.
@@ -1171,6 +1172,38 @@ end
 
 ---
 
+#### `LBody:getBeamReflectivity`
+
+Returns the energy multiplier used when a reflective beam bounces from this body.
+
+```lua
+LBody:getBeamReflectivity()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Beam reflection multiplier in the range 0..1. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local mirror = world:newBody(120, 90, 12, 48, "static")
+    mirror:setMirror(true)
+    mirror:setBeamReflectivity(0.4)
+    local reflectivity = mirror:getBeamReflectivity()
+    local trace = world:castBeam(40, 90, 1, 0, 140, { reflect = true, maxBounces = 1, minEnergy = 0.1 })
+    lurek.log.info("beam_reflectivity=" .. tostring(reflectivity))
+    lurek.log.info("trace_hits=" .. tostring(#trace.hits))
+end
+```
+
+---
+
 #### `LBody:getCollisionGroup`
 
 Returns the single 0..15 collision group for this body, or nil for multi-group masks.
@@ -1471,6 +1504,37 @@ end
 
 ---
 
+#### `LBody:getProjectileReflectivity`
+
+Returns the gameplay projectile reflectivity hint stored on this body.
+
+```lua
+LBody:getProjectileReflectivity()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Projectile reflection multiplier in the range 0..1. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local wall = world:newBody(90, 110, 12, 48, "static")
+    wall:setProjectileReflectivity(0.55)
+    local reflectivity = wall:getProjectileReflectivity()
+    local mirror = wall:isMirror()
+    lurek.log.info("projectile_reflectivity=" .. tostring(reflectivity))
+    lurek.log.info("mirror=" .. tostring(mirror))
+end
+```
+
+---
+
 #### `LBody:getRestitution`
 
 Returns the body's restitution (bounciness) value.
@@ -1714,6 +1778,37 @@ end
 
 ---
 
+#### `LBody:isMirror`
+
+Returns whether this body acts as a reflective mirror for beam traces.
+
+```lua
+LBody:isMirror()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when beam reflection is enabled for this body. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local mirror = world:newBody(90, 90, 12, 48, "static")
+    mirror:setMirror(true)
+    local reflective = mirror:isMirror()
+    local body_id = mirror:getId()
+    lurek.log.info("body=" .. tostring(body_id))
+    lurek.log.info("is_mirror=" .. tostring(reflective))
+end
+```
+
+---
+
 #### `LBody:isSleeping`
 
 Returns whether this body is currently in the sleeping (inactive) state.
@@ -1924,6 +2019,37 @@ do
     lurek.log.info("angular_velocity=" .. tostring(body:getAngularVelocity()))
     world:step(1 / 60)
     lurek.log.info("angle=" .. tostring(body:getAngle()))
+end
+```
+
+---
+
+#### `LBody:setBeamReflectivity`
+
+Sets the energy multiplier used when a reflective beam bounces from this body.
+
+```lua
+LBody:setBeamReflectivity(reflectivity)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `reflectivity` | number | Beam reflection multiplier in the range 0..1. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local mirror = world:newBody(100, 100, 12, 48, "static")
+    mirror:setMirror(true)
+    mirror:setBeamReflectivity(0.65)
+    local reflectivity = mirror:getBeamReflectivity()
+    lurek.log.info("beam_reflectivity=" .. tostring(reflectivity))
+    lurek.log.info("mirror=" .. tostring(mirror:isMirror()))
 end
 ```
 
@@ -2272,6 +2398,37 @@ end
 
 ---
 
+#### `LBody:setMirror`
+
+Enables or disables mirror-style beam reflection on this body.
+
+```lua
+LBody:setMirror(mirror)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `mirror` | boolean | True to let reflective beam traces bounce from this body. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local mirror = world:newBody(80, 80, 12, 48, "static")
+    mirror:setMirror(true)
+    mirror:setBeamReflectivity(1.0)
+    local trace = world:castBeam(20, 80, 1, 0, 160, { reflect = true, maxBounces = 1 })
+    lurek.log.info("mirror_enabled=" .. tostring(mirror:isMirror()))
+    lurek.log.info("mirror_segments=" .. tostring(#trace.segments))
+end
+```
+
+---
+
 #### `LBody:setPosition`
 
 Teleports the body to a new world-space position (does not apply physics forces).
@@ -2297,6 +2454,38 @@ do
     body:setPosition(200, 100)
     lurek.log.info("position=" .. tostring(body:getPosition()))
     lurek.log.info("velocity=" .. tostring(body:getVelocity()))
+end
+```
+
+---
+
+#### `LBody:setProjectileReflectivity`
+
+Sets the gameplay projectile reflectivity hint stored on this body.
+
+```lua
+LBody:setProjectileReflectivity(reflectivity)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `reflectivity` | number | Projectile reflection multiplier in the range 0..1. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local wall = world:newBody(80, 100, 12, 48, "static")
+    wall:setProjectileReflectivity(0.8)
+    local projectile = world:newCircleBody(40, 100, 6, "dynamic")
+    projectile:setVelocity(50, 0)
+    local reflected = world:reflectBodyVelocity(projectile:getId(), -1, 0, wall:getProjectileReflectivity())
+    lurek.log.info("projectile_reflectivity=" .. tostring(wall:getProjectileReflectivity()))
+    lurek.log.info("reflected=" .. tostring(reflected))
 end
 ```
 
@@ -4682,7 +4871,7 @@ LWorld:castBeam(x, y, dx, dy, range, opts)
 | `dx` | number | Beam direction X (does not need to be normalized). |
 | `dy` | number | Beam direction Y. |
 | `range` | number | Maximum beam travel distance. Must be finite and > 0. |
-| `opts?` | table | Optional beam options: {mode?, maxHits?, thickness?, layer?, mask?, group?, groups?, includeSensors?, excludeBody?}. `mode` accepts `closest`, `all`, or `pierce` and defaults to `closest`. `includeSensors` defaults to true. `thickness` must be `0` until thick beam support lands. |
+| `opts?` | table | Optional beam options: {mode?, maxHits?, thickness?, reflect?, maxBounces?, energy?, minEnergy?, layer?, mask?, group?, groups?, includeSensors?, excludeBody?}. `mode` accepts `closest`, `all`, or `pierce` and defaults to `closest`. Reflection currently requires `mode = "closest"`. `reflect` defaults to false. `maxBounces` defaults to 8, `energy` defaults to 1.0, and `minEnergy` defaults to 0.0. `includeSensors` defaults to true. `thickness` must be `0` until thick beam support lands. |
 
 **Returns**
 
@@ -4696,32 +4885,26 @@ LWorld:castBeam(x, y, dx, dy, range, opts)
 do
 
     local world = lurek.physics.newWorld(0, 0)
-    local shooter = world:newCircleBody(40, 120, 8, "dynamic")
-    shooter:setLayer(0x2)
-    for i = 1, 3 do
-        local body = world:newCircleBody(110 + i * 30, 120, 10, "static")
-        body:setLayer(0x2)
-    end
-    local trace = world:castBeam(40, 120, 1, 0, 220, {
-        mode = "pierce",
-        maxHits = 2,
-        excludeBody = shooter:getId(),
-        layer = 0x1,
-        mask = 0x2,
+    local mirror = world:newBody(120, 120, 8, 80, "static")
+    mirror:setMirror(true)
+    mirror:setBeamReflectivity(0.75)
+    local blocker = world:newBody(120, 40, 80, 8, "static")
+    local trace = world:castBeam(40, 120, 1, 0, 260, {
+        reflect = true,
+        maxBounces = 2,
+        energy = 1.0,
+        minEnergy = 0.2,
     })
-    local thick_ok = pcall(function()
-        world:castBeam(40, 120, 1, 0, 220, { thickness = 6 })
-    end)
     lurek.log.info("beam_hits=" .. tostring(#trace.hits))
     lurek.log.info("beam_segments=" .. tostring(#trace.segments))
     lurek.log.info("beam_reached_max=" .. tostring(trace.reachedMaxRange))
     if trace.hits[1] then
-        lurek.log.info("beam_first=" .. tostring(trace.hits[1].bodyId) .. " " .. tostring(trace.hits[1].distance))
+        lurek.log.info("beam_first=" .. tostring(trace.hits[1].bodyId) .. " reflected=" .. tostring(trace.hits[1].reflected))
     end
     if trace.hits[2] then
         lurek.log.info("beam_second=" .. tostring(trace.hits[2].bodyId) .. " " .. tostring(trace.hits[2].distance))
     end
-    lurek.log.info("beam_thick_supported=" .. tostring(thick_ok))
+    lurek.log.info("blocker=" .. tostring(blocker:getId()))
 end
 ```
 
@@ -6678,6 +6861,47 @@ do
     else
         lurek.log.info("body=" .. tostring(nil))
     end
+end
+```
+
+---
+
+#### `LWorld:reflectBodyVelocity`
+
+Reflects a body's current velocity around a supplied world-space surface normal.
+
+```lua
+LWorld:reflectBodyVelocity(bodyId, normalX, normalY, coefficient)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `bodyId` | number | Body ID to update. |
+| `normalX` | number | Surface normal X component in world space. |
+| `normalY` | number | Surface normal Y component in world space. |
+| `coefficient` | number | Speed multiplier applied after the reflection in the range 0..1. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the body velocity was updated, false for inactive bodies, zero-speed bodies, or degenerate normals. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local projectile = world:newCircleBody(40, 90, 4, "dynamic")
+    projectile:setVelocity(120, -40)
+    local ok = world:reflectBodyVelocity(projectile:getId(), 0, 1, 0.5)
+    local vx, vy = projectile:getVelocity()
+    lurek.log.info("reflected=" .. tostring(ok))
+    lurek.log.info("velocity=" .. tostring(vx) .. "," .. tostring(vy))
+    lurek.log.info("projectile=" .. tostring(projectile:getId()))
 end
 ```
 

@@ -416,6 +416,57 @@ describe("body userdata methods", function()
         end)
     end)
 
+    -- @covers LBody:setMirror
+    it("setMirror is callable", function()
+        expect_no_error(function()
+            new_dynamic_body(new_world(0, 0)):setMirror(true)
+        end)
+    end)
+
+    -- @covers LBody:isMirror
+    it("isMirror reflects the authored beam-mirror flag", function()
+        local body = new_dynamic_body(new_world(0, 0))
+        expect_false(body:isMirror())
+        body:setMirror(true)
+        expect_true(body:isMirror())
+    end)
+
+    -- @covers LBody:setBeamReflectivity
+    it("setBeamReflectivity validates 0..1 values", function()
+        local body = new_dynamic_body(new_world(0, 0))
+        expect_no_error(function()
+            body:setBeamReflectivity(0.6)
+        end)
+        expect_error(function()
+            body:setBeamReflectivity(1.1)
+        end)
+    end)
+
+    -- @covers LBody:getBeamReflectivity
+    it("getBeamReflectivity returns the stored beam multiplier", function()
+        local body = new_dynamic_body(new_world(0, 0))
+        body:setBeamReflectivity(0.4)
+        expect_near(0.4, body:getBeamReflectivity(), 0.0001)
+    end)
+
+    -- @covers LBody:setProjectileReflectivity
+    it("setProjectileReflectivity validates 0..1 values", function()
+        local body = new_dynamic_body(new_world(0, 0))
+        expect_no_error(function()
+            body:setProjectileReflectivity(0.25)
+        end)
+        expect_error(function()
+            body:setProjectileReflectivity(-0.1)
+        end)
+    end)
+
+    -- @covers LBody:getProjectileReflectivity
+    it("getProjectileReflectivity returns the stored projectile multiplier", function()
+        local body = new_dynamic_body(new_world(0, 0))
+        body:setProjectileReflectivity(0.75)
+        expect_near(0.75, body:getProjectileReflectivity(), 0.0001)
+    end)
+
     -- @covers LBody:getLayer
     it("getLayer returns a numeric layer", function()
         expect_type("number", new_dynamic_body(new_world(0, 0)):getLayer())
@@ -1653,37 +1704,47 @@ describe("world userdata methods", function()
     end)
 
     -- @covers LWorld:castBeam
-    it("castBeam returns trace data for piercing beams and rejects thick mode for now", function()
+    it("castBeam supports reflective tracing with deterministic bounce segments", function()
         local world = new_world(0, 0)
-        local shooter = world:newCircleBody(20, 0, 2, "dynamic")
-        shooter:setLayer(0x2)
-        local targets = {}
-        for i = 1, 3 do
-            local body = world:newCircleBody(40 + i * 30, 0, 4, "static")
-            body:setLayer(0x2)
-            targets[i] = body
-        end
+        local blocker = world:newBody(10, 0, 6, 40, "static")
+        local mirror = world:newBody(80, 0, 6, 40, "static")
+        mirror:setMirror(true)
+        mirror:setBeamReflectivity(0.8)
         world:step(1 / 60)
 
-        local trace = world:castBeam(20, 0, 1, 0, 220, {
-            mode = "pierce",
-            maxHits = 2,
-            excludeBody = shooter:getId(),
-            layer = 0x1,
-            mask = 0x2,
+        local trace = world:castBeam(40, 0, 1, 0, 160, {
+            reflect = true,
+            maxBounces = 2,
+            energy = 1.0,
+            minEnergy = 0.1,
         })
         expect_type("table", trace)
         expect_equal(2, #trace.hits)
-        expect_equal(1, #trace.segments)
+        expect_equal(2, #trace.segments)
         expect_false(trace.reachedMaxRange)
-        expect_equal(targets[1]:getId(), trace.hits[1].bodyId)
-        expect_equal(targets[2]:getId(), trace.hits[2].bodyId)
-        expect_true(trace.hits[1].distance < trace.hits[2].distance)
+        expect_equal(mirror:getId(), trace.hits[1].bodyId)
+        expect_true(trace.hits[1].reflected)
         expect_equal(1, trace.hits[1].segmentIndex)
-        expect_equal(targets[2]:getId(), trace.segments[1].blockedBy)
-        expect_error(function()
-            world:castBeam(20, 0, 1, 0, 220, { thickness = 4 })
-        end)
+        expect_true(trace.hits[1].outgoingDirX < 0)
+        expect_equal(blocker:getId(), trace.hits[2].bodyId)
+        expect_false(trace.hits[2].reflected)
+        expect_equal(2, trace.hits[2].segmentIndex)
+        expect_true(trace.hits[1].distance < trace.hits[2].distance)
+        expect_equal(mirror:getId(), trace.segments[1].blockedBy)
+        expect_equal(blocker:getId(), trace.segments[2].blockedBy)
+    end)
+
+    -- @covers LWorld:reflectBodyVelocity
+    it("reflectBodyVelocity mirrors the current velocity around a normal", function()
+        local world = new_world(0, 0)
+        local projectile = world:newCircleBody(0, 0, 2, "dynamic")
+        projectile:setVelocity(10, -5)
+
+        expect_true(world:reflectBodyVelocity(projectile:getId(), 0, 1, 0.5))
+        local vx, vy = projectile:getVelocity()
+        expect_near(5, vx, 0.01)
+        expect_near(2.5, vy, 0.01)
+        expect_false(world:reflectBodyVelocity(projectile:getId(), 0, 0, 1.0))
     end)
 
     -- @covers LWorld:beamClosest

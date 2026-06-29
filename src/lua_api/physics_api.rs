@@ -281,6 +281,20 @@ fn beam_hit_to_table<'lua>(lua: &'lua Lua, hit: &BeamHit) -> LuaResult<LuaTable<
     tbl.set("normalY", hit.normal.1)?;
     tbl.set("distance", hit.distance)?;
     tbl.set("segmentIndex", hit.segment_index)?;
+    tbl.set("reflected", hit.reflected)?;
+    tbl.set("incomingDirX", hit.incoming_dir.0)?;
+    tbl.set("incomingDirY", hit.incoming_dir.1)?;
+    tbl.set("reflectivity", hit.reflectivity)?;
+    match hit.outgoing_dir {
+        Some((x, y)) => {
+            tbl.set("outgoingDirX", x)?;
+            tbl.set("outgoingDirY", y)?;
+        }
+        None => {
+            tbl.set("outgoingDirX", LuaValue::Nil)?;
+            tbl.set("outgoingDirY", LuaValue::Nil)?;
+        }
+    }
     Ok(tbl)
 }
 
@@ -363,6 +377,10 @@ fn beam_options_from_lua(
     let filter = query_filter_from_lua(method, value.clone())?;
     let mut thickness = 0.0f32;
     let mut mode = BeamHitMode::Closest;
+    let mut reflect = false;
+    let mut max_bounces = 8usize;
+    let mut energy = 1.0f32;
+    let mut min_energy = 0.0f32;
     if let Some(LuaValue::Table(tbl)) = value {
         if let Some(raw_thickness) = tbl.get::<_, Option<f32>>("thickness")? {
             if !raw_thickness.is_finite() || raw_thickness < 0.0 {
@@ -378,6 +396,24 @@ fn beam_options_from_lua(
                 ));
             }
             thickness = raw_thickness;
+        }
+        if let Some(raw_reflect) = tbl.get::<_, Option<bool>>("reflect")? {
+            reflect = raw_reflect;
+        }
+        if let Some(raw_max_bounces) = tbl.get::<_, Option<usize>>("maxBounces")? {
+            max_bounces = raw_max_bounces;
+        }
+        if let Some(raw_energy) = tbl.get::<_, Option<f32>>("energy")? {
+            if !raw_energy.is_finite() {
+                return Err(physics_runtime_error(method, "energy must be finite"));
+            }
+            energy = raw_energy;
+        }
+        if let Some(raw_min_energy) = tbl.get::<_, Option<f32>>("minEnergy")? {
+            if !raw_min_energy.is_finite() {
+                return Err(physics_runtime_error(method, "minEnergy must be finite"));
+            }
+            min_energy = raw_min_energy;
         }
         let mode_name = tbl
             .get::<_, Option<String>>("mode")?
@@ -403,6 +439,10 @@ fn beam_options_from_lua(
         max_distance,
         thickness,
         hit_mode: mode,
+        reflect,
+        max_bounces,
+        energy,
+        min_energy,
         filter,
     })
 }
@@ -1817,9 +1857,9 @@ impl LuaUserData for LuaWorld {
         /// @param | dx | number | Beam direction X (does not need to be normalized).
         /// @param | dy | number | Beam direction Y.
         /// @param | range | number | Maximum beam travel distance. Must be finite and > 0.
-        /// @param | opts | table? | Optional beam options: {mode?, maxHits?, thickness?, layer?, mask?, group?, groups?, includeSensors?, excludeBody?}. `mode` accepts `closest`, `all`, or `pierce` and defaults to `closest`. `includeSensors` defaults to true. `thickness` must be `0` until thick beam support lands.
+        /// @param | opts | table? | Optional beam options: {mode?, maxHits?, thickness?, reflect?, maxBounces?, energy?, minEnergy?, layer?, mask?, group?, groups?, includeSensors?, excludeBody?}. `mode` accepts `closest`, `all`, or `pierce` and defaults to `closest`. Reflection currently requires `mode = "closest"`. `reflect` defaults to false. `maxBounces` defaults to 8, `energy` defaults to 1.0, and `minEnergy` defaults to 0.0. `includeSensors` defaults to true. `thickness` must be `0` until thick beam support lands.
         /// @return | table | Trace table {hits, segments, reachedMaxRange}.
-        /// @field | hits | table[] | Array of hit tables {bodyId, x, y, normalX, normalY, distance, segmentIndex}.
+        /// @field | hits | table[] | Array of hit tables {bodyId, x, y, normalX, normalY, distance, segmentIndex, reflected, incomingDirX, incomingDirY, outgoingDirX?, outgoingDirY?, reflectivity}.
         /// @field | segments | table[] | Array of segment tables {x1, y1, x2, y2, blockedBy}.
         /// @field | reachedMaxRange | boolean | True when the beam extended to the requested range.
         methods.add_method("castBeam", |lua, this, args: LuaMultiValue| {
@@ -1907,6 +1947,10 @@ impl LuaUserData for LuaWorld {
                         max_distance: range,
                         thickness: 0.0,
                         hit_mode: BeamHitMode::All,
+                        reflect: false,
+                        max_bounces: 0,
+                        energy: 1.0,
+                        min_energy: 0.0,
                         filter,
                     },
                 )
@@ -1917,6 +1961,22 @@ impl LuaUserData for LuaWorld {
             }
             Ok(result)
         });
+        // -- reflectBodyVelocity --
+        /// Reflects a body's current velocity around a supplied world-space surface normal.
+        /// @param | bodyId | integer | Body ID to update.
+        /// @param | normalX | number | Surface normal X component in world space.
+        /// @param | normalY | number | Surface normal Y component in world space.
+        /// @param | coefficient | number | Speed multiplier applied after the reflection in the range 0..1.
+        /// @return | boolean | True when the body velocity was updated, false for inactive bodies, zero-speed bodies, or degenerate normals.
+        methods.add_method(
+            "reflectBodyVelocity",
+            |_, this, (body_id, normal_x, normal_y, coefficient): (usize, f32, f32, f32)| {
+                this.world
+                    .borrow_mut()
+                    .try_reflect_body_velocity(body_id, normal_x, normal_y, coefficient)
+                    .map_err(|err| physics_runtime_error("reflectBodyVelocity", err))
+            },
+        );
         // -- getCollisionEvents --
         /// Returns all collision events from the last step as a table of {bodyA, bodyB} pairs.
         /// @return | table | Array of collision event tables.
@@ -3057,6 +3117,54 @@ impl LuaUserData for LuaBody {
                 b.restitution = restitution;
             }
             Ok(())
+        });
+        // -- setMirror --
+        /// Enables or disables mirror-style beam reflection on this body.
+        /// @param | mirror | boolean | True to let reflective beam traces bounce from this body.
+        methods.add_method("setMirror", |_, this, mirror: bool| {
+            this.world.borrow_mut().set_body_mirror(this.id.0, mirror);
+            Ok(())
+        });
+        // -- isMirror --
+        /// Returns whether this body acts as a reflective mirror for beam traces.
+        /// @return | boolean | True when beam reflection is enabled for this body.
+        methods.add_method("isMirror", |_, this, ()| {
+            Ok(this.world.borrow().is_body_mirror(this.id.0))
+        });
+        // -- setBeamReflectivity --
+        /// Sets the energy multiplier used when a reflective beam bounces from this body.
+        /// @param | reflectivity | number | Beam reflection multiplier in the range 0..1.
+        methods.add_method("setBeamReflectivity", |_, this, reflectivity: f32| {
+            this.world
+                .borrow_mut()
+                .try_set_body_beam_reflectivity(this.id.0, reflectivity)
+                .map_err(|err| physics_runtime_error("setBeamReflectivity", err))?;
+            Ok(())
+        });
+        // -- getBeamReflectivity --
+        /// Returns the energy multiplier used when a reflective beam bounces from this body.
+        /// @return | number | Beam reflection multiplier in the range 0..1.
+        methods.add_method("getBeamReflectivity", |_, this, ()| {
+            Ok(this.world.borrow().get_body_beam_reflectivity(this.id.0))
+        });
+        // -- setProjectileReflectivity --
+        /// Sets the gameplay projectile reflectivity hint stored on this body.
+        /// @param | reflectivity | number | Projectile reflection multiplier in the range 0..1.
+        methods.add_method("setProjectileReflectivity", |_, this, reflectivity: f32| {
+            this.world
+                .borrow_mut()
+                .try_set_body_projectile_reflectivity(this.id.0, reflectivity)
+                .map_err(|err| physics_runtime_error("setProjectileReflectivity", err))?;
+            Ok(())
+        });
+        // -- getProjectileReflectivity --
+        /// Returns the gameplay projectile reflectivity hint stored on this body.
+        /// @return | number | Projectile reflection multiplier in the range 0..1.
+        methods.add_method("getProjectileReflectivity", |_, this, ()| {
+            Ok(this
+                .world
+                .borrow()
+                .get_body_projectile_reflectivity(this.id.0))
         });
         // -- getLayer --
         /// Returns the body's collision layer bitmask.

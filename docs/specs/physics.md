@@ -7,6 +7,7 @@
 - Simulates 2D bodies under dynamic, static, kinematic, or sensor behaviors.
 - Supports shapes, continuous detection, and motorized mechanical joints.
 - Supports bullet-mode CCD bodies and swept circle queries for fast projectile work.
+- Supports mirror-style beam reflection and explicit projectile-velocity ricochet helpers.
 - Can infer approximate collision shapes from image alpha masks for asset-driven colliders.
 - Manages override zones, raycast queries, and destructible static terrain.
 - Provides a 16-group world collision matrix layered over per-body layer/mask filters.
@@ -19,7 +20,7 @@
 - Source path: `src/physics`
 - Binding: `src/lua_api/physics_api.rs`
 - Namespace: `lurek.physics`
-- Lua API surface: `23` functions, `21` types, `225` methods
+- Lua API surface: `23` functions, `21` types, `232` methods
 - User-facing: `true`
 - Plugin tier: `tier_2_plugin`
 
@@ -29,6 +30,7 @@
 - Bodies, colliders, forces, terrain, joints, sensors, and collision layers all belong to the same simulation step, which keeps movement and contact rules coherent across the engine.
 - The module supports dynamic, static, kinematic, and sensor-style roles so projects can mix actors, level geometry, triggers, platforms, and detection-only regions inside one physical space without switching subsystems.
 - Practical physics also depends on querying the world, not only advancing it. Raycasts, overlap checks, sweep-style tests, and contact inspection let gameplay ask what was hit, what overlaps, and why motion changed.
+- Reflective query paths now extend that spatial role. Scripts can mark bodies as mirrors, trace deterministic multi-segment beams through those surfaces, and reflect projectile velocities from supplied contact normals without confusing gameplay reflection with rigid-body restitution.
 - Flow fields extend that world model with continuous directional media. They let scripts describe rectangles, circular fans, and polyline tubes that contribute acceleration or drag-like target velocity behavior without inventing a second movement subsystem outside the physics step.
 - Shape support, terrain integration, and joints give the system expressive range for characters, bullets, walls, pickups, hazards, linked mechanisms, and authored environment collision.
 - Alpha-mask shape inference gives tools and scripts a pragmatic bridge from sprite or image assets to plausible collision geometry: circle-like masks become circles, filled masks become rectangles, and irregular masks become bounded convex polygons.
@@ -165,7 +167,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - Stepping syncs scripted state into Rapier, runs the solver pipeline, then writes motion back into body mirrors.
 - Collision handling buffers begin and end contact pairs plus overlap events so gameplay reads post-step results.
 - Contact and stats helpers summarize active manifolds, sleeping bodies, collider counts, and joint counts.
-- Spatial query helpers provide filtered raycasts, swept circle casts, instant beam traces, AABB scans, and point tests.
+- Spatial query helpers provide filtered raycasts, swept circle casts, instant beam traces, reflective beam paths, AABB scans, and point tests.
 - Fixture APIs let one body carry multiple colliders, while rebuild paths refresh filters and materials after edits.
 - Joint APIs create revolute, rope, prismatic, weld, wheel, friction, motor, and mouse constraints with stable ids.
 - Joint utilities also expose motor speeds, limits, break thresholds, connected bodies, and explicit destruction paths.
@@ -248,6 +250,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LBody:getAngle() -> number`: Returns the body's rotation angle in radians.
 - `LBody:getAngularDamping() -> number`: Returns the angular damping factor (rotational decay rate).
 - `LBody:getAngularVelocity() -> number`: Returns the body's angular (rotational) velocity.
+- `LBody:getBeamReflectivity() -> number`: Returns the energy multiplier used when a reflective beam bounces from this body.
 - `LBody:getCollisionGroup() -> integer?`: Returns the single 0..15 collision group for this body, or nil for multi-group masks.
 - `LBody:getFriction() -> number`: Returns the body's friction coefficient.
 - `LBody:getGravityScale() -> number`: Returns the gravity scale multiplier for this body (1.0 = normal gravity).
@@ -258,6 +261,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LBody:getMask() -> integer`: Returns the body's collision mask (which layers this body can collide with).
 - `LBody:getMass() -> number`: Returns the body's total mass (computed from density and fixture areas).
 - `LBody:getPosition() -> number`: Returns the current world-space position of this body.
+- `LBody:getProjectileReflectivity() -> number`: Returns the gameplay projectile reflectivity hint stored on this body.
 - `LBody:getRestitution() -> number`: Returns the body's restitution (bounciness) value.
 - `LBody:getType() -> string`: Returns the body's type as a string.
 - `LBody:getVelocity() -> number`: Returns the body's current linear velocity.
@@ -266,6 +270,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LBody:getY() -> number`: Returns only the Y component of the body's position.
 - `LBody:isBullet() -> boolean`: Returns whether continuous collision detection (bullet mode) is enabled for this body.
 - `LBody:isFixedRotation() -> boolean`: Returns whether the body's rotation is locked.
+- `LBody:isMirror() -> boolean`: Returns whether this body acts as a reflective mirror for beam traces.
 - `LBody:isSleeping() -> boolean`: Returns whether this body is currently in the sleeping (inactive) state.
 - `LBody:isSleepingAllowed() -> boolean`: Returns whether the body is allowed to enter sleep state when at rest.
 - `LBody:isValid() -> boolean`: Returns whether this body handle still points to an active body.
@@ -273,6 +278,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LBody:setAngle(angle) -> nil`: Sets the body's rotation angle directly.
 - `LBody:setAngularDamping(damping) -> nil`: Sets the angular damping factor (higher = rotation decays faster).
 - `LBody:setAngularVelocity(omega) -> nil`: Sets the body's angular velocity directly.
+- `LBody:setBeamReflectivity(reflectivity) -> nil`: Sets the energy multiplier used when a reflective beam bounces from this body.
 - `LBody:setBullet(bullet) -> nil`: Enables or disables continuous collision detection to prevent fast-moving tunneling. Use it for small, fast bodies such as bullets and shrapnel, not every body in the scene.
 - `LBody:setCollisionGroup(group) -> nil`: Assigns the body to one collision group and opens its local mask to the 16 group bits.
 - `LBody:setFixedRotation(fixed) -> nil`: Locks or unlocks the body's rotation. Useful for player characters.
@@ -284,7 +290,9 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LBody:setLinearDamping(damping) -> nil`: Sets the linear damping factor (higher = more velocity decay per step).
 - `LBody:setMask(mask) -> nil`: Sets the body's collision mask (which layers this body can collide with).
 - `LBody:setMass(mass) -> nil`: Overrides the body's mass directly.
+- `LBody:setMirror(mirror) -> nil`: Enables or disables mirror-style beam reflection on this body.
 - `LBody:setPosition(x, y) -> nil`: Teleports the body to a new world-space position (does not apply physics forces).
+- `LBody:setProjectileReflectivity(reflectivity) -> nil`: Sets the gameplay projectile reflectivity hint stored on this body.
 - `LBody:setRestitution(restitution) -> nil`: Sets the body's restitution (bounciness) value.
 - `LBody:setSleepingAllowed(allowed) -> nil`: Controls whether the body can enter sleep state. Disable for bodies that must stay active.
 - `LBody:setType(bodyType) -> nil`: Changes the body's type at runtime.
@@ -478,6 +486,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:raycast(x1, y1, x2, y2, filter?) -> table`: Casts a ray from point (x1,y1) to (x2,y2) and returns the first body hit, or nil.
 - `LWorld:raycastAll(x, y, dx, dy, maxDist, filter?) -> table`: Casts a directional ray and returns all bodies hit within max distance as a table of results.
 - `LWorld:raycastClosest(x, y, dx, dy, maxDist, filter?) -> table`: Casts a directional ray from a point and returns the closest hit within max distance.
+- `LWorld:reflectBodyVelocity(bodyId, normalX, normalY, coefficient) -> boolean`: Reflects a body's current velocity around a supplied world-space surface normal.
 - `LWorld:removeFlowField(id) -> boolean`: Disables one flow field by id.
 - `LWorld:removeGravityVector(id) -> boolean`: Removes one additive gravity vector so it no longer affects future steps.
 - `LWorld:resetCollisionGroups() -> nil`: Restores all 16 collision groups so every group can collide with every other group.
@@ -555,7 +564,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 ##### Fields
 
-- `hits` (`table[]`): Array of hit tables {bodyId, x, y, normalX, normalY, distance, segmentIndex}.
+- `hits` (`table[]`): Array of hit tables {bodyId, x, y, normalX, normalY, distance, segmentIndex, reflected, incomingDirX, incomingDirY, outgoingDirX?, outgoingDirY?, reflectivity}.
 - `reachedMaxRange` (`boolean`): True when the beam extended to the requested range.
 - `segments` (`table[]`): Array of segment tables {x1, y1, x2, y2, blockedBy}.
 
@@ -765,9 +774,11 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 ## Notes
 
 - Beam query contract:
-  `LWorld:castBeam`, `LWorld:beamClosest`, and `LWorld:beamAll` are instant spatial queries, not projectile-body simulation. They share the same layer, mask, group, sensor, and `excludeBody` filtering semantics as the raycast family so gameplay can switch between projectiles and hitscan without inventing parallel collision policy. The current release ships the thin-beam path (`thickness = 0`) and leaves thick beam shape-casting as the explicit follow-up; calling `thickness > 0` fails fast so scripts do not assume wide-beam support yet.
+  `LWorld:castBeam`, `LWorld:beamClosest`, and `LWorld:beamAll` are instant spatial queries, not projectile-body simulation. They share the same layer, mask, group, sensor, and `excludeBody` filtering semantics as the raycast family so gameplay can switch between projectiles and hitscan without inventing parallel collision policy. `castBeam(..., { reflect = true })` extends the closest-hit path into deterministic mirror tracing: mirror bodies use surface normals plus per-body beam reflectivity to produce chained segments until the range, bounce budget, or energy budget runs out. The current release still ships the thin-beam path (`thickness = 0`) and leaves thick beam shape-casting as the explicit follow-up; calling `thickness > 0` fails fast so scripts do not assume wide-beam support yet.
 - Fast-projectile contract:
-  `LBody:setBullet(true)` and `LWorld:setBodyCCD(id, true)` enable Rapier CCD for physical projectiles that should bounce, collide, and emit normal contact events. `LWorld:setCcdSubsteps(n)` tunes how aggressively the world resolves CCD events for those bullet bodies, while `LWorld:stepFixed(accumulator, stepDt, maxSteps)` handles frame pacing and backlog reduction. Use bullet CCD for dynamic bodies that must stay physical; use `LWorld:castCircle(...)` when a script needs an immediate swept hit before moving a kinematic or manually-authored projectile. Use raycasts and beam helpers for thin hitscan logic, not for thick moving projectile volumes.
+  `LBody:setBullet(true)` and `LWorld:setBodyCCD(id, true)` enable Rapier CCD for physical projectiles that should bounce, collide, and emit normal contact events. `LWorld:setCcdSubsteps(n)` tunes how aggressively the world resolves CCD events for those bullet bodies, while `LWorld:stepFixed(accumulator, stepDt, maxSteps)` handles frame pacing and backlog reduction. Use `LWorld:reflectBodyVelocity(bodyId, normalX, normalY, coefficient)` when gameplay has already decided a projectile should ricochet from a supplied world-space contact normal and needs the shared reflection math to update both Rapier and the Lua-visible body mirror. Use bullet CCD for dynamic bodies that must stay physical; use `LWorld:castCircle(...)` when a script needs an immediate swept hit before moving a kinematic or manually-authored projectile. Use raycasts and beam helpers for thin hitscan logic, not for thick moving projectile volumes.
+- Reflective-surface contract:
+  Mirror-style beam reflection is explicit gameplay metadata, not a synonym for rigid-body restitution. `LBody:setMirror(...)`, `LBody:setBeamReflectivity(...)`, and `LBody:setProjectileReflectivity(...)` let scripts describe mirror and ricochet intent independently from `setRestitution(...)`, so laser puzzles and gameplay reflection can stay deterministic even when physical bounce settings differ.
 - Flow-field contract:
   Authored flow fields live on the world, respect layer masks, can overlap additively, and may be sampled directly from Lua for AI, VFX, UI previews, or debugging. The physics world remains the source of truth for how those currents affect bodies during stepping.
 - Body-influence contract:

@@ -1,9 +1,9 @@
 {
   "rust": {
-    "total": 6854,
-    "covered": 3911,
-    "uncovered": 2943,
-    "coverage_pct": 57.1,
+    "total": 6862,
+    "covered": 3913,
+    "uncovered": 2949,
+    "coverage_pct": 57.0,
     "covered_items": [
       {
         "module": "agent",
@@ -10851,25 +10851,25 @@
         "module": "lua_api",
         "name": "LuaBody::body_id",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2890
+        "line": 2950
       },
       {
         "module": "lua_api",
         "name": "LuaPhysicsShape::new",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3363
+        "line": 3471
       },
       {
         "module": "lua_api",
         "name": "LuaPhysicsShape::data",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3376
+        "line": 3484
       },
       {
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3546
+        "line": 3654
       },
       {
         "module": "lua_api",
@@ -15699,73 +15699,73 @@
         "module": "physics",
         "name": "Body::validate",
         "file": "src/physics/body.rs",
-        "line": 266
+        "line": 287
       },
       {
         "module": "physics",
         "name": "Body::try_new",
         "file": "src/physics/body.rs",
-        "line": 373
+        "line": 396
       },
       {
         "module": "physics",
         "name": "Body::new",
         "file": "src/physics/body.rs",
-        "line": 398
+        "line": 421
       },
       {
         "module": "physics",
         "name": "Body::try_new_circle",
         "file": "src/physics/body.rs",
-        "line": 421
+        "line": 444
       },
       {
         "module": "physics",
         "name": "Body::new_circle",
         "file": "src/physics/body.rs",
-        "line": 441
+        "line": 464
       },
       {
         "module": "physics",
         "name": "Body::new_polygon",
         "file": "src/physics/body.rs",
-        "line": 505
+        "line": 528
       },
       {
         "module": "physics",
         "name": "Body::bounding_box",
         "file": "src/physics/body.rs",
-        "line": 656
+        "line": 679
       },
       {
         "module": "physics",
         "name": "Body::collides_with_layer",
         "file": "src/physics/body.rs",
-        "line": 674
+        "line": 697
       },
       {
         "module": "physics",
         "name": "Body::get_bounding_box",
         "file": "src/physics/body.rs",
-        "line": 679
+        "line": 702
       },
       {
         "module": "physics",
         "name": "Body::get_type",
         "file": "src/physics/body.rs",
-        "line": 685
+        "line": 708
       },
       {
         "module": "physics",
         "name": "Body::get_world_point",
         "file": "src/physics/body.rs",
-        "line": 695
+        "line": 718
       },
       {
         "module": "physics",
         "name": "Body::get_local_point",
         "file": "src/physics/body.rs",
-        "line": 704
+        "line": 727
       },
       {
         "module": "physics",
@@ -15981,385 +15981,397 @@
         "module": "physics",
         "name": "World::extract_shape_snapshots",
         "file": "src/physics/world.rs",
-        "line": 858
+        "line": 883
       },
       {
         "module": "physics",
         "name": "World::new",
         "file": "src/physics/world.rs",
-        "line": 930
+        "line": 955
       },
       {
         "module": "physics",
         "name": "World::get_diagnostics",
         "file": "src/physics/world.rs",
-        "line": 1125
+        "line": 1150
       },
       {
         "module": "physics",
         "name": "World::has_body",
         "file": "src/physics/world.rs",
-        "line": 1136
+        "line": 1161
       },
       {
         "module": "physics",
         "name": "World::has_joint",
         "file": "src/physics/world.rs",
-        "line": 1140
+        "line": 1165
       },
       {
         "module": "physics",
         "name": "World::add_body",
         "file": "src/physics/world.rs",
-        "line": 1296
+        "line": 1321
       },
       {
         "module": "physics",
         "name": "World::try_add_fixture",
         "file": "src/physics/world.rs",
-        "line": 1327
+        "line": 1352
       },
       {
         "module": "physics",
         "name": "World::add_fixture",
         "file": "src/physics/world.rs",
-        "line": 1374
+        "line": 1399
       },
       {
         "module": "physics",
         "name": "World::fixture_count",
         "file": "src/physics/world.rs",
-        "line": 1392
+        "line": 1417
       },
       {
         "module": "physics",
         "name": "World::get_body",
         "file": "src/physics/world.rs",
-        "line": 1539
+        "line": 1564
       },
       {
         "module": "physics",
         "name": "World::get_body_mut",
         "file": "src/physics/world.rs",
-        "line": 1543
+        "line": 1568
       },
       {
         "module": "physics",
         "name": "World::try_set_body_collision_group",
         "file": "src/physics/world.rs",
-        "line": 1565
+        "line": 1653
       },
       {
         "module": "physics",
         "name": "World::try_set_collision_pair",
         "file": "src/physics/world.rs",
-        "line": 1587
+        "line": 1675
       },
       {
         "module": "physics",
         "name": "World::try_set_collision_group_mask",
         "file": "src/physics/world.rs",
-        "line": 1621
+        "line": 1709
       },
       {
         "module": "physics",
         "name": "World::try_get_collision_group_mask",
         "file": "src/physics/world.rs",
-        "line": 1633
+        "line": 1721
       },
       {
         "module": "physics",
         "name": "World::body_count",
         "file": "src/physics/world.rs",
-        "line": 1643
+        "line": 1731
       },
       {
         "module": "physics",
         "name": "World::try_add_revolute_joint",
         "file": "src/physics/world.rs",
-        "line": 1647
+        "line": 1735
       },
       {
         "module": "physics",
         "name": "World::add_revolute_joint",
         "file": "src/physics/world.rs",
-        "line": 1667
+        "line": 1755
       },
       {
         "module": "physics",
         "name": "World::raycast",
         "file": "src/physics/world.rs",
-        "line": 1683
+        "line": 1771
       },
       {
         "module": "physics",
         "name": "World::raycast_filtered",
         "file": "src/physics/world.rs",
-        "line": 1687
+        "line": 1775
       },
       {
         "module": "physics",
         "name": "World::step",
         "file": "src/physics/world.rs",
-        "line": 1718
+        "line": 1806
       },
       {
         "module": "physics",
         "name": "World::get_collision_events",
         "file": "src/physics/world.rs",
-        "line": 1954
+        "line": 2042
       },
       {
         "module": "physics",
         "name": "World::get_begin_contact_events",
         "file": "src/physics/world.rs",
-        "line": 1958
+        "line": 2046
       },
       {
         "module": "physics",
         "name": "World::get_end_contact_events",
         "file": "src/physics/world.rs",
-        "line": 1962
+        "line": 2050
       },
       {
         "module": "physics",
         "name": "World::try_add_zone",
         "file": "src/physics/world.rs",
-        "line": 1966
+        "line": 2054
       },
       {
         "module": "physics",
         "name": "World::add_zone",
         "file": "src/physics/world.rs",
-        "line": 1983
+        "line": 2071
       },
       {
         "module": "physics",
         "name": "World::zone_mut",
         "file": "src/physics/world.rs",
-        "line": 1997
+        "line": 2085
       },
       {
         "module": "physics",
         "name": "World::zone",
         "file": "src/physics/world.rs",
-        "line": 2001
+        "line": 2089
       },
       {
         "module": "physics",
         "name": "World::add_gravity_vector",
         "file": "src/physics/world.rs",
-        "line": 2031
+        "line": 2119
       },
       {
         "module": "physics",
         "name": "World::set_gravity_vector",
         "file": "src/physics/world.rs",
-        "line": 2063
+        "line": 2151
       },
       {
         "module": "physics",
         "name": "World::remove_gravity_vector",
         "file": "src/physics/world.rs",
-        "line": 2070
+        "line": 2158
       },
       {
         "module": "physics",
         "name": "World::clear_gravity_vectors",
         "file": "src/physics/world.rs",
-        "line": 2084
+        "line": 2172
       },
       {
         "module": "physics",
         "name": "World::get_gravity_vector",
         "file": "src/physics/world.rs",
-        "line": 2091
+        "line": 2179
       },
       {
         "module": "physics",
         "name": "World::try_add_flow_field",
         "file": "src/physics/world.rs",
-        "line": 2099
+        "line": 2187
       },
       {
         "module": "physics",
         "name": "World::add_flow_field",
         "file": "src/physics/world.rs",
-        "line": 2112
+        "line": 2200
       },
       {
         "module": "physics",
         "name": "World::flow_field",
         "file": "src/physics/world.rs",
-        "line": 2123
+        "line": 2211
       },
       {
         "module": "physics",
         "name": "World::sample_flow",
         "file": "src/physics/world.rs",
-        "line": 2164
+        "line": 2252
       },
       {
         "module": "physics",
         "name": "World::set_body_position",
         "file": "src/physics/world.rs",
-        "line": 2429
+        "line": 2517
       },
       {
         "module": "physics",
         "name": "World::get_body_mass",
         "file": "src/physics/world.rs",
-        "line": 2499
+        "line": 2587
       },
       {
         "module": "physics",
         "name": "World::set_body_mass",
         "file": "src/physics/world.rs",
-        "line": 2511
+        "line": 2599
       },
       {
         "module": "physics",
         "name": "World::set_gravity_scale",
         "file": "src/physics/world.rs",
-        "line": 2530
+        "line": 2618
       },
       {
         "module": "physics",
         "name": "World::get_gravity_scale",
         "file": "src/physics/world.rs",
-        "line": 2583
+        "line": 2671
       },
       {
         "module": "physics",
         "name": "World::set_bullet",
         "file": "src/physics/world.rs",
-        "line": 2619
+        "line": 2707
       },
       {
         "module": "physics",
         "name": "World::is_bullet",
         "file": "src/physics/world.rs",
-        "line": 2630
+        "line": 2718
       },
       {
         "module": "physics",
         "name": "World::set_ccd_substeps",
         "file": "src/physics/world.rs",
-        "line": 2639
+        "line": 2727
       },
       {
         "module": "physics",
         "name": "World::get_ccd_substeps",
         "file": "src/physics/world.rs",
-        "line": 2643
+        "line": 2731
       },
       {
         "module": "physics",
         "name": "World::get_body_ids",
         "file": "src/physics/world.rs",
-        "line": 2673
+        "line": 2761
       },
       {
         "module": "physics",
         "name": "World::get_joint_ids",
         "file": "src/physics/world.rs",
-        "line": 2681
+        "line": 2769
       },
       {
         "module": "physics",
         "name": "World::get_gravity",
         "file": "src/physics/world.rs",
-        "line": 2720
+        "line": 2808
       },
       {
         "module": "physics",
         "name": "World::set_gravity",
         "file": "src/physics/world.rs",
-        "line": 2724
+        "line": 2812
       },
       {
         "module": "physics",
         "name": "World::clear",
         "file": "src/physics/world.rs",
-        "line": 2728
+        "line": 2816
       },
       {
         "module": "physics",
         "name": "World::reset_world",
         "file": "src/physics/world.rs",
-        "line": 2774
+        "line": 2862
       },
       {
         "module": "physics",
         "name": "World::destroy_body",
         "file": "src/physics/world.rs",
-        "line": 2799
+        "line": 2887
       },
       {
         "module": "physics",
         "name": "World::joint_count",
         "file": "src/physics/world.rs",
-        "line": 2848
+        "line": 2936
+      },
+      {
+        "module": "physics",
+        "name": "World::set_body_velocity",
+        "file": "src/physics/world.rs",
+        "line": 2987
+      },
+      {
+        "module": "physics",
+        "name": "World::reflect_body_velocity",
+        "file": "src/physics/world.rs",
+        "line": 3006
       },
       {
         "module": "physics",
         "name": "World::destroy_joint",
         "file": "src/physics/world.rs",
-        "line": 3055
+        "line": 3209
       },
       {
         "module": "physics",
         "name": "World::query_aabb",
         "file": "src/physics/world.rs",
-        "line": 3476
+        "line": 3847
       },
       {
         "module": "physics",
         "name": "World::query_aabb_filtered",
         "file": "src/physics/world.rs",
-        "line": 3480
+        "line": 3851
       },
       {
         "module": "physics",
         "name": "World::get_joint_type",
         "file": "src/physics/world.rs",
-        "line": 3812
+        "line": 4183
       },
       {
         "module": "physics",
         "name": "World::set_meter",
         "file": "src/physics/world.rs",
-        "line": 3819
+        "line": 4190
       },
       {
         "module": "physics",
         "name": "World::get_meter",
         "file": "src/physics/world.rs",
-        "line": 3823
+        "line": 4194
       },
       {
         "module": "physics",
         "name": "World::set_solver_iterations",
         "file": "src/physics/world.rs",
-        "line": 3938
+        "line": 4309
       },
       {
         "module": "physics",
         "name": "World::get_solver_iterations",
         "file": "src/physics/world.rs",
-        "line": 3942
+        "line": 4313
       },
       {
         "module": "physics",
         "name": "World::get_stats",
         "file": "src/physics/world.rs",
-        "line": 3946
+        "line": 4317
       },
       {
         "module": "physics",
         "name": "World::add_bodies",
         "file": "src/physics/world.rs",
-        "line": 3979
+        "line": 4350
       },
       {
         "module": "physics",
@@ -31631,19 +31643,19 @@
         "module": "lua_api",
         "name": "LuaWorld::world_handle",
         "file": "src/lua_api/physics_api.rs",
-        "line": 753
+        "line": 793
       },
       {
         "module": "lua_api",
         "name": "lua_body_from_body",
         "file": "src/lua_api/physics_api.rs",
-        "line": 759
+        "line": 799
       },
       {
         "module": "lua_api",
         "name": "LuaBody::world_handle",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2885
+        "line": 2945
       },
       {
         "module": "lua_api",
@@ -35027,31 +35039,31 @@
         "module": "physics",
         "name": "Body::try_new_polygon",
         "file": "src/physics/body.rs",
-        "line": 466
+        "line": 489
       },
       {
         "module": "physics",
         "name": "Body::try_new_edge",
         "file": "src/physics/body.rs",
-        "line": 528
+        "line": 551
       },
       {
         "module": "physics",
         "name": "Body::new_edge",
         "file": "src/physics/body.rs",
-        "line": 565
+        "line": 588
       },
       {
         "module": "physics",
         "name": "Body::try_new_chain",
         "file": "src/physics/body.rs",
-        "line": 588
+        "line": 611
       },
       {
         "module": "physics",
         "name": "Body::new_chain",
         "file": "src/physics/body.rs",
-        "line": 627
+        "line": 650
       },
       {
         "module": "physics",
@@ -35147,577 +35159,613 @@
         "module": "physics",
         "name": "World::draw_debug_to_image",
         "file": "src/physics/world.rs",
-        "line": 577
+        "line": 602
       },
       {
         "module": "physics",
         "name": "World::draw_flow_debug_to_image",
         "file": "src/physics/world.rs",
-        "line": 772
+        "line": 797
       },
       {
         "module": "physics",
         "name": "World::mark_body_dirty",
         "file": "src/physics/world.rs",
-        "line": 1130
+        "line": 1155
       },
       {
         "module": "physics",
         "name": "World::try_set_fixture_friction",
         "file": "src/physics/world.rs",
-        "line": 1399
+        "line": 1424
       },
       {
         "module": "physics",
         "name": "World::set_fixture_friction",
         "file": "src/physics/world.rs",
-        "line": 1438
+        "line": 1463
       },
       {
         "module": "physics",
         "name": "World::try_set_fixture_restitution",
         "file": "src/physics/world.rs",
-        "line": 1447
+        "line": 1472
       },
       {
         "module": "physics",
         "name": "World::set_fixture_restitution",
         "file": "src/physics/world.rs",
-        "line": 1486
+        "line": 1511
       },
       {
         "module": "physics",
         "name": "World::try_set_fixture_sensor",
         "file": "src/physics/world.rs",
-        "line": 1500
+        "line": 1525
       },
       {
         "module": "physics",
         "name": "World::set_fixture_sensor",
         "file": "src/physics/world.rs",
-        "line": 1530
+        "line": 1555
+      },
+      {
+        "module": "physics",
+        "name": "World::is_body_mirror",
+        "file": "src/physics/world.rs",
+        "line": 1576
+      },
+      {
+        "module": "physics",
+        "name": "World::set_body_mirror",
+        "file": "src/physics/world.rs",
+        "line": 1580
+      },
+      {
+        "module": "physics",
+        "name": "World::get_body_beam_reflectivity",
+        "file": "src/physics/world.rs",
+        "line": 1586
+      },
+      {
+        "module": "physics",
+        "name": "World::try_set_body_beam_reflectivity",
+        "file": "src/physics/world.rs",
+        "line": 1591
+      },
+      {
+        "module": "physics",
+        "name": "World::get_body_projectile_reflectivity",
+        "file": "src/physics/world.rs",
+        "line": 1612
+      },
+      {
+        "module": "physics",
+        "name": "World::try_set_body_projectile_reflectivity",
+        "file": "src/physics/world.rs",
+        "line": 1618
       },
       {
         "module": "physics",
         "name": "World::set_body_layer",
         "file": "src/physics/world.rs",
-        "line": 1551
+        "line": 1639
       },
       {
         "module": "physics",
         "name": "World::set_body_mask",
         "file": "src/physics/world.rs",
-        "line": 1558
+        "line": 1646
       },
       {
         "module": "physics",
         "name": "World::get_body_collision_group",
         "file": "src/physics/world.rs",
-        "line": 1582
+        "line": 1670
       },
       {
         "module": "physics",
         "name": "World::try_get_collision_pair",
         "file": "src/physics/world.rs",
-        "line": 1608
+        "line": 1696
       },
       {
         "module": "physics",
         "name": "World::reset_collision_groups",
         "file": "src/physics/world.rs",
-        "line": 1638
+        "line": 1726
       },
       {
         "module": "physics",
         "name": "World::apply_impulse",
         "file": "src/physics/world.rs",
-        "line": 1934
+        "line": 2022
       },
       {
         "module": "physics",
         "name": "World::remove_zone",
         "file": "src/physics/world.rs",
-        "line": 1993
+        "line": 2081
       },
       {
         "module": "physics",
         "name": "World::get_zone_events",
         "file": "src/physics/world.rs",
-        "line": 2005
+        "line": 2093
       },
       {
         "module": "physics",
         "name": "World::try_add_gravity_vector",
         "file": "src/physics/world.rs",
-        "line": 2010
+        "line": 2098
       },
       {
         "module": "physics",
         "name": "World::try_set_gravity_vector",
         "file": "src/physics/world.rs",
-        "line": 2042
+        "line": 2130
       },
       {
         "module": "physics",
         "name": "World::flow_field_slot",
         "file": "src/physics/world.rs",
-        "line": 2130
+        "line": 2218
       },
       {
         "module": "physics",
         "name": "World::flow_field_mut",
         "file": "src/physics/world.rs",
-        "line": 2135
+        "line": 2223
       },
       {
         "module": "physics",
         "name": "World::flow_field_slot_mut",
         "file": "src/physics/world.rs",
-        "line": 2142
+        "line": 2230
       },
       {
         "module": "physics",
         "name": "World::remove_flow_field",
         "file": "src/physics/world.rs",
-        "line": 2147
+        "line": 2235
       },
       {
         "module": "physics",
         "name": "World::clear_flow_fields",
         "file": "src/physics/world.rs",
-        "line": 2157
+        "line": 2245
       },
       {
         "module": "physics",
         "name": "World::apply_zone_forces",
         "file": "src/physics/world.rs",
-        "line": 2276
+        "line": 2364
       },
       {
         "module": "physics",
         "name": "World::apply_flow_forces",
         "file": "src/physics/world.rs",
-        "line": 2350
+        "line": 2438
       },
       {
         "module": "physics",
         "name": "World::step_fixed",
         "file": "src/physics/world.rs",
-        "line": 2414
+        "line": 2502
       },
       {
         "module": "physics",
         "name": "World::apply_force",
         "file": "src/physics/world.rs",
-        "line": 2445
+        "line": 2533
       },
       {
         "module": "physics",
         "name": "World::apply_torque",
         "file": "src/physics/world.rs",
-        "line": 2453
+        "line": 2541
       },
       {
         "module": "physics",
         "name": "World::set_angular_velocity",
         "file": "src/physics/world.rs",
-        "line": 2461
+        "line": 2549
       },
       {
         "module": "physics",
         "name": "World::get_angular_velocity",
         "file": "src/physics/world.rs",
-        "line": 2476
+        "line": 2564
       },
       {
         "module": "physics",
         "name": "World::get_body_angle",
         "file": "src/physics/world.rs",
-        "line": 2480
+        "line": 2568
       },
       {
         "module": "physics",
         "name": "World::set_body_angle",
         "file": "src/physics/world.rs",
-        "line": 2484
+        "line": 2572
       },
       {
         "module": "physics",
         "name": "World::set_fixed_rotation",
         "file": "src/physics/world.rs",
-        "line": 2545
+        "line": 2633
       },
       {
         "module": "physics",
         "name": "World::set_linear_damping",
         "file": "src/physics/world.rs",
-        "line": 2553
+        "line": 2641
       },
       {
         "module": "physics",
         "name": "World::set_angular_damping",
         "file": "src/physics/world.rs",
-        "line": 2568
+        "line": 2656
       },
       {
         "module": "physics",
         "name": "World::is_fixed_rotation",
         "file": "src/physics/world.rs",
-        "line": 2592
+        "line": 2680
       },
       {
         "module": "physics",
         "name": "World::get_linear_damping",
         "file": "src/physics/world.rs",
-        "line": 2601
+        "line": 2689
       },
       {
         "module": "physics",
         "name": "World::get_angular_damping",
         "file": "src/physics/world.rs",
-        "line": 2610
+        "line": 2698
       },
       {
         "module": "physics",
         "name": "World::apply_force_at_point",
         "file": "src/physics/world.rs",
-        "line": 2647
+        "line": 2735
       },
       {
         "module": "physics",
         "name": "World::apply_angular_impulse",
         "file": "src/physics/world.rs",
-        "line": 2655
+        "line": 2743
       },
       {
         "module": "physics",
         "name": "World::get_body_type_str",
         "file": "src/physics/world.rs",
-        "line": 2689
+        "line": 2777
       },
       {
         "module": "physics",
         "name": "World::set_body_type",
         "file": "src/physics/world.rs",
-        "line": 2703
+        "line": 2791
       },
       {
         "module": "physics",
         "name": "World::set_sleeping_allowed",
         "file": "src/physics/world.rs",
-        "line": 2779
+        "line": 2867
       },
       {
         "module": "physics",
         "name": "World::is_sleeping_allowed",
         "file": "src/physics/world.rs",
-        "line": 2792
+        "line": 2880
       },
       {
         "module": "physics",
         "name": "World::try_add_distance_joint",
         "file": "src/physics/world.rs",
-        "line": 2853
+        "line": 2941
       },
       {
         "module": "physics",
         "name": "World::add_distance_joint",
         "file": "src/physics/world.rs",
-        "line": 2880
+        "line": 2968
       },
       {
         "module": "physics",
-        "name": "World::set_body_velocity",
+        "name": "World::try_reflect_body_velocity",
         "file": "src/physics/world.rs",
-        "line": 2899
+        "line": 3017
       },
       {
         "module": "physics",
         "name": "World::try_add_prismatic_joint",
         "file": "src/physics/world.rs",
-        "line": 2915
+        "line": 3069
       },
       {
         "module": "physics",
         "name": "World::add_prismatic_joint",
         "file": "src/physics/world.rs",
-        "line": 2946
+        "line": 3100
       },
       {
         "module": "physics",
         "name": "World::try_add_weld_joint",
         "file": "src/physics/world.rs",
-        "line": 2964
+        "line": 3118
       },
       {
         "module": "physics",
         "name": "World::add_weld_joint",
         "file": "src/physics/world.rs",
-        "line": 2984
+        "line": 3138
       },
       {
         "module": "physics",
         "name": "World::try_add_rope_joint",
         "file": "src/physics/world.rs",
-        "line": 3001
+        "line": 3155
       },
       {
         "module": "physics",
         "name": "World::add_rope_joint",
         "file": "src/physics/world.rs",
-        "line": 3028
+        "line": 3182
       },
       {
         "module": "physics",
         "name": "World::get_joint_bodies",
         "file": "src/physics/world.rs",
-        "line": 3047
+        "line": 3201
       },
       {
         "module": "physics",
         "name": "World::cast_beam",
         "file": "src/physics/world.rs",
-        "line": 3182
+        "line": 3420
       },
       {
         "module": "physics",
         "name": "World::try_cast_beam",
         "file": "src/physics/world.rs",
-        "line": 3188
+        "line": 3426
       },
       {
         "module": "physics",
         "name": "World::cast_circle",
         "file": "src/physics/world.rs",
-        "line": 3260
+        "line": 3625
       },
       {
         "module": "physics",
         "name": "World::cast_circle_filtered",
         "file": "src/physics/world.rs",
-        "line": 3281
+        "line": 3647
       },
       {
         "module": "physics",
         "name": "World::try_cast_circle_filtered",
         "file": "src/physics/world.rs",
-        "line": 3297
+        "line": 3664
       },
       {
         "module": "physics",
         "name": "World::cast_beam_closest",
         "file": "src/physics/world.rs",
-        "line": 3341
+        "line": 3708
       },
       {
         "module": "physics",
         "name": "World::try_cast_beam_closest",
         "file": "src/physics/world.rs",
-        "line": 3355
+        "line": 3722
       },
       {
         "module": "physics",
         "name": "World::raycast_closest",
         "file": "src/physics/world.rs",
-        "line": 3380
+        "line": 3751
       },
       {
         "module": "physics",
         "name": "World::raycast_closest_filtered",
         "file": "src/physics/world.rs",
-        "line": 3391
+        "line": 3762
       },
       {
         "module": "physics",
         "name": "World::raycast_all",
         "file": "src/physics/world.rs",
-        "line": 3422
+        "line": 3793
       },
       {
         "module": "physics",
         "name": "World::raycast_all_filtered",
         "file": "src/physics/world.rs",
-        "line": 3433
+        "line": 3804
       },
       {
         "module": "physics",
         "name": "World::get_body_at_point",
         "file": "src/physics/world.rs",
-        "line": 3506
+        "line": 3877
       },
       {
         "module": "physics",
         "name": "World::get_body_at_point_filtered",
         "file": "src/physics/world.rs",
-        "line": 3510
+        "line": 3881
       },
       {
         "module": "physics",
         "name": "World::try_add_wheel_joint",
         "file": "src/physics/world.rs",
-        "line": 3533
+        "line": 3904
       },
       {
         "module": "physics",
         "name": "World::add_wheel_joint",
         "file": "src/physics/world.rs",
-        "line": 3566
+        "line": 3937
       },
       {
         "module": "physics",
         "name": "World::try_add_friction_joint",
         "file": "src/physics/world.rs",
-        "line": 3585
+        "line": 3956
       },
       {
         "module": "physics",
         "name": "World::add_friction_joint",
         "file": "src/physics/world.rs",
-        "line": 3619
+        "line": 3990
       },
       {
         "module": "physics",
         "name": "World::try_add_motor_joint",
         "file": "src/physics/world.rs",
-        "line": 3638
+        "line": 4009
       },
       {
         "module": "physics",
         "name": "World::add_motor_joint",
         "file": "src/physics/world.rs",
-        "line": 3665
+        "line": 4036
       },
       {
         "module": "physics",
         "name": "World::try_add_mouse_joint",
         "file": "src/physics/world.rs",
-        "line": 3680
+        "line": 4051
       },
       {
         "module": "physics",
         "name": "World::add_mouse_joint",
         "file": "src/physics/world.rs",
-        "line": 3709
+        "line": 4080
       },
       {
         "module": "physics",
         "name": "World::set_mouse_joint_target",
         "file": "src/physics/world.rs",
-        "line": 3725
+        "line": 4096
       },
       {
         "module": "physics",
         "name": "World::add_pulley_joint",
         "file": "src/physics/world.rs",
-        "line": 3734
+        "line": 4105
       },
       {
         "module": "physics",
         "name": "World::add_gear_joint",
         "file": "src/physics/world.rs",
-        "line": 3745
+        "line": 4116
       },
       {
         "module": "physics",
         "name": "World::set_joint_motor_speed",
         "file": "src/physics/world.rs",
-        "line": 3756
+        "line": 4127
       },
       {
         "module": "physics",
         "name": "World::get_joint_motor_speed",
         "file": "src/physics/world.rs",
-        "line": 3764
+        "line": 4135
       },
       {
         "module": "physics",
         "name": "World::set_joint_limits_enabled",
         "file": "src/physics/world.rs",
-        "line": 3775
+        "line": 4146
       },
       {
         "module": "physics",
         "name": "World::set_joint_limits",
         "file": "src/physics/world.rs",
-        "line": 3793
+        "line": 4164
       },
       {
         "module": "physics",
         "name": "World::get_joint_limits",
         "file": "src/physics/world.rs",
-        "line": 3801
+        "line": 4172
       },
       {
         "module": "physics",
         "name": "World::to_physics",
         "file": "src/physics/world.rs",
-        "line": 3827
+        "line": 4198
       },
       {
         "module": "physics",
         "name": "World::to_pixels",
         "file": "src/physics/world.rs",
-        "line": 3835
+        "line": 4206
       },
       {
         "module": "physics",
         "name": "World::get_contacts",
         "file": "src/physics/world.rs",
-        "line": 3839
+        "line": 4210
       },
       {
         "module": "physics",
         "name": "World::get_body_contacts",
         "file": "src/physics/world.rs",
-        "line": 3871
+        "line": 4242
       },
       {
         "module": "physics",
         "name": "World::set_body_one_way",
         "file": "src/physics/world.rs",
-        "line": 3878
+        "line": 4249
       },
       {
         "module": "physics",
         "name": "World::clear_body_one_way",
         "file": "src/physics/world.rs",
-        "line": 3887
+        "line": 4258
       },
       {
         "module": "physics",
         "name": "World::get_body_one_way",
         "file": "src/physics/world.rs",
-        "line": 3893
+        "line": 4264
       },
       {
         "module": "physics",
         "name": "World::set_joint_break_force",
         "file": "src/physics/world.rs",
-        "line": 3900
+        "line": 4271
       },
       {
         "module": "physics",
         "name": "World::get_joint_break_force",
         "file": "src/physics/world.rs",
-        "line": 3906
+        "line": 4277
       },
       {
         "module": "physics",
         "name": "World::is_body_sleeping",
         "file": "src/physics/world.rs",
-        "line": 3913
+        "line": 4284
       },
       {
         "module": "physics",
         "name": "World::wake_up_body",
         "file": "src/physics/world.rs",
-        "line": 3922
+        "line": 4293
       },
       {
         "module": "physics",
         "name": "World::sleep_body",
         "file": "src/physics/world.rs",
-        "line": 3930
+        "line": 4301
       },
       {
         "module": "physics",
@@ -41134,8 +41182,8 @@
     ]
   },
   "lua": {
-    "total": 6416,
-    "covered": 6416,
+    "total": 6423,
+    "covered": 6423,
     "uncovered": 0,
     "coverage_pct": 100.0,
     "covered_items": [
@@ -70215,1736 +70263,1785 @@
         "lua_name": "LWorld:drawDebug",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 773
+        "line": 813
       },
       {
         "module": "physics",
         "lua_name": "LWorld:step",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 798
+        "line": 838
       },
       {
         "module": "physics",
         "lua_name": "LWorld:clear",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 820
+        "line": 860
       },
       {
         "module": "physics",
         "lua_name": "LWorld:resetWorld",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 827
+        "line": 867
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setCollisionPair",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 836
+        "line": 876
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getCollisionPair",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 853
+        "line": 893
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setCollisionGroupMask",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 868
+        "line": 908
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getCollisionGroupMask",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 884
+        "line": 924
       },
       {
         "module": "physics",
         "lua_name": "LWorld:resetCollisionGroups",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 893
+        "line": 933
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getGravity",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 901
+        "line": 941
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setGravity",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 908
+        "line": 948
       },
       {
         "module": "physics",
         "lua_name": "LWorld:addGravityVector",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 918
+        "line": 958
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setGravityVector",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 935
+        "line": 975
       },
       {
         "module": "physics",
         "lua_name": "LWorld:removeGravityVector",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 949
+        "line": 989
       },
       {
         "module": "physics",
         "lua_name": "LWorld:clearGravityVectors",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 954
+        "line": 994
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getGravityVector",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 962
+        "line": 1002
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setMeter",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 971
+        "line": 1011
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getMeter",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 978
+        "line": 1018
       },
       {
         "module": "physics",
         "lua_name": "LWorld:toPhysics",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 985
+        "line": 1025
       },
       {
         "module": "physics",
         "lua_name": "LWorld:toPixels",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 992
+        "line": 1032
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getBodyCount",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 998
+        "line": 1038
       },
       {
         "module": "physics",
         "lua_name": "LWorld:hasBody",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1005
+        "line": 1045
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getBodyIds",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1011
+        "line": 1051
       },
       {
         "module": "physics",
         "lua_name": "LWorld:hasJoint",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1018
+        "line": 1058
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getStats",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1035
+        "line": 1075
       },
       {
         "module": "physics",
         "lua_name": "LWorld:sampleFlow",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1045
+        "line": 1085
       },
       {
         "module": "physics",
         "lua_name": "LWorld:addFlowField",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1060
+        "line": 1100
       },
       {
         "module": "physics",
         "lua_name": "LWorld:removeFlowField",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1076
+        "line": 1116
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getFlowField",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1083
+        "line": 1123
       },
       {
         "module": "physics",
         "lua_name": "LWorld:clearFlowFields",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1091
+        "line": 1131
       },
       {
         "module": "physics",
         "lua_name": "LWorld:drawFlowDebug",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1099
+        "line": 1139
       },
       {
         "module": "physics",
         "lua_name": "LWorld:destroyBody",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1116
+        "line": 1156
       },
       {
         "module": "physics",
         "lua_name": "LWorld:newBody",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1126
+        "line": 1166
       },
       {
         "module": "physics",
         "lua_name": "LWorld:newCircleBody",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1167
+        "line": 1207
       },
       {
         "module": "physics",
         "lua_name": "LWorld:newPolygonBody",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1187
+        "line": 1227
       },
       {
         "module": "physics",
         "lua_name": "LWorld:newEdgeBody",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1220
+        "line": 1260
       },
       {
         "module": "physics",
         "lua_name": "LWorld:newChainBody",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1242
+        "line": 1282
       },
       {
         "module": "physics",
         "lua_name": "LWorld:addFixture",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1274
+        "line": 1314
       },
       {
         "module": "physics",
         "lua_name": "LWorld:fixtureCount",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1300
+        "line": 1340
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setFixtureFriction",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1308
+        "line": 1348
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setFixtureRestitution",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1323
+        "line": 1363
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setFixtureSensor",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1338
+        "line": 1378
       },
       {
         "module": "physics",
         "lua_name": "LWorld:addRevoluteJoint",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1355
+        "line": 1395
       },
       {
         "module": "physics",
         "lua_name": "LWorld:addDistanceJoint",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1375
+        "line": 1415
       },
       {
         "module": "physics",
         "lua_name": "LWorld:addPrismaticJoint",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1393
+        "line": 1433
       },
       {
         "module": "physics",
         "lua_name": "LWorld:addWeldJoint",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1409
+        "line": 1449
       },
       {
         "module": "physics",
         "lua_name": "LWorld:addRopeJoint",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1429
+        "line": 1469
       },
       {
         "module": "physics",
         "lua_name": "LWorld:addWheelJoint",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1447
+        "line": 1487
       },
       {
         "module": "physics",
         "lua_name": "LWorld:addFrictionJoint",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1465
+        "line": 1505
       },
       {
         "module": "physics",
         "lua_name": "LWorld:addMotorJoint",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1480
+        "line": 1520
       },
       {
         "module": "physics",
         "lua_name": "LWorld:addMouseJoint",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1496
+        "line": 1536
       },
       {
         "module": "physics",
         "lua_name": "LWorld:addPulleyJoint",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1512
+        "line": 1552
       },
       {
         "module": "physics",
         "lua_name": "LWorld:addGearJoint",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1528
+        "line": 1568
       },
       {
         "module": "physics",
         "lua_name": "LWorld:jointCount",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1540
+        "line": 1580
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getJointIds",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1546
+        "line": 1586
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getJointBodies",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1554
+        "line": 1594
       },
       {
         "module": "physics",
         "lua_name": "LWorld:destroyJoint",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1563
+        "line": 1603
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getJointType",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1571
+        "line": 1611
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setJointMotorSpeed",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1578
+        "line": 1618
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getJointMotorSpeed",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1596
+        "line": 1636
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setJointLimitsEnabled",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1603
+        "line": 1643
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setJointLimits",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1622
+        "line": 1662
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getJointLimits",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1641
+        "line": 1681
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setMouseJointTarget",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1649
+        "line": 1689
       },
       {
         "module": "physics",
         "lua_name": "LWorld:raycast",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1677
+        "line": 1717
       },
       {
         "module": "physics",
         "lua_name": "LWorld:raycastClosest",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1704
+        "line": 1744
       },
       {
         "module": "physics",
         "lua_name": "LWorld:raycastAll",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1736
+        "line": 1776
       },
       {
         "module": "physics",
         "lua_name": "LWorld:queryAABB",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1762
+        "line": 1802
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getBodyAtPoint",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1777
+        "line": 1817
       },
       {
         "module": "physics",
         "lua_name": "LWorld:castCircle",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1794
+        "line": 1834
       },
       {
         "module": "physics",
         "lua_name": "LWorld:castBeam",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1825
+        "line": 1865
       },
       {
         "module": "physics",
         "lua_name": "LWorld:beamClosest",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1856
+        "line": 1896
       },
       {
         "module": "physics",
         "lua_name": "LWorld:beamAll",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1890
+        "line": 1930
+      },
+      {
+        "module": "physics",
+        "lua_name": "LWorld:reflectBodyVelocity",
+        "kind": "method",
+        "file": "src/lua_api/physics_api.rs",
+        "line": 1971
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getCollisionEvents",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1925
+        "line": 1985
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getBeginContactEvents",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1942
+        "line": 2002
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getEndContactEvents",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1959
+        "line": 2019
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getContacts",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1979
+        "line": 2039
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getBodyContacts",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1996
+        "line": 2056
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setBodyType",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2008
+        "line": 2068
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getBodyType",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2017
+        "line": 2077
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setBeginContact",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2023
+        "line": 2083
       },
       {
         "module": "physics",
         "lua_name": "LWorld:clearBeginContact",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2029
+        "line": 2089
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setEndContact",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2036
+        "line": 2096
       },
       {
         "module": "physics",
         "lua_name": "LWorld:clearEndContact",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2042
+        "line": 2102
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setBodyData",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2050
+        "line": 2110
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getBodyData",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2062
+        "line": 2122
       },
       {
         "module": "physics",
         "lua_name": "LWorld:clearBodyData",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2072
+        "line": 2132
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setBodyCCD",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2083
+        "line": 2143
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getBodyCCD",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2091
+        "line": 2151
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setBodyOneWay",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2099
+        "line": 2159
       },
       {
         "module": "physics",
         "lua_name": "LWorld:clearBodyOneWay",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2109
+        "line": 2169
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getBodyOneWay",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2118
+        "line": 2178
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setJointBreakForce",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2128
+        "line": 2188
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getJointBreakForce",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2136
+        "line": 2196
       },
       {
         "module": "physics",
         "lua_name": "LWorld:isBodySleeping",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2143
+        "line": 2203
       },
       {
         "module": "physics",
         "lua_name": "LWorld:wakeUpBody",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2149
+        "line": 2209
       },
       {
         "module": "physics",
         "lua_name": "LWorld:sleepBody",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2156
+        "line": 2216
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setSolverIterations",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2163
+        "line": 2223
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getSolverIterations",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2170
+        "line": 2230
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setCcdSubsteps",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2176
+        "line": 2236
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getCcdSubsteps",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2183
+        "line": 2243
       },
       {
         "module": "physics",
         "lua_name": "LWorld:newBodies",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2190
+        "line": 2250
       },
       {
         "module": "physics",
         "lua_name": "LWorld:stepFixed",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2221
+        "line": 2281
       },
       {
         "module": "physics",
         "lua_name": "LWorld:addZone",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2238
+        "line": 2298
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getZoneEvents",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2257
+        "line": 2317
       },
       {
         "module": "physics",
         "lua_name": "LWorld:type",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2279
+        "line": 2339
       },
       {
         "module": "physics",
         "lua_name": "LWorld:typeOf",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2284
+        "line": 2344
       },
       {
         "module": "physics",
         "lua_name": "LFlowStream:getId",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2300
+        "line": 2360
       },
       {
         "module": "physics",
         "lua_name": "LFlowStream:setEnabled",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2304
+        "line": 2364
       },
       {
         "module": "physics",
         "lua_name": "LFlowStream:isEnabled",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2315
+        "line": 2375
       },
       {
         "module": "physics",
         "lua_name": "LFlowStream:setStrength",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2326
+        "line": 2386
       },
       {
         "module": "physics",
         "lua_name": "LFlowStream:getStrength",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2340
+        "line": 2400
       },
       {
         "module": "physics",
         "lua_name": "LFlowStream:setWidth",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2351
+        "line": 2411
       },
       {
         "module": "physics",
         "lua_name": "LFlowStream:setPoints",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2373
+        "line": 2433
       },
       {
         "module": "physics",
         "lua_name": "LFlowStream:setLayerMask",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2397
+        "line": 2457
       },
       {
         "module": "physics",
         "lua_name": "LFlowStream:getLayerMask",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2408
+        "line": 2468
       },
       {
         "module": "physics",
         "lua_name": "LFlowStream:setApplication",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2419
+        "line": 2479
       },
       {
         "module": "physics",
         "lua_name": "LFlowStream:setCombine",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2430
+        "line": 2490
       },
       {
         "module": "physics",
         "lua_name": "LFlowStream:destroy",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2440
+        "line": 2500
       },
       {
         "module": "physics",
         "lua_name": "LFlowStream:type",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2447
+        "line": 2507
       },
       {
         "module": "physics",
         "lua_name": "LFlowStream:typeOf",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2452
+        "line": 2512
       },
       {
         "module": "physics",
         "lua_name": "LZone:getId",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2468
+        "line": 2528
       },
       {
         "module": "physics",
         "lua_name": "LZone:setEnabled",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2472
+        "line": 2532
       },
       {
         "module": "physics",
         "lua_name": "LZone:setPriority",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2482
+        "line": 2542
       },
       {
         "module": "physics",
         "lua_name": "LZone:setLayerMask",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2492
+        "line": 2552
       },
       {
         "module": "physics",
         "lua_name": "LZone:setCircle",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2504
+        "line": 2564
       },
       {
         "module": "physics",
         "lua_name": "LZone:setGravityDirectional",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2516
+        "line": 2576
       },
       {
         "module": "physics",
         "lua_name": "LZone:setGravityPoint",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2529
+        "line": 2589
       },
       {
         "module": "physics",
         "lua_name": "LZone:setGravityRepulsor",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2545
+        "line": 2605
       },
       {
         "module": "physics",
         "lua_name": "LZone:setGravityZero",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2558
+        "line": 2618
       },
       {
         "module": "physics",
         "lua_name": "LZone:setGravityAdditive",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2568
+        "line": 2628
       },
       {
         "module": "physics",
         "lua_name": "LZone:isGravityAdditive",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2578
+        "line": 2638
       },
       {
         "module": "physics",
         "lua_name": "LZone:setGravityFalloff",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2585
+        "line": 2645
       },
       {
         "module": "physics",
         "lua_name": "LZone:getGravityFalloff",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2596
+        "line": 2656
       },
       {
         "module": "physics",
         "lua_name": "LZone:setGravityRadius",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2606
+        "line": 2666
       },
       {
         "module": "physics",
         "lua_name": "LZone:setGravityLimits",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2621
+        "line": 2681
       },
       {
         "module": "physics",
         "lua_name": "LZone:setLinearDampingOverride",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2635
+        "line": 2695
       },
       {
         "module": "physics",
         "lua_name": "LZone:setAngularDampingOverride",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2646
+        "line": 2706
       },
       {
         "module": "physics",
         "lua_name": "LZone:setLinearDrag",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2660
+        "line": 2720
       },
       {
         "module": "physics",
         "lua_name": "LZone:setQuadraticDrag",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2671
+        "line": 2731
       },
       {
         "module": "physics",
         "lua_name": "LZone:destroy",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2681
+        "line": 2741
       },
       {
         "module": "physics",
         "lua_name": "LZone:type",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2688
+        "line": 2748
       },
       {
         "module": "physics",
         "lua_name": "LZone:typeOf",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2693
+        "line": 2753
       },
       {
         "module": "physics",
         "lua_name": "LTerrain:setCell",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2711
+        "line": 2771
       },
       {
         "module": "physics",
         "lua_name": "LTerrain:getCell",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2720
+        "line": 2780
       },
       {
         "module": "physics",
         "lua_name": "LTerrain:fillCircle",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2729
+        "line": 2789
       },
       {
         "module": "physics",
         "lua_name": "LTerrain:fillRect",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2746
+        "line": 2806
       },
       {
         "module": "physics",
         "lua_name": "LTerrain:fillAll",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2759
+        "line": 2819
       },
       {
         "module": "physics",
         "lua_name": "LTerrain:flush",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2765
+        "line": 2825
       },
       {
         "module": "physics",
         "lua_name": "LTerrain:isDirty",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2774
+        "line": 2834
       },
       {
         "module": "physics",
         "lua_name": "LTerrain:collapseColumns",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2780
+        "line": 2840
       },
       {
         "module": "physics",
         "lua_name": "LTerrain:solidPositions",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2788
+        "line": 2848
       },
       {
         "module": "physics",
         "lua_name": "LTerrain:spawnDebris",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2805
+        "line": 2865
       },
       {
         "module": "physics",
         "lua_name": "LTerrain:toImageData",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2837
+        "line": 2897
       },
       {
         "module": "physics",
         "lua_name": "LTerrain:toBytes",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2851
+        "line": 2911
       },
       {
         "module": "physics",
         "lua_name": "LTerrain:loadFromBytes",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2858
+        "line": 2918
       },
       {
         "module": "physics",
         "lua_name": "LTerrain:type",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2867
+        "line": 2927
       },
       {
         "module": "physics",
         "lua_name": "LTerrain:typeOf",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2872
+        "line": 2932
       },
       {
         "module": "physics",
         "lua_name": "LBody:getId",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2899
+        "line": 2959
       },
       {
         "module": "physics",
         "lua_name": "LBody:isValid",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2903
+        "line": 2963
       },
       {
         "module": "physics",
         "lua_name": "LBody:getPosition",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2910
+        "line": 2970
       },
       {
         "module": "physics",
         "lua_name": "LBody:setPosition",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2921
+        "line": 2981
       },
       {
         "module": "physics",
         "lua_name": "LBody:getX",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2928
+        "line": 2988
       },
       {
         "module": "physics",
         "lua_name": "LBody:getY",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2935
+        "line": 2995
       },
       {
         "module": "physics",
         "lua_name": "LBody:getVelocity",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2943
+        "line": 3003
       },
       {
         "module": "physics",
         "lua_name": "LBody:setVelocity",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2954
+        "line": 3014
       },
       {
         "module": "physics",
         "lua_name": "LBody:getAngle",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2961
+        "line": 3021
       },
       {
         "module": "physics",
         "lua_name": "LBody:setAngle",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2967
+        "line": 3027
       },
       {
         "module": "physics",
         "lua_name": "LBody:getAngularVelocity",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2974
+        "line": 3034
       },
       {
         "module": "physics",
         "lua_name": "LBody:setAngularVelocity",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2980
+        "line": 3040
       },
       {
         "module": "physics",
         "lua_name": "LBody:getMass",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2989
+        "line": 3049
       },
       {
         "module": "physics",
         "lua_name": "LBody:setMass",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2995
+        "line": 3055
       },
       {
         "module": "physics",
         "lua_name": "LBody:getType",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3002
+        "line": 3062
       },
       {
         "module": "physics",
         "lua_name": "LBody:setType",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3008
+        "line": 3068
       },
       {
         "module": "physics",
         "lua_name": "LBody:getWidth",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3016
+        "line": 3076
       },
       {
         "module": "physics",
         "lua_name": "LBody:getHeight",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3023
+        "line": 3083
       },
       {
         "module": "physics",
         "lua_name": "LBody:getFriction",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3030
+        "line": 3090
       },
       {
         "module": "physics",
         "lua_name": "LBody:setFriction",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3037
+        "line": 3097
       },
       {
         "module": "physics",
         "lua_name": "LBody:getRestitution",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3047
+        "line": 3107
       },
       {
         "module": "physics",
         "lua_name": "LBody:setRestitution",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3054
+        "line": 3114
       },
       {
         "module": "physics",
-        "lua_name": "LBody:getLayer",
+        "lua_name": "LBody:setMirror",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3064
+        "line": 3124
       },
       {
         "module": "physics",
-        "lua_name": "LBody:setLayer",
+        "lua_name": "LBody:isMirror",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3071
+        "line": 3131
       },
       {
         "module": "physics",
-        "lua_name": "LBody:getMask",
+        "lua_name": "LBody:setBeamReflectivity",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3078
+        "line": 3137
       },
       {
         "module": "physics",
-        "lua_name": "LBody:setMask",
-        "kind": "method",
-        "file": "src/lua_api/physics_api.rs",
-        "line": 3085
-      },
-      {
-        "module": "physics",
-        "lua_name": "LBody:getCollisionGroup",
-        "kind": "method",
-        "file": "src/lua_api/physics_api.rs",
-        "line": 3092
-      },
-      {
-        "module": "physics",
-        "lua_name": "LBody:setCollisionGroup",
-        "kind": "method",
-        "file": "src/lua_api/physics_api.rs",
-        "line": 3098
-      },
-      {
-        "module": "physics",
-        "lua_name": "LBody:applyImpulse",
-        "kind": "method",
-        "file": "src/lua_api/physics_api.rs",
-        "line": 3110
-      },
-      {
-        "module": "physics",
-        "lua_name": "LBody:applyForce",
-        "kind": "method",
-        "file": "src/lua_api/physics_api.rs",
-        "line": 3118
-      },
-      {
-        "module": "physics",
-        "lua_name": "LBody:applyTorque",
-        "kind": "method",
-        "file": "src/lua_api/physics_api.rs",
-        "line": 3125
-      },
-      {
-        "module": "physics",
-        "lua_name": "LBody:applyForceAtPoint",
-        "kind": "method",
-        "file": "src/lua_api/physics_api.rs",
-        "line": 3135
-      },
-      {
-        "module": "physics",
-        "lua_name": "LBody:applyAngularImpulse",
+        "lua_name": "LBody:getBeamReflectivity",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
         "line": 3147
       },
       {
         "module": "physics",
-        "lua_name": "LBody:getGravityScale",
+        "lua_name": "LBody:setProjectileReflectivity",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3156
+        "line": 3153
       },
       {
         "module": "physics",
-        "lua_name": "LBody:setGravityScale",
+        "lua_name": "LBody:getProjectileReflectivity",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3162
+        "line": 3163
       },
       {
         "module": "physics",
-        "lua_name": "LBody:setFlowScale",
+        "lua_name": "LBody:getLayer",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3169
+        "line": 3172
       },
       {
         "module": "physics",
-        "lua_name": "LBody:setAirScale",
+        "lua_name": "LBody:setLayer",
+        "kind": "method",
+        "file": "src/lua_api/physics_api.rs",
+        "line": 3179
+      },
+      {
+        "module": "physics",
+        "lua_name": "LBody:getMask",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
         "line": 3186
       },
       {
         "module": "physics",
-        "lua_name": "LBody:setWaterScale",
+        "lua_name": "LBody:setMask",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3203
+        "line": 3193
       },
       {
         "module": "physics",
-        "lua_name": "LBody:setFlowCrossSection",
+        "lua_name": "LBody:getCollisionGroup",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3220
+        "line": 3200
       },
       {
         "module": "physics",
-        "lua_name": "LBody:isFixedRotation",
+        "lua_name": "LBody:setCollisionGroup",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3237
+        "line": 3206
       },
       {
         "module": "physics",
-        "lua_name": "LBody:setFixedRotation",
+        "lua_name": "LBody:applyImpulse",
+        "kind": "method",
+        "file": "src/lua_api/physics_api.rs",
+        "line": 3218
+      },
+      {
+        "module": "physics",
+        "lua_name": "LBody:applyForce",
+        "kind": "method",
+        "file": "src/lua_api/physics_api.rs",
+        "line": 3226
+      },
+      {
+        "module": "physics",
+        "lua_name": "LBody:applyTorque",
+        "kind": "method",
+        "file": "src/lua_api/physics_api.rs",
+        "line": 3233
+      },
+      {
+        "module": "physics",
+        "lua_name": "LBody:applyForceAtPoint",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
         "line": 3243
       },
       {
         "module": "physics",
+        "lua_name": "LBody:applyAngularImpulse",
+        "kind": "method",
+        "file": "src/lua_api/physics_api.rs",
+        "line": 3255
+      },
+      {
+        "module": "physics",
+        "lua_name": "LBody:getGravityScale",
+        "kind": "method",
+        "file": "src/lua_api/physics_api.rs",
+        "line": 3264
+      },
+      {
+        "module": "physics",
+        "lua_name": "LBody:setGravityScale",
+        "kind": "method",
+        "file": "src/lua_api/physics_api.rs",
+        "line": 3270
+      },
+      {
+        "module": "physics",
+        "lua_name": "LBody:setFlowScale",
+        "kind": "method",
+        "file": "src/lua_api/physics_api.rs",
+        "line": 3277
+      },
+      {
+        "module": "physics",
+        "lua_name": "LBody:setAirScale",
+        "kind": "method",
+        "file": "src/lua_api/physics_api.rs",
+        "line": 3294
+      },
+      {
+        "module": "physics",
+        "lua_name": "LBody:setWaterScale",
+        "kind": "method",
+        "file": "src/lua_api/physics_api.rs",
+        "line": 3311
+      },
+      {
+        "module": "physics",
+        "lua_name": "LBody:setFlowCrossSection",
+        "kind": "method",
+        "file": "src/lua_api/physics_api.rs",
+        "line": 3328
+      },
+      {
+        "module": "physics",
+        "lua_name": "LBody:isFixedRotation",
+        "kind": "method",
+        "file": "src/lua_api/physics_api.rs",
+        "line": 3345
+      },
+      {
+        "module": "physics",
+        "lua_name": "LBody:setFixedRotation",
+        "kind": "method",
+        "file": "src/lua_api/physics_api.rs",
+        "line": 3351
+      },
+      {
+        "module": "physics",
         "lua_name": "LBody:getLinearDamping",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3250
+        "line": 3358
       },
       {
         "module": "physics",
         "lua_name": "LBody:setLinearDamping",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3256
+        "line": 3364
       },
       {
         "module": "physics",
         "lua_name": "LBody:getAngularDamping",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3265
+        "line": 3373
       },
       {
         "module": "physics",
         "lua_name": "LBody:setAngularDamping",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3271
+        "line": 3379
       },
       {
         "module": "physics",
         "lua_name": "LBody:isBullet",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3280
+        "line": 3388
       },
       {
         "module": "physics",
         "lua_name": "LBody:setBullet",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3286
+        "line": 3394
       },
       {
         "module": "physics",
         "lua_name": "LBody:isSleepingAllowed",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3293
+        "line": 3401
       },
       {
         "module": "physics",
         "lua_name": "LBody:setSleepingAllowed",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3299
+        "line": 3407
       },
       {
         "module": "physics",
         "lua_name": "LBody:destroy",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3307
+        "line": 3415
       },
       {
         "module": "physics",
         "lua_name": "LBody:isSleeping",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3314
+        "line": 3422
       },
       {
         "module": "physics",
         "lua_name": "LBody:wakeUp",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3319
+        "line": 3427
       },
       {
         "module": "physics",
         "lua_name": "LBody:sleep",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3325
+        "line": 3433
       },
       {
         "module": "physics",
         "lua_name": "LBody:type",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3332
+        "line": 3440
       },
       {
         "module": "physics",
         "lua_name": "LBody:typeOf",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3337
+        "line": 3445
       },
       {
         "module": "physics",
         "lua_name": "LPhysicsShape:getType",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3385
+        "line": 3493
       },
       {
         "module": "physics",
         "lua_name": "LPhysicsShape:getRadius",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3398
+        "line": 3506
       },
       {
         "module": "physics",
         "lua_name": "LPhysicsShape:getBoundingBox",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3410
+        "line": 3518
       },
       {
         "module": "physics",
         "lua_name": "LPhysicsShape:getVertexCount",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3442
+        "line": 3550
       },
       {
         "module": "physics",
         "lua_name": "LPhysicsShape:getVertices",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3453
+        "line": 3561
       },
       {
         "module": "physics",
         "lua_name": "LPhysicsShape:setDensity",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3469
+        "line": 3577
       },
       {
         "module": "physics",
         "lua_name": "LPhysicsShape:setFriction",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3482
+        "line": 3590
       },
       {
         "module": "physics",
         "lua_name": "LPhysicsShape:setRestitution",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3495
+        "line": 3603
       },
       {
         "module": "physics",
         "lua_name": "LPhysicsShape:setSensor",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3508
+        "line": 3616
       },
       {
         "module": "physics",
         "lua_name": "LPhysicsShape:destroy",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3514
+        "line": 3622
       },
       {
         "module": "physics",
         "lua_name": "LPhysicsShape:type",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3518
+        "line": 3626
       },
       {
         "module": "physics",
         "lua_name": "LPhysicsShape:typeOf",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3523
+        "line": 3631
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.newWorld",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3554
+        "line": 3662
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.step",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3572
+        "line": 3680
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.destroyWorld",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3586
+        "line": 3694
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.newBody",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3597
+        "line": 3705
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.getBody",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3609
+        "line": 3717
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.setBodyVelocity",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3631
+        "line": 3739
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.isSleepingAllowed",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3644
+        "line": 3752
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.setSleepingAllowed",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3659
+        "line": 3767
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.newRectangleShape",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3676
+        "line": 3784
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.newCircleShape",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3688
+        "line": 3796
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.newEdgeShape",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3703
+        "line": 3811
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.newPolygonShape",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3715
+        "line": 3823
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.newChainShape",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3724
+        "line": 3832
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.shapeFromImage",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3735
+        "line": 3843
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.attachShape",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3749
+        "line": 3857
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.getCollisions",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3775
+        "line": 3883
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.debugDraw",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3787
+        "line": 3895
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.drawDebugGpu",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3799
+        "line": 3907
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.newTerrain",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3816
+        "line": 3924
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.testAABB",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3841
+        "line": 3949
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.testCircles",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3860
+        "line": 3968
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.testPoint",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3879
+        "line": 3987
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.testCircleAABB",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 3899
+        "line": 4007
       },
       {
         "module": "pipeline",

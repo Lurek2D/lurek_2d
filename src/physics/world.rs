@@ -3,7 +3,7 @@
 //! Stepping syncs scripted state into Rapier, runs the solver pipeline, then writes motion back into body mirrors.
 //! Collision handling buffers begin and end contact pairs plus overlap events so gameplay reads post-step results.
 //! Contact and stats helpers summarize active manifolds, sleeping bodies, collider counts, and joint counts.
-//! Spatial query helpers provide filtered raycasts, swept circle casts, instant beam traces, AABB scans, and point tests.
+//! Spatial query helpers provide filtered raycasts, swept circle casts, instant beam traces, reflective beam paths, AABB scans, and point tests.
 //! Fixture APIs let one body carry multiple colliders, while rebuild paths refresh filters and materials after edits.
 //! Joint APIs create revolute, rope, prismatic, weld, wheel, friction, motor, and mouse constraints with stable ids.
 //! Joint utilities also expose motor speeds, limits, break thresholds, connected bodies, and explicit destruction paths.
@@ -35,6 +35,7 @@ type BodySyncState = (f32, f32, f32, f32, f32, f32, BodyType);
 /// Number of low-bit collision groups controlled by the world-level collision matrix.
 pub const COLLISION_GROUP_COUNT: usize = 16;
 const COLLISION_GROUP_MASK: u32 = 0xFFFF;
+const BEAM_REFLECTION_EPSILON: f32 = 0.01;
 
 /// Internal rapier event sink forwarding collision events through a mutex.
 struct LocalEventCollector {
@@ -148,6 +149,10 @@ pub enum BeamHitMode {
 /// - `max_distance`: maximum beam travel distance in world units.
 /// - `thickness`: beam radius in world units; only `0.0` is currently supported.
 /// - `hit_mode`: how many hits to collect.
+/// - `reflect`: whether the beam should continue reflecting from mirror bodies.
+/// - `max_bounces`: maximum number of reflections allowed when `reflect` is true.
+/// - `energy`: starting beam energy multiplier used with reflective surfaces.
+/// - `min_energy`: beam tracing stops when reflected energy would drop below this threshold.
 /// - `filter`: collision and sensor filtering shared with other physics queries.
 #[derive(Debug, Clone, Copy)]
 pub struct BeamOptions {
@@ -157,6 +162,14 @@ pub struct BeamOptions {
     pub thickness: f32,
     /// Hit collection mode for this beam.
     pub hit_mode: BeamHitMode,
+    /// Whether the beam should continue reflecting from mirror bodies.
+    pub reflect: bool,
+    /// Maximum number of reflections allowed when `reflect` is true.
+    pub max_bounces: usize,
+    /// Starting beam energy multiplier used with reflective surfaces.
+    pub energy: f32,
+    /// Tracing stops when reflected energy would fall below this threshold.
+    pub min_energy: f32,
     /// Collision and sensor filtering for the beam query.
     pub filter: PhysicsQueryFilter,
 }
@@ -167,6 +180,10 @@ pub struct BeamOptions {
 /// - `normal`: outward surface normal.
 /// - `distance`: beam travel distance from the origin to the hit point.
 /// - `segment_index`: 1-based segment index for reflected or chained traces.
+/// - `reflected`: whether the beam continued past this hit by reflecting.
+/// - `incoming_dir`: normalized incoming beam direction at the hit.
+/// - `outgoing_dir`: normalized reflected direction, if the hit reflected the beam.
+/// - `reflectivity`: beam reflectivity multiplier used for the hit body.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct BeamHit {
     /// Body id that was hit.
@@ -179,6 +196,14 @@ pub struct BeamHit {
     pub distance: f32,
     /// 1-based segment index within the trace.
     pub segment_index: usize,
+    /// True when the trace continued by reflecting from this hit.
+    pub reflected: bool,
+    /// Normalized incoming beam direction at the hit point.
+    pub incoming_dir: (f32, f32),
+    /// Normalized reflected direction when the hit continues the trace.
+    pub outgoing_dir: Option<(f32, f32)>,
+    /// Beam reflectivity multiplier applied at this hit.
+    pub reflectivity: f32,
 }
 /// One visible segment of a beam trace.
 /// # Fields
@@ -1547,6 +1572,69 @@ impl World {
             None
         }
     }
+    /// Return whether body `id` acts as a reflective mirror for beam tracing.
+    pub fn is_body_mirror(&self, id: usize) -> bool {
+        self.get_body(id).is_some_and(|body| body.reflective)
+    }
+    /// Enable or disable mirror-style beam reflection on body `id`.
+    pub fn set_body_mirror(&mut self, id: usize, reflective: bool) {
+        if let Some(body) = self.get_body_mut(id) {
+            body.reflective = reflective;
+        }
+    }
+    /// Return the beam reflectivity multiplier for body `id`.
+    pub fn get_body_beam_reflectivity(&self, id: usize) -> f32 {
+        self.get_body(id)
+            .map_or(1.0, |body| Self::clamp_reflectivity(body.beam_reflectivity))
+    }
+    /// Update the beam reflectivity multiplier for body `id`.
+    pub fn try_set_body_beam_reflectivity(
+        &mut self,
+        id: usize,
+        reflectivity: f32,
+    ) -> Result<(), PhysicsError> {
+        validate_finite("reflectivity", f64::from(reflectivity))?;
+        if !(0.0..=1.0).contains(&reflectivity) {
+            return Err(PhysicsError::ValueOutOfRange {
+                field: "reflectivity",
+                min: 0.0,
+                max: 1.0,
+                value: f64::from(reflectivity),
+            });
+        }
+        let body = self
+            .get_body_mut(id)
+            .ok_or(PhysicsError::InvalidBodyReference { body_id: id })?;
+        body.beam_reflectivity = reflectivity;
+        Ok(())
+    }
+    /// Return the projectile reflectivity multiplier for body `id`.
+    pub fn get_body_projectile_reflectivity(&self, id: usize) -> f32 {
+        self.get_body(id).map_or(1.0, |body| {
+            Self::clamp_reflectivity(body.projectile_reflectivity)
+        })
+    }
+    /// Update the projectile reflectivity multiplier for body `id`.
+    pub fn try_set_body_projectile_reflectivity(
+        &mut self,
+        id: usize,
+        reflectivity: f32,
+    ) -> Result<(), PhysicsError> {
+        validate_finite("reflectivity", f64::from(reflectivity))?;
+        if !(0.0..=1.0).contains(&reflectivity) {
+            return Err(PhysicsError::ValueOutOfRange {
+                field: "reflectivity",
+                min: 0.0,
+                max: 1.0,
+                value: f64::from(reflectivity),
+            });
+        }
+        let body = self
+            .get_body_mut(id)
+            .ok_or(PhysicsError::InvalidBodyReference { body_id: id })?;
+        body.projectile_reflectivity = reflectivity;
+        Ok(())
+    }
     /// Set a body's collision layer bitmask and immediately refresh its colliders.
     pub fn set_body_layer(&mut self, id: usize, layer: u32) {
         if let Some(body) = self.get_body_mut(id) {
@@ -2911,6 +2999,72 @@ impl World {
             }
         }
     }
+    /// Reflect body `id` velocity around the supplied world-space surface normal.
+    ///
+    /// Returns `true` when the velocity was updated, or `false` when the body has no
+    /// meaningful velocity or the normal is degenerate.
+    pub fn reflect_body_velocity(
+        &mut self,
+        id: usize,
+        normal_x: f32,
+        normal_y: f32,
+        coefficient: f32,
+    ) -> bool {
+        self.try_reflect_body_velocity(id, normal_x, normal_y, coefficient)
+            .unwrap_or(false)
+    }
+    /// Reflect body `id` velocity around the supplied world-space surface normal.
+    pub fn try_reflect_body_velocity(
+        &mut self,
+        id: usize,
+        normal_x: f32,
+        normal_y: f32,
+        coefficient: f32,
+    ) -> Result<bool, PhysicsError> {
+        validate_finite("normal_x", f64::from(normal_x))?;
+        validate_finite("normal_y", f64::from(normal_y))?;
+        validate_finite("coefficient", f64::from(coefficient))?;
+        if !(0.0..=1.0).contains(&coefficient) {
+            return Err(PhysicsError::ValueOutOfRange {
+                field: "coefficient",
+                min: 0.0,
+                max: 1.0,
+                value: f64::from(coefficient),
+            });
+        }
+        let current_velocity = self
+            .get_body(id)
+            .map(|body| body.velocity)
+            .ok_or(PhysicsError::InvalidBodyReference { body_id: id })?;
+        if current_velocity.x * current_velocity.x + current_velocity.y * current_velocity.y
+            <= 1e-12
+        {
+            return Ok(false);
+        }
+        let Some(reflected_dir) = Self::reflect_vector(
+            Vector::new(current_velocity.x, current_velocity.y),
+            Vector::new(normal_x, normal_y),
+        ) else {
+            return Ok(false);
+        };
+        let speed = (current_velocity.x * current_velocity.x
+            + current_velocity.y * current_velocity.y)
+            .sqrt();
+        let new_velocity = Vector::new(
+            reflected_dir.x * speed * coefficient,
+            reflected_dir.y * speed * coefficient,
+        );
+        if let Some(body) = self.get_body_mut(id) {
+            body.velocity.x = new_velocity.x;
+            body.velocity.y = new_velocity.y;
+        }
+        if let Some(handle) = self.active_body_handle(id) {
+            if let Some(rb) = self.rbodies.get_mut(handle) {
+                rb.set_linvel(new_velocity, true);
+            }
+        }
+        Ok(true)
+    }
     /// Add a prismatic (slide-axis) joint between two bodies using strict validation.
     pub fn try_add_prismatic_joint(
         &mut self,
@@ -3099,13 +3253,52 @@ impl World {
         Ok(Vector::new(dx / dir_len, dy / dir_len))
     }
 
-    fn beam_hit_from_raycast(hit: RaycastHit, segment_index: usize) -> BeamHit {
+    fn reflect_vector(direction: Vector, normal: Vector) -> Option<Vector> {
+        let normal_len_sq = normal.x * normal.x + normal.y * normal.y;
+        if normal_len_sq <= 1e-12 {
+            return None;
+        }
+        let inv_normal_len = normal_len_sq.sqrt().recip();
+        let nx = normal.x * inv_normal_len;
+        let ny = normal.y * inv_normal_len;
+        let dot = direction.x * nx + direction.y * ny;
+        let reflected_x = direction.x - 2.0 * dot * nx;
+        let reflected_y = direction.y - 2.0 * dot * ny;
+        let reflected_len_sq = reflected_x * reflected_x + reflected_y * reflected_y;
+        if reflected_len_sq <= 1e-12 {
+            return None;
+        }
+        let inv_reflected_len = reflected_len_sq.sqrt().recip();
+        Some(Vector::new(
+            reflected_x * inv_reflected_len,
+            reflected_y * inv_reflected_len,
+        ))
+    }
+
+    fn clamp_reflectivity(value: f32) -> f32 {
+        if value.is_finite() {
+            value.clamp(0.0, 1.0)
+        } else {
+            0.0
+        }
+    }
+
+    fn beam_hit_from_raycast(
+        hit: RaycastHit,
+        distance: f32,
+        segment_index: usize,
+        incoming_dir: Vector,
+    ) -> BeamHit {
         BeamHit {
             body_id: hit.body_id,
             point: hit.point,
             normal: hit.normal,
-            distance: hit.toi,
+            distance,
             segment_index,
+            reflected: false,
+            incoming_dir: (incoming_dir.x, incoming_dir.y),
+            outgoing_dir: None,
+            reflectivity: 0.0,
         }
     }
 
@@ -3140,6 +3333,8 @@ impl World {
         validate_finite("dy", f64::from(dy))?;
         validate_positive("max_distance", f64::from(options.max_distance))?;
         validate_finite("thickness", f64::from(options.thickness))?;
+        validate_finite("energy", f64::from(options.energy))?;
+        validate_finite("min_energy", f64::from(options.min_energy))?;
         if options.thickness < 0.0 {
             return Err(PhysicsError::ValueOutOfRange {
                 field: "thickness",
@@ -3162,6 +3357,49 @@ impl World {
                     min: 1.0,
                     max: self.limits.max_bodies as f64,
                     value: max_hits as f64,
+                });
+            }
+        }
+        if options.reflect {
+            if !matches!(options.hit_mode, BeamHitMode::Closest) {
+                return Err(PhysicsError::InvalidMode {
+                    context: "physics beam reflection",
+                    value: format!("{:?}", options.hit_mode),
+                    expected: "closest beam mode when reflect = true",
+                });
+            }
+            if options.max_bounces > self.limits.max_bodies {
+                return Err(PhysicsError::ValueOutOfRange {
+                    field: "max_bounces",
+                    min: 0.0,
+                    max: self.limits.max_bodies as f64,
+                    value: options.max_bounces as f64,
+                });
+            }
+            if options.energy < 0.0 || options.energy > 1.0 {
+                return Err(PhysicsError::ValueOutOfRange {
+                    field: "energy",
+                    min: 0.0,
+                    max: 1.0,
+                    value: f64::from(options.energy),
+                });
+            }
+            if options.min_energy < 0.0 || options.min_energy > 1.0 {
+                return Err(PhysicsError::ValueOutOfRange {
+                    field: "min_energy",
+                    min: 0.0,
+                    max: 1.0,
+                    value: f64::from(options.min_energy),
+                });
+            }
+            if options.min_energy > options.energy {
+                return Err(PhysicsError::InvalidMode {
+                    context: "physics beam reflection",
+                    value: format!(
+                        "energy={} min_energy={}",
+                        options.energy, options.min_energy
+                    ),
+                    expected: "min_energy <= energy",
                 });
             }
         }
@@ -3194,6 +3432,9 @@ impl World {
         options: BeamOptions,
     ) -> Result<BeamTrace, PhysicsError> {
         let unit_dir = self.validate_beam_options(x1, y1, dx, dy, options)?;
+        if options.reflect {
+            return self.try_cast_reflective_beam(x1, y1, unit_dir, options);
+        }
         let end_point = Self::beam_endpoint(x1, y1, unit_dir, options.max_distance);
         match options.hit_mode {
             BeamHitMode::Closest => {
@@ -3205,7 +3446,7 @@ impl World {
                     options.max_distance,
                     options.filter,
                 ) {
-                    let beam_hit = Self::beam_hit_from_raycast(hit, 1);
+                    let beam_hit = Self::beam_hit_from_raycast(hit, hit.toi, 1, unit_dir);
                     Ok(BeamTrace {
                         hits: vec![beam_hit],
                         segments: vec![BeamSegment {
@@ -3223,7 +3464,7 @@ impl World {
                 let hits = self
                     .raycast_all_filtered(x1, y1, dx, dy, options.max_distance, options.filter)
                     .into_iter()
-                    .map(|hit| Self::beam_hit_from_raycast(hit, 1))
+                    .map(|hit| Self::beam_hit_from_raycast(hit, hit.toi, 1, unit_dir))
                     .collect();
                 Ok(Self::beam_trace_to_max_range(x1, y1, end_point, hits))
             }
@@ -3233,7 +3474,7 @@ impl World {
                 let truncated = hits.len() > max_hits;
                 let mut beam_hits = Vec::with_capacity(hits.len().min(max_hits));
                 for hit in hits.into_iter().take(max_hits) {
-                    beam_hits.push(Self::beam_hit_from_raycast(hit, 1));
+                    beam_hits.push(Self::beam_hit_from_raycast(hit, hit.toi, 1, unit_dir));
                 }
                 if truncated {
                     let last_hit = beam_hits
@@ -3253,6 +3494,130 @@ impl World {
                     Ok(Self::beam_trace_to_max_range(x1, y1, end_point, beam_hits))
                 }
             }
+        }
+    }
+
+    fn try_cast_reflective_beam(
+        &self,
+        x1: f32,
+        y1: f32,
+        unit_dir: Vector,
+        options: BeamOptions,
+    ) -> Result<BeamTrace, PhysicsError> {
+        let mut hits = Vec::new();
+        let mut segments = Vec::new();
+        let mut current_point = (x1, y1);
+        let mut current_dir = unit_dir;
+        let mut remaining_range = options.max_distance;
+        let mut current_energy = options.energy;
+        let mut segment_index = 1usize;
+        let mut bounce_count = 0usize;
+        let mut total_distance = 0.0f32;
+
+        loop {
+            let offset = if segment_index == 1 {
+                0.0
+            } else {
+                BEAM_REFLECTION_EPSILON
+            };
+            let query_max_distance = remaining_range - offset;
+            if query_max_distance <= 1e-6 {
+                return Ok(BeamTrace {
+                    hits,
+                    segments,
+                    reached_max_range: false,
+                });
+            }
+            let query_origin = (
+                current_point.0 + current_dir.x * offset,
+                current_point.1 + current_dir.y * offset,
+            );
+            let Some(hit) = self.raycast_closest_filtered(
+                query_origin.0,
+                query_origin.1,
+                current_dir.x,
+                current_dir.y,
+                query_max_distance,
+                options.filter,
+            ) else {
+                segments.push(BeamSegment {
+                    from: current_point,
+                    to: (
+                        current_point.0 + current_dir.x * remaining_range,
+                        current_point.1 + current_dir.y * remaining_range,
+                    ),
+                    blocked_by: None,
+                });
+                return Ok(BeamTrace {
+                    hits,
+                    segments,
+                    reached_max_range: true,
+                });
+            };
+
+            let dx = hit.point.0 - current_point.0;
+            let dy = hit.point.1 - current_point.1;
+            let visible_distance = (dx * dx + dy * dy).sqrt();
+            total_distance += visible_distance;
+            remaining_range -= visible_distance;
+
+            let (reflective, reflectivity) = self
+                .get_body(hit.body_id.0)
+                .map(|body| {
+                    (
+                        body.reflective,
+                        Self::clamp_reflectivity(body.beam_reflectivity),
+                    )
+                })
+                .unwrap_or((false, 0.0));
+
+            let outgoing_dir = if reflective
+                && bounce_count < options.max_bounces
+                && current_energy > 0.0
+                && reflectivity > 0.0
+            {
+                Self::reflect_vector(current_dir, Vector::new(hit.normal.0, hit.normal.1))
+            } else {
+                None
+            };
+            let reflected = outgoing_dir.is_some()
+                && current_energy * reflectivity >= options.min_energy
+                && remaining_range > BEAM_REFLECTION_EPSILON;
+
+            hits.push(BeamHit {
+                body_id: hit.body_id,
+                point: hit.point,
+                normal: hit.normal,
+                distance: total_distance,
+                segment_index,
+                reflected,
+                incoming_dir: (current_dir.x, current_dir.y),
+                outgoing_dir: if reflected {
+                    outgoing_dir.map(|dir| (dir.x, dir.y))
+                } else {
+                    None
+                },
+                reflectivity,
+            });
+            segments.push(BeamSegment {
+                from: current_point,
+                to: hit.point,
+                blocked_by: Some(hit.body_id),
+            });
+
+            if !reflected {
+                return Ok(BeamTrace {
+                    hits,
+                    segments,
+                    reached_max_range: false,
+                });
+            }
+
+            current_energy *= reflectivity;
+            current_point = hit.point;
+            current_dir = outgoing_dir.expect("reflected beam should have outgoing direction");
+            segment_index += 1;
+            bounce_count += 1;
         }
     }
 
@@ -3372,6 +3737,10 @@ impl World {
                 max_distance,
                 thickness: 0.0,
                 hit_mode: BeamHitMode::Closest,
+                reflect: false,
+                max_bounces: 0,
+                energy: 1.0,
+                min_energy: 0.0,
                 filter,
             },
         )?;

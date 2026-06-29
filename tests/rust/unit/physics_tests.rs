@@ -261,6 +261,66 @@ mod world_tests {
     }
 
     #[test]
+    fn reflect_body_velocity_handles_head_on_hits() {
+        let mut w = World::new(0.0, 0.0);
+        let id = w.add_body(Body::new_circle(0.0, 0.0, 1.0, BodyType::Dynamic));
+        w.set_body_velocity(id.0, 10.0, 0.0);
+
+        assert!(w.reflect_body_velocity(id.0, -1.0, 0.0, 1.0));
+        let velocity = w.get_body(id.0).unwrap().velocity;
+        assert!((velocity.x + 10.0).abs() < 1e-6);
+        assert!(velocity.y.abs() < 1e-6);
+    }
+
+    #[test]
+    fn reflect_body_velocity_handles_forty_five_degree_hits() {
+        let mut w = World::new(0.0, 0.0);
+        let id = w.add_body(Body::new_circle(0.0, 0.0, 1.0, BodyType::Dynamic));
+        w.set_body_velocity(id.0, 4.0, -4.0);
+
+        assert!(w.reflect_body_velocity(id.0, 0.0, 1.0, 1.0));
+        let velocity = w.get_body(id.0).unwrap().velocity;
+        assert!((velocity.x - 4.0).abs() < 1e-6);
+        assert!((velocity.y - 4.0).abs() < 1e-6);
+    }
+
+    #[test]
+    fn reflect_body_velocity_preserves_grazing_hits() {
+        let mut w = World::new(0.0, 0.0);
+        let id = w.add_body(Body::new_circle(0.0, 0.0, 1.0, BodyType::Dynamic));
+        w.set_body_velocity(id.0, 6.0, 0.0);
+
+        assert!(w.reflect_body_velocity(id.0, 0.0, 1.0, 1.0));
+        let velocity = w.get_body(id.0).unwrap().velocity;
+        assert!((velocity.x - 6.0).abs() < 1e-6);
+        assert!(velocity.y.abs() < 1e-6);
+    }
+
+    #[test]
+    fn reflect_body_velocity_normalizes_normals() {
+        let mut w = World::new(0.0, 0.0);
+        let id = w.add_body(Body::new_circle(0.0, 0.0, 1.0, BodyType::Dynamic));
+        w.set_body_velocity(id.0, 10.0, 0.0);
+
+        assert!(w.reflect_body_velocity(id.0, -2.0, 0.0, 1.0));
+        let velocity = w.get_body(id.0).unwrap().velocity;
+        assert!((velocity.x + 10.0).abs() < 1e-6);
+        assert!(velocity.y.abs() < 1e-6);
+    }
+
+    #[test]
+    fn reflect_body_velocity_rejects_degenerate_normals() {
+        let mut w = World::new(0.0, 0.0);
+        let id = w.add_body(Body::new_circle(0.0, 0.0, 1.0, BodyType::Dynamic));
+        w.set_body_velocity(id.0, 3.0, 4.0);
+
+        assert!(!w.reflect_body_velocity(id.0, 0.0, 0.0, 1.0));
+        let velocity = w.get_body(id.0).unwrap().velocity;
+        assert!((velocity.x - 3.0).abs() < 1e-6);
+        assert!((velocity.y - 4.0).abs() < 1e-6);
+    }
+
+    #[test]
     fn query_filter_uses_layer_mask_and_sensor_flag() {
         let mut w = World::new(0.0, 0.0);
         let mut solid = Body::new(0.0, 0.0, 10.0, 10.0, BodyType::Static);

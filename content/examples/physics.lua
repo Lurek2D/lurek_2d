@@ -454,6 +454,80 @@ do
     lurek.log.info("friction=" .. tostring(body:getFriction()))
 end
 
+--@api: LBody:setMirror
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local mirror = world:newBody(80, 80, 12, 48, "static")
+    mirror:setMirror(true)
+    mirror:setBeamReflectivity(1.0)
+    local trace = world:castBeam(20, 80, 1, 0, 160, { reflect = true, maxBounces = 1 })
+    lurek.log.info("mirror_enabled=" .. tostring(mirror:isMirror()))
+    lurek.log.info("mirror_segments=" .. tostring(#trace.segments))
+end
+
+--@api: LBody:isMirror
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local mirror = world:newBody(90, 90, 12, 48, "static")
+    mirror:setMirror(true)
+    local reflective = mirror:isMirror()
+    local body_id = mirror:getId()
+    lurek.log.info("body=" .. tostring(body_id))
+    lurek.log.info("is_mirror=" .. tostring(reflective))
+end
+
+--@api: LBody:setBeamReflectivity
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local mirror = world:newBody(100, 100, 12, 48, "static")
+    mirror:setMirror(true)
+    mirror:setBeamReflectivity(0.65)
+    local reflectivity = mirror:getBeamReflectivity()
+    lurek.log.info("beam_reflectivity=" .. tostring(reflectivity))
+    lurek.log.info("mirror=" .. tostring(mirror:isMirror()))
+end
+
+--@api: LBody:getBeamReflectivity
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local mirror = world:newBody(120, 90, 12, 48, "static")
+    mirror:setMirror(true)
+    mirror:setBeamReflectivity(0.4)
+    local reflectivity = mirror:getBeamReflectivity()
+    local trace = world:castBeam(40, 90, 1, 0, 140, { reflect = true, maxBounces = 1, minEnergy = 0.1 })
+    lurek.log.info("beam_reflectivity=" .. tostring(reflectivity))
+    lurek.log.info("trace_hits=" .. tostring(#trace.hits))
+end
+
+--@api: LBody:setProjectileReflectivity
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local wall = world:newBody(80, 100, 12, 48, "static")
+    wall:setProjectileReflectivity(0.8)
+    local projectile = world:newCircleBody(40, 100, 6, "dynamic")
+    projectile:setVelocity(50, 0)
+    local reflected = world:reflectBodyVelocity(projectile:getId(), -1, 0, wall:getProjectileReflectivity())
+    lurek.log.info("projectile_reflectivity=" .. tostring(wall:getProjectileReflectivity()))
+    lurek.log.info("reflected=" .. tostring(reflected))
+end
+
+--@api: LBody:getProjectileReflectivity
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local wall = world:newBody(90, 110, 12, 48, "static")
+    wall:setProjectileReflectivity(0.55)
+    local reflectivity = wall:getProjectileReflectivity()
+    local mirror = wall:isMirror()
+    lurek.log.info("projectile_reflectivity=" .. tostring(reflectivity))
+    lurek.log.info("mirror=" .. tostring(mirror))
+end
+
 --@api: LBody:setLinearDamping
 do
 
@@ -1437,32 +1511,39 @@ end
 do
 
     local world = lurek.physics.newWorld(0, 0)
-    local shooter = world:newCircleBody(40, 120, 8, "dynamic")
-    shooter:setLayer(0x2)
-    for i = 1, 3 do
-        local body = world:newCircleBody(110 + i * 30, 120, 10, "static")
-        body:setLayer(0x2)
-    end
-    local trace = world:castBeam(40, 120, 1, 0, 220, {
-        mode = "pierce",
-        maxHits = 2,
-        excludeBody = shooter:getId(),
-        layer = 0x1,
-        mask = 0x2,
+    local mirror = world:newBody(120, 120, 8, 80, "static")
+    mirror:setMirror(true)
+    mirror:setBeamReflectivity(0.75)
+    local blocker = world:newBody(120, 40, 80, 8, "static")
+    local trace = world:castBeam(40, 120, 1, 0, 260, {
+        reflect = true,
+        maxBounces = 2,
+        energy = 1.0,
+        minEnergy = 0.2,
     })
-    local thick_ok = pcall(function()
-        world:castBeam(40, 120, 1, 0, 220, { thickness = 6 })
-    end)
     lurek.log.info("beam_hits=" .. tostring(#trace.hits))
     lurek.log.info("beam_segments=" .. tostring(#trace.segments))
     lurek.log.info("beam_reached_max=" .. tostring(trace.reachedMaxRange))
     if trace.hits[1] then
-        lurek.log.info("beam_first=" .. tostring(trace.hits[1].bodyId) .. " " .. tostring(trace.hits[1].distance))
+        lurek.log.info("beam_first=" .. tostring(trace.hits[1].bodyId) .. " reflected=" .. tostring(trace.hits[1].reflected))
     end
     if trace.hits[2] then
         lurek.log.info("beam_second=" .. tostring(trace.hits[2].bodyId) .. " " .. tostring(trace.hits[2].distance))
     end
-    lurek.log.info("beam_thick_supported=" .. tostring(thick_ok))
+    lurek.log.info("blocker=" .. tostring(blocker:getId()))
+end
+
+--@api: LWorld:reflectBodyVelocity
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local projectile = world:newCircleBody(40, 90, 4, "dynamic")
+    projectile:setVelocity(120, -40)
+    local ok = world:reflectBodyVelocity(projectile:getId(), 0, 1, 0.5)
+    local vx, vy = projectile:getVelocity()
+    lurek.log.info("reflected=" .. tostring(ok))
+    lurek.log.info("velocity=" .. tostring(vx) .. "," .. tostring(vy))
+    lurek.log.info("projectile=" .. tostring(projectile:getId()))
 end
 
 --@api: LWorld:beamClosest
