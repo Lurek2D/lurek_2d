@@ -1,15 +1,15 @@
 {
   "meta": {
-    "generated": "2026-06-28T22:15:28.286533+00:00",
+    "generated": "2026-06-29T06:26:31.413728+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
-    "total_api_functions": 6413,
-    "marker_covered": 6388,
+    "total_api_functions": 6416,
+    "marker_covered": 6391,
     "describe_covered": 150,
     "describe_coverage_pct": 2.3,
     "heuristic_covered": 0,
-    "total_covered": 6413,
+    "total_covered": 6416,
     "coverage_pct": 100.0
   },
   "modules": {
@@ -38216,11 +38216,11 @@
       ]
     },
     "physics": {
-      "total": 245,
-      "marker_covered": 245,
+      "total": 248,
+      "marker_covered": 248,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 245,
+      "covered": 248,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -39060,6 +39060,15 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "LWorld:castCircle",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "LWorld:castBeam",
           "kind": "method",
           "marker_covered": true,
@@ -39313,6 +39322,24 @@
         },
         {
           "lua_name": "LWorld:getSolverIterations",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LWorld:setCcdSubsteps",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LWorld:getCcdSubsteps",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,

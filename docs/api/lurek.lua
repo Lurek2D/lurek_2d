@@ -23483,7 +23483,7 @@ function LBody:setAngularDamping(damping) end
 ---@param omega number Angular velocity in radians per second.
 function LBody:setAngularVelocity(omega) end
 
---- Enables or disables continuous collision detection to prevent fast-moving tunneling.
+--- Enables or disables continuous collision detection to prevent fast-moving tunneling. Use it for small, fast bodies such as bullets and shrapnel, not every body in the scene.
 ---@param bullet boolean True to enable CCD.
 function LBody:setBullet(bullet) end
 
@@ -23916,6 +23916,17 @@ function LWorld:beamClosest(x, y, dx, dy, range, filter) end
 ---@return LWorldCastBeamResult Trace table {hits, segments, reachedMaxRange}.
 function LWorld:castBeam(x, y, dx, dy, range, opts) end
 
+--- Sweeps a circle along a direction and returns the first collider hit.
+---@param x number Circle center X at the start of the sweep.
+---@param y number Circle center Y at the start of the sweep.
+---@param radius number Circle radius in world units.
+---@param dx number Sweep direction X (does not need to be normalized).
+---@param dy number Sweep direction Y (does not need to be normalized).
+---@param maxDist number Maximum sweep travel distance.
+---@param filter? table Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}.
+---@return table Hit info {bodyId, x, y, normalX, normalY, toi, safeFraction} or nil if no hit.
+function LWorld:castCircle(x, y, radius, dx, dy, maxDist, filter) end
+
 --- Removes bodies, joints, terrain colliders, and zones while preserving world-level settings.
 function LWorld:clear() end
 
@@ -23976,7 +23987,7 @@ function LWorld:getBeginContactEvents() end
 ---@return number Body ID at the point, or nil.
 function LWorld:getBodyAtPoint(x, y, filter) end
 
---- Returns whether continuous collision detection is enabled on a body.
+--- Returns whether continuous collision detection is enabled on a body. This is the world-level alias for `LBody:isBullet`.
 ---@param id number The body ID.
 ---@return boolean True if CCD is enabled.
 function LWorld:getBodyCCD(id) end
@@ -24009,6 +24020,10 @@ function LWorld:getBodyOneWay(id) end
 ---@param id number The body ID.
 ---@return string Body type: "static", "dynamic", "kinematic", or "sensor".
 function LWorld:getBodyType(id) end
+
+--- Returns the maximum number of CCD substeps used for bullet bodies in this world.
+---@return number CCD substep count.
+function LWorld:getCcdSubsteps() end
 
 --- Returns all collision events from the last step as a table of {bodyA, bodyB} pairs.
 ---@return LWorldGetCollisionEventsResult Array of collision event tables.
@@ -24227,7 +24242,7 @@ function LWorld:sampleFlow(x, y, opts) end
 ---@param callback function Called with (bodyIdA, bodyIdB) on each new contact.
 function LWorld:setBeginContact(callback) end
 
---- Enables or disables continuous collision detection (bullet mode) on a body to prevent tunneling.
+--- Enables or disables continuous collision detection (bullet mode) on a body to prevent tunneling. This is the world-level alias for `LBody:setBullet`.
 ---@param id number The body ID.
 ---@param enabled boolean True to enable CCD.
 function LWorld:setBodyCCD(id, enabled) end
@@ -24247,6 +24262,10 @@ function LWorld:setBodyOneWay(id, nx, ny) end
 ---@param id number The body ID.
 ---@param bodyType string New type: "static", "dynamic", "kinematic", or "sensor".
 function LWorld:setBodyType(id, bodyType) end
+
+--- Sets the maximum number of CCD substeps. Increase this when fast bullet bodies still need more reliable thin-wall resolution.
+---@param n number Maximum CCD substeps. Values below 1 clamp to 1.
+function LWorld:setCcdSubsteps(n) end
 
 --- Replaces one row of the 16-group collision matrix.
 ---@param group number Source collision group index, 0..15.
@@ -24336,7 +24355,7 @@ function LWorld:sleepBody(id) end
 ---@param dt number Time step in seconds (e.g. 1/60 for 60 FPS).
 function LWorld:step(dt) end
 
---- Performs fixed-timestep physics stepping, consuming accumulated time. Returns the leftover time.
+--- Performs fixed-timestep physics stepping, consuming accumulated time. Use this for frame pacing; bullet CCD still matters for thin barriers.
 ---@param accumulator number Accumulated time since last frame (seconds).
 ---@param stepDt number Fixed step size (e.g. 1/60).
 ---@param maxSteps number Maximum sub-steps per call to prevent spiral of death.

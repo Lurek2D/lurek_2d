@@ -4,6 +4,7 @@
 
 - Simulates 2D bodies under dynamic, static, kinematic, or sensor behaviors.
 - Supports shapes, continuous detection, and motorized mechanical joints.
+- Supports bullet-mode CCD bodies and swept circle queries for fast projectile work.
 - Can infer approximate collision shapes from image alpha masks for asset-driven colliders.
 - Manages override zones, raycast queries, and destructible static terrain.
 - Provides a 16-group world collision matrix layered over per-body layer/mask filters.
@@ -38,6 +39,8 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 - Beam query contract:
   `LWorld:castBeam`, `LWorld:beamClosest`, and `LWorld:beamAll` are instant spatial queries, not projectile-body simulation. They share the same layer, mask, group, sensor, and `excludeBody` filtering semantics as the raycast family so gameplay can switch between projectiles and hitscan without inventing parallel collision policy. The current release ships the thin-beam path (`thickness = 0`) and leaves thick beam shape-casting as the explicit follow-up; calling `thickness > 0` fails fast so scripts do not assume wide-beam support yet.
+- Fast-projectile contract:
+  `LBody:setBullet(true)` and `LWorld:setBodyCCD(id, true)` enable Rapier CCD for physical projectiles that should bounce, collide, and emit normal contact events. `LWorld:setCcdSubsteps(n)` tunes how aggressively the world resolves CCD events for those bullet bodies, while `LWorld:stepFixed(accumulator, stepDt, maxSteps)` handles frame pacing and backlog reduction. Use bullet CCD for dynamic bodies that must stay physical; use `LWorld:castCircle(...)` when a script needs an immediate swept hit before moving a kinematic or manually-authored projectile. Use raycasts and beam helpers for thin hitscan logic, not for thick moving projectile volumes.
 - Flow-field contract:
   Authored flow fields live on the world, respect layer masks, can overlap additively, and may be sampled directly from Lua for AI, VFX, UI previews, or debugging. The physics world remains the source of truth for how those currents affect bodies during stepping.
 - Body-influence contract:

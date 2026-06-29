@@ -45824,7 +45824,7 @@
           "name": "setBullet",
           "fullPath": "LBody:setBullet",
           "signature": "(bullet)",
-          "description": "Enables or disables continuous collision detection to prevent fast-moving tunneling.",
+          "description": "Enables or disables continuous collision detection to prevent fast-moving tunneling. Use it for small, fast bodies such as bullets and shrapnel, not every body in the scene.",
           "parameters": [
             {
               "name": "bullet",
@@ -181142,6 +181142,60 @@
           "objectType": "LWorld"
         },
         {
+          "name": "castCircle",
+          "fullPath": "LWorld:castCircle",
+          "signature": "(...)",
+          "description": "Sweeps a circle along a direction and returns the first collider hit.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "Circle center X at the start of the sweep.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Circle center Y at the start of the sweep.",
+              "optional": false
+            },
+            {
+              "name": "radius",
+              "type": "number",
+              "description": "Circle radius in world units.",
+              "optional": false
+            },
+            {
+              "name": "dx",
+              "type": "number",
+              "description": "Sweep direction X (does not need to be normalized).",
+              "optional": false
+            },
+            {
+              "name": "dy",
+              "type": "number",
+              "description": "Sweep direction Y (does not need to be normalized).",
+              "optional": false
+            },
+            {
+              "name": "maxDist",
+              "type": "number",
+              "description": "Maximum sweep travel distance.",
+              "optional": false
+            },
+            {
+              "name": "filter",
+              "type": "table",
+              "description": "Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
           "name": "castBeam",
           "fullPath": "LWorld:castBeam",
           "signature": "(...)",
@@ -181511,7 +181565,7 @@
           "name": "setBodyCCD",
           "fullPath": "LWorld:setBodyCCD",
           "signature": "(id, enabled)",
-          "description": "Enables or disables continuous collision detection (bullet mode) on a body to prevent tunneling.",
+          "description": "Enables or disables continuous collision detection (bullet mode) on a body to prevent tunneling. This is the world-level alias for `LBody:setBullet`.",
           "parameters": [
             {
               "name": "id",
@@ -181535,7 +181589,7 @@
           "name": "getBodyCCD",
           "fullPath": "LWorld:getBodyCCD",
           "signature": "(id)",
-          "description": "Returns whether continuous collision detection is enabled on a body.",
+          "description": "Returns whether continuous collision detection is enabled on a body. This is the world-level alias for `LBody:isBullet`.",
           "parameters": [
             {
               "name": "id",
@@ -181741,6 +181795,35 @@
           "objectType": "LWorld"
         },
         {
+          "name": "setCcdSubsteps",
+          "fullPath": "LWorld:setCcdSubsteps",
+          "signature": "(n)",
+          "description": "Sets the maximum number of CCD substeps. Increase this when fast bullet bodies still need more reliable thin-wall resolution.",
+          "parameters": [
+            {
+              "name": "n",
+              "type": "integer",
+              "description": "Maximum CCD substeps. Values below 1 clamp to 1.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "getCcdSubsteps",
+          "fullPath": "LWorld:getCcdSubsteps",
+          "signature": "()",
+          "description": "Returns the maximum number of CCD substeps used for bullet bodies in this world.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
           "name": "newBodies",
           "fullPath": "LWorld:newBodies",
           "signature": "(specs)",
@@ -181762,7 +181845,7 @@
           "name": "stepFixed",
           "fullPath": "LWorld:stepFixed",
           "signature": "(accum, step_dt, max_steps)",
-          "description": "Performs fixed-timestep physics stepping, consuming accumulated time. Returns the leftover time.",
+          "description": "Performs fixed-timestep physics stepping, consuming accumulated time. Use this for frame pacing; bullet CCD still matters for thin barriers.",
           "parameters": [
             {
               "name": "accumulator",

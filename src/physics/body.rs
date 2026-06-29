@@ -89,6 +89,7 @@ impl Default for BodyFlowInfluence {
 /// - `friction`: surface friction coefficient.
 /// - `angle`: rotation in radians.
 /// - `angular_velocity`: rotational velocity in radians per second.
+/// - `bullet`: whether continuous collision detection should be enabled for this body.
 /// - `shape_ext`: optional extended polygon/edge/chain geometry.
 /// - `flow_influence`: authored coefficients used when flow fields affect the body.
 pub struct Body {
@@ -118,6 +119,8 @@ pub struct Body {
     pub angle: f32,
     /// Angular velocity in radians per second.
     pub angular_velocity: f32,
+    /// Enables continuous collision detection for fast-moving bodies.
+    pub bullet: bool,
     /// Extended shape for polygon, edge, and chain bodies.
     pub shape_ext: Option<Shape>,
     /// Per-body flow-field response coefficients.
@@ -148,6 +151,7 @@ impl Body {
             friction: 0.5,
             angle: 0.0,
             angular_velocity: 0.0,
+            bullet: false,
             shape_ext,
             flow_influence: BodyFlowInfluence::default(),
         }

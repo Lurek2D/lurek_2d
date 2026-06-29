@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Simulates 2D bodies under dynamic, static, kinematic, or sensor behaviors. - Supports shapes, continuous detection, and motorized mechanical joints. - Can infer approximate collision shapes from image alpha masks for asset-driven colliders. - Manages override zones, raycast queries, and destructible static terrain. - Provides a 16-group world collision matrix layered over per-body layer/mask filters. - Provides post-step contact events and colorized visual debug overlays. - Supports authored flow fields for wind, water, conveyor, and magic-current style motion that can be sampled or applied during stepping.
+Simulates 2D bodies under dynamic, static, kinematic, or sensor behaviors. - Supports shapes, continuous detection, and motorized mechanical joints. - Supports bullet-mode CCD bodies and swept circle queries for fast projectile work. - Can infer approximate collision shapes from image alpha masks for asset-driven colliders. - Manages override zones, raycast queries, and destructible static terrain. - Provides a 16-group world collision matrix layered over per-body layer/mask filters. - Provides post-step contact events and colorized visual debug overlays. - Supports authored flow fields for wind, water, conveyor, and magic-current style motion that can be sampled or applied during stepping.
 
 ## Summary
 
@@ -1931,7 +1931,7 @@ end
 
 #### `LBody:setBullet`
 
-Enables or disables continuous collision detection to prevent fast-moving tunneling.
+Enables or disables continuous collision detection to prevent fast-moving tunneling. Use it for small, fast bodies such as bullets and shrapnel, not every body in the scene.
 
 ```lua
 LBody:setBullet(bullet)
@@ -4727,6 +4727,50 @@ end
 
 ---
 
+#### `LWorld:castCircle`
+
+Sweeps a circle along a direction and returns the first collider hit.
+
+```lua
+LWorld:castCircle(x, y, radius, dx, dy, maxDist, filter)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Circle center X at the start of the sweep. |
+| `y` | number | Circle center Y at the start of the sweep. |
+| `radius` | number | Circle radius in world units. |
+| `dx` | number | Sweep direction X (does not need to be normalized). |
+| `dy` | number | Sweep direction Y (does not need to be normalized). |
+| `maxDist` | number | Maximum sweep travel distance. |
+| `filter?` | table | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Hit info {bodyId, x, y, normalX, normalY, toi, safeFraction} or nil if no hit. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local sensor = world:newBody(120, 100, 8, 80, "sensor")
+    local wall = world:newBody(160, 100, 8, 80, "static")
+    local with_sensor = world:castCircle(40, 100, 6, 1, 0, 200, { includeSensors = true })
+    local solid_hit = world:castCircle(40, 100, 6, 1, 0, 200, { includeSensors = false })
+    lurek.log.info("sensor_first=" .. tostring(with_sensor and with_sensor.bodyId) .. " solid_owner=" .. tostring(sensor:getId()))
+    lurek.log.info("solid_first=" .. tostring(solid_hit and solid_hit.bodyId) .. " wall_owner=" .. tostring(wall:getId()))
+    lurek.log.info("solid_normal=" .. tostring(solid_hit and solid_hit.normalX) .. "," .. tostring(solid_hit and solid_hit.normalY))
+end
+```
+
+---
+
 #### `LWorld:clear`
 
 Removes bodies, joints, terrain colliders, and zones while preserving world-level settings.
@@ -5169,7 +5213,7 @@ end
 
 #### `LWorld:getBodyCCD`
 
-Returns whether continuous collision detection is enabled on a body.
+Returns whether continuous collision detection is enabled on a body. This is the world-level alias for `[LBody](#lbody):isBullet`.
 
 ```lua
 LWorld:getBodyCCD(id)
@@ -5411,6 +5455,38 @@ do
     local data = world:getBodyData(body:getId())
     lurek.log.info("body type lookup=" .. world:getBodyType(body:getId()) .. " id=" .. body:getId())
     lurek.log.info("role=" .. data.role .. " world bodies=" .. world:getBodyCount())
+end
+```
+
+---
+
+#### `LWorld:getCcdSubsteps`
+
+Returns the maximum number of CCD substeps used for bullet bodies in this world.
+
+```lua
+LWorld:getCcdSubsteps()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | CCD substep count. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local wall = world:newBody(180, 90, 6, 80, "static")
+    local projectile = world:newCircleBody(40, 90, 2, "dynamic")
+    world:setCcdSubsteps(6)
+    projectile:setBullet(true)
+    local remainder = world:stepFixed(1 / 30, 1 / 120, 8)
+    lurek.log.info("ccd_substeps=" .. tostring(world:getCcdSubsteps()) .. " remainder=" .. tostring(remainder))
+    lurek.log.info("wall=" .. wall:getType() .. " projectile_x=" .. tostring(select(1, projectile:getPosition())))
 end
 ```
 
@@ -6818,7 +6894,7 @@ end
 
 #### `LWorld:setBodyCCD`
 
-Enables or disables continuous collision detection (bullet mode) on a body to prevent tunneling.
+Enables or disables continuous collision detection (bullet mode) on a body to prevent tunneling. This is the world-level alias for `[LBody](#lbody):setBullet`.
 
 ```lua
 LWorld:setBodyCCD(id, enabled)
@@ -6938,6 +7014,37 @@ do
     world:step(1 / 60)
     lurek.log.info("builder converted type=" .. world:getBodyType(body:getId()))
     lurek.log.info("placement=" .. body:getX() .. "," .. body:getY())
+end
+```
+
+---
+
+#### `LWorld:setCcdSubsteps`
+
+Sets the maximum number of CCD substeps. Increase this when fast bullet bodies still need more reliable thin-wall resolution.
+
+```lua
+LWorld:setCcdSubsteps(n)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `n` | number | Maximum CCD substeps. Values below 1 clamp to 1. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local bullet = world:newCircleBody(40, 80, 3, "dynamic")
+    world:setCcdSubsteps(4)
+    bullet:setBullet(true)
+    bullet:setVelocity(1200, 0)
+    lurek.log.info("ccd_substeps=" .. tostring(world:getCcdSubsteps()))
+    lurek.log.info("bullet_mode=" .. tostring(bullet:isBullet()))
 end
 ```
 
@@ -7485,7 +7592,7 @@ end
 
 #### `LWorld:stepFixed`
 
-Performs fixed-timestep physics stepping, consuming accumulated time. Returns the leftover time.
+Performs fixed-timestep physics stepping, consuming accumulated time. Use this for frame pacing; bullet CCD still matters for thin barriers.
 
 ```lua
 LWorld:stepFixed(accumulator, stepDt, maxSteps)

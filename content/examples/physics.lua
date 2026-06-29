@@ -185,6 +185,31 @@ do
     lurek.log.info("scene bodies=" .. world:getBodyCount() .. " floor=" .. floor:getType() .. " ball_y=" .. select(2, ball:getPosition()))
 end
 
+--@api: LWorld:setCcdSubsteps
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local bullet = world:newCircleBody(40, 80, 3, "dynamic")
+    world:setCcdSubsteps(4)
+    bullet:setBullet(true)
+    bullet:setVelocity(1200, 0)
+    lurek.log.info("ccd_substeps=" .. tostring(world:getCcdSubsteps()))
+    lurek.log.info("bullet_mode=" .. tostring(bullet:isBullet()))
+end
+
+--@api: LWorld:getCcdSubsteps
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local wall = world:newBody(180, 90, 6, 80, "static")
+    local projectile = world:newCircleBody(40, 90, 2, "dynamic")
+    world:setCcdSubsteps(6)
+    projectile:setBullet(true)
+    local remainder = world:stepFixed(1 / 30, 1 / 120, 8)
+    lurek.log.info("ccd_substeps=" .. tostring(world:getCcdSubsteps()) .. " remainder=" .. tostring(remainder))
+    lurek.log.info("wall=" .. wall:getType() .. " projectile_x=" .. tostring(select(1, projectile:getPosition())))
+end
+
 --@api: LWorld:resetWorld
 do
 
@@ -1393,6 +1418,19 @@ do
     if hits[1] then
         lurek.log.info("first=" .. tostring(hits[1].bodyId) .. " " .. tostring(hits[1].x) .. " " .. tostring(hits[1].y))
     end
+end
+
+--@api: LWorld:castCircle
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local sensor = world:newBody(120, 100, 8, 80, "sensor")
+    local wall = world:newBody(160, 100, 8, 80, "static")
+    local with_sensor = world:castCircle(40, 100, 6, 1, 0, 200, { includeSensors = true })
+    local solid_hit = world:castCircle(40, 100, 6, 1, 0, 200, { includeSensors = false })
+    lurek.log.info("sensor_first=" .. tostring(with_sensor and with_sensor.bodyId) .. " solid_owner=" .. tostring(sensor:getId()))
+    lurek.log.info("solid_first=" .. tostring(solid_hit and solid_hit.bodyId) .. " wall_owner=" .. tostring(wall:getId()))
+    lurek.log.info("solid_normal=" .. tostring(solid_hit and solid_hit.normalX) .. "," .. tostring(solid_hit and solid_hit.normalY))
 end
 
 --@api: LWorld:castBeam

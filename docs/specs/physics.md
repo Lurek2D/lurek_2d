@@ -6,6 +6,7 @@
 
 - Simulates 2D bodies under dynamic, static, kinematic, or sensor behaviors.
 - Supports shapes, continuous detection, and motorized mechanical joints.
+- Supports bullet-mode CCD bodies and swept circle queries for fast projectile work.
 - Can infer approximate collision shapes from image alpha masks for asset-driven colliders.
 - Manages override zones, raycast queries, and destructible static terrain.
 - Provides a 16-group world collision matrix layered over per-body layer/mask filters.
@@ -18,7 +19,7 @@
 - Source path: `src/physics`
 - Binding: `src/lua_api/physics_api.rs`
 - Namespace: `lurek.physics`
-- Lua API surface: `23` functions, `21` types, `222` methods
+- Lua API surface: `23` functions, `21` types, `225` methods
 - User-facing: `true`
 - Plugin tier: `tier_2_plugin`
 
@@ -164,7 +165,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - Stepping syncs scripted state into Rapier, runs the solver pipeline, then writes motion back into body mirrors.
 - Collision handling buffers begin and end contact pairs plus overlap events so gameplay reads post-step results.
 - Contact and stats helpers summarize active manifolds, sleeping bodies, collider counts, and joint counts.
-- Spatial query helpers provide filtered raycasts, instant beam traces, AABB scans, and point tests.
+- Spatial query helpers provide filtered raycasts, swept circle casts, instant beam traces, AABB scans, and point tests.
 - Fixture APIs let one body carry multiple colliders, while rebuild paths refresh filters and materials after edits.
 - Joint APIs create revolute, rope, prismatic, weld, wheel, friction, motor, and mouse constraints with stable ids.
 - Joint utilities also expose motor speeds, limits, break thresholds, connected bodies, and explicit destruction paths.
@@ -272,7 +273,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LBody:setAngle(angle) -> nil`: Sets the body's rotation angle directly.
 - `LBody:setAngularDamping(damping) -> nil`: Sets the angular damping factor (higher = rotation decays faster).
 - `LBody:setAngularVelocity(omega) -> nil`: Sets the body's angular velocity directly.
-- `LBody:setBullet(bullet) -> nil`: Enables or disables continuous collision detection to prevent fast-moving tunneling.
+- `LBody:setBullet(bullet) -> nil`: Enables or disables continuous collision detection to prevent fast-moving tunneling. Use it for small, fast bodies such as bullets and shrapnel, not every body in the scene.
 - `LBody:setCollisionGroup(group) -> nil`: Assigns the body to one collision group and opens its local mask to the 16 group bits.
 - `LBody:setFixedRotation(fixed) -> nil`: Locks or unlocks the body's rotation. Useful for player characters.
 - `LBody:setFlowCrossSection(crossSection) -> nil`: Sets the drag cross-section factor used by drag-style flow application.
@@ -422,6 +423,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:beamAll(x, y, dx, dy, range, filter?) -> table`: Returns all instant beam hits in deterministic distance order.
 - `LWorld:beamClosest(x, y, dx, dy, range, filter?) -> table`: Returns only the closest instant beam hit, or nil if nothing blocks the beam.
 - `LWorld:castBeam(x, y, dx, dy, range, opts?) -> table`: Casts an instant beam and returns hit plus segment data for gameplay or rendering.
+- `LWorld:castCircle(x, y, radius, dx, dy, maxDist, filter?) -> table`: Sweeps a circle along a direction and returns the first collider hit.
 - `LWorld:clear() -> nil`: Removes bodies, joints, terrain colliders, and zones while preserving world-level settings.
 - `LWorld:clearBeginContact() -> nil`: Removes the begin-contact callback so it is no longer called.
 - `LWorld:clearBodyData(id) -> nil`: Removes and releases the Lua data attached to a body.
@@ -436,13 +438,14 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:fixtureCount(bodyId) -> integer`: Returns how many fixtures (colliders) are attached to a body.
 - `LWorld:getBeginContactEvents() -> table`: Returns contact-begin events from the last step (pairs of bodies that started touching).
 - `LWorld:getBodyAtPoint(x, y, filter?) -> integer`: Returns the body ID at a specific world point, or nil if no body is there.
-- `LWorld:getBodyCCD(id) -> boolean`: Returns whether continuous collision detection is enabled on a body.
+- `LWorld:getBodyCCD(id) -> boolean`: Returns whether continuous collision detection is enabled on a body. This is the world-level alias for `LBody:isBullet`.
 - `LWorld:getBodyContacts(bodyId) -> table`: Returns all contacts involving a specific body.
 - `LWorld:getBodyCount() -> integer`: Returns the total number of active bodies in the world.
 - `LWorld:getBodyData(id) -> table`: Retrieves the Lua data previously attached to a body, or nil if none was set.
 - `LWorld:getBodyIds() -> integer[]`: Returns a sequential table of all body IDs currently in the world.
 - `LWorld:getBodyOneWay(id) -> number`: Returns the one-way platform normal for a body, or nil,nil if not set.
 - `LWorld:getBodyType(id) -> string`: Returns the type name of a body as a string.
+- `LWorld:getCcdSubsteps() -> integer`: Returns the maximum number of CCD substeps used for bullet bodies in this world.
 - `LWorld:getCollisionEvents() -> table`: Returns all collision events from the last step as a table of {bodyA, bodyB} pairs.
 - `LWorld:getCollisionGroupMask(group) -> integer`: Returns one row of the 16-group collision matrix.
 - `LWorld:getCollisionPair(groupA, groupB) -> boolean`: Returns whether collisions are enabled between two world-level collision groups.
@@ -481,10 +484,11 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:resetWorld() -> nil`: Fully resets the world to its post-construction state.
 - `LWorld:sampleFlow(x, y, opts?) -> table`: Samples combined flow at a world position.
 - `LWorld:setBeginContact(callback) -> nil`: Registers a callback function invoked whenever two bodies begin touching.
-- `LWorld:setBodyCCD(id, enabled) -> nil`: Enables or disables continuous collision detection (bullet mode) on a body to prevent tunneling.
+- `LWorld:setBodyCCD(id, enabled) -> nil`: Enables or disables continuous collision detection (bullet mode) on a body to prevent tunneling. This is the world-level alias for `LBody:setBullet`.
 - `LWorld:setBodyData(id, value) -> nil`: Attaches arbitrary Lua data to a body ID for later retrieval (e.g. entity reference, tag).
 - `LWorld:setBodyOneWay(id, nx, ny) -> nil`: Marks a body as a one-way platform: other bodies can pass through from the opposite side of the normal.
 - `LWorld:setBodyType(id, bodyType) -> nil`: Changes the type of an existing body (e.g. from "dynamic" to "static").
+- `LWorld:setCcdSubsteps(n) -> nil`: Sets the maximum number of CCD substeps. Increase this when fast bullet bodies still need more reliable thin-wall resolution.
 - `LWorld:setCollisionGroupMask(group, mask) -> nil`: Replaces one row of the 16-group collision matrix.
 - `LWorld:setCollisionPair(groupA, groupB, enabled) -> nil`: Enables or disables collisions between two world-level collision groups.
 - `LWorld:setEndContact(callback) -> nil`: Registers a callback function invoked whenever two bodies stop touching.
@@ -502,7 +506,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:setSolverIterations(n) -> nil`: Sets the number of velocity solver iterations. Higher values improve stability at the cost of performance.
 - `LWorld:sleepBody(id) -> nil`: Forces a body into the sleeping state, pausing its simulation until disturbed.
 - `LWorld:step(dt) -> nil`: Advances the physics simulation by a time delta and fires any registered contact callbacks.
-- `LWorld:stepFixed(accumulator, stepDt, maxSteps) -> number`: Performs fixed-timestep physics stepping, consuming accumulated time. Returns the leftover time.
+- `LWorld:stepFixed(accumulator, stepDt, maxSteps) -> number`: Performs fixed-timestep physics stepping, consuming accumulated time. Use this for frame pacing; bullet CCD still matters for thin barriers.
 - `LWorld:toPhysics(px) -> number`: Converts a pixel measurement to physics-world meters using the current meter scale.
 - `LWorld:toPixels(m) -> number`: Converts a physics-world meter measurement to pixels using the current meter scale.
 - `LWorld:type() -> string`: Returns the type name of this object ("LWorld").
@@ -762,6 +766,8 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 - Beam query contract:
   `LWorld:castBeam`, `LWorld:beamClosest`, and `LWorld:beamAll` are instant spatial queries, not projectile-body simulation. They share the same layer, mask, group, sensor, and `excludeBody` filtering semantics as the raycast family so gameplay can switch between projectiles and hitscan without inventing parallel collision policy. The current release ships the thin-beam path (`thickness = 0`) and leaves thick beam shape-casting as the explicit follow-up; calling `thickness > 0` fails fast so scripts do not assume wide-beam support yet.
+- Fast-projectile contract:
+  `LBody:setBullet(true)` and `LWorld:setBodyCCD(id, true)` enable Rapier CCD for physical projectiles that should bounce, collide, and emit normal contact events. `LWorld:setCcdSubsteps(n)` tunes how aggressively the world resolves CCD events for those bullet bodies, while `LWorld:stepFixed(accumulator, stepDt, maxSteps)` handles frame pacing and backlog reduction. Use bullet CCD for dynamic bodies that must stay physical; use `LWorld:castCircle(...)` when a script needs an immediate swept hit before moving a kinematic or manually-authored projectile. Use raycasts and beam helpers for thin hitscan logic, not for thick moving projectile volumes.
 - Flow-field contract:
   Authored flow fields live on the world, respect layer masks, can overlap additively, and may be sampled directly from Lua for AI, VFX, UI previews, or debugging. The physics world remains the source of truth for how those currents affect bodies during stepping.
 - Body-influence contract:

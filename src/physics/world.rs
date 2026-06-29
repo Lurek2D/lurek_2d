@@ -3,7 +3,7 @@
 //! Stepping syncs scripted state into Rapier, runs the solver pipeline, then writes motion back into body mirrors.
 //! Collision handling buffers begin and end contact pairs plus overlap events so gameplay reads post-step results.
 //! Contact and stats helpers summarize active manifolds, sleeping bodies, collider counts, and joint counts.
-//! Spatial query helpers provide filtered raycasts, instant beam traces, AABB scans, and point tests.
+//! Spatial query helpers provide filtered raycasts, swept circle casts, instant beam traces, AABB scans, and point tests.
 //! Fixture APIs let one body carry multiple colliders, while rebuild paths refresh filters and materials after edits.
 //! Joint APIs create revolute, rope, prismatic, weld, wheel, friction, motor, and mouse constraints with stable ids.
 //! Joint utilities also expose motor speeds, limits, break thresholds, connected bodies, and explicit destruction paths.
@@ -109,6 +109,26 @@ pub struct RaycastHit {
     pub normal: (f32, f32),
     /// Parametric distance along the ray.
     pub toi: f32,
+}
+/// The closest swept-shape intersection result.
+/// # Fields
+/// - `body_id`: body hit by the sweep.
+/// - `point`: world-space impact point on the hit collider.
+/// - `normal`: outward hit normal on the hit collider.
+/// - `toi`: travel distance from the cast origin to the first impact.
+/// - `safe_fraction`: normalized travel fraction in `0.0..=1.0` before the impact.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct ShapeSweepHit {
+    /// Body id that was hit.
+    pub body_id: BodyId,
+    /// World-space impact point on the hit collider.
+    pub point: (f32, f32),
+    /// Outward surface normal at the impact point.
+    pub normal: (f32, f32),
+    /// Travel distance from the cast origin to the first impact.
+    pub toi: f32,
+    /// Normalized travel fraction in `0.0..=1.0` before the impact.
+    pub safe_fraction: f32,
 }
 /// Beam hit collection mode for instant gameplay beams.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -1278,6 +1298,7 @@ impl World {
         let rb = RigidBodyBuilder::new(Self::rapier_body_type(body.body_type))
             .translation(Vector::new(body.position.x, body.position.y))
             .linvel(Vector::new(body.velocity.x, body.velocity.y))
+            .ccd_enabled(body.bullet)
             .build();
         let body_handle = self.rbodies.insert(rb);
         let collider = self.make_collider(&body);
@@ -2600,6 +2621,9 @@ impl World {
             if let Some(rb) = self.rbodies.get_mut(handle) {
                 rb.enable_ccd(bullet);
             }
+            if let Some(body) = self.bodies.get_mut(id) {
+                body.bullet = bullet;
+            }
         }
     }
     /// Return true if CCD is enabled on body `id`.
@@ -2609,7 +2633,15 @@ impl World {
                 return rb.is_ccd_enabled();
             }
         }
-        false
+        self.bodies.get(id).map(|body| body.bullet).unwrap_or(false)
+    }
+    /// Set the maximum number of CCD substeps used by the solver. Minimum value is `1`.
+    pub fn set_ccd_substeps(&mut self, max_substeps: usize) {
+        self.params.max_ccd_substeps = max_substeps.max(1);
+    }
+    /// Return the configured maximum number of CCD substeps.
+    pub fn get_ccd_substeps(&self) -> usize {
+        self.params.max_ccd_substeps
     }
     /// Apply force `(fx, fy)` at world point `(px, py)` on body `id`.
     pub fn apply_force_at_point(&mut self, id: usize, fx: f32, fy: f32, px: f32, py: f32) {
@@ -3043,6 +3075,30 @@ impl World {
         (x1 + unit_dir.x * distance, y1 + unit_dir.y * distance)
     }
 
+    fn validate_sweep_direction(
+        &self,
+        context: &'static str,
+        x: f32,
+        y: f32,
+        dx: f32,
+        dy: f32,
+        max_dist: f32,
+    ) -> Result<Vector, PhysicsError> {
+        validate_finite("x", f64::from(x))?;
+        validate_finite("y", f64::from(y))?;
+        validate_finite("dx", f64::from(dx))?;
+        validate_finite("dy", f64::from(dy))?;
+        validate_positive("max_distance", f64::from(max_dist))?;
+        let dir_len = (dx * dx + dy * dy).sqrt();
+        if dir_len < 1e-6 {
+            return Err(PhysicsError::DegenerateGeometry {
+                context,
+                detail: "direction must be non-zero",
+            });
+        }
+        Ok(Vector::new(dx / dir_len, dy / dir_len))
+    }
+
     fn beam_hit_from_raycast(hit: RaycastHit, segment_index: usize) -> BeamHit {
         BeamHit {
             body_id: hit.body_id,
@@ -3198,6 +3254,86 @@ impl World {
                 }
             }
         }
+    }
+
+    /// Sweep a circle from `(x, y)` in direction `(dx, dy)` and return the first collider hit.
+    pub fn cast_circle(
+        &self,
+        x: f32,
+        y: f32,
+        radius: f32,
+        dx: f32,
+        dy: f32,
+        max_dist: f32,
+    ) -> Option<ShapeSweepHit> {
+        self.cast_circle_filtered(
+            x,
+            y,
+            radius,
+            dx,
+            dy,
+            max_dist,
+            PhysicsQueryFilter::default(),
+        )
+    }
+
+    /// Sweep a circle from `(x, y)` in direction `(dx, dy)` using a query filter.
+    #[allow(clippy::too_many_arguments)]
+    pub fn cast_circle_filtered(
+        &self,
+        x: f32,
+        y: f32,
+        radius: f32,
+        dx: f32,
+        dy: f32,
+        max_dist: f32,
+        filter: PhysicsQueryFilter,
+    ) -> Option<ShapeSweepHit> {
+        self.try_cast_circle_filtered(x, y, radius, dx, dy, max_dist, filter)
+            .ok()
+            .flatten()
+    }
+
+    /// Sweep a circle from `(x, y)` in direction `(dx, dy)` using a query filter.
+    #[allow(clippy::too_many_arguments)]
+    pub fn try_cast_circle_filtered(
+        &self,
+        x: f32,
+        y: f32,
+        radius: f32,
+        dx: f32,
+        dy: f32,
+        max_dist: f32,
+        filter: PhysicsQueryFilter,
+    ) -> Result<Option<ShapeSweepHit>, PhysicsError> {
+        validate_positive("radius", f64::from(radius))?;
+        let unit_dir =
+            self.validate_sweep_direction("physics circle cast", x, y, dx, dy, max_dist)?;
+        let qp = self.query_pipeline(filter);
+        let shape = Ball::new(radius);
+        let shape_pos = Pose::new(Vector::new(x, y), 0.0);
+        let options = rapier2d::parry::query::ShapeCastOptions {
+            target_distance: 0.0,
+            stop_at_penetration: false,
+            max_time_of_impact: max_dist,
+            compute_impact_geometry_on_penetration: true,
+        };
+        let Some((col_handle, hit)) = qp.cast_shape(&shape_pos, unit_dir, &shape, options) else {
+            return Ok(None);
+        };
+        let Some(body_id) = self.body_for_collider(col_handle) else {
+            return Ok(None);
+        };
+        if !self.has_body(body_id) {
+            return Ok(None);
+        }
+        Ok(Some(ShapeSweepHit {
+            body_id: BodyId(body_id),
+            point: (hit.witness1.x, hit.witness1.y),
+            normal: (hit.normal1.x, hit.normal1.y),
+            toi: hit.time_of_impact,
+            safe_fraction: (hit.time_of_impact / max_dist).clamp(0.0, 1.0),
+        }))
     }
 
     /// Return only the closest instant beam hit.

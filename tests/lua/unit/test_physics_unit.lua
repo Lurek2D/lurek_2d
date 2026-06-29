@@ -591,14 +591,29 @@ describe("body userdata methods", function()
 
     -- @covers LBody:isBullet
     it("isBullet returns the current ccd flag", function()
-        expect_type("boolean", new_dynamic_body(new_world(0, 0)):isBullet())
+        local body = new_dynamic_body(new_world(0, 0))
+        expect_false(body:isBullet())
+        body:setBullet(true)
+        expect_true(body:isBullet())
     end)
 
     -- @covers LBody:setBullet
     it("setBullet updates the ccd flag", function()
-        local body = new_dynamic_body(new_world(0, 0))
-        body:setBullet(true)
-        expect_true(body:isBullet())
+        local function fire_projectile(bullet_mode)
+            local world = new_world(0, 0)
+            world:setCcdSubsteps(4)
+            local wall = world:newBody(100, 40, 2, 80, "static")
+            local projectile = world:newCircleBody(20, 40, 1, "dynamic")
+            projectile:setBullet(bullet_mode)
+            projectile:setVelocity(6000, 0)
+            world:step(1 / 60)
+            return projectile:getX(), wall:getX()
+        end
+
+        local tunneled_x, wall_x = fire_projectile(false)
+        local blocked_x = fire_projectile(true)
+        expect_true(tunneled_x > wall_x)
+        expect_true(blocked_x < wall_x)
     end)
 
     -- @covers LBody:isSleepingAllowed
@@ -1462,6 +1477,7 @@ describe("world userdata methods", function()
         local world = new_world(0, 0)
         local body = world:newBody(0, 0, "dynamic")
         world:setBodyCCD(body:getId(), true)
+        world:step(1 / 60)
         expect_true(world:getBodyCCD(body:getId()))
     end)
 
@@ -1469,6 +1485,7 @@ describe("world userdata methods", function()
     it("getBodyCCD returns whether continuous collision detection is enabled", function()
         local world = new_world(0, 0)
         local body = world:newBody(0, 0, "dynamic")
+        expect_false(world:getBodyCCD(body:getId()))
         world:setBodyCCD(body:getId(), true)
         expect_true(world:getBodyCCD(body:getId()))
     end)
@@ -1504,6 +1521,23 @@ describe("world userdata methods", function()
         local world = new_world(0, 0)
         world:setSolverIterations(8)
         expect_equal(8, world:getSolverIterations())
+    end)
+
+    -- @covers LWorld:setCcdSubsteps
+    it("setCcdSubsteps persists positive values and clamps zero", function()
+        local world = new_world(0, 0)
+        world:setCcdSubsteps(4)
+        expect_equal(4, world:getCcdSubsteps())
+        world:setCcdSubsteps(0)
+        expect_equal(1, world:getCcdSubsteps())
+    end)
+
+    -- @covers LWorld:getCcdSubsteps
+    it("getCcdSubsteps returns the configured value", function()
+        local world = new_world(0, 0)
+        expect_equal(1, world:getCcdSubsteps())
+        world:setCcdSubsteps(6)
+        expect_equal(6, world:getCcdSubsteps())
     end)
 
     -- @covers LWorld:isBodySleeping
@@ -1597,6 +1631,25 @@ describe("world userdata methods", function()
         local empty = world:raycastAll(50, 200, 0, 0, 600)
         expect_equal(0, #empty)
         expect_equal(0, #world:raycastAll(50, 200, 1, 0, 600, { layer = 0x1, mask = 0x4 }))
+    end)
+
+    -- @covers LWorld:castCircle
+    it("castCircle returns the first solid hit and respects sensor filters", function()
+        local world = new_world(0, 0)
+        local sensor = world:newBody(60, 0, 6, 40, "sensor")
+        local wall = world:newBody(110, 0, 6, 40, "static")
+        world:step(1 / 60)
+
+        local with_sensor = world:castCircle(0, 0, 4, 1, 0, 200, { includeSensors = true })
+        local without_sensor = world:castCircle(0, 0, 4, 1, 0, 200, { includeSensors = false })
+
+        expect_type("table", with_sensor)
+        expect_type("table", without_sensor)
+        expect_equal(sensor:getId(), with_sensor.bodyId)
+        expect_equal(wall:getId(), without_sensor.bodyId)
+        expect_true(without_sensor.toi > with_sensor.toi)
+        expect_true(without_sensor.safeFraction > with_sensor.safeFraction)
+        expect_near(-1, without_sensor.normalX, 0.01)
     end)
 
     -- @covers LWorld:castBeam

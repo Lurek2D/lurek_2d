@@ -8,7 +8,7 @@ use crate::physics::{
     AlphaShapeOptions, BeamHit, BeamHitMode, BeamOptions, BeamSegment, BeamTrace, Body, BodyId,
     BodyType, FlowApplicationMode, FlowCombineMode, FlowDirectionMode, FlowFalloff, FlowField,
     FlowGeometry, FlowMedium, FlowSample, PhysicsQueryFilter, PhysicsWorldStats, PhysicsZone,
-    RaycastHit, Shape, TerrainMap, World,
+    RaycastHit, Shape, ShapeSweepHit, TerrainMap, World,
 };
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -252,6 +252,22 @@ fn raycast_hit_to_table<'lua>(lua: &'lua Lua, hit: &RaycastHit) -> LuaResult<Lua
     tbl.set("normalX", hit.normal.0)?;
     tbl.set("normalY", hit.normal.1)?;
     tbl.set("toi", hit.toi)?;
+    Ok(tbl)
+}
+
+/// Serializes a swept-circle hit into the Lua table shape exposed by the bindings.
+fn shape_sweep_hit_to_table<'lua>(
+    lua: &'lua Lua,
+    hit: &ShapeSweepHit,
+) -> LuaResult<LuaTable<'lua>> {
+    let tbl = lua.create_table()?;
+    tbl.set("bodyId", hit.body_id)?;
+    tbl.set("x", hit.point.0)?;
+    tbl.set("y", hit.point.1)?;
+    tbl.set("normalX", hit.normal.0)?;
+    tbl.set("normalY", hit.normal.1)?;
+    tbl.set("toi", hit.toi)?;
+    tbl.set("safeFraction", hit.safe_fraction)?;
     Ok(tbl)
 }
 
@@ -1765,6 +1781,35 @@ impl LuaUserData for LuaWorld {
             let filter = query_filter_from_lua("getBodyAtPoint", vals.get(2).cloned())?;
             Ok(this.world.borrow().get_body_at_point_filtered(x, y, filter))
         });
+        // -- castCircle --
+        /// Sweeps a circle along a direction and returns the first collider hit.
+        /// @param | x | number | Circle center X at the start of the sweep.
+        /// @param | y | number | Circle center Y at the start of the sweep.
+        /// @param | radius | number | Circle radius in world units.
+        /// @param | dx | number | Sweep direction X (does not need to be normalized).
+        /// @param | dy | number | Sweep direction Y (does not need to be normalized).
+        /// @param | maxDist | number | Maximum sweep travel distance.
+        /// @param | filter | table? | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}.
+        /// @return | table | Hit info {bodyId, x, y, normalX, normalY, toi, safeFraction} or nil if no hit.
+        methods.add_method("castCircle", |lua, this, args: LuaMultiValue| {
+            let vals: Vec<LuaValue> = args.into_iter().collect();
+            let x = required_f32(lua, &vals, 0, "x")?;
+            let y = required_f32(lua, &vals, 1, "y")?;
+            let radius = required_f32(lua, &vals, 2, "radius")?;
+            let dx = required_f32(lua, &vals, 3, "dx")?;
+            let dy = required_f32(lua, &vals, 4, "dy")?;
+            let max_dist = required_f32(lua, &vals, 5, "maxDist")?;
+            let filter = query_filter_from_lua("castCircle", vals.get(6).cloned())?;
+            match this
+                .world
+                .borrow()
+                .try_cast_circle_filtered(x, y, radius, dx, dy, max_dist, filter)
+                .map_err(|err| physics_runtime_error("castCircle", err))?
+            {
+                Some(hit) => Ok(LuaValue::Table(shape_sweep_hit_to_table(lua, &hit)?)),
+                None => Ok(LuaValue::Nil),
+            }
+        });
         // -- castBeam --
         /// Casts an instant beam and returns hit plus segment data for gameplay or rendering.
         /// @param | x | number | Beam origin X.
@@ -2032,7 +2077,7 @@ impl LuaUserData for LuaWorld {
             Ok(())
         });
         // -- setBodyCCD --
-        /// Enables or disables continuous collision detection (bullet mode) on a body to prevent tunneling.
+        /// Enables or disables continuous collision detection (bullet mode) on a body to prevent tunneling. This is the world-level alias for `LBody:setBullet`.
         /// @param | id | integer | The body ID.
         /// @param | enabled | boolean | True to enable CCD.
         methods.add_method("setBodyCCD", |_, this, (id, enabled): (usize, bool)| {
@@ -2040,7 +2085,7 @@ impl LuaUserData for LuaWorld {
             Ok(())
         });
         // -- getBodyCCD --
-        /// Returns whether continuous collision detection is enabled on a body.
+        /// Returns whether continuous collision detection is enabled on a body. This is the world-level alias for `LBody:isBullet`.
         /// @param | id | integer | The body ID.
         /// @return | boolean | True if CCD is enabled.
         methods.add_method("getBodyCCD", |_, this, id: usize| {
@@ -2125,6 +2170,19 @@ impl LuaUserData for LuaWorld {
         methods.add_method("getSolverIterations", |_, this, ()| {
             Ok(this.world.borrow().get_solver_iterations())
         });
+        // -- setCcdSubsteps --
+        /// Sets the maximum number of CCD substeps. Increase this when fast bullet bodies still need more reliable thin-wall resolution.
+        /// @param | n | integer | Maximum CCD substeps. Values below 1 clamp to 1.
+        methods.add_method("setCcdSubsteps", |_, this, n: usize| {
+            this.world.borrow_mut().set_ccd_substeps(n);
+            Ok(())
+        });
+        // -- getCcdSubsteps --
+        /// Returns the maximum number of CCD substeps used for bullet bodies in this world.
+        /// @return | integer | CCD substep count.
+        methods.add_method("getCcdSubsteps", |_, this, ()| {
+            Ok(this.world.borrow().get_ccd_substeps())
+        });
         // -- newBodies --
         /// Batch-creates multiple bodies at once for better performance. Each entry is {x, y, w, h, type} or {x, y, type}.
         /// @param | specs | table | Array of tables: {{x, y, w, h, "dynamic"}, ...} or {{x, y, "dynamic"}, ...} (defaults to 16x16).
@@ -2155,7 +2213,7 @@ impl LuaUserData for LuaWorld {
             Ok(ids)
         });
         // -- stepFixed --
-        /// Performs fixed-timestep physics stepping, consuming accumulated time. Returns the leftover time.
+        /// Performs fixed-timestep physics stepping, consuming accumulated time. Use this for frame pacing; bullet CCD still matters for thin barriers.
         /// @param | accumulator | number | Accumulated time since last frame (seconds).
         /// @param | stepDt | number | Fixed step size (e.g. 1/60).
         /// @param | maxSteps | integer | Maximum sub-steps per call to prevent spiral of death.
@@ -3223,7 +3281,7 @@ impl LuaUserData for LuaBody {
             Ok(this.world.borrow().is_bullet(this.id.0))
         });
         // -- setBullet --
-        /// Enables or disables continuous collision detection to prevent fast-moving tunneling.
+        /// Enables or disables continuous collision detection to prevent fast-moving tunneling. Use it for small, fast bodies such as bullets and shrapnel, not every body in the scene.
         /// @param | bullet | boolean | True to enable CCD.
         methods.add_method("setBullet", |_, this, bullet: bool| {
             this.world.borrow_mut().set_bullet(this.id.0, bullet);

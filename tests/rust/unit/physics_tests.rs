@@ -246,6 +246,21 @@ mod world_tests {
     }
 
     #[test]
+    fn authored_bullet_flag_seeds_rapier_and_world_mirror() {
+        let mut w = World::new(0.0, 0.0);
+        let mut body = Body::new_circle(0.0, 0.0, 1.0, BodyType::Dynamic);
+        body.bullet = true;
+        let id = w.add_body(body);
+
+        assert!(w.is_bullet(id.0));
+        assert!(w.get_body(id.0).unwrap().bullet);
+
+        w.set_bullet(id.0, false);
+        assert!(!w.is_bullet(id.0));
+        assert!(!w.get_body(id.0).unwrap().bullet);
+    }
+
+    #[test]
     fn query_filter_uses_layer_mask_and_sensor_flag() {
         let mut w = World::new(0.0, 0.0);
         let mut solid = Body::new(0.0, 0.0, 10.0, 10.0, BodyType::Static);
@@ -481,6 +496,7 @@ mod world_tests {
         w.set_gravity(-3.0, 4.0);
         w.set_meter(96.0);
         w.set_solver_iterations(12);
+        w.set_ccd_substeps(4);
         w.try_add_zone(PhysicsZone::try_new_rect(0, -10.0, -10.0, 20.0, 20.0).unwrap())
             .unwrap();
 
@@ -493,6 +509,7 @@ mod world_tests {
         assert_eq!(w.get_gravity(), (-3.0, 4.0));
         assert!((w.get_meter() - 96.0).abs() < 1e-6);
         assert_eq!(w.get_solver_iterations(), 12);
+        assert_eq!(w.get_ccd_substeps(), 4);
     }
 
     #[test]
@@ -502,6 +519,7 @@ mod world_tests {
         w.set_gravity(-3.0, 4.0);
         w.set_meter(96.0);
         w.set_solver_iterations(12);
+        w.set_ccd_substeps(4);
         w.try_add_zone(PhysicsZone::try_new_rect(0, -10.0, -10.0, 20.0, 20.0).unwrap())
             .unwrap();
 
@@ -513,6 +531,7 @@ mod world_tests {
         assert_eq!(w.get_gravity(), (0.0, 9.8));
         assert!((w.get_meter() - 1.0).abs() < 1e-6);
         assert_eq!(w.get_solver_iterations(), 4);
+        assert_eq!(w.get_ccd_substeps(), 1);
     }
 
     #[test]
