@@ -383,8 +383,16 @@ end)
 -- @describe lurek.asset live reload metadata
 describe("lurek.asset live reload metadata", function()
     -- @covers lurek.asset.watch
+    it("watch marks an asset for live-reload metadata tracking", function()
+        reset_assets()
+        local handle = lurek.asset.load(PATH_TOML, "toml")
+        local watched = lurek.asset.watch(handle)
+        expect_equal("LAssetHandle", watched:type())
+        reset_assets()
+    end)
+
     -- @covers lurek.asset.resolve
-    it("watch marks an asset and resolve returns a metadata snapshot", function()
+    it("resolve returns a metadata snapshot for a watched handle", function()
         reset_assets()
         local handle = lurek.asset.load(PATH_TOML, "toml")
         local watched = lurek.asset.watch(handle)
@@ -396,19 +404,35 @@ describe("lurek.asset live reload metadata", function()
     end)
 
     -- @covers lurek.asset.reload
-    -- @covers lurek.asset.getRevision
-    -- @covers lurek.asset.onReload
-    it("reload increments revision and fires callbacks", function()
+    it("reload increments a watched asset revision", function()
         reset_assets()
         local handle = lurek.asset.load(PATH_TOML, "toml")
         local before = lurek.asset.getRevision(handle)
+        local after = lurek.asset.reload(handle)
+        expect_true(after > before)
+        reset_assets()
+    end)
+
+    -- @covers lurek.asset.getRevision
+    it("getRevision returns the current watched asset revision", function()
+        reset_assets()
+        local handle = lurek.asset.load(PATH_TOML, "toml")
+        local before = lurek.asset.getRevision(handle)
+        local after = lurek.asset.reload(handle)
+        expect_equal(after, lurek.asset.getRevision(handle))
+        expect_true(after > before)
+        reset_assets()
+    end)
+
+    -- @covers lurek.asset.onReload
+    it("onReload fires callbacks with the new revision", function()
+        reset_assets()
+        local handle = lurek.asset.load(PATH_TOML, "toml")
         local callback_revision = 0
         lurek.asset.onReload(handle, function(_, revision)
             callback_revision = revision
         end)
         local after = lurek.asset.reload(handle)
-        expect_true(after > before)
-        expect_equal(after, lurek.asset.getRevision(handle))
         expect_equal(after, callback_revision)
         reset_assets()
     end)

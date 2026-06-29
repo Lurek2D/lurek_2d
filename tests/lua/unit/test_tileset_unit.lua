@@ -342,8 +342,7 @@ describe("lurek.tileset v2 catalog", function()
     end)
 
     -- @covers LTileSet:setTerrainProfile
-    -- @covers LTileSet:getTerrainProfile
-    it("stores Godot-style terrain profiles", function()
+    it("setTerrainProfile stores Godot-style terrain metadata", function()
         local tileset = sample_tileset()
         tileset:setTerrainProfile("grass", {
             terrainSet = "ground",
@@ -352,6 +351,17 @@ describe("lurek.tileset v2 catalog", function()
         })
         local profile = tileset:getTerrainProfile("grass")
         expect_equal("ground", profile.terrainSet)
+    end)
+
+    -- @covers LTileSet:getTerrainProfile
+    it("getTerrainProfile returns stored terrain metadata", function()
+        local tileset = sample_tileset()
+        tileset:setTerrainProfile("grass", {
+            terrainSet = "ground",
+            mode = "matchCornersAndSides",
+            defaultTileId = 2,
+        })
+        local profile = tileset:getTerrainProfile("grass")
         expect_equal("matchCornersAndSides", profile.mode)
         expect_equal(2, profile.defaultTileId)
     end)

@@ -667,9 +667,7 @@ end)
 -- @describe spine attachment sources
 describe("spine attachment sources", function()
     -- @covers LSkeleton:bindAtlas
-    -- @covers LSkeleton:setAttachmentSource
-    -- @covers LSkeleton:getAttachmentSource
-    it("binds atlas regions and explicit neutral attachment sources", function()
+    it("bindAtlas populates sprite-region attachment sources", function()
         local atlas = lurek.sprite.parseAtlas(
             '{"frames":{"head":{"frame":{"x":2,"y":3,"w":8,"h":9},"rotated":false}}}'
         )
@@ -680,7 +678,34 @@ describe("spine attachment sources", function()
         local source = sk:getAttachmentSource("head")
         expect_equal("spriteRegion", source.kind)
         expect_equal(8, source.w)
+    end)
 
+    -- @covers LSkeleton:setAttachmentSource
+    it("setAttachmentSource stores explicit neutral attachment metadata", function()
+        local sk = lurek.spine.newSkeleton("sources")
+        sk:addBone("root")
+        sk:addSlot("head_slot", 0, "head")
+        sk:setAttachmentSource("head_slot", {
+            kind = "imageRegion",
+            name = "manual",
+            x = 1,
+            y = 2,
+            w = 3,
+            h = 4,
+            textureId = 42,
+            textureWidth = 16,
+            textureHeight = 16,
+        })
+        local manual = sk:getAttachmentSource("head_slot")
+        expect_equal("imageRegion", manual.kind)
+        expect_equal(42, manual.textureId)
+    end)
+
+    -- @covers LSkeleton:getAttachmentSource
+    it("getAttachmentSource returns the stored explicit attachment metadata", function()
+        local sk = lurek.spine.newSkeleton("sources")
+        sk:addBone("root")
+        sk:addSlot("head_slot", 0, "head")
         sk:setAttachmentSource("head_slot", {
             kind = "imageRegion",
             name = "manual",

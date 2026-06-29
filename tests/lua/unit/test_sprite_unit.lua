@@ -786,18 +786,34 @@ describe("sprite image-backed sheets", function()
         return img
     end
 
+    local function new_sheet_from_image()
+        return lurek.sprite.newSheetFromImage(image(), { frameWidth = 16, frameHeight = 16 })
+    end
+
+    local function new_auto_tile_sheet()
+        return lurek.sprite.newAutoTileSheet(image(), "minimal16", { tileWidth = 16, tileHeight = 16 })
+    end
+
     -- @covers lurek.sprite.newSheetFromImage
+    it("newSheetFromImage infers a sheet from image dimensions", function()
+        local sheet = new_sheet_from_image()
+        expect_equal(2, sheet:getFrameCount())
+    end)
+
     -- @covers LSpriteSheet:toFrames
-    -- @covers LSpriteSheet:toAnimationClip
-    it("creates sheets from image dimensions and exports frame DTOs", function()
-        local img = image()
-        local sheet = lurek.sprite.newSheetFromImage(img, { frameWidth = 16, frameHeight = 16 })
+    it("toFrames exports frame DTOs for an image-backed sheet", function()
+        local sheet = new_sheet_from_image()
         local frames = sheet:toFrames()
-        local clip = sheet:toAnimationClip({ name = "idle", fps = 8, loop = true })
         expect_equal(2, #frames)
+        expect_equal(16, frames[2].x)
+    end)
+
+    -- @covers LSpriteSheet:toAnimationClip
+    it("toAnimationClip builds a clip descriptor from sheet frames", function()
+        local sheet = new_sheet_from_image()
+        local clip = sheet:toAnimationClip({ name = "idle", fps = 8, loop = true })
         expect_equal("idle", clip.name)
         expect_equal(2, #clip.frames)
-        expect_equal(10, ({ img:getPixel(0, 0) })[1])
     end)
 
     -- @covers lurek.sprite.newAtlasFromImage
@@ -814,25 +830,62 @@ describe("sprite image-backed sheets", function()
     end)
 
     -- @covers lurek.sprite.newAutoTileSheet
-    -- @covers LSpriteAutoTileSheet:getLayout
-    -- @covers LSpriteAutoTileSheet:getDefaultMode
-    -- @covers LSpriteAutoTileSheet:getTileCount
-    -- @covers LSpriteAutoTileSheet:getQuad
-    -- @covers LSpriteAutoTileSheet:getBitmaskForTile
-    -- @covers LSpriteAutoTileSheet:getTileForBitmask
-    -- @covers LSpriteAutoTileSheet:toFrames
-    -- @covers LSpriteAutoTileSheet:type
-    -- @covers LSpriteAutoTileSheet:typeOf
-    it("creates autotile sheet descriptors from image dimensions", function()
-        local auto = lurek.sprite.newAutoTileSheet(image(), "minimal16", { tileWidth = 16, tileHeight = 16 })
-        expect_equal("minimal16", auto:getLayout())
-        expect_type("string", auto:getDefaultMode())
+    it("newAutoTileSheet creates autotile descriptors from image dimensions", function()
+        local auto = new_auto_tile_sheet()
         expect_equal(16, auto:getTileCount())
+    end)
+
+    -- @covers LSpriteAutoTileSheet:getLayout
+    it("getLayout returns the autotile layout id", function()
+        local auto = new_auto_tile_sheet()
+        expect_equal("minimal16", auto:getLayout())
+    end)
+
+    -- @covers LSpriteAutoTileSheet:getDefaultMode
+    it("getDefaultMode returns the default autotile matching mode", function()
+        local auto = new_auto_tile_sheet()
+        expect_type("string", auto:getDefaultMode())
+    end)
+
+    -- @covers LSpriteAutoTileSheet:getTileCount
+    it("getTileCount reports the autotile variant count", function()
+        local auto = new_auto_tile_sheet()
+        expect_equal(16, auto:getTileCount())
+    end)
+
+    -- @covers LSpriteAutoTileSheet:getQuad
+    it("getQuad returns atlas geometry for one autotile entry", function()
+        local auto = new_auto_tile_sheet()
         expect_equal(16, auto:getQuad(2).x)
+    end)
+
+    -- @covers LSpriteAutoTileSheet:getBitmaskForTile
+    it("getBitmaskForTile returns the bitmask mapped to one tile", function()
+        local auto = new_auto_tile_sheet()
         expect_equal(0, auto:getBitmaskForTile(1))
+    end)
+
+    -- @covers LSpriteAutoTileSheet:getTileForBitmask
+    it("getTileForBitmask resolves the tile for one adjacency mask", function()
+        local auto = new_auto_tile_sheet()
         expect_equal(1, auto:getTileForBitmask(0))
+    end)
+
+    -- @covers LSpriteAutoTileSheet:toFrames
+    it("toFrames exports frame DTOs for every autotile entry", function()
+        local auto = new_auto_tile_sheet()
         expect_equal(16, #auto:toFrames())
+    end)
+
+    -- @covers LSpriteAutoTileSheet:type
+    it("type returns the autotile sheet userdata name", function()
+        local auto = new_auto_tile_sheet()
         expect_equal("LSpriteAutoTileSheet", auto:type())
+    end)
+
+    -- @covers LSpriteAutoTileSheet:typeOf
+    it("typeOf accepts the autotile sheet userdata name", function()
+        local auto = new_auto_tile_sheet()
         expect_true(auto:typeOf("LObject"))
     end)
 end)

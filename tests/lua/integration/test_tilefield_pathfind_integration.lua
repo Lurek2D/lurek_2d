@@ -23,8 +23,12 @@ describe("integration: tilefield feeds pathfind movement", function()
         end
     end)
 
+    -- @integration lurek.tilefield.new
+    -- @integration LTileField:setBlock
+    -- @integration LTileField:setCost
     -- @integration lurek.pathfind.newHexGridFromField
     -- @integration LHexGrid:findPath
+    -- @integration LHexGrid:isBlocked
     it("hex tilefield feeds hex pathfinding without square-grid conversion", function()
         local field = lurek.tilefield.new({ width = 5, height = 5, topology = "hex" })
         field:setBlock(3, 3, 1, "move", true)

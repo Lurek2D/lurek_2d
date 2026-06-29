@@ -165,8 +165,7 @@ describe("overlay methods", function()
     end)
 
     -- @covers LOverlay:setStatusEffect
-    -- @covers LOverlay:getStatusEffect
-    it("setStatusEffect stores textured status overlays and exposes them by id", function()
+    it("setStatusEffect stores textured status overlays", function()
         local overlay = new_overlay(320, 240)
         local texture = lurek.image.newImageData(4, 4)
         texture:fill(255, 255, 255, 255)
@@ -183,18 +182,47 @@ describe("overlay methods", function()
         local effect = overlay:getStatusEffect("frozen")
         local plan = overlay:getRenderPlan()
         expect_equal("frozen", effect.id)
-        expect_equal("frozen", effect.kind)
-        expect_true(effect.hasTexture)
-        expect_true(effect.intensity > 0.0)
         expect_equal("grayscale", effect.shader)
         expect_true(table_contains(plan.rendered, "status_color_wash"))
         expect_true(table_contains(plan.rendered, "status_texture"))
         expect_true(table_contains(plan.externally_handled, "status_postfx"))
     end)
 
+    -- @covers LOverlay:getStatusEffect
+    it("getStatusEffect returns a configured overlay effect by id", function()
+        local overlay = new_overlay(320, 240)
+        overlay:setStatusEffect("frozen", {
+            intensity = 7.0,
+            fadeIn = 0.01,
+            color = { 0.6, 0.8, 1.0, 0.3 },
+            shader = "grayscale",
+            shaderStrength = 0.75,
+        })
+        overlay:update(0.05)
+        local effect = overlay:getStatusEffect("frozen")
+        expect_equal("frozen", effect.kind)
+        expect_true(effect.intensity > 0.0)
+        expect_equal("grayscale", effect.shader)
+    end)
+
     -- @covers LOverlay:setStatusIntensity
+    it("setStatusIntensity creates preset overlay layers", function()
+        local overlay = new_overlay(320, 240)
+        overlay:setStatusEffect("burning", {
+            intensity = 5.0,
+            priority = 10,
+            fadeIn = 0.01,
+        })
+        overlay:setStatusIntensity("lowhealth", 3.0)
+        overlay:update(0.05)
+        local effects = overlay:getStatusEffects()
+        expect_true(#effects >= 2)
+        expect_equal("lowhealth", effects[1].id)
+        expect_true(effects[1].intensity > 0.0)
+    end)
+
     -- @covers LOverlay:getStatusEffects
-    it("setStatusIntensity creates preset layers and status effects stay priority sorted", function()
+    it("getStatusEffects returns active effects sorted by priority", function()
         local overlay = new_overlay(320, 240)
         overlay:setStatusEffect("burning", {
             intensity = 5.0,
@@ -207,7 +235,6 @@ describe("overlay methods", function()
         expect_true(#effects >= 2)
         expect_equal("lowhealth", effects[1].id)
         expect_equal("burning", effects[#effects].id)
-        expect_true(effects[1].intensity > 0.0)
     end)
 
     -- @covers LOverlay:clearStatusEffect

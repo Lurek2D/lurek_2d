@@ -38,6 +38,14 @@ local function new_layered_fixture()
     return stack
 end
 
+local function load_test_animated_image()
+    local path = "work/test_load_animated.gif"
+    local a = solid_image(2, 2, 255, 0, 0, 255)
+    local b = solid_image(2, 2, 0, 255, 0, 255)
+    lurek.image.saveGIF({ a, b }, path, { delayMs = 40 })
+    return lurek.image.loadAnimated(path)
+end
+
 local function write_small_province_map()
     local img = solid_image(4, 4, 0, 0, 0, 0)
 
@@ -910,24 +918,32 @@ end)
 -- @describe image extended editing API
 describe("image extended editing API", function()
     -- @covers LImageData:clone
-    -- @covers LImageData:copyRegion
-    it("clone and copyRegion return independent image data", function()
+    it("clone returns independent image data", function()
         local img = solid_image(4, 4, 10, 20, 30, 255)
         local copy = img:clone()
-        local region = img:copyRegion(1, 1, 2, 2)
         copy:setPixel(0, 0, 1, 2, 3, 4)
         expect_pixel(img, 0, 0, 10, 20, 30, 255)
+    end)
+
+    -- @covers LImageData:copyRegion
+    it("copyRegion returns an extracted sub-image", function()
+        local img = solid_image(4, 4, 10, 20, 30, 255)
+        local region = img:copyRegion(1, 1, 2, 2)
         expect_equal(2, region:getWidth())
         expect_equal(2, region:getHeight())
     end)
 
     -- @covers LImageData:applyEffect
-    -- @covers LImageData:applyEffects
-    it("applyEffect and applyEffects mutate pixels through named effects", function()
+    it("applyEffect mutates pixels through one named effect", function()
         local img = solid_image(2, 2, 20, 40, 80, 255)
         img:applyEffect("invert", { region = { 0, 0, 1, 1 } })
         local r = ({ img:getPixel(0, 0) })[1]
         expect_equal(235, r)
+    end)
+
+    -- @covers LImageData:applyEffects
+    it("applyEffects applies an effect chain to image data", function()
+        local img = solid_image(2, 2, 20, 40, 80, 255)
         img:applyEffects({ "grayscale", { name = "posterize", opts = { levels = 2 } } })
         expect_type("number", ({ img:getPixel(1, 1) })[1])
     end)
@@ -1034,24 +1050,50 @@ fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @locati
     end)
 
     -- @covers lurek.image.loadAnimated
-    -- @covers LAnimatedImage:frameCount
-    -- @covers LAnimatedImage:getFrame
-    -- @covers LAnimatedImage:getDuration
-    -- @covers LAnimatedImage:getFrames
-    -- @covers LAnimatedImage:getDurations
-    -- @covers LAnimatedImage:type
-    -- @covers LAnimatedImage:typeOf
-    it("loadAnimated decodes saved GIF frames and durations", function()
-        local a = solid_image(2, 2, 255, 0, 0, 255)
-        local b = solid_image(2, 2, 0, 255, 0, 255)
-        lurek.image.saveGIF({ a, b }, "work/test_load_animated.gif", { delayMs = 40 })
-        local animated = lurek.image.loadAnimated("work/test_load_animated.gif")
-        expect_equal(2, animated:frameCount())
-        expect_type("userdata", animated:getFrame(1))
-        expect_true(animated:getDuration(1) >= 10)
-        expect_equal(2, #animated:getFrames())
-        expect_equal(2, #animated:getDurations())
+    it("loadAnimated decodes a saved GIF into animated image userdata", function()
+        local animated = load_test_animated_image()
         expect_equal("LAnimatedImage", animated:type())
+    end)
+
+    -- @covers LAnimatedImage:frameCount
+    it("frameCount reports the number of decoded frames", function()
+        local animated = load_test_animated_image()
+        expect_equal(2, animated:frameCount())
+    end)
+
+    -- @covers LAnimatedImage:getFrame
+    it("getFrame returns one decoded frame image", function()
+        local animated = load_test_animated_image()
+        expect_type("userdata", animated:getFrame(1))
+    end)
+
+    -- @covers LAnimatedImage:getDuration
+    it("getDuration returns the per-frame delay", function()
+        local animated = load_test_animated_image()
+        expect_true(animated:getDuration(1) >= 10)
+    end)
+
+    -- @covers LAnimatedImage:getFrames
+    it("getFrames returns all decoded frame images", function()
+        local animated = load_test_animated_image()
+        expect_equal(2, #animated:getFrames())
+    end)
+
+    -- @covers LAnimatedImage:getDurations
+    it("getDurations returns the per-frame delays table", function()
+        local animated = load_test_animated_image()
+        expect_equal(2, #animated:getDurations())
+    end)
+
+    -- @covers LAnimatedImage:type
+    it("type returns the animated image userdata name", function()
+        local animated = load_test_animated_image()
+        expect_equal("LAnimatedImage", animated:type())
+    end)
+
+    -- @covers LAnimatedImage:typeOf
+    it("typeOf accepts the animated image userdata name", function()
+        local animated = load_test_animated_image()
         expect_true(animated:typeOf("LObject"))
     end)
 end)

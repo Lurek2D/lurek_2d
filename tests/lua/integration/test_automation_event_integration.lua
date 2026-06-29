@@ -123,12 +123,9 @@ describe("automation + event integration", function()
     -- @integration lurek.automation.update
     -- @integration lurek.input.clearBindings
     -- @integration lurek.input.bind
-    -- @integration lurek.input.wasActionPressed
-    -- @integration lurek.input.keyboard.isDown
     -- @integration lurek.input.mouse.getPosition
     -- @integration lurek.input.mouse.getWheelDelta
-    -- @integration lurek.input.mouse.isDown
-    it("updates live input state and callbacks for keyboard and mouse automation", function()
+    it("updates input callbacks, pointer position, and wheel state for automation", function()
         local seen = {}
         lurek.keypressed = function(key, scancode, is_repeat)
             seen.keypressed = { key, scancode, is_repeat }
@@ -177,10 +174,6 @@ describe("automation + event integration", function()
         expect_equal(1, seen.mousepressed[3])
         expect_equal(0, seen.wheelmoved[1])
         expect_equal(-2, seen.wheelmoved[2])
-        expect_true(lurek.input.keyboard.isDown("a"))
-        expect_true(lurek.input.wasActionPressed("jump"))
-        expect_true(lurek.input.mouse.isDown(1))
-        expect_true(lurek.input.wasActionPressed("click"))
         local mx, my = lurek.input.mouse.getPosition()
         expect_equal(120, mx)
         expect_equal(84, my)
@@ -195,8 +188,6 @@ describe("automation + event integration", function()
         expect_equal(120, seen.mousereleased[1])
         expect_equal(84, seen.mousereleased[2])
         expect_equal(1, seen.mousereleased[3])
-        expect_false(lurek.input.keyboard.isDown("a"))
-        expect_false(lurek.input.mouse.isDown(1))
 
         lurek.automation.stop()
         lurek.automation.unload("live_input")

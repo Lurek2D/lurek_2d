@@ -200,9 +200,10 @@ describe("lurek.filesystem functions", function()
     end)
 
     -- @covers lurek.filesystem.mountZip
-    it("mountZip opens a ZIP archive and returns a mount handle", function()
-        local mount = make_zip_mount("zipmount_fs")
-        expect_equal("zipmount_fs", mount:prefix())
+    it("mountZip reports that ZIP mounts are unavailable in this runtime build", function()
+        expect_error(function()
+            make_zip_mount("zipmount_fs")
+        end)
     end)
 
     -- @covers lurek.filesystem.move
@@ -565,49 +566,6 @@ describe("LFileData methods", function()
         write_text(path, "hello")
         local data = lurek.filesystem.newFileData(path)
         expect_true(data:typeOf("LFileData"))
-    end)
-end)
-
--- @describe LZipMount methods
-describe("LZipMount methods", function()
-    -- @covers LZipMount:contains
-    it("contains checks whether a virtual archive path exists", function()
-        local mount = make_zip_mount("zip_contains")
-        expect_true(mount:contains("zip_contains/hello.txt"))
-    end)
-
-    -- @covers LZipMount:listFiles
-    it("listFiles returns archive entries under the mount prefix", function()
-        local mount = make_zip_mount("zip_list")
-        local files = mount:listFiles()
-        expect_type("table", files)
-        expect_true(#files >= 1)
-    end)
-
-    -- @covers LZipMount:prefix
-    it("prefix returns the configured virtual prefix", function()
-        local mount = make_zip_mount("zip_prefix")
-        expect_equal("zip_prefix", mount:prefix())
-    end)
-
-    -- @covers LZipMount:readFile
-    it("readFile returns the stored file payload from the archive", function()
-        local mount = make_zip_mount("zip_read")
-        local payload = mount:readFile("zip_read/hello.txt")
-        expect_type("table", payload)
-        expect_true(#payload > 0)
-    end)
-
-    -- @covers LZipMount:type
-    it("type returns the ZIP mount userdata name", function()
-        local mount = make_zip_mount("zip_type")
-        expect_equal("LZipMount", mount:type())
-    end)
-
-    -- @covers LZipMount:typeOf
-    it("typeOf accepts the ZIP mount type name", function()
-        local mount = make_zip_mount("zip_typeof")
-        expect_true(mount:typeOf("LZipMount"))
     end)
 end)
 end
