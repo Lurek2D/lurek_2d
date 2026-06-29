@@ -2587,6 +2587,187 @@ describe("destructible terrain", function()
         expect_true(terrain:typeOf("LObject"))
     end)
 end)
+
+-- @describe liquid map
+describe("liquid map", function()
+    -- @covers lurek.physics.newLiquidMap
+    it("newLiquidMap creates a liquid userdata and rejects mismatched terrain grids", function()
+        local world = new_world(0, 0)
+        local terrain = new_terrain(world, 8, 8, 4)
+        local liquid = lurek.physics.newLiquidMap(8, 8, 4, world, terrain)
+        expect_type("userdata", liquid)
+
+        local ok, err = pcall(function()
+            local other = new_terrain(world, 4, 4, 4)
+            lurek.physics.newLiquidMap(8, 8, 4, world, other)
+        end)
+        expect_false(ok)
+        expect_true(string.find(tostring(err), "newLiquidMap", 1, true) ~= nil)
+    end)
+
+    -- @covers LLiquidMap:setCell
+    it("setCell stores one liquid amount and kind", function()
+        local liquid = lurek.physics.newLiquidMap(8, 8, 4, new_world(0, 0))
+        liquid:setCell(2, 3, 0.75, "water")
+        local amount, kind = liquid:getCell(2, 3)
+        expect_near(0.75, amount, 0.001)
+        expect_equal("water", kind)
+    end)
+
+    -- @covers LLiquidMap:getCell
+    it("getCell returns stored values and nil kind for empty cells", function()
+        local liquid = lurek.physics.newLiquidMap(8, 8, 4, new_world(0, 0))
+        local empty_amount, empty_kind = liquid:getCell(1, 1)
+        expect_equal(0, empty_amount)
+        expect_nil(empty_kind)
+        liquid:setCell(1, 1, 1.0, "lava")
+        local amount, kind = liquid:getCell(1, 1)
+        expect_near(1.0, amount, 0.001)
+        expect_equal("lava", kind)
+    end)
+
+    -- @covers LLiquidMap:fillRect
+    it("fillRect assigns a rectangle of liquid cells", function()
+        local liquid = lurek.physics.newLiquidMap(8, 8, 4, new_world(0, 0))
+        liquid:fillRect(2, 2, 3, 2, 1.0, "acid")
+        local amount, kind = liquid:getCell(3, 3)
+        expect_near(1.0, amount, 0.001)
+        expect_equal("acid", kind)
+    end)
+
+    -- @covers LLiquidMap:drainRect
+    it("drainRect removes volume from each cell in a rectangle", function()
+        local liquid = lurek.physics.newLiquidMap(8, 8, 4, new_world(0, 0))
+        liquid:fillRect(2, 2, 3, 2, 1.0, "water")
+        liquid:drainRect(2, 2, 3, 2, 0.4)
+        local amount, kind = liquid:getCell(3, 3)
+        expect_near(0.6, amount, 0.001)
+        expect_equal("water", kind)
+    end)
+
+    -- @covers LLiquidMap:step
+    it("step leaks through a carved tank opening while conserving volume within tolerance", function()
+        local world = new_world(0, 200)
+        local terrain = new_terrain(world, 8, 8, 8)
+        for x = 1, 6 do
+            terrain:setCell(x, 6, true)
+        end
+        for y = 2, 6 do
+            terrain:setCell(1, y, true)
+            terrain:setCell(6, y, true)
+        end
+
+        local liquid = lurek.physics.newLiquidMap(8, 8, 8, world, terrain)
+        liquid:fillRect(2, 2, 3, 3, 1.0, "water")
+
+        local inside_before = 0
+        local total_before = 0
+        for y = 0, 7 do
+            for x = 0, 7 do
+                local amount = select(1, liquid:getCell(x, y))
+                total_before = total_before + amount
+                if x >= 2 and x <= 4 and y >= 2 and y <= 5 then
+                    inside_before = inside_before + amount
+                end
+            end
+        end
+
+        terrain:setCell(3, 6, false)
+        local stats = nil
+        for _ = 1, 18 do
+            stats = liquid:step({
+                gravityFlow = 1.0,
+                sidewaysFlow = 0.5,
+                pressureFlow = 0.15,
+                maxSteps = 2,
+            })
+        end
+
+        local inside_after = 0
+        local outside_after = 0
+        local total_after = 0
+        for y = 0, 7 do
+            for x = 0, 7 do
+                local amount = select(1, liquid:getCell(x, y))
+                total_after = total_after + amount
+                if x >= 2 and x <= 4 and y >= 2 and y <= 5 then
+                    inside_after = inside_after + amount
+                end
+                if y == 7 then
+                    outside_after = outside_after + amount
+                end
+            end
+        end
+
+        expect_type("table", stats)
+        expect_true(inside_after < inside_before)
+        expect_true(outside_after > 0.0)
+        expect_near(total_before, total_after, 0.01)
+    end)
+
+    -- @covers LLiquidMap:getAmountAt
+    it("getAmountAt samples liquid amount in world space", function()
+        local liquid = lurek.physics.newLiquidMap(8, 8, 8, new_world(0, 0))
+        liquid:setCell(2, 3, 0.6, "acid")
+        expect_near(0.6, liquid:getAmountAt(20, 28), 0.001)
+        expect_equal(0, liquid:getAmountAt(999, 999))
+    end)
+
+    -- @covers LLiquidMap:getLevelAt
+    it("getLevelAt returns the top visible surface height for a liquid column", function()
+        local liquid = lurek.physics.newLiquidMap(8, 8, 8, new_world(0, 0))
+        liquid:setCell(4, 4, 1.0, "water")
+        liquid:setCell(4, 3, 0.5, "water")
+        local level = liquid:getLevelAt(36, 24)
+        expect_type("number", level)
+        expect_near(28.0, level, 0.001)
+    end)
+
+    -- @covers LLiquidMap:applyBuoyancy
+    it("applyBuoyancy applies sampled drag and upward force to submerged bodies", function()
+        local world = new_world(0, 200)
+        local body = world:newCircleBody(20, 20, 6, "dynamic")
+        local liquid = lurek.physics.newLiquidMap(8, 8, 8, world)
+        liquid:fillRect(1, 1, 3, 3, 1.0, "water")
+        local stats = liquid:applyBuoyancy({ density = 3.0, drag = 1.0 })
+        world:step(1 / 60)
+        local _, vy = body:getVelocity()
+        expect_type("table", stats)
+        expect_equal(1, stats.affectedBodies)
+        expect_true(stats.submergedBodies >= 1)
+        expect_true(vy < (200 / 60))
+    end)
+
+    -- @covers LLiquidMap:toBytes
+    it("toBytes serializes liquid grid state into a string", function()
+        local liquid = lurek.physics.newLiquidMap(8, 8, 4, new_world(0, 0))
+        liquid:fillRect(1, 1, 2, 2, 1.0, "water")
+        expect_type("string", liquid:toBytes())
+    end)
+
+    -- @covers LLiquidMap:loadFromBytes
+    it("loadFromBytes restores a prior liquid snapshot", function()
+        local world = new_world(0, 0)
+        local liquid = lurek.physics.newLiquidMap(8, 8, 4, world)
+        liquid:fillRect(1, 1, 2, 2, 1.0, "water")
+        local bytes = liquid:toBytes()
+        local clone = lurek.physics.newLiquidMap(8, 8, 4, world)
+        expect_true(clone:loadFromBytes(bytes))
+        expect_near(1.0, select(1, clone:getCell(1, 1)), 0.001)
+    end)
+
+    -- @covers LLiquidMap:type
+    it("type returns LLiquidMap", function()
+        expect_equal("LLiquidMap", lurek.physics.newLiquidMap(8, 8, 4, new_world(0, 0)):type())
+    end)
+
+    -- @covers LLiquidMap:typeOf
+    it("typeOf reports liquid-map inheritance", function()
+        local liquid = lurek.physics.newLiquidMap(8, 8, 4, new_world(0, 0))
+        expect_true(liquid:typeOf("LLiquidMap"))
+        expect_true(liquid:typeOf("LObject"))
+    end)
+end)
 end
 -- END test_physics_core_unit.lua
 

@@ -28,6 +28,19 @@ describe("lurek.particle.newSystem", function()
         expect_type("userdata", ps)
         expect_true(lurek.particle.isActive(ps), "default system should be active")
         expect_type("userdata", lurek.particle.newSystem({ emissionRate = 50, maxParticles = 100 }))
+        local from_toml_keys = lurek.particle.newSystem({
+            seed = 9,
+            max_particles = 48,
+            emission_rate = 12,
+            lifetime_min = 0.2,
+            lifetime_max = 0.6,
+            speed_min = 14,
+            speed_max = 28,
+            gravity_y = 96,
+        })
+        expect_near(12.0, from_toml_keys:getEmissionRate(), 0.001)
+        expect_near(48, from_toml_keys:getBufferSize(), 0.001)
+        expect_near(96.0, select(2, from_toml_keys:getGravity()), 0.001)
         expect_type("userdata", lurek.particle.newSystem({ sizeStart = 8.0, sizeEnd = 2.0 }))
         expect_type("userdata", lurek.particle.newSystem({
             colorStart = {1, 0, 0, 1},

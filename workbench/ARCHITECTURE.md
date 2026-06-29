@@ -7,35 +7,38 @@ Workbench is a host for focused tools, not a monolithic IDE. The shell provides 
 ## Shared Shell Responsibilities
 
 - Window setup for a native, resizable, maximized desktop app.
-- Activity bar and left sidebar.
-- Open editor tabs.
-- Context toolbar.
-- Central workspace rectangle.
-- Inspector panel.
-- Bottom log, problems, and export preview.
-- Dirty state and status messaging.
+- Retained `lurek.ui` chrome: activity bar, sidebar, tabs, toolbar, inspector, bottom panel, and status bar.
+- Command dispatch, status messaging, and log capture.
+- Project-tree selection routing into document open commands.
+- Editor widget visibility and per-editor inspector control hosting.
+
+## Shared Services
+
+- `command_bus.lua`: named action routing with consistent success/error payloads.
+- `project_index.lua`: recursive sample/project scan plus tree bucketing for particles, maps, layouts, assets, and other files.
+- `document_service.lua`: open, validate, serialize, save, reload, revert, export, and active-document tracking.
 
 ## Editor Responsibilities
 
-- Own state under `ctx.editor_state[editor_id]`.
+- Match file paths when they can open project documents.
+- Build and validate document models when they are document-backed.
 - Render only inside the provided workspace rectangle.
 - Return inspector fields as plain `{ label, value }` rows.
-- Return export text without writing files directly.
-- Defer project-wide file writes to a future app file service.
+- Return export text and export payloads without writing files directly.
+- Keep editor-specific controls inside `ensure_controls` and `layout_controls`.
 
 ## Data Flow
 
 ```text
-input -> shell hit testing -> command/status/log
-input -> active editor state
-editor state -> preview draw
-editor state -> inspector fields
-editor state -> export text
+input -> lurek.ui widgets -> shell action routing
+shell action -> command bus -> project/document services
+document state -> active editor preview + inspector + export
+editor mutation -> document service refresh -> validation + dirty state + live preview rebuild
 ```
 
 ## First Real Vertical Slice
 
-Particle Designer should be the first fully real editor because `lurek.particle` already has strong Lua-facing primitives:
+Particle Designer is the first fully real editor because `lurek.particle` already has strong Lua-facing primitives:
 
 - `lurek.particle.newSystem(config)`
 - `lurek.particle.fromTOML(path)`
@@ -45,4 +48,10 @@ Particle Designer should be the first fully real editor because `lurek.particle`
 - `LParticleSystem:setSpeed(min, max)`
 - `LParticleSystem:setColors(...)`
 
-The target deliverable is a `.particle.toml` editor with live preview, validation, save/export, and a generated Lua loader snippet.
+The delivered slice is a `.particle.toml` editor with:
+
+- project-index discovery from the sample project tree
+- TOML parse/serialize via `lurek.serialize`
+- runtime validation through `lurek.particle.newSystem`
+- live preview in the workbench workspace
+- explicit save, reload, revert, and Lua loader export flows

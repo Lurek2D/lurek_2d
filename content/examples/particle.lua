@@ -16,9 +16,20 @@ do
         lifetimeMin = 0.25,
         lifetimeMax = 0.75,
     })
+    local from_toml_shape = lurek.particle.newSystem({
+        seed = 7,
+        max_particles = 32,
+        emission_rate = 12,
+        lifetime_min = 0.15,
+        lifetime_max = 0.45,
+        speed_min = 20,
+        speed_max = 60,
+        gravity_y = 48,
+    })
 
     lurek.log.info("type = " .. ps:type())
     lurek.log.info("buffer = " .. ps:getBufferSize())
+    lurek.log.info("snake_case rate = " .. from_toml_shape:getEmissionRate())
 end
 
 --@api: lurek.particle.newPreset

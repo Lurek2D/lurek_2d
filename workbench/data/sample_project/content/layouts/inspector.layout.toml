@@ -1,0 +1,3 @@
+type = "panel"
+id = "inspector"
+class = "workbench_inspector"

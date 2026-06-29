@@ -357,6 +357,8 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
   Explicit `seed` values opt the emitter into deterministic replay under `ParticleRngVersion::V1`; omitted seeds are treated as nondeterministic and are reported through config/runtime diagnostics.
 - Runtime budgets:
   Emitters cap direct pool size, total live particles, per-update sub-emitter spawns, recycled child-system retention, attractor count, and render instances per frame; dropped child spawns and render over-budget events are surfaced through `getStats`.
+- File-backed tooling contract:
+  `lurek.particle.newSystem(config)` accepts both the historical Lua-style camelCase option keys and the canonical snake_case TOML keys used by `lurek.serialize.fromToml`, so editors and content tools can preview parsed particle documents without field-by-field remapping.
 - Custom emission callback contract:
   Deferred Lua custom-shape callbacks target stable particle ids instead of raw pool indices, so `bottom` and `random` insert modes cannot retarget pending offsets after later inserts. Failed callbacks leave the particle's existing spawn offset unchanged.
 - Render and collision policy:

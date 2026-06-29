@@ -18928,7 +18928,7 @@
             {
               "name": "config",
               "type": "table",
-              "description": "Particle config table. Supports `seed` for deterministic emission and reset behavior.",
+              "description": "Particle config table. Supports `seed` for deterministic emission and reset behavior, plus canonical TOML-style snake_case keys for file-backed tooling flows.",
               "optional": true
             }
           ],
@@ -20653,6 +20653,48 @@
           ],
           "returns": "LTerrain",
           "returnType": "LTerrain",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newLiquidMap",
+          "fullPath": "lurek.physics.newLiquidMap",
+          "signature": "lurek.physics.newLiquidMap(width, height, cellSize, world, [terrain])",
+          "description": "Creates a grid-based liquid map linked to a physics world and optionally to a terrain blocker grid.",
+          "parameters": [
+            {
+              "name": "width",
+              "type": "integer",
+              "description": "Grid width in cells.",
+              "optional": false
+            },
+            {
+              "name": "height",
+              "type": "integer",
+              "description": "Grid height in cells.",
+              "optional": false
+            },
+            {
+              "name": "cellSize",
+              "type": "number",
+              "description": "World-space size of each cell.",
+              "optional": false
+            },
+            {
+              "name": "world",
+              "type": "LWorld",
+              "description": "Physics world used for `applyBuoyancy`.",
+              "optional": false
+            },
+            {
+              "name": "terrain",
+              "type": "LTerrain",
+              "description": "Optional terrain grid; when provided, it must match the liquid grid dimensions, cell size, and origin.",
+              "optional": true
+            }
+          ],
+          "returns": "LLiquidMap",
+          "returnType": "LLiquidMap",
           "isMethod": false,
           "objectType": null
         },
@@ -93493,6 +93535,304 @@
           "returnType": "boolean",
           "isMethod": true,
           "objectType": "LLineChart"
+        }
+      ]
+    },
+    {
+      "name": "LLiquidMap",
+      "description": "A separate grid-based liquid map linked to a physics world and optionally to terrain blocking.",
+      "methods": [
+        {
+          "name": "setCell",
+          "fullPath": "LLiquidMap:setCell",
+          "signature": "(cx, cy, amount, kind)",
+          "description": "Sets one liquid cell amount and kind.",
+          "parameters": [
+            {
+              "name": "cx",
+              "type": "integer",
+              "description": "Cell column (0-based).",
+              "optional": false
+            },
+            {
+              "name": "cy",
+              "type": "integer",
+              "description": "Cell row (0-based).",
+              "optional": false
+            },
+            {
+              "name": "amount",
+              "type": "number",
+              "description": "Fill amount in `0.0..1.0`.",
+              "optional": false
+            },
+            {
+              "name": "kind",
+              "type": "any",
+              "description": "Liquid kind as `water`, `lava`, `acid`, or a custom unsigned integer id.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLiquidMap"
+        },
+        {
+          "name": "getCell",
+          "fullPath": "LLiquidMap:getCell",
+          "signature": "(cx, cy)",
+          "description": "Returns the amount and kind stored in one liquid cell.",
+          "parameters": [
+            {
+              "name": "cx",
+              "type": "integer",
+              "description": "Cell column (0-based).",
+              "optional": false
+            },
+            {
+              "name": "cy",
+              "type": "integer",
+              "description": "Cell row (0-based).",
+              "optional": false
+            }
+          ],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LLiquidMap"
+        },
+        {
+          "name": "fillRect",
+          "fullPath": "LLiquidMap:fillRect",
+          "signature": "(x, y, width, height, amount, kind)",
+          "description": "Sets every liquid cell in a rectangular region to the same amount and kind.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Rectangle left cell coordinate.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Rectangle top cell coordinate.",
+              "optional": false
+            },
+            {
+              "name": "width",
+              "type": "integer",
+              "description": "Rectangle width in cells.",
+              "optional": false
+            },
+            {
+              "name": "height",
+              "type": "integer",
+              "description": "Rectangle height in cells.",
+              "optional": false
+            },
+            {
+              "name": "amount",
+              "type": "number",
+              "description": "Fill amount in `0.0..1.0`.",
+              "optional": false
+            },
+            {
+              "name": "kind",
+              "type": "any",
+              "description": "Liquid kind as `water`, `lava`, `acid`, or a custom unsigned integer id.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLiquidMap"
+        },
+        {
+          "name": "drainRect",
+          "fullPath": "LLiquidMap:drainRect",
+          "signature": "(x, y, width, height, amount)",
+          "description": "Removes up to the requested amount from every cell in a rectangular region.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Rectangle left cell coordinate.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Rectangle top cell coordinate.",
+              "optional": false
+            },
+            {
+              "name": "width",
+              "type": "integer",
+              "description": "Rectangle width in cells.",
+              "optional": false
+            },
+            {
+              "name": "height",
+              "type": "integer",
+              "description": "Rectangle height in cells.",
+              "optional": false
+            },
+            {
+              "name": "amount",
+              "type": "number",
+              "description": "Amount removed from each cell, clamped into `0.0..1.0`.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLiquidMap"
+        },
+        {
+          "name": "step",
+          "fullPath": "LLiquidMap:step",
+          "signature": "([opts])",
+          "description": "Advances the liquid simulation with deterministic per-cell flow.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional controls: { gravityFlow?, sidewaysFlow?, pressureFlow?, evaporation?, maxSteps? }.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LLiquidMap"
+        },
+        {
+          "name": "getAmountAt",
+          "fullPath": "LLiquidMap:getAmountAt",
+          "signature": "(world_x, world_y)",
+          "description": "Samples liquid fill amount at one world-space point.",
+          "parameters": [
+            {
+              "name": "worldX",
+              "type": "number",
+              "description": "World-space X coordinate.",
+              "optional": false
+            },
+            {
+              "name": "worldY",
+              "type": "number",
+              "description": "World-space Y coordinate.",
+              "optional": false
+            }
+          ],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LLiquidMap"
+        },
+        {
+          "name": "getLevelAt",
+          "fullPath": "LLiquidMap:getLevelAt",
+          "signature": "(world_x, world_y)",
+          "description": "Returns the top liquid surface level for the sampled column.",
+          "parameters": [
+            {
+              "name": "worldX",
+              "type": "number",
+              "description": "World-space X coordinate.",
+              "optional": false
+            },
+            {
+              "name": "worldY",
+              "type": "number",
+              "description": "World-space Y coordinate used to select the sampled column.",
+              "optional": false
+            }
+          ],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LLiquidMap"
+        },
+        {
+          "name": "applyBuoyancy",
+          "fullPath": "LLiquidMap:applyBuoyancy",
+          "signature": "([opts])",
+          "description": "Applies sampled buoyancy and linear drag to matching dynamic bodies in the linked world.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional controls: { layerMask?, density?, drag? }.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LLiquidMap"
+        },
+        {
+          "name": "toBytes",
+          "fullPath": "LLiquidMap:toBytes",
+          "signature": "()",
+          "description": "Serializes the liquid grid to binary data for save or transfer workflows.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LLiquidMap"
+        },
+        {
+          "name": "loadFromBytes",
+          "fullPath": "LLiquidMap:loadFromBytes",
+          "signature": "(data)",
+          "description": "Restores liquid grid state from binary data previously produced by `toBytes`.",
+          "parameters": [
+            {
+              "name": "data",
+              "type": "string",
+              "description": "Binary liquid data.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LLiquidMap"
+        },
+        {
+          "name": "type",
+          "fullPath": "LLiquidMap:type",
+          "signature": "()",
+          "description": "Returns the type name of this object (\"LLiquidMap\").",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LLiquidMap"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LLiquidMap:typeOf",
+          "signature": "(name)",
+          "description": "Checks whether this object matches a given type name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to check.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LLiquidMap"
         }
       ]
     },

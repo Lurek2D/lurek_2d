@@ -1670,7 +1670,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     // -- newSystem --
     /// Creates a particle system from an optional config table.
-    /// @param | config | table? | Particle config table. Supports `seed` for deterministic emission and reset behavior.
+    /// @param | config | table? | Particle config table. Supports `seed` for deterministic emission and reset behavior, plus canonical TOML-style snake_case keys for file-backed tooling flows.
     /// @return | LParticleSystem | New particle system handle.
     tbl.set(
         "newSystem",
@@ -1909,22 +1909,40 @@ impl ParticleConfig {
     /// Builds a particle config from a Lua options table.
     pub fn from_lua_opts(t: &LuaTable) -> LuaResult<Self> {
         let mut c = ParticleConfig::default();
-        if let Ok(v) = t.get::<_, u32>("maxParticles") {
+        if let Ok(v) = t
+            .get::<_, u32>("maxParticles")
+            .or_else(|_| t.get("max_particles"))
+        {
             c.max_particles = v;
         }
-        if let Ok(v) = t.get::<_, f32>("emissionRate") {
+        if let Ok(v) = t
+            .get::<_, f32>("emissionRate")
+            .or_else(|_| t.get("emission_rate"))
+        {
             c.emission_rate = v;
         }
-        if let Ok(v) = t.get::<_, f32>("lifetimeMin") {
+        if let Ok(v) = t
+            .get::<_, f32>("lifetimeMin")
+            .or_else(|_| t.get("lifetime_min"))
+        {
             c.lifetime_min = v;
         }
-        if let Ok(v) = t.get::<_, f32>("lifetimeMax") {
+        if let Ok(v) = t
+            .get::<_, f32>("lifetimeMax")
+            .or_else(|_| t.get("lifetime_max"))
+        {
             c.lifetime_max = v;
         }
-        if let Ok(v) = t.get::<_, f32>("speedMin") {
+        if let Ok(v) = t
+            .get::<_, f32>("speedMin")
+            .or_else(|_| t.get("speed_min"))
+        {
             c.speed_min = v;
         }
-        if let Ok(v) = t.get::<_, f32>("speedMax") {
+        if let Ok(v) = t
+            .get::<_, f32>("speedMax")
+            .or_else(|_| t.get("speed_max"))
+        {
             c.speed_max = v;
         }
         if let Ok(v) = t.get::<_, f32>("direction") {
@@ -1933,85 +1951,163 @@ impl ParticleConfig {
         if let Ok(v) = t.get::<_, f32>("spread") {
             c.spread = v;
         }
-        if let Ok(v) = t.get::<_, f32>("gravityX") {
+        if let Ok(v) = t
+            .get::<_, f32>("gravityX")
+            .or_else(|_| t.get("gravity_x"))
+        {
             c.gravity_x = v;
         }
-        if let Ok(v) = t.get::<_, f32>("gravityY") {
+        if let Ok(v) = t
+            .get::<_, f32>("gravityY")
+            .or_else(|_| t.get("gravity_y"))
+        {
             c.gravity_y = v;
         }
-        if let Ok(v) = t.get::<_, f32>("spinMin") {
+        if let Ok(v) = t
+            .get::<_, f32>("spinMin")
+            .or_else(|_| t.get("spin_min"))
+        {
             c.spin_min = v;
         }
-        if let Ok(v) = t.get::<_, f32>("spinMax") {
+        if let Ok(v) = t
+            .get::<_, f32>("spinMax")
+            .or_else(|_| t.get("spin_max"))
+        {
             c.spin_max = v;
         }
-        if let Ok(v) = t.get::<_, f32>("spinVariation") {
+        if let Ok(v) = t
+            .get::<_, f32>("spinVariation")
+            .or_else(|_| t.get("spin_variation"))
+        {
             c.spin_variation = v;
         }
-        if let Ok(v) = t.get::<_, f32>("sizeVariation") {
+        if let Ok(v) = t
+            .get::<_, f32>("sizeVariation")
+            .or_else(|_| t.get("size_variation"))
+        {
             c.size_variation = v;
         }
-        if let Ok(v) = t.get::<_, f32>("rotationMin") {
+        if let Ok(v) = t
+            .get::<_, f32>("rotationMin")
+            .or_else(|_| t.get("rotation_min"))
+        {
             c.rotation_min = v;
         }
-        if let Ok(v) = t.get::<_, f32>("rotationMax") {
+        if let Ok(v) = t
+            .get::<_, f32>("rotationMax")
+            .or_else(|_| t.get("rotation_max"))
+        {
             c.rotation_max = v;
         }
-        if let Ok(v) = t.get::<_, f32>("emitterLifetime") {
+        if let Ok(v) = t
+            .get::<_, f32>("emitterLifetime")
+            .or_else(|_| t.get("emitter_lifetime"))
+        {
             c.emitter_lifetime = v;
         }
         if let Ok(v) = t.get::<_, u64>("seed") {
             c.seed = Some(v);
         }
-        if let Ok(v) = t.get::<_, f32>("linearAccelXMin") {
+        if let Ok(v) = t
+            .get::<_, f32>("linearAccelXMin")
+            .or_else(|_| t.get("linear_accel_x_min"))
+        {
             c.linear_accel_x_min = v;
         }
-        if let Ok(v) = t.get::<_, f32>("linearAccelXMax") {
+        if let Ok(v) = t
+            .get::<_, f32>("linearAccelXMax")
+            .or_else(|_| t.get("linear_accel_x_max"))
+        {
             c.linear_accel_x_max = v;
         }
-        if let Ok(v) = t.get::<_, f32>("linearAccelYMin") {
+        if let Ok(v) = t
+            .get::<_, f32>("linearAccelYMin")
+            .or_else(|_| t.get("linear_accel_y_min"))
+        {
             c.linear_accel_y_min = v;
         }
-        if let Ok(v) = t.get::<_, f32>("linearAccelYMax") {
+        if let Ok(v) = t
+            .get::<_, f32>("linearAccelYMax")
+            .or_else(|_| t.get("linear_accel_y_max"))
+        {
             c.linear_accel_y_max = v;
         }
-        if let Ok(v) = t.get::<_, f32>("radialAccelMin") {
+        if let Ok(v) = t
+            .get::<_, f32>("radialAccelMin")
+            .or_else(|_| t.get("radial_accel_min"))
+        {
             c.radial_accel_min = v;
         }
-        if let Ok(v) = t.get::<_, f32>("radialAccelMax") {
+        if let Ok(v) = t
+            .get::<_, f32>("radialAccelMax")
+            .or_else(|_| t.get("radial_accel_max"))
+        {
             c.radial_accel_max = v;
         }
-        if let Ok(v) = t.get::<_, f32>("tangentialAccelMin") {
+        if let Ok(v) = t
+            .get::<_, f32>("tangentialAccelMin")
+            .or_else(|_| t.get("tangential_accel_min"))
+        {
             c.tangential_accel_min = v;
         }
-        if let Ok(v) = t.get::<_, f32>("tangentialAccelMax") {
+        if let Ok(v) = t
+            .get::<_, f32>("tangentialAccelMax")
+            .or_else(|_| t.get("tangential_accel_max"))
+        {
             c.tangential_accel_max = v;
         }
-        if let Ok(v) = t.get::<_, f32>("linearDampingMin") {
+        if let Ok(v) = t
+            .get::<_, f32>("linearDampingMin")
+            .or_else(|_| t.get("linear_damping_min"))
+        {
             c.linear_damping_min = v;
         }
-        if let Ok(v) = t.get::<_, f32>("linearDampingMax") {
+        if let Ok(v) = t
+            .get::<_, f32>("linearDampingMax")
+            .or_else(|_| t.get("linear_damping_max"))
+        {
             c.linear_damping_max = v;
         }
-        if let Ok(v) = t.get::<_, f32>("areaWidth") {
+        if let Ok(v) = t
+            .get::<_, f32>("areaWidth")
+            .or_else(|_| t.get("area_width"))
+        {
             c.area_width = v;
         }
-        if let Ok(v) = t.get::<_, f32>("areaHeight") {
+        if let Ok(v) = t
+            .get::<_, f32>("areaHeight")
+            .or_else(|_| t.get("area_height"))
+        {
             c.area_height = v;
         }
-        if let Ok(v) = t.get::<_, f32>("areaAngle") {
+        if let Ok(v) = t
+            .get::<_, f32>("areaAngle")
+            .or_else(|_| t.get("area_angle"))
+        {
             c.area_angle = v;
         }
-        if let Ok(v) = t.get::<_, bool>("areaDirectionRelative") {
+        if let Ok(v) = t
+            .get::<_, bool>("areaDirectionRelative")
+            .or_else(|_| t.get("area_direction_relative"))
+        {
             c.area_direction_relative = v;
         }
-        if let Ok(v) = t.get::<_, bool>("relativeRotation") {
+        if let Ok(v) = t
+            .get::<_, bool>("relativeRotation")
+            .or_else(|_| t.get("relative_rotation"))
+        {
             c.relative_rotation = v;
         }
-        if let Ok(v) = t.get::<_, f32>("offsetX") {
+        if let Ok(v) = t
+            .get::<_, f32>("offsetX")
+            .or_else(|_| t.get("offset_x"))
+        {
             c.offset_x = v;
         }
-        if let Ok(v) = t.get::<_, f32>("offsetY") {
+        if let Ok(v) = t
+            .get::<_, f32>("offsetY")
+            .or_else(|_| t.get("offset_y"))
+        {
             c.offset_y = v;
         }
         if let Ok(v) = t.get::<_, f32>("turbulence") {
@@ -2020,22 +2116,40 @@ impl ParticleConfig {
         if let Ok(v) = t.get::<_, f32>("drag") {
             c.drag = v;
         }
-        if let Ok(v) = t.get::<_, f32>("orbitSpeed") {
+        if let Ok(v) = t
+            .get::<_, f32>("orbitSpeed")
+            .or_else(|_| t.get("orbit_speed"))
+        {
             c.orbit_speed = v;
         }
-        if let Ok(v) = t.get::<_, u32>("animatedFrames") {
+        if let Ok(v) = t
+            .get::<_, u32>("animatedFrames")
+            .or_else(|_| t.get("animated_frames"))
+        {
             c.animated_frames = v;
         }
-        if let Ok(v) = t.get::<_, f32>("frameRate") {
+        if let Ok(v) = t
+            .get::<_, f32>("frameRate")
+            .or_else(|_| t.get("frame_rate"))
+        {
             c.frame_rate = v;
         }
-        if let Ok(v) = t.get::<_, bool>("colorBySpeed") {
+        if let Ok(v) = t
+            .get::<_, bool>("colorBySpeed")
+            .or_else(|_| t.get("color_by_speed"))
+        {
             c.color_by_speed = v;
         }
-        if let Ok(v) = t.get::<_, f32>("speedColorMin") {
+        if let Ok(v) = t
+            .get::<_, f32>("speedColorMin")
+            .or_else(|_| t.get("speed_color_min"))
+        {
             c.speed_color_min = v;
         }
-        if let Ok(v) = t.get::<_, f32>("speedColorMax") {
+        if let Ok(v) = t
+            .get::<_, f32>("speedColorMax")
+            .or_else(|_| t.get("speed_color_max"))
+        {
             c.speed_color_max = v;
         }
         if let Ok(st) = t.get::<_, LuaTable>("sizes") {
@@ -2068,7 +2182,10 @@ impl ParticleConfig {
                 c.colors = colors;
             }
         }
-        if let Ok(at) = t.get::<_, LuaTable>("alphaKeyframes") {
+        if let Ok(at) = t
+            .get::<_, LuaTable>("alphaKeyframes")
+            .or_else(|_| t.get("alpha_keyframes"))
+        {
             let mut alphas = Vec::new();
             for i in 1..=16 {
                 match at.get::<_, f32>(i) {
@@ -2080,7 +2197,10 @@ impl ParticleConfig {
                 c.alpha_keyframes = alphas;
             }
         }
-        if let Ok(v) = t.get::<_, String>("areaDistribution") {
+        if let Ok(v) = t
+            .get::<_, String>("areaDistribution")
+            .or_else(|_| t.get("area_distribution"))
+        {
             c.area_distribution = match v.as_str() {
                 "uniform" => AreaDistribution::Uniform,
                 "normal" => AreaDistribution::Normal,
@@ -2090,7 +2210,10 @@ impl ParticleConfig {
                 _ => AreaDistribution::default(),
             };
         }
-        if let Ok(v) = t.get::<_, String>("insertMode") {
+        if let Ok(v) = t
+            .get::<_, String>("insertMode")
+            .or_else(|_| t.get("insert_mode"))
+        {
             c.insert_mode = match v.as_str() {
                 "top" => InsertMode::Top,
                 "bottom" => InsertMode::Bottom,

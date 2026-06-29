@@ -1,0 +1,17 @@
+seed = 17
+max_particles = 96
+emission_rate = 48.0
+lifetime_min = 0.08
+lifetime_max = 0.24
+speed_min = 90.0
+speed_max = 210.0
+direction = -1.5707964
+spread = 1.2
+gravity_x = 0.0
+gravity_y = 160.0
+sizes = [4.0, 2.0, 0.5]
+colors = [
+    [1.0, 0.9, 0.55, 1.0],
+    [1.0, 0.55, 0.12, 0.55],
+    [0.45, 0.12, 0.02, 0.0],
+]

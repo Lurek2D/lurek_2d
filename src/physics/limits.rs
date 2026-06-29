@@ -19,8 +19,12 @@ pub struct PhysicsLimits {
     pub max_zones: usize,
     /// Maximum number of terrain cells allowed in one grid allocation.
     pub max_terrain_cells: u64,
+    /// Maximum number of liquid cells allowed in one grid allocation.
+    pub max_liquid_cells: u64,
     /// Maximum number of terrain cells one connected-component terrain scan may inspect.
     pub max_terrain_component_scan_cells: u64,
+    /// Maximum number of non-empty liquid cells a single step call may process.
+    pub max_active_liquid_cells: u64,
     /// Maximum output bytes allowed in one terrain RGBA export.
     pub max_output_bytes: u64,
     /// Maximum number of polygon vertices accepted by strict constructors.
@@ -43,7 +47,9 @@ impl Default for PhysicsLimits {
             max_joints: 131_072,
             max_zones: 4_096,
             max_terrain_cells: 16_777_216,
+            max_liquid_cells: 4_194_304,
             max_terrain_component_scan_cells: 1_048_576,
+            max_active_liquid_cells: 1_048_576,
             max_output_bytes: 268_435_456,
             max_polygon_vertices: 8,
             max_chain_vertices: 4_096,
@@ -112,6 +118,31 @@ pub(crate) fn checked_terrain_cells(
         height,
         cells,
         max_cells: limits.max_terrain_cells,
+    })
+}
+
+/// Return the exact liquid cell count, rejecting overflow and configured ceilings.
+pub(crate) fn checked_liquid_cells(
+    width: u32,
+    height: u32,
+    limits: &PhysicsLimits,
+) -> Result<usize, PhysicsError> {
+    let cells = u64::from(width)
+        .checked_mul(u64::from(height))
+        .ok_or(PhysicsError::LiquidCellOverflow { width, height })?;
+    if cells > limits.max_liquid_cells {
+        return Err(PhysicsError::LiquidCellLimitExceeded {
+            width,
+            height,
+            cells,
+            max_cells: limits.max_liquid_cells,
+        });
+    }
+    usize::try_from(cells).map_err(|_| PhysicsError::LiquidCellLimitExceeded {
+        width,
+        height,
+        cells,
+        max_cells: limits.max_liquid_cells,
     })
 }
 

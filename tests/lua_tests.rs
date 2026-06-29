@@ -1075,6 +1075,11 @@ fn lua_integration_ui_localization_data_integration() {
 }
 
 #[test]
+fn lua_integration_workbench_particle_integration() {
+    run_lua_test("integration/test_workbench_particle_integration.lua");
+}
+
+#[test]
 fn lua_library_battle_library() {
     run_lua_test("library/test_battle_library.lua");
 }

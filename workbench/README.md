@@ -14,15 +14,15 @@ The app starts as a normal native desktop window, resizable and maximized by def
 
 ## Current Baseline
 
-- Fullscreen Lurek project under `workbench/`.
-- Professional shell with menu, activity bar, sidebar, editor tabs, contextual toolbar, central workspace, inspector, bottom log/problems/export panel, and status bar.
-- Independent editor registry.
-- Baseline editor modules:
+- Native Lurek project under `workbench/` with a retained `lurek.ui` shell host.
+- Shared workbench services for command dispatch, project indexing, and document lifecycle.
+- Sample project data under `workbench/data/sample_project/` for startup and smoke coverage.
+- Current editor modules:
   - `overview`: project hub and architecture summary.
-  - `particle`: deterministic emitter preview and TOML/Lua export shape.
-  - `tilemap`: layer/grid painter preview and Lua tilemap export shape.
-  - `sprite_atlas`: sheet slicing and quad export shape.
-  - `ui_layout`: TOML layout studio preview.
+  - `particle`: real `.particle.toml` vertical slice with parse, validate, preview, save, reload, revert, and Lua export.
+  - `tilemap`: planned next slice running on the shared shell baseline.
+  - `sprite_atlas`: placeholder content tool module on the same host.
+  - `ui_layout`: placeholder layout tool module on the same host.
 
 ## Architecture
 
@@ -31,18 +31,24 @@ workbench/
   conf.toml
   main.lua
   app/
+    command_bus.lua
     state.lua
     editor_registry.lua
     shell.lua
+    services/
+      document_service.lua
+      project_index.lua
   editors/
     overview.lua
     particle.lua
     tilemap.lua
     sprite_atlas.lua
     ui_layout.lua
+  data/
+    sample_project/
 ```
 
-`main.lua` only wires Lurek callbacks and loads modules. `app/shell.lua` owns the workbench frame, input hit testing, tabs, activity bar, status, logs, and editor hosting. Each editor owns its own preview, inspector fields, update loop, actions, and export text.
+`main.lua` only wires Lurek callbacks and loads modules. `app/shell.lua` owns the retained `lurek.ui` chrome, routing input and editor actions through shared services. `app/state.lua` registers workbench commands and keeps project/document state coherent. Editors stay independent and own their own preview, validation, inspector fields, and exports.
 
 ## Editor Contract
 
@@ -54,29 +60,36 @@ return {
     title = "Particle Designer",
     summary = "Emitter sandbox",
     workspace = "preview",
+    matches_path = function(path) return boolean end,
     actions = {
         { id = "export-toml", label = "Export TOML" },
     },
+    create_document = function(path, source_text, project_root) return doc end,
+    serialize_document = function(document, project_root) return text end,
+    validate_document = function(document, project_root) return problems end,
+    build_export = function(document, project_root) return payload end,
+    handle_action = function(ctx, action_id) return ok, result end,
     update = function(ctx, dt) end,
     draw = function(ctx, rect, ui) end,
     inspect = function(ctx) return fields end,
     export = function(ctx) return text end,
+    ensure_controls = function(shell) end,
+    layout_controls = function(ctx, rect, shell) end,
 }
 ```
 
 ## Next Implementation Steps
 
-1. Promote `Particle Designer` to a full vertical slice:
-   - Open and save `.particle.toml`.
-   - Create/update a real `lurek.particle` handle when values change.
-   - Add sliders, color keyframes, seed reset, preset import, and validation.
-2. Add project file services:
-   - Project open, recent projects, GameFS path normalization, file watch.
-   - Write only through explicit save/export actions.
-3. Add real interaction to `Tilemap Editor`:
-   - Cell picking, brush, fill, layers, tile palette, collision/ref slots.
-4. Move shell panels from custom hit testing toward retained `lurek.ui` widgets where richer text input, lists, and dock resizing are needed.
-5. Add screenshot evidence for the shell and every editor.
+1. Deepen `Particle Designer` controls with color keyframe editing, seed reset, and more presets.
+2. Promote `Tilemap Editor` to the next real document-backed slice on the shared services.
+3. Add recent-project and file-watch workflows on top of the project index.
+4. Add screenshot evidence for the retained shell and each real editor slice.
+
+## Validation
+
+- Headless workbench coverage: `cargo test --test workbench_smoke_tests`
+- Real window smoke path: `cargo test --test workbench_smoke_tests -- --include-ignored`
+- Lua document flow coverage: `cargo test --test lua_tests lua_integration_workbench_particle_integration`
 
 ## Boundary
 

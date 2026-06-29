@@ -2711,6 +2711,169 @@ do
     lurek.log.info("terrain userdata=" .. terrain:type())
 end
 
+--@api: lurek.physics.newLiquidMap
+do
+
+    local world = lurek.physics.newWorld(0, 200)
+    local terrain = lurek.physics.newTerrain(16, 16, 8, world)
+    local liquid = lurek.physics.newLiquidMap(16, 16, 8, world, terrain)
+    liquid:setCell(4, 4, 1.0, "water")
+    local amount = liquid:getAmountAt(36, 36)
+    lurek.log.info("liquid amount=" .. tostring(amount))
+    lurek.log.info("liquid type=" .. tostring(liquid:type()))
+end
+
+--@api: LLiquidMap:setCell
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local liquid = lurek.physics.newLiquidMap(8, 8, 8, world)
+    liquid:setCell(2, 3, 0.75, "water")
+    local amount, kind = liquid:getCell(2, 3)
+    lurek.log.info("setCell amount=" .. tostring(amount))
+    lurek.log.info("setCell kind=" .. tostring(kind))
+end
+
+--@api: LLiquidMap:getCell
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local liquid = lurek.physics.newLiquidMap(8, 8, 8, world)
+    liquid:setCell(1, 1, 0.5, "lava")
+    local amount, kind = liquid:getCell(1, 1)
+    lurek.log.info("getCell amount=" .. tostring(amount))
+    lurek.log.info("getCell kind=" .. tostring(kind))
+end
+
+--@api: LLiquidMap:fillRect
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local liquid = lurek.physics.newLiquidMap(10, 10, 8, world)
+    liquid:fillRect(2, 2, 3, 2, 1.0, "water")
+    local amount, kind = liquid:getCell(3, 3)
+    lurek.log.info("fillRect amount=" .. tostring(amount))
+    lurek.log.info("fillRect kind=" .. tostring(kind))
+end
+
+--@api: LLiquidMap:drainRect
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local liquid = lurek.physics.newLiquidMap(10, 10, 8, world)
+    liquid:fillRect(2, 2, 3, 2, 1.0, "water")
+    liquid:drainRect(2, 2, 3, 2, 0.4)
+    local amount = select(1, liquid:getCell(3, 3))
+    lurek.log.info("drainRect amount=" .. tostring(amount))
+    lurek.log.info("drainRect type=" .. tostring(liquid:type()))
+end
+
+--@api: LLiquidMap:step
+do
+
+    local world = lurek.physics.newWorld(0, 200)
+    local terrain = lurek.physics.newTerrain(8, 8, 8, world)
+    for x = 1, 6 do
+        terrain:setCell(x, 6, true)
+    end
+    for y = 2, 6 do
+        terrain:setCell(1, y, true)
+        terrain:setCell(6, y, true)
+    end
+    local liquid = lurek.physics.newLiquidMap(8, 8, 8, world, terrain)
+    liquid:fillRect(2, 2, 3, 3, 1.0, "water")
+    terrain:setCell(3, 6, false)
+    local stats = nil
+    for _ = 1, 18 do
+        stats = liquid:step({ gravityFlow = 1.0, sidewaysFlow = 0.5, pressureFlow = 0.15, maxSteps = 2 })
+    end
+    lurek.log.info("step moved=" .. tostring(stats.movedAmount))
+    lurek.log.info("step outside=" .. tostring(liquid:getAmountAt(28, 60)))
+end
+
+--@api: LLiquidMap:getAmountAt
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local liquid = lurek.physics.newLiquidMap(8, 8, 8, world)
+    liquid:setCell(2, 3, 0.6, "acid")
+    local amount = liquid:getAmountAt(20, 28)
+    local outside = liquid:getAmountAt(1000, 1000)
+    lurek.log.info("amountAt inside=" .. tostring(amount))
+    lurek.log.info("amountAt outside=" .. tostring(outside))
+end
+
+--@api: LLiquidMap:getLevelAt
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local liquid = lurek.physics.newLiquidMap(8, 8, 8, world)
+    liquid:setCell(4, 4, 1.0, "water")
+    liquid:setCell(4, 3, 0.5, "water")
+    local level = liquid:getLevelAt(36, 24)
+    lurek.log.info("levelAt y=" .. tostring(level))
+    lurek.log.info("levelAt type=" .. tostring(liquid:type()))
+end
+
+--@api: LLiquidMap:applyBuoyancy
+do
+
+    local world = lurek.physics.newWorld(0, 200)
+    local body = world:newCircleBody(20, 20, 6, "dynamic")
+    local liquid = lurek.physics.newLiquidMap(8, 8, 8, world)
+    liquid:fillRect(1, 1, 3, 3, 1.0, "water")
+    local stats = liquid:applyBuoyancy({ density = 3.0, drag = 1.0 })
+    world:step(1 / 60)
+    lurek.log.info("buoyancy submerged=" .. tostring(stats.submergedBodies))
+    lurek.log.info("buoyancy vy=" .. tostring(select(2, body:getVelocity())))
+end
+
+--@api: LLiquidMap:toBytes
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local liquid = lurek.physics.newLiquidMap(8, 8, 8, world)
+    liquid:fillRect(1, 1, 3, 3, 1.0, "water")
+    local bytes = liquid:toBytes()
+    lurek.log.info("liquid bytes=" .. tostring(#bytes))
+    lurek.log.info("liquid type=" .. tostring(liquid:type()))
+end
+
+--@api: LLiquidMap:loadFromBytes
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local liquid = lurek.physics.newLiquidMap(8, 8, 8, world)
+    liquid:fillRect(1, 1, 3, 3, 1.0, "water")
+    local bytes = liquid:toBytes()
+    local clone = lurek.physics.newLiquidMap(8, 8, 8, world)
+    lurek.log.info("liquid loaded=" .. tostring(clone:loadFromBytes(bytes)))
+    lurek.log.info("liquid cell=" .. tostring(select(1, clone:getCell(1, 1))))
+end
+
+--@api: LLiquidMap:type
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local liquid = lurek.physics.newLiquidMap(8, 8, 8, world)
+    liquid:fillRect(1, 1, 2, 2, 1.0, "water")
+    local kind = select(2, liquid:getCell(1, 1))
+    lurek.log.info("liquid userdata=" .. tostring(liquid:type()))
+    lurek.log.info("liquid kind=" .. tostring(kind))
+end
+
+--@api: LLiquidMap:typeOf
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local liquid = lurek.physics.newLiquidMap(8, 8, 8, world)
+    liquid:setCell(1, 1, 1.0, "water")
+    local isLiquid = liquid:typeOf("LLiquidMap")
+    local isObject = liquid:typeOf("LObject")
+    lurek.log.info("liquid inheritance=" .. tostring(isLiquid))
+    lurek.log.info("liquid object=" .. tostring(isObject))
+end
+
 --@api: LWorld:addFixture
 do
 

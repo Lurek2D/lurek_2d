@@ -7,9 +7,11 @@ use crate::physics::world::{BodyContact, COLLISION_GROUP_COUNT};
 use crate::physics::{
     AlphaShapeOptions, BeamHit, BeamHitMode, BeamOptions, BeamSegment, BeamTrace, Body, BodyId,
     BodyType, FlowApplicationMode, FlowCombineMode, FlowDirectionMode, FlowFalloff, FlowField,
-    FlowGeometry, FlowMedium, FlowSample, PhysicsMaterial, PhysicsQueryFilter, PhysicsWorldStats,
-    PhysicsZone, RaycastHit, Shape, ShapeSweepHit, TerrainCollapseMode, TerrainCollapseOptions,
-    TerrainCollapseResult, TerrainMap, TerrainSupportRule, World,
+    FlowGeometry, FlowMedium, FlowSample, LiquidBodyForceOptions, LiquidBodyForceStats,
+    LiquidKind, LiquidMap, LiquidStepOptions, LiquidStepStats, PhysicsMaterial,
+    PhysicsQueryFilter, PhysicsWorldStats, PhysicsZone, RaycastHit, Shape, ShapeSweepHit,
+    TerrainCollapseMode, TerrainCollapseOptions, TerrainCollapseResult, TerrainMap,
+    TerrainSupportRule, World,
 };
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -398,6 +400,121 @@ fn terrain_flush_stats_to_table<'lua>(
     tbl.set("bodiesDestroyed", stats.bodies_destroyed)?;
     tbl.set("bodiesCreated", stats.bodies_created)?;
     tbl.set("elapsedMicros", stats.elapsed_micros)?;
+    Ok(tbl)
+}
+
+fn parse_liquid_kind(method: &str, value: LuaValue) -> LuaResult<LiquidKind> {
+    match value {
+        LuaValue::String(text) => match text.to_str()?.trim().to_ascii_lowercase().as_str() {
+            "water" => Ok(LiquidKind::Water),
+            "lava" => Ok(LiquidKind::Lava),
+            "acid" => Ok(LiquidKind::Acid),
+            other => Err(physics_runtime_error(
+                method,
+                format!(
+                    "invalid liquid kind '{}': expected water, lava, acid, or a custom integer id",
+                    other
+                ),
+            )),
+        },
+        LuaValue::Integer(id) if (0..=u16::MAX as i64).contains(&id) => {
+            Ok(LiquidKind::Custom(id as u16))
+        }
+        LuaValue::Number(id)
+            if id.is_finite() && id.fract().abs() <= f64::EPSILON && (0.0..=u16::MAX as f64).contains(&id) =>
+        {
+            Ok(LiquidKind::Custom(id as u16))
+        }
+        LuaValue::Integer(id) => Err(physics_runtime_error(
+            method,
+            format!("custom liquid kind must be in 0..65535, got {}", id),
+        )),
+        LuaValue::Number(id) => Err(physics_runtime_error(
+            method,
+            format!("custom liquid kind must be a finite integer in 0..65535, got {}", id),
+        )),
+        _ => Err(physics_runtime_error(
+            method,
+            "liquid kind must be a string or integer id",
+        )),
+    }
+}
+
+fn liquid_kind_to_lua_value<'lua>(lua: &'lua Lua, kind: LiquidKind) -> LuaResult<LuaValue<'lua>> {
+    match kind {
+        LiquidKind::Water => Ok(LuaValue::String(lua.create_string("water")?)),
+        LiquidKind::Lava => Ok(LuaValue::String(lua.create_string("lava")?)),
+        LiquidKind::Acid => Ok(LuaValue::String(lua.create_string("acid")?)),
+        LiquidKind::Custom(id) => Ok(LuaValue::Integer(i64::from(id))),
+    }
+}
+
+fn liquid_step_options_from_lua(
+    method: &str,
+    opts: Option<&LuaTable>,
+) -> LuaResult<LiquidStepOptions> {
+    let mut options = LiquidStepOptions::default();
+    if let Some(opts) = opts {
+        options.gravity_flow = opts
+            .get::<_, Option<f32>>("gravityFlow")?
+            .unwrap_or(options.gravity_flow);
+        options.sideways_flow = opts
+            .get::<_, Option<f32>>("sidewaysFlow")?
+            .unwrap_or(options.sideways_flow);
+        options.pressure_flow = opts
+            .get::<_, Option<f32>>("pressureFlow")?
+            .unwrap_or(options.pressure_flow);
+        options.evaporation = opts
+            .get::<_, Option<f32>>("evaporation")?
+            .unwrap_or(options.evaporation);
+        options.max_steps_per_frame = opts
+            .get::<_, Option<u32>>("maxSteps")?
+            .unwrap_or(options.max_steps_per_frame);
+    }
+    options
+        .validate()
+        .map_err(|err| physics_runtime_error(method, err))?;
+    Ok(options)
+}
+
+fn liquid_step_stats_to_table<'lua>(
+    lua: &'lua Lua,
+    stats: LiquidStepStats,
+) -> LuaResult<LuaTable<'lua>> {
+    let tbl = lua.create_table()?;
+    tbl.set("movedAmount", stats.moved_amount)?;
+    tbl.set("activeCells", stats.active_cells)?;
+    tbl.set("dirtyChunks", stats.dirty_chunks)?;
+    Ok(tbl)
+}
+
+fn liquid_body_force_options_from_lua(
+    method: &str,
+    opts: Option<&LuaTable>,
+) -> LuaResult<LiquidBodyForceOptions> {
+    let mut options = LiquidBodyForceOptions::default();
+    if let Some(opts) = opts {
+        options.layer_mask = opts
+            .get::<_, Option<u32>>("layerMask")?
+            .unwrap_or(options.layer_mask);
+        options.density = opts
+            .get::<_, Option<f32>>("density")?
+            .unwrap_or(options.density);
+        options.drag = opts.get::<_, Option<f32>>("drag")?.unwrap_or(options.drag);
+    }
+    options
+        .validate()
+        .map_err(|err| physics_runtime_error(method, err))?;
+    Ok(options)
+}
+
+fn liquid_body_force_stats_to_table<'lua>(
+    lua: &'lua Lua,
+    stats: LiquidBodyForceStats,
+) -> LuaResult<LuaTable<'lua>> {
+    let tbl = lua.create_table()?;
+    tbl.set("affectedBodies", stats.affected_bodies)?;
+    tbl.set("submergedBodies", stats.submerged_bodies)?;
     Ok(tbl)
 }
 
@@ -3454,6 +3571,186 @@ impl LuaUserData for LuaTerrain {
         });
     }
 }
+
+/// A separate grid-based liquid map linked to a physics world and optionally to terrain blocking.
+#[derive(Clone)]
+pub struct LuaLiquidMap {
+    liquid: Rc<RefCell<LiquidMap>>,
+    world: Rc<RefCell<World>>,
+    terrain: Option<Rc<RefCell<TerrainMap>>>,
+}
+
+impl LuaUserData for LuaLiquidMap {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- setCell --
+        /// Sets one liquid cell amount and kind.
+        /// @param | cx | integer | Cell column (0-based).
+        /// @param | cy | integer | Cell row (0-based).
+        /// @param | amount | number | Fill amount in `0.0..1.0`.
+        /// @param | kind | any | Liquid kind as `water`, `lava`, `acid`, or a custom unsigned integer id.
+        methods.add_method_mut(
+            "setCell",
+            |_, this, (cx, cy, amount, kind): (u32, u32, f32, LuaValue)| {
+                let kind = parse_liquid_kind("setCell", kind)?;
+                this.liquid
+                    .borrow_mut()
+                    .try_set_cell(cx, cy, amount, kind)
+                    .map_err(|err| physics_runtime_error("setCell", err))?;
+                Ok(())
+            },
+        );
+        // -- getCell --
+        /// Returns the amount and kind stored in one liquid cell.
+        /// @param | cx | integer | Cell column (0-based).
+        /// @param | cy | integer | Cell row (0-based).
+        /// @return | number | Fill amount in `0.0..1.0`.
+        /// @return | any | Liquid kind as a built-in string or custom integer id, or nil when the cell is empty.
+        methods.add_method("getCell", |lua, this, (cx, cy): (u32, u32)| {
+            let cell = this.liquid.borrow().get_cell(cx, cy);
+            let kind = if cell.amount > 0.0 {
+                liquid_kind_to_lua_value(lua, cell.kind)?
+            } else {
+                LuaValue::Nil
+            };
+            Ok((cell.amount, kind))
+        });
+        // -- fillRect --
+        /// Sets every liquid cell in a rectangular region to the same amount and kind.
+        /// @param | x | integer | Rectangle left cell coordinate.
+        /// @param | y | integer | Rectangle top cell coordinate.
+        /// @param | width | integer | Rectangle width in cells.
+        /// @param | height | integer | Rectangle height in cells.
+        /// @param | amount | number | Fill amount in `0.0..1.0`.
+        /// @param | kind | any | Liquid kind as `water`, `lava`, `acid`, or a custom unsigned integer id.
+        methods.add_method_mut(
+            "fillRect",
+            |_, this, (x, y, width, height, amount, kind): (u32, u32, u32, u32, f32, LuaValue)| {
+                let kind = parse_liquid_kind("fillRect", kind)?;
+                this.liquid
+                    .borrow_mut()
+                    .try_fill_rect(x, y, width, height, amount, kind)
+                    .map_err(|err| physics_runtime_error("fillRect", err))?;
+                Ok(())
+            },
+        );
+        // -- drainRect --
+        /// Removes up to the requested amount from every cell in a rectangular region.
+        /// @param | x | integer | Rectangle left cell coordinate.
+        /// @param | y | integer | Rectangle top cell coordinate.
+        /// @param | width | integer | Rectangle width in cells.
+        /// @param | height | integer | Rectangle height in cells.
+        /// @param | amount | number | Amount removed from each cell, clamped into `0.0..1.0`.
+        methods.add_method_mut(
+            "drainRect",
+            |_, this, (x, y, width, height, amount): (u32, u32, u32, u32, f32)| {
+                this.liquid
+                    .borrow_mut()
+                    .try_drain_rect(x, y, width, height, amount)
+                    .map_err(|err| physics_runtime_error("drainRect", err))?;
+                Ok(())
+            },
+        );
+        // -- step --
+        /// Advances the liquid simulation with deterministic per-cell flow.
+        /// @param | opts | table? | Optional controls: { gravityFlow?, sidewaysFlow?, pressureFlow?, evaporation?, maxSteps? }.
+        /// @return | table | Step diagnostics with `movedAmount`, `activeCells`, and `dirtyChunks`.
+        methods.add_method_mut("step", |lua, this, opts: Option<LuaTable>| {
+            let options = liquid_step_options_from_lua("step", opts.as_ref())?;
+            let stats = if let Some(terrain) = &this.terrain {
+                let terrain_ref = terrain.borrow();
+                this.liquid
+                    .borrow_mut()
+                    .step_with_terrain(&terrain_ref, options)
+                    .map_err(|err| physics_runtime_error("step", err))?
+            } else {
+                this.liquid
+                    .borrow_mut()
+                    .step(options)
+                    .map_err(|err| physics_runtime_error("step", err))?
+            };
+            liquid_step_stats_to_table(lua, stats)
+        });
+        // -- getAmountAt --
+        /// Samples liquid fill amount at one world-space point.
+        /// @param | worldX | number | World-space X coordinate.
+        /// @param | worldY | number | World-space Y coordinate.
+        /// @return | number | Fill amount in `0.0..1.0`, or zero outside the map or inside solid linked terrain.
+        methods.add_method("getAmountAt", |_, this, (world_x, world_y): (f32, f32)| {
+            let amount = if let Some(terrain) = &this.terrain {
+                let terrain_ref = terrain.borrow();
+                this.liquid
+                    .borrow()
+                    .get_amount_at_with_terrain(world_x, world_y, &terrain_ref)
+            } else {
+                this.liquid.borrow().get_amount_at(world_x, world_y)
+            };
+            Ok(amount)
+        });
+        // -- getLevelAt --
+        /// Returns the top liquid surface level for the sampled column.
+        /// @param | worldX | number | World-space X coordinate.
+        /// @param | worldY | number | World-space Y coordinate used to select the sampled column.
+        /// @return | number | World-space surface Y, or nil when the sampled column is empty.
+        methods.add_method("getLevelAt", |_, this, (world_x, world_y): (f32, f32)| {
+            let level = if let Some(terrain) = &this.terrain {
+                let terrain_ref = terrain.borrow();
+                this.liquid
+                    .borrow()
+                    .get_level_at_with_terrain(world_x, world_y, &terrain_ref)
+            } else {
+                this.liquid.borrow().get_level_at(world_x, world_y)
+            };
+            Ok(level)
+        });
+        // -- applyBuoyancy --
+        /// Applies sampled buoyancy and linear drag to matching dynamic bodies in the linked world.
+        /// @param | opts | table? | Optional controls: { layerMask?, density?, drag? }.
+        /// @return | table | Diagnostics with `affectedBodies` and `submergedBodies`.
+        methods.add_method_mut("applyBuoyancy", |lua, this, opts: Option<LuaTable>| {
+            let options = liquid_body_force_options_from_lua("applyBuoyancy", opts.as_ref())?;
+            let stats = if let Some(terrain) = &this.terrain {
+                let terrain_ref = terrain.borrow();
+                this.liquid
+                    .borrow()
+                    .apply_body_forces(&mut this.world.borrow_mut(), Some(&terrain_ref), options)
+                    .map_err(|err| physics_runtime_error("applyBuoyancy", err))?
+            } else {
+                this.liquid
+                    .borrow()
+                    .apply_body_forces(&mut this.world.borrow_mut(), None, options)
+                    .map_err(|err| physics_runtime_error("applyBuoyancy", err))?
+            };
+            liquid_body_force_stats_to_table(lua, stats)
+        });
+        // -- toBytes --
+        /// Serializes the liquid grid to binary data for save or transfer workflows.
+        /// @return | string | Binary liquid data.
+        methods.add_method("toBytes", |lua, this, ()| {
+            lua.create_string(this.liquid.borrow().to_bytes())
+        });
+        // -- loadFromBytes --
+        /// Restores liquid grid state from binary data previously produced by `toBytes`.
+        /// @param | data | string | Binary liquid data.
+        /// @return | boolean | True when the data matched this map's dimensions and cell size.
+        methods.add_method_mut("loadFromBytes", |_, this, data: LuaString| {
+            Ok(this
+                .liquid
+                .borrow_mut()
+                .load_from_bytes(data.as_bytes().as_ref()))
+        });
+        // -- type --
+        /// Returns the type name of this object ("LLiquidMap").
+        /// @return | string | "LLiquidMap".
+        methods.add_method("type", |_, _, ()| Ok("LLiquidMap"));
+        // -- typeOf --
+        /// Checks whether this object matches a given type name.
+        /// @param | name | string | Type name to check.
+        /// @return | boolean | True for `LLiquidMap` and `LObject`.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LLiquidMap" || name == "LObject")
+        });
+    }
+}
 /// A handle to a single physics body in the world, providing per-body manipulation methods.
 #[derive(Clone)]
 pub struct LuaBody {
@@ -4483,6 +4780,51 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                 Ok(LuaTerrain {
                     terrain: Rc::new(RefCell::new(terrain)),
                     world: world_handle.world.clone(),
+                })
+            }
+        })?,
+    )?;
+    // -- newLiquidMap --
+    /// Creates a grid-based liquid map linked to a physics world and optionally to a terrain blocker grid.
+    /// @param | width | integer | Grid width in cells.
+    /// @param | height | integer | Grid height in cells.
+    /// @param | cellSize | number | World-space size of each cell.
+    /// @param | world | LWorld | Physics world used for `applyBuoyancy`.
+    /// @param | terrain | LTerrain? | Optional terrain grid; when provided, it must match the liquid grid dimensions, cell size, and origin.
+    /// @return | LLiquidMap | The liquid map object.
+    tbl.set(
+        "newLiquidMap",
+        lua.create_function({
+            move |_,
+                  (width, height, cell_size, world_ud, terrain_ud): (
+                u32,
+                u32,
+                f32,
+                mlua::AnyUserData,
+                Option<mlua::AnyUserData>,
+            )| {
+                let world_handle: std::cell::Ref<LuaWorld> = world_ud.borrow::<LuaWorld>()?;
+                let liquid = LiquidMap::try_new(width, height, cell_size)
+                    .map_err(|err| physics_runtime_error("newLiquidMap", err))?;
+                let liquid = Rc::new(RefCell::new(liquid));
+                let terrain = if let Some(terrain_ud) = terrain_ud {
+                    let terrain_handle = terrain_ud.borrow::<LuaTerrain>()?;
+                    let terrain = terrain_handle.terrain.clone();
+                    {
+                        let terrain_ref = terrain.borrow();
+                        liquid
+                            .borrow()
+                            .validate_terrain_compatibility(&terrain_ref)
+                            .map_err(|err| physics_runtime_error("newLiquidMap", err))?;
+                    }
+                    Some(terrain)
+                } else {
+                    None
+                };
+                Ok(LuaLiquidMap {
+                    liquid,
+                    world: world_handle.world.clone(),
+                    terrain,
                 })
             }
         })?,

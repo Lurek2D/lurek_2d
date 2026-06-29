@@ -1,18 +1,18 @@
 {
   "meta": {
-    "generated": "2026-06-29T09:21:23.362389+00:00",
+    "generated": "2026-06-29T20:24:31.576284+00:00",
     "generator": "tools/gen_lua_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "lua_functions": 6435,
+      "lua_functions": 6448,
       "lua_modules": 71,
       "engine_callbacks": 29
     }
   },
   "lua_api": {
     "summary": {
-      "total_functions": 6435,
-      "documented": 6430,
+      "total_functions": 6448,
+      "documented": 6443,
       "coverage_pct": 99.9,
       "modules": 71
     },
@@ -84463,8 +84463,8 @@
             "kind": "function",
             "owner_type": "",
             "description": "Creates a particle system from an optional config table.",
-            "full_doc": "Creates a particle system from an optional config table.\n@param | config | table? | Particle config table. Supports `seed` for deterministic emission and reset behavior.\n@return | LParticleSystem | New particle system handle.",
-            "params_doc": "- `config` â€” `table?`: Particle config table. Supports `seed` for deterministic emission and reset behavior.",
+            "full_doc": "Creates a particle system from an optional config table.\n@param | config | table? | Particle config table. Supports `seed` for deterministic emission and reset behavior, plus canonical TOML-style snake_case keys for file-backed tooling flows.\n@return | LParticleSystem | New particle system handle.",
+            "params_doc": "- `config` â€” `table?`: Particle config table. Supports `seed` for deterministic emission and reset behavior, plus canonical TOML-style snake_case keys for file-backed tooling flows.",
             "returns_doc": "LParticleSystem",
             "inferred_sig": "([config])",
             "typed_params": [
@@ -84472,7 +84472,7 @@
                 "config",
                 "table?",
                 true,
-                "Particle config table. Supports `seed` for deterministic emission and reset behavior."
+                "Particle config table. Supports `seed` for deterministic emission and reset behavior, plus canonical TOML-style snake_case keys for file-backed tooling flows."
               ]
             ],
             "inferred_return": "LParticleSystem",
@@ -98202,7 +98202,7 @@
             ],
             "inferred_return": "LWorld",
             "return_description": "The new physics world.",
-            "line": 4202,
+            "line": 4499,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98231,7 +98231,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 4220,
+            "line": 4517,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98254,7 +98254,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 4234,
+            "line": 4531,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98277,7 +98277,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Canonical material table that can be reused with body and fixture assignment APIs.",
-            "line": 4242,
+            "line": 4539,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98324,7 +98324,7 @@
             ],
             "inferred_return": "LBody",
             "return_description": "The newly created body.",
-            "line": 4257,
+            "line": 4554,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98353,7 +98353,7 @@
             ],
             "inferred_return": "number",
             "return_description": "X position.",
-            "line": 4269,
+            "line": 4566,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98394,7 +98394,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 4291,
+            "line": 4588,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98423,7 +98423,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if sleeping is allowed.",
-            "line": 4304,
+            "line": 4601,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98458,7 +98458,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 4319,
+            "line": 4616,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98487,7 +98487,7 @@
             ],
             "inferred_return": "LPhysicsShape",
             "return_description": "The shape object.",
-            "line": 4336,
+            "line": 4633,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98510,7 +98510,7 @@
             ],
             "inferred_return": "LPhysicsShape",
             "return_description": "The shape object.",
-            "line": 4348,
+            "line": 4645,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98551,7 +98551,7 @@
             ],
             "inferred_return": "LPhysicsShape",
             "return_description": "The shape object.",
-            "line": 4363,
+            "line": 4660,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98574,7 +98574,7 @@
             ],
             "inferred_return": "LPhysicsShape",
             "return_description": "The shape object.",
-            "line": 4375,
+            "line": 4672,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98603,7 +98603,7 @@
             ],
             "inferred_return": "LPhysicsShape",
             "return_description": "The shape object.",
-            "line": 4384,
+            "line": 4681,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98632,7 +98632,7 @@
             ],
             "inferred_return": "LPhysicsShape",
             "return_description": "Circle, rectangle, or convex polygon approximating the opaque pixels.",
-            "line": 4395,
+            "line": 4692,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98661,7 +98661,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 4409,
+            "line": 4706,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98684,7 +98684,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Array of collision event tables.",
-            "line": 4435,
+            "line": 4732,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98707,7 +98707,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 4447,
+            "line": 4744,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98736,7 +98736,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 4459,
+            "line": 4756,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98777,7 +98777,54 @@
             ],
             "inferred_return": "LTerrain",
             "return_description": "The terrain object.",
-            "line": 4476,
+            "line": 4773,
+            "file": "src/lua_api/physics_api.rs"
+          },
+          {
+            "name": "newLiquidMap",
+            "lua_name": "lurek.physics.newLiquidMap",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Creates a grid-based liquid map linked to a physics world and optionally to a terrain blocker grid.",
+            "full_doc": "Creates a grid-based liquid map linked to a physics world and optionally to a terrain blocker grid.\n@param | width | integer | Grid width in cells.\n@param | height | integer | Grid height in cells.\n@param | cellSize | number | World-space size of each cell.\n@param | world | LWorld | Physics world used for `applyBuoyancy`.\n@param | terrain | LTerrain? | Optional terrain grid; when provided, it must match the liquid grid dimensions, cell size, and origin.\n@return | LLiquidMap | The liquid map object.",
+            "params_doc": "- `width` â€” `integer`: Grid width in cells.\n- `height` â€” `integer`: Grid height in cells.\n- `cellSize` â€” `number`: World-space size of each cell.\n- `world` â€” `LWorld`: Physics world used for `applyBuoyancy`.\n- `terrain` â€” `LTerrain?`: Optional terrain grid; when provided, it must match the liquid grid dimensions, cell size, and origin.",
+            "returns_doc": "LLiquidMap",
+            "inferred_sig": "",
+            "typed_params": [
+              [
+                "width",
+                "integer",
+                false,
+                "Grid width in cells."
+              ],
+              [
+                "height",
+                "integer",
+                false,
+                "Grid height in cells."
+              ],
+              [
+                "cellSize",
+                "number",
+                false,
+                "World-space size of each cell."
+              ],
+              [
+                "world",
+                "LWorld",
+                false,
+                "Physics world used for `applyBuoyancy`."
+              ],
+              [
+                "terrain",
+                "LTerrain?",
+                true,
+                "Optional terrain grid; when provided, it must match the liquid grid dimensions, cell size, and origin."
+              ]
+            ],
+            "inferred_return": "LLiquidMap",
+            "return_description": "The liquid map object.",
+            "line": 4795,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98842,7 +98889,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the rectangles overlap.",
-            "line": 4501,
+            "line": 4843,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98895,7 +98942,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the circles overlap.",
-            "line": 4520,
+            "line": 4862,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98948,7 +98995,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the point is inside.",
-            "line": 4539,
+            "line": 4881,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -99007,7 +99054,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if circle and AABB overlap.",
-            "line": 4559,
+            "line": 4901,
             "file": "src/lua_api/physics_api.rs"
           }
         ],
@@ -99060,7 +99107,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1112,
+                "line": 1229,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99083,7 +99130,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1137,
+                "line": 1254,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99099,7 +99146,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1159,
+                "line": 1276,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99115,7 +99162,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1166,
+                "line": 1283,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99150,7 +99197,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1175,
+                "line": 1292,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99179,7 +99226,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the pair is enabled in both matrix directions.",
-                "line": 1192,
+                "line": 1309,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99208,7 +99255,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1207,
+                "line": 1324,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99231,7 +99278,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Target group bitmask.",
-                "line": 1223,
+                "line": 1340,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99247,7 +99294,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1232,
+                "line": 1349,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99263,7 +99310,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Gravity X component in world units per second squared.",
-                "line": 1240,
+                "line": 1357,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99292,7 +99339,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1247,
+                "line": 1364,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99327,7 +99374,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Stable gravity vector ID.",
-                "line": 1257,
+                "line": 1374,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99368,7 +99415,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1274,
+                "line": 1391,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99391,7 +99438,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if an active vector was removed.",
-                "line": 1288,
+                "line": 1405,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99407,7 +99454,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1293,
+                "line": 1410,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99430,7 +99477,7 @@
                 ],
                 "inferred_return": "table?",
                 "return_description": "Table with id, gx, gy, layerMask, and enabled fields.",
-                "line": 1301,
+                "line": 1418,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99453,7 +99500,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1310,
+                "line": 1427,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99469,7 +99516,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Pixels per meter.",
-                "line": 1317,
+                "line": 1434,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99492,7 +99539,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Equivalent value in physics meters.",
-                "line": 1324,
+                "line": 1441,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99515,7 +99562,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Equivalent value in pixels.",
-                "line": 1331,
+                "line": 1448,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99531,7 +99578,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Body count.",
-                "line": 1337,
+                "line": 1454,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99554,7 +99601,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the body is active.",
-                "line": 1344,
+                "line": 1461,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99570,7 +99617,7 @@
                 "typed_params": [],
                 "inferred_return": "integer[]",
                 "return_description": "Body ID numbers.",
-                "line": 1350,
+                "line": 1467,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99593,7 +99640,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the joint is active.",
-                "line": 1357,
+                "line": 1474,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99609,7 +99656,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Stats table with bodies, bodySlots, colliders, joints, jointSlots, zones, gravityVectors, sleepingBodies.",
-                "line": 1374,
+                "line": 1491,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99644,7 +99691,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Flow sample table with `vx`, `vy`, `magnitude`, `intensity`, and `sources`.",
-                "line": 1384,
+                "line": 1501,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99667,7 +99714,7 @@
                 ],
                 "inferred_return": "LFlowStream",
                 "return_description": "New flow field handle.",
-                "line": 1399,
+                "line": 1516,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99690,7 +99737,7 @@
                 ],
                 "inferred_return": "LFlowStream",
                 "return_description": "New flow field handle.",
-                "line": 1415,
+                "line": 1532,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99713,7 +99760,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the field existed and was active.",
-                "line": 1432,
+                "line": 1549,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99736,7 +99783,7 @@
                 ],
                 "inferred_return": "table?",
                 "return_description": "Flow field descriptor table with geometry, enabled, strength, application, combine, and layer-mask fields.",
-                "line": 1439,
+                "line": 1556,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99752,7 +99799,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1447,
+                "line": 1564,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99781,7 +99828,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1455,
+                "line": 1572,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99804,7 +99851,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1472,
+                "line": 1589,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99845,7 +99892,7 @@
                 ],
                 "inferred_return": "LBody",
                 "return_description": "The newly created body handle.",
-                "line": 1483,
+                "line": 1600,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99892,7 +99939,7 @@
                 ],
                 "inferred_return": "LBody",
                 "return_description": "The newly created body handle.",
-                "line": 1545,
+                "line": 1662,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99939,7 +99986,7 @@
                 ],
                 "inferred_return": "LBody",
                 "return_description": "The newly created body handle.",
-                "line": 1568,
+                "line": 1685,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100004,7 +100051,7 @@
                 ],
                 "inferred_return": "LBody",
                 "return_description": "The newly created body handle.",
-                "line": 1604,
+                "line": 1721,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100057,7 +100104,7 @@
                 ],
                 "inferred_return": "LBody",
                 "return_description": "The newly created body handle.",
-                "line": 1640,
+                "line": 1757,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100116,7 +100163,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The fixture index on the body.",
-                "line": 1683,
+                "line": 1800,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100139,7 +100186,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Number of attached fixtures.",
-                "line": 1709,
+                "line": 1826,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100174,7 +100221,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1717,
+                "line": 1834,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100209,7 +100256,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1732,
+                "line": 1849,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100244,7 +100291,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1746,
+                "line": 1863,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100273,7 +100320,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Material table with solver-backed and gameplay metadata fields.",
-                "line": 1761,
+                "line": 1878,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100308,7 +100355,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1777,
+                "line": 1894,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100349,7 +100396,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The joint ID.",
-                "line": 1794,
+                "line": 1911,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100408,7 +100455,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The joint ID.",
-                "line": 1814,
+                "line": 1931,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100461,7 +100508,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The joint ID.",
-                "line": 1832,
+                "line": 1949,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100502,7 +100549,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The joint ID.",
-                "line": 1848,
+                "line": 1965,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100561,7 +100608,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The joint ID.",
-                "line": 1868,
+                "line": 1985,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100614,7 +100661,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The joint ID.",
-                "line": 1886,
+                "line": 2003,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100667,7 +100714,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The joint ID.",
-                "line": 1904,
+                "line": 2021,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100702,7 +100749,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The joint ID.",
-                "line": 1919,
+                "line": 2036,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100743,7 +100790,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The joint ID.",
-                "line": 1935,
+                "line": 2052,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100784,7 +100831,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The joint ID.",
-                "line": 1951,
+                "line": 2068,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100825,7 +100872,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The joint ID.",
-                "line": 1967,
+                "line": 2084,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100841,7 +100888,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Joint count.",
-                "line": 1979,
+                "line": 2096,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100857,7 +100904,7 @@
                 "typed_params": [],
                 "inferred_return": "integer[]",
                 "return_description": "Joint ID numbers.",
-                "line": 1985,
+                "line": 2102,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100880,7 +100927,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Body A ID.",
-                "line": 1993,
+                "line": 2110,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100903,7 +100950,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2002,
+                "line": 2119,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100926,7 +100973,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "The joint type name.",
-                "line": 2010,
+                "line": 2127,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100955,7 +101002,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2017,
+                "line": 2134,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100978,7 +101025,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Motor speed value.",
-                "line": 2035,
+                "line": 2152,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101007,7 +101054,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2042,
+                "line": 2159,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101042,7 +101089,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2061,
+                "line": 2178,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101065,7 +101112,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Lower limit.",
-                "line": 2080,
+                "line": 2197,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101100,7 +101147,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2088,
+                "line": 2205,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101147,7 +101194,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Hit info {bodyId, x, y, normalX, normalY, toi} or nil if no hit.",
-                "line": 2116,
+                "line": 2233,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101200,7 +101247,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Hit info {bodyId, x, y, normalX, normalY, toi} or nil if no hit.",
-                "line": 2143,
+                "line": 2260,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101253,7 +101300,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of hit tables {bodyId, x, y, normalX, normalY, toi}.",
-                "line": 2175,
+                "line": 2292,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101300,7 +101347,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Body ID numbers found in the region.",
-                "line": 2201,
+                "line": 2318,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101335,7 +101382,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Body ID at the point, or nil.",
-                "line": 2216,
+                "line": 2333,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101394,7 +101441,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Hit info {bodyId, x, y, normalX, normalY, toi, safeFraction} or nil if no hit.",
-                "line": 2233,
+                "line": 2350,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101447,7 +101494,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Trace table {hits, segments, reachedMaxRange}.",
-                "line": 2264,
+                "line": 2381,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101500,7 +101547,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Hit info {bodyId, x, y, normalX, normalY, distance, segmentIndex} or nil if no hit.",
-                "line": 2295,
+                "line": 2412,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101553,7 +101600,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of hit tables {bodyId, x, y, normalX, normalY, distance, segmentIndex}.",
-                "line": 2329,
+                "line": 2446,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101594,7 +101641,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the body velocity was updated, false for inactive bodies, zero-speed bodies, or degenerate normals.",
-                "line": 2370,
+                "line": 2487,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101610,7 +101657,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of collision event tables.",
-                "line": 2384,
+                "line": 2501,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101626,7 +101673,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of {bodyA, bodyB} tables.",
-                "line": 2401,
+                "line": 2518,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101642,7 +101689,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of {bodyA, bodyB} tables.",
-                "line": 2418,
+                "line": 2535,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101658,7 +101705,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of {bodyA, bodyB, normalX, normalY, isTouching} tables.",
-                "line": 2438,
+                "line": 2555,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101681,7 +101728,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of {bodyA, bodyB, normalX, normalY, isTouching} tables.",
-                "line": 2455,
+                "line": 2572,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101710,7 +101757,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2467,
+                "line": 2584,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101733,7 +101780,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Body type: \"static\", \"dynamic\", \"kinematic\", or \"sensor\".",
-                "line": 2476,
+                "line": 2593,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101756,7 +101803,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2482,
+                "line": 2599,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101772,7 +101819,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2488,
+                "line": 2605,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101795,7 +101842,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2495,
+                "line": 2612,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101811,7 +101858,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2501,
+                "line": 2618,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101840,7 +101887,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2509,
+                "line": 2626,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101863,7 +101910,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "The stored value, or nil if none was set.",
-                "line": 2521,
+                "line": 2638,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101886,7 +101933,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2531,
+                "line": 2648,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101915,7 +101962,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2542,
+                "line": 2659,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101938,7 +101985,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if CCD is enabled.",
-                "line": 2550,
+                "line": 2667,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101973,7 +102020,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2558,
+                "line": 2675,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101996,7 +102043,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2568,
+                "line": 2685,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102019,7 +102066,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Normal X, or nil if not a one-way body.",
-                "line": 2577,
+                "line": 2694,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102048,7 +102095,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2587,
+                "line": 2704,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102071,7 +102118,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Break force value.",
-                "line": 2595,
+                "line": 2712,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102094,7 +102141,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the body is sleeping.",
-                "line": 2602,
+                "line": 2719,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102117,7 +102164,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2608,
+                "line": 2725,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102140,7 +102187,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2615,
+                "line": 2732,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102163,7 +102210,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2622,
+                "line": 2739,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102179,7 +102226,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Iteration count.",
-                "line": 2629,
+                "line": 2746,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102202,7 +102249,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2635,
+                "line": 2752,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102218,7 +102265,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "CCD substep count.",
-                "line": 2642,
+                "line": 2759,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102241,7 +102288,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Body ID numbers in creation order.",
-                "line": 2649,
+                "line": 2766,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102276,7 +102323,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Remaining unstepped time to carry into next frame.",
-                "line": 2680,
+                "line": 2797,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102317,7 +102364,7 @@
                 ],
                 "inferred_return": "LZone",
                 "return_description": "The zone handle.",
-                "line": 2697,
+                "line": 2814,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102333,7 +102380,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of {zone_id, body_id, kind} tables where kind is \"enter\" or \"leave\".",
-                "line": 2716,
+                "line": 2833,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102349,7 +102396,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "\"LWorld\".",
-                "line": 2738,
+                "line": 2855,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102372,7 +102419,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the object matches.",
-                "line": 2743,
+                "line": 2860,
                 "file": "src/lua_api/physics_api.rs"
               }
             ]
@@ -102394,7 +102441,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Stable flow field id.",
-                "line": 2759,
+                "line": 2876,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102417,7 +102464,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2763,
+                "line": 2880,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102433,7 +102480,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True when enabled.",
-                "line": 2774,
+                "line": 2891,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102456,7 +102503,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2785,
+                "line": 2902,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102472,7 +102519,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Strength value.",
-                "line": 2799,
+                "line": 2916,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102495,7 +102542,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2810,
+                "line": 2927,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102518,7 +102565,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2832,
+                "line": 2949,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102541,7 +102588,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2856,
+                "line": 2973,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102557,7 +102604,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Layer bitmask.",
-                "line": 2867,
+                "line": 2984,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102580,7 +102627,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2878,
+                "line": 2995,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102603,7 +102650,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2889,
+                "line": 3006,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102619,7 +102666,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2899,
+                "line": 3016,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102635,7 +102682,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "`LFlowStream`.",
-                "line": 2906,
+                "line": 3023,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102658,7 +102705,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True for `LFlowStream` and `LObject`.",
-                "line": 2911,
+                "line": 3028,
                 "file": "src/lua_api/physics_api.rs"
               }
             ]
@@ -102680,7 +102727,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Zone ID.",
-                "line": 2927,
+                "line": 3044,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102703,7 +102750,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2931,
+                "line": 3048,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102726,7 +102773,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2941,
+                "line": 3058,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102749,7 +102796,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2951,
+                "line": 3068,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102784,7 +102831,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2963,
+                "line": 3080,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102813,7 +102860,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2975,
+                "line": 3092,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102848,7 +102895,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2988,
+                "line": 3105,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102883,7 +102930,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3004,
+                "line": 3121,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102899,7 +102946,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3017,
+                "line": 3134,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102922,7 +102969,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3027,
+                "line": 3144,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102938,7 +102985,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True when additive gravity mode is enabled.",
-                "line": 3037,
+                "line": 3154,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102961,7 +103008,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3044,
+                "line": 3161,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102977,7 +103024,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Falloff mode name.",
-                "line": 3055,
+                "line": 3172,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103006,7 +103053,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3065,
+                "line": 3182,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103035,7 +103082,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3080,
+                "line": 3197,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103058,7 +103105,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3094,
+                "line": 3211,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103081,7 +103128,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3105,
+                "line": 3222,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103104,7 +103151,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3119,
+                "line": 3236,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103127,7 +103174,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3130,
+                "line": 3247,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103143,7 +103190,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3140,
+                "line": 3257,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103159,7 +103206,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "\"LZone\".",
-                "line": 3147,
+                "line": 3264,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103182,7 +103229,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the object matches.",
-                "line": 3152,
+                "line": 3269,
                 "file": "src/lua_api/physics_api.rs"
               }
             ]
@@ -103223,7 +103270,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3170,
+                "line": 3287,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103252,7 +103299,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the cell is solid.",
-                "line": 3179,
+                "line": 3296,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103293,7 +103340,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3188,
+                "line": 3305,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103328,7 +103375,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3203,
+                "line": 3320,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103363,7 +103410,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3218,
+                "line": 3335,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103410,7 +103457,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3232,
+                "line": 3349,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103451,7 +103498,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3248,
+                "line": 3365,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103492,7 +103539,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3264,
+                "line": 3381,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103533,7 +103580,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Collapse result table with removedCells, components, bodyIds, and debrisBodies fields.",
-                "line": 3285,
+                "line": 3402,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103556,7 +103603,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3314,
+                "line": 3431,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103579,7 +103626,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Rebuild diagnostics with dirtyChunksRebuilt, dirtyChunksRemaining, bodiesDestroyed, bodiesCreated, and elapsedMicros fields.",
-                "line": 3327,
+                "line": 3444,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103595,7 +103642,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if a flush is needed.",
-                "line": 3337,
+                "line": 3454,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103611,7 +103658,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Number of unsupported single cells removed.",
-                "line": 3343,
+                "line": 3460,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103634,7 +103681,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Collapse result table with removedCells, components, bodyIds, and debrisBodies fields.",
-                "line": 3354,
+                "line": 3471,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103650,7 +103697,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of tables with x and y fields (world-space centers).",
-                "line": 3368,
+                "line": 3485,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103685,7 +103732,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array of body IDs for the spawned debris.",
-                "line": 3385,
+                "line": 3502,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103738,7 +103785,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Raw RGBA pixel bytes.",
-                "line": 3417,
+                "line": 3534,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103754,7 +103801,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Binary terrain data.",
-                "line": 3431,
+                "line": 3548,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103777,7 +103824,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if loading succeeded.",
-                "line": 3438,
+                "line": 3555,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103793,7 +103840,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "\"LTerrain\".",
-                "line": 3447,
+                "line": 3564,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103816,7 +103863,365 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the object matches.",
-                "line": 3452,
+                "line": 3569,
+                "file": "src/lua_api/physics_api.rs"
+              }
+            ]
+          },
+          "LLiquidMap": {
+            "description": "A separate grid-based liquid map linked to a physics world and optionally to terrain blocking.",
+            "fields": [],
+            "methods": [
+              {
+                "name": "setCell",
+                "lua_name": "LLiquidMap:setCell",
+                "kind": "method",
+                "owner_type": "LLiquidMap",
+                "description": "Sets one liquid cell amount and kind.",
+                "full_doc": "Sets one liquid cell amount and kind.\n@param | cx | integer | Cell column (0-based).\n@param | cy | integer | Cell row (0-based).\n@param | amount | number | Fill amount in `0.0..1.0`.\n@param | kind | any | Liquid kind as `water`, `lava`, `acid`, or a custom unsigned integer id.",
+                "params_doc": "- `cx` â€” `integer`: Cell column (0-based).\n- `cy` â€” `integer`: Cell row (0-based).\n- `amount` â€” `number`: Fill amount in `0.0..1.0`.\n- `kind` â€” `any`: Liquid kind as `water`, `lava`, `acid`, or a custom unsigned integer id.",
+                "returns_doc": "",
+                "inferred_sig": "(cx, cy, amount, kind)",
+                "typed_params": [
+                  [
+                    "cx",
+                    "integer",
+                    false,
+                    "Cell column (0-based)."
+                  ],
+                  [
+                    "cy",
+                    "integer",
+                    false,
+                    "Cell row (0-based)."
+                  ],
+                  [
+                    "amount",
+                    "number",
+                    false,
+                    "Fill amount in `0.0..1.0`."
+                  ],
+                  [
+                    "kind",
+                    "any",
+                    false,
+                    "Liquid kind as `water`, `lava`, `acid`, or a custom unsigned integer id."
+                  ]
+                ],
+                "inferred_return": "",
+                "return_description": "",
+                "line": 3591,
+                "file": "src/lua_api/physics_api.rs"
+              },
+              {
+                "name": "getCell",
+                "lua_name": "LLiquidMap:getCell",
+                "kind": "method",
+                "owner_type": "LLiquidMap",
+                "description": "Returns the amount and kind stored in one liquid cell.",
+                "full_doc": "Returns the amount and kind stored in one liquid cell.\n@param | cx | integer | Cell column (0-based).\n@param | cy | integer | Cell row (0-based).\n@return | number | Fill amount in `0.0..1.0`.\n@return | any | Liquid kind as a built-in string or custom integer id, or nil when the cell is empty.",
+                "params_doc": "- `cx` â€” `integer`: Cell column (0-based).\n- `cy` â€” `integer`: Cell row (0-based).",
+                "returns_doc": "number",
+                "inferred_sig": "(cx, cy)",
+                "typed_params": [
+                  [
+                    "cx",
+                    "integer",
+                    false,
+                    "Cell column (0-based)."
+                  ],
+                  [
+                    "cy",
+                    "integer",
+                    false,
+                    "Cell row (0-based)."
+                  ]
+                ],
+                "inferred_return": "number",
+                "return_description": "Fill amount in `0.0..1.0`.",
+                "line": 3608,
+                "file": "src/lua_api/physics_api.rs"
+              },
+              {
+                "name": "fillRect",
+                "lua_name": "LLiquidMap:fillRect",
+                "kind": "method",
+                "owner_type": "LLiquidMap",
+                "description": "Sets every liquid cell in a rectangular region to the same amount and kind.",
+                "full_doc": "Sets every liquid cell in a rectangular region to the same amount and kind.\n@param | x | integer | Rectangle left cell coordinate.\n@param | y | integer | Rectangle top cell coordinate.\n@param | width | integer | Rectangle width in cells.\n@param | height | integer | Rectangle height in cells.\n@param | amount | number | Fill amount in `0.0..1.0`.\n@param | kind | any | Liquid kind as `water`, `lava`, `acid`, or a custom unsigned integer id.",
+                "params_doc": "- `x` â€” `integer`: Rectangle left cell coordinate.\n- `y` â€” `integer`: Rectangle top cell coordinate.\n- `width` â€” `integer`: Rectangle width in cells.\n- `height` â€” `integer`: Rectangle height in cells.\n- `amount` â€” `number`: Fill amount in `0.0..1.0`.\n- `kind` â€” `any`: Liquid kind as `water`, `lava`, `acid`, or a custom unsigned integer id.",
+                "returns_doc": "",
+                "inferred_sig": "(x, y, width, height, amount, kind)",
+                "typed_params": [
+                  [
+                    "x",
+                    "integer",
+                    false,
+                    "Rectangle left cell coordinate."
+                  ],
+                  [
+                    "y",
+                    "integer",
+                    false,
+                    "Rectangle top cell coordinate."
+                  ],
+                  [
+                    "width",
+                    "integer",
+                    false,
+                    "Rectangle width in cells."
+                  ],
+                  [
+                    "height",
+                    "integer",
+                    false,
+                    "Rectangle height in cells."
+                  ],
+                  [
+                    "amount",
+                    "number",
+                    false,
+                    "Fill amount in `0.0..1.0`."
+                  ],
+                  [
+                    "kind",
+                    "any",
+                    false,
+                    "Liquid kind as `water`, `lava`, `acid`, or a custom unsigned integer id."
+                  ]
+                ],
+                "inferred_return": "",
+                "return_description": "",
+                "line": 3625,
+                "file": "src/lua_api/physics_api.rs"
+              },
+              {
+                "name": "drainRect",
+                "lua_name": "LLiquidMap:drainRect",
+                "kind": "method",
+                "owner_type": "LLiquidMap",
+                "description": "Removes up to the requested amount from every cell in a rectangular region.",
+                "full_doc": "Removes up to the requested amount from every cell in a rectangular region.\n@param | x | integer | Rectangle left cell coordinate.\n@param | y | integer | Rectangle top cell coordinate.\n@param | width | integer | Rectangle width in cells.\n@param | height | integer | Rectangle height in cells.\n@param | amount | number | Amount removed from each cell, clamped into `0.0..1.0`.",
+                "params_doc": "- `x` â€” `integer`: Rectangle left cell coordinate.\n- `y` â€” `integer`: Rectangle top cell coordinate.\n- `width` â€” `integer`: Rectangle width in cells.\n- `height` â€” `integer`: Rectangle height in cells.\n- `amount` â€” `number`: Amount removed from each cell, clamped into `0.0..1.0`.",
+                "returns_doc": "",
+                "inferred_sig": "(x, y, width, height, amount)",
+                "typed_params": [
+                  [
+                    "x",
+                    "integer",
+                    false,
+                    "Rectangle left cell coordinate."
+                  ],
+                  [
+                    "y",
+                    "integer",
+                    false,
+                    "Rectangle top cell coordinate."
+                  ],
+                  [
+                    "width",
+                    "integer",
+                    false,
+                    "Rectangle width in cells."
+                  ],
+                  [
+                    "height",
+                    "integer",
+                    false,
+                    "Rectangle height in cells."
+                  ],
+                  [
+                    "amount",
+                    "number",
+                    false,
+                    "Amount removed from each cell, clamped into `0.0..1.0`."
+                  ]
+                ],
+                "inferred_return": "",
+                "return_description": "",
+                "line": 3643,
+                "file": "src/lua_api/physics_api.rs"
+              },
+              {
+                "name": "step",
+                "lua_name": "LLiquidMap:step",
+                "kind": "method",
+                "owner_type": "LLiquidMap",
+                "description": "Advances the liquid simulation with deterministic per-cell flow.",
+                "full_doc": "Advances the liquid simulation with deterministic per-cell flow.\n@param | opts | table? | Optional controls: { gravityFlow?, sidewaysFlow?, pressureFlow?, evaporation?, maxSteps? }.\n@return | table | Step diagnostics with `movedAmount`, `activeCells`, and `dirtyChunks`.",
+                "params_doc": "- `opts` â€” `table?`: Optional controls: { gravityFlow?, sidewaysFlow?, pressureFlow?, evaporation?, maxSteps? }.",
+                "returns_doc": "table",
+                "inferred_sig": "([opts])",
+                "typed_params": [
+                  [
+                    "opts",
+                    "table?",
+                    true,
+                    "Optional controls: { gravityFlow?, sidewaysFlow?, pressureFlow?, evaporation?, maxSteps? }."
+                  ]
+                ],
+                "inferred_return": "table",
+                "return_description": "Step diagnostics with `movedAmount`, `activeCells`, and `dirtyChunks`.",
+                "line": 3657,
+                "file": "src/lua_api/physics_api.rs"
+              },
+              {
+                "name": "getAmountAt",
+                "lua_name": "LLiquidMap:getAmountAt",
+                "kind": "method",
+                "owner_type": "LLiquidMap",
+                "description": "Samples liquid fill amount at one world-space point.",
+                "full_doc": "Samples liquid fill amount at one world-space point.\n@param | worldX | number | World-space X coordinate.\n@param | worldY | number | World-space Y coordinate.\n@return | number | Fill amount in `0.0..1.0`, or zero outside the map or inside solid linked terrain.",
+                "params_doc": "- `worldX` â€” `number`: World-space X coordinate.\n- `worldY` â€” `number`: World-space Y coordinate.",
+                "returns_doc": "number",
+                "inferred_sig": "(world_x, world_y)",
+                "typed_params": [
+                  [
+                    "worldX",
+                    "number",
+                    false,
+                    "World-space X coordinate."
+                  ],
+                  [
+                    "worldY",
+                    "number",
+                    false,
+                    "World-space Y coordinate."
+                  ]
+                ],
+                "inferred_return": "number",
+                "return_description": "Fill amount in `0.0..1.0`, or zero outside the map or inside solid linked terrain.",
+                "line": 3678,
+                "file": "src/lua_api/physics_api.rs"
+              },
+              {
+                "name": "getLevelAt",
+                "lua_name": "LLiquidMap:getLevelAt",
+                "kind": "method",
+                "owner_type": "LLiquidMap",
+                "description": "Returns the top liquid surface level for the sampled column.",
+                "full_doc": "Returns the top liquid surface level for the sampled column.\n@param | worldX | number | World-space X coordinate.\n@param | worldY | number | World-space Y coordinate used to select the sampled column.\n@return | number | World-space surface Y, or nil when the sampled column is empty.",
+                "params_doc": "- `worldX` â€” `number`: World-space X coordinate.\n- `worldY` â€” `number`: World-space Y coordinate used to select the sampled column.",
+                "returns_doc": "number",
+                "inferred_sig": "(world_x, world_y)",
+                "typed_params": [
+                  [
+                    "worldX",
+                    "number",
+                    false,
+                    "World-space X coordinate."
+                  ],
+                  [
+                    "worldY",
+                    "number",
+                    false,
+                    "World-space Y coordinate used to select the sampled column."
+                  ]
+                ],
+                "inferred_return": "number",
+                "return_description": "World-space surface Y, or nil when the sampled column is empty.",
+                "line": 3694,
+                "file": "src/lua_api/physics_api.rs"
+              },
+              {
+                "name": "applyBuoyancy",
+                "lua_name": "LLiquidMap:applyBuoyancy",
+                "kind": "method",
+                "owner_type": "LLiquidMap",
+                "description": "Applies sampled buoyancy and linear drag to matching dynamic bodies in the linked world.",
+                "full_doc": "Applies sampled buoyancy and linear drag to matching dynamic bodies in the linked world.\n@param | opts | table? | Optional controls: { layerMask?, density?, drag? }.\n@return | table | Diagnostics with `affectedBodies` and `submergedBodies`.",
+                "params_doc": "- `opts` â€” `table?`: Optional controls: { layerMask?, density?, drag? }.",
+                "returns_doc": "table",
+                "inferred_sig": "([opts])",
+                "typed_params": [
+                  [
+                    "opts",
+                    "table?",
+                    true,
+                    "Optional controls: { layerMask?, density?, drag? }."
+                  ]
+                ],
+                "inferred_return": "table",
+                "return_description": "Diagnostics with `affectedBodies` and `submergedBodies`.",
+                "line": 3709,
+                "file": "src/lua_api/physics_api.rs"
+              },
+              {
+                "name": "toBytes",
+                "lua_name": "LLiquidMap:toBytes",
+                "kind": "method",
+                "owner_type": "LLiquidMap",
+                "description": "Serializes the liquid grid to binary data for save or transfer workflows.",
+                "full_doc": "Serializes the liquid grid to binary data for save or transfer workflows.\n@return | string | Binary liquid data.",
+                "params_doc": "",
+                "returns_doc": "string",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "string",
+                "return_description": "Binary liquid data.",
+                "line": 3728,
+                "file": "src/lua_api/physics_api.rs"
+              },
+              {
+                "name": "loadFromBytes",
+                "lua_name": "LLiquidMap:loadFromBytes",
+                "kind": "method",
+                "owner_type": "LLiquidMap",
+                "description": "Restores liquid grid state from binary data previously produced by `toBytes`.",
+                "full_doc": "Restores liquid grid state from binary data previously produced by `toBytes`.\n@param | data | string | Binary liquid data.\n@return | boolean | True when the data matched this map's dimensions and cell size.",
+                "params_doc": "- `data` â€” `string`: Binary liquid data.",
+                "returns_doc": "boolean",
+                "inferred_sig": "(data)",
+                "typed_params": [
+                  [
+                    "data",
+                    "string",
+                    false,
+                    "Binary liquid data."
+                  ]
+                ],
+                "inferred_return": "boolean",
+                "return_description": "True when the data matched this map's dimensions and cell size.",
+                "line": 3735,
+                "file": "src/lua_api/physics_api.rs"
+              },
+              {
+                "name": "type",
+                "lua_name": "LLiquidMap:type",
+                "kind": "method",
+                "owner_type": "LLiquidMap",
+                "description": "Returns the type name of this object (\"LLiquidMap\").",
+                "full_doc": "Returns the type name of this object (\"LLiquidMap\").\n@return | string | \"LLiquidMap\".",
+                "params_doc": "",
+                "returns_doc": "string",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "string",
+                "return_description": "\"LLiquidMap\".",
+                "line": 3744,
+                "file": "src/lua_api/physics_api.rs"
+              },
+              {
+                "name": "typeOf",
+                "lua_name": "LLiquidMap:typeOf",
+                "kind": "method",
+                "owner_type": "LLiquidMap",
+                "description": "Checks whether this object matches a given type name.",
+                "full_doc": "Checks whether this object matches a given type name.\n@param | name | string | Type name to check.\n@return | boolean | True for `LLiquidMap` and `LObject`.",
+                "params_doc": "- `name` â€” `string`: Type name to check.",
+                "returns_doc": "boolean",
+                "inferred_sig": "(name)",
+                "typed_params": [
+                  [
+                    "name",
+                    "string",
+                    false,
+                    "Type name to check."
+                  ]
+                ],
+                "inferred_return": "boolean",
+                "return_description": "True for `LLiquidMap` and `LObject`.",
+                "line": 3749,
                 "file": "src/lua_api/physics_api.rs"
               }
             ]
@@ -103838,7 +104243,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Body ID.",
-                "line": 3479,
+                "line": 3776,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103854,7 +104259,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if the body has not been destroyed.",
-                "line": 3483,
+                "line": 3780,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103870,7 +104275,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "X coordinate.",
-                "line": 3490,
+                "line": 3787,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103899,7 +104304,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3501,
+                "line": 3798,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103915,7 +104320,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "X coordinate.",
-                "line": 3508,
+                "line": 3805,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103931,7 +104336,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Y coordinate.",
-                "line": 3515,
+                "line": 3812,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103947,7 +104352,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Velocity X component.",
-                "line": 3523,
+                "line": 3820,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103976,7 +104381,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3534,
+                "line": 3831,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103992,7 +104397,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Angle in radians.",
-                "line": 3541,
+                "line": 3838,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104015,7 +104420,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3547,
+                "line": 3844,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104031,7 +104436,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Angular velocity in radians per second.",
-                "line": 3554,
+                "line": 3851,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104054,7 +104459,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3560,
+                "line": 3857,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104070,7 +104475,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Mass in kilograms.",
-                "line": 3569,
+                "line": 3866,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104093,7 +104498,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3575,
+                "line": 3872,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104116,7 +104521,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3582,
+                "line": 3879,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104132,7 +104537,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Material table with solver-backed and gameplay metadata fields.",
-                "line": 3593,
+                "line": 3890,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104148,7 +104553,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Body type: \"static\", \"dynamic\", \"kinematic\", or \"sensor\".",
-                "line": 3604,
+                "line": 3901,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104171,7 +104576,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3610,
+                "line": 3907,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104187,7 +104592,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Width in world units.",
-                "line": 3618,
+                "line": 3915,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104203,7 +104608,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Height in world units.",
-                "line": 3625,
+                "line": 3922,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104219,7 +104624,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Friction value.",
-                "line": 3632,
+                "line": 3929,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104242,7 +104647,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3639,
+                "line": 3936,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104258,7 +104663,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Restitution (0 = no bounce, 1 = perfectly elastic).",
-                "line": 3648,
+                "line": 3945,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104281,7 +104686,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3655,
+                "line": 3952,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104304,7 +104709,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3664,
+                "line": 3961,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104320,7 +104725,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True when beam reflection is enabled for this body.",
-                "line": 3671,
+                "line": 3968,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104343,7 +104748,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3677,
+                "line": 3974,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104359,7 +104764,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Beam reflection multiplier in the range 0..1.",
-                "line": 3687,
+                "line": 3984,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104382,7 +104787,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3693,
+                "line": 3990,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104398,7 +104803,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Projectile reflection multiplier in the range 0..1.",
-                "line": 3703,
+                "line": 4000,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104414,7 +104819,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Layer bitmask.",
-                "line": 3712,
+                "line": 4009,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104437,7 +104842,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3719,
+                "line": 4016,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104453,7 +104858,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Mask bitmask.",
-                "line": 3726,
+                "line": 4023,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104476,7 +104881,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3733,
+                "line": 4030,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104492,7 +104897,7 @@
                 "typed_params": [],
                 "inferred_return": "integer?",
                 "return_description": "Collision group index, or nil.",
-                "line": 3740,
+                "line": 4037,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104515,7 +104920,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3746,
+                "line": 4043,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104544,7 +104949,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3758,
+                "line": 4055,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104573,7 +104978,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3766,
+                "line": 4063,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104596,7 +105001,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3773,
+                "line": 4070,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104637,7 +105042,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3783,
+                "line": 4080,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104660,7 +105065,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3795,
+                "line": 4092,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104676,7 +105081,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Gravity scale.",
-                "line": 3804,
+                "line": 4101,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104699,7 +105104,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3810,
+                "line": 4107,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104722,7 +105127,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3817,
+                "line": 4114,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104745,7 +105150,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3834,
+                "line": 4131,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104768,7 +105173,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3851,
+                "line": 4148,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104791,7 +105196,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3868,
+                "line": 4165,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104807,7 +105212,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if rotation is fixed.",
-                "line": 3885,
+                "line": 4182,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104830,7 +105235,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3891,
+                "line": 4188,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104846,7 +105251,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Damping value.",
-                "line": 3898,
+                "line": 4195,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104869,7 +105274,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3904,
+                "line": 4201,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104885,7 +105290,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Angular damping value.",
-                "line": 3913,
+                "line": 4210,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104908,7 +105313,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3919,
+                "line": 4216,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104924,7 +105329,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if CCD is active.",
-                "line": 3928,
+                "line": 4225,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104947,7 +105352,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3934,
+                "line": 4231,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104963,7 +105368,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if sleeping is allowed.",
-                "line": 3941,
+                "line": 4238,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104986,7 +105391,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3947,
+                "line": 4244,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105002,7 +105407,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3955,
+                "line": 4252,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105018,7 +105423,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if sleeping.",
-                "line": 3962,
+                "line": 4259,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105034,7 +105439,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3967,
+                "line": 4264,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105050,7 +105455,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3973,
+                "line": 4270,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105066,7 +105471,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "\"LBody\".",
-                "line": 3980,
+                "line": 4277,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105089,7 +105494,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the object matches.",
-                "line": 3985,
+                "line": 4282,
                 "file": "src/lua_api/physics_api.rs"
               }
             ]
@@ -105111,7 +105516,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Shape type name.",
-                "line": 4033,
+                "line": 4330,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105127,7 +105532,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Circle radius.",
-                "line": 4046,
+                "line": 4343,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105143,7 +105548,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Minimum X.",
-                "line": 4058,
+                "line": 4355,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105159,7 +105564,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Vertex count.",
-                "line": 4090,
+                "line": 4387,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105175,7 +105580,7 @@
                 "typed_params": [],
                 "inferred_return": "table?",
                 "return_description": "Vertex table, or nil for circles.",
-                "line": 4101,
+                "line": 4398,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105198,7 +105603,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4117,
+                "line": 4414,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105221,7 +105626,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4130,
+                "line": 4427,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105244,7 +105649,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4143,
+                "line": 4440,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105267,7 +105672,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4156,
+                "line": 4453,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105283,7 +105688,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4162,
+                "line": 4459,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105299,7 +105704,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "\"LPhysicsShape\".",
-                "line": 4166,
+                "line": 4463,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105322,7 +105727,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the object matches.",
-                "line": 4171,
+                "line": 4468,
                 "file": "src/lua_api/physics_api.rs"
               }
             ]

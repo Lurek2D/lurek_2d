@@ -471,6 +471,10 @@ name = "demo_smoke_tests"
 path = "tests/demo_smoke_tests.rs"
 
 [[test]]
+name = "workbench_smoke_tests"
+path = "tests/workbench_smoke_tests.rs"
+
+[[test]]
 name = "effects_audio_runtime_smoke_tests"
 path = "tests/rust/ext/effects_audio_runtime_smoke_tests.rs"
 

@@ -23,6 +23,11 @@ pub enum PhysicsError {
         max: f64,
         value: f64,
     },
+    /// Two linked physics owners require matching configuration but do not agree.
+    ConfigMismatch {
+        context: &'static str,
+        detail: String,
+    },
     /// A flat coordinate list had an odd number of entries.
     OddCoordinateCount { context: &'static str, count: usize },
     /// A count-based input exceeded a configured ceiling.
@@ -75,6 +80,17 @@ pub enum PhysicsError {
         cells: u64,
         max_cells: u64,
     },
+    /// Liquid dimensions overflowed before a cell count could be computed.
+    LiquidCellOverflow { width: u32, height: u32 },
+    /// Liquid dimensions were zero for an API that requires a non-empty grid.
+    InvalidLiquidDimensions { width: u32, height: u32 },
+    /// Liquid dimensions exceeded the configured cell ceiling.
+    LiquidCellLimitExceeded {
+        width: u32,
+        height: u32,
+        cells: u64,
+        max_cells: u64,
+    },
     /// Terrain image export overflowed before a byte count could be computed.
     TerrainImageByteOverflow { width: u32, height: u32 },
     /// Terrain image export exceeded the configured output byte ceiling.
@@ -115,6 +131,9 @@ impl fmt::Display for PhysicsError {
                 "physics field '{}' must be in [{}, {}], got {}",
                 field, min, max, value
             ),
+            Self::ConfigMismatch { context, detail } => {
+                write!(f, "{} configuration mismatch: {}", context, detail)
+            }
             Self::OddCoordinateCount { context, count } => write!(
                 f,
                 "{} requires complete x,y coordinate pairs, got {} value(s)",
@@ -192,6 +211,26 @@ impl fmt::Display for PhysicsError {
             } => write!(
                 f,
                 "physics terrain {}x{} requires {} cells, exceeding limit {}",
+                width, height, cells, max_cells
+            ),
+            Self::LiquidCellOverflow { width, height } => write!(
+                f,
+                "physics liquid dimensions {}x{} overflow cell count",
+                width, height
+            ),
+            Self::InvalidLiquidDimensions { width, height } => write!(
+                f,
+                "physics liquid dimensions must be non-zero, got {}x{}",
+                width, height
+            ),
+            Self::LiquidCellLimitExceeded {
+                width,
+                height,
+                cells,
+                max_cells,
+            } => write!(
+                f,
+                "physics liquid {}x{} requires {} cells, exceeding limit {}",
                 width, height, cells, max_cells
             ),
             Self::TerrainImageByteOverflow { width, height } => write!(

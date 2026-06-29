@@ -1062,6 +1062,106 @@ mod terrain_tests {
     }
 }
 
+mod liquid_tests {
+    use super::*;
+
+    #[test]
+    fn bytes_roundtrip_preserves_liquid_cells() {
+        let mut liquid = LiquidMap::new(4, 3, 2.5);
+        liquid.set_cell(0, 0, 1.0, LiquidKind::Water);
+        liquid.set_cell(3, 2, 0.5, LiquidKind::Lava);
+
+        let bytes = liquid.to_bytes();
+        let restored = LiquidMap::from_bytes(&bytes).expect("roundtrip");
+
+        assert_eq!(restored.width, 4);
+        assert_eq!(restored.height, 3);
+        assert!((restored.cell_size - 2.5).abs() < 1e-6);
+        assert_eq!(restored.get_cell(0, 0).kind, LiquidKind::Water);
+        assert_eq!(restored.get_cell(3, 2).kind, LiquidKind::Lava);
+        assert!((restored.get_cell(3, 2).amount - 0.5).abs() < 1e-6);
+    }
+
+    #[test]
+    fn terrain_link_step_leaks_through_hole_and_conserves_volume() {
+        let mut terrain = TerrainMap::new(8, 8, 8.0);
+        for x in 1..=6 {
+            terrain.set_cell(x, 6, true);
+        }
+        for y in 2..=6 {
+            terrain.set_cell(1, y, true);
+            terrain.set_cell(6, y, true);
+        }
+
+        let mut liquid = LiquidMap::new(8, 8, 8.0);
+        liquid.fill_rect(2, 2, 3, 3, 1.0, LiquidKind::Water);
+
+        let mut inside_before = 0.0;
+        for x in 2..=4 {
+            for y in 2..=5 {
+                inside_before += liquid.get_cell(x, y).amount;
+            }
+        }
+        let total_before = liquid.total_amount();
+
+        terrain.set_cell(3, 6, false);
+        let options = LiquidStepOptions {
+            gravity_flow: 1.0,
+            sideways_flow: 0.5,
+            pressure_flow: 0.15,
+            evaporation: 0.0,
+            max_steps_per_frame: 2,
+        };
+        for _ in 0..18 {
+            liquid
+                .step_with_terrain(&terrain, options)
+                .expect("linked liquid step");
+        }
+
+        let mut inside_after = 0.0;
+        for x in 2..=4 {
+            for y in 2..=5 {
+                inside_after += liquid.get_cell(x, y).amount;
+            }
+        }
+        let mut outside_after = 0.0;
+        for x in 0..8 {
+            outside_after += liquid.get_cell(x, 7).amount;
+        }
+        let total_after = liquid.total_amount();
+
+        assert!(inside_after < inside_before);
+        assert!(outside_after > 0.0);
+        assert!((total_before - total_after).abs() <= 0.01);
+    }
+
+    #[test]
+    fn apply_body_forces_pushes_submerged_body_upward() {
+        let mut world = World::new(0.0, 200.0);
+        let body_id = world.add_body(Body::new(20.0, 20.0, 12.0, 12.0, BodyType::Dynamic));
+
+        let mut liquid = LiquidMap::new(8, 8, 8.0);
+        liquid.fill_rect(1, 1, 3, 3, 1.0, LiquidKind::Water);
+
+        let stats = liquid
+            .apply_body_forces(
+                &mut world,
+                None,
+                LiquidBodyForceOptions {
+                    density: 3.0,
+                    drag: 1.0,
+                    ..LiquidBodyForceOptions::default()
+                },
+            )
+            .expect("apply liquid forces");
+        world.step(1.0 / 60.0);
+
+        assert_eq!(stats.affected_bodies, 1);
+        assert_eq!(stats.submerged_bodies, 1);
+        assert!(world.get_body(body_id.0).unwrap().velocity.y < 200.0 / 60.0);
+    }
+}
+
 mod zone_boundary_tests {
     use super::*;
 
@@ -1260,13 +1360,17 @@ mod material_tests {
 
     #[test]
     fn physics_material_validation_rejects_invalid_ranges() {
-        let mut material = PhysicsMaterial::default();
-        material.density = 0.0;
-        assert!(material.validate().is_err());
+        let zero_density = PhysicsMaterial {
+            density: 0.0,
+            ..PhysicsMaterial::default()
+        };
+        assert!(zero_density.validate().is_err());
 
-        material.density = 1.0;
-        material.beam_absorption = 1.5;
-        assert!(material.validate().is_err());
+        let invalid_absorption = PhysicsMaterial {
+            beam_absorption: 1.5,
+            ..PhysicsMaterial::default()
+        };
+        assert!(invalid_absorption.validate().is_err());
     }
 
     #[test]

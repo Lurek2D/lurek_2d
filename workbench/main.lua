@@ -9,6 +9,9 @@ end
 local State = load_module("app/state.lua")
 local Registry = load_module("app/editor_registry.lua")
 local Shell = load_module("app/shell.lua")
+local CommandBus = load_module("app/command_bus.lua")
+local ProjectIndex = load_module("app/services/project_index.lua")
+local DocumentService = load_module("app/services/document_service.lua")
 
 local app = {
     ready = false,
@@ -32,7 +35,12 @@ end
 function lurek.init()
     apply_window_defaults()
     local registry = Registry.create(load_module)
-    app.shell = Shell.create(State.create(registry))
+    local services = {
+        commands = CommandBus.create(),
+        projects = ProjectIndex.create(),
+        documents = DocumentService.create(registry),
+    }
+    app.shell = Shell.create(State.create(registry, services))
     app.ready = true
     app.shell:log("info", "Lurek Workbench ready")
 end

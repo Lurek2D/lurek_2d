@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Simulates 2D bodies under dynamic, static, kinematic, or sensor behaviors. - Supports shapes, continuous detection, and motorized mechanical joints. - Supports bullet-mode CCD bodies and swept circle queries for fast projectile work. - Supports mirror-style beam reflection and explicit projectile-velocity ricochet helpers. - Can infer approximate collision shapes from image alpha masks for asset-driven colliders. - Manages override zones, raycast queries, and destructible static terrain. - Provides a 16-group world collision matrix layered over per-body layer/mask filters. - Provides post-step contact events and colorized visual debug overlays. - Supports authored flow fields for wind, water, conveyor, and magic-current style motion that can be sampled or applied during stepping.
+Simulates 2D bodies under dynamic, static, kinematic, or sensor behaviors. - Supports shapes, continuous detection, and motorized mechanical joints. - Supports bullet-mode CCD bodies and swept circle queries for fast projectile work. - Supports mirror-style beam reflection and explicit projectile-velocity ricochet helpers. - Can infer approximate collision shapes from image alpha masks for asset-driven colliders. - Manages override zones, raycast queries, and destructible static terrain. - Provides a separate grid-based LiquidMap for leaking tanks, simple settling, serialization, and sampled buoyancy or drag. - Provides a 16-group world collision matrix layered over per-body layer/mask filters. - Provides post-step contact events and colorized visual debug overlays. - Supports authored flow fields for wind, water, conveyor, and magic-current style motion that can be sampled or applied during stepping.
 
 ## Summary
 
@@ -12,6 +12,7 @@ Simulates 2D bodies under dynamic, static, kinematic, or sensor behaviors. - Sup
 - Practical physics also depends on querying the world, not only advancing it. Raycasts, overlap checks, sweep-style tests, and contact inspection let gameplay ask what was hit, what overlaps, and why motion changed.
 - Reflective query paths now extend that spatial role. Scripts can mark bodies as mirrors, trace deterministic multi-segment beams through those surfaces, and reflect projectile velocities from supplied contact normals without confusing gameplay reflection with rigid-body restitution.
 - Flow fields extend that world model with continuous directional media. They let scripts describe rectangles, circular fans, and polyline tubes that contribute acceleration or drag-like target velocity behavior without inventing a second movement subsystem outside the physics step.
+- Liquids now cover the next step beyond those purely authored media. `LLiquidMap` adds a separate cell grid for finite-volume leaks, settling levels, terrain-linked openings, and sampled body buoyancy without turning every liquid cell into a rigid-body collider.
 - Shape support, terrain integration, and joints give the system expressive range for characters, bullets, walls, pickups, hazards, linked mechanisms, and authored environment collision.
 - Alpha-mask shape inference gives tools and scripts a pragmatic bridge from sprite or image assets to plausible collision geometry: circle-like masks become circles, filled masks become rectangles, and irregular masks become bounded convex polygons.
 - Contact data is one of the main user-facing outputs because systems often need normals, hit points, and begin or end state changes to react meaningfully.
@@ -422,6 +423,47 @@ do
     edge:setSensor(false)
     lurek.log.info("ledge edge type=" .. edge:getType())
     lurek.log.info("ledge bounds=" .. minX .. "," .. minY .. " -> " .. maxX .. "," .. maxY)
+end
+```
+
+---
+
+### `lurek.physics.newLiquidMap`
+
+Creates a grid-based liquid map linked to a physics world and optionally to a terrain blocker grid.
+
+```lua
+lurek.physics.newLiquidMap(width, height, cellSize, world, terrain)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `width` | number | Grid width in cells. |
+| `height` | number | Grid height in cells. |
+| `cellSize` | number | World-space size of each cell. |
+| `world` | [LWorld](#lworld) | Physics world used for `applyBuoyancy`. |
+| `terrain?` | [LTerrain](#lterrain) | Optional terrain grid; when provided, it must match the liquid grid dimensions, cell size, and origin. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LLiquidMap](#lliquidmap) | The liquid map object. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 200)
+    local terrain = lurek.physics.newTerrain(16, 16, 8, world)
+    local liquid = lurek.physics.newLiquidMap(16, 16, 8, world, terrain)
+    liquid:setCell(4, 4, 1.0, "water")
+    local amount = liquid:getAmountAt(36, 36)
+    lurek.log.info("liquid amount=" .. tostring(amount))
+    lurek.log.info("liquid type=" .. tostring(liquid:type()))
 end
 ```
 
@@ -935,6 +977,7 @@ end
 
 - [LBody](#lbody)
 - [LFlowStream](#lflowstream)
+- [LLiquidMap](#lliquidmap)
 - [LPhysicsShape](#lphysicsshape)
 - [LTerrain](#lterrain)
 - [LWorld](#lworld)
@@ -3388,6 +3431,451 @@ do
         strength = 20,
     })
     lurek.log.info("[physics] flow typeOf=" .. tostring(field:typeOf("LFlowStream")))
+end
+```
+
+---
+
+## LLiquidMap
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LLiquidMap:applyBuoyancy`
+
+Applies sampled buoyancy and linear drag to matching dynamic bodies in the linked world.
+
+```lua
+LLiquidMap:applyBuoyancy(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts?` | table | Optional controls: { layerMask?, density?, drag? }. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Diagnostics with `affectedBodies` and `submergedBodies`. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 200)
+    local body = world:newCircleBody(20, 20, 6, "dynamic")
+    local liquid = lurek.physics.newLiquidMap(8, 8, 8, world)
+    liquid:fillRect(1, 1, 3, 3, 1.0, "water")
+    local stats = liquid:applyBuoyancy({ density = 3.0, drag = 1.0 })
+    world:step(1 / 60)
+    lurek.log.info("buoyancy submerged=" .. tostring(stats.submergedBodies))
+    lurek.log.info("buoyancy vy=" .. tostring(select(2, body:getVelocity())))
+end
+```
+
+---
+
+#### `LLiquidMap:drainRect`
+
+Removes up to the requested amount from every cell in a rectangular region.
+
+```lua
+LLiquidMap:drainRect(x, y, width, height, amount)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Rectangle left cell coordinate. |
+| `y` | number | Rectangle top cell coordinate. |
+| `width` | number | Rectangle width in cells. |
+| `height` | number | Rectangle height in cells. |
+| `amount` | number | Amount removed from each cell, clamped into `0.0..1.0`. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local liquid = lurek.physics.newLiquidMap(10, 10, 8, world)
+    liquid:fillRect(2, 2, 3, 2, 1.0, "water")
+    liquid:drainRect(2, 2, 3, 2, 0.4)
+    local amount = select(1, liquid:getCell(3, 3))
+    lurek.log.info("drainRect amount=" .. tostring(amount))
+    lurek.log.info("drainRect type=" .. tostring(liquid:type()))
+end
+```
+
+---
+
+#### `LLiquidMap:fillRect`
+
+Sets every liquid cell in a rectangular region to the same amount and kind.
+
+```lua
+LLiquidMap:fillRect(x, y, width, height, amount, kind)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Rectangle left cell coordinate. |
+| `y` | number | Rectangle top cell coordinate. |
+| `width` | number | Rectangle width in cells. |
+| `height` | number | Rectangle height in cells. |
+| `amount` | number | Fill amount in `0.0..1.0`. |
+| `kind` | any | Liquid kind as `water`, `lava`, `acid`, or a custom unsigned integer id. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local liquid = lurek.physics.newLiquidMap(10, 10, 8, world)
+    liquid:fillRect(2, 2, 3, 2, 1.0, "water")
+    local amount, kind = liquid:getCell(3, 3)
+    lurek.log.info("fillRect amount=" .. tostring(amount))
+    lurek.log.info("fillRect kind=" .. tostring(kind))
+end
+```
+
+---
+
+#### `LLiquidMap:getAmountAt`
+
+Samples liquid fill amount at one world-space point.
+
+```lua
+LLiquidMap:getAmountAt(worldX, worldY)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `worldX` | number | World-space X coordinate. |
+| `worldY` | number | World-space Y coordinate. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Fill amount in `0.0..1.0`, or zero outside the map or inside solid linked terrain. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local liquid = lurek.physics.newLiquidMap(8, 8, 8, world)
+    liquid:setCell(2, 3, 0.6, "acid")
+    local amount = liquid:getAmountAt(20, 28)
+    local outside = liquid:getAmountAt(1000, 1000)
+    lurek.log.info("amountAt inside=" .. tostring(amount))
+    lurek.log.info("amountAt outside=" .. tostring(outside))
+end
+```
+
+---
+
+#### `LLiquidMap:getCell`
+
+Returns the amount and kind stored in one liquid cell.
+
+```lua
+LLiquidMap:getCell(cx, cy)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `cx` | number | Cell column (0-based). |
+| `cy` | number | Cell row (0-based). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Fill amount in `0.0..1.0`. |
+| any | Liquid kind as a built-in string or custom integer id; or nil when the cell is empty. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local liquid = lurek.physics.newLiquidMap(8, 8, 8, world)
+    liquid:setCell(1, 1, 0.5, "lava")
+    local amount, kind = liquid:getCell(1, 1)
+    lurek.log.info("getCell amount=" .. tostring(amount))
+    lurek.log.info("getCell kind=" .. tostring(kind))
+end
+```
+
+---
+
+#### `LLiquidMap:getLevelAt`
+
+Returns the top liquid surface level for the sampled column.
+
+```lua
+LLiquidMap:getLevelAt(worldX, worldY)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `worldX` | number | World-space X coordinate. |
+| `worldY` | number | World-space Y coordinate used to select the sampled column. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | World-space surface Y, or nil when the sampled column is empty. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local liquid = lurek.physics.newLiquidMap(8, 8, 8, world)
+    liquid:setCell(4, 4, 1.0, "water")
+    liquid:setCell(4, 3, 0.5, "water")
+    local level = liquid:getLevelAt(36, 24)
+    lurek.log.info("levelAt y=" .. tostring(level))
+    lurek.log.info("levelAt type=" .. tostring(liquid:type()))
+end
+```
+
+---
+
+#### `LLiquidMap:loadFromBytes`
+
+Restores liquid grid state from binary data previously produced by `toBytes`.
+
+```lua
+LLiquidMap:loadFromBytes(data)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `data` | string | Binary liquid data. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the data matched this map's dimensions and cell size. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local liquid = lurek.physics.newLiquidMap(8, 8, 8, world)
+    liquid:fillRect(1, 1, 3, 3, 1.0, "water")
+    local bytes = liquid:toBytes()
+    local clone = lurek.physics.newLiquidMap(8, 8, 8, world)
+    lurek.log.info("liquid loaded=" .. tostring(clone:loadFromBytes(bytes)))
+    lurek.log.info("liquid cell=" .. tostring(select(1, clone:getCell(1, 1))))
+end
+```
+
+---
+
+#### `LLiquidMap:setCell`
+
+Sets one liquid cell amount and kind.
+
+```lua
+LLiquidMap:setCell(cx, cy, amount, kind)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `cx` | number | Cell column (0-based). |
+| `cy` | number | Cell row (0-based). |
+| `amount` | number | Fill amount in `0.0..1.0`. |
+| `kind` | any | Liquid kind as `water`, `lava`, `acid`, or a custom unsigned integer id. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local liquid = lurek.physics.newLiquidMap(8, 8, 8, world)
+    liquid:setCell(2, 3, 0.75, "water")
+    local amount, kind = liquid:getCell(2, 3)
+    lurek.log.info("setCell amount=" .. tostring(amount))
+    lurek.log.info("setCell kind=" .. tostring(kind))
+end
+```
+
+---
+
+#### `LLiquidMap:step`
+
+Advances the liquid simulation with deterministic per-cell flow.
+
+```lua
+LLiquidMap:step(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts?` | table | Optional controls: { gravityFlow?, sidewaysFlow?, pressureFlow?, evaporation?, maxSteps? }. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Step diagnostics with `movedAmount`, `activeCells`, and `dirtyChunks`. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 200)
+    local terrain = lurek.physics.newTerrain(8, 8, 8, world)
+    for x = 1, 6 do
+        terrain:setCell(x, 6, true)
+    end
+    for y = 2, 6 do
+        terrain:setCell(1, y, true)
+        terrain:setCell(6, y, true)
+    end
+    local liquid = lurek.physics.newLiquidMap(8, 8, 8, world, terrain)
+    liquid:fillRect(2, 2, 3, 3, 1.0, "water")
+    terrain:setCell(3, 6, false)
+    local stats = nil
+    for _ = 1, 18 do
+        stats = liquid:step({ gravityFlow = 1.0, sidewaysFlow = 0.5, pressureFlow = 0.15, maxSteps = 2 })
+    end
+    lurek.log.info("step moved=" .. tostring(stats.movedAmount))
+    lurek.log.info("step outside=" .. tostring(liquid:getAmountAt(28, 60)))
+end
+```
+
+---
+
+#### `LLiquidMap:toBytes`
+
+Serializes the liquid grid to binary data for save or transfer workflows.
+
+```lua
+LLiquidMap:toBytes()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Binary liquid data. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local liquid = lurek.physics.newLiquidMap(8, 8, 8, world)
+    liquid:fillRect(1, 1, 3, 3, 1.0, "water")
+    local bytes = liquid:toBytes()
+    lurek.log.info("liquid bytes=" .. tostring(#bytes))
+    lurek.log.info("liquid type=" .. tostring(liquid:type()))
+end
+```
+
+---
+
+#### `LLiquidMap:type`
+
+Returns the type name of this object ("[LLiquidMap](#lliquidmap)").
+
+```lua
+LLiquidMap:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | "[LLiquidMap](#lliquidmap)". |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local liquid = lurek.physics.newLiquidMap(8, 8, 8, world)
+    liquid:fillRect(1, 1, 2, 2, 1.0, "water")
+    local kind = select(2, liquid:getCell(1, 1))
+    lurek.log.info("liquid userdata=" .. tostring(liquid:type()))
+    lurek.log.info("liquid kind=" .. tostring(kind))
+end
+```
+
+---
+
+#### `LLiquidMap:typeOf`
+
+Checks whether this object matches a given type name.
+
+```lua
+LLiquidMap:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to check. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True for `[LLiquidMap](#lliquidmap)` and `LObject`. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local liquid = lurek.physics.newLiquidMap(8, 8, 8, world)
+    liquid:setCell(1, 1, 1.0, "water")
+    local isLiquid = liquid:typeOf("LLiquidMap")
+    local isObject = liquid:typeOf("LObject")
+    lurek.log.info("liquid inheritance=" .. tostring(isLiquid))
+    lurek.log.info("liquid object=" .. tostring(isObject))
 end
 ```
 
@@ -6985,7 +7473,7 @@ end
 Creates a new body with a chain (polyline) collider. Useful for terrain edges.
 
 ```lua
-LWorld:newChainBody(x, y, vertices, closed, bodyType)
+LWorld:newChainBody(x, y, vertices, closed, bodyType, opts)
 ```
 
 **Parameters**
@@ -6997,6 +7485,7 @@ LWorld:newChainBody(x, y, vertices, closed, bodyType)
 | `vertices` | table | Flat array of vertex coordinates {x1,y1,x2,y2,...}. |
 | `closed` | boolean | If true, connects the last vertex back to the first. |
 | `bodyType` | string | One of "static", "dynamic", "kinematic", or "sensor". |
+| `opts?` | table | Optional body options: { material?, bullet?, layer?, mask? }. |
 
 **Returns**
 
@@ -7089,7 +7578,7 @@ end
 Creates a new body with an edge (line segment) collider between two local points.
 
 ```lua
-LWorld:newEdgeBody(x, y, x1, y1, x2, y2, bodyType)
+LWorld:newEdgeBody(x, y, x1, y1, x2, y2, bodyType, opts)
 ```
 
 **Parameters**
@@ -7103,6 +7592,7 @@ LWorld:newEdgeBody(x, y, x1, y1, x2, y2, bodyType)
 | `x2` | number | Edge end X relative to body. |
 | `y2` | number | Edge end Y relative to body. |
 | `bodyType` | string | One of "static", "dynamic", "kinematic", or "sensor". |
+| `opts?` | table | Optional body options: { material?, bullet?, layer?, mask? }. |
 
 **Returns**
 
@@ -7142,7 +7632,7 @@ end
 Creates a new body with a convex polygon collider defined by vertex pairs.
 
 ```lua
-LWorld:newPolygonBody(x, y, vertices, bodyType)
+LWorld:newPolygonBody(x, y, vertices, bodyType, opts)
 ```
 
 **Parameters**
@@ -7153,6 +7643,7 @@ LWorld:newPolygonBody(x, y, vertices, bodyType)
 | `y` | number | Initial Y position in world coordinates. |
 | `vertices` | table | Flat array of vertex coordinates {x1,y1,x2,y2,...}. |
 | `bodyType` | string | One of "static", "dynamic", "kinematic", or "sensor". |
+| `opts?` | table | Optional body options: { material?, bullet?, layer?, mask? }. |
 
 **Returns**
 

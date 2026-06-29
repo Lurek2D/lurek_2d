@@ -8,6 +8,7 @@
 - Supports mirror-style beam reflection and explicit projectile-velocity ricochet helpers.
 - Can infer approximate collision shapes from image alpha masks for asset-driven colliders.
 - Manages override zones, raycast queries, and destructible static terrain.
+- Provides a separate grid-based `LiquidMap` for leaking tanks, simple settling, serialization, and sampled buoyancy or drag.
 - Provides a 16-group world collision matrix layered over per-body layer/mask filters.
 - Provides post-step contact events and colorized visual debug overlays.
 - Supports authored flow fields for wind, water, conveyor, and magic-current style motion that can be sampled or applied during stepping.
@@ -20,6 +21,7 @@
 - Practical physics also depends on querying the world, not only advancing it. Raycasts, overlap checks, sweep-style tests, and contact inspection let gameplay ask what was hit, what overlaps, and why motion changed.
 - Reflective query paths now extend that spatial role. Scripts can mark bodies as mirrors, trace deterministic multi-segment beams through those surfaces, and reflect projectile velocities from supplied contact normals without confusing gameplay reflection with rigid-body restitution.
 - Flow fields extend that world model with continuous directional media. They let scripts describe rectangles, circular fans, and polyline tubes that contribute acceleration or drag-like target velocity behavior without inventing a second movement subsystem outside the physics step.
+- Liquids now cover the next step beyond those purely authored media. `LLiquidMap` adds a separate cell grid for finite-volume leaks, settling levels, terrain-linked openings, and sampled body buoyancy without turning every liquid cell into a rigid-body collider.
 - Shape support, terrain integration, and joints give the system expressive range for characters, bullets, walls, pickups, hazards, linked mechanisms, and authored environment collision.
 - Alpha-mask shape inference gives tools and scripts a pragmatic bridge from sprite or image assets to plausible collision geometry: circle-like masks become circles, filled masks become rectangles, and irregular masks become bounded convex polygons.
 - Contact data is one of the main user-facing outputs because systems often need normals, hit points, and begin or end state changes to react meaningfully.
@@ -72,6 +74,8 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
   Rectangles, full circles, directional fans, radial in/out currents, and tangential clockwise/counter-clockwise swirl all share the same flow-field owner. `addFan(...)` is the convenience helper for designer-authored blower wedges, while circular fields plus radial or tangential directions cover attraction, repulsion, and vortex-like motion without introducing a second subsystem.
 - Body-influence contract:
   Bodies expose per-body flow coefficients so gameplay can scale all flow, air-only flow, water-only flow, and drag cross-section without forking world behavior. Those coefficients are body metadata, not separate force emitters.
+- Liquid contract:
+  `LLiquidMap` is the first volume-aware liquid surface. It stores per-cell amount and kind in a separate grid, serializes those cells directly, links to `LTerrain` when projects want leaks through carved openings, and advances with deterministic downward, lateral, and light pressure equalization passes. The current implementation is intentionally pragmatic: it conserves volume within floating-point tolerance when evaporation is zero, samples liquid at body points to apply buoyancy or drag, and leaves full SPH, particle-only fluids, and collider-backed liquid bodies out of scope. Zones and flow fields remain the cheaper non-volume-conserving option for "body is inside water" style gameplay volumes.
 - Debug contract:
   Physics debug rendering includes authored flow guides through `drawFlowDebug` so tools and examples can inspect centerlines, coverage bounds, and sampled arrows using the same world-owned data that stepping uses.
 

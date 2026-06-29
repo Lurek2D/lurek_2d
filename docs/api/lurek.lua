@@ -2736,6 +2736,10 @@ LBody = {}
 ---@class LFlowStream
 LFlowStream = {}
 
+--- A separate grid-based liquid map linked to a physics world and optionally to terrain blocking.
+---@class LLiquidMap
+LLiquidMap = {}
+
 --- A standalone collision shape with material properties, to be attached to bodies via `attachShape`.
 ---@class LPhysicsShape
 LPhysicsShape = {}
@@ -21058,7 +21062,7 @@ lurek.particle.fromTOML = function(path) end
 lurek.particle.newPreset = function(name) end
 
 --- Creates a particle system from an optional config table.
----@param config? table Particle config table. Supports `seed` for deterministic emission and reset behavior.
+---@param config? table Particle config table. Supports `seed` for deterministic emission and reset behavior, plus canonical TOML-style snake_case keys for file-backed tooling flows.
 ---@return LParticleSystem New particle system handle.
 lurek.particle.newSystem = function(config) end
 
@@ -23679,6 +23683,77 @@ function LFlowStream:type() end
 ---@return boolean True for `LFlowStream` and `LObject`.
 function LFlowStream:typeOf(name) end
 
+--- Applies sampled buoyancy and linear drag to matching dynamic bodies in the linked world.
+---@param opts? table Optional controls: { layerMask?, density?, drag? }.
+---@return table Diagnostics with `affectedBodies` and `submergedBodies`.
+function LLiquidMap:applyBuoyancy(opts) end
+
+--- Removes up to the requested amount from every cell in a rectangular region.
+---@param x number Rectangle left cell coordinate.
+---@param y number Rectangle top cell coordinate.
+---@param width number Rectangle width in cells.
+---@param height number Rectangle height in cells.
+---@param amount number Amount removed from each cell, clamped into `0.0..1.0`.
+function LLiquidMap:drainRect(x, y, width, height, amount) end
+
+--- Sets every liquid cell in a rectangular region to the same amount and kind.
+---@param x number Rectangle left cell coordinate.
+---@param y number Rectangle top cell coordinate.
+---@param width number Rectangle width in cells.
+---@param height number Rectangle height in cells.
+---@param amount number Fill amount in `0.0..1.0`.
+---@param kind any Liquid kind as `water`, `lava`, `acid`, or a custom unsigned integer id.
+function LLiquidMap:fillRect(x, y, width, height, amount, kind) end
+
+--- Samples liquid fill amount at one world-space point.
+---@param worldX number World-space X coordinate.
+---@param worldY number World-space Y coordinate.
+---@return number Fill amount in `0.0..1.0`, or zero outside the map or inside solid linked terrain.
+function LLiquidMap:getAmountAt(worldX, worldY) end
+
+--- Returns the amount and kind stored in one liquid cell.
+---@param cx number Cell column (0-based).
+---@param cy number Cell row (0-based).
+---@return number Fill amount in `0.0..1.0`.
+---@return any Liquid kind as a built-in string or custom integer id; or nil when the cell is empty.
+function LLiquidMap:getCell(cx, cy) end
+
+--- Returns the top liquid surface level for the sampled column.
+---@param worldX number World-space X coordinate.
+---@param worldY number World-space Y coordinate used to select the sampled column.
+---@return number World-space surface Y, or nil when the sampled column is empty.
+function LLiquidMap:getLevelAt(worldX, worldY) end
+
+--- Restores liquid grid state from binary data previously produced by `toBytes`.
+---@param data string Binary liquid data.
+---@return boolean True when the data matched this map's dimensions and cell size.
+function LLiquidMap:loadFromBytes(data) end
+
+--- Sets one liquid cell amount and kind.
+---@param cx number Cell column (0-based).
+---@param cy number Cell row (0-based).
+---@param amount number Fill amount in `0.0..1.0`.
+---@param kind any Liquid kind as `water`, `lava`, `acid`, or a custom unsigned integer id.
+function LLiquidMap:setCell(cx, cy, amount, kind) end
+
+--- Advances the liquid simulation with deterministic per-cell flow.
+---@param opts? table Optional controls: { gravityFlow?, sidewaysFlow?, pressureFlow?, evaporation?, maxSteps? }.
+---@return table Step diagnostics with `movedAmount`, `activeCells`, and `dirtyChunks`.
+function LLiquidMap:step(opts) end
+
+--- Serializes the liquid grid to binary data for save or transfer workflows.
+---@return string Binary liquid data.
+function LLiquidMap:toBytes() end
+
+--- Returns the type name of this object ("LLiquidMap").
+---@return string "LLiquidMap".
+function LLiquidMap:type() end
+
+--- Checks whether this object matches a given type name.
+---@param name string Type name to check.
+---@return boolean True for `LLiquidMap` and `LObject`.
+function LLiquidMap:typeOf(name) end
+
 --- No-op placeholder for API consistency. Shapes are freed when no longer referenced.
 function LPhysicsShape:destroy() end
 
@@ -24672,6 +24747,15 @@ lurek.physics.newCircleShape = function(r) end
 ---@param y2 number End Y.
 ---@return LPhysicsShape The shape object.
 lurek.physics.newEdgeShape = function(x1, y1, x2, y2) end
+
+--- Creates a grid-based liquid map linked to a physics world and optionally to a terrain blocker grid.
+---@param width number Grid width in cells.
+---@param height number Grid height in cells.
+---@param cellSize number World-space size of each cell.
+---@param world LWorld Physics world used for `applyBuoyancy`.
+---@param terrain? LTerrain Optional terrain grid; when provided, it must match the liquid grid dimensions, cell size, and origin.
+---@return LLiquidMap The liquid map object.
+lurek.physics.newLiquidMap = function(width, height, cellSize, world, terrain) end
 
 --- Validates and canonicalizes a reusable physics material table.
 ---@param opts table Material options: { name?, density?, friction?, restitution?, linearDamping?, angularDamping?, gravityScale?, massOverride?, stickiness?, adhesion?, beamReflectivity?, projectileReflectivity?, beamAbsorption?, buoyancy?, surfaceType? }.

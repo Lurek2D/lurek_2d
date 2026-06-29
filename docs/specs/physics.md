@@ -10,6 +10,7 @@
 - Supports mirror-style beam reflection and explicit projectile-velocity ricochet helpers.
 - Can infer approximate collision shapes from image alpha masks for asset-driven colliders.
 - Manages override zones, raycast queries, and destructible static terrain.
+- Provides a separate grid-based `LiquidMap` for leaking tanks, simple settling, serialization, and sampled buoyancy or drag.
 - Provides a 16-group world collision matrix layered over per-body layer/mask filters.
 - Provides post-step contact events and colorized visual debug overlays.
 - Supports authored flow fields for wind, water, conveyor, and magic-current style motion that can be sampled or applied during stepping.
@@ -20,7 +21,7 @@
 - Source path: `src/physics`
 - Binding: `src/lua_api/physics_api.rs`
 - Namespace: `lurek.physics`
-- Lua API surface: `24` functions, `24` types, `243` methods
+- Lua API surface: `25` functions, `25` types, `255` methods
 - User-facing: `true`
 - Plugin tier: `tier_2_plugin`
 
@@ -32,6 +33,7 @@
 - Practical physics also depends on querying the world, not only advancing it. Raycasts, overlap checks, sweep-style tests, and contact inspection let gameplay ask what was hit, what overlaps, and why motion changed.
 - Reflective query paths now extend that spatial role. Scripts can mark bodies as mirrors, trace deterministic multi-segment beams through those surfaces, and reflect projectile velocities from supplied contact normals without confusing gameplay reflection with rigid-body restitution.
 - Flow fields extend that world model with continuous directional media. They let scripts describe rectangles, circular fans, and polyline tubes that contribute acceleration or drag-like target velocity behavior without inventing a second movement subsystem outside the physics step.
+- Liquids now cover the next step beyond those purely authored media. `LLiquidMap` adds a separate cell grid for finite-volume leaks, settling levels, terrain-linked openings, and sampled body buoyancy without turning every liquid cell into a rigid-body collider.
 - Shape support, terrain integration, and joints give the system expressive range for characters, bullets, walls, pickups, hazards, linked mechanisms, and authored environment collision.
 - Alpha-mask shape inference gives tools and scripts a pragmatic bridge from sprite or image assets to plausible collision geometry: circle-like masks become circles, filled masks become rectangles, and irregular masks become bounded convex polygons.
 - Contact data is one of the main user-facing outputs because systems often need normals, hit points, and begin or end state changes to react meaningfully.
@@ -114,6 +116,13 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - Owns physics behavior with explicit state, validation, and crate-local integration boundaries.
 - Keeps public crate helpers focused on limits behavior while Lua registration stays elsewhere.
 
+### liquid.rs
+
+- Owns separate grid-based liquids for leaking-container gameplay, conservative cell flow, and body sampling.
+- Keeps liquid state distinct from `TerrainMap` while allowing the two grids to share cell metrics when linked.
+- This file handles cell editing, serialization, deterministic stepping, and sampled buoyancy or drag forces.
+- It intentionally stops short of SPH, particle fluids, or collider-backed liquid volumes.
+
 ### material.rs
 
 - Owns the reusable physics material model shared by body defaults, fixture overrides, and Lua table conversions.
@@ -129,6 +138,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `collision.rs` and `collision_helpers.rs` own contact payloads and lightweight overlap checks outside full stepping.
 - `body.rs`, `shape.rs`, and `zone.rs` define the core authored inputs that later feed the runtime world owner.
 - `flow.rs` owns path and volume flow-field definitions sampled by `world.rs` during stepping.
+- `liquid.rs` owns separate grid liquids used for leaking tanks, simple buoyancy sampling, and conservative flow.
 - Change this file when the public physics symbol map moves; change siblings when simulation data rules change.
 
 ### render.rs
@@ -210,6 +220,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `lurek.physics.newChainShape(closed, ...) -> LPhysicsShape`: Creates a chain (polyline) collision shape. Useful for terrain outlines.
 - `lurek.physics.newCircleShape(r) -> LPhysicsShape`: Creates a circle collision shape with the given radius.
 - `lurek.physics.newEdgeShape(x1, y1, x2, y2) -> LPhysicsShape`: Creates an edge (line segment) collision shape between two local points.
+- `lurek.physics.newLiquidMap(width, height, cellSize, world, terrain?) -> LLiquidMap`: Creates a grid-based liquid map linked to a physics world and optionally to a terrain blocker grid.
 - `lurek.physics.newMaterial(opts) -> table`: Validates and canonicalizes a reusable physics material table.
 - `lurek.physics.newPolygonShape(...) -> LPhysicsShape`: Creates a convex polygon collision shape from vertex coordinate pairs.
 - `lurek.physics.newRectangleShape(w, h) -> LPhysicsShape`: Creates a rectangle collision shape with the given dimensions.
@@ -333,6 +344,29 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LFlowStream:setWidth(width) -> nil`: Sets the width of a path-shaped flow field.
 - `LFlowStream:type() -> string`: Returns the type name of this object.
 - `LFlowStream:typeOf(name) -> boolean`: Returns whether this object matches the requested type name.
+
+#### LLiquidMap Type
+
+- A separate grid-based liquid map linked to a physics world and optionally to terrain blocking.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LLiquidMap:applyBuoyancy(opts?) -> table`: Applies sampled buoyancy and linear drag to matching dynamic bodies in the linked world.
+- `LLiquidMap:drainRect(x, y, width, height, amount) -> nil`: Removes up to the requested amount from every cell in a rectangular region.
+- `LLiquidMap:fillRect(x, y, width, height, amount, kind) -> nil`: Sets every liquid cell in a rectangular region to the same amount and kind.
+- `LLiquidMap:getAmountAt(worldX, worldY) -> number`: Samples liquid fill amount at one world-space point.
+- `LLiquidMap:getCell(cx, cy) -> number`: Returns the amount and kind stored in one liquid cell.
+- `LLiquidMap:getLevelAt(worldX, worldY) -> number`: Returns the top liquid surface level for the sampled column.
+- `LLiquidMap:loadFromBytes(data) -> boolean`: Restores liquid grid state from binary data previously produced by `toBytes`.
+- `LLiquidMap:setCell(cx, cy, amount, kind) -> nil`: Sets one liquid cell amount and kind.
+- `LLiquidMap:step(opts?) -> table`: Advances the liquid simulation with deterministic per-cell flow.
+- `LLiquidMap:toBytes() -> string`: Serializes the liquid grid to binary data for save or transfer workflows.
+- `LLiquidMap:type() -> string`: Returns the type name of this object ("LLiquidMap").
+- `LLiquidMap:typeOf(name) -> boolean`: Checks whether this object matches a given type name.
 
 #### LPhysicsGetCollisionsResult Type
 
@@ -867,5 +901,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
   Rectangles, full circles, directional fans, radial in/out currents, and tangential clockwise/counter-clockwise swirl all share the same flow-field owner. `addFan(...)` is the convenience helper for designer-authored blower wedges, while circular fields plus radial or tangential directions cover attraction, repulsion, and vortex-like motion without introducing a second subsystem.
 - Body-influence contract:
   Bodies expose per-body flow coefficients so gameplay can scale all flow, air-only flow, water-only flow, and drag cross-section without forking world behavior. Those coefficients are body metadata, not separate force emitters.
+- Liquid contract:
+  `LLiquidMap` is the first volume-aware liquid surface. It stores per-cell amount and kind in a separate grid, serializes those cells directly, links to `LTerrain` when projects want leaks through carved openings, and advances with deterministic downward, lateral, and light pressure equalization passes. The current implementation is intentionally pragmatic: it conserves volume within floating-point tolerance when evaporation is zero, samples liquid at body points to apply buoyancy or drag, and leaves full SPH, particle-only fluids, and collider-backed liquid bodies out of scope. Zones and flow fields remain the cheaper non-volume-conserving option for "body is inside water" style gameplay volumes.
 - Debug contract:
   Physics debug rendering includes authored flow guides through `drawFlowDebug` so tools and examples can inspect centerlines, coverage bounds, and sampled arrows using the same world-owned data that stepping uses.

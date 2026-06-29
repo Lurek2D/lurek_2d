@@ -28,6 +28,15 @@ function M.create(load_module)
         return self.by_id[id] or self.order[1]
     end
 
+    function self:match_path(path)
+        for _, editor in ipairs(self.order) do
+            if editor.matches_path and editor.matches_path(path) then
+                return editor
+            end
+        end
+        return nil
+    end
+
     function self:index_of(id)
         for i, editor in ipairs(self.order) do
             if editor.id == id then return i end
@@ -39,4 +48,3 @@ function M.create(load_module)
 end
 
 return M
-

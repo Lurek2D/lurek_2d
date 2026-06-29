@@ -4,6 +4,7 @@
 //! `collision.rs` and `collision_helpers.rs` own contact payloads and lightweight overlap checks outside full stepping.
 //! `body.rs`, `shape.rs`, and `zone.rs` define the core authored inputs that later feed the runtime world owner.
 //! `flow.rs` owns path and volume flow-field definitions sampled by `world.rs` during stepping.
+//! `liquid.rs` owns separate grid liquids used for leaking tanks, simple buoyancy sampling, and conservative flow.
 //! Change this file when the public physics symbol map moves; change siblings when simulation data rules change.
 
 /// Rigid body management and handle types.
@@ -18,6 +19,8 @@ pub mod error;
 pub mod flow;
 /// Shared sizing and validation limits.
 pub mod limits;
+/// Separate grid-based liquids for leaking-container gameplay.
+pub mod liquid;
 /// Reusable body and fixture material descriptors.
 pub mod material;
 /// Debug render helpers for physics shapes.
@@ -41,6 +44,10 @@ pub use error::PhysicsError;
 pub use flow::{
     combine_contributions, FlowApplicationMode, FlowCombineMode, FlowContribution,
     FlowDirectionMode, FlowFalloff, FlowField, FlowFieldId, FlowGeometry, FlowMedium, FlowSample,
+};
+pub use liquid::{
+    LiquidBodyForceOptions, LiquidBodyForceStats, LiquidCell, LiquidKind, LiquidMap,
+    LiquidStepOptions, LiquidStepStats,
 };
 pub use limits::PhysicsLimits;
 pub use material::PhysicsMaterial;
