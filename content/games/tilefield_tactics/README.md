@@ -7,7 +7,7 @@ Tilefield Tactics is a compact tactical sandbox built around one shared `lurek.t
 ## Run
 
 ```powershell
-cargo run -- content/newgames/tilefield_tactics
+cargo run -- content/games/tilefield_tactics
 ```
 
 ## Controls

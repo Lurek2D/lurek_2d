@@ -21,6 +21,7 @@ use super::flow::{
     FlowMedium, FlowSample,
 };
 use super::limits::{validate_finite, validate_positive, PhysicsLimits};
+use super::material::PhysicsMaterial;
 use super::shape::Shape;
 use super::types::BodyId;
 use super::zone::{PhysicsZone, ZoneEvent, ZoneGravityFalloff, ZoneGravityMode, ZoneTracker};
@@ -476,6 +477,8 @@ pub struct PhysicsWorldStats {
 /// - `body_base_linear_damping`: linear damping restored after temporary zone overrides.
 /// - `body_base_angular_damping`: angular damping restored after temporary zone overrides.
 /// - `body_mass_overrides`: explicit mass values authored through `setMass`.
+/// - `body_materials`: body-default material snapshots kept in sync with direct setters.
+/// - `fixture_materials`: extra-fixture material snapshots keyed by `(body_id, fixture_index)`.
 /// - `zones`: registered physics zones.
 /// - `gravity_vectors`: additive world gravity vectors.
 /// - `flow_fields`: authored flow fields sampled before the solver step.
@@ -567,6 +570,10 @@ pub struct World {
     body_base_angular_damping: Vec<f32>,
     /// Explicit mass overrides authored through `setMass`; `None` means use Rapier computed mass.
     body_mass_overrides: Vec<Option<f32>>,
+    /// Body-default material snapshots for the primary collider and body-owned material metadata.
+    body_materials: Vec<PhysicsMaterial>,
+    /// Material snapshots for fixture overrides; primary collider uses `body_materials`.
+    fixture_materials: HashMap<(usize, usize), PhysicsMaterial>,
     /// Active trigger zones.
     zones: Vec<PhysicsZone>,
     /// Additive world gravity vectors applied when no non-additive zone override is active.
@@ -598,6 +605,11 @@ pub struct World {
 }
 /// Physics world operations: body management, stepping, joints, queries, zones, and debug rendering.
 impl World {
+    /// Return the shared strict-physics limits currently attached to this world.
+    pub(crate) fn limits(&self) -> &PhysicsLimits {
+        &self.limits
+    }
+
     /// Draw all body outlines onto an RGBA `ImageData` using the given colour.
     pub fn draw_debug_to_image(
         &self,
@@ -835,6 +847,49 @@ impl World {
                         );
                     }
                 }
+                super::flow::FlowGeometry::DirectionalFan {
+                    cx,
+                    cy,
+                    radius,
+                    inner_radius,
+                    facing,
+                    half_angle_deg,
+                } => {
+                    let cx_i = cx.round() as i32;
+                    let cy_i = cy.round() as i32;
+                    img.draw_circle(
+                        cx_i,
+                        cy_i,
+                        radius.round().max(1.0) as u32,
+                        90,
+                        220,
+                        255,
+                        220,
+                    );
+                    if *inner_radius > 0.0 {
+                        img.draw_circle(
+                            cx_i,
+                            cy_i,
+                            inner_radius.round().max(1.0) as u32,
+                            60,
+                            140,
+                            170,
+                            180,
+                        );
+                    }
+                    let facing = if facing.length() > 1.0e-6 {
+                        *facing / facing.length()
+                    } else {
+                        crate::math::Vec2::new(1.0, 0.0)
+                    };
+                    let half_angle = half_angle_deg.to_radians();
+                    for angle in [-half_angle, 0.0, half_angle] {
+                        let dir = facing.rotate(angle);
+                        let ex = (*cx + dir.x * *radius).round() as i32;
+                        let ey = (*cy + dir.y * *radius).round() as i32;
+                        img.draw_line(cx_i, cy_i, ex, ey, 255, 200, 70, 220);
+                    }
+                }
                 super::flow::FlowGeometry::PolylineTube { points, width } => {
                     for segment_index in 0..points.len().saturating_sub(1) {
                         let start = points[segment_index];
@@ -991,6 +1046,8 @@ impl World {
             body_base_linear_damping: Vec::new(),
             body_base_angular_damping: Vec::new(),
             body_mass_overrides: Vec::new(),
+            body_materials: Vec::new(),
+            fixture_materials: HashMap::new(),
             zones: Vec::new(),
             gravity_vectors: Vec::new(),
             flow_fields: Vec::new(),
@@ -1185,8 +1242,69 @@ impl World {
         self.joint_types.push(joint_type);
         jid
     }
+    fn default_body_material_for(body: &Body) -> PhysicsMaterial {
+        PhysicsMaterial {
+            density: 1.0,
+            friction: body.friction,
+            restitution: body.restitution,
+            linear_damping: Some(0.0),
+            angular_damping: Some(0.0),
+            gravity_scale: Some(1.0),
+            mass_override: None,
+            beam_reflectivity: body.beam_reflectivity,
+            projectile_reflectivity: body.projectile_reflectivity,
+            ..PhysicsMaterial::default()
+        }
+    }
+    fn default_fixture_material(density: f32, friction: f32, restitution: f32) -> PhysicsMaterial {
+        PhysicsMaterial {
+            density,
+            friction,
+            restitution,
+            ..PhysicsMaterial::default().fixture_scope()
+        }
+    }
+    fn sync_body_material_snapshot(&mut self, id: usize) {
+        if !self.has_body(id) {
+            return;
+        }
+        let Some(body) = self.bodies.get(id) else {
+            return;
+        };
+        let Some(material) = self.body_materials.get_mut(id) else {
+            return;
+        };
+        material.friction = body.friction;
+        material.restitution = body.restitution;
+        material.beam_reflectivity = body.beam_reflectivity;
+        material.projectile_reflectivity = body.projectile_reflectivity;
+        material.linear_damping = self.body_base_linear_damping.get(id).copied();
+        material.angular_damping = self.body_base_angular_damping.get(id).copied();
+        material.gravity_scale = self.body_base_gravity_scales.get(id).copied();
+        material.mass_override = self.body_mass_overrides.get(id).and_then(|value| *value);
+    }
+    fn set_body_mass_override_internal(&mut self, id: usize, mass: Option<f32>) {
+        if let Some(slot) = self.body_mass_overrides.get_mut(id) {
+            *slot = mass;
+        }
+        if let Some(body) = self.get_body_mut(id) {
+            if let Some(value) = mass {
+                body.mass = value;
+            }
+        }
+        if let Some(handle) = self.active_body_handle(id) {
+            if let Some(rb) = self.rbodies.get_mut(handle) {
+                let additional = match mass {
+                    Some(value) => value - rb.mass_properties().local_mprops.mass(),
+                    None => 0.0,
+                };
+                rb.set_additional_mass(additional, true);
+            }
+        }
+        self.sync_body_material_snapshot(id);
+    }
     /// Build a rapier `Collider` from a body's shape and filter settings.
-    fn make_collider(&self, body: &Body) -> Collider {
+    fn make_collider(&self, body: &Body, density: f32) -> Collider {
         let is_sensor = body.body_type == BodyType::Sensor;
         let groups = self.collision_groups(body.layer, body.mask);
         let builder = if let Some(ref shape_ext) = body.shape_ext {
@@ -1207,6 +1325,7 @@ impl World {
             }
         };
         builder
+            .density(density)
             .sensor(is_sensor)
             .restitution(body.restitution)
             .friction(body.friction)
@@ -1218,6 +1337,10 @@ impl World {
     fn rebuild_collider(&mut self, id: usize) {
         let old_handle = self.collider_handles[id];
         let body_handle = self.body_handles[id];
+        let density = self
+            .body_materials
+            .get(id)
+            .map_or(1.0, |material| material.density);
         let (shape, shape_ext, restitution, friction, layer, mask, is_sensor) = {
             let b = &self.bodies[id];
             (
@@ -1249,6 +1372,7 @@ impl World {
             }
         };
         let collider = builder
+            .density(density)
             .sensor(is_sensor)
             .restitution(restitution)
             .friction(friction)
@@ -1320,13 +1444,14 @@ impl World {
     /// Insert a body into the world and return its id.
     pub fn add_body(&mut self, body: Body) -> BodyId {
         let id = self.bodies.len();
+        let material = Self::default_body_material_for(&body);
         let rb = RigidBodyBuilder::new(Self::rapier_body_type(body.body_type))
             .translation(Vector::new(body.position.x, body.position.y))
             .linvel(Vector::new(body.velocity.x, body.velocity.y))
             .ccd_enabled(body.bullet)
             .build();
         let body_handle = self.rbodies.insert(rb);
-        let collider = self.make_collider(&body);
+        let collider = self.make_collider(&body, material.density);
         let collider_handle =
             self.rcolliders
                 .insert_with_parent(collider, body_handle, &mut self.rbodies);
@@ -1346,6 +1471,7 @@ impl World {
         self.body_base_linear_damping.push(0.0);
         self.body_base_angular_damping.push(0.0);
         self.body_mass_overrides.push(None);
+        self.body_materials.push(material);
         BodyId(id)
     }
     /// Add an extra collider shape to an existing body using strict validation.
@@ -1392,7 +1518,12 @@ impl World {
         self.collider_to_body.insert(handle, body_id);
         let extras = &mut self.extra_collider_handles[body_id];
         extras.push(handle);
-        Ok(extras.len())
+        let fixture_index = extras.len();
+        self.fixture_materials.insert(
+            (body_id, fixture_index),
+            Self::default_fixture_material(density, friction, restitution),
+        );
+        Ok(fixture_index)
     }
 
     /// Add an extra collider shape to an existing body; returns the fixture index.
@@ -1456,6 +1587,14 @@ impl World {
                     fixture_index: fixture_idx,
                 })?;
         collider.set_friction(friction);
+        if fixture_idx == 0 {
+            if let Some(body) = self.get_body_mut(body_id) {
+                body.friction = friction;
+            }
+            self.sync_body_material_snapshot(body_id);
+        } else if let Some(material) = self.fixture_materials.get_mut(&(body_id, fixture_idx)) {
+            material.friction = friction;
+        }
         Ok(())
     }
 
@@ -1504,6 +1643,14 @@ impl World {
                     fixture_index: fixture_idx,
                 })?;
         collider.set_restitution(restitution);
+        if fixture_idx == 0 {
+            if let Some(body) = self.get_body_mut(body_id) {
+                body.restitution = restitution;
+            }
+            self.sync_body_material_snapshot(body_id);
+        } else if let Some(material) = self.fixture_materials.get_mut(&(body_id, fixture_idx)) {
+            material.restitution = restitution;
+        }
         Ok(())
     }
 
@@ -1572,6 +1719,187 @@ impl World {
             None
         }
     }
+    /// Return the current body-default material snapshot for `id`.
+    pub fn get_body_material(&self, id: usize) -> Option<PhysicsMaterial> {
+        self.has_body(id)
+            .then(|| self.body_materials.get(id).cloned())
+            .flatten()
+    }
+    /// Apply a body-default material to the primary collider and body-owned solver properties.
+    pub fn try_set_body_material(
+        &mut self,
+        id: usize,
+        material: PhysicsMaterial,
+    ) -> Result<(), PhysicsError> {
+        material.validate()?;
+        {
+            let body = self
+                .get_body_mut(id)
+                .ok_or(PhysicsError::InvalidBodyReference { body_id: id })?;
+            body.friction = material.friction;
+            body.restitution = material.restitution;
+            body.beam_reflectivity = material.beam_reflectivity;
+            body.projectile_reflectivity = material.projectile_reflectivity;
+        }
+        let handle = self
+            .collider_handles
+            .get(id)
+            .copied()
+            .ok_or(PhysicsError::InvalidBodyReference { body_id: id })?;
+        let collider = self
+            .rcolliders
+            .get_mut(handle)
+            .ok_or(PhysicsError::InvalidBodyReference { body_id: id })?;
+        collider.set_density(material.density);
+        collider.set_friction(material.friction);
+        collider.set_restitution(material.restitution);
+        if let Some(scale) = material.gravity_scale {
+            self.set_gravity_scale(id, scale);
+        }
+        if let Some(damping) = material.linear_damping {
+            self.set_linear_damping(id, damping);
+        }
+        if let Some(damping) = material.angular_damping {
+            self.set_angular_damping(id, damping);
+        }
+        self.set_body_mass_override_internal(id, material.mass_override);
+        if let Some(slot) = self.body_materials.get_mut(id) {
+            *slot = material;
+        }
+        self.cached_frictions[id] = self.bodies[id].friction;
+        self.cached_restitutions[id] = self.bodies[id].restitution;
+        self.sync_body_material_snapshot(id);
+        Ok(())
+    }
+    /// Return the current material snapshot for one fixture.
+    pub fn get_fixture_material(
+        &self,
+        body_id: usize,
+        fixture_idx: usize,
+    ) -> Result<PhysicsMaterial, PhysicsError> {
+        if !self.has_body(body_id) {
+            return Err(PhysicsError::InvalidBodyReference { body_id });
+        }
+        if fixture_idx == 0 {
+            return self
+                .get_body_material(body_id)
+                .map(|material| material.fixture_scope())
+                .ok_or(PhysicsError::InvalidFixtureReference {
+                    body_id,
+                    fixture_index: fixture_idx,
+                });
+        }
+        self.fixture_materials
+            .get(&(body_id, fixture_idx))
+            .cloned()
+            .ok_or(PhysicsError::InvalidFixtureReference {
+                body_id,
+                fixture_index: fixture_idx,
+            })
+    }
+    /// Apply one material snapshot to a fixture without disturbing unrelated fixtures.
+    pub fn try_set_fixture_material(
+        &mut self,
+        body_id: usize,
+        fixture_idx: usize,
+        material: PhysicsMaterial,
+    ) -> Result<(), PhysicsError> {
+        let material = material.fixture_scope();
+        material.validate()?;
+        if fixture_idx == 0 {
+            {
+                let body = self
+                    .get_body_mut(body_id)
+                    .ok_or(PhysicsError::InvalidBodyReference { body_id })?;
+                body.friction = material.friction;
+                body.restitution = material.restitution;
+                body.beam_reflectivity = material.beam_reflectivity;
+                body.projectile_reflectivity = material.projectile_reflectivity;
+            }
+            let handle = self.collider_handles.get(body_id).copied().ok_or(
+                PhysicsError::InvalidFixtureReference {
+                    body_id,
+                    fixture_index: fixture_idx,
+                },
+            )?;
+            let collider =
+                self.rcolliders
+                    .get_mut(handle)
+                    .ok_or(PhysicsError::InvalidFixtureReference {
+                        body_id,
+                        fixture_index: fixture_idx,
+                    })?;
+            collider.set_density(material.density);
+            collider.set_friction(material.friction);
+            collider.set_restitution(material.restitution);
+            if let Some(slot) = self.body_materials.get_mut(body_id) {
+                slot.name = material.name;
+                slot.density = material.density;
+                slot.friction = material.friction;
+                slot.restitution = material.restitution;
+                slot.stickiness = material.stickiness;
+                slot.adhesion = material.adhesion;
+                slot.beam_reflectivity = material.beam_reflectivity;
+                slot.projectile_reflectivity = material.projectile_reflectivity;
+                slot.beam_absorption = material.beam_absorption;
+                slot.buoyancy = material.buoyancy;
+                slot.surface_type = material.surface_type;
+            }
+            self.cached_frictions[body_id] = self.bodies[body_id].friction;
+            self.cached_restitutions[body_id] = self.bodies[body_id].restitution;
+            return Ok(());
+        }
+        let handle = self
+            .extra_collider_handles
+            .get(body_id)
+            .and_then(|handles| handles.get(fixture_idx - 1))
+            .copied()
+            .ok_or(PhysicsError::InvalidFixtureReference {
+                body_id,
+                fixture_index: fixture_idx,
+            })?;
+        let collider =
+            self.rcolliders
+                .get_mut(handle)
+                .ok_or(PhysicsError::InvalidFixtureReference {
+                    body_id,
+                    fixture_index: fixture_idx,
+                })?;
+        collider.set_density(material.density);
+        collider.set_friction(material.friction);
+        collider.set_restitution(material.restitution);
+        self.fixture_materials
+            .insert((body_id, fixture_idx), material);
+        Ok(())
+    }
+    /// Set a body's primary friction coefficient.
+    pub fn set_body_friction(&mut self, id: usize, friction: f32) {
+        if !friction.is_finite() || !(0.0..=1.0).contains(&friction) {
+            self.record_invalid_operation();
+            return;
+        }
+        if let Some(body) = self.get_body_mut(id) {
+            body.friction = friction;
+        }
+        if id < self.cached_frictions.len() {
+            self.cached_frictions[id] = friction;
+        }
+        self.sync_body_material_snapshot(id);
+    }
+    /// Set a body's primary restitution coefficient.
+    pub fn set_body_restitution(&mut self, id: usize, restitution: f32) {
+        if !restitution.is_finite() || !(0.0..=1.0).contains(&restitution) {
+            self.record_invalid_operation();
+            return;
+        }
+        if let Some(body) = self.get_body_mut(id) {
+            body.restitution = restitution;
+        }
+        if id < self.cached_restitutions.len() {
+            self.cached_restitutions[id] = restitution;
+        }
+        self.sync_body_material_snapshot(id);
+    }
     /// Return whether body `id` acts as a reflective mirror for beam tracing.
     pub fn is_body_mirror(&self, id: usize) -> bool {
         self.get_body(id).is_some_and(|body| body.reflective)
@@ -1581,6 +1909,7 @@ impl World {
         if let Some(body) = self.get_body_mut(id) {
             body.reflective = reflective;
         }
+        self.sync_body_material_snapshot(id);
     }
     /// Return the beam reflectivity multiplier for body `id`.
     pub fn get_body_beam_reflectivity(&self, id: usize) -> f32 {
@@ -1606,6 +1935,8 @@ impl World {
             .get_body_mut(id)
             .ok_or(PhysicsError::InvalidBodyReference { body_id: id })?;
         body.beam_reflectivity = reflectivity;
+        let _ = body;
+        self.sync_body_material_snapshot(id);
         Ok(())
     }
     /// Return the projectile reflectivity multiplier for body `id`.
@@ -1633,6 +1964,8 @@ impl World {
             .get_body_mut(id)
             .ok_or(PhysicsError::InvalidBodyReference { body_id: id })?;
         body.projectile_reflectivity = reflectivity;
+        let _ = body;
+        self.sync_body_material_snapshot(id);
         Ok(())
     }
     /// Set a body's collision layer bitmask and immediately refresh its colliders.
@@ -1785,22 +2118,9 @@ impl World {
         if max_toi < 1e-6 {
             return None;
         }
-        let unit_dir = dir / max_toi;
-        let ray = Ray::new(Vector::new(x1, y1), unit_dir);
-        let qp = self.query_pipeline(filter);
-        let (col_handle, ri) = qp.cast_ray_and_get_normal(&ray, max_toi, true)?;
-        let body_id = self.body_for_collider(col_handle)?;
-        if !self.has_body(body_id) {
-            return None;
-        }
-        let pt_x = ray.origin.x + ray.dir.x * ri.time_of_impact;
-        let pt_y = ray.origin.y + ray.dir.y * ri.time_of_impact;
-        Some(RaycastHit {
-            body_id: BodyId(body_id),
-            point: (pt_x, pt_y),
-            normal: (ri.normal.x, ri.normal.y),
-            toi: ri.time_of_impact,
-        })
+        self.collect_raycast_hits_sorted(x1, y1, dir.x, dir.y, max_toi, filter)
+            .into_iter()
+            .next()
     }
     /// Step the simulation by `dt` seconds; synchronises body state with rapier.
     pub fn step(&mut self, dt: f32) {
@@ -2601,18 +2921,7 @@ impl World {
             self.record_invalid_operation();
             return;
         }
-        if let Some(body) = self.get_body_mut(id) {
-            body.mass = mass;
-        }
-        if let Some(slot) = self.body_mass_overrides.get_mut(id) {
-            *slot = Some(mass);
-        }
-        if let Some(handle) = self.active_body_handle(id) {
-            if let Some(rb) = self.rbodies.get_mut(handle) {
-                let props = rb.mass_properties();
-                rb.set_additional_mass(mass - props.local_mprops.mass(), true);
-            }
-        }
+        self.set_body_mass_override_internal(id, Some(mass));
     }
     /// Set gravity scale multiplier on body `id`.
     pub fn set_gravity_scale(&mut self, id: usize, scale: f32) {
@@ -2628,6 +2937,7 @@ impl World {
                 rb.set_gravity_scale(scale, true);
             }
         }
+        self.sync_body_material_snapshot(id);
     }
     /// Lock or unlock rotation for body `id`.
     pub fn set_fixed_rotation(&mut self, id: usize, fixed: bool) {
@@ -2651,6 +2961,7 @@ impl World {
                 rb.set_linear_damping(damping);
             }
         }
+        self.sync_body_material_snapshot(id);
     }
     /// Set angular damping coefficient on body `id`.
     pub fn set_angular_damping(&mut self, id: usize, damping: f32) {
@@ -2666,6 +2977,7 @@ impl World {
                 rb.set_angular_damping(damping);
             }
         }
+        self.sync_body_material_snapshot(id);
     }
     /// Return gravity scale of body `id`; returns 1.0 if out of range.
     pub fn get_gravity_scale(&self, id: usize) -> f32 {
@@ -2845,6 +3157,8 @@ impl World {
         self.body_base_linear_damping.clear();
         self.body_base_angular_damping.clear();
         self.body_mass_overrides.clear();
+        self.body_materials.clear();
+        self.fixture_materials.clear();
         self.zones.clear();
         self.gravity_vectors.clear();
         self.flow_fields.clear();
@@ -2899,6 +3213,8 @@ impl World {
         if id < self.extra_collider_handles.len() {
             self.extra_collider_handles[id].clear();
         }
+        self.fixture_materials
+            .retain(|(body_id, _), _| *body_id != id);
         let body_handle = self.active_body_handle(id);
         if let Some(handle) = body_handle {
             let joints_to_destroy: Vec<usize> = self
@@ -3317,6 +3633,49 @@ impl World {
             }],
             reached_max_range: true,
         }
+    }
+
+    fn collect_raycast_hits_sorted(
+        &self,
+        x1: f32,
+        y1: f32,
+        dx: f32,
+        dy: f32,
+        max_dist: f32,
+        filter: PhysicsQueryFilter,
+    ) -> Vec<RaycastHit> {
+        let dir_len = (dx * dx + dy * dy).sqrt();
+        if dir_len < 1e-6 {
+            return Vec::new();
+        }
+        let unit_dir = Vector::new(dx / dir_len, dy / dir_len);
+        let ray = Ray::new(Vector::new(x1, y1), unit_dir);
+        let qp = self.query_pipeline(filter);
+        let mut best_by_body: HashMap<usize, RaycastHit> = HashMap::new();
+        for (col_handle, _co, ri) in qp.intersect_ray(ray, max_dist, true) {
+            if let Some(body_id) = self.body_for_collider(col_handle) {
+                if !self.has_body(body_id) {
+                    continue;
+                }
+                let pt_x = x1 + unit_dir.x * ri.time_of_impact;
+                let pt_y = y1 + unit_dir.y * ri.time_of_impact;
+                let hit = RaycastHit {
+                    body_id: BodyId(body_id),
+                    point: (pt_x, pt_y),
+                    normal: (ri.normal.x, ri.normal.y),
+                    toi: ri.time_of_impact,
+                };
+                match best_by_body.get(&body_id) {
+                    Some(old) if old.toi <= hit.toi => {}
+                    _ => {
+                        best_by_body.insert(body_id, hit);
+                    }
+                }
+            }
+        }
+        let mut hits: Vec<_> = best_by_body.into_values().collect();
+        hits.sort_by(|a, b| a.toi.total_cmp(&b.toi).then(a.body_id.0.cmp(&b.body_id.0)));
+        hits
     }
 
     fn validate_beam_options(
@@ -3768,26 +4127,9 @@ impl World {
         max_dist: f32,
         filter: PhysicsQueryFilter,
     ) -> Option<RaycastHit> {
-        let dir_len = (dx * dx + dy * dy).sqrt();
-        if dir_len < 1e-6 {
-            return None;
-        }
-        let unit_dir = Vector::new(dx / dir_len, dy / dir_len);
-        let ray = Ray::new(Vector::new(x1, y1), unit_dir);
-        let qp = self.query_pipeline(filter);
-        let (col_handle, toi_result) = qp.cast_ray_and_get_normal(&ray, max_dist, true)?;
-        let body_id = self.body_for_collider(col_handle)?;
-        if !self.has_body(body_id) {
-            return None;
-        }
-        let pt_x = x1 + unit_dir.x * toi_result.time_of_impact;
-        let pt_y = y1 + unit_dir.y * toi_result.time_of_impact;
-        Some(RaycastHit {
-            body_id: BodyId(body_id),
-            point: (pt_x, pt_y),
-            normal: (toi_result.normal.x, toi_result.normal.y),
-            toi: toi_result.time_of_impact,
-        })
+        self.collect_raycast_hits_sorted(x1, y1, dx, dy, max_dist, filter)
+            .into_iter()
+            .next()
     }
     /// Cast a ray from `(x1,y1)` in direction `(dx,dy)` and return all hits up to `max_dist`.
     pub fn raycast_all(
@@ -3810,38 +4152,7 @@ impl World {
         max_dist: f32,
         filter: PhysicsQueryFilter,
     ) -> Vec<RaycastHit> {
-        let dir_len = (dx * dx + dy * dy).sqrt();
-        if dir_len < 1e-6 {
-            return Vec::new();
-        }
-        let unit_dir = Vector::new(dx / dir_len, dy / dir_len);
-        let ray = Ray::new(Vector::new(x1, y1), unit_dir);
-        let qp = self.query_pipeline(filter);
-        let mut best_by_body: HashMap<usize, RaycastHit> = HashMap::new();
-        for (col_handle, _co, ri) in qp.intersect_ray(ray, max_dist, true) {
-            if let Some(body_id) = self.body_for_collider(col_handle) {
-                if !self.has_body(body_id) {
-                    continue;
-                }
-                let pt_x = x1 + unit_dir.x * ri.time_of_impact;
-                let pt_y = y1 + unit_dir.y * ri.time_of_impact;
-                let hit = RaycastHit {
-                    body_id: BodyId(body_id),
-                    point: (pt_x, pt_y),
-                    normal: (ri.normal.x, ri.normal.y),
-                    toi: ri.time_of_impact,
-                };
-                match best_by_body.get(&body_id) {
-                    Some(old) if old.toi <= hit.toi => {}
-                    _ => {
-                        best_by_body.insert(body_id, hit);
-                    }
-                }
-            }
-        }
-        let mut hits: Vec<_> = best_by_body.into_values().collect();
-        hits.sort_by(|a, b| a.toi.total_cmp(&b.toi).then(a.body_id.0.cmp(&b.body_id.0)));
-        hits
+        self.collect_raycast_hits_sorted(x1, y1, dx, dy, max_dist, filter)
     }
     /// Return all body ids whose AABB overlaps the query rectangle.
     pub fn query_aabb(&self, x: f32, y: f32, w: f32, h: f32) -> Vec<usize> {

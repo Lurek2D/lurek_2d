@@ -541,10 +541,17 @@ do
 
 
     local ov = lurek.overlay.new(800, 600)
-    ov:flash(1.0, 1.0, 1.0, 0.5, 0.2)
-    ov:render()
+    ov:setStatusEffect("blind", {
+        intensity = 6.0,
+        fadeIn = 0.01,
+        target = "sceneOnly",
+        shader = "vignette",
+    })
+    ov:update(0.05)
+    ov:render({ target = "sceneOnly" })
+    ov:render({ target = "hudFront", includeGlobal = true })
     lurek.log.info("LOverlay:render active=" .. tostring(ov:isActive()))
-    lurek.log.info("LOverlay:render flashAlpha=" .. string.format("%.2f", ov:getFlashAlpha()))
+    lurek.log.info("LOverlay:render statusLayers=" .. tostring(#ov:getStatusEffects()))
 end
 
 --@api: LOverlay:resize

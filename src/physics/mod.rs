@@ -18,6 +18,8 @@ pub mod error;
 pub mod flow;
 /// Shared sizing and validation limits.
 pub mod limits;
+/// Reusable body and fixture material descriptors.
+pub mod material;
 /// Debug render helpers for physics shapes.
 pub mod render;
 /// Shape definitions for bodies and standalone queries.
@@ -41,8 +43,12 @@ pub use flow::{
     FlowDirectionMode, FlowFalloff, FlowField, FlowFieldId, FlowGeometry, FlowMedium, FlowSample,
 };
 pub use limits::PhysicsLimits;
+pub use material::PhysicsMaterial;
 pub use shape::{AlphaShapeOptions, Shape, StandaloneShape};
-pub use terrain::TerrainMap;
+pub use terrain::{
+    TerrainCollapseMode, TerrainCollapseOptions, TerrainCollapseResult, TerrainComponent,
+    TerrainFlushStats, TerrainMap, TerrainRegion, TerrainSupportRule,
+};
 pub use world::BodyContact as CollisionEvent;
 pub use world::{
     BeamHit, BeamHitMode, BeamOptions, BeamSegment, BeamTrace, ContactInfo, GravityVector,

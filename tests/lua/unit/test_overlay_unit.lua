@@ -161,7 +161,25 @@ describe("overlay methods", function()
         expect_true(table_contains(plan.externally_handled, "water"))
         expect_true(table_contains(plan.externally_handled, "clouds"))
         expect_true(table_contains(plan.externally_handled, "film_grain"))
+        expect_type("table", plan.unsupported)
+        expect_type("table", plan.fallback)
         expect_type("table", plan.shader)
+    end)
+
+    -- @covers LOverlay:render
+    it("render accepts target-filtered status rendering options", function()
+        local overlay = new_overlay(320, 240)
+        overlay:setStatusEffect("blind", {
+            intensity = 6.0,
+            fadeIn = 0.01,
+            target = "sceneOnly",
+            shader = "vignette",
+        })
+        overlay:update(0.05)
+        expect_no_error(function()
+            overlay:render({ target = "sceneOnly" })
+            overlay:render({ target = "hudFront", includeGlobal = true })
+        end)
     end)
 
     -- @covers LOverlay:setStatusEffect

@@ -39,6 +39,27 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 ## Notes
 
+- Material model:
+  `lurek.physics.newMaterial({...})` is the reusable, validated material constructor. Body-default material assignment lives on `LBody:setMaterial(...)` / `LBody:getMaterial()`, while collider-specific overrides live on `LWorld:setFixtureMaterial(bodyId, fixtureIndex, ...)` / `LWorld:getFixtureMaterial(...)`. Existing direct setters such as `setFriction`, `setRestitution`, `setMass`, `setGravityScale`, `setLinearDamping`, `setAngularDamping`, `setBeamReflectivity`, and `setProjectileReflectivity` remain valid and keep the stored body-material snapshot in sync.
+
+  Mixed-surface contacts currently use backend-default combine behavior. Lurek2D stores the authored friction and restitution values per collider, but does not set an engine-specific combine rule on contact, so scripts should treat friction/restitution interaction as "Rapier default combine policy" until a dedicated engine-level override is added.
+
+  | Property | Scope | Current API | Backing |
+  | --- | --- | --- | --- |
+  | `density` | body primary collider, fixture | `newMaterial`, `setMaterial`, `setFixtureMaterial`, `addFixture` | solver-backed |
+  | `friction` | body primary collider, fixture | `getFriction`, `setFriction`, `setFixtureFriction`, material APIs | solver-backed |
+  | `restitution` | body primary collider, fixture | `getRestitution`, `setRestitution`, `setFixtureRestitution`, material APIs | solver-backed |
+  | `massOverride` | body | `getMass`, `setMass`, material APIs | solver-backed |
+  | `gravityScale` | body | `getGravityScale`, `setGravityScale`, material APIs | solver-backed |
+  | `linearDamping`, `angularDamping` | body | damping getters/setters, material APIs | solver-backed |
+  | `beamReflectivity`, `projectileReflectivity` | body, fixture metadata | dedicated reflectivity getters/setters, material APIs | gameplay-backed |
+  | `beamAbsorption` | body, fixture metadata | material APIs | gameplay-backed |
+  | `stickiness`, `adhesion` | body, fixture metadata | material APIs | gameplay-backed |
+  | `buoyancy` | body, fixture metadata | material APIs | gameplay-backed |
+  | `name`, `surfaceType` | body, fixture metadata | material APIs | metadata |
+
+- Terrain contract:
+  `LTerrain:fillCircle(...)` and `LTerrain:fillRect(...)` remain the low-level solid-or-empty edit primitives, while `carveCircle`, `addCircle`, `carveRect`, `addRect`, and `damageCircle` expose gameplay-intent names so crater code does not have to remember boolean fill semantics. `collapseColumns()` is still the legacy single-cell overhang cleanup heuristic, not a full stability pass. `collapseUnsupported(...)` is the explicit connected-component pass for Worms-style unsupported terrain handling: it scans solid islands, treats bottom-border or any-border connectivity as support depending on the chosen rule, removes unsupported components, spawns sampled debris, or emits one dynamic rectangle body per unsupported component bounds when `mode = "spawnDynamicChunks"`. `flush(maxDirtyChunks?)` stays explicit so scripts can batch edits before chunk-local collider rebuilds, and now reports how many dirty chunks were rebuilt, how many remain queued, how many terrain bodies were destroyed or created, and how long the rebuild took. Static collider generation still uses fast row-run rectangles per dirty 16x16 chunk; smoother contour colliders and anchor-cell support remain later upgrades.
 - Beam query contract:
   `LWorld:castBeam`, `LWorld:beamClosest`, and `LWorld:beamAll` are instant spatial queries, not projectile-body simulation. They share the same layer, mask, group, sensor, and `excludeBody` filtering semantics as the raycast family so gameplay can switch between projectiles and hitscan without inventing parallel collision policy. `castBeam(..., { reflect = true })` extends the closest-hit path into deterministic mirror tracing: mirror bodies use surface normals plus per-body beam reflectivity to produce chained segments until the range, bounce budget, or energy budget runs out. The current release still ships the thin-beam path (`thickness = 0`) and leaves thick beam shape-casting as the explicit follow-up; calling `thickness > 0` fails fast so scripts do not assume wide-beam support yet.
 - Fast-projectile contract:
@@ -47,6 +68,8 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
   Mirror-style beam reflection is explicit gameplay metadata, not a synonym for rigid-body restitution. `LBody:setMirror(...)`, `LBody:setBeamReflectivity(...)`, and `LBody:setProjectileReflectivity(...)` let scripts describe mirror and ricochet intent independently from `setRestitution(...)`, so laser puzzles and gameplay reflection can stay deterministic even when physical bounce settings differ.
 - Flow-field contract:
   Authored flow fields live on the world, respect layer masks, can overlap additively, and may be sampled directly from Lua for AI, VFX, UI previews, or debugging. The physics world remains the source of truth for how those currents affect bodies during stepping.
+- Simple-field contract:
+  Rectangles, full circles, directional fans, radial in/out currents, and tangential clockwise/counter-clockwise swirl all share the same flow-field owner. `addFan(...)` is the convenience helper for designer-authored blower wedges, while circular fields plus radial or tangential directions cover attraction, repulsion, and vortex-like motion without introducing a second subsystem.
 - Body-influence contract:
   Bodies expose per-body flow coefficients so gameplay can scale all flow, air-only flow, water-only flow, and drag cross-section without forking world behavior. Those coefficients are body metadata, not separate force emitters.
 - Debug contract:

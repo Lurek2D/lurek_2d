@@ -1,20 +1,20 @@
 {
   "meta": {
-    "generated": "2026-06-29T06:58:49.651326+00:00",
+    "generated": "2026-06-29T08:53:06.789425+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "rust_items": 3125,
-      "rust_modules": 725,
+      "rust_items": 3134,
+      "rust_modules": 726,
       "rust_tests": 498,
       "lua_tests": 284
     }
   },
   "rust_api": {
     "summary": {
-      "total_items": 3125,
-      "documented": 3121,
-      "modules": 725
+      "total_items": 3134,
+      "documented": 3130,
+      "modules": 726
     },
     "modules": {
       "agent::chat": {
@@ -12983,14 +12983,14 @@
             "kind": "enum",
             "description": "Structured overlay validation and safety failures.",
             "file": "src/overlay/controller.rs",
-            "line": 385
+            "line": 389
           },
           {
             "name": "Overlay",
             "kind": "struct",
             "description": "Owns every screen-space overlay state block applied on top of world rendering.",
             "file": "src/overlay/controller.rs",
-            "line": 515
+            "line": 519
           }
         ]
       },
@@ -15247,35 +15247,35 @@
             "kind": "enum",
             "description": "Geometry variants supported by the flow-field sampler.",
             "file": "src/physics/flow.rs",
-            "line": 74
+            "line": 78
           },
           {
             "name": "FlowContribution",
             "kind": "struct",
             "description": "One field-level contribution inside a sampled overlap result.",
             "file": "src/physics/flow.rs",
-            "line": 90
+            "line": 103
           },
           {
             "name": "FlowSample",
             "kind": "struct",
             "description": "Sample result returned by `World::sample_flow`.",
             "file": "src/physics/flow.rs",
-            "line": 107
+            "line": 120
           },
           {
             "name": "FlowField",
             "kind": "struct",
             "description": "One authored flow field stored by the physics world.",
             "file": "src/physics/flow.rs",
-            "line": 122
+            "line": 135
           },
           {
             "name": "combine_contributions",
             "kind": "fn",
             "description": "Combines contributions that share one overlap sample into a final vector.",
             "file": "src/physics/flow.rs",
-            "line": 333
+            "line": 419
           }
         ]
       },
@@ -15289,6 +15289,19 @@
             "description": "Shared safety limits for physics geometry, terrain allocations, and bounded stepping.",
             "file": "src/physics/limits.rs",
             "line": 11
+          }
+        ]
+      },
+      "physics::material": {
+        "module_doc": "Owns the reusable physics material model shared by body defaults, fixture overrides, and Lua table conversions. Keeps solver-backed fields and gameplay metadata in one value type so validation and storage stay consistent. Defines the first-pass material contract without forcing a global registry or callback-driven gameplay hooks yet. Open this file when changing material defaults, validation ranges, or which properties are considered body-only.",
+        "source_file": "src/physics/material.rs",
+        "items": [
+          {
+            "name": "PhysicsMaterial",
+            "kind": "struct",
+            "description": "Reusable physics material properties shared by bodies and fixtures.  Solver-backed fields map onto Rapier body or collider settings, while gameplay fields remain metadata until higher-level systems consume them.",
+            "file": "src/physics/material.rs",
+            "line": 14
           }
         ]
       },
@@ -15339,46 +15352,53 @@
             "line": 20
           },
           {
+            "name": "material",
+            "kind": "mod",
+            "description": "Reusable body and fixture material descriptors.",
+            "file": "src/physics/mod.rs",
+            "line": 22
+          },
+          {
             "name": "render",
             "kind": "mod",
             "description": "Debug render helpers for physics shapes.",
             "file": "src/physics/mod.rs",
-            "line": 22
+            "line": 24
           },
           {
             "name": "shape",
             "kind": "mod",
             "description": "Shape definitions for bodies and standalone queries.",
             "file": "src/physics/mod.rs",
-            "line": 24
+            "line": 26
           },
           {
             "name": "terrain",
             "kind": "mod",
             "description": "Static terrain tile-map. This module is publicly re-exported.",
             "file": "src/physics/mod.rs",
-            "line": 26
+            "line": 28
           },
           {
             "name": "types",
             "kind": "mod",
             "description": "Core type definitions for the physics subsystem.",
             "file": "src/physics/mod.rs",
-            "line": 28
+            "line": 30
           },
           {
             "name": "world",
             "kind": "mod",
             "description": "Physics world, stepping, bodies, raycasting, and instant beam queries.",
             "file": "src/physics/mod.rs",
-            "line": 30
+            "line": 32
           },
           {
             "name": "zone",
             "kind": "mod",
             "description": "Spatial trigger zones with gravity and event tracking.",
             "file": "src/physics/mod.rs",
-            "line": 34
+            "line": 36
           }
         ]
       },
@@ -15415,7 +15435,7 @@
         ]
       },
       "physics::terrain": {
-        "module_doc": "Owns physics behavior with explicit state, validation, and crate-local integration boundaries. Keeps physics data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how terrain data is validated, transformed, or stored before neighboring systems use it. Owns physics behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on terrain behavior while Lua registration stays elsewhere. Documents the boundary where physics code accepts inputs, reports errors, or updates state. Use this file when changing terrain defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the physics state that can explain them while keeping call sites explicit.",
+        "module_doc": "Owns destructible terrain grid storage, collider rebuild ownership, and collapse analysis. Keeps Lua-facing terrain helpers thin by centralizing validation, component scans, and debris spawning here. Defines the boundary where terrain edits become dirty chunks, rebuilt static colliders, or optional debris bodies. Use this file when changing terrain fill semantics, collapse policies, serialization, or terrain-owned diagnostics.",
         "source_file": "src/physics/terrain.rs",
         "items": [
           {
@@ -15423,14 +15443,63 @@
             "kind": "struct",
             "description": "Key identifying a chunk by its chunk-grid coordinates. # Fields - `cx`: chunk-space column index. - `cy`: chunk-space row index.",
             "file": "src/physics/terrain.rs",
-            "line": 28
+            "line": 25
+          },
+          {
+            "name": "TerrainRegion",
+            "kind": "struct",
+            "description": "Inclusive-low, exclusive-high cell-space bounds for terrain scans or component extents. # Fields - `x0`: First included cell column. - `y0`: First included cell row. - `x1`: One-past-last included cell column. - `y1`: One-past-last included cell row.",
+            "file": "src/physics/terrain.rs",
+            "line": 39
+          },
+          {
+            "name": "TerrainComponent",
+            "kind": "struct",
+            "description": "One connected solid terrain component expressed as cell coordinates plus support flags. # Fields - `cells`: All solid cells that belong to this connected component. - `bounds`: Cell-space bounds containing every component cell. - `touches_bottom`: Whether any component cell touches the bottom terrain border. - `touches_border`: Whether any component cell touches any terrain border.",
+            "file": "src/physics/terrain.rs",
+            "line": 81
+          },
+          {
+            "name": "TerrainSupportRule",
+            "kind": "enum",
+            "description": "Support policy used when deciding whether a terrain component should collapse.",
+            "file": "src/physics/terrain.rs",
+            "line": 94
+          },
+          {
+            "name": "TerrainCollapseMode",
+            "kind": "enum",
+            "description": "Action applied to unsupported terrain components.",
+            "file": "src/physics/terrain.rs",
+            "line": 103
+          },
+          {
+            "name": "TerrainCollapseOptions",
+            "kind": "struct",
+            "description": "Policy options for unsupported-terrain collapse passes. # Fields - `support_rule`: Rule deciding which components count as supported. - `mode`: Action applied to unsupported components that pass the minimum-size filter. - `min_component_cells`: Minimum number of cells a component must have before the policy applies. - `max_debris`: Maximum number of debris bodies to spawn across the whole collapse call. - `debris_mass`: Mass assigned to spawned debris bodies. - `debris_restitution`: Restitution assigned to spawned debris bodies.",
+            "file": "src/physics/terrain.rs",
+            "line": 123
+          },
+          {
+            "name": "TerrainCollapseResult",
+            "kind": "struct",
+            "description": "Result returned after collapsing unsupported terrain components. # Fields - `components`: Number of unsupported components that matched the size threshold. - `removed_cells`: Number of terrain cells removed from the grid. - `debris_body_ids`: Body ids spawned for debris mode.",
+            "file": "src/physics/terrain.rs",
+            "line": 176
+          },
+          {
+            "name": "TerrainFlushStats",
+            "kind": "struct",
+            "description": "Diagnostics returned by the most recent terrain collider rebuild pass. # Fields - `dirty_chunks_rebuilt`: Number of dirty chunks rebuilt during this flush call. - `dirty_chunks_remaining`: Number of dirty chunks still queued after this flush call. - `bodies_destroyed`: Number of old terrain bodies removed before rebuild. - `bodies_created`: Number of new terrain bodies created by rebuild. - `elapsed_micros`: Wall-clock duration of the rebuild pass in microseconds.",
+            "file": "src/physics/terrain.rs",
+            "line": 193
           },
           {
             "name": "TerrainMap",
             "kind": "struct",
-            "description": "Tile-based terrain map that synchronises static physics bodies with a `World`. # Fields - `width`: grid width in cells. - `height`: grid height in cells. - `cell_size`: world-space cell size. - `offset_x`: world-space x origin. - `offset_y`: world-space y origin.",
+            "description": "Tile-based terrain map that synchronises static physics bodies with a `World`. # Fields - `width`: Grid width in cells. - `height`: Grid height in cells. - `cell_size`: World units per cell side. - `offset_x`: World-space x origin. - `offset_y`: World-space y origin.",
             "file": "src/physics/terrain.rs",
-            "line": 42
+            "line": 213
           }
         ]
       },
@@ -15456,112 +15525,112 @@
             "kind": "const",
             "description": "Number of low-bit collision groups controlled by the world-level collision matrix.",
             "file": "src/physics/world.rs",
-            "line": 36
+            "line": 37
           },
           {
             "name": "BodyContact",
             "kind": "struct",
             "description": "A pair of body ids that have started or are overlapping. # Fields - `body_a`: first body id. - `body_b`: second body id.",
             "file": "src/physics/world.rs",
-            "line": 91
+            "line": 92
           },
           {
             "name": "RaycastHit",
             "kind": "struct",
             "description": "The closest raycast intersection result. # Fields - `body_id`: body hit by the ray. - `point`: world-space hit point. - `normal`: outward hit normal. - `toi`: parametric distance along the cast.",
             "file": "src/physics/world.rs",
-            "line": 104
+            "line": 105
           },
           {
             "name": "ShapeSweepHit",
             "kind": "struct",
             "description": "The closest swept-shape intersection result. # Fields - `body_id`: body hit by the sweep. - `point`: world-space impact point on the hit collider. - `normal`: outward hit normal on the hit collider. - `toi`: travel distance from the cast origin to the first impact. - `safe_fraction`: normalized travel fraction in `0.0..=1.0` before the impact.",
             "file": "src/physics/world.rs",
-            "line": 122
+            "line": 123
           },
           {
             "name": "BeamHitMode",
             "kind": "enum",
             "description": "Beam hit collection mode for instant gameplay beams.",
             "file": "src/physics/world.rs",
-            "line": 136
+            "line": 137
           },
           {
             "name": "BeamOptions",
             "kind": "struct",
             "description": "Options controlling one instant beam query. # Fields - `max_distance`: maximum beam travel distance in world units. - `thickness`: beam radius in world units; only `0.0` is currently supported. - `hit_mode`: how many hits to collect. - `reflect`: whether the beam should continue reflecting from mirror bodies. - `max_bounces`: maximum number of reflections allowed when `reflect` is true. - `energy`: starting beam energy multiplier used with reflective surfaces. - `min_energy`: beam tracing stops when reflected energy would drop below this threshold. - `filter`: collision and sensor filtering shared with other physics queries.",
             "file": "src/physics/world.rs",
-            "line": 158
+            "line": 159
           },
           {
             "name": "BeamHit",
             "kind": "struct",
             "description": "One beam hit ready for gameplay or debug rendering. # Fields - `body_id`: body hit by the beam. - `point`: world-space hit point. - `normal`: outward surface normal. - `distance`: beam travel distance from the origin to the hit point. - `segment_index`: 1-based segment index for reflected or chained traces. - `reflected`: whether the beam continued past this hit by reflecting. - `incoming_dir`: normalized incoming beam direction at the hit. - `outgoing_dir`: normalized reflected direction, if the hit reflected the beam. - `reflectivity`: beam reflectivity multiplier used for the hit body.",
             "file": "src/physics/world.rs",
-            "line": 188
+            "line": 189
           },
           {
             "name": "BeamSegment",
             "kind": "struct",
             "description": "One visible segment of a beam trace. # Fields - `from`: segment start in world space. - `to`: segment end in world space. - `blocked_by`: body that stopped this segment, if any.",
             "file": "src/physics/world.rs",
-            "line": 214
+            "line": 215
           },
           {
             "name": "BeamTrace",
             "kind": "struct",
             "description": "Full instant beam query result. # Fields - `hits`: ordered hit results. - `segments`: ordered beam segments for gameplay and rendering. - `reached_max_range`: whether the trace extended to the requested max range.",
             "file": "src/physics/world.rs",
-            "line": 228
+            "line": 229
           },
           {
             "name": "ContactInfo",
             "kind": "struct",
             "description": "Contact information between two bodies. # Fields - `body_a`: first body id. - `body_b`: second body id. - `normal_x`: contact normal x component. - `normal_y`: contact normal y component. - `is_touching`: whether the bodies are currently touching.",
             "file": "src/physics/world.rs",
-            "line": 244
+            "line": 245
           },
           {
             "name": "PhysicsShapeSnapshot",
             "kind": "struct",
             "description": "Snapshot of a physics shape used for debug rendering. # Fields - `x`: world-space x center. - `y`: world-space y center. - `half_w`: half-width for box-like shapes. - `half_h`: half-height for box-like shapes. - `angle`: rotation in radians. - `is_static`: whether the source body is static. - `is_sleeping`: whether the source body is sleeping. - `is_sensor`: whether the source collider is a sensor. - `is_circle`: whether the shape should be rendered as a circle. - `hull_verts`: polygon hull vertices for non-rectangular shapes.",
             "file": "src/physics/world.rs",
-            "line": 268
+            "line": 269
           },
           {
             "name": "PhysicsQueryFilter",
             "kind": "struct",
             "description": "Optional filters applied to physics spatial queries. # Fields - `layer`: optional query-side collision layer mask. - `mask`: optional query-side collision mask. - `groups`: optional 16-group query-side membership mask. - `include_sensors`: whether sensor colliders should be returned. - `exclude_body`: optional body whose colliders should be excluded.",
             "file": "src/physics/world.rs",
-            "line": 298
+            "line": 299
           },
           {
             "name": "GravityVector",
             "kind": "struct",
             "description": "Additive directional gravity vector applied to matching dynamic bodies before the solver step. # Fields - `id`: stable gravity vector identifier. - `gx`: x acceleration in world units per second squared. - `gy`: y acceleration in world units per second squared. - `layer_mask`: body layer mask; bodies with `body.layer & layer_mask == 0` are skipped. - `enabled`: whether the vector participates in the next step.",
             "file": "src/physics/world.rs",
-            "line": 330
+            "line": 331
           },
           {
             "name": "PhysicsDiagnostics",
             "kind": "struct",
             "description": "Runtime diagnostics recorded by the physics world across steps and strict mutators. # Fields - `skipped_steps`: invalid or empty `step` calls rejected before rapier. - `clamped_steps`: `step` calls whose dt was reduced to the configured ceiling. - `invalid_operations`: strict helper failures observed through legacy wrappers. - `last_bodies_scanned`: body slots examined during the most recent step. - `last_colliders_rebuilt`: collider rebuilds triggered during the most recent step. - `last_zone_checks`: body-zone containment checks performed during the most recent step. - `last_flow_samples`: field samples evaluated during the most recent step. - `last_flow_affected_bodies`: dynamic bodies that received non-zero flow influence during the most recent step. - `last_contacts`: contact events emitted during the most recent step. - `last_synced_bodies`: body mirrors pushed into rapier during the most recent step.",
             "file": "src/physics/world.rs",
-            "line": 355
+            "line": 356
           },
           {
             "name": "PhysicsWorldStats",
             "kind": "struct",
             "description": "Lightweight world diagnostics for Lua/editor tooling. # Fields - `bodies`: active body count. - `body_slots`: total allocated body slots. - `colliders`: active collider count. - `joints`: active joint count. - `joint_slots`: total allocated joint slots. - `zones`: active zone count. - `gravity_vectors`: active additive gravity vector count. - `flow_fields`: active flow-field count. - `sleeping_bodies`: active bodies currently sleeping. - `skipped_steps`: invalid or empty `step` calls rejected before rapier. - `clamped_steps`: `step` calls whose dt was reduced to the configured ceiling. - `invalid_operations`: strict helper failures observed through legacy wrappers. - `bodies_scanned`: body slots examined during the most recent step. - `colliders_rebuilt`: collider rebuilds triggered during the most recent step. - `zone_checks`: body-zone containment checks performed during the most recent step. - `flow_samples`: flow-field samples evaluated during the most recent step. - `flow_affected_bodies`: dynamic bodies that received non-zero flow influence during the most recent step. - `contacts`: contact events emitted during the most recent step. - `synced_bodies`: body mirrors pushed into rapier during the most recent step.",
             "file": "src/physics/world.rs",
-            "line": 399
+            "line": 400
           },
           {
             "name": "World",
             "kind": "struct",
-            "description": "Full rapier2d-backed simulation world. # Fields - `bodies`: Lua-visible body mirrors. - `body_handles`: rapier rigid body handles for each slot. - `body_active`: active/tombstoned body slot state. - `collider_handles`: primary collider per body. - `extra_collider_handles`: additional colliders per body. - `collider_to_body`: reverse collider-to-body lookup. - `cached_shapes`: cached shape descriptors for rebuild detection. - `cached_restitutions`: cached restitution values per body. - `cached_layers`: cached layer/mask pairs per body. - `collision_group_masks`: world-level 16-group collision matrix rows. - `cached_frictions`: cached friction values per body. - `pipeline`: rapier simulation pipeline. - `gravity`: world gravity vector. - `params`: integration parameters. - `islands`: rapier island manager. - `broad_phase`: rapier broad phase. - `narrow_phase`: rapier narrow phase. - `rbodies`: rapier rigid body storage. - `rcolliders`: rapier collider storage. - `impulse_joints`: rapier impulse joint storage. - `multibody_joints`: rapier multibody joint storage. - `ccd_solver`: rapier CCD solver. - `joint_handles`: rapier impulse joint handles by slot. - `joint_active`: active/tombstoned joint slot state. - `collision_events`: buffered overlap/contact events. - `begin_contact_events`: body pairs that started touching this step. - `end_contact_events`: body pairs that stopped touching this step. - `event_handler`: local rapier event collector. - `joint_types`: joint type labels by stable joint id. - `mouse_joint_anchors`: mouse-joint anchor body lookup. - `pixels_per_meter`: pixels-to-meter conversion ratio. - `joint_break_forces`: optional joint break thresholds. - `one_way_normals`: one-way platform normals by body id. - `body_dirty_sync`: explicit mirror-to-rapier sync flags for dynamic bodies. - `body_base_gravity_scales`: gravity scales restored after temporary zone overrides. - `body_base_linear_damping`: linear damping restored after temporary zone overrides. - `body_base_angular_damping`: angular damping restored after temporary zone overrides. - `body_mass_overrides`: explicit mass values authored through `setMass`. - `zones`: registered physics zones. - `gravity_vectors`: additive world gravity vectors. - `flow_fields`: authored flow fields sampled before the solver step. - `gravity_vector_id_counter`: next stable additive gravity vector id. - `zone_id_counter`: next stable zone id. - `flow_field_id_counter`: next stable flow-field id. - `zone_tracker`: body/zone membership tracker. - `zone_events`: buffered zone enter/leave events. - `limits`: shared safety ceilings for strict helpers and bounded stepping. - `diagnostics`: cumulative and per-step instrumentation counters. - `rebuild_scratch`: reusable body-id buffer for collider rebuild scans. - `sync_scratch`: reusable mirror-state buffer for rapier sync. - `sorted_zone_indices`: reusable priority-order buffer for zones. - `default_gravity`: gravity captured at construction for full reset semantics. # Fields See inline field docs below for the authoritative per-field details.",
+            "description": "Full rapier2d-backed simulation world. # Fields - `bodies`: Lua-visible body mirrors. - `body_handles`: rapier rigid body handles for each slot. - `body_active`: active/tombstoned body slot state. - `collider_handles`: primary collider per body. - `extra_collider_handles`: additional colliders per body. - `collider_to_body`: reverse collider-to-body lookup. - `cached_shapes`: cached shape descriptors for rebuild detection. - `cached_restitutions`: cached restitution values per body. - `cached_layers`: cached layer/mask pairs per body. - `collision_group_masks`: world-level 16-group collision matrix rows. - `cached_frictions`: cached friction values per body. - `pipeline`: rapier simulation pipeline. - `gravity`: world gravity vector. - `params`: integration parameters. - `islands`: rapier island manager. - `broad_phase`: rapier broad phase. - `narrow_phase`: rapier narrow phase. - `rbodies`: rapier rigid body storage. - `rcolliders`: rapier collider storage. - `impulse_joints`: rapier impulse joint storage. - `multibody_joints`: rapier multibody joint storage. - `ccd_solver`: rapier CCD solver. - `joint_handles`: rapier impulse joint handles by slot. - `joint_active`: active/tombstoned joint slot state. - `collision_events`: buffered overlap/contact events. - `begin_contact_events`: body pairs that started touching this step. - `end_contact_events`: body pairs that stopped touching this step. - `event_handler`: local rapier event collector. - `joint_types`: joint type labels by stable joint id. - `mouse_joint_anchors`: mouse-joint anchor body lookup. - `pixels_per_meter`: pixels-to-meter conversion ratio. - `joint_break_forces`: optional joint break thresholds. - `one_way_normals`: one-way platform normals by body id. - `body_dirty_sync`: explicit mirror-to-rapier sync flags for dynamic bodies. - `body_base_gravity_scales`: gravity scales restored after temporary zone overrides. - `body_base_linear_damping`: linear damping restored after temporary zone overrides. - `body_base_angular_damping`: angular damping restored after temporary zone overrides. - `body_mass_overrides`: explicit mass values authored through `setMass`. - `body_materials`: body-default material snapshots kept in sync with direct setters. - `fixture_materials`: extra-fixture material snapshots keyed by `(body_id, fixture_index)`. - `zones`: registered physics zones. - `gravity_vectors`: additive world gravity vectors. - `flow_fields`: authored flow fields sampled before the solver step. - `gravity_vector_id_counter`: next stable additive gravity vector id. - `zone_id_counter`: next stable zone id. - `flow_field_id_counter`: next stable flow-field id. - `zone_tracker`: body/zone membership tracker. - `zone_events`: buffered zone enter/leave events. - `limits`: shared safety ceilings for strict helpers and bounded stepping. - `diagnostics`: cumulative and per-step instrumentation counters. - `rebuild_scratch`: reusable body-id buffer for collider rebuild scans. - `sync_scratch`: reusable mirror-state buffer for rapier sync. - `sorted_zone_indices`: reusable priority-order buffer for zones. - `default_gravity`: gravity captured at construction for full reset semantics. # Fields See inline field docs below for the authoritative per-field details.",
             "file": "src/physics/world.rs",
-            "line": 495
+            "line": 498
           }
         ]
       },

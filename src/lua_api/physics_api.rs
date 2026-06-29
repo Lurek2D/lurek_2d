@@ -7,8 +7,9 @@ use crate::physics::world::{BodyContact, COLLISION_GROUP_COUNT};
 use crate::physics::{
     AlphaShapeOptions, BeamHit, BeamHitMode, BeamOptions, BeamSegment, BeamTrace, Body, BodyId,
     BodyType, FlowApplicationMode, FlowCombineMode, FlowDirectionMode, FlowFalloff, FlowField,
-    FlowGeometry, FlowMedium, FlowSample, PhysicsQueryFilter, PhysicsWorldStats, PhysicsZone,
-    RaycastHit, Shape, ShapeSweepHit, TerrainMap, World,
+    FlowGeometry, FlowMedium, FlowSample, PhysicsMaterial, PhysicsQueryFilter, PhysicsWorldStats,
+    PhysicsZone, RaycastHit, Shape, ShapeSweepHit, TerrainCollapseMode, TerrainCollapseOptions,
+    TerrainCollapseResult, TerrainMap, TerrainSupportRule, World,
 };
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -113,6 +114,18 @@ fn parse_flow_falloff(value: Option<String>) -> LuaResult<FlowFalloff> {
     }
 }
 
+fn parse_flow_direction_vector(opts: &LuaTable, method: &str) -> LuaResult<Vec2> {
+    let dir_tbl: LuaTable = opts.get("directionVector").map_err(|_| {
+        physics_runtime_error(
+            method,
+            "directionVector = { x = ..., y = ... } is required for this flow field",
+        )
+    })?;
+    let x: f32 = dir_tbl.get("x")?;
+    let y: f32 = dir_tbl.get("y")?;
+    Ok(Vec2::new(x, y))
+}
+
 fn parse_flow_direction(opts: &LuaTable) -> LuaResult<FlowDirectionMode> {
     let value = opts
         .get::<_, Option<String>>("direction")?
@@ -122,16 +135,19 @@ fn parse_flow_direction(opts: &LuaTable) -> LuaResult<FlowDirectionMode> {
         "againstpath" | "against_path" => Ok(FlowDirectionMode::AgainstPath),
         "radialout" | "radial_out" => Ok(FlowDirectionMode::RadialOut),
         "radialin" | "radial_in" => Ok(FlowDirectionMode::RadialIn),
+        "tangentialclockwise" | "tangential_clockwise" | "clockwise" => {
+            Ok(FlowDirectionMode::TangentialClockwise)
+        }
+        "tangentialcounterclockwise"
+        | "tangential_counter_clockwise"
+        | "counterclockwise"
+        | "counter_clockwise" => Ok(FlowDirectionMode::TangentialCounterClockwise),
         "explicit" => {
-            let dir_tbl: LuaTable = opts.get("directionVector").map_err(|_| {
-                physics_runtime_error(
-                    "addFlowField",
-                    "direction='explicit' requires directionVector = { x = ..., y = ... }",
-                )
-            })?;
-            let x: f32 = dir_tbl.get("x")?;
-            let y: f32 = dir_tbl.get("y")?;
-            Ok(FlowDirectionMode::Explicit { x, y })
+            let vector = parse_flow_direction_vector(opts, "addFlowField")?;
+            Ok(FlowDirectionMode::Explicit {
+                x: vector.x,
+                y: vector.y,
+            })
         }
         other => Err(physics_runtime_error(
             "addFlowField",
@@ -151,6 +167,240 @@ fn parse_flow_points(tbl: LuaTable) -> LuaResult<Vec<Vec2>> {
     Ok(points)
 }
 
+fn normalize_optional_lua_string(value: Option<String>) -> Option<String> {
+    value.and_then(|text| {
+        let trimmed = text.trim();
+        (!trimmed.is_empty()).then(|| trimmed.to_string())
+    })
+}
+
+fn physics_material_from_lua(method: &str, tbl: &LuaTable) -> LuaResult<PhysicsMaterial> {
+    let mut material = PhysicsMaterial::default();
+    material.name = normalize_optional_lua_string(tbl.get::<_, Option<String>>("name")?);
+    material.surface_type =
+        normalize_optional_lua_string(tbl.get::<_, Option<String>>("surfaceType")?);
+    material.density = tbl
+        .get::<_, Option<f32>>("density")?
+        .unwrap_or(material.density);
+    material.friction = tbl
+        .get::<_, Option<f32>>("friction")?
+        .unwrap_or(material.friction);
+    material.restitution = tbl
+        .get::<_, Option<f32>>("restitution")?
+        .unwrap_or(material.restitution);
+    material.linear_damping = tbl.get::<_, Option<f32>>("linearDamping")?;
+    material.angular_damping = tbl.get::<_, Option<f32>>("angularDamping")?;
+    material.gravity_scale = tbl.get::<_, Option<f32>>("gravityScale")?;
+    material.mass_override = tbl.get::<_, Option<f32>>("massOverride")?;
+    material.stickiness = tbl
+        .get::<_, Option<f32>>("stickiness")?
+        .unwrap_or(material.stickiness);
+    material.adhesion = tbl
+        .get::<_, Option<f32>>("adhesion")?
+        .unwrap_or(material.adhesion);
+    material.beam_reflectivity = tbl
+        .get::<_, Option<f32>>("beamReflectivity")?
+        .unwrap_or(material.beam_reflectivity);
+    material.projectile_reflectivity = tbl
+        .get::<_, Option<f32>>("projectileReflectivity")?
+        .unwrap_or(material.projectile_reflectivity);
+    material.beam_absorption = tbl
+        .get::<_, Option<f32>>("beamAbsorption")?
+        .unwrap_or(material.beam_absorption);
+    material.buoyancy = tbl
+        .get::<_, Option<f32>>("buoyancy")?
+        .unwrap_or(material.buoyancy);
+    material
+        .validate()
+        .map_err(|err| physics_runtime_error(method, err))?;
+    Ok(material)
+}
+
+fn physics_material_to_table<'lua>(
+    lua: &'lua Lua,
+    material: &PhysicsMaterial,
+) -> LuaResult<LuaTable<'lua>> {
+    let tbl = lua.create_table()?;
+    if let Some(name) = &material.name {
+        tbl.set("name", name.clone())?;
+    }
+    tbl.set("density", material.density)?;
+    tbl.set("friction", material.friction)?;
+    tbl.set("restitution", material.restitution)?;
+    if let Some(value) = material.linear_damping {
+        tbl.set("linearDamping", value)?;
+    }
+    if let Some(value) = material.angular_damping {
+        tbl.set("angularDamping", value)?;
+    }
+    if let Some(value) = material.gravity_scale {
+        tbl.set("gravityScale", value)?;
+    }
+    if let Some(value) = material.mass_override {
+        tbl.set("massOverride", value)?;
+    }
+    tbl.set("stickiness", material.stickiness)?;
+    tbl.set("adhesion", material.adhesion)?;
+    tbl.set("beamReflectivity", material.beam_reflectivity)?;
+    tbl.set("projectileReflectivity", material.projectile_reflectivity)?;
+    tbl.set("beamAbsorption", material.beam_absorption)?;
+    tbl.set("buoyancy", material.buoyancy)?;
+    if let Some(surface_type) = &material.surface_type {
+        tbl.set("surfaceType", surface_type.clone())?;
+    }
+    Ok(tbl)
+}
+
+#[derive(Default)]
+struct LuaBodyCreateOptions {
+    material: Option<PhysicsMaterial>,
+    bullet: Option<bool>,
+    layer: Option<u32>,
+    mask: Option<u32>,
+}
+
+fn parse_body_create_options(
+    method: &str,
+    opts: Option<&LuaTable>,
+) -> LuaResult<LuaBodyCreateOptions> {
+    let Some(opts) = opts else {
+        return Ok(LuaBodyCreateOptions::default());
+    };
+    let material = match opts.get::<_, Option<LuaTable>>("material")? {
+        Some(tbl) => Some(physics_material_from_lua(method, &tbl)?),
+        None => None,
+    };
+    Ok(LuaBodyCreateOptions {
+        material,
+        bullet: opts.get::<_, Option<bool>>("bullet")?,
+        layer: opts.get::<_, Option<u32>>("layer")?,
+        mask: opts.get::<_, Option<u32>>("mask")?,
+    })
+}
+
+fn apply_body_create_options(
+    method: &str,
+    world: &Rc<RefCell<World>>,
+    id: BodyId,
+    options: &LuaBodyCreateOptions,
+) -> LuaResult<()> {
+    let mut world_ref = world.borrow_mut();
+    if let Some(material) = options.material.clone() {
+        world_ref
+            .try_set_body_material(id.0, material)
+            .map_err(|err| physics_runtime_error(method, err))?;
+    }
+    if let Some(enabled) = options.bullet {
+        world_ref.set_bullet(id.0, enabled);
+    }
+    if let Some(layer) = options.layer {
+        world_ref.set_body_layer(id.0, layer);
+    }
+    if let Some(mask) = options.mask {
+        world_ref.set_body_mask(id.0, mask);
+    }
+    Ok(())
+}
+
+fn parse_terrain_support_rule(
+    method: &str,
+    value: Option<String>,
+) -> LuaResult<TerrainSupportRule> {
+    match value
+        .unwrap_or_else(|| "bottom".to_string())
+        .trim()
+        .to_ascii_lowercase()
+        .as_str()
+    {
+        "bottom" => Ok(TerrainSupportRule::Bottom),
+        "border" | "anyborder" | "any_border" => Ok(TerrainSupportRule::AnyBorder),
+        other => Err(physics_runtime_error(
+            method,
+            format!("invalid terrain support '{}'", other),
+        )),
+    }
+}
+
+fn parse_terrain_collapse_mode(
+    method: &str,
+    value: Option<String>,
+) -> LuaResult<TerrainCollapseMode> {
+    match value
+        .unwrap_or_else(|| "remove".to_string())
+        .trim()
+        .to_ascii_lowercase()
+        .as_str()
+    {
+        "remove" => Ok(TerrainCollapseMode::Remove),
+        "spawndebris" | "spawn_debris" => Ok(TerrainCollapseMode::SpawnDebris),
+        "spawndynamicchunks" | "spawn_dynamic_chunks" => {
+            Ok(TerrainCollapseMode::SpawnDynamicChunks)
+        }
+        "keepstatic" | "keep_static" => Ok(TerrainCollapseMode::KeepStatic),
+        other => Err(physics_runtime_error(
+            method,
+            format!("invalid terrain collapse mode '{}'", other),
+        )),
+    }
+}
+
+fn terrain_collapse_options_from_lua(
+    method: &str,
+    opts: Option<&LuaTable>,
+) -> LuaResult<TerrainCollapseOptions> {
+    let mut options = TerrainCollapseOptions::default();
+    if let Some(opts) = opts {
+        options.support_rule =
+            parse_terrain_support_rule(method, opts.get::<_, Option<String>>("support")?)?;
+        options.mode = parse_terrain_collapse_mode(method, opts.get::<_, Option<String>>("mode")?)?;
+        options.min_component_cells = opts
+            .get::<_, Option<u32>>("minComponentCells")?
+            .unwrap_or(options.min_component_cells);
+        options.max_debris = opts
+            .get::<_, Option<u32>>("maxDebris")?
+            .unwrap_or(options.max_debris);
+        options.debris_mass = opts
+            .get::<_, Option<f32>>("debrisMass")?
+            .unwrap_or(options.debris_mass);
+        options.debris_restitution = opts
+            .get::<_, Option<f32>>("debrisRestitution")?
+            .unwrap_or(options.debris_restitution);
+    }
+    options
+        .validate()
+        .map_err(|err| physics_runtime_error(method, err))?;
+    Ok(options)
+}
+
+fn terrain_collapse_result_to_table<'lua>(
+    lua: &'lua Lua,
+    result: &TerrainCollapseResult,
+) -> LuaResult<LuaTable<'lua>> {
+    let tbl = lua.create_table()?;
+    tbl.set("removedCells", result.removed_cells)?;
+    tbl.set("components", result.components)?;
+    let body_ids_tbl = lua.create_table()?;
+    for (index, body_id) in result.debris_body_ids.iter().enumerate() {
+        body_ids_tbl.set(index + 1, *body_id)?;
+    }
+    tbl.set("bodyIds", body_ids_tbl.clone())?;
+    tbl.set("debrisBodies", body_ids_tbl)?;
+    Ok(tbl)
+}
+
+fn terrain_flush_stats_to_table<'lua>(
+    lua: &'lua Lua,
+    stats: crate::physics::TerrainFlushStats,
+) -> LuaResult<LuaTable<'lua>> {
+    let tbl = lua.create_table()?;
+    tbl.set("dirtyChunksRebuilt", stats.dirty_chunks_rebuilt)?;
+    tbl.set("dirtyChunksRemaining", stats.dirty_chunks_remaining)?;
+    tbl.set("bodiesDestroyed", stats.bodies_destroyed)?;
+    tbl.set("bodiesCreated", stats.bodies_created)?;
+    tbl.set("elapsedMicros", stats.elapsed_micros)?;
+    Ok(tbl)
+}
+
 fn flow_field_from_lua(opts: LuaTable) -> LuaResult<FlowField> {
     let geometry_name = opts
         .get::<_, Option<String>>("geometry")?
@@ -164,11 +414,19 @@ fn flow_field_from_lua(opts: LuaTable) -> LuaResult<FlowField> {
             w: opts.get("w")?,
             h: opts.get("h")?,
         },
-        "circle" | "fan" => FlowGeometry::CircleFan {
+        "circle" => FlowGeometry::CircleFan {
             cx: opts.get("x")?,
             cy: opts.get("y")?,
             radius: opts.get("radius")?,
             inner_radius: opts.get::<_, Option<f32>>("innerRadius")?.unwrap_or(0.0),
+        },
+        "fan" => FlowGeometry::DirectionalFan {
+            cx: opts.get("x")?,
+            cy: opts.get("y")?,
+            radius: opts.get("radius")?,
+            inner_radius: opts.get::<_, Option<f32>>("innerRadius")?.unwrap_or(0.0),
+            facing: parse_flow_direction_vector(&opts, "addFlowField")?,
+            half_angle_deg: opts.get::<_, Option<f32>>("widthAngle")?.unwrap_or(40.0) * 0.5,
         },
         "path" | "polyline" => FlowGeometry::PolylineTube {
             points: parse_flow_points(opts.get("points")?)?,
@@ -639,6 +897,25 @@ fn flow_field_to_table<'lua>(lua: &'lua Lua, field: &FlowField) -> LuaResult<Lua
             tbl.set("radius", *radius)?;
             tbl.set("innerRadius", *inner_radius)?;
         }
+        FlowGeometry::DirectionalFan {
+            cx,
+            cy,
+            radius,
+            inner_radius,
+            facing,
+            half_angle_deg,
+        } => {
+            tbl.set("geometry", "fan")?;
+            tbl.set("x", *cx)?;
+            tbl.set("y", *cy)?;
+            tbl.set("radius", *radius)?;
+            tbl.set("innerRadius", *inner_radius)?;
+            tbl.set("widthAngle", *half_angle_deg * 2.0)?;
+            let direction_tbl = lua.create_table()?;
+            direction_tbl.set("x", facing.x)?;
+            direction_tbl.set("y", facing.y)?;
+            tbl.set("directionVector", direction_tbl)?;
+        }
         FlowGeometry::PolylineTube { points, width } => {
             tbl.set("geometry", "path")?;
             tbl.set("width", *width)?;
@@ -703,7 +980,7 @@ fn physics_debug_color(tbl: &LuaTable, field: &str, default: [f32; 4]) -> [f32; 
 
 fn new_body_from_lua_args(lua: &Lua, args: LuaMultiValue) -> LuaResult<LuaBody> {
     let vals: Vec<LuaValue> = args.into_iter().collect();
-    let (world_ud, x, y, w, h, bt) =
+    let (world_ud, x, y, w, h, bt, opts) =
         match vals.as_slice() {
             [wud, ax, ay, abt] => (
                 LuaAnyUserData::from_lua(wud.clone(), lua)?,
@@ -712,6 +989,16 @@ fn new_body_from_lua_args(lua: &Lua, args: LuaMultiValue) -> LuaResult<LuaBody> 
                 16.0_f32,
                 16.0_f32,
                 String::from_lua(abt.clone(), lua)?,
+                None,
+            ),
+            [wud, ax, ay, abt, aopts] => (
+                LuaAnyUserData::from_lua(wud.clone(), lua)?,
+                f32::from_lua(ax.clone(), lua)?,
+                f32::from_lua(ay.clone(), lua)?,
+                16.0_f32,
+                16.0_f32,
+                String::from_lua(abt.clone(), lua)?,
+                Some(LuaTable::from_lua(aopts.clone(), lua)?),
             ),
             [wud, ax, ay, aw, ah, abt] => (
                 LuaAnyUserData::from_lua(wud.clone(), lua)?,
@@ -720,18 +1007,30 @@ fn new_body_from_lua_args(lua: &Lua, args: LuaMultiValue) -> LuaResult<LuaBody> 
                 f32::from_lua(aw.clone(), lua)?,
                 f32::from_lua(ah.clone(), lua)?,
                 String::from_lua(abt.clone(), lua)?,
+                None,
+            ),
+            [wud, ax, ay, aw, ah, abt, aopts] => (
+                LuaAnyUserData::from_lua(wud.clone(), lua)?,
+                f32::from_lua(ax.clone(), lua)?,
+                f32::from_lua(ay.clone(), lua)?,
+                f32::from_lua(aw.clone(), lua)?,
+                f32::from_lua(ah.clone(), lua)?,
+                String::from_lua(abt.clone(), lua)?,
+                Some(LuaTable::from_lua(aopts.clone(), lua)?),
             ),
             _ => return Err(LuaError::RuntimeError(
-                "lurek.physics.newBody expects (world,x,y,bodyType) or (world,x,y,w,h,bodyType)"
+                "lurek.physics.newBody expects (world,x,y,bodyType[,opts]) or (world,x,y,w,h,bodyType[,opts])"
                     .into(),
             )),
         };
 
     let world = world_ud.borrow::<LuaWorld>()?;
     let body_type = parse_body_type(&bt)?;
+    let options = parse_body_create_options("newBody", opts.as_ref())?;
     let body = Body::try_new(x, y, w, h, body_type)
         .map_err(|err| physics_runtime_error("newBody", err))?;
     let id = world.world.borrow_mut().add_body(body);
+    apply_body_create_options("newBody", &world.world, id, &options)?;
     Ok(LuaBody {
         world: Rc::clone(&world.world),
         id,
@@ -1109,6 +1408,23 @@ impl LuaUserData for LuaWorld {
                 id,
             })
         });
+        // -- addFan --
+        /// Creates a directional fan helper around the flow-field system.
+        /// @param | opts | table | Fan options such as `x`, `y`, `radius`, `directionVector`, and `widthAngle`.
+        /// @return | LFlowStream | New flow field handle.
+        methods.add_method_mut("addFan", |_, this, opts: LuaTable| {
+            opts.set("geometry", "fan")?;
+            let field = flow_field_from_lua(opts)?;
+            let id = this
+                .world
+                .borrow_mut()
+                .try_add_flow_field(field)
+                .map_err(|err| physics_runtime_error("addFan", err))?;
+            Ok(LuaFlowField {
+                world: Rc::clone(&this.world),
+                id,
+            })
+        });
         // -- removeFlowField --
         /// Disables one flow field by id.
         /// @param | id | integer | Flow field id.
@@ -1117,11 +1433,11 @@ impl LuaUserData for LuaWorld {
             Ok(this.world.borrow_mut().remove_flow_field(id))
         });
         // -- getFlowField --
-        /// Returns one flow field table by id, or nil when missing.
+        /// Returns one authored flow field table by id, or nil when missing.
         /// @param | id | integer | Flow field id.
-        /// @return | table? | Flow field descriptor table with geometry, strength, application, combine, and layer-mask fields.
+        /// @return | table? | Flow field descriptor table with geometry, enabled, strength, application, combine, and layer-mask fields.
         methods.add_method("getFlowField", |lua, this, id: usize| {
-            match this.world.borrow().flow_field(id) {
+            match this.world.borrow().flow_field_slot(id) {
                 Some(field) => Ok(Some(flow_field_to_table(lua, field)?)),
                 None => Ok(None),
             }
@@ -1162,36 +1478,57 @@ impl LuaUserData for LuaWorld {
         /// @param | x | number | Initial X position in world coordinates.
         /// @param | y | number | Initial Y position in world coordinates.
         /// @param | bodyType | string | One of "static", "dynamic", "kinematic", or "sensor".
+        /// @param | opts? | table | Optional body options: { material?, bullet?, layer?, mask? }.
         /// @return | LBody | The newly created body handle.
         methods.add_method("newBody", |lua, this, args: LuaMultiValue| {
             let vals: Vec<LuaValue> = args.into_iter().collect();
-            let (x, y, w, h, bt) = match vals.as_slice() {
-                // Legacy form: world:newBody(x, y, bodyType)
-                [ax, ay, abt] => (
-                    f32::from_lua(ax.clone(), lua)?,
-                    f32::from_lua(ay.clone(), lua)?,
-                    16.0_f32,
-                    16.0_f32,
-                    String::from_lua(abt.clone(), lua)?,
-                ),
-                // Full form: world:newBody(x, y, w, h, bodyType)
-                [ax, ay, aw, ah, abt] => (
-                    f32::from_lua(ax.clone(), lua)?,
-                    f32::from_lua(ay.clone(), lua)?,
-                    f32::from_lua(aw.clone(), lua)?,
-                    f32::from_lua(ah.clone(), lua)?,
-                    String::from_lua(abt.clone(), lua)?,
-                ),
-                _ => {
-                    return Err(LuaError::RuntimeError(
-                        "LWorld:newBody expects (x,y,bodyType) or (x,y,w,h,bodyType)".into(),
-                    ))
-                }
-            };
+            let (x, y, w, h, bt, opts) =
+                match vals.as_slice() {
+                    // Legacy form: world:newBody(x, y, bodyType)
+                    [ax, ay, abt] => (
+                        f32::from_lua(ax.clone(), lua)?,
+                        f32::from_lua(ay.clone(), lua)?,
+                        16.0_f32,
+                        16.0_f32,
+                        String::from_lua(abt.clone(), lua)?,
+                        None,
+                    ),
+                    [ax, ay, abt, aopts] => (
+                        f32::from_lua(ax.clone(), lua)?,
+                        f32::from_lua(ay.clone(), lua)?,
+                        16.0_f32,
+                        16.0_f32,
+                        String::from_lua(abt.clone(), lua)?,
+                        Some(LuaTable::from_lua(aopts.clone(), lua)?),
+                    ),
+                    // Full form: world:newBody(x, y, w, h, bodyType)
+                    [ax, ay, aw, ah, abt] => (
+                        f32::from_lua(ax.clone(), lua)?,
+                        f32::from_lua(ay.clone(), lua)?,
+                        f32::from_lua(aw.clone(), lua)?,
+                        f32::from_lua(ah.clone(), lua)?,
+                        String::from_lua(abt.clone(), lua)?,
+                        None,
+                    ),
+                    [ax, ay, aw, ah, abt, aopts] => (
+                        f32::from_lua(ax.clone(), lua)?,
+                        f32::from_lua(ay.clone(), lua)?,
+                        f32::from_lua(aw.clone(), lua)?,
+                        f32::from_lua(ah.clone(), lua)?,
+                        String::from_lua(abt.clone(), lua)?,
+                        Some(LuaTable::from_lua(aopts.clone(), lua)?),
+                    ),
+                    _ => return Err(LuaError::RuntimeError(
+                        "LWorld:newBody expects (x,y,bodyType[,opts]) or (x,y,w,h,bodyType[,opts])"
+                            .into(),
+                    )),
+                };
             let body_type = parse_body_type(&bt)?;
+            let options = parse_body_create_options("newBody", opts.as_ref())?;
             let body = Body::try_new(x, y, w, h, body_type)
                 .map_err(|err| physics_runtime_error("newBody", err))?;
             let id = this.world.borrow_mut().add_body(body);
+            apply_body_create_options("newBody", &this.world, id, &options)?;
             Ok(LuaBody {
                 world: Rc::clone(&this.world),
                 id,
@@ -1203,14 +1540,17 @@ impl LuaUserData for LuaWorld {
         /// @param | y | number | Initial Y position in world coordinates.
         /// @param | radius | number | Circle radius in world units.
         /// @param | bodyType | string | One of "static", "dynamic", "kinematic", or "sensor".
+        /// @param | opts? | table | Optional body options: { material?, bullet?, layer?, mask? }.
         /// @return | LBody | The newly created body handle.
         methods.add_method(
             "newCircleBody",
-            |_, this, (x, y, radius, bt): (f32, f32, f32, String)| {
+            |_, this, (x, y, radius, bt, opts): (f32, f32, f32, String, Option<LuaTable>)| {
                 let body_type = parse_body_type(&bt)?;
+                let options = parse_body_create_options("newCircleBody", opts.as_ref())?;
                 let body = Body::try_new_circle(x, y, radius, body_type)
                     .map_err(|err| physics_runtime_error("newCircleBody", err))?;
                 let id = this.world.borrow_mut().add_body(body);
+                apply_body_create_options("newCircleBody", &this.world, id, &options)?;
                 Ok(LuaBody {
                     world: Rc::clone(&this.world),
                     id,
@@ -1223,11 +1563,13 @@ impl LuaUserData for LuaWorld {
         /// @param | y | number | Initial Y position in world coordinates.
         /// @param | vertices | table | Flat array of vertex coordinates {x1,y1,x2,y2,...}.
         /// @param | bodyType | string | One of "static", "dynamic", "kinematic", or "sensor".
+        /// @param | opts? | table | Optional body options: { material?, bullet?, layer?, mask? }.
         /// @return | LBody | The newly created body handle.
         methods.add_method(
             "newPolygonBody",
-            |_, this, (x, y, tbl, bt): (f32, f32, LuaTable, String)| {
+            |_, this, (x, y, tbl, bt, opts): (f32, f32, LuaTable, String, Option<LuaTable>)| {
                 let body_type = parse_body_type(&bt)?;
+                let options = parse_body_create_options("newPolygonBody", opts.as_ref())?;
                 let mut verts = Vec::new();
                 let len = tbl.raw_len();
                 let mut i = 1;
@@ -1240,6 +1582,7 @@ impl LuaUserData for LuaWorld {
                 let body = Body::try_new_polygon(x, y, verts, body_type)
                     .map_err(|err| physics_runtime_error("newPolygonBody", err))?;
                 let id = this.world.borrow_mut().add_body(body);
+                apply_body_create_options("newPolygonBody", &this.world, id, &options)?;
                 Ok(LuaBody {
                     world: Rc::clone(&this.world),
                     id,
@@ -1255,16 +1598,30 @@ impl LuaUserData for LuaWorld {
         /// @param | x2 | number | Edge end X relative to body.
         /// @param | y2 | number | Edge end Y relative to body.
         /// @param | bodyType | string | One of "static", "dynamic", "kinematic", or "sensor".
+        /// @param | opts? | table | Optional body options: { material?, bullet?, layer?, mask? }.
         /// @return | LBody | The newly created body handle.
         #[allow(clippy::too_many_arguments)]
         methods.add_method(
             "newEdgeBody",
-            |_, this, (x, y, x1, y1, x2, y2, bt): (f32, f32, f32, f32, f32, f32, String)| {
+            |_,
+             this,
+             (x, y, x1, y1, x2, y2, bt, opts): (
+                f32,
+                f32,
+                f32,
+                f32,
+                f32,
+                f32,
+                String,
+                Option<LuaTable>,
+            )| {
                 let body_type = parse_body_type(&bt)?;
+                let options = parse_body_create_options("newEdgeBody", opts.as_ref())?;
                 let body =
                     Body::try_new_edge(x, y, Vec2::new(x1, y1), Vec2::new(x2, y2), body_type)
                         .map_err(|err| physics_runtime_error("newEdgeBody", err))?;
                 let id = this.world.borrow_mut().add_body(body);
+                apply_body_create_options("newEdgeBody", &this.world, id, &options)?;
                 Ok(LuaBody {
                     world: Rc::clone(&this.world),
                     id,
@@ -1278,11 +1635,22 @@ impl LuaUserData for LuaWorld {
         /// @param | vertices | table | Flat array of vertex coordinates {x1,y1,x2,y2,...}.
         /// @param | closed | boolean | If true, connects the last vertex back to the first.
         /// @param | bodyType | string | One of "static", "dynamic", "kinematic", or "sensor".
+        /// @param | opts? | table | Optional body options: { material?, bullet?, layer?, mask? }.
         /// @return | LBody | The newly created body handle.
         methods.add_method(
             "newChainBody",
-            |_, this, (x, y, tbl, closed, bt): (f32, f32, LuaTable, bool, String)| {
+            |_,
+             this,
+             (x, y, tbl, closed, bt, opts): (
+                f32,
+                f32,
+                LuaTable,
+                bool,
+                String,
+                Option<LuaTable>,
+            )| {
                 let body_type = parse_body_type(&bt)?;
+                let options = parse_body_create_options("newChainBody", opts.as_ref())?;
                 let mut verts = Vec::new();
                 let len = tbl.raw_len();
                 let mut i = 1;
@@ -1295,6 +1663,7 @@ impl LuaUserData for LuaWorld {
                 let body = Body::try_new_chain(x, y, verts, closed, body_type)
                     .map_err(|err| physics_runtime_error("newChainBody", err))?;
                 let id = this.world.borrow_mut().add_body(body);
+                apply_body_create_options("newChainBody", &this.world, id, &options)?;
                 Ok(LuaBody {
                     world: Rc::clone(&this.world),
                     id,
@@ -1344,7 +1713,7 @@ impl LuaUserData for LuaWorld {
         /// Updates the friction coefficient of a specific fixture on a body.
         /// @param | bodyId | integer | The body ID.
         /// @param | fixtureIndex | integer | Zero-based fixture index on the body.
-        /// @param | friction | number | New friction value (0Ä‚ËĂ˘â€šÂ¬Ă˘â‚¬Ĺ›1 typical range).
+        /// @param | friction | number | New friction value (0..1 typical range).
         methods.add_method(
             "setFixtureFriction",
             |_, this, (body_id, fix_idx, friction): (usize, usize, f32)| {
@@ -1368,6 +1737,36 @@ impl LuaUserData for LuaWorld {
                     .try_set_fixture_restitution(body_id, fix_idx, restitution)
                     .map_err(|err| physics_runtime_error("setFixtureRestitution", err))?;
                 Ok(())
+            },
+        );
+        /// Assigns a reusable material table to one fixture.
+        /// @param | bodyId | integer | The body ID.
+        /// @param | fixtureIndex | integer | Zero-based fixture index on the body.
+        /// @param | material | table | Material table created by `lurek.physics.newMaterial(...)` or an equivalent options table.
+        methods.add_method(
+            "setFixtureMaterial",
+            |_, this, (body_id, fix_idx, material_tbl): (usize, usize, LuaTable)| {
+                let material = physics_material_from_lua("setFixtureMaterial", &material_tbl)?;
+                this.world
+                    .borrow_mut()
+                    .try_set_fixture_material(body_id, fix_idx, material)
+                    .map_err(|err| physics_runtime_error("setFixtureMaterial", err))?;
+                Ok(())
+            },
+        );
+        /// Returns the current material table for one fixture.
+        /// @param | bodyId | integer | The body ID.
+        /// @param | fixtureIndex | integer | Zero-based fixture index on the body.
+        /// @return | table | Material table with solver-backed and gameplay metadata fields.
+        methods.add_method(
+            "getFixtureMaterial",
+            |lua, this, (body_id, fix_idx): (usize, usize)| {
+                let material = this
+                    .world
+                    .borrow()
+                    .get_fixture_material(body_id, fix_idx)
+                    .map_err(|err| physics_runtime_error("getFixtureMaterial", err))?;
+                physics_material_to_table(lua, &material)
             },
         );
         // -- setFixtureSensor --
@@ -2796,6 +3195,33 @@ impl LuaUserData for LuaTerrain {
                 Ok(())
             },
         );
+        // -- carveCircle --
+        /// Carves a circular hole by clearing terrain cells inside the given radius.
+        /// @param | wx | number | Circle center X in world coordinates.
+        /// @param | wy | number | Circle center Y in world coordinates.
+        /// @param | radius | number | Circle radius in world units.
+        methods.add_method_mut(
+            "carveCircle",
+            |_, this, (wx, wy, radius): (f32, f32, f32)| {
+                this.terrain
+                    .borrow_mut()
+                    .try_carve_circle(wx, wy, radius)
+                    .map_err(|err| physics_runtime_error("carveCircle", err))?;
+                Ok(())
+            },
+        );
+        // -- addCircle --
+        /// Adds solid terrain inside a circular region.
+        /// @param | wx | number | Circle center X in world coordinates.
+        /// @param | wy | number | Circle center Y in world coordinates.
+        /// @param | radius | number | Circle radius in world units.
+        methods.add_method_mut("addCircle", |_, this, (wx, wy, radius): (f32, f32, f32)| {
+            this.terrain
+                .borrow_mut()
+                .try_add_circle(wx, wy, radius)
+                .map_err(|err| physics_runtime_error("addCircle", err))?;
+            Ok(())
+        });
         // -- fillRect --
         /// Fills or clears a rectangular region of terrain cells.
         /// @param | wx | number | Rectangle left X in world coordinates.
@@ -2813,6 +3239,75 @@ impl LuaUserData for LuaTerrain {
                 Ok(())
             },
         );
+        // -- carveRect --
+        /// Carves a rectangular hole by clearing all overlapping terrain cells.
+        /// @param | wx | number | Rectangle left X in world coordinates.
+        /// @param | wy | number | Rectangle top Y in world coordinates.
+        /// @param | w | number | Rectangle width in world units.
+        /// @param | h | number | Rectangle height in world units.
+        methods.add_method_mut(
+            "carveRect",
+            |_, this, (wx, wy, w, h): (f32, f32, f32, f32)| {
+                this.terrain
+                    .borrow_mut()
+                    .try_carve_rect(wx, wy, w, h)
+                    .map_err(|err| physics_runtime_error("carveRect", err))?;
+                Ok(())
+            },
+        );
+        // -- addRect --
+        /// Adds solid terrain across a rectangular region.
+        /// @param | wx | number | Rectangle left X in world coordinates.
+        /// @param | wy | number | Rectangle top Y in world coordinates.
+        /// @param | w | number | Rectangle width in world units.
+        /// @param | h | number | Rectangle height in world units.
+        methods.add_method_mut(
+            "addRect",
+            |_, this, (wx, wy, w, h): (f32, f32, f32, f32)| {
+                this.terrain
+                    .borrow_mut()
+                    .try_add_rect(wx, wy, w, h)
+                    .map_err(|err| physics_runtime_error("addRect", err))?;
+                Ok(())
+            },
+        );
+        // -- damageCircle --
+        /// Carves a circular hole and can immediately collapse unsupported terrain with policy options.
+        /// @param | wx | number | Circle center X in world coordinates.
+        /// @param | wy | number | Circle center Y in world coordinates.
+        /// @param | radius | number | Circle radius in world units.
+        /// @param | opts | table? | Optional damage settings: { collapse?, support?, mode?, minComponentCells?, maxDebris?, debrisMass?, debrisRestitution? }. `support` accepts `bottom` or `border`. `mode` accepts `remove`, `spawnDebris`, `spawnDynamicChunks`, or `keepStatic`. `collapse` defaults to false.
+        /// @return | table | Collapse result table with removedCells, components, bodyIds, and debrisBodies fields.
+        /// @field | removedCells | integer | Number of terrain cells removed by the collapse pass after carving.
+        /// @field | components | integer | Number of unsupported components that matched the collapse threshold.
+        /// @field | bodyIds | integer[] | Body ids created for spawned debris or dynamic chunk bodies.
+        /// @field | debrisBodies | integer[] | Alias of `bodyIds` kept for debris-oriented scripts.
+        methods.add_method_mut(
+            "damageCircle",
+            |lua, this, (wx, wy, radius, opts): (f32, f32, f32, Option<LuaTable>)| {
+                {
+                    let mut terrain = this.terrain.borrow_mut();
+                    terrain
+                        .try_carve_circle(wx, wy, radius)
+                        .map_err(|err| physics_runtime_error("damageCircle", err))?;
+                }
+                let collapse = opts
+                    .as_ref()
+                    .and_then(|tbl| tbl.get::<_, Option<bool>>("collapse").ok().flatten())
+                    .unwrap_or(false);
+                let result = if collapse {
+                    let options = terrain_collapse_options_from_lua("damageCircle", opts.as_ref())?;
+                    let mut terrain = this.terrain.borrow_mut();
+                    let mut world = this.world.borrow_mut();
+                    terrain
+                        .collapse_unsupported_in_world(&mut world, &options)
+                        .map_err(|err| physics_runtime_error("damageCircle", err))?
+                } else {
+                    TerrainCollapseResult::default()
+                };
+                terrain_collapse_result_to_table(lua, &result)
+            },
+        );
         // -- fillAll --
         /// Sets all terrain cells to either solid or empty.
         /// @param | solid | boolean | True to fill everything solid, false to clear.
@@ -2821,12 +3316,20 @@ impl LuaUserData for LuaTerrain {
             Ok(())
         });
         // -- flush --
-        /// Regenerates physics colliders from the current terrain grid state. Call after modifying cells.
-        methods.add_method_mut("flush", |_, this, ()| {
-            this.terrain
-                .borrow_mut()
-                .flush(&mut this.world.borrow_mut());
-            Ok(())
+        /// Regenerates physics colliders from the current terrain grid state and returns rebuild diagnostics.
+        /// @param | maxDirtyChunks | integer? | Optional maximum number of dirty chunks to rebuild in this call. When omitted, all pending dirty chunks are rebuilt.
+        /// @return | table | Rebuild diagnostics with dirtyChunksRebuilt, dirtyChunksRemaining, bodiesDestroyed, bodiesCreated, and elapsedMicros fields.
+        /// @field | dirtyChunksRebuilt | integer | Number of dirty chunks rebuilt during this call.
+        /// @field | dirtyChunksRemaining | integer | Number of dirty chunks still queued after this call.
+        /// @field | bodiesDestroyed | integer | Number of previous terrain bodies removed before rebuilding.
+        /// @field | bodiesCreated | integer | Number of new static terrain bodies created during rebuilding.
+        /// @field | elapsedMicros | integer | Wall-clock duration of the collider rebuild in microseconds.
+        methods.add_method_mut("flush", |lua, this, max_dirty_chunks: Option<u32>| {
+            let stats = this.terrain.borrow_mut().flush_with_limit(
+                &mut this.world.borrow_mut(),
+                max_dirty_chunks.map(|value| value as usize),
+            );
+            terrain_flush_stats_to_table(lua, stats)
         });
         // -- isDirty --
         /// Returns true if terrain cells have been modified since the last flush.
@@ -2835,16 +3338,33 @@ impl LuaUserData for LuaTerrain {
             Ok(this.terrain.borrow().is_dirty())
         });
         // -- collapseColumns --
-        /// Optimizes terrain by merging vertically adjacent solid cells into larger colliders.
-        /// @return | integer | Number of columns collapsed.
+        /// Removes isolated single-cell overhangs that have no support below or beside them.
+        /// @return | integer | Number of unsupported single cells removed.
         methods.add_method_mut("collapseColumns", |_, this, ()| {
             Ok(this.terrain.borrow_mut().collapse_columns())
         });
+        // -- collapseUnsupported --
+        /// Collapses unsupported connected terrain components using the requested support rule and collapse mode.
+        /// @param | opts | table | Collapse options: { support?, mode?, minComponentCells?, maxDebris?, debrisMass?, debrisRestitution? }. `support` accepts `bottom` or `border`. `mode` accepts `remove`, `spawnDebris`, `spawnDynamicChunks`, or `keepStatic`. Call `flush()` afterward to rebuild static colliders.
+        /// @return | table | Collapse result table with removedCells, components, bodyIds, and debrisBodies fields.
+        /// @field | removedCells | integer | Number of terrain cells removed from unsupported components.
+        /// @field | components | integer | Number of unsupported components that matched the collapse threshold.
+        /// @field | bodyIds | integer[] | Body ids created for spawned debris or dynamic chunk bodies.
+        /// @field | debrisBodies | integer[] | Alias of `bodyIds` kept for debris-oriented scripts.
+        methods.add_method_mut("collapseUnsupported", |lua, this, opts: LuaTable| {
+            let options = terrain_collapse_options_from_lua("collapseUnsupported", Some(&opts))?;
+            let mut terrain = this.terrain.borrow_mut();
+            let mut world = this.world.borrow_mut();
+            let result = terrain
+                .collapse_unsupported_in_world(&mut world, &options)
+                .map_err(|err| physics_runtime_error("collapseUnsupported", err))?;
+            terrain_collapse_result_to_table(lua, &result)
+        });
         // -- solidPositions --
-        /// Returns all solid cell positions as a table of {x, y} entries.
-        /// @return | table | Array of tables with x and y fields (cell coordinates).
-        /// @field | x | integer | Cell x coordinate.
-        /// @field | y | integer | Cell y coordinate.
+        /// Returns all solid cell centers as a table of `{x, y}` entries in world coordinates.
+        /// @return | table | Array of tables with x and y fields (world-space centers).
+        /// @field | x | number | World-space center X coordinate.
+        /// @field | y | number | World-space center Y coordinate.
         methods.add_method("solidPositions", |lua, this, ()| {
             let positions = this.terrain.borrow().solid_cell_positions();
             let tbl = lua.create_table()?;
@@ -3056,6 +3576,28 @@ impl LuaUserData for LuaBody {
             this.world.borrow_mut().set_body_mass(this.id.0, mass);
             Ok(())
         });
+        // -- setMaterial --
+        /// Applies a validated material table to this body's primary collider and body-level solver properties.
+        /// @param | material | table | Material table created by `lurek.physics.newMaterial(...)` or an equivalent options table.
+        methods.add_method("setMaterial", |_, this, material_tbl: LuaTable| {
+            let material = physics_material_from_lua("setMaterial", &material_tbl)?;
+            this.world
+                .borrow_mut()
+                .try_set_body_material(this.id.0, material)
+                .map_err(|err| physics_runtime_error("setMaterial", err))?;
+            Ok(())
+        });
+        // -- getMaterial --
+        /// Returns this body's current material table.
+        /// @return | table | Material table with solver-backed and gameplay metadata fields.
+        methods.add_method("getMaterial", |lua, this, ()| {
+            let material = this
+                .world
+                .borrow()
+                .get_body_material(this.id.0)
+                .ok_or_else(|| physics_runtime_error("getMaterial", "body does not exist"))?;
+            physics_material_to_table(lua, &material)
+        });
         // -- getType --
         /// Returns the body's type as a string.
         /// @return | string | Body type: "static", "dynamic", "kinematic", or "sensor".
@@ -3095,10 +3637,9 @@ impl LuaUserData for LuaBody {
         /// Sets the body's friction coefficient.
         /// @param | friction | number | New friction value (0 = ice, 1 = rubber).
         methods.add_method("setFriction", |_, this, friction: f32| {
-            let mut w = this.world.borrow_mut();
-            if let Some(b) = w.get_body_mut(this.id.0) {
-                b.friction = friction;
-            }
+            this.world
+                .borrow_mut()
+                .set_body_friction(this.id.0, friction);
             Ok(())
         });
         // -- getRestitution --
@@ -3110,12 +3651,11 @@ impl LuaUserData for LuaBody {
         });
         // -- setRestitution --
         /// Sets the body's restitution (bounciness) value.
-        /// @param | restitution | number | New restitution (0Ä‚ËĂ˘â€šÂ¬Ă˘â‚¬Ĺ›1).
+        /// @param | restitution | number | New restitution (0..1).
         methods.add_method("setRestitution", |_, this, restitution: f32| {
-            let mut w = this.world.borrow_mut();
-            if let Some(b) = w.get_body_mut(this.id.0) {
-                b.restitution = restitution;
-            }
+            this.world
+                .borrow_mut()
+                .set_body_restitution(this.id.0, restitution);
             Ok(())
         });
         // -- setMirror --
@@ -3695,12 +4235,24 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "destroyWorld",
         lua.create_function(|_, _world_ud: LuaAnyUserData| Ok(()))?,
     )?;
+    // -- newMaterial --
+    /// Validates and canonicalizes a reusable physics material table.
+    /// @param | opts | table | Material options: { name?, density?, friction?, restitution?, linearDamping?, angularDamping?, gravityScale?, massOverride?, stickiness?, adhesion?, beamReflectivity?, projectileReflectivity?, beamAbsorption?, buoyancy?, surfaceType? }.
+    /// @return | table | Canonical material table that can be reused with body and fixture assignment APIs.
+    tbl.set(
+        "newMaterial",
+        lua.create_function(|lua, opts: LuaTable| {
+            let material = physics_material_from_lua("newMaterial", &opts)?;
+            physics_material_to_table(lua, &material)
+        })?,
+    )?;
     // -- newBody --
     /// Creates a new body in a world (free-function variant).
     /// @param | world | LWorld | The target world.
     /// @param | x | number | Initial X position.
     /// @param | y | number | Initial Y position.
     /// @param | bodyType | string | Body type: "static", "dynamic", "kinematic", or "sensor".
+    /// @param | opts? | table | Optional body options: { material?, bullet?, layer?, mask? }.
     /// @return | LBody | The newly created body.
     tbl.set(
         "newBody",

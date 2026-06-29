@@ -67,6 +67,10 @@ pub enum FlowDirectionMode {
     RadialOut,
     /// Point toward the field center.
     RadialIn,
+    /// Orbit around the field center in clockwise order.
+    TangentialClockwise,
+    /// Orbit around the field center in counter-clockwise order.
+    TangentialCounterClockwise,
 }
 
 /// Geometry variants supported by the flow-field sampler.
@@ -80,6 +84,15 @@ pub enum FlowGeometry {
         cy: f32,
         radius: f32,
         inner_radius: f32,
+    },
+    /// Directional conical fan with optional inner dead zone.
+    DirectionalFan {
+        cx: f32,
+        cy: f32,
+        radius: f32,
+        inner_radius: f32,
+        facing: Vec2,
+        half_angle_deg: f32,
     },
     /// Polyline stream with tube width.
     PolylineTube { points: Vec<Vec2>, width: f32 },
@@ -192,7 +205,9 @@ impl FlowField {
             FlowDirectionMode::AlongPath
             | FlowDirectionMode::AgainstPath
             | FlowDirectionMode::RadialOut
-            | FlowDirectionMode::RadialIn => {}
+            | FlowDirectionMode::RadialIn
+            | FlowDirectionMode::TangentialClockwise
+            | FlowDirectionMode::TangentialCounterClockwise => {}
         }
         match &self.geometry {
             FlowGeometry::UniformRect { x, y, w, h } => {
@@ -216,6 +231,43 @@ impl FlowField {
                         min: 0.0,
                         max: f64::from(*radius),
                         value: f64::from(*inner_radius),
+                    });
+                }
+            }
+            FlowGeometry::DirectionalFan {
+                cx,
+                cy,
+                radius,
+                inner_radius,
+                facing,
+                half_angle_deg,
+            } => {
+                validate_finite("flow.fan.cx", f64::from(*cx))?;
+                validate_finite("flow.fan.cy", f64::from(*cy))?;
+                validate_positive("flow.fan.radius", f64::from(*radius))?;
+                validate_finite("flow.fan.facing.x", f64::from(facing.x))?;
+                validate_finite("flow.fan.facing.y", f64::from(facing.y))?;
+                if facing.length() <= 1.0e-6 {
+                    return Err(PhysicsError::DegenerateGeometry {
+                        context: "physics flow fan",
+                        detail: "fan direction must be non-zero",
+                    });
+                }
+                if *inner_radius < 0.0 || !inner_radius.is_finite() || *inner_radius >= *radius {
+                    return Err(PhysicsError::ValueOutOfRange {
+                        field: "flow.fan.inner_radius",
+                        min: 0.0,
+                        max: f64::from(*radius),
+                        value: f64::from(*inner_radius),
+                    });
+                }
+                if !half_angle_deg.is_finite() || *half_angle_deg <= 0.0 || *half_angle_deg > 180.0
+                {
+                    return Err(PhysicsError::ValueOutOfRange {
+                        field: "flow.fan.half_angle_deg",
+                        min: 0.0,
+                        max: 180.0,
+                        value: f64::from(*half_angle_deg),
                     });
                 }
             }
@@ -272,6 +324,34 @@ impl FlowField {
                 let center = Vec2::new(*cx, *cy);
                 (self.direction_vector(center, None, x, y)?, weight)
             }
+            FlowGeometry::DirectionalFan {
+                cx,
+                cy,
+                radius,
+                inner_radius,
+                facing,
+                half_angle_deg,
+            } => {
+                let dx = x - *cx;
+                let dy = y - *cy;
+                let distance = (dx * dx + dy * dy).sqrt();
+                if distance > *radius || distance < *inner_radius {
+                    return None;
+                }
+                let radial = normalized_or_none(Vec2::new(dx, dy))?;
+                let facing = normalized_or_none(*facing)?;
+                let angle_cos = radial.dot(facing);
+                let limit_cos = half_angle_deg.to_radians().cos();
+                if angle_cos < limit_cos {
+                    return None;
+                }
+                let span = (*radius - *inner_radius).max(1.0e-4);
+                let radial_weight = self.falloff_weight(1.0 - ((distance - *inner_radius) / span));
+                let angular_weight =
+                    ((angle_cos - limit_cos) / (1.0 - limit_cos).max(1.0e-4)).clamp(0.0, 1.0);
+                let weight = radial_weight * angular_weight;
+                (facing, weight)
+            }
             FlowGeometry::PolylineTube { points, width } => {
                 let sample = closest_polyline_sample(points, x, y)?;
                 if sample.distance > *width {
@@ -315,6 +395,12 @@ impl FlowField {
             }
             FlowDirectionMode::RadialIn => {
                 normalized_or_none(Vec2::new(center.x - x, center.y - y))
+            }
+            FlowDirectionMode::TangentialClockwise => {
+                normalized_or_none(Vec2::new(y - center.y, center.x - x))
+            }
+            FlowDirectionMode::TangentialCounterClockwise => {
+                normalized_or_none(Vec2::new(center.y - y, x - center.x))
             }
         }
     }

@@ -17,7 +17,7 @@ use super::atmosphere::{
     CloudState, FilmGrainState, FogState, HeatHazeState, LightningState, VignetteState,
 };
 use super::screen_effects::{FadeState, FlashState, ShakeState};
-use super::status::StatusOverlayStack;
+use super::status::{StatusLayerTarget, StatusOverlayLayer, StatusOverlayStack};
 use super::water::WaterOverlayState;
 use super::weather::{WeatherParticle, WeatherProfile, WeatherState, WeatherType};
 use crate::image::ImageData;
@@ -378,6 +378,10 @@ pub struct OverlayRenderPlan {
     pub rendered: Vec<OverlayRenderLayer>,
     /// Active layers owned by other render or post-processing paths.
     pub externally_handled: Vec<OverlayRenderLayer>,
+    /// Active layers that the overlay recognized but cannot currently route directly.
+    pub unsupported: Vec<OverlayRenderLayer>,
+    /// Active layers that were downgraded into a fallback path.
+    pub fallback: Vec<OverlayRenderLayer>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -964,6 +968,9 @@ impl Overlay {
             .retain(|layer| !layer.id.is_empty());
 
         let mut accessibility_changes = 0usize;
+        for layer in &mut self.status_stack.layers {
+            accessibility_changes += apply_status_accessibility(layer, self.accessibility_policy);
+        }
         if self.flash.color[3] > self.accessibility_policy.max_flash_alpha {
             self.flash.color[3] = self.accessibility_policy.max_flash_alpha;
             accessibility_changes += 1;
@@ -1477,6 +1484,17 @@ impl Overlay {
         plan
     }
 
+    fn active_status_layers_for_target(
+        &self,
+        target: Option<StatusLayerTarget>,
+    ) -> Vec<&StatusOverlayLayer> {
+        self.status_stack
+            .active_layers_sorted()
+            .into_iter()
+            .filter(|layer| target.map(|wanted| layer.target == wanted).unwrap_or(true))
+            .collect()
+    }
+
     /// Updates the overlay target dimensions.
     pub fn resize(&mut self, width: u32, height: u32) {
         self.width = width.max(1);
@@ -1582,57 +1600,68 @@ impl Overlay {
 
     /// Builds render commands for currently active full-screen overlay layers.
     pub fn build_render_commands(&self) -> Vec<RenderCommand> {
+        self.build_render_commands_for_target(None, true)
+    }
+
+    /// Builds render commands, optionally filtering status layers to a conceptual frame target.
+    pub fn build_render_commands_for_target(
+        &self,
+        target: Option<StatusLayerTarget>,
+        include_global_layers: bool,
+    ) -> Vec<RenderCommand> {
         let sanitized = self.sanitized_clone();
         let mut cmds = Vec::with_capacity(8);
         let width = sanitized.width as f32;
         let height = sanitized.height as f32;
-        let flash_alpha = sanitized.get_flash_alpha();
-        if flash_alpha > 0.0 {
-            let [r, g, b, _] = sanitized.flash.color;
-            cmds.push(RenderCommand::SetColor(r, g, b, flash_alpha));
-            cmds.push(RenderCommand::Rectangle {
-                mode: DrawMode::Fill,
-                x: 0.0,
-                y: 0.0,
-                w: width,
-                h: height,
-            });
+        if include_global_layers {
+            let flash_alpha = sanitized.get_flash_alpha();
+            if flash_alpha > 0.0 {
+                let [r, g, b, _] = sanitized.flash.color;
+                cmds.push(RenderCommand::SetColor(r, g, b, flash_alpha));
+                cmds.push(RenderCommand::Rectangle {
+                    mode: DrawMode::Fill,
+                    x: 0.0,
+                    y: 0.0,
+                    w: width,
+                    h: height,
+                });
+            }
+            if sanitized.fade.active && sanitized.fade.color[3] > 0.0 {
+                let [r, g, b, a] = sanitized.fade.color;
+                cmds.push(RenderCommand::SetColor(r, g, b, a));
+                cmds.push(RenderCommand::Rectangle {
+                    mode: DrawMode::Fill,
+                    x: 0.0,
+                    y: 0.0,
+                    w: width,
+                    h: height,
+                });
+            }
+            let lightning_alpha = sanitized.get_lightning_alpha();
+            if lightning_alpha > 0.0 {
+                let [r, g, b, _] = sanitized.lightning.color;
+                cmds.push(RenderCommand::SetColor(r, g, b, lightning_alpha));
+                cmds.push(RenderCommand::Rectangle {
+                    mode: DrawMode::Fill,
+                    x: 0.0,
+                    y: 0.0,
+                    w: width,
+                    h: height,
+                });
+            }
+            if sanitized.vignette.enabled && sanitized.vignette.strength > 0.0 {
+                let alpha = (sanitized.vignette.strength * 0.5).clamp(0.0, 1.0);
+                cmds.push(RenderCommand::SetColor(0.0, 0.0, 0.0, alpha));
+                cmds.push(RenderCommand::Rectangle {
+                    mode: DrawMode::Fill,
+                    x: 0.0,
+                    y: 0.0,
+                    w: width,
+                    h: height,
+                });
+            }
         }
-        if sanitized.fade.active && sanitized.fade.color[3] > 0.0 {
-            let [r, g, b, a] = sanitized.fade.color;
-            cmds.push(RenderCommand::SetColor(r, g, b, a));
-            cmds.push(RenderCommand::Rectangle {
-                mode: DrawMode::Fill,
-                x: 0.0,
-                y: 0.0,
-                w: width,
-                h: height,
-            });
-        }
-        let lightning_alpha = sanitized.get_lightning_alpha();
-        if lightning_alpha > 0.0 {
-            let [r, g, b, _] = sanitized.lightning.color;
-            cmds.push(RenderCommand::SetColor(r, g, b, lightning_alpha));
-            cmds.push(RenderCommand::Rectangle {
-                mode: DrawMode::Fill,
-                x: 0.0,
-                y: 0.0,
-                w: width,
-                h: height,
-            });
-        }
-        if sanitized.vignette.enabled && sanitized.vignette.strength > 0.0 {
-            let alpha = (sanitized.vignette.strength * 0.5).clamp(0.0, 1.0);
-            cmds.push(RenderCommand::SetColor(0.0, 0.0, 0.0, alpha));
-            cmds.push(RenderCommand::Rectangle {
-                mode: DrawMode::Fill,
-                x: 0.0,
-                y: 0.0,
-                w: width,
-                h: height,
-            });
-        }
-        for layer in sanitized.status_stack.active_layers_sorted() {
+        for layer in sanitized.active_status_layers_for_target(target) {
             if let Some(color) = layer.visual.color {
                 let alpha = layer.color_alpha();
                 if alpha > 0.0 {
@@ -1673,9 +1702,17 @@ impl Overlay {
 
     /// Builds built-in post-fx passes requested by active status layers.
     pub fn build_postfx_passes(&self) -> Vec<PostFxPass> {
+        self.build_postfx_passes_for_target(None)
+    }
+
+    /// Builds built-in post-fx passes, optionally filtering status layers to one frame target.
+    pub fn build_postfx_passes_for_target(
+        &self,
+        target: Option<StatusLayerTarget>,
+    ) -> Vec<PostFxPass> {
         let sanitized = self.sanitized_clone();
         let mut passes = Vec::new();
-        for layer in sanitized.status_stack.active_layers_sorted() {
+        for layer in sanitized.active_status_layers_for_target(target) {
             let Some(effect_name) = layer.visual.shader_effect.as_deref() else {
                 continue;
             };
@@ -2148,6 +2185,47 @@ fn sanitize_status_layer(layer: &mut super::status::StatusOverlayLayer, index: u
             *effect = trimmed;
             changed += 1;
         }
+    }
+    changed
+}
+
+fn apply_status_accessibility(
+    layer: &mut super::status::StatusOverlayLayer,
+    policy: OverlayAccessibilityPolicy,
+) -> usize {
+    let mut changed = 0usize;
+    if let Some(mut color) = layer.visual.color {
+        let next_alpha = color[3].min(policy.max_flash_alpha);
+        if next_alpha != color[3] {
+            color[3] = next_alpha;
+            layer.visual.color = Some(color);
+            changed += 1;
+        }
+    }
+    if layer.visual.texture_opacity > policy.max_flash_alpha {
+        layer.visual.texture_opacity = policy.max_flash_alpha;
+        changed += 1;
+    }
+    let Some(effect_name) = layer.visual.shader_effect.as_deref() else {
+        return changed;
+    };
+    let next_strength = if policy.disable_film_grain && matches!(effect_name, "noise" | "scanlines")
+    {
+        0.0
+    } else if policy.reduced_motion {
+        match effect_name {
+            "noise" | "scanlines" => 0.0,
+            "chromatic" | "waterdistort" | "blur_h" | "blur_v" => {
+                layer.visual.shader_strength.min(0.35)
+            }
+            _ => layer.visual.shader_strength.min(0.75),
+        }
+    } else {
+        layer.visual.shader_strength
+    };
+    if next_strength != layer.visual.shader_strength {
+        layer.visual.shader_strength = next_strength;
+        changed += 1;
     }
     changed
 }

@@ -729,7 +729,10 @@ def _collect_table_namespaces(lines: List[str]) -> Dict[str, str]:
             if root_m:
                 namespace_key, table_var = root_m.groups()
                 namespace = f"lurek.{namespace_key}"
-                if namespaces.get(table_var) != namespace:
+                # Keep namespace discovery monotonic. Local helper variables like
+                # `tbl` and `result` are frequently reused across unrelated scopes,
+                # and overwriting them here can create non-converging cycles.
+                if table_var not in namespaces:
                     namespaces[table_var] = namespace
                     changed = True
                 continue
@@ -738,11 +741,9 @@ def _collect_table_namespaces(lines: List[str]) -> Dict[str, str]:
             if child_m:
                 parent_var, child_key, child_var = child_m.groups()
                 parent_namespace = namespaces.get(parent_var)
-                if parent_namespace:
-                    namespace = f"{parent_namespace}.{child_key}"
-                    if namespaces.get(child_var) != namespace:
-                        namespaces[child_var] = namespace
-                        changed = True
+                if parent_namespace and child_var not in namespaces:
+                    namespaces[child_var] = f"{parent_namespace}.{child_key}"
+                    changed = True
 
     return namespaces
 

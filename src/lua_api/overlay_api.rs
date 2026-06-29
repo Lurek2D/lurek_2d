@@ -472,7 +472,7 @@ impl LuaUserData for LuaOverlay {
         });
         // -- getRenderPlan --
         /// Returns the current render responsibility plan for active overlay layers.
-        /// @return | table | Table with `rendered`, `externally_handled`, and `shader` string arrays.
+        /// @return | table | Table with `rendered`, `externally_handled`, `unsupported`, `fallback`, and `shader` string arrays.
         /// `rendered` may include `status_color_wash` and `status_texture`; `externally_handled` may include `status_postfx`.
         methods.add_method("getRenderPlan", |lua, this, ()| {
             let plan = this.inner.render_plan();
@@ -487,6 +487,16 @@ impl LuaUserData for LuaOverlay {
             }
             table.set("rendered", rendered)?;
             table.set("externally_handled", external)?;
+            let unsupported = lua.create_table()?;
+            for (index, layer) in plan.unsupported.iter().enumerate() {
+                unsupported.set(index + 1, layer.as_str())?;
+            }
+            table.set("unsupported", unsupported)?;
+            let fallback = lua.create_table()?;
+            for (index, layer) in plan.fallback.iter().enumerate() {
+                fallback.set(index + 1, layer.as_str())?;
+            }
+            table.set("fallback", fallback)?;
             let shader_layers = lua.create_table()?;
             let mut shader_index = 1;
             if this.shader.is_some() {
@@ -1229,22 +1239,41 @@ impl LuaUserData for LuaOverlay {
         methods.add_method("isFading", |_, this, ()| Ok(this.inner.fade.active));
         // -- render --
         /// Queues renderer commands for the overlay's current visual state.
-        methods.add_method("render", |_, this, ()| {
-            let mut cmds = this.inner.build_render_commands();
-            let mut shader_passes = this.inner.build_postfx_passes();
-            if let Some(key) = this.shader {
-                shader_passes.push(overlay_shader_pass(
-                    format!("overlay_shader_{}", shader_id_from_key(key)),
-                    key,
-                ));
-            }
-            let mut layers: Vec<_> = this.shader_layers.iter().collect();
-            layers.sort_by(|(left, _), (right, _)| left.cmp(right));
-            for (layer, key) in layers {
-                shader_passes.push(overlay_shader_pass(
-                    format!("overlay_layer_{}_{}", layer, shader_id_from_key(*key)),
-                    *key,
-                ));
+        /// @param | opts | table? | Optional table with `target` and `includeGlobal`.
+        methods.add_method("render", |_, this, opts: Option<LuaTable>| {
+            let target = if let Some(ref table) = opts {
+                Some(parse_status_target(
+                    table.get::<_, Option<String>>("target")?,
+                )?)
+            } else {
+                None
+            };
+            let include_global_layers = if let Some(ref table) = opts {
+                table
+                    .get::<_, Option<bool>>("includeGlobal")?
+                    .unwrap_or(false)
+            } else {
+                true
+            };
+            let mut cmds = this
+                .inner
+                .build_render_commands_for_target(target, include_global_layers);
+            let mut shader_passes = this.inner.build_postfx_passes_for_target(target);
+            if target.is_none() || include_global_layers {
+                if let Some(key) = this.shader {
+                    shader_passes.push(overlay_shader_pass(
+                        format!("overlay_shader_{}", shader_id_from_key(key)),
+                        key,
+                    ));
+                }
+                let mut layers: Vec<_> = this.shader_layers.iter().collect();
+                layers.sort_by(|(left, _), (right, _)| left.cmp(right));
+                for (layer, key) in layers {
+                    shader_passes.push(overlay_shader_pass(
+                        format!("overlay_layer_{}_{}", layer, shader_id_from_key(*key)),
+                        *key,
+                    ));
+                }
             }
             if !shader_passes.is_empty() {
                 cmds.push(RenderCommand::BeginPostFx {

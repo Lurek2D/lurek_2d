@@ -79,6 +79,27 @@ describe("lurek.physics module", function()
         expect_type("userdata", lurek.physics.newBody(new_world(0, 0), 10, 20, "dynamic"))
     end)
 
+    -- @covers lurek.physics.newMaterial
+    it("newMaterial validates and canonicalizes reusable material tables", function()
+        local material = lurek.physics.newMaterial({
+            name = "rubber",
+            density = 1.2,
+            friction = 0.9,
+            restitution = 0.8,
+            beamReflectivity = 0.6,
+            surfaceType = "bounce_pad",
+        })
+        expect_type("table", material)
+        expect_equal("rubber", material.name)
+        expect_near(0.9, material.friction, 0.001)
+        expect_equal("bounce_pad", material.surfaceType)
+        local ok, err = pcall(function()
+            lurek.physics.newMaterial({ density = 0 })
+        end)
+        expect_false(ok)
+        expect_true(string.find(tostring(err), "newMaterial", 1, true) ~= nil)
+    end)
+
     -- @covers lurek.physics.getBody
     it("getBody returns position and velocity values", function()
         local world = new_world(0, 0)
@@ -378,6 +399,51 @@ describe("body userdata methods", function()
         local body = new_dynamic_body(new_world(0, 0))
         body:setMass(7.5)
         expect_near(7.5, body:getMass(), 0.01)
+    end)
+
+    -- @covers LBody:setMaterial
+    it("setMaterial applies solver-backed properties to the body", function()
+        local body = new_dynamic_body(new_world(0, 0))
+        body:setMaterial(lurek.physics.newMaterial({
+            name = "glue",
+            density = 1.4,
+            friction = 1.0,
+            restitution = 0.0,
+            gravityScale = 0.5,
+            linearDamping = 0.25,
+            angularDamping = 0.75,
+            massOverride = 6.5,
+            stickiness = 1.0,
+            adhesion = 0.8,
+        }))
+        expect_near(1.0, body:getFriction(), 0.001)
+        expect_near(0.0, body:getRestitution(), 0.001)
+        expect_near(0.5, body:getGravityScale(), 0.001)
+        expect_near(0.25, body:getLinearDamping(), 0.001)
+        expect_near(0.75, body:getAngularDamping(), 0.001)
+        expect_near(6.5, body:getMass(), 0.01)
+    end)
+
+    -- @covers LBody:getMaterial
+    it("getMaterial returns the current body material snapshot", function()
+        local body = new_dynamic_body(new_world(0, 0))
+        body:setMaterial(lurek.physics.newMaterial({
+            name = "mirror",
+            friction = 0.2,
+            restitution = 0.1,
+            beamReflectivity = 1.0,
+            projectileReflectivity = 0.25,
+            beamAbsorption = 0.4,
+            buoyancy = 0.3,
+        }))
+        local material = body:getMaterial()
+        expect_type("table", material)
+        expect_equal("mirror", material.name)
+        expect_near(0.2, material.friction, 0.001)
+        expect_near(1.0, material.beamReflectivity, 0.001)
+        expect_near(0.25, material.projectileReflectivity, 0.001)
+        expect_near(0.4, material.beamAbsorption, 0.001)
+        expect_near(0.3, material.buoyancy, 0.001)
     end)
 
     -- @covers LBody:getType
@@ -808,13 +874,33 @@ describe("world userdata methods", function()
         expect_equal("LFlowStream", field:type())
     end)
 
+    -- @covers LWorld:addFan
+    it("addFan creates a directional wedge flow helper", function()
+        local world = new_world(0, 0)
+        local fan = world:addFan({
+            x = 32,
+            y = 32,
+            radius = 48,
+            widthAngle = 60,
+            directionVector = { x = 1, y = 0 },
+            strength = 30,
+        })
+        local ahead = world:sampleFlow(60, 32)
+        local behind = world:sampleFlow(8, 32)
+        expect_equal("LFlowStream", fan:type())
+        expect_true(ahead.vx > 0)
+        expect_near(0, behind.magnitude, 0.0001)
+    end)
+
     -- @covers LWorld:getFlowField
     it("getFlowField returns authored metadata by id", function()
         local world = new_world(0, 0)
         local field = add_path_flow_field(world)
+        field:setEnabled(false)
         local info = world:getFlowField(field:getId())
         expect_equal("wind_lane", info.name)
         expect_equal("path", info.geometry)
+        expect_false(info.enabled)
     end)
 
     -- @covers LWorld:sampleFlow
@@ -822,8 +908,11 @@ describe("world userdata methods", function()
         local world = new_world(0, 0)
         add_path_flow_field(world)
         local sample = world:sampleFlow(40, 0, { layerMask = 0x2 })
+        local repeat_sample = world:sampleFlow(40, 0, { layerMask = 0x2 })
         expect_true(sample.vx > 0)
         expect_equal(1, #sample.sources)
+        expect_near(sample.vx, repeat_sample.vx, 0.0001)
+        expect_near(sample.intensity, repeat_sample.intensity, 0.0001)
     end)
 
     -- @covers LFlowStream:getId
@@ -834,15 +923,15 @@ describe("world userdata methods", function()
     end)
 
     -- @covers LWorld:removeFlowField
-    it("removeFlowField removes one authored flow field", function()
+    it("removeFlowField disables one authored flow field", function()
         local world = new_world(0, 0)
         local first = add_rect_flow_field(world)
         expect_true(world:removeFlowField(first:getId()))
-        expect_equal(nil, world:getFlowField(first:getId()))
+        expect_false(world:getFlowField(first:getId()).enabled)
     end)
 
     -- @covers LWorld:clearFlowFields
-    it("clearFlowFields removes all authored flow fields", function()
+    it("clearFlowFields disables all authored flow fields", function()
         local world = new_world(0, 0)
         add_rect_flow_field(world)
         local second = world:addFlowField({
@@ -854,7 +943,7 @@ describe("world userdata methods", function()
             strength = 30,
         })
         world:clearFlowFields()
-        expect_equal(nil, world:getFlowField(second:getId()))
+        expect_false(world:getFlowField(second:getId()).enabled)
         expect_equal(0, world:getStats().flowFields)
     end)
 
@@ -944,12 +1033,12 @@ describe("world userdata methods", function()
     end)
 
     -- @covers LFlowStream:destroy
-    it("destroy removes the authored flow field from the world", function()
+    it("destroy disables the authored flow field handle", function()
         local world = new_world(0, 0)
         local field = add_rect_flow_field(world)
         local id = field:getId()
         field:destroy()
-        expect_equal(nil, world:getFlowField(id))
+        expect_false(world:getFlowField(id).enabled)
     end)
 
     -- @covers LFlowStream:type
@@ -1187,25 +1276,84 @@ describe("world userdata methods", function()
     end)
 
     -- @covers LWorld:newCircleBody
-    it("newCircleBody creates a dynamic circle body", function()
-        expect_type("userdata", new_world(0, 0):newCircleBody(10, 20, 5, "dynamic"))
+    it("newCircleBody accepts material and collision options", function()
+        local world = new_world(0, 0)
+        local body = world:newCircleBody(10, 20, 5, "dynamic", {
+            material = lurek.physics.newMaterial({
+                name = "rubber",
+                density = 1.1,
+                friction = 0.85,
+                restitution = 0.7,
+            }),
+            bullet = true,
+            layer = 0x2,
+            mask = 0x3,
+        })
+        expect_type("userdata", body)
+        expect_true(body:isBullet())
+        expect_equal(0x2, body:getLayer())
+        expect_equal(0x3, body:getMask())
+        expect_equal("rubber", body:getMaterial().name)
     end)
 
     -- @covers LWorld:newPolygonBody
-    it("newPolygonBody creates a polygon body", function()
-        local verts = { 0, 0, 10, 0, 10, 10, 0, 10 }
-        expect_not_nil(new_world(0, 0):newPolygonBody(5, 5, verts, "dynamic"))
+    it("newPolygonBody applies material and collision options", function()
+        local world = new_world(0, 0)
+        local body = world:newPolygonBody(5, 5, { 0, 0, 10, 0, 10, 10, 0, 10 }, "dynamic", {
+            material = lurek.physics.newMaterial({
+                name = "poly",
+                density = 1.25,
+                friction = 0.65,
+                restitution = 0.2,
+            }),
+            bullet = true,
+            layer = 0x4,
+            mask = 0x5,
+        })
+        expect_type("userdata", body)
+        expect_true(body:isBullet())
+        expect_equal(0x4, body:getLayer())
+        expect_equal(0x5, body:getMask())
+        expect_equal("poly", body:getMaterial().name)
     end)
 
     -- @covers LWorld:newEdgeBody
-    it("newEdgeBody creates an edge body", function()
-        expect_not_nil(new_world(0, 0):newEdgeBody(0, 0, 0, 0, 100, 0, "static"))
+    it("newEdgeBody applies material and collision options", function()
+        local world = new_world(0, 0)
+        local body = world:newEdgeBody(0, 0, 0, 0, 100, 0, "static", {
+            material = lurek.physics.newMaterial({
+                name = "edge",
+                friction = 0.4,
+                restitution = 0.0,
+                beamReflectivity = 0.75,
+            }),
+            layer = 0x8,
+            mask = 0x3,
+        })
+        expect_type("userdata", body)
+        expect_equal(0x8, body:getLayer())
+        expect_equal(0x3, body:getMask())
+        expect_equal("edge", body:getMaterial().name)
+        expect_near(0.75, body:getMaterial().beamReflectivity, 0.001)
     end)
 
     -- @covers LWorld:newChainBody
-    it("newChainBody creates a chain-collider body", function()
-        local body = new_world(0, 0):newChainBody(0, 0, { 0, 0, 20, 0, 20, 10 }, false, "static")
+    it("newChainBody applies material and collision options", function()
+        local world = new_world(0, 0)
+        local body = world:newChainBody(0, 0, { 0, 0, 20, 0, 20, 10 }, false, "static", {
+            material = lurek.physics.newMaterial({
+                name = "chain",
+                friction = 0.9,
+                restitution = 0.0,
+                surfaceType = "ground",
+            }),
+            layer = 0x10,
+            mask = 0x1F,
+        })
         expect_type("userdata", body)
+        expect_equal(0x10, body:getLayer())
+        expect_equal(0x1F, body:getMask())
+        expect_equal("ground", body:getMaterial().surfaceType)
     end)
 
     -- @covers LWorld:addRevoluteJoint
@@ -1487,6 +1635,46 @@ describe("world userdata methods", function()
         end)
     end)
 
+    -- @covers LWorld:setFixtureMaterial
+    it("setFixtureMaterial updates only the targeted fixture snapshot", function()
+        local world = new_world(0, 0)
+        local body = lurek.physics.newBody(world, 0, 0, "dynamic")
+        local fixture = world:addFixture(body:getId(), "circle", 1.0, 0.5, 0.3, false, 2.0)
+        world:setFixtureMaterial(body:getId(), fixture, lurek.physics.newMaterial({
+            name = "glass",
+            density = 0.6,
+            friction = 0.05,
+            restitution = 0.8,
+            beamReflectivity = 1.0,
+            projectileReflectivity = 0.2,
+        }))
+        local primary = world:getFixtureMaterial(body:getId(), 0)
+        local extra = world:getFixtureMaterial(body:getId(), fixture)
+        expect_equal("glass", extra.name)
+        expect_near(0.05, extra.friction, 0.001)
+        expect_near(0.5, primary.friction, 0.001)
+    end)
+
+    -- @covers LWorld:getFixtureMaterial
+    it("getFixtureMaterial returns the current fixture material table", function()
+        local world = new_world(0, 0)
+        local body = lurek.physics.newBody(world, 0, 0, "dynamic")
+        local fixture = world:addFixture(body:getId(), "circle", 1.0, 0.2, 0.1, false, 2.0)
+        world:setFixtureMaterial(body:getId(), fixture, lurek.physics.newMaterial({
+            name = "ice",
+            density = 0.9,
+            friction = 0.05,
+            restitution = 0.15,
+            buoyancy = 0.2,
+            surfaceType = "slick",
+        }))
+        local material = world:getFixtureMaterial(body:getId(), fixture)
+        expect_type("table", material)
+        expect_equal("ice", material.name)
+        expect_near(0.2, material.buoyancy, 0.001)
+        expect_equal("slick", material.surfaceType)
+    end)
+
     -- @covers LWorld:setFixtureSensor
     it("setFixtureSensor is callable", function()
         local world = new_world(0, 0)
@@ -1704,7 +1892,7 @@ describe("world userdata methods", function()
     end)
 
     -- @covers LWorld:castBeam
-    it("castBeam supports reflective tracing with deterministic bounce segments", function()
+    it("castBeam covers reflective tracing, pierce ordering, and thick-beam fail-fast behavior", function()
         local world = new_world(0, 0)
         local blocker = world:newBody(10, 0, 6, 40, "static")
         local mirror = world:newBody(80, 0, 6, 40, "static")
@@ -1732,6 +1920,78 @@ describe("world userdata methods", function()
         expect_true(trace.hits[1].distance < trace.hits[2].distance)
         expect_equal(mirror:getId(), trace.segments[1].blockedBy)
         expect_equal(blocker:getId(), trace.segments[2].blockedBy)
+
+        local tie_world = new_world(0, 0)
+        local first_mirror = tie_world:newBody(80, -10, 6, 40, "static")
+        first_mirror:setMirror(true)
+        local second_mirror = tie_world:newBody(80, 10, 6, 40, "static")
+        second_mirror:setMirror(true)
+        tie_world:step(1 / 60)
+
+        local tie_trace = tie_world:castBeam(40, 0, 1, 0, 120, {
+            reflect = true,
+            maxBounces = 1,
+        })
+        expect_equal(first_mirror:getId(), tie_trace.hits[1].bodyId)
+
+        local bounce_world = new_world(0, 0)
+        local left_mirror = bounce_world:newBody(20, 0, 6, 60, "static")
+        left_mirror:setMirror(true)
+        local right_mirror = bounce_world:newBody(80, 0, 6, 60, "static")
+        right_mirror:setMirror(true)
+        bounce_world:step(1 / 60)
+
+        local bounce_trace = bounce_world:castBeam(50, 0, 1, 0, 200, {
+            reflect = true,
+            maxBounces = 2,
+        })
+        expect_equal(3, #bounce_trace.hits)
+        expect_equal(3, #bounce_trace.segments)
+        expect_equal(right_mirror:getId(), bounce_trace.hits[1].bodyId)
+        expect_equal(left_mirror:getId(), bounce_trace.hits[2].bodyId)
+        expect_equal(right_mirror:getId(), bounce_trace.hits[3].bodyId)
+        expect_false(bounce_trace.hits[3].reflected)
+
+        local pierce_world = new_world(0, 0)
+        local shooter = pierce_world:newCircleBody(10, 0, 2, "dynamic")
+        shooter:setLayer(0x2)
+        local ids = {}
+        for i = 1, 3 do
+            local target = pierce_world:newCircleBody(40 + i * 20, 0, 4, "static")
+            target:setLayer(0x2)
+            ids[i] = target:getId()
+        end
+        pierce_world:step(1 / 60)
+
+        local trace = pierce_world:castBeam(10, 0, 1, 0, 120, {
+            mode = "pierce",
+            maxHits = 2,
+            layer = 0x1,
+            mask = 0x2,
+            excludeBody = shooter:getId(),
+        })
+        expect_type("table", trace)
+        expect_equal(2, #trace.hits)
+        expect_equal(ids[1], trace.hits[1].bodyId)
+        expect_equal(ids[2], trace.hits[2].bodyId)
+        expect_true(trace.hits[1].distance < trace.hits[2].distance)
+        expect_equal(1, trace.hits[1].segmentIndex)
+        expect_equal(1, trace.hits[2].segmentIndex)
+        expect_equal(1, #trace.segments)
+        expect_equal(ids[2], trace.segments[1].blockedBy)
+        expect_false(trace.reachedMaxRange)
+
+        local err = expect_error(function()
+            new_world(0, 0):castBeam(0, 0, 1, 0, 20, { thickness = 2 })
+        end)
+        expect_true(
+            string.find(
+                tostring(err),
+                "thickness > 0 is not implemented yet; thick beams require shape casting",
+                1,
+                true
+            ) ~= nil
+        )
     end)
 
     -- @covers LWorld:reflectBodyVelocity
@@ -2184,6 +2444,22 @@ describe("destructible terrain", function()
         expect_true(terrain:isDirty())
     end)
 
+    -- @covers LTerrain:carveCircle
+    it("carveCircle clears a circular patch without a boolean flag", function()
+        local terrain = new_terrain(new_world(0, 0), 32, 32, 4)
+        terrain:fillAll(true)
+        terrain:carveCircle(32, 32, 12)
+        expect_false(terrain:getCell(8, 8))
+    end)
+
+    -- @covers LTerrain:addCircle
+    it("addCircle restores solid terrain in a circular patch", function()
+        local terrain = new_terrain(new_world(0, 0), 32, 32, 4)
+        terrain:fillAll(false)
+        terrain:addCircle(32, 32, 12)
+        expect_true(terrain:getCell(8, 8))
+    end)
+
     -- @covers LTerrain:fillRect
     it("fillRect edits a rectangular patch of terrain", function()
         local terrain = new_terrain(new_world(0, 0), 16, 16, 4)
@@ -2191,10 +2467,30 @@ describe("destructible terrain", function()
         expect_true(terrain:isDirty())
     end)
 
-    -- @covers LTerrain:flush
-    it("flush clears the terrain dirty flag", function()
+    -- @covers LTerrain:carveRect
+    it("carveRect clears a rectangular patch without a boolean flag", function()
         local terrain = new_terrain(new_world(0, 0), 16, 16, 4)
         terrain:fillAll(true)
+        terrain:carveRect(8, 8, 12, 12)
+        expect_false(terrain:getCell(2, 2))
+    end)
+
+    -- @covers LTerrain:addRect
+    it("addRect fills a rectangular patch without a boolean flag", function()
+        local terrain = new_terrain(new_world(0, 0), 16, 16, 4)
+        terrain:fillAll(false)
+        terrain:addRect(8, 8, 12, 12)
+        expect_true(terrain:getCell(2, 2))
+    end)
+
+    -- @covers LTerrain:flush
+    it("flush returns rebuild diagnostics and can honor a chunk budget", function()
+        local terrain = new_terrain(new_world(0, 0), 16, 16, 4)
+        terrain:fillAll(true)
+        local stats = terrain:flush(1)
+        expect_type("table", stats)
+        expect_equal(1, stats.dirtyChunksRebuilt)
+        expect_true(stats.dirtyChunksRemaining >= 0)
         terrain:flush()
         expect_false(terrain:isDirty())
     end)
@@ -2204,6 +2500,45 @@ describe("destructible terrain", function()
         local terrain = new_terrain(new_world(0, 0), 16, 16, 4)
         terrain:fillAll(true)
         expect_true(terrain:isDirty())
+    end)
+
+    -- @covers LTerrain:damageCircle
+    it("damageCircle carves terrain and returns a collapse result table", function()
+        local terrain = new_terrain(new_world(0, 0), 32, 32, 4)
+        terrain:fillAll(true)
+        local result = terrain:damageCircle(32, 32, 12)
+        expect_false(terrain:getCell(8, 8))
+        expect_type("table", result)
+        expect_equal(0, result.removedCells)
+    end)
+
+    -- @covers LTerrain:collapseUnsupported
+    it("collapseUnsupported removes floating terrain and can spawn debris or dynamic chunks", function()
+        local world = new_world(0, 200)
+        local terrain = new_terrain(world, 16, 16, 8)
+        terrain:fillRect(0, 120, 128, 8, true)
+        terrain:addRect(32, 32, 16, 16)
+        local result = terrain:collapseUnsupported({
+            support = "bottom",
+            mode = "spawnDebris",
+            minComponentCells = 2,
+            maxDebris = 2,
+        })
+        expect_equal(1, result.components)
+        expect_equal(4, result.removedCells)
+        expect_equal(2, #result.bodyIds)
+        expect_equal(2, #result.debrisBodies)
+
+        local terrain2 = new_terrain(world, 16, 16, 8)
+        terrain2:addRect(32, 32, 16, 16)
+        local chunks = terrain2:collapseUnsupported({
+            support = "bottom",
+            mode = "spawnDynamicChunks",
+            minComponentCells = 2,
+        })
+        expect_equal(1, chunks.components)
+        expect_equal(4, chunks.removedCells)
+        expect_equal(1, #chunks.bodyIds)
     end)
 
     -- @covers LTerrain:solidPositions

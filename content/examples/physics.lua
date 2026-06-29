@@ -299,16 +299,43 @@ do
     lurek.log.info("position=" .. tostring(body:getPosition()))
 end
 
+--@api: lurek.physics.newMaterial
+do
+
+    local rubber = lurek.physics.newMaterial({
+        name = "rubber",
+        density = 1.2,
+        friction = 0.9,
+        restitution = 0.8,
+        surfaceType = "bounce_pad",
+    })
+    lurek.log.info("name=" .. tostring(rubber.name))
+    lurek.log.info("friction=" .. tostring(rubber.friction))
+    lurek.log.info("surface=" .. tostring(rubber.surfaceType))
+end
+
 --@api: LWorld:newCircleBody
 do
 
     local world = lurek.physics.newWorld(0, 400)
-    local ball = world:newCircleBody(200, 100, 16, "dynamic")
+    local rubber = lurek.physics.newMaterial({
+        name = "rubber",
+        density = 1.1,
+        friction = 0.85,
+        restitution = 0.7,
+    })
+    local ball = world:newCircleBody(200, 100, 16, "dynamic", {
+        material = rubber,
+        bullet = true,
+        layer = 0x2,
+        mask = 0x3,
+    })
     local target = world:newBody(200, 260, "static")
     ball:setVelocity(15, -20)
     world:step(1 / 60)
     lurek.log.info("projectile pos=" .. select(1, ball:getPosition()) .. "," .. select(2, ball:getPosition()))
     lurek.log.info("projectile size=" .. ball:getWidth() .. "x" .. ball:getHeight() .. " target=" .. target:getType())
+    lurek.log.info("projectile bullet=" .. tostring(ball:isBullet()) .. " layer=" .. tostring(ball:getLayer()))
 end
 
 --@api: LWorld:kinematic
@@ -412,6 +439,44 @@ do
     body:setMass(7.5)
     lurek.log.info("mass=" .. tostring(body:getMass()))
     lurek.log.info("type=" .. tostring(body:getType()))
+end
+
+--@api: LBody:setMaterial
+do
+
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newCircleBody(100, 100, 20, "dynamic")
+    local glue = lurek.physics.newMaterial({
+        name = "glue",
+        density = 1.4,
+        friction = 1.0,
+        restitution = 0.0,
+        stickiness = 1.0,
+        adhesion = 0.8,
+        gravityScale = 0.5,
+    })
+    body:setMaterial(glue)
+    lurek.log.info("friction=" .. tostring(body:getFriction()))
+    lurek.log.info("gravity=" .. tostring(body:getGravityScale()))
+end
+
+--@api: LBody:getMaterial
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newBody(40, 40, "dynamic")
+    body:setMaterial(lurek.physics.newMaterial({
+        name = "mirror",
+        friction = 0.2,
+        restitution = 0.1,
+        beamReflectivity = 1.0,
+        projectileReflectivity = 0.25,
+        beamAbsorption = 0.0,
+    }))
+    local material = body:getMaterial()
+    lurek.log.info("name=" .. tostring(material.name))
+    lurek.log.info("beam=" .. tostring(material.beamReflectivity))
+    lurek.log.info("projectile=" .. tostring(material.projectileReflectivity))
 end
 
 --@api: LBody:setFriction
@@ -1052,6 +1117,47 @@ do
     lurek.log.info("fixture_count=" .. tostring(world:fixtureCount(body:getId())))
 end
 
+--@api: LWorld:setFixtureMaterial
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newBody(100, 100, 20, 20, "dynamic")
+    local fixture = world:addFixture(body:getId(), "circle", 0.6, 0.2, 0.1, false, 8)
+    local mirror = lurek.physics.newMaterial({
+        name = "mirror",
+        density = 0.6,
+        friction = 0.1,
+        restitution = 0.05,
+        beamReflectivity = 1.0,
+        projectileReflectivity = 0.2,
+        surfaceType = "glass",
+    })
+    world:setFixtureMaterial(body:getId(), fixture, mirror)
+    lurek.log.info("fixture=" .. tostring(fixture))
+    lurek.log.info("material=" .. tostring(world:getFixtureMaterial(body:getId(), fixture).name))
+end
+
+--@api: LWorld:getFixtureMaterial
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newBody(120, 120, 20, 20, "dynamic")
+    local fixture = world:addFixture(body:getId(), "circle", 1.0, 0.3, 0.2, false, 6)
+    world:setFixtureMaterial(body:getId(), fixture, lurek.physics.newMaterial({
+        name = "ice",
+        density = 0.9,
+        friction = 0.05,
+        restitution = 0.15,
+        stickiness = 0.0,
+        adhesion = 0.0,
+        buoyancy = 0.2,
+    }))
+    local material = world:getFixtureMaterial(body:getId(), fixture)
+    lurek.log.info("name=" .. tostring(material.name))
+    lurek.log.info("friction=" .. tostring(material.friction))
+    lurek.log.info("buoyancy=" .. tostring(material.buoyancy))
+end
+
 --@api: LWorld:setFixtureSensor
 do
 
@@ -1067,36 +1173,67 @@ end
 do
 
     local world = lurek.physics.newWorld(0, 400)
-    local tri = world:newPolygonBody(100, 200, { 0, -20, -15, 15, 15, 15 }, "dynamic")
+    local tri = world:newPolygonBody(100, 200, { 0, -20, -15, 15, 15, 15 }, "dynamic", {
+        material = lurek.physics.newMaterial({
+            name = "wedge",
+            density = 1.3,
+            friction = 0.7,
+            restitution = 0.2,
+        }),
+        bullet = true,
+        layer = 0x4,
+        mask = 0x7,
+    })
     tri:setAngularVelocity(1.5)
     world:step(1 / 60)
     local x, y = tri:getPosition()
     lurek.log.info("falling wedge pos=" .. x .. "," .. y)
     lurek.log.info("body type=" .. tri:getType() .. " angle=" .. tri:getAngle())
+    lurek.log.info("material=" .. tostring(tri:getMaterial().name) .. " bullet=" .. tostring(tri:isBullet()))
 end
 
 --@api: LWorld:newEdgeBody
 do
 
     local world = lurek.physics.newWorld(0, 400)
-    local wall = world:newEdgeBody(0, 500, 0, 0, 800, 0, "static")
+    local wall = world:newEdgeBody(0, 500, 0, 0, 800, 0, "static", {
+        material = lurek.physics.newMaterial({
+            name = "rail",
+            friction = 0.4,
+            restitution = 0.0,
+            beamReflectivity = 0.8,
+        }),
+        layer = 0x8,
+        mask = 0x2,
+    })
     local player = world:newCircleBody(100, 420, 10, "dynamic")
     player:setVelocity(40, 0)
     world:step(1 / 60)
     lurek.log.info("ledge body type=" .. wall:getType() .. " pos_y=" .. select(2, wall:getPosition()))
     lurek.log.info("runner pos=" .. select(1, player:getPosition()) .. "," .. select(2, player:getPosition()))
+    lurek.log.info("material=" .. tostring(wall:getMaterial().name) .. " layer=" .. tostring(wall:getLayer()))
 end
 
 --@api: LWorld:newChainBody
 do
 
     local world = lurek.physics.newWorld(0, 400)
-    local ground = world:newChainBody(0, 500, { 0, 100, 100, 80, 200, 90, 300, 60, 400, 100 }, false, "static")
+    local ground = world:newChainBody(0, 500, { 0, 100, 100, 80, 200, 90, 300, 60, 400, 100 }, false, "static", {
+        material = lurek.physics.newMaterial({
+            name = "track",
+            friction = 0.9,
+            restitution = 0.0,
+            surfaceType = "ground",
+        }),
+        layer = 0x10,
+        mask = 0x1F,
+    })
     local bike = world:newCircleBody(120, 420, 8, "dynamic")
     bike:setVelocity(30, 0)
     world:step(1 / 60)
     lurek.log.info("track body type=" .. ground:getType() .. " start_y=" .. select(2, ground:getPosition()))
     lurek.log.info("bike pos=" .. select(1, bike:getPosition()) .. "," .. select(2, bike:getPosition()))
+    lurek.log.info("material=" .. tostring(ground:getMaterial().surfaceType) .. " mask=" .. tostring(ground:getMask()))
 end
 
 --@api: LWorld:newBodies
@@ -2040,6 +2177,50 @@ do
     lurek.log.info("cell=" .. tostring(terrain:getCell(10, 10)))
 end
 
+--@api: LTerrain:carveCircle
+do
+
+    local world = lurek.physics.newWorld(0, 400)
+    local terrain = lurek.physics.newTerrain(32, 32, 8, world)
+    terrain:fillAll(true)
+    terrain:carveCircle(64, 64, 18)
+    lurek.log.info("center=" .. tostring(terrain:getCell(8, 8)))
+    lurek.log.info("dirty=" .. tostring(terrain:isDirty()))
+end
+
+--@api: LTerrain:addCircle
+do
+
+    local world = lurek.physics.newWorld(0, 400)
+    local terrain = lurek.physics.newTerrain(32, 32, 8, world)
+    terrain:fillAll(false)
+    terrain:addCircle(64, 64, 18)
+    lurek.log.info("center=" .. tostring(terrain:getCell(8, 8)))
+    lurek.log.info("dirty=" .. tostring(terrain:isDirty()))
+end
+
+--@api: LTerrain:carveRect
+do
+
+    local world = lurek.physics.newWorld(0, 400)
+    local terrain = lurek.physics.newTerrain(32, 32, 8, world)
+    terrain:fillAll(true)
+    terrain:carveRect(40, 40, 24, 24)
+    lurek.log.info("cell=" .. tostring(terrain:getCell(5, 5)))
+    lurek.log.info("dirty=" .. tostring(terrain:isDirty()))
+end
+
+--@api: LTerrain:addRect
+do
+
+    local world = lurek.physics.newWorld(0, 400)
+    local terrain = lurek.physics.newTerrain(32, 32, 8, world)
+    terrain:fillAll(false)
+    terrain:addRect(40, 40, 24, 24)
+    lurek.log.info("cell=" .. tostring(terrain:getCell(5, 5)))
+    lurek.log.info("dirty=" .. tostring(terrain:isDirty()))
+end
+
 --@api: LTerrain:collapseColumns
 do
 
@@ -2050,6 +2231,48 @@ do
     terrain:flush()
     lurek.log.info("collapsed=" .. tostring(terrain:collapseColumns()))
     lurek.log.info("dirty=" .. tostring(terrain:isDirty()))
+end
+
+--@api: LTerrain:damageCircle
+do
+
+    local world = lurek.physics.newWorld(0, 400)
+    local terrain = lurek.physics.newTerrain(32, 32, 8, world)
+    terrain:fillAll(true)
+    local result = terrain:damageCircle(64, 64, 18, {
+        collapse = true,
+        support = "bottom",
+        mode = "remove",
+        minComponentCells = 2,
+    })
+    lurek.log.info("removed=" .. tostring(result.removedCells))
+    lurek.log.info("components=" .. tostring(result.components))
+end
+
+--@api: LTerrain:collapseUnsupported
+do
+
+    local world = lurek.physics.newWorld(0, 400)
+    local terrain = lurek.physics.newTerrain(32, 32, 8, world)
+    terrain:fillRect(0, 248, 256, 8, true)
+    terrain:addRect(72, 72, 24, 24)
+    local debris_result = terrain:collapseUnsupported({
+        support = "bottom",
+        mode = "spawnDebris",
+        minComponentCells = 2,
+        maxDebris = 2,
+    })
+    local terrain2 = lurek.physics.newTerrain(32, 32, 8, world)
+    terrain2:addRect(72, 72, 24, 24)
+    local chunk_result = terrain2:collapseUnsupported({
+        support = "bottom",
+        mode = "spawnDynamicChunks",
+        minComponentCells = 2,
+    })
+    terrain:flush()
+    lurek.log.info("debris_components=" .. tostring(debris_result.components))
+    lurek.log.info("debris_bodies=" .. tostring(#debris_result.debrisBodies))
+    lurek.log.info("chunk_bodies=" .. tostring(#chunk_result.bodyIds))
 end
 
 --@api: LTerrain:solidPositions
@@ -2445,11 +2668,13 @@ end
 do
 
     local world = lurek.physics.newWorld(0, 9.8)
-    local terrain = lurek.physics.newTerrain(32, 32, 16, world)
+    local terrain = lurek.physics.newTerrain(64, 16, 16, world)
     terrain:fillAll(true)
-    terrain:flush()
-    lurek.log.info("dirty=" .. tostring(terrain:isDirty()))
-    lurek.log.info("type=" .. tostring(terrain:type()))
+    local first = terrain:flush(2)
+    local second = terrain:flush()
+    lurek.log.info("rebuilt=" .. tostring(first.dirtyChunksRebuilt))
+    lurek.log.info("remaining=" .. tostring(first.dirtyChunksRemaining))
+    lurek.log.info("final_remaining=" .. tostring(second.dirtyChunksRemaining))
 end
 
 --@api: LTerrain:isDirty
@@ -2775,18 +3000,43 @@ end
 
 --@api: LWorld:addFlowField
 do
-    local world = lurek.physics.newWorld(0, 0)
+    local world = lurek.physics.newWorld(0, 220)
     local field = world:addFlowField({
-        name = "river_lane",
+        name = "canyon_wind",
         geometry = "path",
         points = {
-            { x = 0, y = 0 },
-            { x = 80, y = 0 },
+            { x = 80, y = 180 },
+            { x = 200, y = 160 },
+            { x = 340, y = 190 },
         },
-        width = 24,
-        strength = 45,
+        width = 70,
+        strength = 180,
+        direction = "alongPath",
+        application = "acceleration",
     })
-    lurek.log.info("[physics] flow field id=" .. tostring(field:getId()))
+    local projectile = world:newCircleBody(120, 120, 4, "dynamic")
+    projectile:setBullet(true)
+    projectile:applyImpulse(420, -160)
+    for _ = 1, 30 do
+        world:step(1 / 60)
+    end
+    local x, y = projectile:getPosition()
+    lurek.log.info("[physics] flow field id=" .. tostring(field:getId()) .. " projectile=" .. tostring(math.floor(x)) .. "," .. tostring(math.floor(y)))
+end
+
+--@api: LWorld:addFan
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local fan = world:addFan({
+        x = 80,
+        y = 80,
+        radius = 72,
+        widthAngle = 70,
+        directionVector = { x = 1, y = -0.2 },
+        strength = 120,
+    })
+    local sample = world:sampleFlow(120, 72)
+    lurek.log.info("[physics] fan id=" .. tostring(fan:getId()) .. " sample=" .. string.format("%.2f,%.2f", sample.vx, sample.vy))
 end
 
 --@api: LWorld:removeFlowField
@@ -2802,7 +3052,9 @@ do
         directionVector = { x = 1, y = 0 },
         strength = 20,
     })
-    lurek.log.info("[physics] removed=" .. tostring(world:removeFlowField(field:getId())))
+    world:removeFlowField(field:getId())
+    local info = world:getFlowField(field:getId())
+    lurek.log.info("[physics] removed=" .. tostring(info ~= nil and not info.enabled))
 end
 
 --@api: LWorld:getFlowField
@@ -2817,14 +3069,16 @@ do
         direction = "radialOut",
         strength = 35,
     })
+    field:setEnabled(false)
     local info = world:getFlowField(field:getId())
-    lurek.log.info("[physics] flow geometry=" .. tostring(info.geometry) .. " strength=" .. tostring(info.strength))
+    lurek.log.info("[physics] flow geometry=" .. tostring(info.geometry) .. " enabled=" .. tostring(info.enabled))
+    lurek.log.info("[physics] flow strength=" .. tostring(info.strength))
 end
 
 --@api: LWorld:clearFlowFields
 do
     local world = lurek.physics.newWorld(0, 0)
-    world:addFlowField({
+    local field = world:addFlowField({
         geometry = "rect",
         x = 0,
         y = 0,
@@ -2836,6 +3090,7 @@ do
     })
     world:clearFlowFields()
     lurek.log.info("[physics] flow count after clear=" .. tostring(world:getStats().flowFields))
+    lurek.log.info("[physics] first disabled=" .. tostring(not world:getFlowField(field:getId()).enabled))
 end
 
 --@api: LWorld:drawFlowDebug
@@ -3057,7 +3312,7 @@ do
         strength = 20,
     })
     field:destroy()
-    lurek.log.info("[physics] destroyed flow=" .. tostring(world:getFlowField(field:getId()) == nil))
+    lurek.log.info("[physics] destroyed flow=" .. tostring(not world:getFlowField(field:getId()).enabled))
 end
 
 --@api: LFlowStream:type
@@ -3137,13 +3392,14 @@ do
     local body = world:newCircleBody(20, 20, 8, "dynamic")
     body:setWaterScale(1.5)
     world:addFlowField({
-        geometry = "rect",
-        x = 0,
-        y = 0,
-        w = 80,
-        h = 80,
-        direction = "explicit",
-        directionVector = { x = 1, y = 0 },
+        geometry = "path",
+        points = {
+            { x = 0, y = 20 },
+            { x = 120, y = 20 },
+            { x = 180, y = 48 },
+        },
+        width = 48,
+        direction = "alongPath",
         strength = 50,
         medium = "water",
     })

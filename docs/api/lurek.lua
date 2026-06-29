@@ -1332,9 +1332,31 @@ LSpriteSheetGetRowResult = {}
 ---@field text string Text.
 LTerminalParseAnsiResult = {}
 
+---@class LTerrainCollapseUnsupportedResult
+---@field bodyIds number[] Body ids created for spawned debris or dynamic chunk bodies.
+---@field components number Number of unsupported components that matched the collapse threshold.
+---@field debrisBodies number[] Alias of `bodyIds` kept for debris-oriented scripts.
+---@field removedCells number Number of terrain cells removed from unsupported components.
+LTerrainCollapseUnsupportedResult = {}
+
+---@class LTerrainDamageCircleResult
+---@field bodyIds number[] Body ids created for spawned debris or dynamic chunk bodies.
+---@field components number Number of unsupported components that matched the collapse threshold.
+---@field debrisBodies number[] Alias of `bodyIds` kept for debris-oriented scripts.
+---@field removedCells number Number of terrain cells removed by the collapse pass after carving.
+LTerrainDamageCircleResult = {}
+
+---@class LTerrainFlushResult
+---@field bodiesCreated number Number of new static terrain bodies created during rebuilding.
+---@field bodiesDestroyed number Number of previous terrain bodies removed before rebuilding.
+---@field dirtyChunksRebuilt number Number of dirty chunks rebuilt during this call.
+---@field dirtyChunksRemaining number Number of dirty chunks still queued after this call.
+---@field elapsedMicros number Wall-clock duration of the collider rebuild in microseconds.
+LTerrainFlushResult = {}
+
 ---@class LTerrainSolidPositionsResult
----@field x number Cell x coordinate.
----@field y number Cell y coordinate.
+---@field x number World-space center X coordinate.
+---@field y number World-space center Y coordinate.
 LTerrainSolidPositionsResult = {}
 
 ---@class LTileMapFindTilesByGidResult
@@ -19891,7 +19913,7 @@ function LOverlay:getLightningAlpha() end
 function LOverlay:getLightningColor() end
 
 --- Returns the current render responsibility plan for active overlay layers.
----@return table Table with `rendered`, `externally_handled`, and `shader` string arrays.
+---@return table Table with `rendered`, `externally_handled`, `unsupported`, `fallback`, and `shader` string arrays.
 function LOverlay:getRenderPlan() end
 
 --- Returns the shader bound to this overlay, if any.
@@ -20008,7 +20030,8 @@ function LOverlay:pullAmbientFromLight() end
 function LOverlay:pushAmbientToLight() end
 
 --- Queues renderer commands for the overlay's current visual state.
-function LOverlay:render() end
+---@param opts? table Optional table with `target` and `includeGlobal`.
+function LOverlay:render(opts) end
 
 --- Resizes the overlay target dimensions.
 ---@param w number New width in pixels.
@@ -23421,6 +23444,10 @@ function LBody:getMask() end
 ---@return number Mass in kilograms.
 function LBody:getMass() end
 
+--- Returns this body's current material table.
+---@return table Material table with solver-backed and gameplay metadata fields.
+function LBody:getMaterial() end
+
 --- Returns the current world-space position of this body.
 ---@return number X coordinate.
 ---@return number Y coordinate.
@@ -23543,6 +23570,10 @@ function LBody:setMask(mask) end
 ---@param mass number New mass value.
 function LBody:setMass(mass) end
 
+--- Applies a validated material table to this body's primary collider and body-level solver properties.
+---@param material table Material table created by `lurek.physics.newMaterial(...)` or an equivalent options table.
+function LBody:setMaterial(material) end
+
 --- Enables or disables mirror-style beam reflection on this body.
 ---@param mirror boolean True to let reflective beam traces bounce from this body.
 function LBody:setMirror(mirror) end
@@ -23557,7 +23588,7 @@ function LBody:setPosition(x, y) end
 function LBody:setProjectileReflectivity(reflectivity) end
 
 --- Sets the body's restitution (bounciness) value.
----@param restitution number New restitution (0Ä‚ËĂ˘â€šÂ¬Ă˘â‚¬Ĺ›1).
+---@param restitution number New restitution (0..1).
 function LBody:setRestitution(restitution) end
 
 --- Controls whether the body can enter sleep state. Disable for bodies that must stay active.
@@ -23699,9 +23730,48 @@ function LPhysicsShape:type() end
 ---@return boolean True if the object matches.
 function LPhysicsShape:typeOf(name) end
 
---- Optimizes terrain by merging vertically adjacent solid cells into larger colliders.
----@return number Number of columns collapsed.
+--- Adds solid terrain inside a circular region.
+---@param wx number Circle center X in world coordinates.
+---@param wy number Circle center Y in world coordinates.
+---@param radius number Circle radius in world units.
+function LTerrain:addCircle(wx, wy, radius) end
+
+--- Adds solid terrain across a rectangular region.
+---@param wx number Rectangle left X in world coordinates.
+---@param wy number Rectangle top Y in world coordinates.
+---@param w number Rectangle width in world units.
+---@param h number Rectangle height in world units.
+function LTerrain:addRect(wx, wy, w, h) end
+
+--- Carves a circular hole by clearing terrain cells inside the given radius.
+---@param wx number Circle center X in world coordinates.
+---@param wy number Circle center Y in world coordinates.
+---@param radius number Circle radius in world units.
+function LTerrain:carveCircle(wx, wy, radius) end
+
+--- Carves a rectangular hole by clearing all overlapping terrain cells.
+---@param wx number Rectangle left X in world coordinates.
+---@param wy number Rectangle top Y in world coordinates.
+---@param w number Rectangle width in world units.
+---@param h number Rectangle height in world units.
+function LTerrain:carveRect(wx, wy, w, h) end
+
+--- Removes isolated single-cell overhangs that have no support below or beside them.
+---@return number Number of unsupported single cells removed.
 function LTerrain:collapseColumns() end
+
+--- Collapses unsupported connected terrain components using the requested support rule and collapse mode.
+---@param opts table Collapse options: { support?, mode?, minComponentCells?, maxDebris?, debrisMass?, debrisRestitution? }. `support` accepts `bottom` or `border`. `mode` accepts `remove`, `spawnDebris`, `spawnDynamicChunks`, or `keepStatic`. Call `flush()` afterward to rebuild static colliders.
+---@return LTerrainCollapseUnsupportedResult Collapse result table with removedCells, components, bodyIds, and debrisBodies fields.
+function LTerrain:collapseUnsupported(opts) end
+
+--- Carves a circular hole and can immediately collapse unsupported terrain with policy options.
+---@param wx number Circle center X in world coordinates.
+---@param wy number Circle center Y in world coordinates.
+---@param radius number Circle radius in world units.
+---@param opts? table Optional damage settings: { collapse?, support?, mode?, minComponentCells?, maxDebris?, debrisMass?, debrisRestitution? }. `support` accepts `bottom` or `border`. `mode` accepts `remove`, `spawnDebris`, `spawnDynamicChunks`, or `keepStatic`. `collapse` defaults to false.
+---@return LTerrainDamageCircleResult Collapse result table with removedCells, components, bodyIds, and debrisBodies fields.
+function LTerrain:damageCircle(wx, wy, radius, opts) end
 
 --- Sets all terrain cells to either solid or empty.
 ---@param solid boolean True to fill everything solid, false to clear.
@@ -23722,8 +23792,10 @@ function LTerrain:fillCircle(wx, wy, radius, solid) end
 ---@param solid boolean True to fill solid, false to carve empty.
 function LTerrain:fillRect(wx, wy, w, h, solid) end
 
---- Regenerates physics colliders from the current terrain grid state. Call after modifying cells.
-function LTerrain:flush() end
+--- Regenerates physics colliders from the current terrain grid state and returns rebuild diagnostics.
+---@param maxDirtyChunks? number Optional maximum number of dirty chunks to rebuild in this call. When omitted, all pending dirty chunks are rebuilt.
+---@return LTerrainFlushResult Rebuild diagnostics with dirtyChunksRebuilt, dirtyChunksRemaining, bodiesDestroyed, bodiesCreated, and elapsedMicros fields.
+function LTerrain:flush(maxDirtyChunks) end
 
 --- Returns whether a cell is solid. This method is available to Lua scripts.
 ---@param cx number Cell column.
@@ -23746,8 +23818,8 @@ function LTerrain:loadFromBytes(data) end
 ---@param solid boolean True for solid, false for empty.
 function LTerrain:setCell(cx, cy, solid) end
 
---- Returns all solid cell positions as a table of {x, y} entries.
----@return LTerrainSolidPositionsResult Array of tables with x and y fields (cell coordinates).
+--- Returns all solid cell centers as a table of `{x, y}` entries in world coordinates.
+---@return LTerrainSolidPositionsResult Array of tables with x and y fields (world-space centers).
 function LTerrain:solidPositions() end
 
 --- Spawns small dynamic debris bodies at the given positions (for destruction effects).
@@ -23790,6 +23862,11 @@ function LTerrain:typeOf(name) end
 ---@param length number Target distance between anchors.
 ---@return number The joint ID.
 function LWorld:addDistanceJoint(bodyA, bodyB, anchorAX, anchorAY, anchorBX, anchorBY, length) end
+
+--- Creates a directional fan helper around the flow-field system.
+---@param opts table Fan options such as `x`, `y`, `radius`, `directionVector`, and `widthAngle`.
+---@return LFlowStream New flow field handle.
+function LWorld:addFan(opts) end
 
 --- Attaches a new collider shape to an existing body with material properties.
 ---@param bodyId number The target body ID.
@@ -24072,9 +24149,15 @@ function LWorld:getContacts() end
 ---@return LWorldGetEndContactEventsResult Array of {bodyA, bodyB} tables.
 function LWorld:getEndContactEvents() end
 
---- Returns one flow field table by id, or nil when missing.
+--- Returns the current material table for one fixture.
+---@param bodyId number The body ID.
+---@param fixtureIndex number Zero-based fixture index on the body.
+---@return table Material table with solver-backed and gameplay metadata fields.
+function LWorld:getFixtureMaterial(bodyId, fixtureIndex) end
+
+--- Returns one authored flow field table by id, or nil when missing.
 ---@param id number Flow field id.
----@return table? Flow field descriptor table with geometry, strength, application, combine, and layer-mask fields.
+---@return table? Flow field descriptor table with geometry, enabled, strength, application, combine, and layer-mask fields.
 function LWorld:getFlowField(id) end
 
 --- Returns the current world gravity vector.
@@ -24162,8 +24245,9 @@ function LWorld:newBodies(specs) end
 ---@param x number Initial X position in world coordinates.
 ---@param y number Initial Y position in world coordinates.
 ---@param bodyType string One of "static", "dynamic", "kinematic", or "sensor".
+---@param opts? table Optional body options: { material?, bullet?, layer?, mask? }.
 ---@return LBody The newly created body handle.
-function LWorld:newBody(x, y, bodyType) end
+function LWorld:newBody(x, y, bodyType, opts) end
 
 --- Creates a new body with a chain (polyline) collider. Useful for terrain edges.
 ---@param x number Body X position in world coordinates.
@@ -24171,16 +24255,18 @@ function LWorld:newBody(x, y, bodyType) end
 ---@param vertices table Flat array of vertex coordinates {x1,y1,x2,y2,...}.
 ---@param closed boolean If true, connects the last vertex back to the first.
 ---@param bodyType string One of "static", "dynamic", "kinematic", or "sensor".
+---@param opts? table Optional body options: { material?, bullet?, layer?, mask? }.
 ---@return LBody The newly created body handle.
-function LWorld:newChainBody(x, y, vertices, closed, bodyType) end
+function LWorld:newChainBody(x, y, vertices, closed, bodyType, opts) end
 
 --- Creates a new body with a circle collider already attached.
 ---@param x number Initial X position in world coordinates.
 ---@param y number Initial Y position in world coordinates.
 ---@param radius number Circle radius in world units.
 ---@param bodyType string One of "static", "dynamic", "kinematic", or "sensor".
+---@param opts? table Optional body options: { material?, bullet?, layer?, mask? }.
 ---@return LBody The newly created body handle.
-function LWorld:newCircleBody(x, y, radius, bodyType) end
+function LWorld:newCircleBody(x, y, radius, bodyType, opts) end
 
 --- Creates a new body with an edge (line segment) collider between two local points.
 ---@param x number Body X position in world coordinates.
@@ -24190,16 +24276,18 @@ function LWorld:newCircleBody(x, y, radius, bodyType) end
 ---@param x2 number Edge end X relative to body.
 ---@param y2 number Edge end Y relative to body.
 ---@param bodyType string One of "static", "dynamic", "kinematic", or "sensor".
+---@param opts? table Optional body options: { material?, bullet?, layer?, mask? }.
 ---@return LBody The newly created body handle.
-function LWorld:newEdgeBody(x, y, x1, y1, x2, y2, bodyType) end
+function LWorld:newEdgeBody(x, y, x1, y1, x2, y2, bodyType, opts) end
 
 --- Creates a new body with a convex polygon collider defined by vertex pairs.
 ---@param x number Initial X position in world coordinates.
 ---@param y number Initial Y position in world coordinates.
 ---@param vertices table Flat array of vertex coordinates {x1,y1,x2,y2,...}.
 ---@param bodyType string One of "static", "dynamic", "kinematic", or "sensor".
+---@param opts? table Optional body options: { material?, bullet?, layer?, mask? }.
 ---@return LBody The newly created body handle.
-function LWorld:newPolygonBody(x, y, vertices, bodyType) end
+function LWorld:newPolygonBody(x, y, vertices, bodyType, opts) end
 
 --- Returns all body IDs whose axis-aligned bounding boxes overlap the given rectangle.
 ---@param x number Query rectangle left X.
@@ -24317,8 +24405,14 @@ function LWorld:setEndContact(callback) end
 --- Updates the friction coefficient of a specific fixture on a body.
 ---@param bodyId number The body ID.
 ---@param fixtureIndex number Zero-based fixture index on the body.
----@param friction number New friction value (0Ä‚ËĂ˘â€šÂ¬Ă˘â‚¬Ĺ›1 typical range).
+---@param friction number New friction value (0..1 typical range).
 function LWorld:setFixtureFriction(bodyId, fixtureIndex, friction) end
+
+--- Assigns a reusable material table to one fixture.
+---@param bodyId number The body ID.
+---@param fixtureIndex number Zero-based fixture index on the body.
+---@param material table Material table created by `lurek.physics.newMaterial(...)` or an equivalent options table.
+function LWorld:setFixtureMaterial(bodyId, fixtureIndex, material) end
 
 --- Updates the restitution (bounciness) of a specific fixture on a body.
 ---@param bodyId number The body ID.
@@ -24556,8 +24650,9 @@ lurek.physics.isSleepingAllowed = function(world, body) end
 ---@param x number Initial X position.
 ---@param y number Initial Y position.
 ---@param bodyType string Body type: "static", "dynamic", "kinematic", or "sensor".
+---@param opts? table Optional body options: { material?, bullet?, layer?, mask? }.
 ---@return LBody The newly created body.
-lurek.physics.newBody = function(world, x, y, bodyType) end
+lurek.physics.newBody = function(world, x, y, bodyType, opts) end
 
 --- Creates a chain (polyline) collision shape. Useful for terrain outlines.
 ---@param closed boolean If true, connects last vertex to first.
@@ -24577,6 +24672,11 @@ lurek.physics.newCircleShape = function(r) end
 ---@param y2 number End Y.
 ---@return LPhysicsShape The shape object.
 lurek.physics.newEdgeShape = function(x1, y1, x2, y2) end
+
+--- Validates and canonicalizes a reusable physics material table.
+---@param opts table Material options: { name?, density?, friction?, restitution?, linearDamping?, angularDamping?, gravityScale?, massOverride?, stickiness?, adhesion?, beamReflectivity?, projectileReflectivity?, beamAbsorption?, buoyancy?, surfaceType? }.
+---@return table Canonical material table that can be reused with body and fixture assignment APIs.
+lurek.physics.newMaterial = function(opts) end
 
 --- Creates a convex polygon collision shape from vertex coordinate pairs.
 ---@param ... number Alternating x,y coordinates (minimum 3 pairs = 6 numbers).

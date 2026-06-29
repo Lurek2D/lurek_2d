@@ -28,10 +28,14 @@ This module primarily collaborates with `color`, `image`, `render`, `runtime`. I
   `overlay` owns scene-wide screen presentation policy and temporal orchestration: weather, ambient tint, flash, fade, shake, lightning, accessibility, layer ordering, and diagnostics. It may request post-fx work through explicit descriptors, but it must not own shader catalogs, post-fx stack ordering, or capture lifecycle; those belong to `effect` and `render`.
 - Status stack contract:
   Status layers are overlay-owned descriptors with stable ids, normalized intensity, fade in/out timing, priority ordering, optional fullscreen texture metadata, and optional built-in post-fx names. Lua should treat them as authored presentation state, not as ad hoc one-frame shader toggles.
+- Targeting contract:
+  Status layers may be authored for `sceneOnly`, `hudBack`, `hudFront`, or `fullScreenTop`. Scripts place them by calling `overlay:render({ target = ... })` in the appropriate frame phase rather than by pushing presentation policy into physics or gameplay modules.
 - Render boundary:
   Direct overlay commands are suitable for simple color/shape layers. Shader-backed treatments such as heat haze, water distortion, film grain, cloud shadows, CRT, pixelate, upscale/downscale, or full-frame grading should route through post-fx descriptors and renderer execution.
 - Routing boundary:
   A status layer may contribute direct fullscreen color or texture work and may also request a built-in post-fx pass such as grayscale, vignette, blur, chromatic offset, scanlines, or noise. Overlay decides which parts are directly rendered versus delegated to renderer-managed post-fx execution.
+- Accessibility boundary:
+  Reduced-motion policy also applies to status layers: high-alpha washes are clamped, grain-like `noise` / `scanlines` passes can be disabled, and heavy distortion-style passes are reduced so danger feedback remains readable without strobing or harsh full-screen pulses.
 - World boundary:
   Overlay is screen-space after the world. World-space effects such as sparks behind an isometric wall, dust at a tile collision, or object-local trails belong to `particle`/`scene`/`tilemap` depth ordering, not overlay.
 

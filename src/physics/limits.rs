@@ -19,6 +19,8 @@ pub struct PhysicsLimits {
     pub max_zones: usize,
     /// Maximum number of terrain cells allowed in one grid allocation.
     pub max_terrain_cells: u64,
+    /// Maximum number of terrain cells one connected-component terrain scan may inspect.
+    pub max_terrain_component_scan_cells: u64,
     /// Maximum output bytes allowed in one terrain RGBA export.
     pub max_output_bytes: u64,
     /// Maximum number of polygon vertices accepted by strict constructors.
@@ -41,6 +43,7 @@ impl Default for PhysicsLimits {
             max_joints: 131_072,
             max_zones: 4_096,
             max_terrain_cells: 16_777_216,
+            max_terrain_component_scan_cells: 1_048_576,
             max_output_bytes: 268_435_456,
             max_polygon_vertices: 8,
             max_chain_vertices: 4_096,
@@ -109,6 +112,25 @@ pub(crate) fn checked_terrain_cells(
         height,
         cells,
         max_cells: limits.max_terrain_cells,
+    })
+}
+
+/// Return the exact terrain cell budget for one connected-component scan, rejecting configured ceilings.
+pub(crate) fn checked_terrain_component_scan_cells(
+    cells: u64,
+    limits: &PhysicsLimits,
+) -> Result<usize, PhysicsError> {
+    if cells > limits.max_terrain_component_scan_cells {
+        return Err(PhysicsError::CountLimitExceeded {
+            context: "physics terrain component scan",
+            count: usize::try_from(cells).unwrap_or(usize::MAX),
+            max: usize::try_from(limits.max_terrain_component_scan_cells).unwrap_or(usize::MAX),
+        });
+    }
+    usize::try_from(cells).map_err(|_| PhysicsError::CountLimitExceeded {
+        context: "physics terrain component scan",
+        count: usize::MAX,
+        max: usize::try_from(limits.max_terrain_component_scan_cells).unwrap_or(usize::MAX),
     })
 }
 

@@ -20219,6 +20219,24 @@
           "objectType": null
         },
         {
+          "name": "newMaterial",
+          "fullPath": "lurek.physics.newMaterial",
+          "signature": "(opts)",
+          "description": "Validates and canonicalizes a reusable physics material table.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Material options: { name?, density?, friction?, restitution?, linearDamping?, angularDamping?, gravityScale?, massOverride?, stickiness?, adhesion?, beamReflectivity?, projectileReflectivity?, beamAbsorption?, buoyancy?, surfaceType? }.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "newBody",
           "fullPath": "lurek.physics.newBody",
           "signature": "(...)",
@@ -20247,6 +20265,12 @@
               "type": "string",
               "description": "Body type: \"static\", \"dynamic\", \"kinematic\", or \"sensor\".",
               "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional body options: { material?, bullet?, layer?, mask? }.",
+              "optional": true
             }
           ],
           "returns": "LBody",
@@ -45306,6 +45330,35 @@
           "objectType": "LBody"
         },
         {
+          "name": "setMaterial",
+          "fullPath": "LBody:setMaterial",
+          "signature": "(material_tbl)",
+          "description": "Applies a validated material table to this body's primary collider and body-level solver properties.",
+          "parameters": [
+            {
+              "name": "material",
+              "type": "table",
+              "description": "Material table created by `lurek.physics.newMaterial(...)` or an equivalent options table.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBody"
+        },
+        {
+          "name": "getMaterial",
+          "fullPath": "LBody:getMaterial",
+          "signature": "()",
+          "description": "Returns this body's current material table.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LBody"
+        },
+        {
           "name": "getType",
           "fullPath": "LBody:getType",
           "signature": "()",
@@ -45405,7 +45458,7 @@
             {
               "name": "restitution",
               "type": "number",
-              "description": "New restitution (0Ä‚ËĂ˘â€šÂ¬Ă˘â‚¬Ĺ›1).",
+              "description": "New restitution (0..1).",
               "optional": false
             }
           ],
@@ -110348,9 +110401,16 @@
         {
           "name": "render",
           "fullPath": "LOverlay:render",
-          "signature": "()",
+          "signature": "([opts])",
           "description": "Queues renderer commands for the overlay's current visual state.",
-          "parameters": [],
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional table with `target` and `includeGlobal`.",
+              "optional": true
+            }
+          ],
           "returns": "nil",
           "returnType": "nil",
           "isMethod": true,
@@ -157070,6 +157130,66 @@
           "objectType": "LTerrain"
         },
         {
+          "name": "carveCircle",
+          "fullPath": "LTerrain:carveCircle",
+          "signature": "(wx, wy, radius)",
+          "description": "Carves a circular hole by clearing terrain cells inside the given radius.",
+          "parameters": [
+            {
+              "name": "wx",
+              "type": "number",
+              "description": "Circle center X in world coordinates.",
+              "optional": false
+            },
+            {
+              "name": "wy",
+              "type": "number",
+              "description": "Circle center Y in world coordinates.",
+              "optional": false
+            },
+            {
+              "name": "radius",
+              "type": "number",
+              "description": "Circle radius in world units.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTerrain"
+        },
+        {
+          "name": "addCircle",
+          "fullPath": "LTerrain:addCircle",
+          "signature": "(wx, wy, radius)",
+          "description": "Adds solid terrain inside a circular region.",
+          "parameters": [
+            {
+              "name": "wx",
+              "type": "number",
+              "description": "Circle center X in world coordinates.",
+              "optional": false
+            },
+            {
+              "name": "wy",
+              "type": "number",
+              "description": "Circle center Y in world coordinates.",
+              "optional": false
+            },
+            {
+              "name": "radius",
+              "type": "number",
+              "description": "Circle radius in world units.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTerrain"
+        },
+        {
           "name": "fillRect",
           "fullPath": "LTerrain:fillRect",
           "signature": "(wx, wy, w, h, solid)",
@@ -157112,6 +157232,114 @@
           "objectType": "LTerrain"
         },
         {
+          "name": "carveRect",
+          "fullPath": "LTerrain:carveRect",
+          "signature": "(wx, wy, w, h)",
+          "description": "Carves a rectangular hole by clearing all overlapping terrain cells.",
+          "parameters": [
+            {
+              "name": "wx",
+              "type": "number",
+              "description": "Rectangle left X in world coordinates.",
+              "optional": false
+            },
+            {
+              "name": "wy",
+              "type": "number",
+              "description": "Rectangle top Y in world coordinates.",
+              "optional": false
+            },
+            {
+              "name": "w",
+              "type": "number",
+              "description": "Rectangle width in world units.",
+              "optional": false
+            },
+            {
+              "name": "h",
+              "type": "number",
+              "description": "Rectangle height in world units.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTerrain"
+        },
+        {
+          "name": "addRect",
+          "fullPath": "LTerrain:addRect",
+          "signature": "(wx, wy, w, h)",
+          "description": "Adds solid terrain across a rectangular region.",
+          "parameters": [
+            {
+              "name": "wx",
+              "type": "number",
+              "description": "Rectangle left X in world coordinates.",
+              "optional": false
+            },
+            {
+              "name": "wy",
+              "type": "number",
+              "description": "Rectangle top Y in world coordinates.",
+              "optional": false
+            },
+            {
+              "name": "w",
+              "type": "number",
+              "description": "Rectangle width in world units.",
+              "optional": false
+            },
+            {
+              "name": "h",
+              "type": "number",
+              "description": "Rectangle height in world units.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTerrain"
+        },
+        {
+          "name": "damageCircle",
+          "fullPath": "LTerrain:damageCircle",
+          "signature": "(wx, wy, radius, [opts])",
+          "description": "Carves a circular hole and can immediately collapse unsupported terrain with policy options.",
+          "parameters": [
+            {
+              "name": "wx",
+              "type": "number",
+              "description": "Circle center X in world coordinates.",
+              "optional": false
+            },
+            {
+              "name": "wy",
+              "type": "number",
+              "description": "Circle center Y in world coordinates.",
+              "optional": false
+            },
+            {
+              "name": "radius",
+              "type": "number",
+              "description": "Circle radius in world units.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional damage settings: { collapse?, support?, mode?, minComponentCells?, maxDebris?, debrisMass?, debrisRestitution? }. `support` accepts `bottom` or `border`. `mode` accepts `remove`, `spawnDebris`, `spawnDynamicChunks`, or `keepStatic`. `collapse` defaults to false.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LTerrain"
+        },
+        {
           "name": "fillAll",
           "fullPath": "LTerrain:fillAll",
           "signature": "(solid)",
@@ -157132,11 +157360,18 @@
         {
           "name": "flush",
           "fullPath": "LTerrain:flush",
-          "signature": "()",
-          "description": "Regenerates physics colliders from the current terrain grid state. Call after modifying cells.",
-          "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "signature": "([max_dirty_chunks])",
+          "description": "Regenerates physics colliders from the current terrain grid state and returns rebuild diagnostics.",
+          "parameters": [
+            {
+              "name": "maxDirtyChunks",
+              "type": "integer",
+              "description": "Optional maximum number of dirty chunks to rebuild in this call. When omitted, all pending dirty chunks are rebuilt.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LTerrain"
         },
@@ -157155,7 +157390,7 @@
           "name": "collapseColumns",
           "fullPath": "LTerrain:collapseColumns",
           "signature": "()",
-          "description": "Optimizes terrain by merging vertically adjacent solid cells into larger colliders.",
+          "description": "Removes isolated single-cell overhangs that have no support below or beside them.",
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
@@ -157163,10 +157398,28 @@
           "objectType": "LTerrain"
         },
         {
+          "name": "collapseUnsupported",
+          "fullPath": "LTerrain:collapseUnsupported",
+          "signature": "(opts)",
+          "description": "Collapses unsupported connected terrain components using the requested support rule and collapse mode.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Collapse options: { support?, mode?, minComponentCells?, maxDebris?, debrisMass?, debrisRestitution? }. `support` accepts `bottom` or `border`. `mode` accepts `remove`, `spawnDebris`, `spawnDynamicChunks`, or `keepStatic`. Call `flush()` afterward to rebuild static colliders.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LTerrain"
+        },
+        {
           "name": "solidPositions",
           "fullPath": "LTerrain:solidPositions",
           "signature": "()",
-          "description": "Returns all solid cell positions as a table of {x, y} entries.",
+          "description": "Returns all solid cell centers as a table of `{x, y}` entries in world coordinates.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -179888,6 +180141,24 @@
           "objectType": "LWorld"
         },
         {
+          "name": "addFan",
+          "fullPath": "LWorld:addFan",
+          "signature": "(opts)",
+          "description": "Creates a directional fan helper around the flow-field system.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Fan options such as `x`, `y`, `radius`, `directionVector`, and `widthAngle`.",
+              "optional": false
+            }
+          ],
+          "returns": "LFlowStream",
+          "returnType": "LFlowStream",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
           "name": "removeFlowField",
           "fullPath": "LWorld:removeFlowField",
           "signature": "(id)",
@@ -179909,7 +180180,7 @@
           "name": "getFlowField",
           "fullPath": "LWorld:getFlowField",
           "signature": "(id)",
-          "description": "Returns one flow field table by id, or nil when missing.",
+          "description": "Returns one authored flow field table by id, or nil when missing.",
           "parameters": [
             {
               "name": "id",
@@ -179999,6 +180270,12 @@
               "type": "string",
               "description": "One of \"static\", \"dynamic\", \"kinematic\", or \"sensor\".",
               "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional body options: { material?, bullet?, layer?, mask? }.",
+              "optional": true
             }
           ],
           "returns": "LBody",
@@ -180009,7 +180286,7 @@
         {
           "name": "newCircleBody",
           "fullPath": "LWorld:newCircleBody",
-          "signature": "(x, y, radius, bt)",
+          "signature": "(x, y, radius, bt, [opts])",
           "description": "Creates a new body with a circle collider already attached.",
           "parameters": [
             {
@@ -180035,6 +180312,12 @@
               "type": "string",
               "description": "One of \"static\", \"dynamic\", \"kinematic\", or \"sensor\".",
               "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional body options: { material?, bullet?, layer?, mask? }.",
+              "optional": true
             }
           ],
           "returns": "LBody",
@@ -180045,7 +180328,7 @@
         {
           "name": "newPolygonBody",
           "fullPath": "LWorld:newPolygonBody",
-          "signature": "(x, y, tbl, bt)",
+          "signature": "(x, y, tbl, bt, [opts])",
           "description": "Creates a new body with a convex polygon collider defined by vertex pairs.",
           "parameters": [
             {
@@ -180071,6 +180354,12 @@
               "type": "string",
               "description": "One of \"static\", \"dynamic\", \"kinematic\", or \"sensor\".",
               "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional body options: { material?, bullet?, layer?, mask? }.",
+              "optional": true
             }
           ],
           "returns": "LBody",
@@ -180081,7 +180370,7 @@
         {
           "name": "newEdgeBody",
           "fullPath": "LWorld:newEdgeBody",
-          "signature": "(x, y, x1, y1, x2, y2, bt)",
+          "signature": "LWorld:newEdgeBody(x, y, x1, y1, x2, y2, bodyType, [opts])",
           "description": "Creates a new body with an edge (line segment) collider between two local points.",
           "parameters": [
             {
@@ -180125,6 +180414,12 @@
               "type": "string",
               "description": "One of \"static\", \"dynamic\", \"kinematic\", or \"sensor\".",
               "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional body options: { material?, bullet?, layer?, mask? }.",
+              "optional": true
             }
           ],
           "returns": "LBody",
@@ -180135,7 +180430,7 @@
         {
           "name": "newChainBody",
           "fullPath": "LWorld:newChainBody",
-          "signature": "(x, y, tbl, closed, bt)",
+          "signature": "LWorld:newChainBody(x, y, vertices, closed, bodyType, [opts])",
           "description": "Creates a new body with a chain (polyline) collider. Useful for terrain edges.",
           "parameters": [
             {
@@ -180167,6 +180462,12 @@
               "type": "string",
               "description": "One of \"static\", \"dynamic\", \"kinematic\", or \"sensor\".",
               "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional body options: { material?, bullet?, layer?, mask? }.",
+              "optional": true
             }
           ],
           "returns": "LBody",
@@ -180267,7 +180568,7 @@
             {
               "name": "friction",
               "type": "number",
-              "description": "New friction value (0Ä‚ËĂ˘â€šÂ¬Ă˘â‚¬Ĺ›1 typical range).",
+              "description": "New friction value (0..1 typical range).",
               "optional": false
             }
           ],
@@ -180303,6 +180604,60 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "setFixtureMaterial",
+          "fullPath": "LWorld:setFixtureMaterial",
+          "signature": "(body_id, fix_idx, material_tbl)",
+          "description": "Assigns a reusable material table to one fixture.",
+          "parameters": [
+            {
+              "name": "bodyId",
+              "type": "integer",
+              "description": "The body ID.",
+              "optional": false
+            },
+            {
+              "name": "fixtureIndex",
+              "type": "integer",
+              "description": "Zero-based fixture index on the body.",
+              "optional": false
+            },
+            {
+              "name": "material",
+              "type": "table",
+              "description": "Material table created by `lurek.physics.newMaterial(...)` or an equivalent options table.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "getFixtureMaterial",
+          "fullPath": "LWorld:getFixtureMaterial",
+          "signature": "(body_id, fix_idx)",
+          "description": "Returns the current material table for one fixture.",
+          "parameters": [
+            {
+              "name": "bodyId",
+              "type": "integer",
+              "description": "The body ID.",
+              "optional": false
+            },
+            {
+              "name": "fixtureIndex",
+              "type": "integer",
+              "description": "Zero-based fixture index on the body.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LWorld"
         },

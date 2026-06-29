@@ -281,7 +281,7 @@ end
 Creates a new body in a world (free-function variant).
 
 ```lua
-lurek.physics.newBody(world, x, y, bodyType)
+lurek.physics.newBody(world, x, y, bodyType, opts)
 ```
 
 **Parameters**
@@ -292,6 +292,7 @@ lurek.physics.newBody(world, x, y, bodyType)
 | `x` | number | Initial X position. |
 | `y` | number | Initial Y position. |
 | `bodyType` | string | Body type: "static", "dynamic", "kinematic", or "sensor". |
+| `opts?` | table | Optional body options: { material?, bullet?, layer?, mask? }. |
 
 **Returns**
 
@@ -421,6 +422,46 @@ do
     edge:setSensor(false)
     lurek.log.info("ledge edge type=" .. edge:getType())
     lurek.log.info("ledge bounds=" .. minX .. "," .. minY .. " -> " .. maxX .. "," .. maxY)
+end
+```
+
+---
+
+### `lurek.physics.newMaterial`
+
+Validates and canonicalizes a reusable physics material table.
+
+```lua
+lurek.physics.newMaterial(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts` | table | Material options: { name?, density?, friction?, restitution?, linearDamping?, angularDamping?, gravityScale?, massOverride?, stickiness?, adhesion?, beamReflectivity?, projectileReflectivity?, beamAbsorption?, buoyancy?, surfaceType? }. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Canonical material table that can be reused with body and fixture assignment APIs. |
+
+**Example**
+
+```lua
+do
+
+    local rubber = lurek.physics.newMaterial({
+        name = "rubber",
+        density = 1.2,
+        friction = 0.9,
+        restitution = 0.8,
+        surfaceType = "bounce_pad",
+    })
+    lurek.log.info("name=" .. tostring(rubber.name))
+    lurek.log.info("friction=" .. tostring(rubber.friction))
+    lurek.log.info("surface=" .. tostring(rubber.surfaceType))
 end
 ```
 
@@ -1472,6 +1513,44 @@ end
 
 ---
 
+#### `LBody:getMaterial`
+
+Returns this body's current material table.
+
+```lua
+LBody:getMaterial()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Material table with solver-backed and gameplay metadata fields. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newBody(40, 40, "dynamic")
+    body:setMaterial(lurek.physics.newMaterial({
+        name = "mirror",
+        friction = 0.2,
+        restitution = 0.1,
+        beamReflectivity = 1.0,
+        projectileReflectivity = 0.25,
+        beamAbsorption = 0.0,
+    }))
+    local material = body:getMaterial()
+    lurek.log.info("name=" .. tostring(material.name))
+    lurek.log.info("beam=" .. tostring(material.beamReflectivity))
+    lurek.log.info("projectile=" .. tostring(material.projectileReflectivity))
+end
+```
+
+---
+
 #### `LBody:getPosition`
 
 Returns the current world-space position of this body.
@@ -2398,6 +2477,44 @@ end
 
 ---
 
+#### `LBody:setMaterial`
+
+Applies a validated material table to this body's primary collider and body-level solver properties.
+
+```lua
+LBody:setMaterial(material)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `material` | table | Material table created by `lurek.physics.newMaterial(...)` or an equivalent options table. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newCircleBody(100, 100, 20, "dynamic")
+    local glue = lurek.physics.newMaterial({
+        name = "glue",
+        density = 1.4,
+        friction = 1.0,
+        restitution = 0.0,
+        stickiness = 1.0,
+        adhesion = 0.8,
+        gravityScale = 0.5,
+    })
+    body:setMaterial(glue)
+    lurek.log.info("friction=" .. tostring(body:getFriction()))
+    lurek.log.info("gravity=" .. tostring(body:getGravityScale()))
+end
+```
+
+---
+
 #### `LBody:setMirror`
 
 Enables or disables mirror-style beam reflection on this body.
@@ -2503,7 +2620,7 @@ LBody:setRestitution(restitution)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `restitution` | number | New restitution (0Ä‚ËĂ˘â€šÂ¬Ă˘â‚¬Ĺ›1). |
+| `restitution` | number | New restitution (0..1). |
 
 **Example**
 
@@ -2631,13 +2748,14 @@ do
     local body = world:newCircleBody(20, 20, 8, "dynamic")
     body:setWaterScale(1.5)
     world:addFlowField({
-        geometry = "rect",
-        x = 0,
-        y = 0,
-        w = 80,
-        h = 80,
-        direction = "explicit",
-        directionVector = { x = 1, y = 0 },
+        geometry = "path",
+        points = {
+            { x = 0, y = 20 },
+            { x = 120, y = 20 },
+            { x = 180, y = 48 },
+        },
+        width = 48,
+        direction = "alongPath",
         strength = 50,
         medium = "water",
     })
@@ -2798,7 +2916,7 @@ do
         strength = 20,
     })
     field:destroy()
-    lurek.log.info("[physics] destroyed flow=" .. tostring(world:getFlowField(field:getId()) == nil))
+    lurek.log.info("[physics] destroyed flow=" .. tostring(not world:getFlowField(field:getId()).enabled))
 end
 ```
 
@@ -3653,9 +3771,139 @@ end
 
 ### Type Methods
 
+#### `LTerrain:addCircle`
+
+Adds solid terrain inside a circular region.
+
+```lua
+LTerrain:addCircle(wx, wy, radius)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `wx` | number | Circle center X in world coordinates. |
+| `wy` | number | Circle center Y in world coordinates. |
+| `radius` | number | Circle radius in world units. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 400)
+    local terrain = lurek.physics.newTerrain(32, 32, 8, world)
+    terrain:fillAll(false)
+    terrain:addCircle(64, 64, 18)
+    lurek.log.info("center=" .. tostring(terrain:getCell(8, 8)))
+    lurek.log.info("dirty=" .. tostring(terrain:isDirty()))
+end
+```
+
+---
+
+#### `LTerrain:addRect`
+
+Adds solid terrain across a rectangular region.
+
+```lua
+LTerrain:addRect(wx, wy, w, h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `wx` | number | Rectangle left X in world coordinates. |
+| `wy` | number | Rectangle top Y in world coordinates. |
+| `w` | number | Rectangle width in world units. |
+| `h` | number | Rectangle height in world units. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 400)
+    local terrain = lurek.physics.newTerrain(32, 32, 8, world)
+    terrain:fillAll(false)
+    terrain:addRect(40, 40, 24, 24)
+    lurek.log.info("cell=" .. tostring(terrain:getCell(5, 5)))
+    lurek.log.info("dirty=" .. tostring(terrain:isDirty()))
+end
+```
+
+---
+
+#### `LTerrain:carveCircle`
+
+Carves a circular hole by clearing terrain cells inside the given radius.
+
+```lua
+LTerrain:carveCircle(wx, wy, radius)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `wx` | number | Circle center X in world coordinates. |
+| `wy` | number | Circle center Y in world coordinates. |
+| `radius` | number | Circle radius in world units. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 400)
+    local terrain = lurek.physics.newTerrain(32, 32, 8, world)
+    terrain:fillAll(true)
+    terrain:carveCircle(64, 64, 18)
+    lurek.log.info("center=" .. tostring(terrain:getCell(8, 8)))
+    lurek.log.info("dirty=" .. tostring(terrain:isDirty()))
+end
+```
+
+---
+
+#### `LTerrain:carveRect`
+
+Carves a rectangular hole by clearing all overlapping terrain cells.
+
+```lua
+LTerrain:carveRect(wx, wy, w, h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `wx` | number | Rectangle left X in world coordinates. |
+| `wy` | number | Rectangle top Y in world coordinates. |
+| `w` | number | Rectangle width in world units. |
+| `h` | number | Rectangle height in world units. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 400)
+    local terrain = lurek.physics.newTerrain(32, 32, 8, world)
+    terrain:fillAll(true)
+    terrain:carveRect(40, 40, 24, 24)
+    lurek.log.info("cell=" .. tostring(terrain:getCell(5, 5)))
+    lurek.log.info("dirty=" .. tostring(terrain:isDirty()))
+end
+```
+
+---
+
 #### `LTerrain:collapseColumns`
 
-Optimizes terrain by merging vertically adjacent solid cells into larger colliders.
+Removes isolated single-cell overhangs that have no support below or beside them.
 
 ```lua
 LTerrain:collapseColumns()
@@ -3665,7 +3913,7 @@ LTerrain:collapseColumns()
 
 | Type | Description |
 |------|-------------|
-| number | Number of columns collapsed. |
+| number | Number of unsupported single cells removed. |
 
 **Example**
 
@@ -3679,6 +3927,101 @@ do
     terrain:flush()
     lurek.log.info("collapsed=" .. tostring(terrain:collapseColumns()))
     lurek.log.info("dirty=" .. tostring(terrain:isDirty()))
+end
+```
+
+---
+
+#### `LTerrain:collapseUnsupported`
+
+Collapses unsupported connected terrain components using the requested support rule and collapse mode.
+
+```lua
+LTerrain:collapseUnsupported(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts` | table | Collapse options: { support?, mode?, minComponentCells?, maxDebris?, debrisMass?, debrisRestitution? }. `support` accepts `bottom` or `border`. `mode` accepts `remove`, `spawnDebris`, `spawnDynamicChunks`, or `keepStatic`. Call `flush()` afterward to rebuild static colliders. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| LTerrainCollapseUnsupportedResult | Collapse result table with removedCells, components, bodyIds, and debrisBodies fields. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 400)
+    local terrain = lurek.physics.newTerrain(32, 32, 8, world)
+    terrain:fillRect(0, 248, 256, 8, true)
+    terrain:addRect(72, 72, 24, 24)
+    local debris_result = terrain:collapseUnsupported({
+        support = "bottom",
+        mode = "spawnDebris",
+        minComponentCells = 2,
+        maxDebris = 2,
+    })
+    local terrain2 = lurek.physics.newTerrain(32, 32, 8, world)
+    terrain2:addRect(72, 72, 24, 24)
+    local chunk_result = terrain2:collapseUnsupported({
+        support = "bottom",
+        mode = "spawnDynamicChunks",
+        minComponentCells = 2,
+    })
+    terrain:flush()
+    lurek.log.info("debris_components=" .. tostring(debris_result.components))
+    lurek.log.info("debris_bodies=" .. tostring(#debris_result.debrisBodies))
+    lurek.log.info("chunk_bodies=" .. tostring(#chunk_result.bodyIds))
+end
+```
+
+---
+
+#### `LTerrain:damageCircle`
+
+Carves a circular hole and can immediately collapse unsupported terrain with policy options.
+
+```lua
+LTerrain:damageCircle(wx, wy, radius, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `wx` | number | Circle center X in world coordinates. |
+| `wy` | number | Circle center Y in world coordinates. |
+| `radius` | number | Circle radius in world units. |
+| `opts?` | table | Optional damage settings: { collapse?, support?, mode?, minComponentCells?, maxDebris?, debrisMass?, debrisRestitution? }. `support` accepts `bottom` or `border`. `mode` accepts `remove`, `spawnDebris`, `spawnDynamicChunks`, or `keepStatic`. `collapse` defaults to false. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| LTerrainDamageCircleResult | Collapse result table with removedCells, components, bodyIds, and debrisBodies fields. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 400)
+    local terrain = lurek.physics.newTerrain(32, 32, 8, world)
+    terrain:fillAll(true)
+    local result = terrain:damageCircle(64, 64, 18, {
+        collapse = true,
+        support = "bottom",
+        mode = "remove",
+        minComponentCells = 2,
+    })
+    lurek.log.info("removed=" .. tostring(result.removedCells))
+    lurek.log.info("components=" .. tostring(result.components))
 end
 ```
 
@@ -3781,11 +4124,23 @@ end
 
 #### `LTerrain:flush`
 
-Regenerates physics colliders from the current terrain grid state. Call after modifying cells.
+Regenerates physics colliders from the current terrain grid state and returns rebuild diagnostics.
 
 ```lua
-LTerrain:flush()
+LTerrain:flush(maxDirtyChunks)
 ```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `maxDirtyChunks?` | number | Optional maximum number of dirty chunks to rebuild in this call. When omitted, all pending dirty chunks are rebuilt. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| LTerrainFlushResult | Rebuild diagnostics with dirtyChunksRebuilt, dirtyChunksRemaining, bodiesDestroyed, bodiesCreated, and elapsedMicros fields. |
 
 **Example**
 
@@ -3793,11 +4148,13 @@ LTerrain:flush()
 do
 
     local world = lurek.physics.newWorld(0, 9.8)
-    local terrain = lurek.physics.newTerrain(32, 32, 16, world)
+    local terrain = lurek.physics.newTerrain(64, 16, 16, world)
     terrain:fillAll(true)
-    terrain:flush()
-    lurek.log.info("dirty=" .. tostring(terrain:isDirty()))
-    lurek.log.info("type=" .. tostring(terrain:type()))
+    local first = terrain:flush(2)
+    local second = terrain:flush()
+    lurek.log.info("rebuilt=" .. tostring(first.dirtyChunksRebuilt))
+    lurek.log.info("remaining=" .. tostring(first.dirtyChunksRemaining))
+    lurek.log.info("final_remaining=" .. tostring(second.dirtyChunksRemaining))
 end
 ```
 
@@ -3938,7 +4295,7 @@ end
 
 #### `LTerrain:solidPositions`
 
-Returns all solid cell positions as a table of {x, y} entries.
+Returns all solid cell centers as a table of `{x, y}` entries in world coordinates.
 
 ```lua
 LTerrain:solidPositions()
@@ -3948,7 +4305,7 @@ LTerrain:solidPositions()
 
 | Type | Description |
 |------|-------------|
-| LTerrainSolidPositionsResult | Array of tables with x and y fields (cell coordinates). |
+| LTerrainSolidPositionsResult | Array of tables with x and y fields (world-space centers). |
 
 **Example**
 
@@ -4199,6 +4556,46 @@ end
 
 ---
 
+#### `LWorld:addFan`
+
+Creates a directional fan helper around the flow-field system.
+
+```lua
+LWorld:addFan(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts` | table | Fan options such as `x`, `y`, `radius`, `directionVector`, and `widthAngle`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LFlowStream](#lflowstream) | New flow field handle. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local fan = world:addFan({
+        x = 80,
+        y = 80,
+        radius = 72,
+        widthAngle = 70,
+        directionVector = { x = 1, y = -0.2 },
+        strength = 120,
+    })
+    local sample = world:sampleFlow(120, 72)
+    lurek.log.info("[physics] fan id=" .. tostring(fan:getId()) .. " sample=" .. string.format("%.2f,%.2f", sample.vx, sample.vy))
+end
+```
+
+---
+
 #### `LWorld:addFixture`
 
 Attaches a new collider shape to an existing body with material properties.
@@ -4264,18 +4661,28 @@ LWorld:addFlowField(opts)
 
 ```lua
 do
-    local world = lurek.physics.newWorld(0, 0)
+    local world = lurek.physics.newWorld(0, 220)
     local field = world:addFlowField({
-        name = "river_lane",
+        name = "canyon_wind",
         geometry = "path",
         points = {
-            { x = 0, y = 0 },
-            { x = 80, y = 0 },
+            { x = 80, y = 180 },
+            { x = 200, y = 160 },
+            { x = 340, y = 190 },
         },
-        width = 24,
-        strength = 45,
+        width = 70,
+        strength = 180,
+        direction = "alongPath",
+        application = "acceleration",
     })
-    lurek.log.info("[physics] flow field id=" .. tostring(field:getId()))
+    local projectile = world:newCircleBody(120, 120, 4, "dynamic")
+    projectile:setBullet(true)
+    projectile:applyImpulse(420, -160)
+    for _ = 1, 30 do
+        world:step(1 / 60)
+    end
+    local x, y = projectile:getPosition()
+    lurek.log.info("[physics] flow field id=" .. tostring(field:getId()) .. " projectile=" .. tostring(math.floor(x)) .. "," .. tostring(math.floor(y)))
 end
 ```
 
@@ -5109,7 +5516,7 @@ LWorld:clearFlowFields()
 ```lua
 do
     local world = lurek.physics.newWorld(0, 0)
-    world:addFlowField({
+    local field = world:addFlowField({
         geometry = "rect",
         x = 0,
         y = 0,
@@ -5121,6 +5528,7 @@ do
     })
     world:clearFlowFields()
     lurek.log.info("[physics] flow count after clear=" .. tostring(world:getStats().flowFields))
+    lurek.log.info("[physics] first disabled=" .. tostring(not world:getFlowField(field:getId()).enabled))
 end
 ```
 
@@ -5863,9 +6271,56 @@ end
 
 ---
 
+#### `LWorld:getFixtureMaterial`
+
+Returns the current material table for one fixture.
+
+```lua
+LWorld:getFixtureMaterial(bodyId, fixtureIndex)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `bodyId` | number | The body ID. |
+| `fixtureIndex` | number | Zero-based fixture index on the body. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Material table with solver-backed and gameplay metadata fields. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newBody(120, 120, 20, 20, "dynamic")
+    local fixture = world:addFixture(body:getId(), "circle", 1.0, 0.3, 0.2, false, 6)
+    world:setFixtureMaterial(body:getId(), fixture, lurek.physics.newMaterial({
+        name = "ice",
+        density = 0.9,
+        friction = 0.05,
+        restitution = 0.15,
+        stickiness = 0.0,
+        adhesion = 0.0,
+        buoyancy = 0.2,
+    }))
+    local material = world:getFixtureMaterial(body:getId(), fixture)
+    lurek.log.info("name=" .. tostring(material.name))
+    lurek.log.info("friction=" .. tostring(material.friction))
+    lurek.log.info("buoyancy=" .. tostring(material.buoyancy))
+end
+```
+
+---
+
 #### `LWorld:getFlowField`
 
-Returns one flow field table by id, or nil when missing.
+Returns one authored flow field table by id, or nil when missing.
 
 ```lua
 LWorld:getFlowField(id)
@@ -5881,7 +6336,7 @@ LWorld:getFlowField(id)
 
 | Type | Description |
 |------|-------------|
-| table? | Flow field descriptor table with geometry, strength, application, combine, and layer-mask fields. |
+| table? | Flow field descriptor table with geometry, enabled, strength, application, combine, and layer-mask fields. |
 
 **Example**
 
@@ -5897,8 +6352,10 @@ do
         direction = "radialOut",
         strength = 35,
     })
+    field:setEnabled(false)
     local info = world:getFlowField(field:getId())
-    lurek.log.info("[physics] flow geometry=" .. tostring(info.geometry) .. " strength=" .. tostring(info.strength))
+    lurek.log.info("[physics] flow geometry=" .. tostring(info.geometry) .. " enabled=" .. tostring(info.enabled))
+    lurek.log.info("[physics] flow strength=" .. tostring(info.strength))
 end
 ```
 
@@ -6489,7 +6946,7 @@ end
 Creates a new physics body at the given position with the specified type and dimensions.
 
 ```lua
-LWorld:newBody(x, y, bodyType)
+LWorld:newBody(x, y, bodyType, opts)
 ```
 
 **Parameters**
@@ -6499,6 +6956,7 @@ LWorld:newBody(x, y, bodyType)
 | `x` | number | Initial X position in world coordinates. |
 | `y` | number | Initial Y position in world coordinates. |
 | `bodyType` | string | One of "static", "dynamic", "kinematic", or "sensor". |
+| `opts?` | table | Optional body options: { material?, bullet?, layer?, mask? }. |
 
 **Returns**
 
@@ -6552,12 +7010,22 @@ LWorld:newChainBody(x, y, vertices, closed, bodyType)
 do
 
     local world = lurek.physics.newWorld(0, 400)
-    local ground = world:newChainBody(0, 500, { 0, 100, 100, 80, 200, 90, 300, 60, 400, 100 }, false, "static")
+    local ground = world:newChainBody(0, 500, { 0, 100, 100, 80, 200, 90, 300, 60, 400, 100 }, false, "static", {
+        material = lurek.physics.newMaterial({
+            name = "track",
+            friction = 0.9,
+            restitution = 0.0,
+            surfaceType = "ground",
+        }),
+        layer = 0x10,
+        mask = 0x1F,
+    })
     local bike = world:newCircleBody(120, 420, 8, "dynamic")
     bike:setVelocity(30, 0)
     world:step(1 / 60)
     lurek.log.info("track body type=" .. ground:getType() .. " start_y=" .. select(2, ground:getPosition()))
     lurek.log.info("bike pos=" .. select(1, bike:getPosition()) .. "," .. select(2, bike:getPosition()))
+    lurek.log.info("material=" .. tostring(ground:getMaterial().surfaceType) .. " mask=" .. tostring(ground:getMask()))
 end
 ```
 
@@ -6568,7 +7036,7 @@ end
 Creates a new body with a circle collider already attached.
 
 ```lua
-LWorld:newCircleBody(x, y, radius, bodyType)
+LWorld:newCircleBody(x, y, radius, bodyType, opts)
 ```
 
 **Parameters**
@@ -6579,6 +7047,7 @@ LWorld:newCircleBody(x, y, radius, bodyType)
 | `y` | number | Initial Y position in world coordinates. |
 | `radius` | number | Circle radius in world units. |
 | `bodyType` | string | One of "static", "dynamic", "kinematic", or "sensor". |
+| `opts?` | table | Optional body options: { material?, bullet?, layer?, mask? }. |
 
 **Returns**
 
@@ -6592,12 +7061,24 @@ LWorld:newCircleBody(x, y, radius, bodyType)
 do
 
     local world = lurek.physics.newWorld(0, 400)
-    local ball = world:newCircleBody(200, 100, 16, "dynamic")
+    local rubber = lurek.physics.newMaterial({
+        name = "rubber",
+        density = 1.1,
+        friction = 0.85,
+        restitution = 0.7,
+    })
+    local ball = world:newCircleBody(200, 100, 16, "dynamic", {
+        material = rubber,
+        bullet = true,
+        layer = 0x2,
+        mask = 0x3,
+    })
     local target = world:newBody(200, 260, "static")
     ball:setVelocity(15, -20)
     world:step(1 / 60)
     lurek.log.info("projectile pos=" .. select(1, ball:getPosition()) .. "," .. select(2, ball:getPosition()))
     lurek.log.info("projectile size=" .. ball:getWidth() .. "x" .. ball:getHeight() .. " target=" .. target:getType())
+    lurek.log.info("projectile bullet=" .. tostring(ball:isBullet()) .. " layer=" .. tostring(ball:getLayer()))
 end
 ```
 
@@ -6635,12 +7116,22 @@ LWorld:newEdgeBody(x, y, x1, y1, x2, y2, bodyType)
 do
 
     local world = lurek.physics.newWorld(0, 400)
-    local wall = world:newEdgeBody(0, 500, 0, 0, 800, 0, "static")
+    local wall = world:newEdgeBody(0, 500, 0, 0, 800, 0, "static", {
+        material = lurek.physics.newMaterial({
+            name = "rail",
+            friction = 0.4,
+            restitution = 0.0,
+            beamReflectivity = 0.8,
+        }),
+        layer = 0x8,
+        mask = 0x2,
+    })
     local player = world:newCircleBody(100, 420, 10, "dynamic")
     player:setVelocity(40, 0)
     world:step(1 / 60)
     lurek.log.info("ledge body type=" .. wall:getType() .. " pos_y=" .. select(2, wall:getPosition()))
     lurek.log.info("runner pos=" .. select(1, player:getPosition()) .. "," .. select(2, player:getPosition()))
+    lurek.log.info("material=" .. tostring(wall:getMaterial().name) .. " layer=" .. tostring(wall:getLayer()))
 end
 ```
 
@@ -6675,12 +7166,23 @@ LWorld:newPolygonBody(x, y, vertices, bodyType)
 do
 
     local world = lurek.physics.newWorld(0, 400)
-    local tri = world:newPolygonBody(100, 200, { 0, -20, -15, 15, 15, 15 }, "dynamic")
+    local tri = world:newPolygonBody(100, 200, { 0, -20, -15, 15, 15, 15 }, "dynamic", {
+        material = lurek.physics.newMaterial({
+            name = "wedge",
+            density = 1.3,
+            friction = 0.7,
+            restitution = 0.2,
+        }),
+        bullet = true,
+        layer = 0x4,
+        mask = 0x7,
+    })
     tri:setAngularVelocity(1.5)
     world:step(1 / 60)
     local x, y = tri:getPosition()
     lurek.log.info("falling wedge pos=" .. x .. "," .. y)
     lurek.log.info("body type=" .. tri:getType() .. " angle=" .. tri:getAngle())
+    lurek.log.info("material=" .. tostring(tri:getMaterial().name) .. " bullet=" .. tostring(tri:isBullet()))
 end
 ```
 
@@ -6942,7 +7444,9 @@ do
         directionVector = { x = 1, y = 0 },
         strength = 20,
     })
-    lurek.log.info("[physics] removed=" .. tostring(world:removeFlowField(field:getId())))
+    world:removeFlowField(field:getId())
+    local info = world:getFlowField(field:getId())
+    lurek.log.info("[physics] removed=" .. tostring(info ~= nil and not info.enabled))
 end
 ```
 
@@ -7392,7 +7896,7 @@ LWorld:setFixtureFriction(bodyId, fixtureIndex, friction)
 |------|------|-------------|
 | `bodyId` | number | The body ID. |
 | `fixtureIndex` | number | Zero-based fixture index on the body. |
-| `friction` | number | New friction value (0Ä‚ËĂ˘â€šÂ¬Ă˘â‚¬Ĺ›1 typical range). |
+| `friction` | number | New friction value (0..1 typical range). |
 
 **Example**
 
@@ -7405,6 +7909,47 @@ do
     world:setFixtureFriction(body:getId(), fixture, 0.8)
     lurek.log.info("fixture=" .. tostring(fixture))
     lurek.log.info("fixture_count=" .. tostring(world:fixtureCount(body:getId())))
+end
+```
+
+---
+
+#### `LWorld:setFixtureMaterial`
+
+Assigns a reusable material table to one fixture.
+
+```lua
+LWorld:setFixtureMaterial(bodyId, fixtureIndex, material)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `bodyId` | number | The body ID. |
+| `fixtureIndex` | number | Zero-based fixture index on the body. |
+| `material` | table | Material table created by `lurek.physics.newMaterial(...)` or an equivalent options table. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newBody(100, 100, 20, 20, "dynamic")
+    local fixture = world:addFixture(body:getId(), "circle", 0.6, 0.2, 0.1, false, 8)
+    local mirror = lurek.physics.newMaterial({
+        name = "mirror",
+        density = 0.6,
+        friction = 0.1,
+        restitution = 0.05,
+        beamReflectivity = 1.0,
+        projectileReflectivity = 0.2,
+        surfaceType = "glass",
+    })
+    world:setFixtureMaterial(body:getId(), fixture, mirror)
+    lurek.log.info("fixture=" .. tostring(fixture))
+    lurek.log.info("material=" .. tostring(world:getFixtureMaterial(body:getId(), fixture).name))
 end
 ```
 

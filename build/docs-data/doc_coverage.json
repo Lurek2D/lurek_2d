@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-06-29T06:59:26.536707+00:00",
+  "generated_at": "2026-06-29T07:45:38.191869+00:00",
   "summary": {
     "rust": {
-      "total": 8864,
-      "covered": 8858,
+      "total": 8894,
+      "covered": 8888,
       "missing": 6,
       "pct": 99.9
     },
@@ -14,8 +14,8 @@
       "pct": 88.2
     },
     "total": {
-      "total": 9068,
-      "covered": 9038,
+      "total": 9098,
+      "covered": 9068,
       "missing": 30,
       "pct": 99.7
     }
@@ -79,7 +79,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 290,
+      "line": 390,
       "kind": "fn",
       "name": "outgoingDirX",
       "has_doc": false
@@ -88,7 +88,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 291,
+      "line": 391,
       "kind": "fn",
       "name": "outgoingDirY",
       "has_doc": false
@@ -97,7 +97,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 294,
+      "line": 394,
       "kind": "fn",
       "name": "outgoingDirX",
       "has_doc": false
@@ -106,7 +106,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 295,
+      "line": 395,
       "kind": "fn",
       "name": "outgoingDirY",
       "has_doc": false
@@ -115,7 +115,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 530,
+      "line": 630,
       "kind": "fn",
       "name": "bodiesScanned",
       "has_doc": false
@@ -124,7 +124,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 576,
+      "line": 676,
       "kind": "fn",
       "name": "sources",
       "has_doc": false
@@ -133,7 +133,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 595,
+      "line": 695,
       "kind": "fn",
       "name": "strength",
       "has_doc": false
@@ -142,7 +142,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 618,
+      "line": 718,
       "kind": "fn",
       "name": "priority",
       "has_doc": false
@@ -151,7 +151,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 619,
+      "line": 719,
       "kind": "fn",
       "name": "layerMask",
       "has_doc": false
@@ -160,7 +160,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 620,
+      "line": 720,
       "kind": "fn",
       "name": "maxAccel",
       "has_doc": false
@@ -169,7 +169,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 621,
+      "line": 721,
       "kind": "fn",
       "name": "drag",
       "has_doc": false
@@ -178,7 +178,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 624,
+      "line": 724,
       "kind": "fn",
       "name": "geometry",
       "has_doc": false
@@ -187,7 +187,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 625,
+      "line": 725,
       "kind": "fn",
       "name": "x",
       "has_doc": false
@@ -196,7 +196,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 626,
+      "line": 726,
       "kind": "fn",
       "name": "y",
       "has_doc": false
@@ -205,7 +205,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 627,
+      "line": 727,
       "kind": "fn",
       "name": "w",
       "has_doc": false
@@ -214,7 +214,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 628,
+      "line": 728,
       "kind": "fn",
       "name": "h",
       "has_doc": false
@@ -223,7 +223,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 636,
+      "line": 736,
       "kind": "fn",
       "name": "geometry",
       "has_doc": false
@@ -232,7 +232,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 637,
+      "line": 737,
       "kind": "fn",
       "name": "x",
       "has_doc": false
@@ -241,7 +241,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 638,
+      "line": 738,
       "kind": "fn",
       "name": "y",
       "has_doc": false
@@ -250,7 +250,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 639,
+      "line": 739,
       "kind": "fn",
       "name": "radius",
       "has_doc": false
@@ -259,7 +259,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 640,
+      "line": 740,
       "kind": "fn",
       "name": "innerRadius",
       "has_doc": false
@@ -268,7 +268,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 643,
+      "line": 743,
       "kind": "fn",
       "name": "geometry",
       "has_doc": false
@@ -277,7 +277,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 644,
+      "line": 744,
       "kind": "fn",
       "name": "width",
       "has_doc": false
@@ -286,7 +286,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 652,
+      "line": 752,
       "kind": "fn",
       "name": "points",
       "has_doc": false
@@ -35712,7 +35712,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 785,
+      "line": 885,
       "kind": "struct",
       "name": "LuaWorld",
       "has_doc": true
@@ -35721,7 +35721,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 793,
+      "line": 893,
       "kind": "fn",
       "name": "world_handle",
       "has_doc": true
@@ -35730,7 +35730,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 799,
+      "line": 899,
       "kind": "fn",
       "name": "lua_body_from_body",
       "has_doc": true
@@ -35739,7 +35739,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 2351,
+      "line": 2451,
       "kind": "struct",
       "name": "LuaFlowField",
       "has_doc": true
@@ -35748,7 +35748,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 2519,
+      "line": 2619,
       "kind": "struct",
       "name": "LuaZone",
       "has_doc": true
@@ -35757,7 +35757,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 2760,
+      "line": 2860,
       "kind": "struct",
       "name": "LuaTerrain",
       "has_doc": true
@@ -35766,7 +35766,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 2939,
+      "line": 3160,
       "kind": "struct",
       "name": "LuaBody",
       "has_doc": true
@@ -35775,7 +35775,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 2945,
+      "line": 3166,
       "kind": "fn",
       "name": "world_handle",
       "has_doc": true
@@ -35784,7 +35784,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 2950,
+      "line": 3171,
       "kind": "fn",
       "name": "body_id",
       "has_doc": true
@@ -35793,7 +35793,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 3452,
+      "line": 3673,
       "kind": "struct",
       "name": "LuaPhysicsShapeData",
       "has_doc": true
@@ -35802,7 +35802,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 3466,
+      "line": 3687,
       "kind": "struct",
       "name": "LuaPhysicsShape",
       "has_doc": true
@@ -35811,7 +35811,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 3471,
+      "line": 3692,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -35820,7 +35820,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 3484,
+      "line": 3705,
       "kind": "fn",
       "name": "data",
       "has_doc": true
@@ -35829,7 +35829,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 3654,
+      "line": 3875,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -51345,7 +51345,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/limits.rs",
-      "line": 55,
+      "line": 58,
       "kind": "fn",
       "name": "validate_finite",
       "has_doc": true
@@ -51354,7 +51354,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/limits.rs",
-      "line": 63,
+      "line": 66,
       "kind": "fn",
       "name": "validate_positive",
       "has_doc": true
@@ -51363,7 +51363,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/limits.rs",
-      "line": 72,
+      "line": 75,
       "kind": "fn",
       "name": "validate_range",
       "has_doc": true
@@ -51372,7 +51372,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/limits.rs",
-      "line": 91,
+      "line": 94,
       "kind": "fn",
       "name": "checked_terrain_cells",
       "has_doc": true
@@ -51381,7 +51381,16 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/limits.rs",
-      "line": 116,
+      "line": 119,
+      "kind": "fn",
+      "name": "checked_terrain_component_scan_cells",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/limits.rs",
+      "line": 138,
       "kind": "fn",
       "name": "checked_terrain_image_bytes",
       "has_doc": true
@@ -51543,7 +51552,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/terrain.rs",
-      "line": 28,
+      "line": 25,
       "kind": "struct",
       "name": "ChunkId",
       "has_doc": true
@@ -51552,7 +51561,97 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/terrain.rs",
-      "line": 42,
+      "line": 39,
+      "kind": "struct",
+      "name": "TerrainRegion",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/terrain.rs",
+      "line": 52,
+      "kind": "fn",
+      "name": "full",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/terrain.rs",
+      "line": 62,
+      "kind": "fn",
+      "name": "clamped_to",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/terrain.rs",
+      "line": 81,
+      "kind": "struct",
+      "name": "TerrainComponent",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/terrain.rs",
+      "line": 94,
+      "kind": "enum",
+      "name": "TerrainSupportRule",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/terrain.rs",
+      "line": 103,
+      "kind": "enum",
+      "name": "TerrainCollapseMode",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/terrain.rs",
+      "line": 123,
+      "kind": "struct",
+      "name": "TerrainCollapseOptions",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/terrain.rs",
+      "line": 153,
+      "kind": "fn",
+      "name": "validate",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/terrain.rs",
+      "line": 176,
+      "kind": "struct",
+      "name": "TerrainCollapseResult",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/terrain.rs",
+      "line": 193,
+      "kind": "struct",
+      "name": "TerrainFlushStats",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/terrain.rs",
+      "line": 213,
       "kind": "struct",
       "name": "TerrainMap",
       "has_doc": true
@@ -51561,7 +51660,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/terrain.rs",
-      "line": 75,
+      "line": 398,
       "kind": "fn",
       "name": "try_new",
       "has_doc": true
@@ -51570,7 +51669,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/terrain.rs",
-      "line": 80,
+      "line": 403,
       "kind": "fn",
       "name": "try_new_with_limits",
       "has_doc": true
@@ -51579,7 +51678,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/terrain.rs",
-      "line": 112,
+      "line": 436,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -51588,7 +51687,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/terrain.rs",
-      "line": 130,
+      "line": 455,
       "kind": "fn",
       "name": "set_cell",
       "has_doc": true
@@ -51597,7 +51696,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/terrain.rs",
-      "line": 142,
+      "line": 467,
       "kind": "fn",
       "name": "get_cell",
       "has_doc": true
@@ -51606,7 +51705,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/terrain.rs",
-      "line": 150,
+      "line": 475,
       "kind": "fn",
       "name": "try_fill_circle",
       "has_doc": true
@@ -51615,7 +51714,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/terrain.rs",
-      "line": 185,
+      "line": 510,
       "kind": "fn",
       "name": "fill_circle",
       "has_doc": true
@@ -51624,7 +51723,43 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/terrain.rs",
-      "line": 190,
+      "line": 515,
+      "kind": "fn",
+      "name": "try_carve_circle",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/terrain.rs",
+      "line": 520,
+      "kind": "fn",
+      "name": "carve_circle",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/terrain.rs",
+      "line": 525,
+      "kind": "fn",
+      "name": "try_add_circle",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/terrain.rs",
+      "line": 530,
+      "kind": "fn",
+      "name": "add_circle",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/terrain.rs",
+      "line": 535,
       "kind": "fn",
       "name": "try_fill_rect",
       "has_doc": true
@@ -51633,7 +51768,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/terrain.rs",
-      "line": 218,
+      "line": 563,
       "kind": "fn",
       "name": "fill_rect",
       "has_doc": true
@@ -51642,7 +51777,43 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/terrain.rs",
-      "line": 223,
+      "line": 568,
+      "kind": "fn",
+      "name": "try_carve_rect",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/terrain.rs",
+      "line": 573,
+      "kind": "fn",
+      "name": "carve_rect",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/terrain.rs",
+      "line": 578,
+      "kind": "fn",
+      "name": "try_add_rect",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/terrain.rs",
+      "line": 583,
+      "kind": "fn",
+      "name": "add_rect",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/terrain.rs",
+      "line": 588,
       "kind": "fn",
       "name": "fill_all",
       "has_doc": true
@@ -51651,7 +51822,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/terrain.rs",
-      "line": 231,
+      "line": 596,
       "kind": "fn",
       "name": "is_dirty",
       "has_doc": true
@@ -51660,7 +51831,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/terrain.rs",
-      "line": 244,
+      "line": 609,
       "kind": "fn",
       "name": "flush",
       "has_doc": true
@@ -51669,7 +51840,25 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/terrain.rs",
-      "line": 292,
+      "line": 614,
+      "kind": "fn",
+      "name": "flush_with_limit",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/terrain.rs",
+      "line": 680,
+      "kind": "fn",
+      "name": "last_flush_stats",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/terrain.rs",
+      "line": 685,
       "kind": "fn",
       "name": "collapse_columns",
       "has_doc": true
@@ -51678,7 +51867,79 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/terrain.rs",
-      "line": 320,
+      "line": 712,
+      "kind": "fn",
+      "name": "find_components",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/terrain.rs",
+      "line": 720,
+      "kind": "fn",
+      "name": "find_components_with_limits",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/terrain.rs",
+      "line": 811,
+      "kind": "fn",
+      "name": "find_unsupported_components",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/terrain.rs",
+      "line": 819,
+      "kind": "fn",
+      "name": "find_unsupported_components_with_limits",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/terrain.rs",
+      "line": 832,
+      "kind": "fn",
+      "name": "collapse_unsupported",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/terrain.rs",
+      "line": 840,
+      "kind": "fn",
+      "name": "collapse_unsupported_with_limits",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/terrain.rs",
+      "line": 849,
+      "kind": "fn",
+      "name": "collapse_unsupported_in_world",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/terrain.rs",
+      "line": 859,
+      "kind": "fn",
+      "name": "collapse_unsupported_in_world_with_limits",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/terrain.rs",
+      "line": 869,
       "kind": "fn",
       "name": "solid_cell_positions",
       "has_doc": true
@@ -51687,7 +51948,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/terrain.rs",
-      "line": 335,
+      "line": 882,
       "kind": "fn",
       "name": "spawn_debris_at",
       "has_doc": true
@@ -51696,7 +51957,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/terrain.rs",
-      "line": 364,
+      "line": 911,
       "kind": "fn",
       "name": "to_image_data_checked",
       "has_doc": true
@@ -51705,7 +51966,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/terrain.rs",
-      "line": 379,
+      "line": 926,
       "kind": "fn",
       "name": "to_image_data",
       "has_doc": true
@@ -51714,7 +51975,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/terrain.rs",
-      "line": 385,
+      "line": 932,
       "kind": "fn",
       "name": "to_bytes",
       "has_doc": true
@@ -51723,7 +51984,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/terrain.rs",
-      "line": 411,
+      "line": 958,
       "kind": "fn",
       "name": "from_bytes_with_limits",
       "has_doc": true
@@ -51732,7 +51993,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/terrain.rs",
-      "line": 455,
+      "line": 1002,
       "kind": "fn",
       "name": "from_bytes",
       "has_doc": true
@@ -51741,7 +52002,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/terrain.rs",
-      "line": 460,
+      "line": 1007,
       "kind": "fn",
       "name": "load_from_bytes",
       "has_doc": true
@@ -51923,6 +52184,15 @@
       "file": "src/physics/world.rs",
       "line": 602,
       "kind": "fn",
+      "name": "limits",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/world.rs",
+      "line": 607,
+      "kind": "fn",
       "name": "draw_debug_to_image",
       "has_doc": true
     },
@@ -51930,7 +52200,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 797,
+      "line": 802,
       "kind": "fn",
       "name": "draw_flow_debug_to_image",
       "has_doc": true
@@ -51939,7 +52209,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 883,
+      "line": 888,
       "kind": "fn",
       "name": "extract_shape_snapshots",
       "has_doc": true
@@ -51948,7 +52218,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 955,
+      "line": 960,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -51957,7 +52227,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1150,
+      "line": 1155,
       "kind": "fn",
       "name": "get_diagnostics",
       "has_doc": true
@@ -51966,7 +52236,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1155,
+      "line": 1160,
       "kind": "fn",
       "name": "mark_body_dirty",
       "has_doc": true
@@ -51975,7 +52245,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1161,
+      "line": 1166,
       "kind": "fn",
       "name": "has_body",
       "has_doc": true
@@ -51984,7 +52254,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1165,
+      "line": 1170,
       "kind": "fn",
       "name": "has_joint",
       "has_doc": true
@@ -51993,7 +52263,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1321,
+      "line": 1326,
       "kind": "fn",
       "name": "add_body",
       "has_doc": true
@@ -52002,7 +52272,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1352,
+      "line": 1357,
       "kind": "fn",
       "name": "try_add_fixture",
       "has_doc": true
@@ -52011,7 +52281,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1399,
+      "line": 1404,
       "kind": "fn",
       "name": "add_fixture",
       "has_doc": true
@@ -52020,7 +52290,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1417,
+      "line": 1422,
       "kind": "fn",
       "name": "fixture_count",
       "has_doc": true
@@ -52029,7 +52299,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1424,
+      "line": 1429,
       "kind": "fn",
       "name": "try_set_fixture_friction",
       "has_doc": true
@@ -52038,7 +52308,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1463,
+      "line": 1468,
       "kind": "fn",
       "name": "set_fixture_friction",
       "has_doc": true
@@ -52047,7 +52317,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1472,
+      "line": 1477,
       "kind": "fn",
       "name": "try_set_fixture_restitution",
       "has_doc": true
@@ -52056,7 +52326,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1511,
+      "line": 1516,
       "kind": "fn",
       "name": "set_fixture_restitution",
       "has_doc": true
@@ -52065,7 +52335,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1525,
+      "line": 1530,
       "kind": "fn",
       "name": "try_set_fixture_sensor",
       "has_doc": true
@@ -52074,7 +52344,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1555,
+      "line": 1560,
       "kind": "fn",
       "name": "set_fixture_sensor",
       "has_doc": true
@@ -52083,7 +52353,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1564,
+      "line": 1569,
       "kind": "fn",
       "name": "get_body",
       "has_doc": true
@@ -52092,7 +52362,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1568,
+      "line": 1573,
       "kind": "fn",
       "name": "get_body_mut",
       "has_doc": true
@@ -52101,7 +52371,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1576,
+      "line": 1581,
       "kind": "fn",
       "name": "is_body_mirror",
       "has_doc": true
@@ -52110,7 +52380,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1580,
+      "line": 1585,
       "kind": "fn",
       "name": "set_body_mirror",
       "has_doc": true
@@ -52119,7 +52389,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1586,
+      "line": 1591,
       "kind": "fn",
       "name": "get_body_beam_reflectivity",
       "has_doc": true
@@ -52128,7 +52398,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1591,
+      "line": 1596,
       "kind": "fn",
       "name": "try_set_body_beam_reflectivity",
       "has_doc": true
@@ -52137,7 +52407,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1612,
+      "line": 1617,
       "kind": "fn",
       "name": "get_body_projectile_reflectivity",
       "has_doc": true
@@ -52146,7 +52416,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1618,
+      "line": 1623,
       "kind": "fn",
       "name": "try_set_body_projectile_reflectivity",
       "has_doc": true
@@ -52155,7 +52425,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1639,
+      "line": 1644,
       "kind": "fn",
       "name": "set_body_layer",
       "has_doc": true
@@ -52164,7 +52434,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1646,
+      "line": 1651,
       "kind": "fn",
       "name": "set_body_mask",
       "has_doc": true
@@ -52173,7 +52443,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1653,
+      "line": 1658,
       "kind": "fn",
       "name": "try_set_body_collision_group",
       "has_doc": true
@@ -52182,7 +52452,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1670,
+      "line": 1675,
       "kind": "fn",
       "name": "get_body_collision_group",
       "has_doc": true
@@ -52191,7 +52461,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1675,
+      "line": 1680,
       "kind": "fn",
       "name": "try_set_collision_pair",
       "has_doc": true
@@ -52200,7 +52470,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1696,
+      "line": 1701,
       "kind": "fn",
       "name": "try_get_collision_pair",
       "has_doc": true
@@ -52209,7 +52479,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1709,
+      "line": 1714,
       "kind": "fn",
       "name": "try_set_collision_group_mask",
       "has_doc": true
@@ -52218,7 +52488,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1721,
+      "line": 1726,
       "kind": "fn",
       "name": "try_get_collision_group_mask",
       "has_doc": true
@@ -52227,7 +52497,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1726,
+      "line": 1731,
       "kind": "fn",
       "name": "reset_collision_groups",
       "has_doc": true
@@ -52236,7 +52506,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1731,
+      "line": 1736,
       "kind": "fn",
       "name": "body_count",
       "has_doc": true
@@ -52245,7 +52515,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1735,
+      "line": 1740,
       "kind": "fn",
       "name": "try_add_revolute_joint",
       "has_doc": true
@@ -52254,7 +52524,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1755,
+      "line": 1760,
       "kind": "fn",
       "name": "add_revolute_joint",
       "has_doc": true
@@ -52263,7 +52533,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1771,
+      "line": 1776,
       "kind": "fn",
       "name": "raycast",
       "has_doc": true
@@ -52272,7 +52542,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1775,
+      "line": 1780,
       "kind": "fn",
       "name": "raycast_filtered",
       "has_doc": true
@@ -52281,7 +52551,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1806,
+      "line": 1811,
       "kind": "fn",
       "name": "step",
       "has_doc": true
@@ -52290,7 +52560,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2022,
+      "line": 2027,
       "kind": "fn",
       "name": "apply_impulse",
       "has_doc": true
@@ -52299,7 +52569,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2042,
+      "line": 2047,
       "kind": "fn",
       "name": "get_collision_events",
       "has_doc": true
@@ -52308,7 +52578,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2046,
+      "line": 2051,
       "kind": "fn",
       "name": "get_begin_contact_events",
       "has_doc": true
@@ -52317,7 +52587,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2050,
+      "line": 2055,
       "kind": "fn",
       "name": "get_end_contact_events",
       "has_doc": true
@@ -52326,7 +52596,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2054,
+      "line": 2059,
       "kind": "fn",
       "name": "try_add_zone",
       "has_doc": true
@@ -52335,7 +52605,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2071,
+      "line": 2076,
       "kind": "fn",
       "name": "add_zone",
       "has_doc": true
@@ -52344,7 +52614,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2081,
+      "line": 2086,
       "kind": "fn",
       "name": "remove_zone",
       "has_doc": true
@@ -52353,7 +52623,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2085,
+      "line": 2090,
       "kind": "fn",
       "name": "zone_mut",
       "has_doc": true
@@ -52362,7 +52632,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2089,
+      "line": 2094,
       "kind": "fn",
       "name": "zone",
       "has_doc": true
@@ -52371,7 +52641,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2093,
+      "line": 2098,
       "kind": "fn",
       "name": "get_zone_events",
       "has_doc": true
@@ -52380,7 +52650,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2098,
+      "line": 2103,
       "kind": "fn",
       "name": "try_add_gravity_vector",
       "has_doc": true
@@ -52389,7 +52659,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2119,
+      "line": 2124,
       "kind": "fn",
       "name": "add_gravity_vector",
       "has_doc": true
@@ -52398,7 +52668,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2130,
+      "line": 2135,
       "kind": "fn",
       "name": "try_set_gravity_vector",
       "has_doc": true
@@ -52407,7 +52677,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2151,
+      "line": 2156,
       "kind": "fn",
       "name": "set_gravity_vector",
       "has_doc": true
@@ -52416,7 +52686,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2158,
+      "line": 2163,
       "kind": "fn",
       "name": "remove_gravity_vector",
       "has_doc": true
@@ -52425,7 +52695,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2172,
+      "line": 2177,
       "kind": "fn",
       "name": "clear_gravity_vectors",
       "has_doc": true
@@ -52434,7 +52704,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2179,
+      "line": 2184,
       "kind": "fn",
       "name": "get_gravity_vector",
       "has_doc": true
@@ -52443,7 +52713,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2187,
+      "line": 2192,
       "kind": "fn",
       "name": "try_add_flow_field",
       "has_doc": true
@@ -52452,7 +52722,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2200,
+      "line": 2205,
       "kind": "fn",
       "name": "add_flow_field",
       "has_doc": true
@@ -52461,7 +52731,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2211,
+      "line": 2216,
       "kind": "fn",
       "name": "flow_field",
       "has_doc": true
@@ -52470,7 +52740,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2218,
+      "line": 2223,
       "kind": "fn",
       "name": "flow_field_slot",
       "has_doc": true
@@ -52479,7 +52749,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2223,
+      "line": 2228,
       "kind": "fn",
       "name": "flow_field_mut",
       "has_doc": true
@@ -52488,7 +52758,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2230,
+      "line": 2235,
       "kind": "fn",
       "name": "flow_field_slot_mut",
       "has_doc": true
@@ -52497,7 +52767,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2235,
+      "line": 2240,
       "kind": "fn",
       "name": "remove_flow_field",
       "has_doc": true
@@ -52506,7 +52776,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2245,
+      "line": 2250,
       "kind": "fn",
       "name": "clear_flow_fields",
       "has_doc": true
@@ -52515,7 +52785,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2252,
+      "line": 2257,
       "kind": "fn",
       "name": "sample_flow",
       "has_doc": true
@@ -52524,7 +52794,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2364,
+      "line": 2369,
       "kind": "fn",
       "name": "apply_zone_forces",
       "has_doc": true
@@ -52533,7 +52803,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2438,
+      "line": 2443,
       "kind": "fn",
       "name": "apply_flow_forces",
       "has_doc": true
@@ -52542,7 +52812,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2502,
+      "line": 2507,
       "kind": "fn",
       "name": "step_fixed",
       "has_doc": true
@@ -52551,7 +52821,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2517,
+      "line": 2522,
       "kind": "fn",
       "name": "set_body_position",
       "has_doc": true
@@ -52560,7 +52830,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2533,
+      "line": 2538,
       "kind": "fn",
       "name": "apply_force",
       "has_doc": true
@@ -52569,7 +52839,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2541,
+      "line": 2546,
       "kind": "fn",
       "name": "apply_torque",
       "has_doc": true
@@ -52578,7 +52848,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2549,
+      "line": 2554,
       "kind": "fn",
       "name": "set_angular_velocity",
       "has_doc": true
@@ -52587,7 +52857,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2564,
+      "line": 2569,
       "kind": "fn",
       "name": "get_angular_velocity",
       "has_doc": true
@@ -52596,7 +52866,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2568,
+      "line": 2573,
       "kind": "fn",
       "name": "get_body_angle",
       "has_doc": true
@@ -52605,7 +52875,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2572,
+      "line": 2577,
       "kind": "fn",
       "name": "set_body_angle",
       "has_doc": true
@@ -52614,7 +52884,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2587,
+      "line": 2592,
       "kind": "fn",
       "name": "get_body_mass",
       "has_doc": true
@@ -52623,7 +52893,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2599,
+      "line": 2604,
       "kind": "fn",
       "name": "set_body_mass",
       "has_doc": true
@@ -52632,7 +52902,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2618,
+      "line": 2623,
       "kind": "fn",
       "name": "set_gravity_scale",
       "has_doc": true
@@ -52641,7 +52911,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2633,
+      "line": 2638,
       "kind": "fn",
       "name": "set_fixed_rotation",
       "has_doc": true
@@ -52650,7 +52920,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2641,
+      "line": 2646,
       "kind": "fn",
       "name": "set_linear_damping",
       "has_doc": true
@@ -52659,7 +52929,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2656,
+      "line": 2661,
       "kind": "fn",
       "name": "set_angular_damping",
       "has_doc": true
@@ -52668,7 +52938,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2671,
+      "line": 2676,
       "kind": "fn",
       "name": "get_gravity_scale",
       "has_doc": true
@@ -52677,7 +52947,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2680,
+      "line": 2685,
       "kind": "fn",
       "name": "is_fixed_rotation",
       "has_doc": true
@@ -52686,7 +52956,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2689,
+      "line": 2694,
       "kind": "fn",
       "name": "get_linear_damping",
       "has_doc": true
@@ -52695,7 +52965,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2698,
+      "line": 2703,
       "kind": "fn",
       "name": "get_angular_damping",
       "has_doc": true
@@ -52704,7 +52974,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2707,
+      "line": 2712,
       "kind": "fn",
       "name": "set_bullet",
       "has_doc": true
@@ -52713,7 +52983,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2718,
+      "line": 2723,
       "kind": "fn",
       "name": "is_bullet",
       "has_doc": true
@@ -52722,7 +52992,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2727,
+      "line": 2732,
       "kind": "fn",
       "name": "set_ccd_substeps",
       "has_doc": true
@@ -52731,7 +53001,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2731,
+      "line": 2736,
       "kind": "fn",
       "name": "get_ccd_substeps",
       "has_doc": true
@@ -52740,7 +53010,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2735,
+      "line": 2740,
       "kind": "fn",
       "name": "apply_force_at_point",
       "has_doc": true
@@ -52749,7 +53019,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2743,
+      "line": 2748,
       "kind": "fn",
       "name": "apply_angular_impulse",
       "has_doc": true
@@ -52758,7 +53028,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2761,
+      "line": 2766,
       "kind": "fn",
       "name": "get_body_ids",
       "has_doc": true
@@ -52767,7 +53037,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2769,
+      "line": 2774,
       "kind": "fn",
       "name": "get_joint_ids",
       "has_doc": true
@@ -52776,7 +53046,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2777,
+      "line": 2782,
       "kind": "fn",
       "name": "get_body_type_str",
       "has_doc": true
@@ -52785,7 +53055,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2791,
+      "line": 2796,
       "kind": "fn",
       "name": "set_body_type",
       "has_doc": true
@@ -52794,7 +53064,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2808,
+      "line": 2813,
       "kind": "fn",
       "name": "get_gravity",
       "has_doc": true
@@ -52803,7 +53073,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2812,
+      "line": 2817,
       "kind": "fn",
       "name": "set_gravity",
       "has_doc": true
@@ -52812,7 +53082,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2816,
+      "line": 2821,
       "kind": "fn",
       "name": "clear",
       "has_doc": true
@@ -52821,7 +53091,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2862,
+      "line": 2867,
       "kind": "fn",
       "name": "reset_world",
       "has_doc": true
@@ -52830,7 +53100,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2867,
+      "line": 2872,
       "kind": "fn",
       "name": "set_sleeping_allowed",
       "has_doc": true
@@ -52839,7 +53109,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2880,
+      "line": 2885,
       "kind": "fn",
       "name": "is_sleeping_allowed",
       "has_doc": true
@@ -52848,7 +53118,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2887,
+      "line": 2892,
       "kind": "fn",
       "name": "destroy_body",
       "has_doc": true
@@ -52857,7 +53127,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2936,
+      "line": 2941,
       "kind": "fn",
       "name": "joint_count",
       "has_doc": true
@@ -52866,7 +53136,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2941,
+      "line": 2946,
       "kind": "fn",
       "name": "try_add_distance_joint",
       "has_doc": true
@@ -52875,7 +53145,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2968,
+      "line": 2973,
       "kind": "fn",
       "name": "add_distance_joint",
       "has_doc": true
@@ -52884,7 +53154,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2987,
+      "line": 2992,
       "kind": "fn",
       "name": "set_body_velocity",
       "has_doc": true
@@ -52893,7 +53163,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 3006,
+      "line": 3011,
       "kind": "fn",
       "name": "reflect_body_velocity",
       "has_doc": true
@@ -52902,7 +53172,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 3017,
+      "line": 3022,
       "kind": "fn",
       "name": "try_reflect_body_velocity",
       "has_doc": true
@@ -52911,7 +53181,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 3069,
+      "line": 3074,
       "kind": "fn",
       "name": "try_add_prismatic_joint",
       "has_doc": true
@@ -52920,7 +53190,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 3100,
+      "line": 3105,
       "kind": "fn",
       "name": "add_prismatic_joint",
       "has_doc": true
@@ -52929,7 +53199,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 3118,
+      "line": 3123,
       "kind": "fn",
       "name": "try_add_weld_joint",
       "has_doc": true
@@ -52938,7 +53208,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 3138,
+      "line": 3143,
       "kind": "fn",
       "name": "add_weld_joint",
       "has_doc": true
@@ -52947,7 +53217,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 3155,
+      "line": 3160,
       "kind": "fn",
       "name": "try_add_rope_joint",
       "has_doc": true
@@ -52956,7 +53226,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 3182,
+      "line": 3187,
       "kind": "fn",
       "name": "add_rope_joint",
       "has_doc": true
@@ -52965,7 +53235,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 3201,
+      "line": 3206,
       "kind": "fn",
       "name": "get_joint_bodies",
       "has_doc": true
@@ -52974,7 +53244,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 3209,
+      "line": 3214,
       "kind": "fn",
       "name": "destroy_joint",
       "has_doc": true
@@ -52983,7 +53253,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 3420,
+      "line": 3425,
       "kind": "fn",
       "name": "cast_beam",
       "has_doc": true
@@ -52992,7 +53262,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 3426,
+      "line": 3431,
       "kind": "fn",
       "name": "try_cast_beam",
       "has_doc": true
@@ -53001,7 +53271,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 3625,
+      "line": 3630,
       "kind": "fn",
       "name": "cast_circle",
       "has_doc": true
@@ -53010,7 +53280,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 3647,
+      "line": 3652,
       "kind": "fn",
       "name": "cast_circle_filtered",
       "has_doc": true
@@ -53019,7 +53289,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 3664,
+      "line": 3669,
       "kind": "fn",
       "name": "try_cast_circle_filtered",
       "has_doc": true
@@ -53028,7 +53298,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 3708,
+      "line": 3713,
       "kind": "fn",
       "name": "cast_beam_closest",
       "has_doc": true
@@ -53037,7 +53307,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 3722,
+      "line": 3727,
       "kind": "fn",
       "name": "try_cast_beam_closest",
       "has_doc": true
@@ -53046,7 +53316,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 3751,
+      "line": 3756,
       "kind": "fn",
       "name": "raycast_closest",
       "has_doc": true
@@ -53055,7 +53325,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 3762,
+      "line": 3767,
       "kind": "fn",
       "name": "raycast_closest_filtered",
       "has_doc": true
@@ -53064,7 +53334,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 3793,
+      "line": 3798,
       "kind": "fn",
       "name": "raycast_all",
       "has_doc": true
@@ -53073,7 +53343,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 3804,
+      "line": 3809,
       "kind": "fn",
       "name": "raycast_all_filtered",
       "has_doc": true
@@ -53082,7 +53352,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 3847,
+      "line": 3852,
       "kind": "fn",
       "name": "query_aabb",
       "has_doc": true
@@ -53091,7 +53361,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 3851,
+      "line": 3856,
       "kind": "fn",
       "name": "query_aabb_filtered",
       "has_doc": true
@@ -53100,7 +53370,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 3877,
+      "line": 3882,
       "kind": "fn",
       "name": "get_body_at_point",
       "has_doc": true
@@ -53109,7 +53379,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 3881,
+      "line": 3886,
       "kind": "fn",
       "name": "get_body_at_point_filtered",
       "has_doc": true
@@ -53118,7 +53388,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 3904,
+      "line": 3909,
       "kind": "fn",
       "name": "try_add_wheel_joint",
       "has_doc": true
@@ -53127,7 +53397,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 3937,
+      "line": 3942,
       "kind": "fn",
       "name": "add_wheel_joint",
       "has_doc": true
@@ -53136,7 +53406,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 3956,
+      "line": 3961,
       "kind": "fn",
       "name": "try_add_friction_joint",
       "has_doc": true
@@ -53145,7 +53415,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 3990,
+      "line": 3995,
       "kind": "fn",
       "name": "add_friction_joint",
       "has_doc": true
@@ -53154,7 +53424,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 4009,
+      "line": 4014,
       "kind": "fn",
       "name": "try_add_motor_joint",
       "has_doc": true
@@ -53163,7 +53433,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 4036,
+      "line": 4041,
       "kind": "fn",
       "name": "add_motor_joint",
       "has_doc": true
@@ -53172,7 +53442,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 4051,
+      "line": 4056,
       "kind": "fn",
       "name": "try_add_mouse_joint",
       "has_doc": true
@@ -53181,7 +53451,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 4080,
+      "line": 4085,
       "kind": "fn",
       "name": "add_mouse_joint",
       "has_doc": true
@@ -53190,7 +53460,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 4096,
+      "line": 4101,
       "kind": "fn",
       "name": "set_mouse_joint_target",
       "has_doc": true
@@ -53199,7 +53469,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 4105,
+      "line": 4110,
       "kind": "fn",
       "name": "add_pulley_joint",
       "has_doc": true
@@ -53208,7 +53478,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 4116,
+      "line": 4121,
       "kind": "fn",
       "name": "add_gear_joint",
       "has_doc": true
@@ -53217,7 +53487,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 4127,
+      "line": 4132,
       "kind": "fn",
       "name": "set_joint_motor_speed",
       "has_doc": true
@@ -53226,7 +53496,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 4135,
+      "line": 4140,
       "kind": "fn",
       "name": "get_joint_motor_speed",
       "has_doc": true
@@ -53235,7 +53505,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 4146,
+      "line": 4151,
       "kind": "fn",
       "name": "set_joint_limits_enabled",
       "has_doc": true
@@ -53244,7 +53514,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 4164,
+      "line": 4169,
       "kind": "fn",
       "name": "set_joint_limits",
       "has_doc": true
@@ -53253,7 +53523,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 4172,
+      "line": 4177,
       "kind": "fn",
       "name": "get_joint_limits",
       "has_doc": true
@@ -53262,7 +53532,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 4183,
+      "line": 4188,
       "kind": "fn",
       "name": "get_joint_type",
       "has_doc": true
@@ -53271,7 +53541,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 4190,
+      "line": 4195,
       "kind": "fn",
       "name": "set_meter",
       "has_doc": true
@@ -53280,7 +53550,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 4194,
+      "line": 4199,
       "kind": "fn",
       "name": "get_meter",
       "has_doc": true
@@ -53289,7 +53559,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 4198,
+      "line": 4203,
       "kind": "fn",
       "name": "to_physics",
       "has_doc": true
@@ -53298,7 +53568,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 4206,
+      "line": 4211,
       "kind": "fn",
       "name": "to_pixels",
       "has_doc": true
@@ -53307,7 +53577,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 4210,
+      "line": 4215,
       "kind": "fn",
       "name": "get_contacts",
       "has_doc": true
@@ -53316,7 +53586,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 4242,
+      "line": 4247,
       "kind": "fn",
       "name": "get_body_contacts",
       "has_doc": true
@@ -53325,7 +53595,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 4249,
+      "line": 4254,
       "kind": "fn",
       "name": "set_body_one_way",
       "has_doc": true
@@ -53334,7 +53604,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 4258,
+      "line": 4263,
       "kind": "fn",
       "name": "clear_body_one_way",
       "has_doc": true
@@ -53343,7 +53613,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 4264,
+      "line": 4269,
       "kind": "fn",
       "name": "get_body_one_way",
       "has_doc": true
@@ -53352,7 +53622,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 4271,
+      "line": 4276,
       "kind": "fn",
       "name": "set_joint_break_force",
       "has_doc": true
@@ -53361,7 +53631,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 4277,
+      "line": 4282,
       "kind": "fn",
       "name": "get_joint_break_force",
       "has_doc": true
@@ -53370,7 +53640,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 4284,
+      "line": 4289,
       "kind": "fn",
       "name": "is_body_sleeping",
       "has_doc": true
@@ -53379,7 +53649,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 4293,
+      "line": 4298,
       "kind": "fn",
       "name": "wake_up_body",
       "has_doc": true
@@ -53388,7 +53658,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 4301,
+      "line": 4306,
       "kind": "fn",
       "name": "sleep_body",
       "has_doc": true
@@ -53397,7 +53667,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 4309,
+      "line": 4314,
       "kind": "fn",
       "name": "set_solver_iterations",
       "has_doc": true
@@ -53406,7 +53676,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 4313,
+      "line": 4318,
       "kind": "fn",
       "name": "get_solver_iterations",
       "has_doc": true
@@ -53415,7 +53685,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 4317,
+      "line": 4322,
       "kind": "fn",
       "name": "get_stats",
       "has_doc": true
@@ -53424,7 +53694,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 4350,
+      "line": 4355,
       "kind": "fn",
       "name": "add_bodies",
       "has_doc": true
@@ -80937,7 +81207,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 290,
+      "line": 390,
       "kind": "fn",
       "name": "outgoingDirX",
       "has_doc": false
@@ -80946,7 +81216,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 291,
+      "line": 391,
       "kind": "fn",
       "name": "outgoingDirY",
       "has_doc": false
@@ -80955,7 +81225,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 294,
+      "line": 394,
       "kind": "fn",
       "name": "outgoingDirX",
       "has_doc": false
@@ -80964,7 +81234,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 295,
+      "line": 395,
       "kind": "fn",
       "name": "outgoingDirY",
       "has_doc": false
@@ -80973,7 +81243,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 530,
+      "line": 630,
       "kind": "fn",
       "name": "bodiesScanned",
       "has_doc": false
@@ -80982,7 +81252,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 532,
+      "line": 632,
       "kind": "fn",
       "name": "collidersRebuilt",
       "has_doc": true
@@ -80991,7 +81261,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 534,
+      "line": 634,
       "kind": "fn",
       "name": "zoneChecks",
       "has_doc": true
@@ -81000,7 +81270,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 536,
+      "line": 636,
       "kind": "fn",
       "name": "flowSamples",
       "has_doc": true
@@ -81009,7 +81279,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 538,
+      "line": 638,
       "kind": "fn",
       "name": "flowAffectedBodies",
       "has_doc": true
@@ -81018,7 +81288,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 540,
+      "line": 640,
       "kind": "fn",
       "name": "contacts",
       "has_doc": true
@@ -81027,7 +81297,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 542,
+      "line": 642,
       "kind": "fn",
       "name": "syncedBodies",
       "has_doc": true
@@ -81036,7 +81306,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 576,
+      "line": 676,
       "kind": "fn",
       "name": "sources",
       "has_doc": false
@@ -81045,7 +81315,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 595,
+      "line": 695,
       "kind": "fn",
       "name": "strength",
       "has_doc": false
@@ -81054,7 +81324,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 618,
+      "line": 718,
       "kind": "fn",
       "name": "priority",
       "has_doc": false
@@ -81063,7 +81333,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 619,
+      "line": 719,
       "kind": "fn",
       "name": "layerMask",
       "has_doc": false
@@ -81072,7 +81342,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 620,
+      "line": 720,
       "kind": "fn",
       "name": "maxAccel",
       "has_doc": false
@@ -81081,7 +81351,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 621,
+      "line": 721,
       "kind": "fn",
       "name": "drag",
       "has_doc": false
@@ -81090,7 +81360,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 624,
+      "line": 724,
       "kind": "fn",
       "name": "geometry",
       "has_doc": false
@@ -81099,7 +81369,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 625,
+      "line": 725,
       "kind": "fn",
       "name": "x",
       "has_doc": false
@@ -81108,7 +81378,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 626,
+      "line": 726,
       "kind": "fn",
       "name": "y",
       "has_doc": false
@@ -81117,7 +81387,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 627,
+      "line": 727,
       "kind": "fn",
       "name": "w",
       "has_doc": false
@@ -81126,7 +81396,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 628,
+      "line": 728,
       "kind": "fn",
       "name": "h",
       "has_doc": false
@@ -81135,7 +81405,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 636,
+      "line": 736,
       "kind": "fn",
       "name": "geometry",
       "has_doc": false
@@ -81144,7 +81414,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 637,
+      "line": 737,
       "kind": "fn",
       "name": "x",
       "has_doc": false
@@ -81153,7 +81423,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 638,
+      "line": 738,
       "kind": "fn",
       "name": "y",
       "has_doc": false
@@ -81162,7 +81432,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 639,
+      "line": 739,
       "kind": "fn",
       "name": "radius",
       "has_doc": false
@@ -81171,7 +81441,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 640,
+      "line": 740,
       "kind": "fn",
       "name": "innerRadius",
       "has_doc": false
@@ -81180,7 +81450,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 643,
+      "line": 743,
       "kind": "fn",
       "name": "geometry",
       "has_doc": false
@@ -81189,7 +81459,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 644,
+      "line": 744,
       "kind": "fn",
       "name": "width",
       "has_doc": false
@@ -81198,7 +81468,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 652,
+      "line": 752,
       "kind": "fn",
       "name": "points",
       "has_doc": false

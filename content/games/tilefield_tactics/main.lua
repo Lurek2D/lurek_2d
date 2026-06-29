@@ -1,5 +1,7 @@
+local GAME_ROOT = "content/games/tilefield_tactics/"
+
 local function load_system(name)
-    local path = "systems/" .. name .. ".lua"
+    local path = GAME_ROOT .. "systems/" .. name .. ".lua"
     local chunk = lurek.filesystem.load(path)
     assert(type(chunk) == "function", "cannot load " .. path)
     local ok, result = pcall(chunk)

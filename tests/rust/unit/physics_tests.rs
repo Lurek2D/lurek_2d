@@ -903,11 +903,144 @@ mod terrain_tests {
     }
 
     #[test]
+    fn find_unsupported_components_tracks_bottom_and_border_support() {
+        let mut terrain = TerrainMap::new(6, 6, 1.0);
+        terrain.set_cell(2, 5, true);
+        terrain.set_cell(1, 2, true);
+        terrain.set_cell(1, 3, true);
+        terrain.set_cell(0, 0, true);
+
+        let bottom_only = terrain
+            .find_unsupported_components(TerrainSupportRule::Bottom)
+            .expect("bottom support scan");
+        assert_eq!(bottom_only.len(), 2);
+        assert!(bottom_only.iter().any(|component| component.bounds.x0 == 0));
+        assert!(bottom_only.iter().any(|component| component.bounds.x0 == 1));
+
+        let border_support = terrain
+            .find_unsupported_components(TerrainSupportRule::AnyBorder)
+            .expect("border support scan");
+        assert_eq!(border_support.len(), 1);
+        assert_eq!(border_support[0].cells.len(), 2);
+        assert!(!border_support[0].touches_border);
+    }
+
+    #[test]
+    fn collapse_unsupported_remove_clears_floating_island() {
+        let mut terrain = TerrainMap::new(8, 8, 1.0);
+        terrain.fill_all(false);
+        terrain.set_cell(3, 6, true);
+        terrain.set_cell(3, 7, true);
+        terrain.set_cell(1, 1, true);
+        terrain.set_cell(2, 1, true);
+        terrain.set_cell(1, 2, true);
+
+        let result = terrain
+            .collapse_unsupported(&TerrainCollapseOptions {
+                support_rule: TerrainSupportRule::Bottom,
+                mode: TerrainCollapseMode::Remove,
+                min_component_cells: 2,
+                ..TerrainCollapseOptions::default()
+            })
+            .expect("collapse unsupported");
+
+        assert_eq!(result.components, 1);
+        assert_eq!(result.removed_cells, 3);
+        assert!(!terrain.get_cell(1, 1));
+        assert!(terrain.get_cell(3, 7));
+    }
+
+    #[test]
+    fn collapse_unsupported_spawn_debris_returns_sampled_body_ids() {
+        let mut terrain = TerrainMap::new(8, 8, 2.0);
+        terrain.set_cell(1, 1, true);
+        terrain.set_cell(2, 1, true);
+        terrain.set_cell(1, 2, true);
+        terrain.set_cell(2, 2, true);
+
+        let mut world = World::new(0.0, 0.0);
+        let result = terrain
+            .collapse_unsupported_in_world(
+                &mut world,
+                &TerrainCollapseOptions {
+                    support_rule: TerrainSupportRule::Bottom,
+                    mode: TerrainCollapseMode::SpawnDebris,
+                    max_debris: 2,
+                    ..TerrainCollapseOptions::default()
+                },
+            )
+            .expect("collapse with debris");
+
+        assert_eq!(result.components, 1);
+        assert_eq!(result.removed_cells, 4);
+        assert_eq!(result.debris_body_ids.len(), 2);
+        assert_eq!(world.body_count(), 2);
+    }
+
+    #[test]
+    fn collapse_unsupported_spawn_dynamic_chunks_returns_component_bodies() {
+        let mut terrain = TerrainMap::new(8, 8, 2.0);
+        terrain.set_cell(1, 1, true);
+        terrain.set_cell(2, 1, true);
+        terrain.set_cell(1, 2, true);
+        terrain.set_cell(2, 2, true);
+
+        let mut world = World::new(0.0, 0.0);
+        let result = terrain
+            .collapse_unsupported_in_world(
+                &mut world,
+                &TerrainCollapseOptions {
+                    support_rule: TerrainSupportRule::Bottom,
+                    mode: TerrainCollapseMode::SpawnDynamicChunks,
+                    ..TerrainCollapseOptions::default()
+                },
+            )
+            .expect("collapse with dynamic chunks");
+
+        assert_eq!(result.components, 1);
+        assert_eq!(result.removed_cells, 4);
+        assert_eq!(result.debris_body_ids.len(), 1);
+        assert_eq!(world.body_count(), 1);
+    }
+
+    #[test]
+    fn flush_with_limit_reports_chunk_diagnostics() {
+        let mut terrain = TerrainMap::new(64, 16, 1.0);
+        terrain.fill_all(true);
+        let mut world = World::new(0.0, 0.0);
+
+        let stats = terrain.flush_with_limit(&mut world, Some(2));
+        assert_eq!(stats.dirty_chunks_rebuilt, 2);
+        assert_eq!(stats.dirty_chunks_remaining, 2);
+        assert!(stats.bodies_created > 0);
+        assert_eq!(terrain.last_flush_stats(), stats);
+        assert!(terrain.is_dirty());
+
+        let final_stats = terrain.flush(&mut world);
+        assert_eq!(final_stats.dirty_chunks_rebuilt, 2);
+        assert_eq!(final_stats.dirty_chunks_remaining, 0);
+        assert!(!terrain.is_dirty());
+    }
+
+    #[test]
     fn try_new_rejects_zero_cell_size() {
         let err = TerrainMap::try_new(4, 4, 0.0)
             .err()
             .expect("zero cell size should fail");
         assert!(err.to_string().contains("cell_size"));
+    }
+
+    #[test]
+    fn component_scan_respects_limits() {
+        let terrain = TerrainMap::new(8, 8, 1.0);
+        let limits = PhysicsLimits {
+            max_terrain_component_scan_cells: 16,
+            ..PhysicsLimits::default()
+        };
+        let err = terrain
+            .find_components_with_limits(None, &limits)
+            .expect_err("scan should hit limit");
+        assert!(err.to_string().contains("terrain component scan"));
     }
 
     #[test]
@@ -1078,5 +1211,148 @@ mod flow_field_tests {
             .water_scale = 1.0;
         world.step(1.0 / 60.0);
         assert!(world.get_body(body.0).unwrap().velocity.x > 0.0);
+    }
+
+    #[test]
+    fn tangential_circle_flow_orbits_around_center() {
+        let mut field = FlowField::new(
+            0,
+            FlowGeometry::CircleFan {
+                cx: 50.0,
+                cy: 50.0,
+                radius: 40.0,
+                inner_radius: 0.0,
+            },
+        );
+        field.direction = FlowDirectionMode::TangentialClockwise;
+        field.strength = 30.0;
+
+        let sample = field
+            .sample(70.0, 50.0)
+            .expect("point should be inside circle");
+        assert!(sample.vx.abs() < 1.0e-3);
+        assert!(sample.vy < 0.0);
+    }
+
+    #[test]
+    fn directional_fan_rejects_points_behind_source_direction() {
+        let mut field = FlowField::new(
+            0,
+            FlowGeometry::DirectionalFan {
+                cx: 32.0,
+                cy: 32.0,
+                radius: 48.0,
+                inner_radius: 0.0,
+                facing: Vec2::new(1.0, 0.0),
+                half_angle_deg: 30.0,
+            },
+        );
+        field.direction = FlowDirectionMode::Explicit { x: 1.0, y: 0.0 };
+        field.strength = 40.0;
+
+        assert!(field.sample(60.0, 32.0).is_some());
+        assert!(field.sample(4.0, 32.0).is_none());
+    }
+}
+
+mod material_tests {
+    use super::*;
+
+    #[test]
+    fn physics_material_validation_rejects_invalid_ranges() {
+        let mut material = PhysicsMaterial::default();
+        material.density = 0.0;
+        assert!(material.validate().is_err());
+
+        material.density = 1.0;
+        material.beam_absorption = 1.5;
+        assert!(material.validate().is_err());
+    }
+
+    #[test]
+    fn body_material_assignment_updates_solver_backed_state() {
+        let mut world = World::new(0.0, 0.0);
+        let body_id = world.add_body(Body::new(0.0, 0.0, 10.0, 10.0, BodyType::Dynamic));
+        let material = PhysicsMaterial {
+            name: Some("rubber".to_string()),
+            density: 2.0,
+            friction: 0.9,
+            restitution: 0.4,
+            linear_damping: Some(0.2),
+            angular_damping: Some(0.7),
+            gravity_scale: Some(-0.5),
+            mass_override: Some(9.0),
+            stickiness: 0.1,
+            adhesion: 0.2,
+            beam_reflectivity: 0.6,
+            projectile_reflectivity: 0.3,
+            beam_absorption: 0.25,
+            buoyancy: 0.4,
+            surface_type: Some("bounce_pad".to_string()),
+        };
+
+        world
+            .try_set_body_material(body_id.0, material.clone())
+            .expect("set body material");
+
+        let snapshot = world
+            .get_body_material(body_id.0)
+            .expect("body material snapshot");
+        assert_eq!(snapshot, material);
+        assert!((world.get_body(body_id.0).unwrap().friction - 0.9).abs() < 1e-6);
+        assert!((world.get_body(body_id.0).unwrap().restitution - 0.4).abs() < 1e-6);
+        assert!((world.get_gravity_scale(body_id.0) + 0.5).abs() < 1e-6);
+        assert!((world.get_linear_damping(body_id.0) - 0.2).abs() < 1e-6);
+        assert!((world.get_angular_damping(body_id.0) - 0.7).abs() < 1e-6);
+        assert!((world.get_body_mass(body_id.0) - 9.0).abs() < 1e-3);
+    }
+
+    #[test]
+    fn fixture_material_assignment_updates_only_target_fixture() {
+        let mut world = World::new(0.0, 0.0);
+        let body_id = world.add_body(Body::new(0.0, 0.0, 10.0, 10.0, BodyType::Dynamic));
+        let fixture_index = world
+            .try_add_fixture(
+                body_id.0,
+                Shape::Circle { radius: 3.0 },
+                1.5,
+                0.2,
+                0.1,
+                false,
+            )
+            .expect("add fixture");
+        let material = PhysicsMaterial {
+            name: Some("glass".to_string()),
+            density: 0.6,
+            friction: 0.05,
+            restitution: 0.85,
+            linear_damping: None,
+            angular_damping: None,
+            gravity_scale: None,
+            mass_override: None,
+            stickiness: 0.0,
+            adhesion: 0.0,
+            beam_reflectivity: 1.0,
+            projectile_reflectivity: 0.2,
+            beam_absorption: 0.1,
+            buoyancy: 0.0,
+            surface_type: Some("smooth".to_string()),
+        };
+
+        world
+            .try_set_fixture_material(body_id.0, fixture_index, material.clone())
+            .expect("set fixture material");
+
+        let primary = world
+            .get_fixture_material(body_id.0, 0)
+            .expect("primary fixture material");
+        let extra = world
+            .get_fixture_material(body_id.0, fixture_index)
+            .expect("extra fixture material");
+
+        assert_eq!(extra, material);
+        assert!((primary.friction - 0.5).abs() < 1e-6);
+        assert!((primary.restitution - 0.3).abs() < 1e-6);
+        assert!((world.get_body(body_id.0).unwrap().friction - 0.5).abs() < 1e-6);
     }
 }

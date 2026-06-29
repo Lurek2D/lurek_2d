@@ -2,8 +2,8 @@
 
 use lurek2d::color::Color;
 use lurek2d::overlay::{
-    Overlay, OverlayAccessibilityPolicy, OverlayError, OverlayRenderLayer, StatusOverlayLayer,
-    WeatherType,
+    Overlay, OverlayAccessibilityPolicy, OverlayError, OverlayRenderLayer, StatusLayerTarget,
+    StatusOverlayLayer, WeatherType,
 };
 
 fn plan_has_layer(plan: &[OverlayRenderLayer], layer: OverlayRenderLayer) -> bool {
@@ -187,6 +187,45 @@ mod render_plan_tests {
             OverlayRenderLayer::StatusPostFx
         ));
         assert_eq!(overlay.build_postfx_passes().len(), 1);
+    }
+
+    #[test]
+    fn status_layers_filter_by_target_and_apply_accessibility() {
+        let mut overlay = Overlay::new(320, 240);
+        overlay.set_accessibility_policy(OverlayAccessibilityPolicy::reduced_motion());
+
+        let mut scene_only = StatusOverlayLayer::new("blind", "blind");
+        scene_only.target = StatusLayerTarget::SceneOnly;
+        scene_only.visual.color = Some([1.0, 1.0, 1.0, 0.9]);
+        scene_only.visual.shader_effect = Some("noise".to_string());
+        scene_only.visual.shader_strength = 1.0;
+        scene_only.set_intensity_public(10.0);
+        overlay.status_stack.upsert(scene_only);
+
+        let mut hud_front = StatusOverlayLayer::new("frozen", "frozen");
+        hud_front.target = StatusLayerTarget::HudFront;
+        hud_front.visual.color = Some([0.4, 0.7, 1.0, 0.2]);
+        hud_front.set_intensity_public(8.0);
+        overlay.status_stack.upsert(hud_front);
+
+        overlay.update(0.05);
+
+        let scene_cmds =
+            overlay.build_render_commands_for_target(Some(StatusLayerTarget::SceneOnly), false);
+        let hud_cmds =
+            overlay.build_render_commands_for_target(Some(StatusLayerTarget::HudFront), false);
+        assert!(!scene_cmds.is_empty());
+        assert!(!hud_cmds.is_empty());
+        assert!(overlay
+            .build_postfx_passes_for_target(Some(StatusLayerTarget::SceneOnly))
+            .is_empty());
+
+        let layer = overlay
+            .status_stack
+            .layer("blind")
+            .expect("status layer exists");
+        assert!(layer.visual.color.unwrap()[3] <= overlay.accessibility_policy().max_flash_alpha);
+        assert_eq!(layer.visual.shader_strength, 0.0);
     }
 }
 

@@ -20,7 +20,7 @@
 - Source path: `src/physics`
 - Binding: `src/lua_api/physics_api.rs`
 - Namespace: `lurek.physics`
-- Lua API surface: `23` functions, `21` types, `232` methods
+- Lua API surface: `24` functions, `24` types, `243` methods
 - User-facing: `true`
 - Plugin tier: `tier_2_plugin`
 
@@ -114,6 +114,13 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - Owns physics behavior with explicit state, validation, and crate-local integration boundaries.
 - Keeps public crate helpers focused on limits behavior while Lua registration stays elsewhere.
 
+### material.rs
+
+- Owns the reusable physics material model shared by body defaults, fixture overrides, and Lua table conversions.
+- Keeps solver-backed fields and gameplay metadata in one value type so validation and storage stay consistent.
+- Defines the first-pass material contract without forcing a global registry or callback-driven gameplay hooks yet.
+- Open this file when changing material defaults, validation ranges, or which properties are considered body-only.
+
 ### mod.rs
 
 - This module re-exports the physics subsystem surface for bodies, shapes, zones, world stepping, and helpers.
@@ -144,14 +151,10 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 ### terrain.rs
 
-- Owns physics behavior with explicit state, validation, and crate-local integration boundaries.
-- Keeps physics data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
-- Defines how terrain data is validated, transformed, or stored before neighboring systems use it.
-- Owns physics behavior with explicit state, validation, and crate-local integration boundaries.
-- Keeps public crate helpers focused on terrain behavior while Lua registration stays elsewhere.
-- Documents the boundary where physics code accepts inputs, reports errors, or updates state.
-- Use this file when changing terrain defaults, lifecycle handling, validation, or data ownership.
-- Keeps failure paths and edge cases near the physics state that can explain them while keeping call sites explicit.
+- Owns destructible terrain grid storage, collider rebuild ownership, and collapse analysis.
+- Keeps Lua-facing terrain helpers thin by centralizing validation, component scans, and debris spawning here.
+- Defines the boundary where terrain edits become dirty chunks, rebuilt static colliders, or optional debris bodies.
+- Use this file when changing terrain fill semantics, collapse policies, serialization, or terrain-owned diagnostics.
 
 ### types.rs
 
@@ -203,10 +206,11 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `lurek.physics.getBody(world, body) -> number`: Returns position and velocity of a body (free-function variant for quick queries).
 - `lurek.physics.getCollisions(world) -> table`: Returns all collision events from the last world step as {body_a, body_b} pairs.
 - `lurek.physics.isSleepingAllowed(world, body) -> boolean`: Checks if sleeping is allowed on a body (free-function variant).
-- `lurek.physics.newBody(world, x, y, bodyType) -> LBody`: Creates a new body in a world (free-function variant).
+- `lurek.physics.newBody(world, x, y, bodyType, opts?) -> LBody`: Creates a new body in a world (free-function variant).
 - `lurek.physics.newChainShape(closed, ...) -> LPhysicsShape`: Creates a chain (polyline) collision shape. Useful for terrain outlines.
 - `lurek.physics.newCircleShape(r) -> LPhysicsShape`: Creates a circle collision shape with the given radius.
 - `lurek.physics.newEdgeShape(x1, y1, x2, y2) -> LPhysicsShape`: Creates an edge (line segment) collision shape between two local points.
+- `lurek.physics.newMaterial(opts) -> table`: Validates and canonicalizes a reusable physics material table.
 - `lurek.physics.newPolygonShape(...) -> LPhysicsShape`: Creates a convex polygon collision shape from vertex coordinate pairs.
 - `lurek.physics.newRectangleShape(w, h) -> LPhysicsShape`: Creates a rectangle collision shape with the given dimensions.
 - `lurek.physics.newTerrain(width, height, cellSize, world) -> LTerrain`: Creates a destructible terrain grid linked to a physics world for automatic collider generation.
@@ -260,6 +264,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LBody:getLinearDamping() -> number`: Returns the linear damping factor (velocity decay rate, like air resistance).
 - `LBody:getMask() -> integer`: Returns the body's collision mask (which layers this body can collide with).
 - `LBody:getMass() -> number`: Returns the body's total mass (computed from density and fixture areas).
+- `LBody:getMaterial() -> table`: Returns this body's current material table.
 - `LBody:getPosition() -> number`: Returns the current world-space position of this body.
 - `LBody:getProjectileReflectivity() -> number`: Returns the gameplay projectile reflectivity hint stored on this body.
 - `LBody:getRestitution() -> number`: Returns the body's restitution (bounciness) value.
@@ -290,6 +295,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LBody:setLinearDamping(damping) -> nil`: Sets the linear damping factor (higher = more velocity decay per step).
 - `LBody:setMask(mask) -> nil`: Sets the body's collision mask (which layers this body can collide with).
 - `LBody:setMass(mass) -> nil`: Overrides the body's mass directly.
+- `LBody:setMaterial(material) -> nil`: Applies a validated material table to this body's primary collider and body-level solver properties.
 - `LBody:setMirror(mirror) -> nil`: Enables or disables mirror-style beam reflection on this body.
 - `LBody:setPosition(x, y) -> nil`: Teleports the body to a new world-space position (does not apply physics forces).
 - `LBody:setProjectileReflectivity(reflectivity) -> nil`: Sets the gameplay projectile reflectivity hint stored on this body.
@@ -374,21 +380,73 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 ##### Methods
 
-- `LTerrain:collapseColumns() -> integer`: Optimizes terrain by merging vertically adjacent solid cells into larger colliders.
+- `LTerrain:addCircle(wx, wy, radius) -> nil`: Adds solid terrain inside a circular region.
+- `LTerrain:addRect(wx, wy, w, h) -> nil`: Adds solid terrain across a rectangular region.
+- `LTerrain:carveCircle(wx, wy, radius) -> nil`: Carves a circular hole by clearing terrain cells inside the given radius.
+- `LTerrain:carveRect(wx, wy, w, h) -> nil`: Carves a rectangular hole by clearing all overlapping terrain cells.
+- `LTerrain:collapseColumns() -> integer`: Removes isolated single-cell overhangs that have no support below or beside them.
+- `LTerrain:collapseUnsupported(opts) -> table`: Collapses unsupported connected terrain components using the requested support rule and collapse mode.
+- `LTerrain:damageCircle(wx, wy, radius, opts?) -> table`: Carves a circular hole and can immediately collapse unsupported terrain with policy options.
 - `LTerrain:fillAll(solid) -> nil`: Sets all terrain cells to either solid or empty.
 - `LTerrain:fillCircle(wx, wy, radius, solid) -> nil`: Fills or clears a circular region of terrain cells.
 - `LTerrain:fillRect(wx, wy, w, h, solid) -> nil`: Fills or clears a rectangular region of terrain cells.
-- `LTerrain:flush() -> nil`: Regenerates physics colliders from the current terrain grid state. Call after modifying cells.
+- `LTerrain:flush(maxDirtyChunks?) -> table`: Regenerates physics colliders from the current terrain grid state and returns rebuild diagnostics.
 - `LTerrain:getCell(cx, cy) -> boolean`: Returns whether a cell is solid. This method is available to Lua scripts.
 - `LTerrain:isDirty() -> boolean`: Returns true if terrain cells have been modified since the last flush.
 - `LTerrain:loadFromBytes(data) -> boolean`: Restores terrain grid state from binary data previously produced by toBytes.
 - `LTerrain:setCell(cx, cy, solid) -> nil`: Sets a single terrain cell to solid or empty.
-- `LTerrain:solidPositions() -> table`: Returns all solid cell positions as a table of {x, y} entries.
+- `LTerrain:solidPositions() -> table`: Returns all solid cell centers as a table of `{x, y}` entries in world coordinates.
 - `LTerrain:spawnDebris(positions, mass, restitution) -> integer[]`: Spawns small dynamic debris bodies at the given positions (for destruction effects).
 - `LTerrain:toBytes() -> string`: Serializes the terrain grid to a compact binary format for saving.
 - `LTerrain:toImageData(sr, sg, sb, er, eg, eb) -> string`: Renders the terrain grid to raw RGBA pixel data with solid and empty colors.
 - `LTerrain:type() -> string`: Returns the type name of this object ("LTerrain").
 - `LTerrain:typeOf(name) -> boolean`: Checks if this object is of a given type name.
+
+#### LTerrainCollapseUnsupportedResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `bodyIds` (`integer[]`): Body ids created for spawned debris or dynamic chunk bodies.
+- `components` (`integer`): Number of unsupported components that matched the collapse threshold.
+- `debrisBodies` (`integer[]`): Alias of `bodyIds` kept for debris-oriented scripts.
+- `removedCells` (`integer`): Number of terrain cells removed from unsupported components.
+
+##### Methods
+
+- No documented methods.
+
+#### LTerrainDamageCircleResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `bodyIds` (`integer[]`): Body ids created for spawned debris or dynamic chunk bodies.
+- `components` (`integer`): Number of unsupported components that matched the collapse threshold.
+- `debrisBodies` (`integer[]`): Alias of `bodyIds` kept for debris-oriented scripts.
+- `removedCells` (`integer`): Number of terrain cells removed by the collapse pass after carving.
+
+##### Methods
+
+- No documented methods.
+
+#### LTerrainFlushResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `bodiesCreated` (`integer`): Number of new static terrain bodies created during rebuilding.
+- `bodiesDestroyed` (`integer`): Number of previous terrain bodies removed before rebuilding.
+- `dirtyChunksRebuilt` (`integer`): Number of dirty chunks rebuilt during this call.
+- `dirtyChunksRemaining` (`integer`): Number of dirty chunks still queued after this call.
+- `elapsedMicros` (`integer`): Wall-clock duration of the collider rebuild in microseconds.
+
+##### Methods
+
+- No documented methods.
 
 #### LTerrainSolidPositionsResult Type
 
@@ -396,8 +454,8 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 ##### Fields
 
-- `x` (`integer`): Cell x coordinate.
-- `y` (`integer`): Cell y coordinate.
+- `x` (`number`): World-space center X coordinate.
+- `y` (`number`): World-space center Y coordinate.
 
 ##### Methods
 
@@ -414,6 +472,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 ##### Methods
 
 - `LWorld:addDistanceJoint(bodyA, bodyB, anchorAX, anchorAY, anchorBX, anchorBY, length) -> integer`: Creates a distance joint that keeps two bodies at a fixed distance apart, like a rigid rod.
+- `LWorld:addFan(opts) -> LFlowStream`: Creates a directional fan helper around the flow-field system.
 - `LWorld:addFixture(bodyId, shapeType, density, friction, restitution, sensor, ...) -> integer`: Attaches a new collider shape to an existing body with material properties.
 - `LWorld:addFlowField(opts) -> LFlowStream`: Creates one authored flow field and returns a handle for later mutation.
 - `LWorld:addFrictionJoint(bodyA, bodyB, anchorX, anchorY, maxForce, maxTorque) -> integer`: Creates a friction joint that applies resistance to relative motion between two bodies.
@@ -459,7 +518,8 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:getCollisionPair(groupA, groupB) -> boolean`: Returns whether collisions are enabled between two world-level collision groups.
 - `LWorld:getContacts() -> table`: Returns all currently active contact manifolds with normals and touching state.
 - `LWorld:getEndContactEvents() -> table`: Returns contact-end events from the last step (pairs of bodies that stopped touching).
-- `LWorld:getFlowField(id) -> table?`: Returns one flow field table by id, or nil when missing.
+- `LWorld:getFixtureMaterial(bodyId, fixtureIndex) -> table`: Returns the current material table for one fixture.
+- `LWorld:getFlowField(id) -> table?`: Returns one authored flow field table by id, or nil when missing.
 - `LWorld:getGravity() -> number`: Returns the current world gravity vector.
 - `LWorld:getGravityVector(id) -> table?`: Returns an additive gravity vector by ID, or nil when no active vector exists.
 - `LWorld:getJointBodies(jointId) -> integer`: Returns the two body IDs connected by a joint.
@@ -477,11 +537,11 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:isBodySleeping(id) -> boolean`: Returns whether a body is currently in the sleeping (inactive) state.
 - `LWorld:jointCount() -> integer`: Returns the total number of joints in the world.
 - `LWorld:newBodies(specs) -> integer[]`: Batch-creates multiple bodies at once for better performance. Each entry is {x, y, w, h, type} or {x, y, type}.
-- `LWorld:newBody(x, y, bodyType) -> LBody`: Creates a new physics body at the given position with the specified type and dimensions.
-- `LWorld:newChainBody(x, y, vertices, closed, bodyType) -> LBody`: Creates a new body with a chain (polyline) collider. Useful for terrain edges.
-- `LWorld:newCircleBody(x, y, radius, bodyType) -> LBody`: Creates a new body with a circle collider already attached.
-- `LWorld:newEdgeBody(x, y, x1, y1, x2, y2, bodyType) -> LBody`: Creates a new body with an edge (line segment) collider between two local points.
-- `LWorld:newPolygonBody(x, y, vertices, bodyType) -> LBody`: Creates a new body with a convex polygon collider defined by vertex pairs.
+- `LWorld:newBody(x, y, bodyType, opts?) -> LBody`: Creates a new physics body at the given position with the specified type and dimensions.
+- `LWorld:newChainBody(x, y, vertices, closed, bodyType, opts?) -> LBody`: Creates a new body with a chain (polyline) collider. Useful for terrain edges.
+- `LWorld:newCircleBody(x, y, radius, bodyType, opts?) -> LBody`: Creates a new body with a circle collider already attached.
+- `LWorld:newEdgeBody(x, y, x1, y1, x2, y2, bodyType, opts?) -> LBody`: Creates a new body with an edge (line segment) collider between two local points.
+- `LWorld:newPolygonBody(x, y, vertices, bodyType, opts?) -> LBody`: Creates a new body with a convex polygon collider defined by vertex pairs.
 - `LWorld:queryAABB(x, y, w, h, filter?) -> integer[]`: Returns all body IDs whose axis-aligned bounding boxes overlap the given rectangle.
 - `LWorld:raycast(x1, y1, x2, y2, filter?) -> table`: Casts a ray from point (x1,y1) to (x2,y2) and returns the first body hit, or nil.
 - `LWorld:raycastAll(x, y, dx, dy, maxDist, filter?) -> table`: Casts a directional ray and returns all bodies hit within max distance as a table of results.
@@ -502,6 +562,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:setCollisionPair(groupA, groupB, enabled) -> nil`: Enables or disables collisions between two world-level collision groups.
 - `LWorld:setEndContact(callback) -> nil`: Registers a callback function invoked whenever two bodies stop touching.
 - `LWorld:setFixtureFriction(bodyId, fixtureIndex, friction) -> nil`: Updates the friction coefficient of a specific fixture on a body.
+- `LWorld:setFixtureMaterial(bodyId, fixtureIndex, material) -> nil`: Assigns a reusable material table to one fixture.
 - `LWorld:setFixtureRestitution(bodyId, fixtureIndex, restitution) -> nil`: Updates the restitution (bounciness) of a specific fixture on a body.
 - `LWorld:setFixtureSensor(bodyId, fixtureIndex, sensor) -> nil`: Toggles whether a fixture acts as a sensor (overlap detection only, no physical response).
 - `LWorld:setGravity(gx, gy) -> nil`: Sets the world gravity vector. Affects all dynamic bodies.
@@ -773,6 +834,27 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 ## Notes
 
+- Material model:
+  `lurek.physics.newMaterial({...})` is the reusable, validated material constructor. Body-default material assignment lives on `LBody:setMaterial(...)` / `LBody:getMaterial()`, while collider-specific overrides live on `LWorld:setFixtureMaterial(bodyId, fixtureIndex, ...)` / `LWorld:getFixtureMaterial(...)`. Existing direct setters such as `setFriction`, `setRestitution`, `setMass`, `setGravityScale`, `setLinearDamping`, `setAngularDamping`, `setBeamReflectivity`, and `setProjectileReflectivity` remain valid and keep the stored body-material snapshot in sync.
+
+  Mixed-surface contacts currently use backend-default combine behavior. Lurek2D stores the authored friction and restitution values per collider, but does not set an engine-specific combine rule on contact, so scripts should treat friction/restitution interaction as "Rapier default combine policy" until a dedicated engine-level override is added.
+
+  | Property | Scope | Current API | Backing |
+  | --- | --- | --- | --- |
+  | `density` | body primary collider, fixture | `newMaterial`, `setMaterial`, `setFixtureMaterial`, `addFixture` | solver-backed |
+  | `friction` | body primary collider, fixture | `getFriction`, `setFriction`, `setFixtureFriction`, material APIs | solver-backed |
+  | `restitution` | body primary collider, fixture | `getRestitution`, `setRestitution`, `setFixtureRestitution`, material APIs | solver-backed |
+  | `massOverride` | body | `getMass`, `setMass`, material APIs | solver-backed |
+  | `gravityScale` | body | `getGravityScale`, `setGravityScale`, material APIs | solver-backed |
+  | `linearDamping`, `angularDamping` | body | damping getters/setters, material APIs | solver-backed |
+  | `beamReflectivity`, `projectileReflectivity` | body, fixture metadata | dedicated reflectivity getters/setters, material APIs | gameplay-backed |
+  | `beamAbsorption` | body, fixture metadata | material APIs | gameplay-backed |
+  | `stickiness`, `adhesion` | body, fixture metadata | material APIs | gameplay-backed |
+  | `buoyancy` | body, fixture metadata | material APIs | gameplay-backed |
+  | `name`, `surfaceType` | body, fixture metadata | material APIs | metadata |
+
+- Terrain contract:
+  `LTerrain:fillCircle(...)` and `LTerrain:fillRect(...)` remain the low-level solid-or-empty edit primitives, while `carveCircle`, `addCircle`, `carveRect`, `addRect`, and `damageCircle` expose gameplay-intent names so crater code does not have to remember boolean fill semantics. `collapseColumns()` is still the legacy single-cell overhang cleanup heuristic, not a full stability pass. `collapseUnsupported(...)` is the explicit connected-component pass for Worms-style unsupported terrain handling: it scans solid islands, treats bottom-border or any-border connectivity as support depending on the chosen rule, removes unsupported components, spawns sampled debris, or emits one dynamic rectangle body per unsupported component bounds when `mode = "spawnDynamicChunks"`. `flush(maxDirtyChunks?)` stays explicit so scripts can batch edits before chunk-local collider rebuilds, and now reports how many dirty chunks were rebuilt, how many remain queued, how many terrain bodies were destroyed or created, and how long the rebuild took. Static collider generation still uses fast row-run rectangles per dirty 16x16 chunk; smoother contour colliders and anchor-cell support remain later upgrades.
 - Beam query contract:
   `LWorld:castBeam`, `LWorld:beamClosest`, and `LWorld:beamAll` are instant spatial queries, not projectile-body simulation. They share the same layer, mask, group, sensor, and `excludeBody` filtering semantics as the raycast family so gameplay can switch between projectiles and hitscan without inventing parallel collision policy. `castBeam(..., { reflect = true })` extends the closest-hit path into deterministic mirror tracing: mirror bodies use surface normals plus per-body beam reflectivity to produce chained segments until the range, bounce budget, or energy budget runs out. The current release still ships the thin-beam path (`thickness = 0`) and leaves thick beam shape-casting as the explicit follow-up; calling `thickness > 0` fails fast so scripts do not assume wide-beam support yet.
 - Fast-projectile contract:
@@ -781,6 +863,8 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
   Mirror-style beam reflection is explicit gameplay metadata, not a synonym for rigid-body restitution. `LBody:setMirror(...)`, `LBody:setBeamReflectivity(...)`, and `LBody:setProjectileReflectivity(...)` let scripts describe mirror and ricochet intent independently from `setRestitution(...)`, so laser puzzles and gameplay reflection can stay deterministic even when physical bounce settings differ.
 - Flow-field contract:
   Authored flow fields live on the world, respect layer masks, can overlap additively, and may be sampled directly from Lua for AI, VFX, UI previews, or debugging. The physics world remains the source of truth for how those currents affect bodies during stepping.
+- Simple-field contract:
+  Rectangles, full circles, directional fans, radial in/out currents, and tangential clockwise/counter-clockwise swirl all share the same flow-field owner. `addFan(...)` is the convenience helper for designer-authored blower wedges, while circular fields plus radial or tangential directions cover attraction, repulsion, and vortex-like motion without introducing a second subsystem.
 - Body-influence contract:
   Bodies expose per-body flow coefficients so gameplay can scale all flow, air-only flow, water-only flow, and drag cross-section without forking world behavior. Those coefficients are body metadata, not separate force emitters.
 - Debug contract:

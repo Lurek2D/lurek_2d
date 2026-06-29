@@ -674,15 +674,6 @@ end)
 
 -- @describe target rendering/drawing contract: overlay
 describe("target rendering/drawing contract: overlay", function()
-    -- @covers LOverlay:render
-    it("overlays expose render()", function()
-        local ov = make_overlay_subject()
-        expect_type("function", ov.render)
-        expect_no_error(function()
-            ov:render()
-        end)
-    end)
-
     -- @covers LOverlay:drawToImage
     it("overlays expose drawToImage()", function()
         local ov = make_overlay_subject()

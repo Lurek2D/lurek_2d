@@ -1,15 +1,15 @@
 {
   "meta": {
-    "generated": "2026-06-29T06:59:58.055854+00:00",
+    "generated": "2026-06-29T07:45:50.197434+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
-    "total_api_functions": 6423,
-    "marker_covered": 6398,
+    "total_api_functions": 6429,
+    "marker_covered": 6404,
     "describe_covered": 150,
     "describe_coverage_pct": 2.3,
     "heuristic_covered": 0,
-    "total_covered": 6423,
+    "total_covered": 6429,
     "coverage_pct": 100.0
   },
   "modules": {
@@ -38216,11 +38216,11 @@
       ]
     },
     "physics": {
-      "total": 255,
-      "marker_covered": 255,
+      "total": 261,
+      "marker_covered": 261,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 255,
+      "covered": 261,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -39762,7 +39762,52 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "LTerrain:carveCircle",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTerrain:addCircle",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "LTerrain:fillRect",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTerrain:carveRect",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTerrain:addRect",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTerrain:damageCircle",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -39799,6 +39844,15 @@
         },
         {
           "lua_name": "LTerrain:collapseColumns",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTerrain:collapseUnsupported",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
