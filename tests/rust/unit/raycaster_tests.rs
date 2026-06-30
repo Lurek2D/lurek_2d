@@ -167,6 +167,8 @@ mod scene_tests {
             depth: 2.0,
             corner_w: [1.0, 1.0, 1.0, 1.0],
             cell_value: 1,
+            level_index: 0,
+            material: None,
         });
         scene.floors.push(FloorQuad {
             corners: unit_corners(0.0, 100.0, 1.0, 50.0),
@@ -175,6 +177,8 @@ mod scene_tests {
             light: [1.0, 1.0, 1.0, 1.0],
             depth: 2.0,
             corner_w: [1.0, 1.0, 1.0, 1.0],
+            level_index: 0,
+            material: None,
         });
         scene.ceilings.push(CeilingQuad {
             corners: unit_corners(0.0, 0.0, 1.0, 50.0),
@@ -183,6 +187,8 @@ mod scene_tests {
             light: [1.0, 1.0, 1.0, 1.0],
             depth: 2.0,
             corner_w: [1.0, 1.0, 1.0, 1.0],
+            level_index: 0,
+            material: None,
         });
         assert_eq!(scene.quad_count(), 3);
         assert!(!scene.is_empty());
@@ -288,9 +294,14 @@ mod scene_adapter_tests {
 
 mod render_tests {
     use super::*;
-    use lurek2d::raycaster::scene::{CeilingQuad, FloorQuad, WallQuad};
+    use lurek2d::raycaster::scene::{
+        CeilingQuad, FloorQuad, RaycasterMaterial, RaycasterMaterialFrameLayout, RaycasterParticle,
+        WallQuad,
+    };
     use lurek2d::render::mesh::{Mesh, MeshDrawMode, MeshVertex};
-    use lurek2d::runtime::resource_keys::TextureKey;
+    use lurek2d::render::renderer::ParticleRenderShape;
+    use lurek2d::render::BlendMode;
+    use lurek2d::runtime::resource_keys::{ShaderKey, TextureKey};
     use slotmap::KeyData;
 
     fn make_corners(x: f32, y: f32, w: f32, h: f32) -> [Vec2; 4] {
@@ -349,15 +360,29 @@ mod render_tests {
         )
     }
 
+    fn sample_material(shader_key: Option<ShaderKey>, blend_mode: BlendMode) -> RaycasterMaterial {
+        RaycasterMaterial {
+            material_id: 7,
+            texture_key: None,
+            shader_key,
+            blend_mode,
+            uv_scroll: [0.25, 0.0],
+            uv_scale: [1.0, 1.0],
+            uv_offset: [0.0, 0.0],
+            frame_count: 4,
+            frame_rate: 2.0,
+            frame_layout: RaycasterMaterialFrameLayout::Horizontal,
+            tint: [1.0, 0.8, 0.6, 1.0],
+        }
+    }
+
     #[test]
     fn raycaster_scene_empty_gives_empty_commands() {
         // Default scene has no quads Ă„â€šĂ‹ÂÄ‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ä‚ËĂ˘â€šÂ¬ÄąÄ„ only SetBlendMode is emitted
         let scene = RaycasterScene::default();
         let cmds = scene.generate_render_commands();
-        // Only the SetBlendMode preamble, no geometry commands
         assert!(
-            cmds.iter()
-                .all(|c| matches!(c, RenderCommand::SetBlendMode(_))),
+            cmds.is_empty(),
             "Empty scene should have no geometry commands"
         );
     }
@@ -366,8 +391,7 @@ mod render_tests {
     fn empty_scene_produces_minimal_commands() {
         let scene = RaycasterScene::new(320.0, 200.0);
         let cmds = scene.generate_render_commands();
-        // Just SetBlendMode
-        assert_eq!(cmds.len(), 1);
+        assert!(cmds.is_empty());
     }
 
     #[test]
@@ -383,6 +407,8 @@ mod render_tests {
             depth: 3.0,
             corner_w: [1.0, 1.0, 1.0, 1.0],
             cell_value: 1,
+            level_index: 0,
+            material: None,
         });
         let cmds = scene.generate_render_commands();
         assert!(
@@ -403,12 +429,12 @@ mod render_tests {
             depth: 3.0,
             corner_w: [1.0, 1.0, 1.0, 1.0],
             cell_value: 1,
+            level_index: 0,
+            material: None,
         });
         let cmds = scene.generate_render_commands();
-        // SetBlendMode + SetColor + Rectangle = 3
-        assert_eq!(cmds.len(), 3);
-        assert!(matches!(cmds[1], RenderCommand::SetColor(..)));
-        assert!(matches!(cmds[2], RenderCommand::Rectangle { .. }));
+        assert_eq!(cmds.len(), 1);
+        assert!(matches!(cmds[0], RenderCommand::DrawColoredPolygon { .. }));
     }
 
     #[test]
@@ -421,9 +447,11 @@ mod render_tests {
             light: [1.0, 1.0, 1.0, 1.0],
             depth: 3.0,
             corner_w: [1.0, 1.0, 1.0, 1.0],
+            level_index: 0,
+            material: None,
         });
         let cmds = scene.generate_render_commands();
-        assert!(cmds.len() >= 2);
+        assert!(cmds.len() >= 1);
     }
 
     #[test]
@@ -436,6 +464,8 @@ mod render_tests {
             light: [1.0, 1.0, 1.0, 1.0],
             depth: 3.0,
             corner_w: [1.0, 1.0, 1.0, 1.0],
+            level_index: 0,
+            material: None,
         });
         scene.walls.push(WallQuad {
             corners: make_corners(0.0, 50.0, 32.0, 100.0),
@@ -445,16 +475,20 @@ mod render_tests {
             depth: 3.0,
             corner_w: [1.0, 1.0, 1.0, 1.0],
             cell_value: 1,
+            level_index: 0,
+            material: None,
         });
         let cmds = scene.generate_render_commands();
         // Find first Rectangle after SetBlendMode Ă„â€šĂ‹ÂÄ‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ä‚ËĂ˘â€šÂ¬ÄąÄ„ should be the ceiling
-        let first_rect_idx = cmds
+        let first_poly_idx = cmds
             .iter()
-            .position(|c| matches!(c, RenderCommand::Rectangle { .. }))
+            .position(|c| matches!(c, RenderCommand::DrawColoredPolygon { .. }))
             .unwrap();
-        // Ceiling rect has y=0 (top-left corner of ceiling quad)
-        if let RenderCommand::Rectangle { y, .. } = &cmds[first_rect_idx] {
-            assert!((*y).abs() < 1e-5, "First rectangle should be ceiling (y=0)");
+        if let RenderCommand::DrawColoredPolygon { vertices, .. } = &cmds[first_poly_idx] {
+            assert!(
+                vertices[1].abs() < 1e-5,
+                "First polygon should be ceiling (y=0)"
+            );
         }
     }
 
@@ -497,21 +531,126 @@ mod render_tests {
         });
 
         let cmds = scene.generate_render_commands();
-        assert_eq!(cmds.len(), 4);
-        assert!(matches!(cmds[0], RenderCommand::SetBlendMode(_)));
-        match &cmds[1] {
+        assert_eq!(cmds.len(), 3);
+        match &cmds[0] {
             RenderCommand::DrawTexturedQuad { texture_key, .. } => {
                 assert_eq!(*texture_key, far_tex)
             }
             other => panic!("expected far sprite quad, got {other:?}"),
         }
-        assert!(matches!(cmds[2], RenderCommand::DrawMeshTransient { .. }));
-        match &cmds[3] {
+        assert!(matches!(cmds[1], RenderCommand::DrawMeshTransient { .. }));
+        match &cmds[2] {
             RenderCommand::DrawTexturedQuad { texture_key, .. } => {
                 assert_eq!(*texture_key, near_tex)
             }
             other => panic!("expected near sprite quad, got {other:?}"),
         }
+    }
+
+    #[test]
+    fn wall_material_emits_shader_and_blend_state() {
+        let texture = TextureKey::from(KeyData::from_ffi(31));
+        let shader = ShaderKey::from(KeyData::from_ffi(32));
+        let mut scene = RaycasterScene::new(160.0, 100.0);
+        scene.walls.push(WallQuad {
+            corners: make_corners(20.0, 16.0, 24.0, 48.0),
+            uvs: unit_uvs(),
+            texture_key: Some(texture),
+            light: [1.0, 1.0, 1.0, 1.0],
+            depth: 2.0,
+            corner_w: [1.0, 1.0, 1.0, 1.0],
+            cell_value: 9,
+            level_index: 0,
+            material: Some(sample_material(Some(shader), BlendMode::Add)),
+        });
+
+        let cmds = scene.generate_render_commands();
+        assert!(matches!(
+            cmds[0],
+            RenderCommand::SetBlendMode(BlendMode::Add)
+        ));
+        assert!(matches!(cmds[1], RenderCommand::SetShader(Some(key)) if key == shader));
+        assert!(
+            matches!(cmds[2], RenderCommand::DrawTexturedQuad { texture_key, .. } if texture_key == texture)
+        );
+    }
+
+    #[test]
+    fn shader_background_and_depth_fog_overlay_emit_fullscreen_commands() {
+        let texture = TextureKey::from(KeyData::from_ffi(41));
+        let shader = ShaderKey::from(KeyData::from_ffi(42));
+        let overlay_shader = ShaderKey::from(KeyData::from_ffi(43));
+        let mut scene = RaycasterScene::new(120.0, 80.0);
+        scene.time_seconds = 1.0;
+        scene.depth_columns = vec![1.0, 3.0, 6.0, 9.0];
+        scene.background = Some(RaycasterBackground::Shader {
+            material: RaycasterMaterial {
+                texture_key: Some(texture),
+                shader_key: Some(shader),
+                ..sample_material(Some(shader), BlendMode::Alpha)
+            },
+        });
+        scene.overlays.push(RaycasterOverlayEffect::DepthFog {
+            color: [0.2, 0.3, 0.5, 0.75],
+            density: 0.8,
+            near: 1.0,
+            far: 10.0,
+        });
+        scene.overlays.push(RaycasterOverlayEffect::Shader {
+            material: RaycasterMaterial {
+                texture_key: Some(texture),
+                shader_key: Some(overlay_shader),
+                ..sample_material(Some(overlay_shader), BlendMode::Screen)
+            },
+        });
+
+        let cmds = scene.generate_render_commands();
+        assert!(cmds
+            .iter()
+            .any(|cmd| matches!(cmd, RenderCommand::SetShader(Some(key)) if *key == shader)));
+        assert!(cmds.iter().any(
+            |cmd| matches!(cmd, RenderCommand::SetShader(Some(key)) if *key == overlay_shader)
+        ));
+        assert!(
+            cmds.iter()
+                .filter(|cmd| matches!(cmd, RenderCommand::Rectangle { .. }))
+                .count()
+                >= 1
+        );
+    }
+
+    #[test]
+    fn particles_emit_particle_system_command() {
+        let texture = TextureKey::from(KeyData::from_ffi(51));
+        let mut scene = RaycasterScene::new(160.0, 100.0);
+        scene.particles.push(RaycasterParticle {
+            x: 80.0,
+            y: 50.0,
+            rotation: 0.1,
+            size: 18.0,
+            color: [1.0, 0.5, 0.2, 0.8],
+            shape: ParticleRenderShape::Circle,
+            texture_key: Some(texture),
+            quad: None,
+            quad_tex_dims: None,
+            local_x: 0.0,
+            local_y: 0.0,
+            velocity_x: 0.0,
+            velocity_y: 0.2,
+            normalized_age: 0.25,
+            lifetime: 1.0,
+            seed: 5,
+            depth: 3.0,
+            shader_key: None,
+            blend_mode: BlendMode::Alpha,
+            level_index: 0,
+            emitter_id: 1,
+        });
+
+        let cmds = scene.generate_render_commands();
+        assert!(cmds
+            .iter()
+            .any(|cmd| matches!(cmd, RenderCommand::DrawParticleSystem { .. })));
     }
 }
 
@@ -633,6 +772,8 @@ mod draw_tests {
             depth: 1.0,
             corner_w: [1.0, 1.0, 1.0, 1.0],
             cell_value: 1,
+            level_index: 0,
+            material: None,
         });
 
         let img = scene.draw_to_image_with_textures(
@@ -674,6 +815,8 @@ mod draw_tests {
             depth: 1.0,
             corner_w: [1.0, 1.0, 1.0, 1.0],
             cell_value: 1,
+            level_index: 0,
+            material: None,
         });
 
         let img = scene.draw_to_image(20, 20);
@@ -708,6 +851,8 @@ mod draw_tests {
             depth: 2.0,
             corner_w: [2.0, 2.0, 2.0, 2.0],
             cell_value: 1,
+            level_index: 0,
+            material: None,
         });
         scene.sprites.push(BillboardSprite {
             corners: [
@@ -1057,6 +1202,7 @@ mod build_scene_tests {
             horizon_offset: 0.0,
             background: None,
             overlays: Vec::new(),
+            time_seconds: 0.0,
         }
     }
 
@@ -1142,6 +1288,7 @@ mod build_scene_tests {
             horizon_offset: 0.0,
             background: None,
             overlays: Vec::new(),
+            time_seconds: 0.0,
         };
 
         let tk = TextureKey::from(KeyData::from_ffi(1));
@@ -1209,6 +1356,7 @@ mod build_scene_tests {
             horizon_offset: 0.0,
             background: None,
             overlays: Vec::new(),
+            time_seconds: 0.0,
         };
 
         let front = TextureKey::from(KeyData::from_ffi(11));
@@ -1511,6 +1659,7 @@ mod build_scene_tests {
             horizon_offset: 0.0,
             background: None,
             overlays: Vec::new(),
+            time_seconds: 0.0,
         };
 
         let baseline = RaycasterScene::build_multilevel(
@@ -1666,6 +1815,7 @@ mod build_scene_tests {
             horizon_offset: 0.0,
             background: None,
             overlays: Vec::new(),
+            time_seconds: 0.0,
         };
         let closed_scene = RaycasterScene::build_multilevel(
             &closed_grid,
@@ -1725,6 +1875,7 @@ mod build_scene_tests {
             horizon_offset: 0.0,
             background: None,
             overlays: Vec::new(),
+            time_seconds: 0.0,
         };
         let closed_scene = RaycasterScene::build_multilevel(
             &closed_grid,
@@ -1788,6 +1939,7 @@ mod build_scene_tests {
             horizon_offset: 0.0,
             background: None,
             overlays: Vec::new(),
+            time_seconds: 0.0,
         };
         let scene = RaycasterScene::build_multilevel(
             &grid,
@@ -1841,6 +1993,7 @@ mod build_scene_tests {
             horizon_offset: 0.0,
             background: None,
             overlays: Vec::new(),
+            time_seconds: 0.0,
         };
         let scene = RaycasterScene::build_multilevel(
             &grid,

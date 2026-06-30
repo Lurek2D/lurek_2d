@@ -1,0 +1,7 @@
+Raycaster material CPU fallback contract
+surface_shaders_executed=false
+background_overlay_shaders_executed=false
+base_texture_and_tint_preserved=true
+uv_scroll_and_frame_animation_approximated=true
+depth_fog_applied_from_column_depth=true
+projected_particles_drawn_without_wgsl=true

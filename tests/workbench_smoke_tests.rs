@@ -13,7 +13,10 @@ use lurek2d::runtime::RuntimeMode;
 fn make_workbench_vm() -> mlua::Lua {
     let game_dir = PathBuf::from("workbench");
     let (config, conf_error) = Config::load(&game_dir);
-    assert!(conf_error.is_none(), "workbench conf.toml should parse cleanly");
+    assert!(
+        conf_error.is_none(),
+        "workbench conf.toml should parse cleanly"
+    );
 
     let mut shared = SharedState::new(1600, 900, "WorkbenchSmoke", game_dir.clone());
     shared.runtime_mode = RuntimeMode::Headless;
@@ -54,7 +57,8 @@ fn run_workbench_screenshot() -> PathBuf {
         .join("workbench_smoke.png");
 
     if screenshot_path.exists() {
-        std::fs::remove_file(&screenshot_path).expect("Failed to remove stale workbench screenshot");
+        std::fs::remove_file(&screenshot_path)
+            .expect("Failed to remove stale workbench screenshot");
     }
 
     let mut child = Command::new(&binary)
@@ -68,7 +72,10 @@ fn run_workbench_screenshot() -> PathBuf {
     loop {
         match child.try_wait().expect("Failed to poll workbench process") {
             Some(status) => {
-                assert!(status.success(), "workbench process exited unsuccessfully: {status}");
+                assert!(
+                    status.success(),
+                    "workbench process exited unsuccessfully: {status}"
+                );
                 break;
             }
             None => {
@@ -87,7 +94,8 @@ fn run_workbench_screenshot() -> PathBuf {
 #[test]
 fn workbench_headless_boots_and_processes() {
     let lua = make_workbench_vm();
-    let code = std::fs::read_to_string("workbench/main.lua").expect("Failed to read workbench/main.lua");
+    let code =
+        std::fs::read_to_string("workbench/main.lua").expect("Failed to read workbench/main.lua");
 
     lua.load(&code)
         .set_name("workbench/main.lua")
@@ -109,8 +117,11 @@ fn workbench_headless_boots_and_processes() {
         .get("renderToImage")
         .expect("Missing lurek.ui.renderToImage");
 
-    init.call::<_, ()>(()).expect("workbench init should succeed");
-    let themed: bool = has_theme.call(()).expect("workbench theme query should succeed");
+    init.call::<_, ()>(())
+        .expect("workbench init should succeed");
+    let themed: bool = has_theme
+        .call(())
+        .expect("workbench theme query should succeed");
     let widgets: i64 = widget_count
         .call(())
         .expect("workbench widget count query should succeed");
@@ -123,23 +134,34 @@ fn workbench_headless_boots_and_processes() {
     mousemoved
         .call::<_, bool>((24.0_f32, 24.0_f32))
         .expect("workbench should accept mouse movement");
-    draw.call::<_, ()>(()).expect("workbench draw should succeed");
+    draw.call::<_, ()>(())
+        .expect("workbench draw should succeed");
 
     let render_path = headless_render_path();
     if render_path.exists() {
-        std::fs::remove_file(&render_path).expect("Failed to remove stale headless workbench render");
+        std::fs::remove_file(&render_path)
+            .expect("Failed to remove stale headless workbench render");
     }
     render_to_image
         .call::<_, ()>((1600_i64, 900_i64, render_path.to_string_lossy().to_string()))
         .expect("workbench should render a headless UI screenshot");
 
-    assert!(handled_f1, "workbench should handle the F1 overview shortcut");
+    assert!(
+        handled_f1,
+        "workbench should handle the F1 overview shortcut"
+    );
     assert!(themed, "workbench should apply a visible lurek.ui theme");
-    assert!(widgets >= 20, "workbench should populate a non-trivial widget tree");
+    assert!(
+        widgets >= 20,
+        "workbench should populate a non-trivial widget tree"
+    );
     let size = std::fs::metadata(&render_path)
         .unwrap_or_else(|error| panic!("Cannot stat headless workbench render: {error}"))
         .len();
-    assert!(size > 2048, "workbench headless UI render is suspiciously small: {size} bytes");
+    assert!(
+        size > 2048,
+        "workbench headless UI render is suspiciously small: {size} bytes"
+    );
 }
 
 #[test]
@@ -207,13 +229,21 @@ return {
     let released_editors: bool = result
         .get("released_editors")
         .expect("Missing released_editors result");
-    let pressed_home: bool = result.get("pressed_home").expect("Missing pressed_home result");
+    let pressed_home: bool = result
+        .get("pressed_home")
+        .expect("Missing pressed_home result");
     let released_home: bool = result
         .get("released_home")
         .expect("Missing released_home result");
 
-    assert!(pressed_editors, "editor sidebar button should receive mouse press");
-    assert!(released_editors, "editor sidebar button should receive mouse release");
+    assert!(
+        pressed_editors,
+        "editor sidebar button should receive mouse press"
+    );
+    assert!(
+        released_editors,
+        "editor sidebar button should receive mouse release"
+    );
     assert!(pressed_home, "home button should receive mouse press");
     assert!(released_home, "home button should receive mouse release");
     assert_eq!(active_sidebar, "editors");
@@ -224,15 +254,21 @@ return {
 #[ignore = "requires a built lurek2d binary plus a real display"]
 fn workbench_window_screenshot_smoke() {
     let screenshot = run_workbench_screenshot();
-    assert!(screenshot.exists(), "Workbench smoke screenshot was not created");
+    assert!(
+        screenshot.exists(),
+        "Workbench smoke screenshot was not created"
+    );
 
     let size = std::fs::metadata(&screenshot)
         .unwrap_or_else(|error| panic!("Cannot stat workbench screenshot: {error}"))
         .len();
-    assert!(size > 2048, "Workbench smoke screenshot is suspiciously small: {size} bytes");
+    assert!(
+        size > 2048,
+        "Workbench smoke screenshot is suspiciously small: {size} bytes"
+    );
 
-    let bytes =
-        std::fs::read(&screenshot).unwrap_or_else(|error| panic!("Cannot read workbench screenshot: {error}"));
+    let bytes = std::fs::read(&screenshot)
+        .unwrap_or_else(|error| panic!("Cannot read workbench screenshot: {error}"));
     assert!(
         bytes.starts_with(&[0x89, 0x50, 0x4E, 0x47]),
         "Workbench smoke output is not a PNG: {}",

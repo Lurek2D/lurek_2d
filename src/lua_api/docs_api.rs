@@ -965,7 +965,9 @@ pub fn register(
         lua.create_function(|lua, opts: Option<LuaTable>| {
             let mut entries = Vec::new();
             if let Some(opts_tbl) = opts {
-                if let Some(custom_table) = opts_tbl.get::<_, Option<LuaTable>>("table").ok().flatten() {
+                if let Some(custom_table) =
+                    opts_tbl.get::<_, Option<LuaTable>>("table").ok().flatten()
+                {
                     let namespace = opts_tbl
                         .get::<_, Option<String>>("namespace")
                         .ok()

@@ -1933,16 +1933,10 @@ impl ParticleConfig {
         {
             c.lifetime_max = v;
         }
-        if let Ok(v) = t
-            .get::<_, f32>("speedMin")
-            .or_else(|_| t.get("speed_min"))
-        {
+        if let Ok(v) = t.get::<_, f32>("speedMin").or_else(|_| t.get("speed_min")) {
             c.speed_min = v;
         }
-        if let Ok(v) = t
-            .get::<_, f32>("speedMax")
-            .or_else(|_| t.get("speed_max"))
-        {
+        if let Ok(v) = t.get::<_, f32>("speedMax").or_else(|_| t.get("speed_max")) {
             c.speed_max = v;
         }
         if let Ok(v) = t.get::<_, f32>("direction") {
@@ -1951,28 +1945,16 @@ impl ParticleConfig {
         if let Ok(v) = t.get::<_, f32>("spread") {
             c.spread = v;
         }
-        if let Ok(v) = t
-            .get::<_, f32>("gravityX")
-            .or_else(|_| t.get("gravity_x"))
-        {
+        if let Ok(v) = t.get::<_, f32>("gravityX").or_else(|_| t.get("gravity_x")) {
             c.gravity_x = v;
         }
-        if let Ok(v) = t
-            .get::<_, f32>("gravityY")
-            .or_else(|_| t.get("gravity_y"))
-        {
+        if let Ok(v) = t.get::<_, f32>("gravityY").or_else(|_| t.get("gravity_y")) {
             c.gravity_y = v;
         }
-        if let Ok(v) = t
-            .get::<_, f32>("spinMin")
-            .or_else(|_| t.get("spin_min"))
-        {
+        if let Ok(v) = t.get::<_, f32>("spinMin").or_else(|_| t.get("spin_min")) {
             c.spin_min = v;
         }
-        if let Ok(v) = t
-            .get::<_, f32>("spinMax")
-            .or_else(|_| t.get("spin_max"))
-        {
+        if let Ok(v) = t.get::<_, f32>("spinMax").or_else(|_| t.get("spin_max")) {
             c.spin_max = v;
         }
         if let Ok(v) = t
@@ -2098,16 +2080,10 @@ impl ParticleConfig {
         {
             c.relative_rotation = v;
         }
-        if let Ok(v) = t
-            .get::<_, f32>("offsetX")
-            .or_else(|_| t.get("offset_x"))
-        {
+        if let Ok(v) = t.get::<_, f32>("offsetX").or_else(|_| t.get("offset_x")) {
             c.offset_x = v;
         }
-        if let Ok(v) = t
-            .get::<_, f32>("offsetY")
-            .or_else(|_| t.get("offset_y"))
-        {
+        if let Ok(v) = t.get::<_, f32>("offsetY").or_else(|_| t.get("offset_y")) {
             c.offset_y = v;
         }
         if let Ok(v) = t.get::<_, f32>("turbulence") {

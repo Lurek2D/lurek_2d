@@ -21,10 +21,13 @@ use crate::raycaster::projection::distance_shade;
 use crate::raycaster::ray_hit::RayHit;
 use crate::raycaster::scene::{
     BillboardSprite, CeilingQuad, FloorQuad, RaycasterBackground, RaycasterBuildStats,
-    RaycasterOverlayEffect, RaycasterScene, WallQuad,
+    RaycasterMaterial, RaycasterMaterialFrameLayout, RaycasterOverlayEffect, RaycasterParticle,
+    RaycasterScene, WallQuad,
 };
 use crate::raycaster::wall_feature::{WallFeature, WallFeatureKind};
-use crate::runtime::resource_keys::TextureKey;
+use crate::render::renderer::ParticleRenderShape;
+use crate::render::BlendMode;
+use crate::runtime::resource_keys::{ShaderKey, TextureKey};
 use std::collections::HashMap;
 /// A floor cell that sits below the standard floor plane, used for pits and step-down areas.
 #[derive(Debug, Clone, Copy)]
@@ -46,6 +49,15 @@ pub struct LevelSprite {
     pub level_index: usize,
     /// Sprite payload projected within that level's floor plane.
     pub sprite: WorldSprite,
+}
+
+/// A world-space projected particle emitter attached to a specific multi-level slice.
+#[derive(Debug, Clone)]
+pub struct LevelParticleEmitter {
+    /// Zero-based level index that owns the emitter.
+    pub level_index: usize,
+    /// Emitter payload projected within that level's floor plane.
+    pub emitter: RaycasterParticleEmitter,
 }
 /// Build a 4-corner array for an axis-aligned rectangle in screen space.
 fn corners_from_rect(x: f32, y: f32, w: f32, h: f32) -> [Vec2; 4] {
@@ -279,6 +291,38 @@ fn project_horizontal_plane(
 fn snap_half(v: f32) -> f32 {
     (v * 2.0).round() * 0.5
 }
+
+fn hash_u32(mut value: u32) -> u32 {
+    value ^= value >> 16;
+    value = value.wrapping_mul(0x7feb_352d);
+    value ^= value >> 15;
+    value = value.wrapping_mul(0x846c_a68b);
+    value ^ (value >> 16)
+}
+
+fn random01(seed: u32, stream: u32) -> f32 {
+    let hashed = hash_u32(seed ^ stream.wrapping_mul(0x9e37_79b9));
+    hashed as f32 / u32::MAX as f32
+}
+
+fn random_signed(seed: u32, stream: u32) -> f32 {
+    random01(seed, stream) * 2.0 - 1.0
+}
+
+fn build_depth_columns(raycaster: &Raycaster2D, params: &SceneBuildParams) -> Vec<f32> {
+    raycaster
+        .cast_rays(
+            params.player_x,
+            params.player_y,
+            params.player_angle,
+            params.fov,
+            params.ray_count.max(1),
+            params.max_distance,
+        )
+        .into_iter()
+        .map(|hit| hit.distance.max(0.0))
+        .collect()
+}
 /// Emit `FloorQuad`, `CeilingQuad`, and lowered-floor side `WallQuad` entries for all visible open tiles.
 #[allow(clippy::too_many_arguments)]
 fn build_floor_tiles(
@@ -291,6 +335,8 @@ fn build_floor_tiles(
     wall_at: &dyn Fn(i32, i32) -> bool,
     floor_texture_at: &dyn Fn(u32, u32) -> Option<TextureKey>,
     ceiling_texture_at: &dyn Fn(u32, u32) -> Option<TextureKey>,
+    floor_material_at: &dyn Fn(u32, u32) -> Option<RaycasterMaterial>,
+    ceiling_material_at: &dyn Fn(u32, u32) -> Option<RaycasterMaterial>,
     floor_visible_at: &dyn Fn(u32, u32) -> bool,
     ceiling_visible_at: &dyn Fn(u32, u32) -> bool,
     roofed_at: &dyn Fn(u32, u32) -> bool,
@@ -410,7 +456,12 @@ fn build_floor_tiles(
                 color_to_light(&c)
             };
             let base_floor_tex = floor_texture_at(tx as u32, ty as u32);
-            let floor_tex = lowered.map(|c| c.texture_key).or(base_floor_tex);
+            let floor_material = floor_material_at(tx as u32, ty as u32);
+            let ceiling_material = ceiling_material_at(tx as u32, ty as u32);
+            let floor_tex = material_texture(
+                floor_material.as_ref(),
+                lowered.map(|c| c.texture_key).or(base_floor_tex),
+            );
             let tp0 = project_horizontal_plane(
                 tx as f32, ty as f32, px, py, cos_a, sin_a, proj_dist, sw, horizon, top_plane,
             );
@@ -465,11 +516,13 @@ fn build_floor_tiles(
             if floor_visible {
                 floors.push(FloorQuad {
                     corners: floor_corners,
-                    uvs: rect_uvs(),
+                    uvs: material_uvs(rect_uvs(), floor_material.as_ref(), params.time_seconds),
                     texture_key: floor_tex,
-                    light: floor_light,
+                    light: tint_light(floor_light, floor_material.as_ref()),
                     depth: dist,
                     corner_w: [tp0.2, tp1.2, tp2.2, tp3.2],
+                    level_index,
+                    material: floor_material.clone(),
                 });
             }
             if ceiling_visible {
@@ -478,13 +531,16 @@ fn build_floor_tiles(
                 } else {
                     default_ceil_light
                 };
+                let ceil_tex = material_texture(ceiling_material.as_ref(), ceil_tex);
                 ceilings.push(CeilingQuad {
                     corners: ceil_corners,
-                    uvs: rect_uvs(),
+                    uvs: material_uvs(rect_uvs(), ceiling_material.as_ref(), params.time_seconds),
                     texture_key: ceil_tex,
-                    light: ceil_light,
+                    light: tint_light(ceil_light, ceiling_material.as_ref()),
                     depth: dist,
                     corner_w: [p0.cx, p1.cx, p2.cx, p3.cx],
+                    level_index,
+                    material: ceiling_material.clone(),
                 });
             }
             if floor_visible {
@@ -501,7 +557,7 @@ fn build_floor_tiles(
                         light_rgb,
                         1.0,
                     ));
-                    let side_tex = base_floor_tex;
+                    let side_tex = material_texture(floor_material.as_ref(), base_floor_tex);
                     let neighbour_drop = |nx: i32, ny: i32| {
                         lowered_floor_at(nx as u32, ny as u32)
                             .map(|c| c.depth_offset)
@@ -546,12 +602,18 @@ fn build_floor_tiles(
                                     Vec2::new(pbb.0, pbb.1),
                                     Vec2::new(pba.0, pba.1),
                                 ],
-                                uvs: rect_uvs(),
+                                uvs: material_uvs(
+                                    rect_uvs(),
+                                    floor_material.as_ref(),
+                                    params.time_seconds,
+                                ),
                                 texture_key: side_tex,
-                                light: side_color,
+                                light: tint_light(side_color, floor_material.as_ref()),
                                 depth: dist + 0.001,
                                 corner_w: [pta.2, ptb.2, pbb.2, pba.2],
                                 cell_value: 0,
+                                level_index,
+                                material: floor_material.clone(),
                             });
                         }
                     };
@@ -666,12 +728,21 @@ fn build_floor_tiles(
                                 Vec2::new(pbb.0, pbb.1),
                                 Vec2::new(pba.0, pba.1),
                             ],
-                            uvs: rect_uvs(),
-                            texture_key: Some(roof_tex),
-                            light: roof_side_light,
+                            uvs: material_uvs(
+                                rect_uvs(),
+                                ceiling_material.as_ref(),
+                                params.time_seconds,
+                            ),
+                            texture_key: material_texture(
+                                ceiling_material.as_ref(),
+                                Some(roof_tex),
+                            ),
+                            light: tint_light(roof_side_light, ceiling_material.as_ref()),
                             depth: (dist - 0.02).max(0.0),
                             corner_w: [pta.2, ptb.2, pbb.2, pba.2],
                             cell_value: 0,
+                            level_index,
+                            material: ceiling_material.clone(),
                         });
                     }
                 };
@@ -724,6 +795,7 @@ fn push_feature_face_segment(
     lights: &[PointLight],
     wall_at: &dyn Fn(i32, i32) -> bool,
     wall_texture: &dyn Fn(u32) -> Option<TextureKey>,
+    wall_material: &dyn Fn(u32) -> Option<RaycasterMaterial>,
     roofed_at: &dyn Fn(u32, u32) -> bool,
     lighting_cache: &mut LightingSampleCache,
     proj_dist: f32,
@@ -770,6 +842,7 @@ fn push_feature_face_segment(
     );
     let mut wall_color = lit_surface_color(&Color::WHITE, light_rgb, 1.0);
     wall_color.a *= alpha.clamp(0.0, 1.0);
+    let material = wall_material(cell_value);
     let top_plane = floor_plane - top_height.clamp(0.0, 1.0);
     let bottom_plane = floor_plane - bottom_height.clamp(0.0, 1.0);
     let pta = project_horizontal_plane(
@@ -827,12 +900,14 @@ fn push_feature_face_segment(
             Vec2::new(pbb.0, pbb.1),
             Vec2::new(pba.0, pba.1),
         ],
-        uvs: rect_uvs(),
-        texture_key: wall_texture(cell_value),
-        light: color_to_light(&wall_color),
+        uvs: material_uvs(rect_uvs(), material.as_ref(), params.time_seconds),
+        texture_key: material_texture(material.as_ref(), wall_texture(cell_value)),
+        light: tint_light(color_to_light(&wall_color), material.as_ref()),
         depth,
         corner_w: [pta.2, ptb.2, pbb.2, pba.2],
         cell_value,
+        level_index,
+        material,
     });
 }
 
@@ -847,8 +922,10 @@ fn build_wall_faces(
     lights: &[PointLight],
     wall_at: &dyn Fn(i32, i32) -> bool,
     wall_texture: &dyn Fn(u32) -> Option<TextureKey>,
+    wall_material: &dyn Fn(u32) -> Option<RaycasterMaterial>,
     wall_feature_at: &dyn Fn(u32, u32) -> Option<WallFeature>,
     ceiling_texture_at: &dyn Fn(u32, u32) -> Option<TextureKey>,
+    ceiling_material_at: &dyn Fn(u32, u32) -> Option<RaycasterMaterial>,
     ceiling_visible_at: &dyn Fn(u32, u32) -> bool,
     roofed_at: &dyn Fn(u32, u32) -> bool,
     lowered_floor_at: &dyn Fn(u32, u32) -> Option<LoweredFloorCell>,
@@ -938,6 +1015,7 @@ fn build_wall_faces(
             wall_at,
         );
         let wall_color = lit_surface_color(&Color::WHITE, light_rgb, 1.0);
+        let material = wall_material(cell_value);
         Some(WallQuad {
             corners: [
                 Vec2::new(pa.sx, pa.ceil_y),
@@ -945,12 +1023,14 @@ fn build_wall_faces(
                 Vec2::new(pb.sx, pb.floor_y),
                 Vec2::new(pa.sx, pa.floor_y),
             ],
-            uvs: rect_uvs(),
-            texture_key: wall_texture(cell_value),
-            light: color_to_light(&wall_color),
+            uvs: material_uvs(rect_uvs(), material.as_ref(), params.time_seconds),
+            texture_key: material_texture(material.as_ref(), wall_texture(cell_value)),
+            light: tint_light(color_to_light(&wall_color), material.as_ref()),
             depth,
             corner_w: [pa.cx, pb.cx, pb.cx, pa.cx],
             cell_value,
+            level_index,
+            material,
         })
     };
     for ty in 0..map_h {
@@ -977,6 +1057,7 @@ fn build_wall_faces(
                                 lights,
                                 wall_at,
                                 wall_texture,
+                                wall_material,
                                 roofed_at,
                                 lighting_cache,
                                 proj_dist,
@@ -1009,6 +1090,7 @@ fn build_wall_faces(
                                 lights,
                                 wall_at,
                                 wall_texture,
+                                wall_material,
                                 roofed_at,
                                 lighting_cache,
                                 proj_dist,
@@ -1041,6 +1123,7 @@ fn build_wall_faces(
                                 lights,
                                 wall_at,
                                 wall_texture,
+                                wall_material,
                                 roofed_at,
                                 lighting_cache,
                                 proj_dist,
@@ -1073,6 +1156,7 @@ fn build_wall_faces(
                                 lights,
                                 wall_at,
                                 wall_texture,
+                                wall_material,
                                 roofed_at,
                                 lighting_cache,
                                 proj_dist,
@@ -1112,6 +1196,7 @@ fn build_wall_faces(
                                     lights,
                                     wall_at,
                                     wall_texture,
+                                    wall_material,
                                     roofed_at,
                                     lighting_cache,
                                     proj_dist,
@@ -1142,6 +1227,7 @@ fn build_wall_faces(
                                     lights,
                                     wall_at,
                                     wall_texture,
+                                    wall_material,
                                     roofed_at,
                                     lighting_cache,
                                     proj_dist,
@@ -1222,6 +1308,7 @@ fn build_wall_faces(
                                     lights,
                                     wall_at,
                                     wall_texture,
+                                    wall_material,
                                     roofed_at,
                                     lighting_cache,
                                     proj_dist,
@@ -1254,6 +1341,7 @@ fn build_wall_faces(
                                     lights,
                                     wall_at,
                                     wall_texture,
+                                    wall_material,
                                     roofed_at,
                                     lighting_cache,
                                     proj_dist,
@@ -1345,6 +1433,7 @@ fn build_wall_faces(
             } else {
                 None
             } {
+                let ceiling_material = ceiling_material_at(tx as u32, ty as u32);
                 let roof_thickness = lowered_floor_at(tx as u32, ty as u32)
                     .map(|c| c.depth_offset)
                     .unwrap_or(0.25)
@@ -1429,12 +1518,21 @@ fn build_wall_faces(
                                     Vec2::new(pbb.0, pbb.1),
                                     Vec2::new(pba.0, pba.1),
                                 ],
-                                uvs: rect_uvs(),
-                                texture_key: Some(roof_tex),
-                                light: roof_light,
+                                uvs: material_uvs(
+                                    rect_uvs(),
+                                    ceiling_material.as_ref(),
+                                    params.time_seconds,
+                                ),
+                                texture_key: material_texture(
+                                    ceiling_material.as_ref(),
+                                    Some(roof_tex),
+                                ),
+                                light: tint_light(roof_light, ceiling_material.as_ref()),
                                 depth: ((dx * dx + dy * dy).sqrt() - 0.02).max(0.0),
                                 corner_w: [pta.2, ptb.2, pbb.2, pba.2],
                                 cell_value: 0,
+                                level_index,
+                                material: ceiling_material.clone(),
                             });
                         };
                     render_roof_side(tx as f32, ty as f32, tx as f32 + 1.0, ty as f32, tx, ty - 1);
@@ -1516,6 +1614,66 @@ pub struct SceneBuildParams {
     pub background: Option<RaycasterBackground>,
     /// Optional full-frame overlay effects drawn after first-person geometry.
     pub overlays: Vec<RaycasterOverlayEffect>,
+    /// Deterministic time source used for animated UVs and projected particle simulation.
+    pub time_seconds: f32,
+}
+
+fn material_texture(
+    material: Option<&RaycasterMaterial>,
+    fallback: Option<TextureKey>,
+) -> Option<TextureKey> {
+    material
+        .and_then(|material| material.texture_key)
+        .or(fallback)
+}
+
+fn tint_light(mut light: [f32; 4], material: Option<&RaycasterMaterial>) -> [f32; 4] {
+    if let Some(material) = material {
+        for (value, tint) in light.iter_mut().zip(material.tint) {
+            *value *= tint;
+        }
+    }
+    light
+}
+
+fn material_uvs(
+    base_uvs: [Vec2; 4],
+    material: Option<&RaycasterMaterial>,
+    time_seconds: f32,
+) -> [Vec2; 4] {
+    let Some(material) = material else {
+        return base_uvs;
+    };
+    let frame_count = material.frame_count.max(1);
+    let animated = if frame_count > 1 && material.frame_rate > 0.0 {
+        ((time_seconds.max(0.0) * material.frame_rate).floor() as u32) % frame_count
+    } else {
+        0
+    };
+    base_uvs.map(|uv| {
+        let mut u = frac01(
+            uv.x * material.uv_scale[0]
+                + material.uv_offset[0]
+                + material.uv_scroll[0] * time_seconds,
+        );
+        let mut v = frac01(
+            uv.y * material.uv_scale[1]
+                + material.uv_offset[1]
+                + material.uv_scroll[1] * time_seconds,
+        );
+        if frame_count > 1 {
+            let frame_count_f = frame_count as f32;
+            match material.frame_layout {
+                RaycasterMaterialFrameLayout::Horizontal => {
+                    u = (u + animated as f32) / frame_count_f;
+                }
+                RaycasterMaterialFrameLayout::Vertical => {
+                    v = (v + animated as f32) / frame_count_f;
+                }
+            }
+        }
+        Vec2::new(u, v)
+    })
 }
 
 fn normalize_signed_angle(mut angle: f32) -> f32 {
@@ -1584,6 +1742,49 @@ pub struct WorldSprite {
     pub directional_textures: Option<DirectionalSpriteTextures>,
     /// World-space size of the sprite (height and width are equal).
     pub size: f32,
+}
+
+/// A deterministic world-space particle emitter projected into the raycaster view.
+#[derive(Debug, Clone)]
+pub struct RaycasterParticleEmitter {
+    /// Stable caller-assigned emitter id.
+    pub emitter_id: u32,
+    /// Multi-level slice index that owns this emitter.
+    pub level_index: usize,
+    /// World X position of the emitter origin.
+    pub world_x: f32,
+    /// World Y position of the emitter origin.
+    pub world_y: f32,
+    /// Height above the owning level floor where particles begin.
+    pub world_z: f32,
+    /// Horizontal spawn radius around the emitter origin.
+    pub radius: f32,
+    /// Vertical spawn span applied before velocity motion.
+    pub height: f32,
+    /// Spawn rate in particles per second.
+    pub rate: f32,
+    /// Minimum and maximum lifetime in seconds.
+    pub lifetime_range: [f32; 2],
+    /// Base XYZ velocity in world units per second.
+    pub velocity: [f32; 3],
+    /// Symmetric random XYZ velocity jitter added per particle.
+    pub velocity_jitter: [f32; 3],
+    /// Minimum and maximum particle size in world units.
+    pub size_range: [f32; 2],
+    /// RGBA color multiplied into the projected particle.
+    pub color: [f32; 4],
+    /// Fallback particle shape.
+    pub shape: ParticleRenderShape,
+    /// Optional texture applied to the particle billboard.
+    pub texture_key: Option<TextureKey>,
+    /// Optional particle-target shader.
+    pub shader_key: Option<ShaderKey>,
+    /// Blend mode used while presenting this emitter.
+    pub blend_mode: BlendMode,
+    /// When true, particles hidden behind nearer wall columns are culled.
+    pub occlude_walls: bool,
+    /// Deterministic seed driving per-particle jitter.
+    pub seed: u32,
 }
 /// Callback type mapping a wall cell value to an optional `TextureKey`.
 pub type TextureLookup = dyn Fn(u32) -> Option<TextureKey>;
@@ -1706,6 +1907,164 @@ impl RaycasterScene {
         }
     }
 
+    fn build_level_particles(
+        &mut self,
+        level_index: usize,
+        params: &SceneBuildParams,
+        emitters: &[RaycasterParticleEmitter],
+        planes: VerticalPlanes,
+    ) {
+        let floor_plane = planes.floor_plane;
+        let half_fov = params.fov * 0.5;
+        let horizon = params.screen_height * 0.5 - params.horizon_offset;
+        let proj_dist = (params.screen_width * 0.5) / (params.fov * 0.5).tan();
+        let cos_a = params.player_angle.cos();
+        let sin_a = params.player_angle.sin();
+        let screen_w = params.screen_width.max(1.0);
+        let screen_h = params.screen_height.max(1.0);
+
+        for emitter in emitters {
+            if emitter.level_index != level_index {
+                continue;
+            }
+            let rate = emitter.rate.max(0.0);
+            if rate <= 0.0 {
+                continue;
+            }
+            let min_lifetime = emitter.lifetime_range[0].max(0.05);
+            let max_lifetime = emitter.lifetime_range[1].max(min_lifetime);
+            let max_live = (rate * max_lifetime).ceil().clamp(1.0, 192.0) as i32;
+            let last_spawn = (params.time_seconds.max(0.0) * rate).floor() as i32;
+            let first_spawn = (last_spawn - max_live - 2).max(0);
+
+            for spawn_index in first_spawn..=last_spawn {
+                let spawn_time = spawn_index as f32 / rate;
+                let age = params.time_seconds - spawn_time;
+                if age < 0.0 {
+                    continue;
+                }
+
+                let seed = hash_u32(
+                    emitter.seed
+                        ^ emitter.emitter_id.wrapping_mul(0x045d_9f3b)
+                        ^ spawn_index as u32,
+                );
+                let lifetime = min_lifetime + (max_lifetime - min_lifetime) * random01(seed, 0);
+                if age > lifetime {
+                    continue;
+                }
+                let normalized_age = (age / lifetime).clamp(0.0, 1.0);
+                let spawn_angle = random01(seed, 1) * std::f32::consts::TAU;
+                let spawn_radius = emitter.radius.max(0.0) * random01(seed, 2).sqrt();
+                let local_x = spawn_angle.cos() * spawn_radius;
+                let local_y = spawn_angle.sin() * spawn_radius;
+                let local_z = emitter.height.max(0.0) * random01(seed, 3);
+                let velocity = [
+                    emitter.velocity[0] + emitter.velocity_jitter[0] * random_signed(seed, 4),
+                    emitter.velocity[1] + emitter.velocity_jitter[1] * random_signed(seed, 5),
+                    emitter.velocity[2] + emitter.velocity_jitter[2] * random_signed(seed, 6),
+                ];
+                let world_x = emitter.world_x + local_x + velocity[0] * age;
+                let world_y = emitter.world_y + local_y + velocity[1] * age;
+                let world_z = emitter.world_z + local_z + velocity[2] * age;
+                let dx = world_x - params.player_x;
+                let dy = world_y - params.player_y;
+                let depth = (dx * dx + dy * dy).sqrt();
+                if depth < 0.05 || depth > params.max_distance + 1.0 {
+                    continue;
+                }
+                let particle_angle = dy.atan2(dx);
+                let angle_diff = normalize_signed_angle(particle_angle - params.player_angle);
+                if angle_diff.abs() > half_fov {
+                    continue;
+                }
+                let screen_x = params.screen_width * 0.5
+                    + (angle_diff / half_fov) * (params.screen_width * 0.5);
+                let sample_x = screen_x.clamp(0.0, screen_w - 1.0);
+                if emitter.occlude_walls && !self.depth_columns.is_empty() {
+                    let depth_index = ((sample_x / screen_w) * self.depth_columns.len() as f32)
+                        .floor()
+                        .clamp(0.0, self.depth_columns.len().saturating_sub(1) as f32)
+                        as usize;
+                    if depth > self.depth_columns[depth_index] + 0.05 {
+                        continue;
+                    }
+                }
+                let size_world = (emitter.size_range[0]
+                    + (emitter.size_range[1] - emitter.size_range[0]) * random01(seed, 7))
+                .max(0.05);
+                let (_, base_y, _) = project_horizontal_plane(
+                    world_x,
+                    world_y,
+                    params.player_x,
+                    params.player_y,
+                    cos_a,
+                    sin_a,
+                    proj_dist,
+                    params.screen_width,
+                    horizon,
+                    floor_plane - world_z,
+                );
+                let (_, top_y, _) = project_horizontal_plane(
+                    world_x,
+                    world_y,
+                    params.player_x,
+                    params.player_y,
+                    cos_a,
+                    sin_a,
+                    proj_dist,
+                    params.screen_width,
+                    horizon,
+                    floor_plane - (world_z + size_world),
+                );
+                let projected_size = (base_y - top_y).abs().max(1.0);
+                let screen_y = base_y - projected_size * 0.5;
+                if screen_x + projected_size < 0.0
+                    || screen_x - projected_size > params.screen_width
+                    || screen_y + projected_size < 0.0
+                    || screen_y - projected_size > screen_h
+                {
+                    continue;
+                }
+
+                let mut color = emitter.color;
+                color[3] *= 1.0 - normalized_age;
+                if color[3] <= 0.01 {
+                    continue;
+                }
+                let rotation = match emitter.shape {
+                    ParticleRenderShape::Spark | ParticleRenderShape::Ray { .. } => {
+                        velocity[1].atan2(velocity[0])
+                    }
+                    _ => random01(seed, 8) * std::f32::consts::TAU + normalized_age * 1.5,
+                };
+                self.particles.push(RaycasterParticle {
+                    x: screen_x,
+                    y: screen_y,
+                    rotation,
+                    size: projected_size,
+                    color,
+                    shape: emitter.shape.clone(),
+                    texture_key: emitter.texture_key,
+                    quad: None,
+                    quad_tex_dims: None,
+                    local_x,
+                    local_y,
+                    velocity_x: velocity[0],
+                    velocity_y: velocity[1],
+                    normalized_age,
+                    lifetime,
+                    seed,
+                    depth,
+                    shader_key: emitter.shader_key,
+                    blend_mode: emitter.blend_mode,
+                    level_index,
+                    emitter_id: emitter.emitter_id,
+                });
+            }
+        }
+    }
+
     #[allow(clippy::too_many_arguments)]
     fn build_scene_into(
         &mut self,
@@ -1714,10 +2073,14 @@ impl RaycasterScene {
         params: &SceneBuildParams,
         lights: &[PointLight],
         sprites: &[WorldSprite],
+        particle_emitters: &[RaycasterParticleEmitter],
         wall_texture: &dyn Fn(u32) -> Option<TextureKey>,
+        wall_material: &dyn Fn(u32) -> Option<RaycasterMaterial>,
         wall_feature_at: &dyn Fn(u32, u32) -> Option<WallFeature>,
         floor_texture_at: &dyn Fn(u32, u32) -> Option<TextureKey>,
         ceiling_texture_at: &dyn Fn(u32, u32) -> Option<TextureKey>,
+        floor_material_at: &dyn Fn(u32, u32) -> Option<RaycasterMaterial>,
+        ceiling_material_at: &dyn Fn(u32, u32) -> Option<RaycasterMaterial>,
         floor_visible_at: &dyn Fn(u32, u32) -> bool,
         ceiling_visible_at: &dyn Fn(u32, u32) -> bool,
         roofed_at: &dyn Fn(u32, u32) -> bool,
@@ -1739,6 +2102,8 @@ impl RaycasterScene {
             &wall_at,
             floor_texture_at,
             ceiling_texture_at,
+            floor_material_at,
+            ceiling_material_at,
             floor_visible_at,
             ceiling_visible_at,
             roofed_at,
@@ -1757,8 +2122,10 @@ impl RaycasterScene {
             lights,
             &wall_at,
             wall_texture,
+            wall_material,
             wall_feature_at,
             ceiling_texture_at,
+            ceiling_material_at,
             ceiling_visible_at,
             roofed_at,
             lowered_floor_at,
@@ -1776,6 +2143,64 @@ impl RaycasterScene {
             sprites,
             planes,
         );
+        self.build_level_particles(level_index, params, particle_emitters, planes);
+    }
+
+    /// Build a complete `RaycasterScene` from camera params, lights, sprites, and texture lookups.
+    #[allow(clippy::too_many_arguments)]
+    pub fn build_with_scene_features(
+        raycaster: &Raycaster2D,
+        params: &SceneBuildParams,
+        lights: &[PointLight],
+        sprites: &[WorldSprite],
+        particle_emitters: &[RaycasterParticleEmitter],
+        wall_texture: &dyn Fn(u32) -> Option<TextureKey>,
+        wall_material: &dyn Fn(u32) -> Option<RaycasterMaterial>,
+        floor_texture_at: &dyn Fn(u32, u32) -> Option<TextureKey>,
+        ceiling_texture_at: &dyn Fn(u32, u32) -> Option<TextureKey>,
+        floor_material_at: &dyn Fn(u32, u32) -> Option<RaycasterMaterial>,
+        ceiling_material_at: &dyn Fn(u32, u32) -> Option<RaycasterMaterial>,
+        lowered_floor_at: &dyn Fn(u32, u32) -> Option<LoweredFloorCell>,
+    ) -> Self {
+        let mut scene = RaycasterScene::new(params.screen_width, params.screen_height);
+        scene.background = params.background.clone();
+        scene.overlays = params.overlays.clone();
+        scene.time_seconds = params.time_seconds;
+        scene.depth_columns = build_depth_columns(raycaster, params);
+        let mut lighting_cache = LightingSampleCache::default();
+        scene.build_scene_into(
+            raycaster,
+            0,
+            params,
+            lights,
+            sprites,
+            particle_emitters,
+            wall_texture,
+            wall_material,
+            &|x, y| raycaster.wall_feature(x, y),
+            floor_texture_at,
+            ceiling_texture_at,
+            floor_material_at,
+            ceiling_material_at,
+            &|_, _| true,
+            &|_, _| true,
+            &|x, y| ceiling_texture_at(x, y).is_some(),
+            lowered_floor_at,
+            &mut lighting_cache,
+            vertical_planes(params.camera_height.clamp(0.1, 0.9), 0.0, 1.0),
+        );
+        scene.sprites.sort_by(|a, b| {
+            b.depth
+                .partial_cmp(&a.depth)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
+        scene.particles.sort_by(|a, b| {
+            b.depth
+                .partial_cmp(&a.depth)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
+        scene.build_stats = lighting_cache.stats();
+        scene
     }
 
     /// Build a complete `RaycasterScene` from camera params, lights, sprites, and texture lookups.
@@ -1790,62 +2215,64 @@ impl RaycasterScene {
         ceiling_texture_at: &dyn Fn(u32, u32) -> Option<TextureKey>,
         lowered_floor_at: &dyn Fn(u32, u32) -> Option<LoweredFloorCell>,
     ) -> Self {
-        let mut scene = RaycasterScene::new(params.screen_width, params.screen_height);
-        scene.background = params.background.clone();
-        scene.overlays = params.overlays.clone();
-        let mut lighting_cache = LightingSampleCache::default();
-        scene.build_scene_into(
+        Self::build_with_scene_features(
             raycaster,
-            0,
             params,
             lights,
             sprites,
+            &[],
             wall_texture,
-            &|x, y| raycaster.wall_feature(x, y),
+            &|_| None,
             floor_texture_at,
             ceiling_texture_at,
-            &|_, _| true,
-            &|_, _| true,
-            &|x, y| ceiling_texture_at(x, y).is_some(),
+            &|_, _| None,
+            &|_, _| None,
             lowered_floor_at,
-            &mut lighting_cache,
-            vertical_planes(params.camera_height.clamp(0.1, 0.9), 0.0, 1.0),
-        );
-        scene.sprites.sort_by(|a, b| {
-            b.depth
-                .partial_cmp(&a.depth)
-                .unwrap_or(std::cmp::Ordering::Equal)
-        });
-        scene.build_stats = lighting_cache.stats();
-        scene
+        )
     }
 
     /// Build a complete `RaycasterScene` from a stack of raycaster levels sharing one camera.
     #[allow(clippy::too_many_arguments)]
-    pub fn build_multilevel(
+    pub fn build_multilevel_with_scene_features(
         grid: &MultiLevelGrid,
         params: &SceneBuildParams,
         lights: &[PointLight],
         sprites: &[LevelSprite],
+        particle_emitters: &[LevelParticleEmitter],
         wall_texture: &dyn Fn(usize, u32) -> Option<TextureKey>,
+        wall_material: &dyn Fn(usize, u32) -> Option<RaycasterMaterial>,
         floor_texture_at: &dyn Fn(usize, u32, u32) -> Option<TextureKey>,
         ceiling_texture_at: &dyn Fn(usize, u32, u32) -> Option<TextureKey>,
+        floor_material_at: &dyn Fn(usize, u32, u32) -> Option<RaycasterMaterial>,
+        ceiling_material_at: &dyn Fn(usize, u32, u32) -> Option<RaycasterMaterial>,
         lowered_floor_at: &dyn Fn(usize, u32, u32) -> Option<LoweredFloorCell>,
     ) -> Self {
         let mut scene = RaycasterScene::new(params.screen_width, params.screen_height);
         scene.background = params.background.clone();
         scene.overlays = params.overlays.clone();
+        scene.time_seconds = params.time_seconds;
         let mut lighting_cache = LightingSampleCache::default();
         let eye = params.camera_height.clamp(0.1, 0.9);
         let camera_world_z = grid
             .get_active()
             .map(|level| level.floor_offset + eye)
             .unwrap_or(eye);
+        if let Some(active_depth) = grid.with_runtime_level(grid.active_level(), |_, raycaster| {
+            build_depth_columns(raycaster, params)
+        }) {
+            scene.depth_columns = active_depth;
+        }
         let level_count = grid.level_count();
         let mut sprites_by_level = vec![Vec::new(); level_count];
         for sprite in sprites {
             if sprite.level_index < level_count {
                 sprites_by_level[sprite.level_index].push(sprite.sprite.clone());
+            }
+        }
+        let mut emitters_by_level = vec![Vec::new(); level_count];
+        for emitter in particle_emitters {
+            if emitter.level_index < level_count {
+                emitters_by_level[emitter.level_index].push(emitter.emitter.clone());
             }
         }
         let mut lights_by_level = vec![Vec::new(); level_count];
@@ -1873,7 +2300,9 @@ impl RaycasterScene {
                     params,
                     &lights_by_level[level_index],
                     &sprites_by_level[level_index],
+                    &emitters_by_level[level_index],
                     &|cell_value| wall_texture(level_index, cell_value),
+                    &|cell_value| wall_material(level_index, cell_value),
                     &|x, y| raycaster.wall_feature(x, y),
                     &|x, y| {
                         floor_texture_at(level_index, x, y)
@@ -1883,6 +2312,8 @@ impl RaycasterScene {
                         ceiling_texture_at(level_index, x, y)
                             .or_else(|| level.ceiling_texture_at(x as usize, y as usize))
                     },
+                    &|x, y| floor_material_at(level_index, x, y),
+                    &|x, y| ceiling_material_at(level_index, x, y),
                     &|x, y| !level.is_floor_hole(x as usize, y as usize),
                     &|x, y| !level.is_ceiling_hole(x as usize, y as usize),
                     &|x, y| !level.is_ceiling_hole(x as usize, y as usize),
@@ -1901,7 +2332,40 @@ impl RaycasterScene {
                 .partial_cmp(&a.depth)
                 .unwrap_or(std::cmp::Ordering::Equal)
         });
+        scene.particles.sort_by(|a, b| {
+            b.depth
+                .partial_cmp(&a.depth)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
         scene.build_stats = lighting_cache.stats();
         scene
+    }
+
+    /// Build a complete `RaycasterScene` from a stack of raycaster levels sharing one camera.
+    #[allow(clippy::too_many_arguments)]
+    pub fn build_multilevel(
+        grid: &MultiLevelGrid,
+        params: &SceneBuildParams,
+        lights: &[PointLight],
+        sprites: &[LevelSprite],
+        wall_texture: &dyn Fn(usize, u32) -> Option<TextureKey>,
+        floor_texture_at: &dyn Fn(usize, u32, u32) -> Option<TextureKey>,
+        ceiling_texture_at: &dyn Fn(usize, u32, u32) -> Option<TextureKey>,
+        lowered_floor_at: &dyn Fn(usize, u32, u32) -> Option<LoweredFloorCell>,
+    ) -> Self {
+        Self::build_multilevel_with_scene_features(
+            grid,
+            params,
+            lights,
+            sprites,
+            &[],
+            wall_texture,
+            &|_, _| None,
+            floor_texture_at,
+            ceiling_texture_at,
+            &|_, _, _| None,
+            &|_, _, _| None,
+            lowered_floor_at,
+        )
     }
 }

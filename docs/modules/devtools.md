@@ -1333,11 +1333,10 @@ do
     lurek.devtools.info("writing runtime diagnostics to save/devtools_example.log")
     local logFile = lurek.devtools.getLogFile()
     local history = lurek.devtools.getLogHistory(1)
-    local fileText = lurek.filesystem.read(logFile)
+    lurek.devtools.setLogFile("")
     lurek.log.info("log file path=" .. tostring(logFile))
     lurek.log.info("history rows after file target change=" .. tostring(#history))
     lurek.log.info("hidden sinks visible to lurek.log=" .. tostring(#lurek.log.listSinks()))
-    lurek.log.info("file contains devtools message=" .. tostring(string.find(fileText, "runtime diagnostics", 1, true) ~= nil))
 end
 ```
 

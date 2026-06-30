@@ -1871,6 +1871,77 @@ describe("LRaycaster methods", function()
         local directional_managed_count = map:buildScene(scene_params(), {}, sprites, { [1] = tex })
         expect_type("number", directional_managed_count)
         expect_true(id > 0)
+
+        local overlay_shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return color;
+}
+]], { target = "overlay" })
+        local particle_shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return color;
+}
+]], { target = "particle" })
+        map:setWallMaterial(2, {
+            texture = wall,
+            shader = draw_shader(),
+            blend = "add",
+            frame_count = 2,
+            frame_rate = 4.0,
+            tint = { 1.0, 0.8, 0.6, 1.0 },
+        })
+        map:setFloorMaterialCell(8, 8, {
+            texture = wall,
+            uv_scroll = { 0.0, 0.1 },
+            tint = { 0.7, 0.8, 1.0, 0.9 },
+        })
+        map:setCeilingMaterialCell(8, 7, {
+            texture = wall,
+            frame_count = 2,
+            frame_rate = 2.0,
+            tint = { 1.0, 0.95, 0.7, 1.0 },
+        })
+        map:addParticleEmitter({
+            x = 8.0,
+            y = 8.0,
+            z = 0.1,
+            rate = 10.0,
+            lifetime = 1.0,
+            size = 0.35,
+            radius = 0.1,
+            height = 0.6,
+            texture = wall,
+            shader = particle_shader,
+            seed = 11,
+        })
+        local feature_params = scene_params()
+        feature_params.time_seconds = 0.5
+        feature_params.background = {
+            type = "shader",
+            shader = overlay_shader,
+            texture = wall,
+            tint = { 0.4, 0.5, 0.8, 1.0 },
+        }
+        feature_params.overlays = {
+            { type = "fog", mode = "depth", color = { 0.2, 0.3, 0.5, 0.8 }, density = 0.5, near = 1.0, far = 12.0 },
+            { type = "shader", shader = overlay_shader, texture = wall, blend = "alpha", tint = { 1.0, 1.0, 1.0, 0.15 } },
+        }
+        local shader_count = map:buildScene(feature_params, {}, {}, { [1] = wall, [2] = wall })
+        expect_true(shader_count > 0)
+        expect_error(function()
+            local bad = scene_params()
+            bad.background = { type = "shader" }
+            map:buildScene(bad, {}, {}, { [1] = wall })
+        end)
+        expect_error(function()
+            local bad = scene_params()
+            bad.overlays = {
+                { type = "shader" },
+            }
+            map:buildScene(bad, {}, {}, { [1] = wall })
+        end)
     end)
 
     -- @covers LRaycaster:buildSceneWithModels
@@ -2169,6 +2240,70 @@ describe("LRaycaster methods", function()
         expect_nil(map:getFloorTextureCell(0, 0))
     end)
 
+    -- @covers LRaycaster:getWallMaterial
+    it("getWallMaterial returns the stored wall material table or nil", function()
+        local map = lurek.raycaster.new(8, 8)
+        expect_nil(map:getWallMaterial(2))
+        local shader = draw_shader()
+        local texture = load_texture()
+        map:setWallMaterial(2, {
+            texture = texture,
+            shader = shader,
+            blend = "add",
+            uv_scroll = { 0.1, 0.0 },
+            uv_scale = { 0.5, 1.0 },
+            uv_offset = { 0.25, 0.0 },
+            frame_count = 4,
+            frame_rate = 8.0,
+            frame_layout = "vertical",
+            tint = { 0.9, 0.8, 0.7, 0.6 },
+        })
+        local material = map:getWallMaterial(2)
+        expect_type("table", material)
+        expect_equal(texture:getId(), material.texture)
+        expect_equal(shader:getId(), material.shader:getId())
+        expect_equal("add", material.blend)
+        expect_equal("vertical", material.frame_layout)
+        expect_equal(4, material.frame_count)
+        expect_true(material.material_id > 0)
+    end)
+
+    -- @covers LRaycaster:getFloorMaterialCell
+    it("getFloorMaterialCell returns the stored floor material table or nil", function()
+        local map = lurek.raycaster.new(8, 8)
+        expect_nil(map:getFloorMaterialCell(1, 1))
+        local texture = load_texture()
+        map:setFloorMaterialCell(1, 1, {
+            texture = texture,
+            blend = "screen",
+            uv_scroll = { 0.0, 0.15 },
+            tint = { 0.7, 0.8, 1.0, 0.9 },
+        })
+        local material = map:getFloorMaterialCell(1, 1)
+        expect_type("table", material)
+        expect_equal(texture:getId(), material.texture)
+        expect_equal("screen", material.blend)
+        expect_near(0.15, material.uv_scroll[2], 1e-5)
+    end)
+
+    -- @covers LRaycaster:getCeilingMaterialCell
+    it("getCeilingMaterialCell returns the stored ceiling material table or nil", function()
+        local map = lurek.raycaster.new(8, 8)
+        expect_nil(map:getCeilingMaterialCell(2, 2))
+        local texture = load_texture()
+        map:setCeilingMaterialCell(2, 2, {
+            texture = texture,
+            frame_count = 2,
+            frame_rate = 4.0,
+            tint = { 1.0, 0.9, 0.7, 1.0 },
+        })
+        local material = map:getCeilingMaterialCell(2, 2)
+        expect_type("table", material)
+        expect_equal(texture:getId(), material.texture)
+        expect_equal(2, material.frame_count)
+        expect_near(4.0, material.frame_rate, 1e-5)
+    end)
+
     -- @covers LRaycaster:getLoweredFloorCell
     it("getLoweredFloorCell returns stored lowered-floor options", function()
         local map = lurek.raycaster.new(8, 8)
@@ -2290,6 +2425,73 @@ describe("LRaycaster methods", function()
         expect_nil(map:getFloorTextureCell(1, 1))
     end)
 
+    -- @covers LRaycaster:setWallMaterial
+    it("setWallMaterial stores validated wall materials and rejects wrong shader targets", function()
+        local map = lurek.raycaster.new(8, 8)
+        local texture = load_texture()
+        local shader = draw_shader()
+        map:setWallMaterial(3, {
+            texture = texture,
+            shader = shader,
+            blend = "multiply",
+            uv_scroll = { 0.05, 0.02 },
+            uv_scale = { 1.0, 0.5 },
+            uv_offset = { 0.1, 0.2 },
+            frame_count = 3,
+            frame_rate = 6.0,
+            frame_layout = "horizontal",
+            tint = { 0.8, 0.7, 0.6, 0.9 },
+        })
+        local material = map:getWallMaterial(3)
+        expect_equal("multiply", material.blend)
+        expect_near(0.05, material.uv_scroll[1], 1e-5)
+        expect_equal("horizontal", material.frame_layout)
+        expect_error(function()
+            map:setWallMaterial(4, {
+                shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return color;
+}
+]], { target = "overlay" }),
+            })
+        end)
+        map:setWallMaterial(3, nil)
+        expect_nil(map:getWallMaterial(3))
+    end)
+
+    -- @covers LRaycaster:setFloorMaterialCell
+    it("setFloorMaterialCell stores and clears per-cell floor materials", function()
+        local map = lurek.raycaster.new(8, 8)
+        map:setFloorMaterialCell(4, 4, {
+            texture = load_texture(),
+            blend = "screen",
+            uv_scroll = { 0.0, 0.1 },
+            tint = { 0.6, 0.8, 1.0, 0.9 },
+        })
+        local material = map:getFloorMaterialCell(4, 4)
+        expect_equal("screen", material.blend)
+        expect_near(0.1, material.uv_scroll[2], 1e-5)
+        map:setFloorMaterialCell(4, 4, nil)
+        expect_nil(map:getFloorMaterialCell(4, 4))
+    end)
+
+    -- @covers LRaycaster:setCeilingMaterialCell
+    it("setCeilingMaterialCell stores and clears per-cell ceiling materials", function()
+        local map = lurek.raycaster.new(8, 8)
+        map:setCeilingMaterialCell(5, 5, {
+            texture = load_texture(),
+            frame_count = 2,
+            frame_rate = 5.0,
+            tint = { 1.0, 0.95, 0.7, 1.0 },
+        })
+        local material = map:getCeilingMaterialCell(5, 5)
+        expect_equal(2, material.frame_count)
+        expect_near(5.0, material.frame_rate, 1e-5)
+        map:setCeilingMaterialCell(5, 5, nil)
+        expect_nil(map:getCeilingMaterialCell(5, 5))
+    end)
+
     -- @covers LRaycaster:setLoweredFloorCell
     it("setLoweredFloorCell stores lowered-floor metadata", function()
         local map = lurek.raycaster.new(8, 8)
@@ -2307,6 +2509,102 @@ describe("LRaycaster methods", function()
         local map = lurek.raycaster.new(4, 4)
         map:setWallAlpha(1, 0.75)
         expect_near(0.75, map:getWallAlpha(1), 1e-5)
+    end)
+
+    -- @covers LRaycaster:addParticleEmitter
+    it("addParticleEmitter adds deterministic projected particles and validates shader targets", function()
+        local map = make_map(12, 12)
+        local baseline = map:buildScene({
+            px = 3.5,
+            py = 6.0,
+            angle = 0.0,
+            fov = math.pi / 3,
+            rays = 48,
+            max_dist = 12.0,
+            screen_w = 160,
+            screen_h = 100,
+            time_seconds = 0.5,
+        }, {}, {}, { [1] = load_texture() })
+        local particle_shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return color;
+}
+]], { target = "particle" })
+        map:addParticleEmitter({
+            x = 6.0,
+            y = 6.0,
+            z = 0.1,
+            radius = 0.2,
+            height = 0.6,
+            rate = 12.0,
+            lifetime = 1.0,
+            size = 0.35,
+            texture = load_texture(),
+            shader = particle_shader,
+            blend = "add",
+            seed = 42,
+        })
+        local with_particles = map:buildScene({
+            px = 3.5,
+            py = 6.0,
+            angle = 0.0,
+            fov = math.pi / 3,
+            rays = 48,
+            max_dist = 12.0,
+            screen_w = 160,
+            screen_h = 100,
+            time_seconds = 0.5,
+        }, {}, {}, { [1] = load_texture() })
+        expect_true(with_particles > baseline)
+        expect_error(function()
+            map:addParticleEmitter({
+                x = 6.0,
+                y = 6.0,
+                shader = draw_shader(),
+            })
+        end)
+    end)
+
+    -- @covers LRaycaster:clearParticleEmitters
+    it("clearParticleEmitters removes projected particle contributions from later builds", function()
+        local map = make_map(12, 12)
+        local wall = load_texture()
+        map:addParticleEmitter({
+            x = 6.0,
+            y = 6.0,
+            radius = 0.2,
+            height = 0.6,
+            rate = 10.0,
+            lifetime = 1.0,
+            size = 0.35,
+            texture = wall,
+            seed = 7,
+        })
+        local with_particles = map:buildScene({
+            px = 3.5,
+            py = 6.0,
+            angle = 0.0,
+            fov = math.pi / 3,
+            rays = 48,
+            max_dist = 12.0,
+            screen_w = 160,
+            screen_h = 100,
+            time_seconds = 0.5,
+        }, {}, {}, { [1] = wall })
+        map:clearParticleEmitters()
+        local cleared = map:buildScene({
+            px = 3.5,
+            py = 6.0,
+            angle = 0.0,
+            fov = math.pi / 3,
+            rays = 48,
+            max_dist = 12.0,
+            screen_w = 160,
+            screen_h = 100,
+            time_seconds = 0.5,
+        }, {}, {}, { [1] = wall })
+        expect_true(with_particles > cleared)
     end)
 
 
@@ -2574,6 +2872,54 @@ describe("raycaster tilefield adapters", function()
     it("drawLastScene rasterizes the last prepared scene", function()
         local map = make_map(8, 8)
         map:setCell(4, 3, 2)
+        local atlas = lurek.image.newImageData(8, 4)
+        atlas:fill(0, 0, 0, 0)
+        atlas:drawRect(0, 0, 4, 4, 255, 40, 40, 255)
+        atlas:drawRect(4, 0, 4, 4, 40, 220, 80, 255)
+        local atlas_texture = lurek.render.newImage(atlas)
+        local overlay_shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return color;
+}
+]], { target = "overlay" })
+        local particle_shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return color;
+}
+]], { target = "particle" })
+        map:setWallMaterial(2, {
+            texture = atlas_texture,
+            shader = draw_shader(),
+            frame_count = 2,
+            frame_rate = 2.0,
+            tint = { 1.0, 1.0, 1.0, 1.0 },
+        })
+        map:setFloorMaterialCell(3, 3, {
+            texture = atlas_texture,
+            uv_scroll = { 0.0, 0.1 },
+            tint = { 0.8, 0.9, 1.0, 1.0 },
+        })
+        map:setCeilingMaterialCell(3, 2, {
+            texture = atlas_texture,
+            frame_count = 2,
+            frame_rate = 2.0,
+            tint = { 1.0, 0.95, 0.8, 1.0 },
+        })
+        map:addParticleEmitter({
+            x = 3.5,
+            y = 3.5,
+            z = 0.1,
+            rate = 10.0,
+            lifetime = 1.0,
+            radius = 0.1,
+            height = 0.4,
+            size = 0.3,
+            texture = atlas_texture,
+            shader = particle_shader,
+            seed = 23,
+        })
         map:buildScene({
             px = 2.5,
             py = 3.5,
@@ -2584,13 +2930,24 @@ describe("raycaster tilefield adapters", function()
             screen_w = 64,
             screen_h = 40,
             ambient = 0.5,
+            time_seconds = 0.0,
+            background = {
+                type = "shader",
+                shader = overlay_shader,
+                texture = atlas_texture,
+                tint = { 0.2, 0.3, 0.5, 1.0 },
+            },
+            overlays = {
+                { type = "depth_fog", color = { 0.2, 0.3, 0.4, 0.8 }, density = 0.6, near = 1.0, far = 8.0 },
+                { type = "shader", shader = overlay_shader, texture = atlas_texture, tint = { 1.0, 1.0, 1.0, 0.08 } },
+            },
         }, {
             { x = 3.5, y = 3.5, radius = 3.0, intensity = 1.0, color = { 1.0, 0.8, 0.4 } },
         }, {
             { x = 3.5, y = 3.5, texture = load_texture(), size = 0.75, id = 42 },
         }, {
             [1] = load_texture(),
-            [2] = load_texture(),
+            [2] = atlas_texture,
         })
 
         local img = lurek.raycaster.drawLastScene(64, 40)
@@ -2599,6 +2956,24 @@ describe("raycaster tilefield adapters", function()
         local r, g, b, a = img:getPixel(32, 20)
         expect_true(a > 0)
         expect_true(r + g + b > 0)
+        map:buildScene({
+            px = 2.5,
+            py = 3.5,
+            angle = 0,
+            fov = 1.0,
+            rays = 32,
+            max_dist = 8,
+            screen_w = 64,
+            screen_h = 40,
+            ambient = 0.5,
+            time_seconds = 0.5,
+        }, {}, {}, {
+            [1] = load_texture(),
+            [2] = atlas_texture,
+        })
+        local img2 = lurek.raycaster.drawLastScene(64, 40)
+        local r2, g2 = img2:getPixel(32, 20)
+        expect_true(r ~= r2 or g ~= g2)
     end)
 end)
 end

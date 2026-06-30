@@ -7,11 +7,10 @@ use crate::physics::world::{BodyContact, COLLISION_GROUP_COUNT};
 use crate::physics::{
     AlphaShapeOptions, BeamHit, BeamHitMode, BeamOptions, BeamSegment, BeamTrace, Body, BodyId,
     BodyType, FlowApplicationMode, FlowCombineMode, FlowDirectionMode, FlowFalloff, FlowField,
-    FlowGeometry, FlowMedium, FlowSample, LiquidBodyForceOptions, LiquidBodyForceStats,
-    LiquidKind, LiquidMap, LiquidStepOptions, LiquidStepStats, PhysicsMaterial,
-    PhysicsQueryFilter, PhysicsWorldStats, PhysicsZone, RaycastHit, Shape, ShapeSweepHit,
-    TerrainCollapseMode, TerrainCollapseOptions, TerrainCollapseResult, TerrainMap,
-    TerrainSupportRule, World,
+    FlowGeometry, FlowMedium, FlowSample, LiquidBodyForceOptions, LiquidBodyForceStats, LiquidKind,
+    LiquidMap, LiquidStepOptions, LiquidStepStats, PhysicsMaterial, PhysicsQueryFilter,
+    PhysicsWorldStats, PhysicsZone, RaycastHit, Shape, ShapeSweepHit, TerrainCollapseMode,
+    TerrainCollapseOptions, TerrainCollapseResult, TerrainMap, TerrainSupportRule, World,
 };
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -421,7 +420,9 @@ fn parse_liquid_kind(method: &str, value: LuaValue) -> LuaResult<LiquidKind> {
             Ok(LiquidKind::Custom(id as u16))
         }
         LuaValue::Number(id)
-            if id.is_finite() && id.fract().abs() <= f64::EPSILON && (0.0..=u16::MAX as f64).contains(&id) =>
+            if id.is_finite()
+                && id.fract().abs() <= f64::EPSILON
+                && (0.0..=u16::MAX as f64).contains(&id) =>
         {
             Ok(LiquidKind::Custom(id as u16))
         }
@@ -431,7 +432,10 @@ fn parse_liquid_kind(method: &str, value: LuaValue) -> LuaResult<LiquidKind> {
         )),
         LuaValue::Number(id) => Err(physics_runtime_error(
             method,
-            format!("custom liquid kind must be a finite integer in 0..65535, got {}", id),
+            format!(
+                "custom liquid kind must be a finite integer in 0..65535, got {}",
+                id
+            ),
         )),
         _ => Err(physics_runtime_error(
             method,

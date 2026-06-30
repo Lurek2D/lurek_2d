@@ -8,7 +8,9 @@
 
 use crate::math::Vec2;
 use crate::render::mesh::Mesh;
-use crate::runtime::resource_keys::TextureKey;
+use crate::render::renderer::ParticleRenderShape;
+use crate::render::BlendMode;
+use crate::runtime::resource_keys::{ShaderKey, TextureKey};
 
 /// Build-time counters captured while assembling a `RaycasterScene`.
 #[derive(Debug, Clone, Copy, Default)]
@@ -80,6 +82,10 @@ pub struct WallQuad {
     pub corner_w: [f32; 4],
     /// Tile value of the wall cell that produced this quad.
     pub cell_value: u32,
+    /// Visible level index that owns this wall surface.
+    pub level_index: usize,
+    /// Optional material metadata driving shader and animated UV presentation.
+    pub material: Option<RaycasterMaterial>,
 }
 /// A perspective-correct floor quad covering one screen column strip.
 #[derive(Debug, Clone)]
@@ -96,6 +102,10 @@ pub struct FloorQuad {
     pub depth: f32,
     /// Homogeneous W values for perspective-correct UV interpolation.
     pub corner_w: [f32; 4],
+    /// Visible level index that owns this floor surface.
+    pub level_index: usize,
+    /// Optional material metadata driving shader and animated UV presentation.
+    pub material: Option<RaycasterMaterial>,
 }
 /// A perspective-correct ceiling quad covering one screen column strip.
 #[derive(Debug, Clone)]
@@ -112,6 +122,10 @@ pub struct CeilingQuad {
     pub depth: f32,
     /// Homogeneous W values for perspective-correct UV interpolation.
     pub corner_w: [f32; 4],
+    /// Visible level index that owns this ceiling surface.
+    pub level_index: usize,
+    /// Optional material metadata driving shader and animated UV presentation.
+    pub material: Option<RaycasterMaterial>,
 }
 /// An axis-aligned billboard sprite quad, sorted by depth relative to walls.
 #[derive(Debug, Clone)]
@@ -136,6 +150,60 @@ pub struct BillboardSprite {
     pub world_y: f32,
 }
 
+/// Atlas-frame layout used by a raycaster material animation strip.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum RaycasterMaterialFrameLayout {
+    /// Frames are packed left-to-right in one row.
+    Horizontal,
+    /// Frames are packed top-to-bottom in one column.
+    Vertical,
+}
+
+/// Render-facing material metadata attached to raycaster surfaces and fullscreen effects.
+#[derive(Debug, Clone)]
+pub struct RaycasterMaterial {
+    /// Stable caller-visible material id when one is supplied; 0 means anonymous.
+    pub material_id: u32,
+    /// Optional texture used by the surface or effect.
+    pub texture_key: Option<TextureKey>,
+    /// Optional shader used when presenting this material.
+    pub shader_key: Option<ShaderKey>,
+    /// Blend mode used while drawing this material.
+    pub blend_mode: BlendMode,
+    /// UV scroll speed in UV units per second.
+    pub uv_scroll: [f32; 2],
+    /// UV scale multiplier applied before atlas-frame selection.
+    pub uv_scale: [f32; 2],
+    /// Constant UV offset applied before atlas-frame selection.
+    pub uv_offset: [f32; 2],
+    /// Number of atlas frames packed in the texture.
+    pub frame_count: u32,
+    /// Playback rate in frames per second for atlas animation.
+    pub frame_rate: f32,
+    /// Atlas packing direction for `frame_count > 1`.
+    pub frame_layout: RaycasterMaterialFrameLayout,
+    /// Constant tint multiplied into the existing surface light.
+    pub tint: [f32; 4],
+}
+
+impl Default for RaycasterMaterial {
+    fn default() -> Self {
+        Self {
+            material_id: 0,
+            texture_key: None,
+            shader_key: None,
+            blend_mode: BlendMode::Alpha,
+            uv_scroll: [0.0, 0.0],
+            uv_scale: [1.0, 1.0],
+            uv_offset: [0.0, 0.0],
+            frame_count: 1,
+            frame_rate: 0.0,
+            frame_layout: RaycasterMaterialFrameLayout::Horizontal,
+            tint: [1.0, 1.0, 1.0, 1.0],
+        }
+    }
+}
+
 /// Full-frame background drawn before raycaster geometry.
 #[derive(Debug, Clone)]
 pub enum RaycasterBackground {
@@ -149,6 +217,8 @@ pub enum RaycasterBackground {
         tint: [f32; 4],
         offset: f32,
     },
+    /// Shader-backed fullscreen background using existing render-owned shader infrastructure.
+    Shader { material: RaycasterMaterial },
 }
 
 /// Screen-space presentation effect drawn over the raycaster frame.
@@ -162,6 +232,62 @@ pub enum RaycasterOverlayEffect {
         density: f32,
         wind: f32,
     },
+    /// Approximate depth fog derived from the raycaster's per-column wall distances.
+    DepthFog {
+        color: [f32; 4],
+        density: f32,
+        near: f32,
+        far: f32,
+    },
+    /// Shader-backed fullscreen overlay using existing render-owned shader infrastructure.
+    Shader { material: RaycasterMaterial },
+}
+
+/// A projected world-space particle prepared for transparent composition within a raycaster scene.
+#[derive(Debug, Clone)]
+pub struct RaycasterParticle {
+    /// Screen-space X position of the billboard center.
+    pub x: f32,
+    /// Screen-space Y position of the billboard center.
+    pub y: f32,
+    /// Billboard rotation in radians.
+    pub rotation: f32,
+    /// Billboard size in screen pixels.
+    pub size: f32,
+    /// Premultiplied RGBA tint/color for this particle.
+    pub color: [f32; 4],
+    /// Particle fallback render shape.
+    pub shape: ParticleRenderShape,
+    /// Optional texture routed into the particle draw.
+    pub texture_key: Option<TextureKey>,
+    /// Optional texture quad sub-region `[x, y, w, h]`.
+    pub quad: Option<[f32; 4]>,
+    /// Optional texture dimensions used with `quad`.
+    pub quad_tex_dims: Option<(f32, f32)>,
+    /// Local emitter-space X offset.
+    pub local_x: f32,
+    /// Local emitter-space Y offset.
+    pub local_y: f32,
+    /// World-space horizontal velocity component.
+    pub velocity_x: f32,
+    /// World-space vertical velocity component.
+    pub velocity_y: f32,
+    /// Normalized age in `[0, 1]`.
+    pub normalized_age: f32,
+    /// Total particle lifetime in seconds.
+    pub lifetime: f32,
+    /// Stable deterministic random seed for this particle.
+    pub seed: u32,
+    /// Camera-space depth used for sorting and wall-occlusion checks.
+    pub depth: f32,
+    /// Optional particle-target shader.
+    pub shader_key: Option<ShaderKey>,
+    /// Blend mode used while presenting this particle.
+    pub blend_mode: BlendMode,
+    /// Multi-level slice index owning this particle.
+    pub level_index: usize,
+    /// Stable emitter id that produced this particle.
+    pub emitter_id: u32,
 }
 /// A static mesh injected into the raycaster scene with an associated depth.
 #[derive(Debug, Clone)]
@@ -192,6 +318,8 @@ pub struct RaycasterScene {
     pub ceilings: Vec<CeilingQuad>,
     /// Billboard sprites sorted back-to-front for alpha blending.
     pub sprites: Vec<BillboardSprite>,
+    /// Projected transparent particles sorted back-to-front.
+    pub particles: Vec<RaycasterParticle>,
     /// Static model meshes sorted back-to-front.
     pub models: Vec<ModelMesh>,
     /// Optional full-frame background drawn before geometry.
@@ -202,8 +330,12 @@ pub struct RaycasterScene {
     pub screen_width: f32,
     /// Framebuffer height in pixels used when building this scene.
     pub screen_height: f32,
+    /// Deterministic time value captured for animated material evaluation.
+    pub time_seconds: f32,
     /// Build-time counters captured while assembling this scene.
     pub build_stats: RaycasterBuildStats,
+    /// Approximate per-ray wall depths used for depth-aware overlays and particle occlusion.
+    pub depth_columns: Vec<f32>,
 }
 impl RaycasterScene {
     /// Create an empty scene sized to `screen_width` × `screen_height` pixels.
@@ -213,12 +345,15 @@ impl RaycasterScene {
             floors: Vec::new(),
             ceilings: Vec::new(),
             sprites: Vec::new(),
+            particles: Vec::new(),
             models: Vec::new(),
             background: None,
             overlays: Vec::new(),
             screen_width,
             screen_height,
+            time_seconds: 0.0,
             build_stats: RaycasterBuildStats::default(),
+            depth_columns: Vec::new(),
         }
     }
     /// Return the total number of quads, sprites, and models in this scene.
@@ -227,6 +362,7 @@ impl RaycasterScene {
             + self.floors.len()
             + self.ceilings.len()
             + self.sprites.len()
+            + self.particles.len()
             + self.models.len()
     }
     /// Return true when no geometry has been added to this scene.

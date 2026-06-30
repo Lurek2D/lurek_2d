@@ -1,8 +1,8 @@
 Raycaster shader binding evidence
 constructor=lurek.render.newShader
 target=draw
-shader_id=4294967297
+shader_id=4294967300
 module.setShader.accepted=true
-module.getShader.id=4294967297
+module.getShader.id=4294967300
 scene.build.queued_for_render=true
 module.shader.cleared=true

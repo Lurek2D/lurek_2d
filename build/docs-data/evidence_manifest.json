@@ -1140,6 +1140,8 @@
       "tests/artifacts/current/raycaster/raycaster_feature_walls_view_pick.png",
       "tests/artifacts/current/raycaster/raycaster_floor_ceiling_pick_uv.png",
       "tests/artifacts/current/raycaster/raycaster_full_scene_day_night.png",
+      "tests/artifacts/current/raycaster/raycaster_material_cpu_fallback_contract.txt",
+      "tests/artifacts/current/raycaster/raycaster_material_depthfog_particles_cpu_fallback.png",
       "tests/artifacts/current/raycaster/raycaster_multilevel_hole_pick.png",
       "tests/artifacts/current/raycaster/raycaster_shader_binding_contract.txt",
       "tests/artifacts/current/raycaster/raycaster_shader_visual_01_wall_shade.png",

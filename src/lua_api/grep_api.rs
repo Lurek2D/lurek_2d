@@ -24,11 +24,7 @@ fn normalize_logical_path(path: &str) -> String {
         .join("/")
 }
 
-fn enforce_grep_read(
-    state: &Rc<RefCell<SharedState>>,
-    path: &str,
-    api: &str,
-) -> LuaResult<()> {
+fn enforce_grep_read(state: &Rc<RefCell<SharedState>>, path: &str, api: &str) -> LuaResult<()> {
     let shared = state.borrow();
     shared
         .ensure_mod_api_allowed("grep")
@@ -51,11 +47,7 @@ fn resolve_grep_path(
         .map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))
 }
 
-fn read_grep_text(
-    state: &Rc<RefCell<SharedState>>,
-    path: &str,
-    api: &str,
-) -> LuaResult<String> {
+fn read_grep_text(state: &Rc<RefCell<SharedState>>, path: &str, api: &str) -> LuaResult<String> {
     enforce_grep_read(state, path, api)?;
     state
         .borrow()
@@ -160,10 +152,7 @@ impl LuaUserData for LuaGrepEngine {
         methods.add_method("count", |_, this, (path, pattern): (String, String)| {
             let filter = FileFilter::game_content();
             let root_path = resolve_grep_path(&this.state, &path, "LGrepEngine:count")?;
-            Ok(this
-                .inner
-                .borrow()
-                .count(&root_path, &pattern, &filter))
+            Ok(this.inner.borrow().count(&root_path, &pattern, &filter))
         });
 
         /// Search a specific provided list of files for text matches.
@@ -176,8 +165,11 @@ impl LuaUserData for LuaGrepEngine {
                 let mut resolved_paths = Vec::with_capacity(files.len());
                 let mut logical_paths = Vec::with_capacity(files.len());
                 for path in files {
-                    resolved_paths
-                        .push(resolve_grep_path(&this.state, &path, "LGrepEngine:searchFiles")?);
+                    resolved_paths.push(resolve_grep_path(
+                        &this.state,
+                        &path,
+                        "LGrepEngine:searchFiles",
+                    )?);
                     logical_paths.push(normalize_logical_path(&path));
                 }
                 let result = this.inner.borrow().search_files(&resolved_paths, &pattern);
@@ -377,35 +369,37 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let search_state = state.clone();
     module.set(
         "logSearch",
-        lua.create_function(move |lua, (file, level, pattern): (String, String, String)| {
-            let content = read_grep_text(&search_state, &file, "lurek.grep.logSearch")?;
-            let lines: Vec<String> = content.lines().map(|l| l.to_string()).collect();
-            let entries = log_search::parse_log_lines(&lines);
-            let opts = log_search::LogSearchOpts {
-                level_filter: if level.is_empty() { None } else { Some(level) },
-                pattern: if pattern.is_empty() {
-                    None
-                } else {
-                    Some(pattern)
-                },
-                ..Default::default()
-            };
-            let results = log_search::search_logs(&entries, &opts);
-            let tbl = lua.create_table()?;
-            for (i, entry) in results.iter().enumerate() {
-                let e = lua.create_table()?;
-                e.set("line", entry.line_number)?;
-                e.set("message", entry.message.clone())?;
-                if let Some(ref ts) = entry.timestamp {
-                    e.set("timestamp", ts.clone())?;
+        lua.create_function(
+            move |lua, (file, level, pattern): (String, String, String)| {
+                let content = read_grep_text(&search_state, &file, "lurek.grep.logSearch")?;
+                let lines: Vec<String> = content.lines().map(|l| l.to_string()).collect();
+                let entries = log_search::parse_log_lines(&lines);
+                let opts = log_search::LogSearchOpts {
+                    level_filter: if level.is_empty() { None } else { Some(level) },
+                    pattern: if pattern.is_empty() {
+                        None
+                    } else {
+                        Some(pattern)
+                    },
+                    ..Default::default()
+                };
+                let results = log_search::search_logs(&entries, &opts);
+                let tbl = lua.create_table()?;
+                for (i, entry) in results.iter().enumerate() {
+                    let e = lua.create_table()?;
+                    e.set("line", entry.line_number)?;
+                    e.set("message", entry.message.clone())?;
+                    if let Some(ref ts) = entry.timestamp {
+                        e.set("timestamp", ts.clone())?;
+                    }
+                    if let Some(ref lvl) = entry.level {
+                        e.set("level", lvl.clone())?;
+                    }
+                    tbl.set(i + 1, e)?;
                 }
-                if let Some(ref lvl) = entry.level {
-                    e.set("level", lvl.clone())?;
-                }
-                tbl.set(i + 1, e)?;
-            }
-            Ok(tbl)
-        })?,
+                Ok(tbl)
+            },
+        )?,
     )?;
 
     lurek.set("grep", module)?;

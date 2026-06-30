@@ -6,7 +6,11 @@
 
 use crate::image::ImageData;
 use crate::math::Vec2;
-use crate::raycaster::scene::{RaycasterBackground, RaycasterOverlayEffect, RaycasterScene};
+use crate::raycaster::scene::{
+    RaycasterBackground, RaycasterMaterial, RaycasterOverlayEffect, RaycasterParticle,
+    RaycasterScene,
+};
+use crate::render::BlendMode;
 use crate::runtime::resource_keys::TextureKey;
 
 type TextureSampler<'a> = dyn Fn(TextureKey, f32, f32) -> Option<(u8, u8, u8, u8)> + 'a;
@@ -21,6 +25,7 @@ struct QuadRaster<'a> {
     depth_buffer: Option<&'a mut [f32]>,
     depth: Option<f32>,
     write_depth: bool,
+    blend_mode: BlendMode,
 }
 
 fn apply_light((r, g, b, a): (u8, u8, u8, u8), light: [f32; 4]) -> (u8, u8, u8, u8) {
@@ -32,9 +37,15 @@ fn apply_light((r, g, b, a): (u8, u8, u8, u8), light: [f32; 4]) -> (u8, u8, u8, 
     )
 }
 
-fn blend_pixel(img: &mut ImageData, x: u32, y: u32, src: (u8, u8, u8, u8)) {
+fn blend_pixel_mode(
+    img: &mut ImageData,
+    x: u32,
+    y: u32,
+    src: (u8, u8, u8, u8),
+    blend_mode: BlendMode,
+) {
     let (sr, sg, sb, sa) = src;
-    if sa == 255 {
+    if matches!(blend_mode, BlendMode::Replace) || sa == 255 {
         img.set_pixel(x, y, sr, sg, sb, sa);
         return;
     }
@@ -45,14 +56,57 @@ fn blend_pixel(img: &mut ImageData, x: u32, y: u32, src: (u8, u8, u8, u8)) {
         return;
     };
     let alpha = sa as f32 / 255.0;
-    let inv = 1.0 - alpha;
+    let (out_r, out_g, out_b, out_a) = match blend_mode {
+        BlendMode::Alpha => {
+            let inv = 1.0 - alpha;
+            (
+                (sr as f32 * alpha) + (dr as f32 * inv),
+                (sg as f32 * alpha) + (dg as f32 * inv),
+                (sb as f32 * alpha) + (db as f32 * inv),
+                sa as f32 + da as f32 * inv,
+            )
+        }
+        BlendMode::Add => (
+            dr as f32 + sr as f32 * alpha,
+            dg as f32 + sg as f32 * alpha,
+            db as f32 + sb as f32 * alpha,
+            da as f32 + sa as f32 * alpha,
+        ),
+        BlendMode::Multiply => {
+            let blend = |dst: u8, src: u8| {
+                let mult = (dst as f32 * (src as f32 / 255.0)).clamp(0.0, 255.0);
+                dst as f32 * (1.0 - alpha) + mult * alpha
+            };
+            (
+                blend(dr, sr),
+                blend(dg, sg),
+                blend(db, sb),
+                (sa as f32 + da as f32 * (1.0 - alpha)).clamp(0.0, 255.0),
+            )
+        }
+        BlendMode::Replace => (sr as f32, sg as f32, sb as f32, sa as f32),
+        BlendMode::Screen => {
+            let screen = |dst: u8, src: u8| {
+                let src_n = src as f32 / 255.0;
+                let dst_n = dst as f32 / 255.0;
+                let screened = 1.0 - (1.0 - src_n) * (1.0 - dst_n);
+                (dst_n * (1.0 - alpha) + screened * alpha) * 255.0
+            };
+            (
+                screen(dr, sr),
+                screen(dg, sg),
+                screen(db, sb),
+                (sa as f32 + da as f32 * (1.0 - alpha)).clamp(0.0, 255.0),
+            )
+        }
+    };
     img.set_pixel(
         x,
         y,
-        ((sr as f32 * alpha) + (dr as f32 * inv)).clamp(0.0, 255.0) as u8,
-        ((sg as f32 * alpha) + (dg as f32 * inv)).clamp(0.0, 255.0) as u8,
-        ((sb as f32 * alpha) + (db as f32 * inv)).clamp(0.0, 255.0) as u8,
-        (sa as f32 + da as f32 * inv).clamp(0.0, 255.0) as u8,
+        out_r.clamp(0.0, 255.0) as u8,
+        out_g.clamp(0.0, 255.0) as u8,
+        out_b.clamp(0.0, 255.0) as u8,
+        out_a.clamp(0.0, 255.0) as u8,
     );
 }
 
@@ -75,9 +129,88 @@ fn mix_rgba(a: [f32; 4], b: [f32; 4], t: f32) -> [f32; 4] {
     ]
 }
 
+fn fullscreen_material_uvs(material: &RaycasterMaterial, time_seconds: f32) -> [Vec2; 4] {
+    fn frac01(v: f32) -> f32 {
+        let f = v - v.floor();
+        if f < 0.0 {
+            f + 1.0
+        } else {
+            f
+        }
+    }
+
+    let frame_count = material.frame_count.max(1);
+    let animated = if frame_count > 1 && material.frame_rate > 0.0 {
+        ((time_seconds.max(0.0) * material.frame_rate).floor() as u32) % frame_count
+    } else {
+        0
+    };
+    let base = [
+        Vec2::new(0.0, 0.0),
+        Vec2::new(1.0, 0.0),
+        Vec2::new(1.0, 1.0),
+        Vec2::new(0.0, 1.0),
+    ];
+    base.map(|uv| {
+        let mut u = frac01(
+            uv.x * material.uv_scale[0]
+                + material.uv_offset[0]
+                + material.uv_scroll[0] * time_seconds,
+        );
+        let mut v = frac01(
+            uv.y * material.uv_scale[1]
+                + material.uv_offset[1]
+                + material.uv_scroll[1] * time_seconds,
+        );
+        if frame_count > 1 {
+            let frame_count_f = frame_count as f32;
+            match material.frame_layout {
+                crate::raycaster::scene::RaycasterMaterialFrameLayout::Horizontal => {
+                    u = (u + animated as f32) / frame_count_f;
+                }
+                crate::raycaster::scene::RaycasterMaterialFrameLayout::Vertical => {
+                    v = (v + animated as f32) / frame_count_f;
+                }
+            }
+        }
+        Vec2::new(u, v)
+    })
+}
+
+fn draw_fullscreen_material(
+    img: &mut ImageData,
+    material: &RaycasterMaterial,
+    time_seconds: f32,
+    texture_sampler: Option<&TextureSampler<'_>>,
+) {
+    let corners = [
+        Vec2::new(0.0, 0.0),
+        Vec2::new(img.width() as f32, 0.0),
+        Vec2::new(img.width() as f32, img.height() as f32),
+        Vec2::new(0.0, img.height() as f32),
+    ];
+    let light = material.tint;
+    fill_quad(
+        img,
+        QuadRaster {
+            corners,
+            uvs: fullscreen_material_uvs(material, time_seconds),
+            corner_w: [1.0, 1.0, 1.0, 1.0],
+            texture_key: material.texture_key,
+            light,
+            texture_sampler,
+            depth_buffer: None,
+            depth: None,
+            write_depth: false,
+            blend_mode: material.blend_mode,
+        },
+    );
+}
+
 fn fill_background(
     img: &mut ImageData,
     background: &RaycasterBackground,
+    time_seconds: f32,
     texture_sampler: Option<&TextureSampler<'_>>,
 ) {
     let width = img.width().max(1);
@@ -118,6 +251,9 @@ fn fill_background(
                 }
             }
         }
+        RaycasterBackground::Shader { material } => {
+            draw_fullscreen_material(img, material, time_seconds, texture_sampler);
+        }
     }
 }
 
@@ -127,7 +263,7 @@ fn overlay_fog(img: &mut ImageData, color: [f32; 4], density: f32) {
     let src = rgba_to_u8(color);
     for y in 0..img.height() {
         for x in 0..img.width() {
-            blend_pixel(img, x, y, src);
+            blend_pixel_mode(img, x, y, src, BlendMode::Alpha);
         }
     }
 }
@@ -151,14 +287,50 @@ fn overlay_snow(img: &mut ImageData, color: [f32; 4], density: f32, wind: f32) {
             let px = x + (wind_px * i) / len.max(1);
             let py = y + i;
             if px >= 0 && py >= 0 && px < width as i32 && py < height as i32 {
-                blend_pixel(img, px as u32, py as u32, src);
+                blend_pixel_mode(img, px as u32, py as u32, src, BlendMode::Alpha);
             }
         }
     }
 }
 
-fn apply_overlays(img: &mut ImageData, overlays: &[RaycasterOverlayEffect]) {
-    for overlay in overlays {
+fn overlay_depth_fog(
+    img: &mut ImageData,
+    depth_columns: &[f32],
+    color: [f32; 4],
+    density: f32,
+    near: f32,
+    far: f32,
+) {
+    if depth_columns.is_empty() {
+        return;
+    }
+    let width = img.width().max(1);
+    let height = img.height();
+    let far = far.max(near + 0.01);
+    for x in 0..width {
+        let column_index = (((x as f32 + 0.5) / width as f32) * depth_columns.len() as f32)
+            .floor()
+            .clamp(0.0, depth_columns.len().saturating_sub(1) as f32)
+            as usize;
+        let depth = depth_columns[column_index];
+        let fog_t = ((depth - near) / (far - near)).clamp(0.0, 1.0);
+        let alpha = (color[3] * density.clamp(0.0, 2.0) * fog_t).clamp(0.0, 1.0);
+        if alpha <= 0.001 {
+            continue;
+        }
+        let src = rgba_to_u8([color[0], color[1], color[2], alpha]);
+        for y in 0..height {
+            blend_pixel_mode(img, x, y, src, BlendMode::Alpha);
+        }
+    }
+}
+
+fn apply_overlays(
+    img: &mut ImageData,
+    scene: &RaycasterScene,
+    texture_sampler: Option<&TextureSampler<'_>>,
+) {
+    for overlay in &scene.overlays {
         match *overlay {
             RaycasterOverlayEffect::Fog { color, density } => overlay_fog(img, color, density),
             RaycasterOverlayEffect::Snow {
@@ -166,8 +338,53 @@ fn apply_overlays(img: &mut ImageData, overlays: &[RaycasterOverlayEffect]) {
                 density,
                 wind,
             } => overlay_snow(img, color, density, wind),
+            RaycasterOverlayEffect::DepthFog {
+                color,
+                density,
+                near,
+                far,
+            } => overlay_depth_fog(img, &scene.depth_columns, color, density, near, far),
+            RaycasterOverlayEffect::Shader { ref material } => {
+                draw_fullscreen_material(img, material, scene.time_seconds, texture_sampler);
+            }
         }
     }
+}
+
+fn particle_uvs(particle: &RaycasterParticle) -> [Vec2; 4] {
+    if let Some(([qx, qy, qw, qh], (tex_w, tex_h))) = particle.quad.zip(particle.quad_tex_dims) {
+        if tex_w > 0.0 && tex_h > 0.0 {
+            let u0 = qx / tex_w;
+            let v0 = qy / tex_h;
+            let u1 = (qx + qw) / tex_w;
+            let v1 = (qy + qh) / tex_h;
+            return [
+                Vec2::new(u0, v0),
+                Vec2::new(u1, v0),
+                Vec2::new(u1, v1),
+                Vec2::new(u0, v1),
+            ];
+        }
+    }
+    [
+        Vec2::new(0.0, 0.0),
+        Vec2::new(1.0, 0.0),
+        Vec2::new(1.0, 1.0),
+        Vec2::new(0.0, 1.0),
+    ]
+}
+
+fn particle_corners(particle: &RaycasterParticle) -> [Vec2; 4] {
+    let half = particle.size * 0.5;
+    let cos_r = particle.rotation.cos();
+    let sin_r = particle.rotation.sin();
+    let local = [(-half, -half), (half, -half), (half, half), (-half, half)];
+    local.map(|(lx, ly)| {
+        Vec2::new(
+            particle.x + lx * cos_r - ly * sin_r,
+            particle.y + lx * sin_r + ly * cos_r,
+        )
+    })
 }
 
 fn scale_corners(
@@ -279,7 +496,7 @@ fn fill_quad_triangle(img: &mut ImageData, quad: &mut QuadRaster<'_>, indices: [
                     }
                 }
             }
-            blend_pixel(img, px, py, color);
+            blend_pixel_mode(img, px, py, color, quad.blend_mode);
         }
     }
 }
@@ -373,12 +590,13 @@ impl RaycasterScene {
     ) -> ImageData {
         enum TransparentItem<'a> {
             Sprite(&'a crate::raycaster::scene::BillboardSprite),
+            Particle(&'a RaycasterParticle),
             Model(&'a crate::raycaster::scene::ModelMesh),
         }
 
         let mut img = ImageData::new(width, height);
         if let Some(background) = &self.background {
-            fill_background(&mut img, background, texture_sampler);
+            fill_background(&mut img, background, self.time_seconds, texture_sampler);
         }
         let mut depth_buffer =
             vec![f32::INFINITY; (width as usize).saturating_mul(height as usize)];
@@ -401,6 +619,11 @@ impl RaycasterScene {
                     depth_buffer: None,
                     depth: None,
                     write_depth: false,
+                    blend_mode: ceil
+                        .material
+                        .as_ref()
+                        .map(|material| material.blend_mode)
+                        .unwrap_or(BlendMode::Alpha),
                 },
             );
         }
@@ -423,6 +646,11 @@ impl RaycasterScene {
                     depth_buffer: None,
                     depth: None,
                     write_depth: false,
+                    blend_mode: floor
+                        .material
+                        .as_ref()
+                        .map(|material| material.blend_mode)
+                        .unwrap_or(BlendMode::Alpha),
                 },
             );
         }
@@ -445,13 +673,22 @@ impl RaycasterScene {
                     depth_buffer: Some(&mut depth_buffer),
                     depth: Some(wall.depth),
                     write_depth: true,
+                    blend_mode: wall
+                        .material
+                        .as_ref()
+                        .map(|material| material.blend_mode)
+                        .unwrap_or(BlendMode::Alpha),
                 },
             );
         }
 
-        let mut transparent_items = Vec::with_capacity(self.sprites.len() + self.models.len());
+        let mut transparent_items =
+            Vec::with_capacity(self.sprites.len() + self.particles.len() + self.models.len());
         for sprite in &self.sprites {
             transparent_items.push(TransparentItem::Sprite(sprite));
+        }
+        for particle in &self.particles {
+            transparent_items.push(TransparentItem::Particle(particle));
         }
         for model in &self.models {
             transparent_items.push(TransparentItem::Model(model));
@@ -459,10 +696,12 @@ impl RaycasterScene {
         transparent_items.sort_by(|a, b| {
             let ad = match a {
                 TransparentItem::Sprite(sprite) => sprite.depth,
+                TransparentItem::Particle(particle) => particle.depth,
                 TransparentItem::Model(model) => model.depth,
             };
             let bd = match b {
                 TransparentItem::Sprite(sprite) => sprite.depth,
+                TransparentItem::Particle(particle) => particle.depth,
                 TransparentItem::Model(model) => model.depth,
             };
             bd.partial_cmp(&ad).unwrap_or(std::cmp::Ordering::Equal)
@@ -488,12 +727,39 @@ impl RaycasterScene {
                         depth_buffer: Some(&mut depth_buffer),
                         depth: Some(sprite.depth),
                         write_depth: false,
+                        blend_mode: BlendMode::Alpha,
+                    },
+                ),
+                TransparentItem::Particle(particle) => fill_quad(
+                    &mut img,
+                    QuadRaster {
+                        corners: scale_corners(
+                            particle_corners(particle),
+                            self.screen_width,
+                            self.screen_height,
+                            width,
+                            height,
+                        ),
+                        uvs: particle_uvs(particle),
+                        corner_w: [
+                            particle.depth,
+                            particle.depth,
+                            particle.depth,
+                            particle.depth,
+                        ],
+                        texture_key: particle.texture_key,
+                        light: particle.color,
+                        texture_sampler,
+                        depth_buffer: Some(&mut depth_buffer),
+                        depth: Some(particle.depth),
+                        write_depth: false,
+                        blend_mode: particle.blend_mode,
                     },
                 ),
                 TransparentItem::Model(model) => fill_mesh(&mut img, &model.mesh),
             }
         }
-        apply_overlays(&mut img, &self.overlays);
+        apply_overlays(&mut img, self, texture_sampler);
         img
     }
 }

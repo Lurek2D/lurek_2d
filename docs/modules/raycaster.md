@@ -87,7 +87,7 @@ lurek.raycaster.buildMultiLevelScene(params, levels, lights, sprites, wallTextur
 
 | Name | Type | Description |
 |------|------|-------------|
-| `params` | table | Scene params plus optional active_level. |
+| `params` | table | Scene params plus optional `active_level`, `time_seconds`, `background`, and `overlays`. |
 | `levels` | table|[LMultiLevelGrid](#lmultilevelgrid) | Array of level tables or a persistent [LMultiLevelGrid](#lmultilevelgrid). |
 | `lights?` | table | Array of render light tables. |
 | `sprites?` | table|[LSpriteManager](#lspritemanager) | Array of sprite tables {x, y, texture?, size?, level?, front_texture?, right_texture?, back_texture?, left_texture?, angle?} or an [LSpriteManager](#lspritemanager) whose sprites use their own optional level indices and default to active_level. |
@@ -445,6 +445,23 @@ lurek.raycaster.drawLastScene(width, height)
 do
     local map = lurek.raycaster.new(8, 8)
     local texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local atlas = lurek.image.newImageData(8, 4)
+    atlas:fill(0, 0, 0, 0)
+    atlas:drawRect(0, 0, 4, 4, 255, 120, 40, 255)
+    atlas:drawRect(4, 0, 4, 4, 60, 220, 90, 255)
+    local atlas_texture = lurek.render.newImage(atlas)
+    local overlay_shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return color;
+}
+]], { target = "overlay" })
+    local particle_shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return color;
+}
+]], { target = "particle" })
     for i = 0, 7 do
         map:setCell(i, 0, 1)
         map:setCell(i, 7, 1)
@@ -452,7 +469,42 @@ do
         map:setCell(7, i, 1)
     end
     map:setCell(5, 4, 2)
-    map:buildScene({
+    map:setWallMaterial(2, {
+        texture = atlas_texture,
+        frame_count = 2,
+        frame_rate = 2.0,
+        tint = { 1.0, 0.9, 0.8, 1.0 },
+    })
+    map:setFloorMaterialCell(4, 4, {
+        texture = atlas_texture,
+        uv_scroll = { 0.0, 0.15 },
+        tint = { 0.75, 0.9, 1.0, 1.0 },
+    })
+    map:setCeilingMaterialCell(4, 3, {
+        texture = atlas_texture,
+        frame_count = 2,
+        frame_rate = 2.0,
+        tint = { 1.0, 0.95, 0.7, 1.0 },
+    })
+    map:addParticleEmitter({
+        x = 4.5,
+        y = 4.5,
+        z = 0.1,
+        rate = 12.0,
+        lifetime = 1.1,
+        size = 0.35,
+        radius = 0.15,
+        height = 0.7,
+        velocity_y = -0.2,
+        jitter_x = 0.08,
+        jitter_y = 0.08,
+        shape = "puff",
+        color = { 1.0, 0.55, 0.18, 0.85 },
+        texture = atlas_texture,
+        shader = particle_shader,
+        seed = 7,
+    })
+    local params = {
         px = 3.5,
         py = 4.5,
         angle = 0,
@@ -468,17 +520,37 @@ do
         ceiling_r = 0.08,
         ceiling_g = 0.10,
         ceiling_b = 0.20,
-    }, {
+        time_seconds = 0.0,
+        background = {
+            type = "shader",
+            shader = overlay_shader,
+            texture = atlas_texture,
+            tint = { 0.25, 0.35, 0.55, 1.0 },
+        },
+        overlays = {
+            { type = "depth_fog", color = { 0.18, 0.26, 0.36, 0.75 }, density = 0.55, near = 1.0, far = 8.0 },
+            { type = "shader", shader = overlay_shader, texture = atlas_texture, tint = { 1.0, 1.0, 1.0, 0.08 } },
+        },
+    }
+    map:buildScene(params, {
         { x = 4.5, y = 4.5, radius = 4.0, intensity = 1.2, color = { 1.0, 0.70, 0.35 } },
     }, {
         { x = 4.5, y = 4.5, texture = texture, size = 0.85, id = 7 },
     }, {
         [1] = texture,
-        [2] = texture,
+        [2] = atlas_texture,
     })
-    local image = lurek.raycaster.drawLastScene(160, 100)
-    local r, g, b = image:getPixel(80, 50)
-    lurek.log.info("[raycaster.example] drawLastScene image=" .. image:getWidth() .. "x" .. image:getHeight() .. " center=" .. r .. "," .. g .. "," .. b)
+    local frame0 = lurek.raycaster.drawLastScene(160, 100)
+    params.time_seconds = 0.5
+    map:buildScene(params, {}, {}, {
+        [1] = texture,
+        [2] = atlas_texture,
+    })
+    local frame1 = lurek.raycaster.drawLastScene(160, 100)
+    local r0, g0 = frame0:getPixel(80, 50)
+    local r1, g1 = frame1:getPixel(80, 50)
+    lurek.log.info("[raycaster.example] drawLastScene frame0=" .. frame0:getWidth() .. "x" .. frame0:getHeight())
+    lurek.log.info("[raycaster.example] animated center=" .. r0 .. "," .. g0 .. " -> " .. r1 .. "," .. g1)
 end
 ```
 
@@ -1759,7 +1831,7 @@ LMultiLevelGrid:buildScene(params, lights, sprites, wallTextures)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `params` | table | Scene params for the current camera. |
+| `params` | table | Scene params for the current camera, including optional `time_seconds`, `background`, and `overlays` descriptors. |
 | `lights?` | table | Array of render light tables. |
 | `sprites?` | table|[LSpriteManager](#lspritemanager) | Array of level sprite tables or an [LSpriteManager](#lspritemanager). |
 | `wallTextures?` | table | Map of cell_value -> texture for wall surfaces. |
@@ -2992,6 +3064,78 @@ end
 
 ### Type Methods
 
+#### `LRaycaster:addParticleEmitter`
+
+Adds a projected raycaster particle emitter that spawns during scene builds.
+
+```lua
+LRaycaster:addParticleEmitter(emitter)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `emitter` | table | Emitter table with x, y, optional z, rate, lifetime, lifetime_range, size, size_range, radius, height, velocity_x/y, jitter_x/y, color, shape, texture, shader, blend, occlude_walls, and seed. |
+
+**Example**
+
+```lua
+do
+
+    local map = lurek.raycaster.new(8, 8)
+    local texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return color;
+}
+]], { target = "particle" })
+
+    for i = 0, 7 do
+        map:setCell(i, 0, 1)
+        map:setCell(i, 7, 1)
+        map:setCell(0, i, 1)
+        map:setCell(7, i, 1)
+    end
+    map:addParticleEmitter({
+        x = 3.5,
+        y = 3.5,
+        z = 0.1,
+        rate = 10.0,
+        lifetime = 1.2,
+        size = 0.35,
+        radius = 0.12,
+        height = 0.6,
+        velocity_y = -0.25,
+        jitter_x = 0.08,
+        jitter_y = 0.08,
+        shape = "puff",
+        color = { 1.0, 0.55, 0.20, 0.85 },
+        texture = texture,
+        shader = shader,
+        seed = 9,
+    })
+
+    local quad_count = map:buildScene({
+        px = 2.5,
+        py = 3.5,
+        angle = 0,
+        fov = math.pi / 3,
+        rays = 48,
+        max_dist = 8,
+        screen_w = 96,
+        screen_h = 64,
+        time_seconds = 0.5,
+    }, {}, {}, {
+        [1] = texture,
+    })
+    lurek.log.info("smoke emitter quad count = " .. quad_count)
+end
+```
+
+---
+
 #### `LRaycaster:applyDoorManager`
 
 Synchronizes animated doors from an `[LDoorManager](#ldoormanager)` into this map's per-cell wall features.
@@ -3045,7 +3189,7 @@ LRaycaster:buildScene(params, lights, sprites, wallTextures)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `params` | table | Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b?, camera_height?, horizon_offset?}. |
+| `params` | table | Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b?, camera_height?, horizon_offset?, time_seconds?, background?, overlays?}. `background` accepts solid, gradient, skybox, or shader descriptors. `overlays` accepts fog, depth fog, snow, or shader descriptors. |
 | `lights?` | table | Array of render light tables {x, y, radius, r?, g?, b?, color?, intensity?, level?}. |
 | `sprites?` | table|[LSpriteManager](#lspritemanager) | Array of sprite tables {x, y, texture?, size?, front_texture?, right_texture?, back_texture?, left_texture?, angle?} or an [LSpriteManager](#lspritemanager) with integer/[LImage](render.md#limage) textures. |
 | `wallTextures?` | table | Map of cell_value -> texture for wall surfaces. |
@@ -3471,6 +3615,70 @@ end
 
 ---
 
+#### `LRaycaster:clearParticleEmitters`
+
+Removes all projected particle emitters from this map.
+
+```lua
+LRaycaster:clearParticleEmitters()
+```
+
+**Example**
+
+```lua
+do
+
+    local map = lurek.raycaster.new(8, 8)
+    local texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+
+    for i = 0, 7 do
+        map:setCell(i, 0, 1)
+        map:setCell(i, 7, 1)
+        map:setCell(0, i, 1)
+        map:setCell(7, i, 1)
+    end
+    map:addParticleEmitter({
+        x = 3.5,
+        y = 3.5,
+        rate = 8.0,
+        lifetime = 1.0,
+        size = 0.3,
+        texture = texture,
+        seed = 3,
+    })
+    local with_particles = map:buildScene({
+        px = 2.5,
+        py = 3.5,
+        angle = 0,
+        fov = math.pi / 3,
+        rays = 32,
+        max_dist = 8,
+        screen_w = 96,
+        screen_h = 64,
+        time_seconds = 0.25,
+    }, {}, {}, {
+        [1] = texture,
+    })
+    map:clearParticleEmitters()
+    local cleared = map:buildScene({
+        px = 2.5,
+        py = 3.5,
+        angle = 0,
+        fov = math.pi / 3,
+        rays = 32,
+        max_dist = 8,
+        screen_w = 96,
+        screen_h = 64,
+    }, {}, {}, {
+        [1] = texture,
+    })
+    lurek.log.info("particles before clear = " .. with_particles)
+    lurek.log.info("particles after clear = " .. cleared)
+end
+```
+
+---
+
 #### `LRaycaster:clearWallFeatureCell`
 
 Removes any per-cell wall feature override from a blocking cell.
@@ -3693,6 +3901,49 @@ end
 
 ---
 
+#### `LRaycaster:getCeilingMaterialCell`
+
+Returns the ceiling material override for one cell, or nil when none is set.
+
+```lua
+LRaycaster:getCeilingMaterialCell(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table? | Material table or nil. |
+
+**Example**
+
+```lua
+do
+
+    local map = lurek.raycaster.new(8, 8)
+    local texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+
+    map:setCeilingMaterialCell(5, 1, {
+        texture = texture,
+        blend = "alpha",
+        uv_offset = { 0.25, 0.0 },
+    })
+
+    local material = map:getCeilingMaterialCell(5, 1)
+    lurek.log.info("ceiling material texture = " .. tostring(material.texture))
+    lurek.log.info("ceiling material offset x = " .. tostring(material.uv_offset[1]))
+end
+```
+
+---
+
 #### `LRaycaster:getCeilingTextureCell`
 
 Returns the raw texture id assigned to this ceiling cell, or nil if none.
@@ -3764,6 +4015,48 @@ do
 
     lurek.log.info("cell(0,0) = " .. value)
     lurek.log.info("cell(7,7) = " .. empty)
+end
+```
+
+---
+
+#### `LRaycaster:getFloorMaterialCell`
+
+Returns the floor material override for one cell, or nil when none is set.
+
+```lua
+LRaycaster:getFloorMaterialCell(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table? | Material table or nil. |
+
+**Example**
+
+```lua
+do
+
+    local map = lurek.raycaster.new(8, 8)
+    local texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+
+    map:setFloorMaterialCell(2, 5, {
+        texture = texture,
+        tint = { 0.8, 0.9, 1.0, 0.9 },
+    })
+
+    local material = map:getFloorMaterialCell(2, 5)
+    lurek.log.info("floor material texture = " .. tostring(material.texture))
+    lurek.log.info("floor material alpha = " .. tostring(material.tint[4]))
 end
 ```
 
@@ -3956,6 +4249,48 @@ do
         lurek.log.info("pick surface = " .. picked.surface)
         lurek.log.info("pick tile = " .. picked.x .. "," .. picked.y)
     end
+end
+```
+
+---
+
+#### `LRaycaster:getWallMaterial`
+
+Returns the material override for a wall tile type, or nil when none is set.
+
+```lua
+LRaycaster:getWallMaterial(cellValue)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `cellValue` | number | Wall tile value to query. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table? | Material table or nil. |
+
+**Example**
+
+```lua
+do
+
+    local map = lurek.raycaster.new(8, 8)
+    local texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+
+    map:setWallMaterial(3, {
+        texture = texture,
+        blend = "multiply",
+        tint = { 0.8, 1.0, 0.9, 1.0 },
+    })
+
+    local material = map:getWallMaterial(3)
+    lurek.log.info("wall texture id = " .. tostring(material.texture))
+    lurek.log.info("wall material id = " .. tostring(material.material_id))
 end
 ```
 
@@ -4240,6 +4575,45 @@ end
 
 ---
 
+#### `LRaycaster:setCeilingMaterialCell`
+
+Assigns a render material override to one ceiling cell. Pass nil to clear.
+
+```lua
+LRaycaster:setCeilingMaterialCell(x, y, material)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
+| `material?` | table | Material table with optional texture, shader, tint, blend, uv_scroll, uv_scale, uv_offset, frame_count, frame_rate, and frame_layout. |
+
+**Example**
+
+```lua
+do
+
+    local map = lurek.raycaster.new(8, 8)
+    local texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+
+    map:setCeilingMaterialCell(4, 2, {
+        texture = texture,
+        frame_count = 2,
+        frame_rate = 3.0,
+        tint = { 1.0, 0.95, 0.75, 1.0 },
+    })
+
+    local material = map:getCeilingMaterialCell(4, 2)
+    lurek.log.info("ceiling material frames = " .. tostring(material.frame_count))
+    lurek.log.info("ceiling material rate = " .. tostring(material.frame_rate))
+end
+```
+
+---
+
 #### `LRaycaster:setCeilingTextureCell`
 
 Assigns a per-cell ceiling texture override. Pass nil to remove the override.
@@ -4340,6 +4714,45 @@ do
     map:setCells(cells)
     lurek.log.info("cell(0,0) = " .. map:getCell(0, 0))
     lurek.log.info("cell(0,1) = " .. map:getCell(0, 1))
+end
+```
+
+---
+
+#### `LRaycaster:setFloorMaterialCell`
+
+Assigns a render material override to one floor cell. Pass nil to clear.
+
+```lua
+LRaycaster:setFloorMaterialCell(x, y, material)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
+| `material?` | table | Material table with optional texture, shader, tint, blend, uv_scroll, uv_scale, uv_offset, frame_count, frame_rate, and frame_layout. |
+
+**Example**
+
+```lua
+do
+
+    local map = lurek.raycaster.new(8, 8)
+    local texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+
+    map:setFloorMaterialCell(3, 3, {
+        texture = texture,
+        blend = "screen",
+        uv_scroll = { 0.0, 0.12 },
+        tint = { 0.7, 0.85, 1.0, 1.0 },
+    })
+
+    local material = map:getFloorMaterialCell(3, 3)
+    lurek.log.info("floor material blend = " .. material.blend)
+    lurek.log.info("floor material scroll y = " .. tostring(material.uv_scroll[2]))
 end
 ```
 
@@ -4482,6 +4895,54 @@ do
 
     lurek.log.info("feature kind = " .. feature.kind)
     lurek.log.info("feature alpha = " .. string.format("%.2f", feature.alpha))
+end
+```
+
+---
+
+#### `LRaycaster:setWallMaterial`
+
+Assigns a render material override to a wall tile type. Pass nil to clear.
+
+```lua
+LRaycaster:setWallMaterial(cellValue, material)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `cellValue` | number | Wall tile value to style. |
+| `material?` | table | Material table with optional texture, shader, tint, blend, uv_scroll, uv_scale, uv_offset, frame_count, frame_rate, and frame_layout. |
+
+**Example**
+
+```lua
+do
+
+    local map = lurek.raycaster.new(8, 8)
+    local texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return color;
+}
+]], { target = "draw" })
+
+    map:setCell(4, 4, 2)
+    map:setWallMaterial(2, {
+        texture = texture,
+        shader = shader,
+        blend = "add",
+        uv_scroll = { 0.05, 0.0 },
+        frame_count = 2,
+        frame_rate = 4.0,
+        tint = { 1.0, 0.85, 0.6, 1.0 },
+    })
+
+    local material = map:getWallMaterial(2)
+    lurek.log.info("wall material blend = " .. material.blend)
+    lurek.log.info("wall material shader = " .. tostring(material.shader:getId()))
 end
 ```
 

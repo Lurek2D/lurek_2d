@@ -52,7 +52,8 @@ impl ValidationEngine {
 
     /// Add an API compliance rule using explicit known API prefixes.
     pub fn add_api_rule_with_known_apis(&mut self, known_apis: Vec<String>) {
-        self.rules.push(Arc::new(ApiComplianceRule::new(known_apis)));
+        self.rules
+            .push(Arc::new(ApiComplianceRule::new(known_apis)));
     }
 
     /// Add a custom Lua pattern validation rule.

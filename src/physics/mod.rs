@@ -45,11 +45,11 @@ pub use flow::{
     combine_contributions, FlowApplicationMode, FlowCombineMode, FlowContribution,
     FlowDirectionMode, FlowFalloff, FlowField, FlowFieldId, FlowGeometry, FlowMedium, FlowSample,
 };
+pub use limits::PhysicsLimits;
 pub use liquid::{
     LiquidBodyForceOptions, LiquidBodyForceStats, LiquidCell, LiquidKind, LiquidMap,
     LiquidStepOptions, LiquidStepStats,
 };
-pub use limits::PhysicsLimits;
 pub use material::PhysicsMaterial;
 pub use shape::{AlphaShapeOptions, Shape, StandaloneShape};
 pub use terrain::{

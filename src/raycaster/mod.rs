@@ -52,7 +52,10 @@ pub mod visualization;
 /// Per-cell wall feature descriptors for doors, windows, and half-height walls.
 pub mod wall_feature;
 
-pub use build_scene::{DirectionalSpriteTextures, LevelSprite, SceneBuildParams, WorldSprite};
+pub use build_scene::{
+    DirectionalSpriteTextures, LevelParticleEmitter, LevelSprite, RaycasterParticleEmitter,
+    SceneBuildParams, WorldSprite,
+};
 pub use column_batch::{ColumnBatch, ColumnData};
 pub use dda::Raycaster2D;
 pub use depth_buffer::DepthBuffer;
@@ -63,9 +66,11 @@ pub use lighting::{apply_lit_shade, compute_lighting, PointLight};
 pub use multilevel::{MultiLevelGrid, RaycasterLevel};
 pub use projection::{distance_shade, project_column};
 pub use ray_hit::RayHit;
+pub use render::RaycasterRenderState;
 pub use scene::{
     BillboardSprite, CeilingQuad, EntityPickKind, EntityPickResult, FloorQuad, ModelMesh,
-    RaycasterBackground, RaycasterBuildStats, RaycasterOverlayEffect, RaycasterScene, WallQuad,
+    RaycasterBackground, RaycasterBuildStats, RaycasterMaterial, RaycasterMaterialFrameLayout,
+    RaycasterOverlayEffect, RaycasterParticle, RaycasterScene, WallQuad,
 };
 #[cfg(feature = "obj-loader")]
 pub use scene_adapter::{ResolvedSceneModel, SceneAdapterModel};

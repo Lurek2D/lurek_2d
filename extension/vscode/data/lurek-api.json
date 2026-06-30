@@ -1,6 +1,6 @@
 {
   "version": "auto-generated",
-  "generated": "2026-06-29",
+  "generated": "2026-07-01",
   "modules": [
     {
       "name": "agent",
@@ -22822,7 +22822,7 @@
             {
               "name": "params",
               "type": "table",
-              "description": "Scene params plus optional active_level.",
+              "description": "Scene params plus optional `active_level`, `time_seconds`, `background`, and `overlays`.",
               "optional": false
             },
             {
@@ -104118,7 +104118,7 @@
             {
               "name": "params",
               "type": "table",
-              "description": "Scene params for the current camera.",
+              "description": "Scene params for the current camera, including optional `time_seconds`, `background`, and `overlays` descriptors.",
               "optional": false
             },
             {
@@ -126595,6 +126595,185 @@
           "objectType": "LRaycaster"
         },
         {
+          "name": "setWallMaterial",
+          "fullPath": "LRaycaster:setWallMaterial",
+          "signature": "(cell_value, material)",
+          "description": "Assigns a render material override to a wall tile type. Pass nil to clear.",
+          "parameters": [
+            {
+              "name": "cellValue",
+              "type": "integer",
+              "description": "Wall tile value to style.",
+              "optional": false
+            },
+            {
+              "name": "material",
+              "type": "table",
+              "description": "Material table with optional texture, shader, tint, blend, uv_scroll, uv_scale, uv_offset, frame_count, frame_rate, and frame_layout.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRaycaster"
+        },
+        {
+          "name": "getWallMaterial",
+          "fullPath": "LRaycaster:getWallMaterial",
+          "signature": "(cell_value)",
+          "description": "Returns the material override for a wall tile type, or nil when none is set.",
+          "parameters": [
+            {
+              "name": "cellValue",
+              "type": "integer",
+              "description": "Wall tile value to query.",
+              "optional": false
+            }
+          ],
+          "returns": "table?",
+          "returnType": "table?",
+          "isMethod": true,
+          "objectType": "LRaycaster"
+        },
+        {
+          "name": "setFloorMaterialCell",
+          "fullPath": "LRaycaster:setFloorMaterialCell",
+          "signature": "(x, y, material)",
+          "description": "Assigns a render material override to one floor cell. Pass nil to clear.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Grid column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Grid row.",
+              "optional": false
+            },
+            {
+              "name": "material",
+              "type": "table",
+              "description": "Material table with optional texture, shader, tint, blend, uv_scroll, uv_scale, uv_offset, frame_count, frame_rate, and frame_layout.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRaycaster"
+        },
+        {
+          "name": "getFloorMaterialCell",
+          "fullPath": "LRaycaster:getFloorMaterialCell",
+          "signature": "(x, y)",
+          "description": "Returns the floor material override for one cell, or nil when none is set.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Grid column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Grid row.",
+              "optional": false
+            }
+          ],
+          "returns": "table?",
+          "returnType": "table?",
+          "isMethod": true,
+          "objectType": "LRaycaster"
+        },
+        {
+          "name": "setCeilingMaterialCell",
+          "fullPath": "LRaycaster:setCeilingMaterialCell",
+          "signature": "(x, y, material)",
+          "description": "Assigns a render material override to one ceiling cell. Pass nil to clear.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Grid column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Grid row.",
+              "optional": false
+            },
+            {
+              "name": "material",
+              "type": "table",
+              "description": "Material table with optional texture, shader, tint, blend, uv_scroll, uv_scale, uv_offset, frame_count, frame_rate, and frame_layout.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRaycaster"
+        },
+        {
+          "name": "getCeilingMaterialCell",
+          "fullPath": "LRaycaster:getCeilingMaterialCell",
+          "signature": "(x, y)",
+          "description": "Returns the ceiling material override for one cell, or nil when none is set.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Grid column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Grid row.",
+              "optional": false
+            }
+          ],
+          "returns": "table?",
+          "returnType": "table?",
+          "isMethod": true,
+          "objectType": "LRaycaster"
+        },
+        {
+          "name": "addParticleEmitter",
+          "fullPath": "LRaycaster:addParticleEmitter",
+          "signature": "(emitter)",
+          "description": "Adds a projected raycaster particle emitter that spawns during scene builds.",
+          "parameters": [
+            {
+              "name": "emitter",
+              "type": "table",
+              "description": "Emitter table with x, y, optional z, rate, lifetime, lifetime_range, size, size_range, radius, height, velocity_x/y, jitter_x/y, color, shape, texture, shader, blend, occlude_walls, and seed.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRaycaster"
+        },
+        {
+          "name": "clearParticleEmitters",
+          "fullPath": "LRaycaster:clearParticleEmitters",
+          "signature": "()",
+          "description": "Removes all projected particle emitters from this map.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRaycaster"
+        },
+        {
           "name": "setLoweredFloorCell",
           "fullPath": "LRaycaster:setLoweredFloorCell",
           "signature": "(x, y, opts)",
@@ -127263,7 +127442,7 @@
             {
               "name": "params",
               "type": "table",
-              "description": "Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b?, camera_height?, horizon_offset?}.",
+              "description": "Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b?, camera_height?, horizon_offset?, time_seconds?, background?, overlays?}. `background` accepts solid, gradient, skybox, or shader descriptors. `overlays` accepts fog, depth fog, snow, or shader descriptors.",
               "optional": false
             },
             {

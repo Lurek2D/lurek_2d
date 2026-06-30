@@ -1,15 +1,15 @@
 {
   "meta": {
-    "generated": "2026-06-29T21:54:58.507345+00:00",
+    "generated": "2026-06-30T22:02:05.485139+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
-    "total_api_functions": 6448,
-    "marker_covered": 6423,
+    "total_api_functions": 6456,
+    "marker_covered": 6431,
     "describe_covered": 150,
     "describe_coverage_pct": 2.3,
     "heuristic_covered": 0,
-    "total_covered": 6448,
+    "total_covered": 6456,
     "coverage_pct": 100.0
   },
   "modules": {
@@ -42944,11 +42944,11 @@
       ]
     },
     "raycaster": {
-      "total": 128,
-      "marker_covered": 128,
+      "total": 136,
+      "marker_covered": 136,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 128,
+      "covered": 136,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -43374,6 +43374,78 @@
         },
         {
           "lua_name": "LRaycaster:getCeilingTextureCell",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LRaycaster:setWallMaterial",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LRaycaster:getWallMaterial",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LRaycaster:setFloorMaterialCell",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LRaycaster:getFloorMaterialCell",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LRaycaster:setCeilingMaterialCell",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LRaycaster:getCeilingMaterialCell",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LRaycaster:addParticleEmitter",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LRaycaster:clearParticleEmitters",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,

@@ -15,7 +15,7 @@
 - Source path: `src/raycaster`
 - Binding: `src/lua_api/raycaster_api.rs`
 - Namespace: `lurek.raycaster`
-- Lua API surface: `19` functions, `18` types, `109` methods
+- Lua API surface: `19` functions, `18` types, `117` methods
 - User-facing: `true`
 - Plugin tier: `tier_1_plugin`
 
@@ -178,10 +178,10 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 ### render.rs
 
 - This file owns the render-command bridge that turns a prepared `RaycasterScene` into generic engine draw commands.
-- It emits textured quads or flat rectangles for ceilings, floors, walls, sprites, and transient meshes in scene order.
-- Because the scene already contains geometry, UVs, lighting, and depth intent, this file mostly translates existing data.
-- It is the handoff point where raycaster-specific presentation becomes backend-agnostic `RenderCommand` work.
-- Open this file when command translation or draw ordering changes; CPU rasterization and scene assembly live in siblings.
+- It emits textured quads, fullscreen overlays, particle batches, and transient meshes while preserving raycaster depth order.
+- Material metadata stays render-facing here: the scene already carries UVs, light, blend intent, and optional shader handles.
+- The bridge deliberately reuses existing render-owned shader and particle infrastructure instead of adding GPU ownership to raycaster.
+- Open this file when raycaster presentation ordering or command translation changes; CPU rasterization and scene assembly live in siblings.
 
 ### scene.rs
 
@@ -433,6 +433,7 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 
 ##### Methods
 
+- `LRaycaster:addParticleEmitter(emitter) -> nil`: Adds a projected raycaster particle emitter that spawns during scene builds.
 - `LRaycaster:applyDoorManager(doors, alpha?) -> nil`: Synchronizes animated doors from an `LDoorManager` into this map's per-cell wall features.
 - `LRaycaster:buildScene(params, lights?, sprites?, wallTextures?) -> integer`: Builds a complete textured raycaster scene for GPU rendering. Stores the output internally.
 - `LRaycaster:buildSceneFromAdapter(params, adapter, wallTextures?) -> integer`: Builds a textured raycaster scene from a runtime scene adapter that may follow physics bodies.
@@ -442,29 +443,36 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - `LRaycaster:castRayMulti(ox, oy, angle, maxDist, maxHits?) -> table`: Casts a single ray that passes through transparent walls, returning multiple hits.
 - `LRaycaster:castRays(ox, oy, angle, fov, count, maxDist) -> table`: Casts multiple rays across a field of view and returns an array of hit tables.
 - `LRaycaster:castRaysFlat(ox, oy, angle, fov, count, maxDist) -> number[]`: Casts multiple rays and returns only the corrected distances as a flat array.
+- `LRaycaster:clearParticleEmitters() -> nil`: Removes all projected particle emitters from this map.
 - `LRaycaster:clearWallFeatureCell(x, y) -> nil`: Removes any per-cell wall feature override from a blocking cell.
 - `LRaycaster:drawCameraSweep(x, y, fov, maxDist, numFrames, fw, fh) -> LImageData`: Renders multiple frames of a rotating camera sweep as a single combined image.
 - `LRaycaster:drawDepthMap(px, py, angle, fov, numRays, w, h, maxDist) -> LImageData`: Renders a grayscale depth map showing distance-to-wall for each column.
 - `LRaycaster:drawTopDown(px, py, angle, scale) -> LImageData`: Renders a top-down debug view of the map with the player's position and direction.
 - `LRaycaster:drawView(px, py, angle, fov, w, h, maxDist) -> LImageData`: Renders a first-person raycaster view to a raw image buffer (no textures, flat-shaded).
+- `LRaycaster:getCeilingMaterialCell(x, y) -> table?`: Returns the ceiling material override for one cell, or nil when none is set.
 - `LRaycaster:getCeilingTextureCell(x, y) -> integer`: Returns the raw texture id assigned to this ceiling cell, or nil if none.
 - `LRaycaster:getCell(x, y) -> integer`: Returns the wall type value at a grid cell.
+- `LRaycaster:getFloorMaterialCell(x, y) -> table?`: Returns the floor material override for one cell, or nil when none is set.
 - `LRaycaster:getFloorTextureCell(x, y) -> integer`: Returns the raw texture id assigned to this floor cell, or nil if none.
 - `LRaycaster:getLoweredFloorCell(x, y) -> table`: Returns the lowered floor configuration at a cell, or nil if the cell is normal.
 - `LRaycaster:getWallAlpha(tileType) -> number`: Returns the current transparency value for a wall tile type.
 - `LRaycaster:getWallFeatureCell(x, y) -> table`: Returns the wall feature attached to a cell, or nil when none is set.
+- `LRaycaster:getWallMaterial(cellValue) -> table?`: Returns the material override for a wall tile type, or nil when none is set.
 - `LRaycaster:height() -> integer`: Returns the map height in grid cells.
 - `LRaycaster:isBlocked(x, y) -> boolean`: Returns true if the grid cell is a solid wall (non-zero value).
 - `LRaycaster:pickScreen(sx, sy, params, sprites?, models?) -> table`: Resolves a screen-space click back into the raycaster world using the same camera semantics as scene building.
 - `LRaycaster:pickScreenFromAdapter(sx, sy, params, adapter) -> table`: Resolves a screen-space click using sprite/model inputs sourced from a runtime scene adapter.
 - `LRaycaster:projectSprite(sx, sy, px, py, pa, fov, screenW) -> table`: Projects a world-space sprite to screen coordinates for billboard rendering.
+- `LRaycaster:setCeilingMaterialCell(x, y, material?) -> nil`: Assigns a render material override to one ceiling cell. Pass nil to clear.
 - `LRaycaster:setCeilingTextureCell(x, y, texture?) -> nil`: Assigns a per-cell ceiling texture override. Pass nil to remove the override.
 - `LRaycaster:setCell(x, y, val) -> nil`: Sets the wall type value at a grid cell. Non-zero values are solid walls.
 - `LRaycaster:setCells(cells) -> nil`: Replaces the entire map grid with a flat array of cell values (row-major order).
+- `LRaycaster:setFloorMaterialCell(x, y, material?) -> nil`: Assigns a render material override to one floor cell. Pass nil to clear.
 - `LRaycaster:setFloorTextureCell(x, y, texture?) -> nil`: Assigns a per-cell floor texture override. Pass nil to remove the override.
 - `LRaycaster:setLoweredFloorCell(x, y, opts?) -> nil`: Marks a cell as a lowered floor (pit) with its own texture, depth, tint, and blocking flag.
 - `LRaycaster:setWallAlpha(tileType, alpha) -> nil`: Sets the transparency for a specific wall tile type, enabling see-through walls.
 - `LRaycaster:setWallFeatureCell(x, y, feature) -> nil`: Attaches a render-only wall feature descriptor to a blocking cell.
+- `LRaycaster:setWallMaterial(cellValue, material?) -> nil`: Assigns a render material override to a wall tile type. Pass nil to clear.
 - `LRaycaster:type() -> string`: Returns the type name of this object ("LRaycaster").
 - `LRaycaster:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 - `LRaycaster:width() -> integer`: Returns the map width in grid cells.
@@ -697,3 +705,8 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - `raycaster` no longer exposes gameplay movement, line-of-sight, tile-light, or minimap-light helpers. Tile-based gameplay flows should build or export from `lurek.tilefield`, then pass render input to `raycaster`.
 - `lurek.raycaster.buildMultiLevelSceneFromField(params, field, opts)` is the field-consuming bridge for generated multilevel render input. It can read `tilefield` blocker channels as a fallback, but the preferred structured path is to map named field slots such as `wallSlot`, `doorSlot`, `windowSlot`, `floorSlot`, `ceilingSlot`, `objectSlot`, `spriteSlot`, `floorHoleSlot`, and `ceilingHoleSlot` into raycaster walls, wall features, surface textures, billboard sprites, holes, and render-only point-light samples. Presentation slots such as `backgroundSlot`, `skyboxSlot`, and `overlaySlot` let typed map refs select first-person sky/background and full-frame effects like fog or snow without moving gameplay semantics into raycaster. When `opts.catalog` or `opts.tileCatalog` is an `LTileCatalog`, typed tilefield refs reuse `tileset` visuals, texture ids, and object properties instead of requiring duplicate raycaster-only material maps.
 - `lurek.raycaster.setShader(shaderOrNil)` accepts only draw-target shaders created through `lurek.render.newShader`. The module stores a render-owned shader handle for the most recently built scene presentation path; it does not compile WGSL or own GPU pipeline state. Software exports such as `drawLastScene` remain CPU captures and do not execute the shader.
+- Surface material overrides are map-owned data. `LRaycaster:setWallMaterial(cellValue, material)`, `setFloorMaterialCell(x, y, material)`, and `setCeilingMaterialCell(x, y, material)` let scripts bind per-surface textures, draw-target shaders, tint, blend mode, UV scroll/scale/offset, and atlas animation (`frame_count`, `frame_rate`, `frame_layout`) without moving shader compilation out of `render`.
+- Scene params for `buildScene`, `buildMultiLevelScene`, and `LMultiLevelGrid:buildScene` now include `time_seconds`, `background`, and `overlays`. Shader backgrounds and shader overlays accept `overlay`, `postfx`, or `draw` targets, and raycaster forwards auto uniforms such as `ray_player_pos`, `ray_screen_size`, `ray_camera_angle`, `ray_fov`, `ray_horizon`, `ray_camera_height`, and `ray_max_distance`.
+- Depth-aware fog is a first-class overlay mode. Use `{ type = "depth_fog", ... }` or `{ type = "fog", mode = "depth", ... }` when the effect should read per-column scene depth instead of only layering a flat fullscreen tint.
+- `LRaycaster:addParticleEmitter(emitter)` spawns deterministic projected 2.5D particles during scene builds. Emitters can bind textures, `particle` shaders, blend modes, seeded jitter, and volumetric placement hints (`z`, `radius`, `height`) while still remaining raycaster scene data instead of direct render command ownership.
+- `lurek.raycaster.drawLastScene(width, height)` is an evidence-oriented CPU fallback. It preserves base textures, tint, UV scrolling, frame-atlas animation, depth fog, and projected particle placement, but it does not execute WGSL for raycaster materials, shader backgrounds, or shader overlays.

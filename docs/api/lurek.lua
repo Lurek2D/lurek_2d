@@ -26254,7 +26254,7 @@ function LMultiLevelGrid:activeLevel() end
 function LMultiLevelGrid:addLevel(level) end
 
 --- Builds a textured multilevel raycaster scene from this persistent world and stores it for rendering.
----@param params table Scene params for the current camera.
+---@param params table Scene params for the current camera, including optional `time_seconds`, `background`, and `overlays` descriptors.
 ---@param lights? table Array of render light tables.
 ---@param sprites? table|LSpriteManager Array of level sprite tables or an LSpriteManager.
 ---@param wallTextures? table Map of cell_value -> texture for wall surfaces.
@@ -26425,13 +26425,17 @@ function LMultiLevelGrid:type() end
 ---@return boolean True if this object is of the given type.
 function LMultiLevelGrid:typeOf(name) end
 
+--- Adds a projected raycaster particle emitter that spawns during scene builds.
+---@param emitter table Emitter table with x, y, optional z, rate, lifetime, lifetime_range, size, size_range, radius, height, velocity_x/y, jitter_x/y, color, shape, texture, shader, blend, occlude_walls, and seed.
+function LRaycaster:addParticleEmitter(emitter) end
+
 --- Synchronizes animated doors from an `LDoorManager` into this map's per-cell wall features.
 ---@param doors LDoorManager Door manager holding animated open amounts.
 ---@param alpha? number Optional alpha multiplier for the synchronized door slabs.
 function LRaycaster:applyDoorManager(doors, alpha) end
 
 --- Builds a complete textured raycaster scene for GPU rendering. Stores the output internally.
----@param params table Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b?, camera_height?, horizon_offset?}.
+---@param params table Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b?, camera_height?, horizon_offset?, time_seconds?, background?, overlays?}. `background` accepts solid, gradient, skybox, or shader descriptors. `overlays` accepts fog, depth fog, snow, or shader descriptors.
 ---@param lights? table Array of render light tables {x, y, radius, r?, g?, b?, color?, intensity?, level?}.
 ---@param sprites? table|LSpriteManager Array of sprite tables {x, y, texture?, size?, front_texture?, right_texture?, back_texture?, left_texture?, angle?} or an LSpriteManager with integer/LImage textures.
 ---@param wallTextures? table Map of cell_value -> texture for wall surfaces.
@@ -26502,6 +26506,9 @@ function LRaycaster:castRays(ox, oy, angle, fov, count, maxDist) end
 ---@return number[] Flat array of corrected distance values.
 function LRaycaster:castRaysFlat(ox, oy, angle, fov, count, maxDist) end
 
+--- Removes all projected particle emitters from this map.
+function LRaycaster:clearParticleEmitters() end
+
 --- Removes any per-cell wall feature override from a blocking cell.
 ---@param x number Grid column.
 ---@param y number Grid row.
@@ -26549,6 +26556,12 @@ function LRaycaster:drawTopDown(px, py, angle, scale) end
 ---@return LImageData Raw image data.
 function LRaycaster:drawView(px, py, angle, fov, w, h, maxDist) end
 
+--- Returns the ceiling material override for one cell, or nil when none is set.
+---@param x number Grid column.
+---@param y number Grid row.
+---@return table? Material table or nil.
+function LRaycaster:getCeilingMaterialCell(x, y) end
+
 --- Returns the raw texture id assigned to this ceiling cell, or nil if none.
 ---@param x number Grid column.
 ---@param y number Grid row.
@@ -26560,6 +26573,12 @@ function LRaycaster:getCeilingTextureCell(x, y) end
 ---@param y number Grid row.
 ---@return number Cell value (0 = empty, 1+ = wall type).
 function LRaycaster:getCell(x, y) end
+
+--- Returns the floor material override for one cell, or nil when none is set.
+---@param x number Grid column.
+---@param y number Grid row.
+---@return table? Material table or nil.
+function LRaycaster:getFloorMaterialCell(x, y) end
 
 --- Returns the raw texture id assigned to this floor cell, or nil if none.
 ---@param x number Grid column.
@@ -26583,6 +26602,11 @@ function LRaycaster:getWallAlpha(tileType) end
 ---@param y number Grid row.
 ---@return LRaycasterGetWallFeatureCellResult Feature table {kind, alpha, ...} or nil.
 function LRaycaster:getWallFeatureCell(x, y) end
+
+--- Returns the material override for a wall tile type, or nil when none is set.
+---@param cellValue number Wall tile value to query.
+---@return table? Material table or nil.
+function LRaycaster:getWallMaterial(cellValue) end
 
 --- Returns the map height in grid cells.
 ---@return number Map height.
@@ -26622,6 +26646,12 @@ function LRaycaster:pickScreenFromAdapter(sx, sy, params, adapter) end
 ---@return LRaycasterProjectSpriteResult Projection info {screen_x, scale, distance, visible}.
 function LRaycaster:projectSprite(sx, sy, px, py, pa, fov, screenW) end
 
+--- Assigns a render material override to one ceiling cell. Pass nil to clear.
+---@param x number Grid column.
+---@param y number Grid row.
+---@param material? table Material table with optional texture, shader, tint, blend, uv_scroll, uv_scale, uv_offset, frame_count, frame_rate, and frame_layout.
+function LRaycaster:setCeilingMaterialCell(x, y, material) end
+
 --- Assigns a per-cell ceiling texture override. Pass nil to remove the override.
 ---@param x number Grid column.
 ---@param y number Grid row.
@@ -26637,6 +26667,12 @@ function LRaycaster:setCell(x, y, val) end
 --- Replaces the entire map grid with a flat array of cell values (row-major order).
 ---@param cells table Flat array of numbers with width*height elements.
 function LRaycaster:setCells(cells) end
+
+--- Assigns a render material override to one floor cell. Pass nil to clear.
+---@param x number Grid column.
+---@param y number Grid row.
+---@param material? table Material table with optional texture, shader, tint, blend, uv_scroll, uv_scale, uv_offset, frame_count, frame_rate, and frame_layout.
+function LRaycaster:setFloorMaterialCell(x, y, material) end
 
 --- Assigns a per-cell floor texture override. Pass nil to remove the override.
 ---@param x number Grid column.
@@ -26660,6 +26696,11 @@ function LRaycaster:setWallAlpha(tileType, alpha) end
 ---@param y number Grid row.
 ---@param feature table|Feature "door", ...}.
 function LRaycaster:setWallFeatureCell(x, y, feature) end
+
+--- Assigns a render material override to a wall tile type. Pass nil to clear.
+---@param cellValue number Wall tile value to style.
+---@param material? table Material table with optional texture, shader, tint, blend, uv_scroll, uv_scale, uv_offset, frame_count, frame_rate, and frame_layout.
+function LRaycaster:setWallMaterial(cellValue, material) end
 
 --- Returns the type name of this object ("LRaycaster").
 ---@return string Type name string.
@@ -26843,7 +26884,7 @@ function LSpriteManager:typeOf(name) end
 lurek.raycaster.applyLitShade = function(baseShade, r, g, b) end
 
 --- Builds a multilevel raycaster scene from a stack of plain Lua level tables.
----@param params table Scene params plus optional active_level.
+---@param params table Scene params plus optional `active_level`, `time_seconds`, `background`, and `overlays`.
 ---@param levels table|LMultiLevelGrid Array of level tables or a persistent LMultiLevelGrid.
 ---@param lights? table Array of render light tables.
 ---@param sprites? table|LSpriteManager Array of sprite tables {x, y, texture?, size?, level?, front_texture?, right_texture?, back_texture?, left_texture?, angle?} or an LSpriteManager whose sprites use their own optional level indices and default to active_level.

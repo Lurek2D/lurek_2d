@@ -636,6 +636,133 @@ describe("Evidence: lurek.raycaster", function()
         save_png(img, "raycaster_full_scene_day_night.png")
     end)
 
+    -- Does: Builds one raycaster scene using wall/floor/ceiling materials, shader-style background and overlay descriptors, depth fog, and projected particle emitters, then captures two deterministic CPU fallback frames.
+    -- Shows: The left and right panels change over time while keeping the same layout, proving animated UV/material fallback, fullscreen fog/overlay fallback, and world-space particles in the software capture path.
+    -- Artifact: tests/artifacts/current/raycaster/raycaster_material_depthfog_particles_cpu_fallback.png
+    -- Why: The shader roadmap explicitly requires deterministic `drawLastScene` behavior with documented GPU-shader approximations, so the evidence needs to show the fallback rendering the full feature mix.
+    it("PNG: material, depth fog, and particles CPU fallback", function()
+        local atlas = lurek.image.newImageData(16, 8)
+        atlas:fill(0, 0, 0, 0)
+        atlas:drawRect(0, 0, 8, 8, 235, 70, 52, 255)
+        atlas:drawRect(8, 0, 8, 8, 56, 196, 112, 255)
+        atlas:drawRect(0, 2, 16, 2, 255, 220, 140, 255)
+        local atlas_texture = lurek.render.newImage(atlas)
+        local overlay_shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return color;
+}
+]], { target = "overlay" })
+        local particle_shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return color;
+}
+]], { target = "particle" })
+        local surface_shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return color;
+}
+]], { target = "draw" })
+
+        local rc = make_room(10, 8)
+        rc:setCell(6, 3, 2)
+        rc:setCell(7, 4, 2)
+        rc:setWallMaterial(2, {
+            texture = atlas_texture,
+            shader = surface_shader,
+            frame_count = 2,
+            frame_rate = 2.0,
+            tint = { 1.0, 1.0, 1.0, 1.0 },
+        })
+        rc:setFloorMaterialCell(5, 5, {
+            texture = atlas_texture,
+            uv_scroll = { 0.0, 0.12 },
+            tint = { 0.72, 0.84, 1.0, 1.0 },
+        })
+        rc:setCeilingMaterialCell(5, 2, {
+            texture = atlas_texture,
+            frame_count = 2,
+            frame_rate = 2.0,
+            tint = { 1.0, 0.95, 0.72, 1.0 },
+        })
+        rc:addParticleEmitter({
+            x = 5.6,
+            y = 4.2,
+            z = 0.1,
+            radius = 0.12,
+            height = 0.45,
+            rate = 14.0,
+            lifetime = 1.0,
+            size = 0.32,
+            texture = atlas_texture,
+            shader = particle_shader,
+            blend = "add",
+            seed = 19,
+        })
+
+        local function frame_at(time_seconds)
+            rc:buildScene({
+                px = 3.2,
+                py = 4.0,
+                angle = 0.08,
+                fov = math.pi / 3,
+                rays = 96,
+                max_dist = 10.0,
+                screen_w = 240,
+                screen_h = 140,
+                ambient = 0.42,
+                time_seconds = time_seconds,
+                background = {
+                    type = "shader",
+                    shader = overlay_shader,
+                    texture = atlas_texture,
+                    tint = { 0.18, 0.30, 0.56, 1.0 },
+                },
+                overlays = {
+                    { type = "depth_fog", color = { 0.18, 0.24, 0.36, 0.78 }, density = 0.75, near = 1.0, far = 10.0 },
+                    { type = "shader", shader = overlay_shader, texture = atlas_texture, blend = "alpha", tint = { 1.0, 1.0, 1.0, 0.06 } },
+                },
+            }, {
+                { x = 5.2, y = 4.0, radius = 3.8, intensity = 1.1, color = { 1.0, 0.78, 0.44 } },
+            }, {}, {
+                [1] = atlas_texture,
+                [2] = atlas_texture,
+            })
+            return lurek.raycaster.drawLastScene(240, 140)
+        end
+
+        local left = frame_at(0.0)
+        local right = frame_at(0.5)
+        local sheet = lurek.image.newImageData(500, 160)
+        sheet:fill(8, 10, 16, 255)
+        sheet:drawRect(10, 10, 240, 140, 28, 34, 44, 255)
+        sheet:drawRect(250, 10, 240, 140, 28, 34, 44, 255)
+        sheet:blit(left, 10, 10)
+        sheet:blit(right, 250, 10)
+        save_png(sheet, "raycaster_material_depthfog_particles_cpu_fallback.png")
+    end)
+
+    -- Does: Records the documented software fallback contract for shader-backed raycaster materials, overlays, and particles.
+    -- Shows: CPU capture keeps base textures, tint, UV animation, depth fog, and projected particles while skipping WGSL execution itself.
+    -- Artifact: tests/artifacts/current/raycaster/raycaster_material_cpu_fallback_contract.txt
+    -- Why: The roadmap acceptance criteria explicitly calls for documented CPU fallback limitations rather than pretending the software path matches GPU shader output.
+    it("TXT: material CPU fallback contract", function()
+        local text = table.concat({
+            "Raycaster material CPU fallback contract",
+            "surface_shaders_executed=false",
+            "background_overlay_shaders_executed=false",
+            "base_texture_and_tint_preserved=true",
+            "uv_scroll_and_frame_animation_approximated=true",
+            "depth_fog_applied_from_column_depth=true",
+            "projected_particles_drawn_without_wgsl=true",
+        }, "\n")
+        local path = OUT .. "raycaster_material_cpu_fallback_contract.txt"
+        if write_file then write_file(path, text) else lurek.filesystem.write(path, text) end
+        expect_evidence_created(path)
+    end)
+
     -- Does: Binds a draw-target shader to the stored raycaster scene presentation path and records getter/cleanup behavior.
     -- Shows: Raycaster keeps only a shader handle while render owns WGSL validation and command execution.
     -- Artifact: tests/artifacts/current/raycaster/raycaster_shader_binding_contract.txt

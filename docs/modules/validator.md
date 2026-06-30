@@ -87,7 +87,7 @@ do
     if not lurek.filesystem.exists(root) then
         lurek.filesystem.createDirectory(root)
     end
-    lurek.filesystem.write(file, "game.quest.start()\n")
+    lurek.filesystem.write(file, "game.quest.start()\ngame.missing.call()\n")
     local default_report = lurek.validator.validate(root)
     local report = lurek.validator.validate(root, {
         api = { "game.quest" },
@@ -95,7 +95,7 @@ do
     lurek.log.info(tostring("lurek.validator.validate files_checked=" .. report.files_checked))
     lurek.log.info(tostring("default warnings=" .. default_report.warning_count))
     lurek.log.info(tostring("custom warnings=" .. report.warning_count))
-    lurek.log.info(tostring("is_clean=" .. tostring(report.is_clean)))
+    lurek.log.info(tostring("first custom violation=" .. tostring(report.violations[1] and report.violations[1].message or "nil")))
 end
 ```
 
@@ -132,7 +132,7 @@ do
     if not lurek.filesystem.exists(root) then
         lurek.filesystem.createDirectory(root)
     end
-    lurek.filesystem.write(file, "game.quest.start()\n")
+    lurek.filesystem.write(file, "game.quest.start()\ngame.missing.call()\n")
     local default_report = lurek.validator.validateFile(file)
     local report = lurek.validator.validateFile(file, {
         api = { "game.quest" },
@@ -191,7 +191,7 @@ do
     if not lurek.filesystem.exists(root) then
         lurek.filesystem.createDirectory(root)
     end
-    lurek.filesystem.write(file, "game.quest.start()\n")
+    lurek.filesystem.write(file, "game.quest.start()\ngame.missing.call()\n")
     local eng = lurek.validator.newEngine(root)
     local before = eng:ruleCount()
     eng:addApiRule({ "game.quest" })
@@ -199,6 +199,7 @@ do
     lurek.log.info(tostring("LValidationEngine:addApiRule rules before=" .. before))
     lurek.log.info(tostring("LValidationEngine:addApiRule rules after=" .. eng:ruleCount()))
     lurek.log.info(tostring("runFile warnings=" .. report.warning_count))
+    lurek.log.info(tostring("first violation=" .. tostring(report.violations[1] and report.violations[1].message or "nil")))
 end
 ```
 

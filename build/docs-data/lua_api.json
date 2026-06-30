@@ -1,18 +1,18 @@
 {
   "meta": {
-    "generated": "2026-06-29T21:54:17.027484+00:00",
+    "generated": "2026-06-30T22:01:01.377832+00:00",
     "generator": "tools/gen_lua_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "lua_functions": 6448,
+      "lua_functions": 6456,
       "lua_modules": 71,
       "engine_callbacks": 29
     }
   },
   "lua_api": {
     "summary": {
-      "total_functions": 6448,
-      "documented": 6443,
+      "total_functions": 6456,
+      "documented": 6451,
       "coverage_pct": 99.9,
       "modules": 71
     },
@@ -34644,7 +34644,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 277,
+            "line": 275,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -34667,7 +34667,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 289,
+            "line": 287,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -34690,7 +34690,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 301,
+            "line": 299,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -34713,7 +34713,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 313,
+            "line": 311,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -34736,7 +34736,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 325,
+            "line": 323,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -34759,7 +34759,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 337,
+            "line": 335,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -34782,7 +34782,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 349,
+            "line": 347,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -34805,7 +34805,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 361,
+            "line": 359,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -34821,7 +34821,7 @@
             "typed_params": [],
             "inferred_return": "string",
             "return_description": "Current minimum log level name.",
-            "line": 377,
+            "line": 375,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -34844,7 +34844,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 386,
+            "line": 384,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -34860,7 +34860,7 @@
             "typed_params": [],
             "inferred_return": "boolean",
             "return_description": "True when console logging is enabled.",
-            "line": 398,
+            "line": 396,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -34883,7 +34883,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 407,
+            "line": 405,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -34899,7 +34899,7 @@
             "typed_params": [],
             "inferred_return": "string",
             "return_description": "Current log file path.",
-            "line": 421,
+            "line": 419,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -34922,7 +34922,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Array table containing level, timestamp, message, source, line, and optional category fields.",
-            "line": 437,
+            "line": 435,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -34938,7 +34938,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 464,
+            "line": 462,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -34961,7 +34961,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 479,
+            "line": 481,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -34977,7 +34977,7 @@
             "typed_params": [],
             "inferred_return": "boolean",
             "return_description": "True when profiler recording is enabled.",
-            "line": 491,
+            "line": 493,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35000,7 +35000,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 500,
+            "line": 502,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35023,7 +35023,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 512,
+            "line": 514,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35039,7 +35039,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 523,
+            "line": 525,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35055,7 +35055,7 @@
             "typed_params": [],
             "inferred_return": "integer",
             "return_description": "Number of retained profiler frames.",
-            "line": 535,
+            "line": 537,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35078,7 +35078,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Array of profiler zones with name, time, selfTime, startTime, and children fields.",
-            "line": 550,
+            "line": 552,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35094,7 +35094,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 568,
+            "line": 570,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35117,7 +35117,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 580,
+            "line": 582,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35133,7 +35133,7 @@
             "typed_params": [],
             "inferred_return": "table",
             "return_description": "Table containing fps, dt, avg, min, max, p50, p95, p99, and samples fields.",
-            "line": 601,
+            "line": 603,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35156,7 +35156,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 632,
+            "line": 634,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35172,7 +35172,7 @@
             "typed_params": [],
             "inferred_return": "table",
             "return_description": "Table containing fps, dt, avg, min, max, p50, p95, p99, and samples fields.",
-            "line": 653,
+            "line": 655,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35188,7 +35188,7 @@
             "typed_params": [],
             "inferred_return": "number[]",
             "return_description": "Array table of CPU frame durations in seconds.",
-            "line": 684,
+            "line": 686,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35211,7 +35211,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 700,
+            "line": 702,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35227,7 +35227,7 @@
             "typed_params": [],
             "inferred_return": "integer",
             "return_description": "Maximum number of retained CPU frame duration samples.",
-            "line": 712,
+            "line": 714,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35250,7 +35250,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when the path was newly added; false when it was already watched.",
-            "line": 722,
+            "line": 724,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35273,7 +35273,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when the path was removed.",
-            "line": 739,
+            "line": 741,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35289,7 +35289,7 @@
             "typed_params": [],
             "inferred_return": "string[]",
             "return_description": "Sorted array table of watched path strings.",
-            "line": 748,
+            "line": 750,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35305,7 +35305,7 @@
             "typed_params": [],
             "inferred_return": "string[]",
             "return_description": "Changed path strings.",
-            "line": 766,
+            "line": 768,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35321,7 +35321,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 782,
+            "line": 784,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35337,7 +35337,7 @@
             "typed_params": [],
             "inferred_return": "number",
             "return_description": "Watch interval in seconds.",
-            "line": 794,
+            "line": 796,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35360,7 +35360,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 803,
+            "line": 805,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35383,7 +35383,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Array of frame tables; each has source (string), line (integer), name (string), and what (string) fields.",
-            "line": 815,
+            "line": 817,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35406,7 +35406,7 @@
             ],
             "inferred_return": "LuaValue",
             "return_description": "Multi-return where the first value is a boolean success flag followed by result values or an error string.",
-            "line": 843,
+            "line": 845,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35422,7 +35422,7 @@
             "typed_params": [],
             "inferred_return": "boolean",
             "return_description": "Always returns true after setting the console-open flag.",
-            "line": 865,
+            "line": 867,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35438,7 +35438,7 @@
             "typed_params": [],
             "inferred_return": "boolean",
             "return_description": "True when the console-open flag is set.",
-            "line": 877,
+            "line": 879,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35454,7 +35454,7 @@
             "typed_params": [],
             "inferred_return": "boolean",
             "return_description": "Always returns true after setting the entity-inspector flag.",
-            "line": 886,
+            "line": 888,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35470,7 +35470,7 @@
             "typed_params": [],
             "inferred_return": "boolean",
             "return_description": "True when the entity-inspector-open flag is set.",
-            "line": 898,
+            "line": 900,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35505,7 +35505,7 @@
             ],
             "inferred_return": "integer",
             "return_description": "Numeric watch id that can be passed to `removeWatch`.",
-            "line": 910,
+            "line": 912,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35528,7 +35528,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when a watch entry was removed.",
-            "line": 933,
+            "line": 935,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35544,7 +35544,7 @@
             "typed_params": [],
             "inferred_return": "table",
             "return_description": "Array of watch rows with name, category, and value fields.",
-            "line": 956,
+            "line": 958,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35560,7 +35560,7 @@
             "typed_params": [],
             "inferred_return": "table",
             "return_description": "Snapshot table with frameStats, watches, profile, log, and watchCount fields.",
-            "line": 993,
+            "line": 995,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35576,7 +35576,7 @@
             "typed_params": [],
             "inferred_return": "table",
             "return_description": "Array table with zone name, call count, total_ms, avg_ms, min_ms, max_ms, and self_ms fields.",
-            "line": 1072,
+            "line": 1074,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35599,7 +35599,7 @@
             ],
             "inferred_return": "LFileWatcher",
             "return_description": "File watcher handle with polling and callback methods.",
-            "line": 1131,
+            "line": 1133,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35622,7 +35622,7 @@
             ],
             "inferred_return": "LReplConsole",
             "return_description": "REPL console handle for eval and history management.",
-            "line": 1148,
+            "line": 1150,
             "file": "src/lua_api/devtools_api.rs"
           }
         ],
@@ -35651,7 +35651,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 218,
+                "line": 216,
                 "file": "src/lua_api/devtools_api.rs"
               },
               {
@@ -35667,7 +35667,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True when at least one change was detected.",
-                "line": 228,
+                "line": 226,
                 "file": "src/lua_api/devtools_api.rs"
               },
               {
@@ -35683,7 +35683,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Watched path string.",
-                "line": 243,
+                "line": 241,
                 "file": "src/lua_api/devtools_api.rs"
               },
               {
@@ -35699,7 +35699,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 246,
+                "line": 244,
                 "file": "src/lua_api/devtools_api.rs"
               },
               {
@@ -35715,7 +35715,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LFileWatcher`.",
-                "line": 256,
+                "line": 254,
                 "file": "src/lua_api/devtools_api.rs"
               },
               {
@@ -35738,7 +35738,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 261,
+                "line": 259,
                 "file": "src/lua_api/devtools_api.rs"
               }
             ]
@@ -35767,7 +35767,7 @@
                 ],
                 "inferred_return": "LuaValue",
                 "return_description": "Evaluation result shape produced by the devtools REPL backend.",
-                "line": 1172,
+                "line": 1174,
                 "file": "src/lua_api/devtools_api.rs"
               },
               {
@@ -35783,7 +35783,7 @@
                 "typed_params": [],
                 "inferred_return": "string[]",
                 "return_description": "History entry strings.",
-                "line": 1178,
+                "line": 1180,
                 "file": "src/lua_api/devtools_api.rs"
               },
               {
@@ -35799,7 +35799,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1187,
+                "line": 1189,
                 "file": "src/lua_api/devtools_api.rs"
               },
               {
@@ -35815,7 +35815,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "History entry count.",
-                "line": 1194,
+                "line": 1196,
                 "file": "src/lua_api/devtools_api.rs"
               },
               {
@@ -35831,7 +35831,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LReplConsole`.",
-                "line": 1198,
+                "line": 1200,
                 "file": "src/lua_api/devtools_api.rs"
               },
               {
@@ -35854,7 +35854,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 1203,
+                "line": 1205,
                 "file": "src/lua_api/devtools_api.rs"
               }
             ]
@@ -37209,7 +37209,7 @@
             ],
             "inferred_return": "LApiCatalog",
             "return_description": "Catalog populated from the live module table.",
-            "line": 996,
+            "line": 998,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37232,7 +37232,7 @@
             ],
             "inferred_return": "LApiCatalog",
             "return_description": "Catalog loaded from the TOML file.",
-            "line": 1013,
+            "line": 1015,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37255,7 +37255,7 @@
             ],
             "inferred_return": "LApiCatalog",
             "return_description": "Catalog containing entries parsed from every readable TOML file.",
-            "line": 1047,
+            "line": 1049,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37284,7 +37284,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1094,
+            "line": 1096,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37313,7 +37313,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1118,
+            "line": 1120,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37342,7 +37342,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1148,
+            "line": 1150,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37358,7 +37358,7 @@
             "typed_params": [],
             "inferred_return": "LApiCatalog",
             "return_description": "Catalog containing entries built by the editing functions.",
-            "line": 1174,
+            "line": 1176,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37374,7 +37374,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 1182,
+            "line": 1184,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37397,7 +37397,7 @@
             ],
             "inferred_return": "LValidationReport",
             "return_description": "Report containing missing, phantom, and incomplete API names.",
-            "line": 1194,
+            "line": 1196,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37426,7 +37426,7 @@
             ],
             "inferred_return": "LValidationReport",
             "return_description": "Report containing missing, phantom, and incomplete API names for the module.",
-            "line": 1217,
+            "line": 1219,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37455,7 +37455,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Table with stale, current, and missing arrays.",
-            "line": 1252,
+            "line": 1254,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37478,7 +37478,7 @@
             ],
             "inferred_return": "LQualityReport",
             "return_description": "Quality report with overall and module-level scores.",
-            "line": 1287,
+            "line": 1289,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37507,7 +37507,7 @@
             ],
             "inferred_return": "LQualityReport",
             "return_description": "Quality report for the filtered module entries.",
-            "line": 1304,
+            "line": 1306,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37530,7 +37530,7 @@
             ],
             "inferred_return": "integer",
             "return_description": "Number of catalog entries supplied as documented.",
-            "line": 1326,
+            "line": 1328,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37559,7 +37559,7 @@
             ],
             "inferred_return": "integer",
             "return_description": "Number of catalog entries for the module.",
-            "line": 1348,
+            "line": 1350,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37588,7 +37588,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1377,
+            "line": 1379,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37617,7 +37617,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1389,
+            "line": 1391,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37646,7 +37646,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1401,
+            "line": 1403,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37675,7 +37675,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1413,
+            "line": 1415,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37704,7 +37704,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1425,
+            "line": 1427,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37733,7 +37733,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1473,
+            "line": 1475,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37762,7 +37762,7 @@
             ],
             "inferred_return": "LSchema",
             "return_description": "Schema handle that can validate Lua tables.",
-            "line": 1509,
+            "line": 1511,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37785,7 +37785,7 @@
             ],
             "inferred_return": "LSchema",
             "return_description": "Schema handle parsed from the TOML text.",
-            "line": 1550,
+            "line": 1552,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37808,7 +37808,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Reflection table keyed by module name or containing the requested module entry.",
-            "line": 1562,
+            "line": 1564,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37837,7 +37837,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Array table of reflected item rows.",
-            "line": 1622,
+            "line": 1624,
             "file": "src/lua_api/docs_api.rs"
           }
         ],
@@ -53864,7 +53864,7 @@
             "typed_params": [],
             "inferred_return": "LGrepEngine",
             "return_description": "Grep engine instance.",
-            "line": 274,
+            "line": 266,
             "file": "src/lua_api/grep_api.rs"
           },
           {
@@ -53887,7 +53887,7 @@
             ],
             "inferred_return": "LGrepEngine",
             "return_description": "Grep engine instance.",
-            "line": 288,
+            "line": 280,
             "file": "src/lua_api/grep_api.rs"
           },
           {
@@ -53903,7 +53903,7 @@
             "typed_params": [],
             "inferred_return": "LFileFilter",
             "return_description": "File filter instance.",
-            "line": 311,
+            "line": 303,
             "file": "src/lua_api/grep_api.rs"
           },
           {
@@ -53919,7 +53919,7 @@
             "typed_params": [],
             "inferred_return": "LFileFilter",
             "return_description": "Pre-configured Lua filter.",
-            "line": 322,
+            "line": 314,
             "file": "src/lua_api/grep_api.rs"
           },
           {
@@ -53948,7 +53948,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Search result.",
-            "line": 336,
+            "line": 328,
             "file": "src/lua_api/grep_api.rs"
           },
           {
@@ -53977,7 +53977,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Array of matches with path and value.",
-            "line": 356,
+            "line": 348,
             "file": "src/lua_api/grep_api.rs"
           },
           {
@@ -54012,7 +54012,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Array of matching log entries.",
-            "line": 378,
+            "line": 370,
             "file": "src/lua_api/grep_api.rs"
           }
         ],
@@ -54047,7 +54047,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Search result with matches, files_searched, total_matches, duration_ms.",
-                "line": 98,
+                "line": 90,
                 "file": "src/lua_api/grep_api.rs"
               },
               {
@@ -54082,7 +54082,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Search result.",
-                "line": 117,
+                "line": 109,
                 "file": "src/lua_api/grep_api.rs"
               },
               {
@@ -54111,7 +54111,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Search result.",
-                "line": 139,
+                "line": 131,
                 "file": "src/lua_api/grep_api.rs"
               },
               {
@@ -54140,7 +54140,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Total match count.",
-                "line": 160,
+                "line": 152,
                 "file": "src/lua_api/grep_api.rs"
               },
               {
@@ -54169,7 +54169,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Search result.",
-                "line": 173,
+                "line": 162,
                 "file": "src/lua_api/grep_api.rs"
               }
             ]
@@ -54198,7 +54198,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 207,
+                "line": 199,
                 "file": "src/lua_api/grep_api.rs"
               },
               {
@@ -54221,7 +54221,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 214,
+                "line": 206,
                 "file": "src/lua_api/grep_api.rs"
               },
               {
@@ -54244,7 +54244,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 221,
+                "line": 213,
                 "file": "src/lua_api/grep_api.rs"
               },
               {
@@ -54267,7 +54267,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 228,
+                "line": 220,
                 "file": "src/lua_api/grep_api.rs"
               }
             ]
@@ -98202,7 +98202,7 @@
             ],
             "inferred_return": "LWorld",
             "return_description": "The new physics world.",
-            "line": 4499,
+            "line": 4503,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98231,7 +98231,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 4517,
+            "line": 4521,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98254,7 +98254,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 4531,
+            "line": 4535,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98277,7 +98277,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Canonical material table that can be reused with body and fixture assignment APIs.",
-            "line": 4539,
+            "line": 4543,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98324,7 +98324,7 @@
             ],
             "inferred_return": "LBody",
             "return_description": "The newly created body.",
-            "line": 4554,
+            "line": 4558,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98353,7 +98353,7 @@
             ],
             "inferred_return": "number",
             "return_description": "X position.",
-            "line": 4566,
+            "line": 4570,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98394,7 +98394,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 4588,
+            "line": 4592,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98423,7 +98423,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if sleeping is allowed.",
-            "line": 4601,
+            "line": 4605,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98458,7 +98458,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 4616,
+            "line": 4620,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98487,7 +98487,7 @@
             ],
             "inferred_return": "LPhysicsShape",
             "return_description": "The shape object.",
-            "line": 4633,
+            "line": 4637,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98510,7 +98510,7 @@
             ],
             "inferred_return": "LPhysicsShape",
             "return_description": "The shape object.",
-            "line": 4645,
+            "line": 4649,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98551,7 +98551,7 @@
             ],
             "inferred_return": "LPhysicsShape",
             "return_description": "The shape object.",
-            "line": 4660,
+            "line": 4664,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98574,7 +98574,7 @@
             ],
             "inferred_return": "LPhysicsShape",
             "return_description": "The shape object.",
-            "line": 4672,
+            "line": 4676,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98603,7 +98603,7 @@
             ],
             "inferred_return": "LPhysicsShape",
             "return_description": "The shape object.",
-            "line": 4681,
+            "line": 4685,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98632,7 +98632,7 @@
             ],
             "inferred_return": "LPhysicsShape",
             "return_description": "Circle, rectangle, or convex polygon approximating the opaque pixels.",
-            "line": 4692,
+            "line": 4696,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98661,7 +98661,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 4706,
+            "line": 4710,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98684,7 +98684,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Array of collision event tables.",
-            "line": 4732,
+            "line": 4736,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98707,7 +98707,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 4744,
+            "line": 4748,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98736,7 +98736,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 4756,
+            "line": 4760,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98777,7 +98777,7 @@
             ],
             "inferred_return": "LTerrain",
             "return_description": "The terrain object.",
-            "line": 4773,
+            "line": 4777,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98824,7 +98824,7 @@
             ],
             "inferred_return": "LLiquidMap",
             "return_description": "The liquid map object.",
-            "line": 4795,
+            "line": 4799,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98889,7 +98889,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the rectangles overlap.",
-            "line": 4843,
+            "line": 4847,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98942,7 +98942,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the circles overlap.",
-            "line": 4862,
+            "line": 4866,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -98995,7 +98995,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the point is inside.",
-            "line": 4881,
+            "line": 4885,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -99054,7 +99054,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if circle and AABB overlap.",
-            "line": 4901,
+            "line": 4905,
             "file": "src/lua_api/physics_api.rs"
           }
         ],
@@ -99107,7 +99107,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1229,
+                "line": 1233,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99130,7 +99130,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1254,
+                "line": 1258,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99146,7 +99146,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1276,
+                "line": 1280,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99162,7 +99162,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1283,
+                "line": 1287,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99197,7 +99197,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1292,
+                "line": 1296,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99226,7 +99226,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the pair is enabled in both matrix directions.",
-                "line": 1309,
+                "line": 1313,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99255,7 +99255,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1324,
+                "line": 1328,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99278,7 +99278,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Target group bitmask.",
-                "line": 1340,
+                "line": 1344,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99294,7 +99294,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1349,
+                "line": 1353,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99310,7 +99310,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Gravity X component in world units per second squared.",
-                "line": 1357,
+                "line": 1361,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99339,7 +99339,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1364,
+                "line": 1368,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99374,7 +99374,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Stable gravity vector ID.",
-                "line": 1374,
+                "line": 1378,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99415,7 +99415,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1391,
+                "line": 1395,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99438,7 +99438,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if an active vector was removed.",
-                "line": 1405,
+                "line": 1409,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99454,7 +99454,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1410,
+                "line": 1414,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99477,7 +99477,7 @@
                 ],
                 "inferred_return": "table?",
                 "return_description": "Table with id, gx, gy, layerMask, and enabled fields.",
-                "line": 1418,
+                "line": 1422,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99500,7 +99500,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1427,
+                "line": 1431,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99516,7 +99516,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Pixels per meter.",
-                "line": 1434,
+                "line": 1438,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99539,7 +99539,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Equivalent value in physics meters.",
-                "line": 1441,
+                "line": 1445,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99562,7 +99562,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Equivalent value in pixels.",
-                "line": 1448,
+                "line": 1452,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99578,7 +99578,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Body count.",
-                "line": 1454,
+                "line": 1458,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99601,7 +99601,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the body is active.",
-                "line": 1461,
+                "line": 1465,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99617,7 +99617,7 @@
                 "typed_params": [],
                 "inferred_return": "integer[]",
                 "return_description": "Body ID numbers.",
-                "line": 1467,
+                "line": 1471,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99640,7 +99640,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the joint is active.",
-                "line": 1474,
+                "line": 1478,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99656,7 +99656,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Stats table with bodies, bodySlots, colliders, joints, jointSlots, zones, gravityVectors, sleepingBodies.",
-                "line": 1491,
+                "line": 1495,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99691,7 +99691,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Flow sample table with `vx`, `vy`, `magnitude`, `intensity`, and `sources`.",
-                "line": 1501,
+                "line": 1505,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99714,7 +99714,7 @@
                 ],
                 "inferred_return": "LFlowStream",
                 "return_description": "New flow field handle.",
-                "line": 1516,
+                "line": 1520,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99737,7 +99737,7 @@
                 ],
                 "inferred_return": "LFlowStream",
                 "return_description": "New flow field handle.",
-                "line": 1532,
+                "line": 1536,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99760,7 +99760,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the field existed and was active.",
-                "line": 1549,
+                "line": 1553,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99783,7 +99783,7 @@
                 ],
                 "inferred_return": "table?",
                 "return_description": "Flow field descriptor table with geometry, enabled, strength, application, combine, and layer-mask fields.",
-                "line": 1556,
+                "line": 1560,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99799,7 +99799,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1564,
+                "line": 1568,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99828,7 +99828,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1572,
+                "line": 1576,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99851,7 +99851,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1589,
+                "line": 1593,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99892,7 +99892,7 @@
                 ],
                 "inferred_return": "LBody",
                 "return_description": "The newly created body handle.",
-                "line": 1600,
+                "line": 1604,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99939,7 +99939,7 @@
                 ],
                 "inferred_return": "LBody",
                 "return_description": "The newly created body handle.",
-                "line": 1662,
+                "line": 1666,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99986,7 +99986,7 @@
                 ],
                 "inferred_return": "LBody",
                 "return_description": "The newly created body handle.",
-                "line": 1685,
+                "line": 1689,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100051,7 +100051,7 @@
                 ],
                 "inferred_return": "LBody",
                 "return_description": "The newly created body handle.",
-                "line": 1721,
+                "line": 1725,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100104,7 +100104,7 @@
                 ],
                 "inferred_return": "LBody",
                 "return_description": "The newly created body handle.",
-                "line": 1757,
+                "line": 1761,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100163,7 +100163,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The fixture index on the body.",
-                "line": 1800,
+                "line": 1804,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100186,7 +100186,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Number of attached fixtures.",
-                "line": 1826,
+                "line": 1830,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100221,7 +100221,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1834,
+                "line": 1838,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100256,7 +100256,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1849,
+                "line": 1853,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100291,7 +100291,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1863,
+                "line": 1867,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100320,7 +100320,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Material table with solver-backed and gameplay metadata fields.",
-                "line": 1878,
+                "line": 1882,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100355,7 +100355,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1894,
+                "line": 1898,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100396,7 +100396,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The joint ID.",
-                "line": 1911,
+                "line": 1915,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100455,7 +100455,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The joint ID.",
-                "line": 1931,
+                "line": 1935,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100508,7 +100508,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The joint ID.",
-                "line": 1949,
+                "line": 1953,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100549,7 +100549,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The joint ID.",
-                "line": 1965,
+                "line": 1969,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100608,7 +100608,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The joint ID.",
-                "line": 1985,
+                "line": 1989,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100661,7 +100661,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The joint ID.",
-                "line": 2003,
+                "line": 2007,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100714,7 +100714,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The joint ID.",
-                "line": 2021,
+                "line": 2025,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100749,7 +100749,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The joint ID.",
-                "line": 2036,
+                "line": 2040,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100790,7 +100790,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The joint ID.",
-                "line": 2052,
+                "line": 2056,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100831,7 +100831,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The joint ID.",
-                "line": 2068,
+                "line": 2072,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100872,7 +100872,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The joint ID.",
-                "line": 2084,
+                "line": 2088,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100888,7 +100888,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Joint count.",
-                "line": 2096,
+                "line": 2100,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100904,7 +100904,7 @@
                 "typed_params": [],
                 "inferred_return": "integer[]",
                 "return_description": "Joint ID numbers.",
-                "line": 2102,
+                "line": 2106,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100927,7 +100927,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Body A ID.",
-                "line": 2110,
+                "line": 2114,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100950,7 +100950,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2119,
+                "line": 2123,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100973,7 +100973,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "The joint type name.",
-                "line": 2127,
+                "line": 2131,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101002,7 +101002,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2134,
+                "line": 2138,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101025,7 +101025,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Motor speed value.",
-                "line": 2152,
+                "line": 2156,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101054,7 +101054,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2159,
+                "line": 2163,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101089,7 +101089,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2178,
+                "line": 2182,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101112,7 +101112,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Lower limit.",
-                "line": 2197,
+                "line": 2201,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101147,7 +101147,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2205,
+                "line": 2209,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101194,7 +101194,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Hit info {bodyId, x, y, normalX, normalY, toi} or nil if no hit.",
-                "line": 2233,
+                "line": 2237,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101247,7 +101247,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Hit info {bodyId, x, y, normalX, normalY, toi} or nil if no hit.",
-                "line": 2260,
+                "line": 2264,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101300,7 +101300,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of hit tables {bodyId, x, y, normalX, normalY, toi}.",
-                "line": 2292,
+                "line": 2296,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101347,7 +101347,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Body ID numbers found in the region.",
-                "line": 2318,
+                "line": 2322,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101382,7 +101382,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Body ID at the point, or nil.",
-                "line": 2333,
+                "line": 2337,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101441,7 +101441,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Hit info {bodyId, x, y, normalX, normalY, toi, safeFraction} or nil if no hit.",
-                "line": 2350,
+                "line": 2354,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101494,7 +101494,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Trace table {hits, segments, reachedMaxRange}.",
-                "line": 2381,
+                "line": 2385,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101547,7 +101547,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Hit info {bodyId, x, y, normalX, normalY, distance, segmentIndex} or nil if no hit.",
-                "line": 2412,
+                "line": 2416,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101600,7 +101600,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of hit tables {bodyId, x, y, normalX, normalY, distance, segmentIndex}.",
-                "line": 2446,
+                "line": 2450,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101641,7 +101641,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the body velocity was updated, false for inactive bodies, zero-speed bodies, or degenerate normals.",
-                "line": 2487,
+                "line": 2491,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101657,7 +101657,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of collision event tables.",
-                "line": 2501,
+                "line": 2505,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101673,7 +101673,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of {bodyA, bodyB} tables.",
-                "line": 2518,
+                "line": 2522,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101689,7 +101689,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of {bodyA, bodyB} tables.",
-                "line": 2535,
+                "line": 2539,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101705,7 +101705,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of {bodyA, bodyB, normalX, normalY, isTouching} tables.",
-                "line": 2555,
+                "line": 2559,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101728,7 +101728,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of {bodyA, bodyB, normalX, normalY, isTouching} tables.",
-                "line": 2572,
+                "line": 2576,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101757,7 +101757,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2584,
+                "line": 2588,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101780,7 +101780,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Body type: \"static\", \"dynamic\", \"kinematic\", or \"sensor\".",
-                "line": 2593,
+                "line": 2597,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101803,7 +101803,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2599,
+                "line": 2603,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101819,7 +101819,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2605,
+                "line": 2609,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101842,7 +101842,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2612,
+                "line": 2616,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101858,7 +101858,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2618,
+                "line": 2622,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101887,7 +101887,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2626,
+                "line": 2630,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101910,7 +101910,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "The stored value, or nil if none was set.",
-                "line": 2638,
+                "line": 2642,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101933,7 +101933,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2648,
+                "line": 2652,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101962,7 +101962,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2659,
+                "line": 2663,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101985,7 +101985,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if CCD is enabled.",
-                "line": 2667,
+                "line": 2671,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102020,7 +102020,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2675,
+                "line": 2679,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102043,7 +102043,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2685,
+                "line": 2689,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102066,7 +102066,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Normal X, or nil if not a one-way body.",
-                "line": 2694,
+                "line": 2698,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102095,7 +102095,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2704,
+                "line": 2708,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102118,7 +102118,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Break force value.",
-                "line": 2712,
+                "line": 2716,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102141,7 +102141,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the body is sleeping.",
-                "line": 2719,
+                "line": 2723,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102164,7 +102164,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2725,
+                "line": 2729,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102187,7 +102187,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2732,
+                "line": 2736,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102210,7 +102210,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2739,
+                "line": 2743,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102226,7 +102226,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Iteration count.",
-                "line": 2746,
+                "line": 2750,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102249,7 +102249,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2752,
+                "line": 2756,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102265,7 +102265,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "CCD substep count.",
-                "line": 2759,
+                "line": 2763,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102288,7 +102288,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Body ID numbers in creation order.",
-                "line": 2766,
+                "line": 2770,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102323,7 +102323,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Remaining unstepped time to carry into next frame.",
-                "line": 2797,
+                "line": 2801,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102364,7 +102364,7 @@
                 ],
                 "inferred_return": "LZone",
                 "return_description": "The zone handle.",
-                "line": 2814,
+                "line": 2818,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102380,7 +102380,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of {zone_id, body_id, kind} tables where kind is \"enter\" or \"leave\".",
-                "line": 2833,
+                "line": 2837,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102396,7 +102396,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "\"LWorld\".",
-                "line": 2855,
+                "line": 2859,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102419,7 +102419,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the object matches.",
-                "line": 2860,
+                "line": 2864,
                 "file": "src/lua_api/physics_api.rs"
               }
             ]
@@ -102441,7 +102441,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Stable flow field id.",
-                "line": 2876,
+                "line": 2880,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102464,7 +102464,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2880,
+                "line": 2884,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102480,7 +102480,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True when enabled.",
-                "line": 2891,
+                "line": 2895,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102503,7 +102503,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2902,
+                "line": 2906,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102519,7 +102519,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Strength value.",
-                "line": 2916,
+                "line": 2920,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102542,7 +102542,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2927,
+                "line": 2931,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102565,7 +102565,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2949,
+                "line": 2953,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102588,7 +102588,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2973,
+                "line": 2977,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102604,7 +102604,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Layer bitmask.",
-                "line": 2984,
+                "line": 2988,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102627,7 +102627,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2995,
+                "line": 2999,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102650,7 +102650,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3006,
+                "line": 3010,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102666,7 +102666,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3016,
+                "line": 3020,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102682,7 +102682,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "`LFlowStream`.",
-                "line": 3023,
+                "line": 3027,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102705,7 +102705,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True for `LFlowStream` and `LObject`.",
-                "line": 3028,
+                "line": 3032,
                 "file": "src/lua_api/physics_api.rs"
               }
             ]
@@ -102727,7 +102727,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Zone ID.",
-                "line": 3044,
+                "line": 3048,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102750,7 +102750,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3048,
+                "line": 3052,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102773,7 +102773,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3058,
+                "line": 3062,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102796,7 +102796,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3068,
+                "line": 3072,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102831,7 +102831,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3080,
+                "line": 3084,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102860,7 +102860,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3092,
+                "line": 3096,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102895,7 +102895,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3105,
+                "line": 3109,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102930,7 +102930,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3121,
+                "line": 3125,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102946,7 +102946,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3134,
+                "line": 3138,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102969,7 +102969,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3144,
+                "line": 3148,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102985,7 +102985,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True when additive gravity mode is enabled.",
-                "line": 3154,
+                "line": 3158,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103008,7 +103008,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3161,
+                "line": 3165,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103024,7 +103024,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Falloff mode name.",
-                "line": 3172,
+                "line": 3176,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103053,7 +103053,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3182,
+                "line": 3186,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103082,7 +103082,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3197,
+                "line": 3201,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103105,7 +103105,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3211,
+                "line": 3215,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103128,7 +103128,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3222,
+                "line": 3226,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103151,7 +103151,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3236,
+                "line": 3240,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103174,7 +103174,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3247,
+                "line": 3251,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103190,7 +103190,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3257,
+                "line": 3261,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103206,7 +103206,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "\"LZone\".",
-                "line": 3264,
+                "line": 3268,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103229,7 +103229,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the object matches.",
-                "line": 3269,
+                "line": 3273,
                 "file": "src/lua_api/physics_api.rs"
               }
             ]
@@ -103270,7 +103270,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3287,
+                "line": 3291,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103299,7 +103299,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the cell is solid.",
-                "line": 3296,
+                "line": 3300,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103340,7 +103340,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3305,
+                "line": 3309,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103375,7 +103375,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3320,
+                "line": 3324,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103410,7 +103410,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3335,
+                "line": 3339,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103457,7 +103457,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3349,
+                "line": 3353,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103498,7 +103498,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3365,
+                "line": 3369,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103539,7 +103539,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3381,
+                "line": 3385,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103580,7 +103580,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Collapse result table with removedCells, components, bodyIds, and debrisBodies fields.",
-                "line": 3402,
+                "line": 3406,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103603,7 +103603,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3431,
+                "line": 3435,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103626,7 +103626,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Rebuild diagnostics with dirtyChunksRebuilt, dirtyChunksRemaining, bodiesDestroyed, bodiesCreated, and elapsedMicros fields.",
-                "line": 3444,
+                "line": 3448,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103642,7 +103642,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if a flush is needed.",
-                "line": 3454,
+                "line": 3458,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103658,7 +103658,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Number of unsupported single cells removed.",
-                "line": 3460,
+                "line": 3464,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103681,7 +103681,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Collapse result table with removedCells, components, bodyIds, and debrisBodies fields.",
-                "line": 3471,
+                "line": 3475,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103697,7 +103697,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of tables with x and y fields (world-space centers).",
-                "line": 3485,
+                "line": 3489,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103732,7 +103732,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array of body IDs for the spawned debris.",
-                "line": 3502,
+                "line": 3506,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103785,7 +103785,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Raw RGBA pixel bytes.",
-                "line": 3534,
+                "line": 3538,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103801,7 +103801,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Binary terrain data.",
-                "line": 3548,
+                "line": 3552,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103824,7 +103824,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if loading succeeded.",
-                "line": 3555,
+                "line": 3559,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103840,7 +103840,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "\"LTerrain\".",
-                "line": 3564,
+                "line": 3568,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103863,7 +103863,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the object matches.",
-                "line": 3569,
+                "line": 3573,
                 "file": "src/lua_api/physics_api.rs"
               }
             ]
@@ -103910,7 +103910,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3591,
+                "line": 3595,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103939,7 +103939,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Fill amount in `0.0..1.0`.",
-                "line": 3608,
+                "line": 3612,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -103992,7 +103992,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3625,
+                "line": 3629,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104039,7 +104039,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3643,
+                "line": 3647,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104062,7 +104062,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Step diagnostics with `movedAmount`, `activeCells`, and `dirtyChunks`.",
-                "line": 3657,
+                "line": 3661,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104091,7 +104091,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Fill amount in `0.0..1.0`, or zero outside the map or inside solid linked terrain.",
-                "line": 3678,
+                "line": 3682,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104120,7 +104120,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "World-space surface Y, or nil when the sampled column is empty.",
-                "line": 3694,
+                "line": 3698,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104143,7 +104143,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Diagnostics with `affectedBodies` and `submergedBodies`.",
-                "line": 3709,
+                "line": 3713,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104159,7 +104159,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Binary liquid data.",
-                "line": 3728,
+                "line": 3732,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104182,7 +104182,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the data matched this map's dimensions and cell size.",
-                "line": 3735,
+                "line": 3739,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104198,7 +104198,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "\"LLiquidMap\".",
-                "line": 3744,
+                "line": 3748,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104221,7 +104221,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True for `LLiquidMap` and `LObject`.",
-                "line": 3749,
+                "line": 3753,
                 "file": "src/lua_api/physics_api.rs"
               }
             ]
@@ -104243,7 +104243,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Body ID.",
-                "line": 3776,
+                "line": 3780,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104259,7 +104259,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if the body has not been destroyed.",
-                "line": 3780,
+                "line": 3784,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104275,7 +104275,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "X coordinate.",
-                "line": 3787,
+                "line": 3791,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104304,7 +104304,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3798,
+                "line": 3802,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104320,7 +104320,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "X coordinate.",
-                "line": 3805,
+                "line": 3809,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104336,7 +104336,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Y coordinate.",
-                "line": 3812,
+                "line": 3816,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104352,7 +104352,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Velocity X component.",
-                "line": 3820,
+                "line": 3824,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104381,7 +104381,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3831,
+                "line": 3835,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104397,7 +104397,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Angle in radians.",
-                "line": 3838,
+                "line": 3842,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104420,7 +104420,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3844,
+                "line": 3848,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104436,7 +104436,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Angular velocity in radians per second.",
-                "line": 3851,
+                "line": 3855,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104459,7 +104459,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3857,
+                "line": 3861,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104475,7 +104475,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Mass in kilograms.",
-                "line": 3866,
+                "line": 3870,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104498,7 +104498,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3872,
+                "line": 3876,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104521,7 +104521,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3879,
+                "line": 3883,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104537,7 +104537,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Material table with solver-backed and gameplay metadata fields.",
-                "line": 3890,
+                "line": 3894,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104553,7 +104553,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Body type: \"static\", \"dynamic\", \"kinematic\", or \"sensor\".",
-                "line": 3901,
+                "line": 3905,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104576,7 +104576,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3907,
+                "line": 3911,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104592,7 +104592,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Width in world units.",
-                "line": 3915,
+                "line": 3919,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104608,7 +104608,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Height in world units.",
-                "line": 3922,
+                "line": 3926,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104624,7 +104624,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Friction value.",
-                "line": 3929,
+                "line": 3933,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104647,7 +104647,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3936,
+                "line": 3940,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104663,7 +104663,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Restitution (0 = no bounce, 1 = perfectly elastic).",
-                "line": 3945,
+                "line": 3949,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104686,7 +104686,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3952,
+                "line": 3956,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104709,7 +104709,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3961,
+                "line": 3965,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104725,7 +104725,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True when beam reflection is enabled for this body.",
-                "line": 3968,
+                "line": 3972,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104748,7 +104748,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3974,
+                "line": 3978,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104764,7 +104764,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Beam reflection multiplier in the range 0..1.",
-                "line": 3984,
+                "line": 3988,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104787,7 +104787,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3990,
+                "line": 3994,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104803,7 +104803,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Projectile reflection multiplier in the range 0..1.",
-                "line": 4000,
+                "line": 4004,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104819,7 +104819,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Layer bitmask.",
-                "line": 4009,
+                "line": 4013,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104842,7 +104842,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4016,
+                "line": 4020,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104858,7 +104858,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Mask bitmask.",
-                "line": 4023,
+                "line": 4027,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104881,7 +104881,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4030,
+                "line": 4034,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104897,7 +104897,7 @@
                 "typed_params": [],
                 "inferred_return": "integer?",
                 "return_description": "Collision group index, or nil.",
-                "line": 4037,
+                "line": 4041,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104920,7 +104920,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4043,
+                "line": 4047,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104949,7 +104949,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4055,
+                "line": 4059,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -104978,7 +104978,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4063,
+                "line": 4067,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105001,7 +105001,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4070,
+                "line": 4074,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105042,7 +105042,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4080,
+                "line": 4084,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105065,7 +105065,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4092,
+                "line": 4096,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105081,7 +105081,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Gravity scale.",
-                "line": 4101,
+                "line": 4105,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105104,7 +105104,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4107,
+                "line": 4111,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105127,7 +105127,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4114,
+                "line": 4118,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105150,7 +105150,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4131,
+                "line": 4135,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105173,7 +105173,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4148,
+                "line": 4152,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105196,7 +105196,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4165,
+                "line": 4169,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105212,7 +105212,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if rotation is fixed.",
-                "line": 4182,
+                "line": 4186,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105235,7 +105235,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4188,
+                "line": 4192,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105251,7 +105251,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Damping value.",
-                "line": 4195,
+                "line": 4199,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105274,7 +105274,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4201,
+                "line": 4205,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105290,7 +105290,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Angular damping value.",
-                "line": 4210,
+                "line": 4214,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105313,7 +105313,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4216,
+                "line": 4220,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105329,7 +105329,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if CCD is active.",
-                "line": 4225,
+                "line": 4229,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105352,7 +105352,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4231,
+                "line": 4235,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105368,7 +105368,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if sleeping is allowed.",
-                "line": 4238,
+                "line": 4242,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105391,7 +105391,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4244,
+                "line": 4248,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105407,7 +105407,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4252,
+                "line": 4256,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105423,7 +105423,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if sleeping.",
-                "line": 4259,
+                "line": 4263,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105439,7 +105439,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4264,
+                "line": 4268,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105455,7 +105455,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4270,
+                "line": 4274,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105471,7 +105471,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "\"LBody\".",
-                "line": 4277,
+                "line": 4281,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105494,7 +105494,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the object matches.",
-                "line": 4282,
+                "line": 4286,
                 "file": "src/lua_api/physics_api.rs"
               }
             ]
@@ -105516,7 +105516,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Shape type name.",
-                "line": 4330,
+                "line": 4334,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105532,7 +105532,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Circle radius.",
-                "line": 4343,
+                "line": 4347,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105548,7 +105548,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Minimum X.",
-                "line": 4355,
+                "line": 4359,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105564,7 +105564,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Vertex count.",
-                "line": 4387,
+                "line": 4391,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105580,7 +105580,7 @@
                 "typed_params": [],
                 "inferred_return": "table?",
                 "return_description": "Vertex table, or nil for circles.",
-                "line": 4398,
+                "line": 4402,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105603,7 +105603,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4414,
+                "line": 4418,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105626,7 +105626,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4427,
+                "line": 4431,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105649,7 +105649,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4440,
+                "line": 4444,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105672,7 +105672,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4453,
+                "line": 4457,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105688,7 +105688,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4459,
+                "line": 4463,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105704,7 +105704,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "\"LPhysicsShape\".",
-                "line": 4463,
+                "line": 4467,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -105727,7 +105727,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the object matches.",
-                "line": 4468,
+                "line": 4472,
                 "file": "src/lua_api/physics_api.rs"
               }
             ]
@@ -112181,7 +112181,7 @@
             ],
             "inferred_return": "LRaycaster",
             "return_description": "A new raycaster map instance.",
-            "line": 5401,
+            "line": 6243,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -112210,7 +112210,7 @@
             ],
             "inferred_return": "LRaycaster",
             "return_description": "A new raycaster map instance.",
-            "line": 5419,
+            "line": 6267,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -112233,7 +112233,7 @@
             ],
             "inferred_return": "LMultiLevelGrid",
             "return_description": "Persistent multi-level world handle.",
-            "line": 5436,
+            "line": 6290,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -112292,7 +112292,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Pick result {x, y, level, surface, distance, hit_x, hit_y, u, v, cell_value?, side?, texture?, ray_angle, id?, wall_height?, feature?} or nil. `feature` mirrors the owning wall-feature descriptor and adds `section` for the solid band/panel that was hit.",
-            "line": 5459,
+            "line": 6313,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -112345,7 +112345,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Pick result {x, y, level, surface, distance, hit_x, hit_y, u, v, cell_value?, side?, texture?, ray_angle, id?, wall_height?, feature?} or nil. `feature` mirrors the owning wall-feature descriptor and adds `section` for the solid band/panel that was hit.",
-            "line": 5659,
+            "line": 6520,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -112354,8 +112354,8 @@
             "kind": "function",
             "owner_type": "",
             "description": "Builds a multilevel raycaster scene from a stack of plain Lua level tables.",
-            "full_doc": "Builds a multilevel raycaster scene from a stack of plain Lua level tables.\n@param | params | table | Scene params plus optional active_level.\n@param | levels | table|LMultiLevelGrid | Array of level tables or a persistent LMultiLevelGrid.\n@param | lights | table? | Array of render light tables.\n@param | sprites | table|LSpriteManager? | Array of sprite tables {x, y, texture?, size?, level?, front_texture?, right_texture?, back_texture?, left_texture?, angle?} or an LSpriteManager whose sprites use their own optional level indices and default to active_level.\n@param | wallTextures | table? | Map of cell_value -> texture for wall surfaces.\n@param | models | table? | Array of model instance tables {model, x, y, level?, rotation?, yaw?, z?, scale?}; instances default to `active_level`.\n@return | integer | Total number of quads in the built scene.",
-            "params_doc": "- `params` â€” `table`: Scene params plus optional active_level.\n- `levels` â€” `table|LMultiLevelGrid`: Array of level tables or a persistent LMultiLevelGrid.\n- `lights` â€” `table?`: Array of render light tables.\n- `sprites` â€” `table|LSpriteManager?`: Array of sprite tables {x, y, texture?, size?, level?, front_texture?, right_texture?, back_texture?, left_texture?, angle?} or an LSpriteManager whose sprites use their own optional level indices and default to active_level.\n- `wallTextures` â€” `table?`: Map of cell_value -> texture for wall surfaces.\n- `models` â€” `table?`: Array of model instance tables {model, x, y, level?, rotation?, yaw?, z?, scale?}; instances default to `active_level`.",
+            "full_doc": "Builds a multilevel raycaster scene from a stack of plain Lua level tables.\n@param | params | table | Scene params plus optional `active_level`, `time_seconds`, `background`, and `overlays`.\n@param | levels | table|LMultiLevelGrid | Array of level tables or a persistent LMultiLevelGrid.\n@param | lights | table? | Array of render light tables.\n@param | sprites | table|LSpriteManager? | Array of sprite tables {x, y, texture?, size?, level?, front_texture?, right_texture?, back_texture?, left_texture?, angle?} or an LSpriteManager whose sprites use their own optional level indices and default to active_level.\n@param | wallTextures | table? | Map of cell_value -> texture for wall surfaces.\n@param | models | table? | Array of model instance tables {model, x, y, level?, rotation?, yaw?, z?, scale?}; instances default to `active_level`.\n@return | integer | Total number of quads in the built scene.",
+            "params_doc": "- `params` â€” `table`: Scene params plus optional `active_level`, `time_seconds`, `background`, and `overlays`.\n- `levels` â€” `table|LMultiLevelGrid`: Array of level tables or a persistent LMultiLevelGrid.\n- `lights` â€” `table?`: Array of render light tables.\n- `sprites` â€” `table|LSpriteManager?`: Array of sprite tables {x, y, texture?, size?, level?, front_texture?, right_texture?, back_texture?, left_texture?, angle?} or an LSpriteManager whose sprites use their own optional level indices and default to active_level.\n- `wallTextures` â€” `table?`: Map of cell_value -> texture for wall surfaces.\n- `models` â€” `table?`: Array of model instance tables {model, x, y, level?, rotation?, yaw?, z?, scale?}; instances default to `active_level`.",
             "returns_doc": "integer",
             "inferred_sig": "",
             "typed_params": [
@@ -112363,7 +112363,7 @@
                 "params",
                 "table",
                 false,
-                "Scene params plus optional active_level."
+                "Scene params plus optional `active_level`, `time_seconds`, `background`, and `overlays`."
               ],
               [
                 "levels",
@@ -112398,7 +112398,7 @@
             ],
             "inferred_return": "integer",
             "return_description": "Total number of quads in the built scene.",
-            "line": 5852,
+            "line": 6718,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -112451,7 +112451,7 @@
             ],
             "inferred_return": "integer",
             "return_description": "Total number of quads in the built scene.",
-            "line": 6004,
+            "line": 6879,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -112492,7 +112492,7 @@
             ],
             "inferred_return": "integer",
             "return_description": "Total number of quads in the built scene.",
-            "line": 6169,
+            "line": 7051,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -112508,7 +112508,7 @@
             "typed_params": [],
             "inferred_return": "table",
             "return_description": "Nil if no raycaster scene has been built yet; otherwise a stats table.",
-            "line": 6306,
+            "line": 7195,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -112531,7 +112531,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 6328,
+            "line": 7217,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -112547,7 +112547,7 @@
             "typed_params": [],
             "inferred_return": "LShader?",
             "return_description": "Bound shader handle, or nil.",
-            "line": 6353,
+            "line": 7242,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -112556,7 +112556,7 @@
             "kind": "function",
             "owner_type": "",
             "description": "Rasterizes the most recently built raycaster scene to raw image data.",
-            "full_doc": "Rasterizes the most recently built raycaster scene to raw image data.\nThis captures the prepared floor, ceiling, wall, sprite, model, and lighting quads produced by `buildScene`, `buildMultiLevelScene`, `buildMultiLevelSceneFromField`, or their adapter variants.\n@param | width | integer | Output image width in pixels.\n@param | height | integer | Output image height in pixels.\n@return | LImageData | Rasterized image data for the last built scene.",
+            "full_doc": "Rasterizes the most recently built raycaster scene to raw image data.\nThis captures the prepared floor, ceiling, wall, sprite, model, and lighting quads produced by `buildScene`, `buildMultiLevelScene`, `buildMultiLevelSceneFromField`, or their adapter variants.\nGPU WGSL shaders are not executed in this CPU fallback path: shader backgrounds, fullscreen overlays, surface materials, and particle shaders are approximated with their bound textures, tint, UV animation, depth fog, and projected particle placement.\n@param | width | integer | Output image width in pixels.\n@param | height | integer | Output image height in pixels.\n@return | LImageData | Rasterized image data for the last built scene.",
             "params_doc": "- `width` â€” `integer`: Output image width in pixels.\n- `height` â€” `integer`: Output image height in pixels.",
             "returns_doc": "LImageData",
             "inferred_sig": "(width, height)",
@@ -112576,7 +112576,7 @@
             ],
             "inferred_return": "LImageData",
             "return_description": "Rasterized image data for the last built scene.",
-            "line": 6372,
+            "line": 7262,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -112611,7 +112611,7 @@
             ],
             "inferred_return": "number",
             "return_description": "Projected column height in pixels.",
-            "line": 6397,
+            "line": 7287,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -112640,7 +112640,7 @@
             ],
             "inferred_return": "number",
             "return_description": "Shade factor (1.0 at distance 0, approaching 0.0 at maxDistance).",
-            "line": 6408,
+            "line": 7298,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -112681,7 +112681,7 @@
             ],
             "inferred_return": "number",
             "return_description": "Shaded red channel.",
-            "line": 6423,
+            "line": 7313,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -112697,7 +112697,7 @@
             "typed_params": [],
             "inferred_return": "LDoorManager",
             "return_description": "A new empty door manager.",
-            "line": 6433,
+            "line": 7323,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -112726,7 +112726,7 @@
             ],
             "inferred_return": "LHeightMap",
             "return_description": "A new height map initialized to zero.",
-            "line": 6446,
+            "line": 7336,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -112742,7 +112742,7 @@
             "typed_params": [],
             "inferred_return": "LSpriteManager",
             "return_description": "A new empty sprite manager.",
-            "line": 6457,
+            "line": 7347,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -112758,7 +112758,7 @@
             "typed_params": [],
             "inferred_return": "LSceneAdapter",
             "return_description": "A new empty scene adapter.",
-            "line": 6470,
+            "line": 7360,
             "file": "src/lua_api/raycaster_api.rs"
           }
         ],
@@ -112805,7 +112805,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Zero-based index of the newly added door.",
-                "line": 2090,
+                "line": 2348,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -112828,7 +112828,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2103,
+                "line": 2361,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -112851,7 +112851,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2110,
+                "line": 2368,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -112874,7 +112874,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2117,
+                "line": 2375,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -112897,7 +112897,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Door info table, or nil if not found.",
-                "line": 2130,
+                "line": 2388,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -112913,7 +112913,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Door count.",
-                "line": 2156,
+                "line": 2414,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -112929,7 +112929,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always \"LDoorManager\".",
-                "line": 2160,
+                "line": 2418,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -112952,7 +112952,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the name matches this userdata type.",
-                "line": 2165,
+                "line": 2423,
                 "file": "src/lua_api/raycaster_api.rs"
               }
             ]
@@ -112993,7 +112993,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2181,
+                "line": 2439,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113028,7 +113028,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2190,
+                "line": 2448,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113057,7 +113057,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Floor height offset at that cell.",
-                "line": 2199,
+                "line": 2457,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113086,7 +113086,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Ceiling height offset at that cell.",
-                "line": 2207,
+                "line": 2465,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113102,7 +113102,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always \"LHeightMap\".",
-                "line": 2213,
+                "line": 2471,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113125,7 +113125,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the name matches this userdata type.",
-                "line": 2218,
+                "line": 2476,
                 "file": "src/lua_api/raycaster_api.rs"
               }
             ]
@@ -113166,7 +113166,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2248,
+                "line": 2830,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113195,7 +113195,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Cell value (0 = empty, 1+ = wall type).",
-                "line": 2257,
+                "line": 2839,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113230,7 +113230,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2265,
+                "line": 2847,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113259,7 +113259,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2281,
+                "line": 2863,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113288,7 +113288,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2298,
+                "line": 2880,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113317,7 +113317,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Feature table {kind, alpha, ...} or nil.",
-                "line": 2314,
+                "line": 2896,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113340,7 +113340,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2358,
+                "line": 2940,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113369,7 +113369,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the cell blocks render rays.",
-                "line": 2370,
+                "line": 2952,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113385,7 +113385,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Map width.",
-                "line": 2376,
+                "line": 2958,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113401,7 +113401,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Map height.",
-                "line": 2380,
+                "line": 2962,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113436,7 +113436,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2386,
+                "line": 2968,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113465,7 +113465,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Raw texture id or nil.",
-                "line": 2405,
+                "line": 2987,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113500,7 +113500,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2413,
+                "line": 2995,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113529,7 +113529,226 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Raw texture id or nil.",
-                "line": 2432,
+                "line": 3014,
+                "file": "src/lua_api/raycaster_api.rs"
+              },
+              {
+                "name": "setWallMaterial",
+                "lua_name": "LRaycaster:setWallMaterial",
+                "kind": "method",
+                "owner_type": "LRaycaster",
+                "description": "Assigns a render material override to a wall tile type. Pass nil to clear.",
+                "full_doc": "Assigns a render material override to a wall tile type. Pass nil to clear.\n@param | cellValue | integer | Wall tile value to style.\n@param | material | table? | Material table with optional texture, shader, tint, blend, uv_scroll, uv_scale, uv_offset, frame_count, frame_rate, and frame_layout.",
+                "params_doc": "- `cellValue` â€” `integer`: Wall tile value to style.\n- `material` â€” `table?`: Material table with optional texture, shader, tint, blend, uv_scroll, uv_scale, uv_offset, frame_count, frame_rate, and frame_layout.",
+                "returns_doc": "",
+                "inferred_sig": "(cell_value, material)",
+                "typed_params": [
+                  [
+                    "cellValue",
+                    "integer",
+                    false,
+                    "Wall tile value to style."
+                  ],
+                  [
+                    "material",
+                    "table?",
+                    true,
+                    "Material table with optional texture, shader, tint, blend, uv_scroll, uv_scale, uv_offset, frame_count, frame_rate, and frame_layout."
+                  ]
+                ],
+                "inferred_return": "",
+                "return_description": "",
+                "line": 3021,
+                "file": "src/lua_api/raycaster_api.rs"
+              },
+              {
+                "name": "getWallMaterial",
+                "lua_name": "LRaycaster:getWallMaterial",
+                "kind": "method",
+                "owner_type": "LRaycaster",
+                "description": "Returns the material override for a wall tile type, or nil when none is set.",
+                "full_doc": "Returns the material override for a wall tile type, or nil when none is set.\n@param | cellValue | integer | Wall tile value to query.\n@return | table? | Material table or nil.",
+                "params_doc": "- `cellValue` â€” `integer`: Wall tile value to query.",
+                "returns_doc": "table?",
+                "inferred_sig": "(cell_value)",
+                "typed_params": [
+                  [
+                    "cellValue",
+                    "integer",
+                    false,
+                    "Wall tile value to query."
+                  ]
+                ],
+                "inferred_return": "table?",
+                "return_description": "Material table or nil.",
+                "line": 3056,
+                "file": "src/lua_api/raycaster_api.rs"
+              },
+              {
+                "name": "setFloorMaterialCell",
+                "lua_name": "LRaycaster:setFloorMaterialCell",
+                "kind": "method",
+                "owner_type": "LRaycaster",
+                "description": "Assigns a render material override to one floor cell. Pass nil to clear.",
+                "full_doc": "Assigns a render material override to one floor cell. Pass nil to clear.\n@param | x | integer | Grid column.\n@param | y | integer | Grid row.\n@param | material | table? | Material table with optional texture, shader, tint, blend, uv_scroll, uv_scale, uv_offset, frame_count, frame_rate, and frame_layout.",
+                "params_doc": "- `x` â€” `integer`: Grid column.\n- `y` â€” `integer`: Grid row.\n- `material` â€” `table?`: Material table with optional texture, shader, tint, blend, uv_scroll, uv_scale, uv_offset, frame_count, frame_rate, and frame_layout.",
+                "returns_doc": "",
+                "inferred_sig": "(x, y, material)",
+                "typed_params": [
+                  [
+                    "x",
+                    "integer",
+                    false,
+                    "Grid column."
+                  ],
+                  [
+                    "y",
+                    "integer",
+                    false,
+                    "Grid row."
+                  ],
+                  [
+                    "material",
+                    "table?",
+                    true,
+                    "Material table with optional texture, shader, tint, blend, uv_scroll, uv_scale, uv_offset, frame_count, frame_rate, and frame_layout."
+                  ]
+                ],
+                "inferred_return": "",
+                "return_description": "",
+                "line": 3067,
+                "file": "src/lua_api/raycaster_api.rs"
+              },
+              {
+                "name": "getFloorMaterialCell",
+                "lua_name": "LRaycaster:getFloorMaterialCell",
+                "kind": "method",
+                "owner_type": "LRaycaster",
+                "description": "Returns the floor material override for one cell, or nil when none is set.",
+                "full_doc": "Returns the floor material override for one cell, or nil when none is set.\n@param | x | integer | Grid column.\n@param | y | integer | Grid row.\n@return | table? | Material table or nil.",
+                "params_doc": "- `x` â€” `integer`: Grid column.\n- `y` â€” `integer`: Grid row.",
+                "returns_doc": "table?",
+                "inferred_sig": "(x, y)",
+                "typed_params": [
+                  [
+                    "x",
+                    "integer",
+                    false,
+                    "Grid column."
+                  ],
+                  [
+                    "y",
+                    "integer",
+                    false,
+                    "Grid row."
+                  ]
+                ],
+                "inferred_return": "table?",
+                "return_description": "Material table or nil.",
+                "line": 3103,
+                "file": "src/lua_api/raycaster_api.rs"
+              },
+              {
+                "name": "setCeilingMaterialCell",
+                "lua_name": "LRaycaster:setCeilingMaterialCell",
+                "kind": "method",
+                "owner_type": "LRaycaster",
+                "description": "Assigns a render material override to one ceiling cell. Pass nil to clear.",
+                "full_doc": "Assigns a render material override to one ceiling cell. Pass nil to clear.\n@param | x | integer | Grid column.\n@param | y | integer | Grid row.\n@param | material | table? | Material table with optional texture, shader, tint, blend, uv_scroll, uv_scale, uv_offset, frame_count, frame_rate, and frame_layout.",
+                "params_doc": "- `x` â€” `integer`: Grid column.\n- `y` â€” `integer`: Grid row.\n- `material` â€” `table?`: Material table with optional texture, shader, tint, blend, uv_scroll, uv_scale, uv_offset, frame_count, frame_rate, and frame_layout.",
+                "returns_doc": "",
+                "inferred_sig": "(x, y, material)",
+                "typed_params": [
+                  [
+                    "x",
+                    "integer",
+                    false,
+                    "Grid column."
+                  ],
+                  [
+                    "y",
+                    "integer",
+                    false,
+                    "Grid row."
+                  ],
+                  [
+                    "material",
+                    "table?",
+                    true,
+                    "Material table with optional texture, shader, tint, blend, uv_scroll, uv_scale, uv_offset, frame_count, frame_rate, and frame_layout."
+                  ]
+                ],
+                "inferred_return": "",
+                "return_description": "",
+                "line": 3115,
+                "file": "src/lua_api/raycaster_api.rs"
+              },
+              {
+                "name": "getCeilingMaterialCell",
+                "lua_name": "LRaycaster:getCeilingMaterialCell",
+                "kind": "method",
+                "owner_type": "LRaycaster",
+                "description": "Returns the ceiling material override for one cell, or nil when none is set.",
+                "full_doc": "Returns the ceiling material override for one cell, or nil when none is set.\n@param | x | integer | Grid column.\n@param | y | integer | Grid row.\n@return | table? | Material table or nil.",
+                "params_doc": "- `x` â€” `integer`: Grid column.\n- `y` â€” `integer`: Grid row.",
+                "returns_doc": "table?",
+                "inferred_sig": "(x, y)",
+                "typed_params": [
+                  [
+                    "x",
+                    "integer",
+                    false,
+                    "Grid column."
+                  ],
+                  [
+                    "y",
+                    "integer",
+                    false,
+                    "Grid row."
+                  ]
+                ],
+                "inferred_return": "table?",
+                "return_description": "Material table or nil.",
+                "line": 3151,
+                "file": "src/lua_api/raycaster_api.rs"
+              },
+              {
+                "name": "addParticleEmitter",
+                "lua_name": "LRaycaster:addParticleEmitter",
+                "kind": "method",
+                "owner_type": "LRaycaster",
+                "description": "Adds a projected raycaster particle emitter that spawns during scene builds.",
+                "full_doc": "Adds a projected raycaster particle emitter that spawns during scene builds.\n@param | emitter | table | Emitter table with x, y, optional z, rate, lifetime, lifetime_range, size, size_range, radius, height, velocity_x/y, jitter_x/y, color, shape, texture, shader, blend, occlude_walls, and seed.",
+                "params_doc": "- `emitter` â€” `table`: Emitter table with x, y, optional z, rate, lifetime, lifetime_range, size, size_range, radius, height, velocity_x/y, jitter_x/y, color, shape, texture, shader, blend, occlude_walls, and seed.",
+                "returns_doc": "",
+                "inferred_sig": "(emitter)",
+                "typed_params": [
+                  [
+                    "emitter",
+                    "table",
+                    false,
+                    "Emitter table with x, y, optional z, rate, lifetime, lifetime_range, size, size_range, radius, height, velocity_x/y, jitter_x/y, color, shape, texture, shader, blend, occlude_walls, and seed."
+                  ]
+                ],
+                "inferred_return": "",
+                "return_description": "",
+                "line": 3161,
+                "file": "src/lua_api/raycaster_api.rs"
+              },
+              {
+                "name": "clearParticleEmitters",
+                "lua_name": "LRaycaster:clearParticleEmitters",
+                "kind": "method",
+                "owner_type": "LRaycaster",
+                "description": "Removes all projected particle emitters from this map.",
+                "full_doc": "Removes all projected particle emitters from this map.",
+                "params_doc": "",
+                "returns_doc": "",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "",
+                "return_description": "",
+                "line": 3177,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113564,7 +113783,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2441,
+                "line": 3187,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113593,7 +113812,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Table {texture, depth, r, g, b, blocked} or nil.",
-                "line": 2508,
+                "line": 3254,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113634,7 +113853,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Hit table {distance, raw_distance, cell_value, alpha, side, tex_u, hit_x, hit_y, hit} or nil.",
-                "line": 2544,
+                "line": 3290,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113687,7 +113906,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of hit tables (same fields as castRay).",
-                "line": 2572,
+                "line": 3318,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113740,7 +113959,7 @@
                 ],
                 "inferred_return": "number[]",
                 "return_description": "Flat array of corrected distance values.",
-                "line": 2593,
+                "line": 3339,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113769,7 +113988,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2606,
+                "line": 3352,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113792,7 +114011,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Alpha value (0.0..1.0).",
-                "line": 2614,
+                "line": 3360,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113839,7 +114058,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of hit tables in distance order.",
-                "line": 2634,
+                "line": 3380,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113898,7 +114117,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of {u, v} tables for each pixel in the row.",
-                "line": 2659,
+                "line": 3405,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113957,7 +114176,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Projection info {screen_x, scale, distance, visible}.",
-                "line": 2701,
+                "line": 3447,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113998,7 +114217,7 @@
                 ],
                 "inferred_return": "LImageData",
                 "return_description": "Raw image data.",
-                "line": 2726,
+                "line": 3472,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114057,7 +114276,7 @@
                 ],
                 "inferred_return": "LImageData",
                 "return_description": "Raw image data.",
-                "line": 2743,
+                "line": 3489,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114122,7 +114341,7 @@
                 ],
                 "inferred_return": "LImageData",
                 "return_description": "Raw depth-map image data.",
-                "line": 2763,
+                "line": 3509,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114181,7 +114400,7 @@
                 ],
                 "inferred_return": "LImageData",
                 "return_description": "Raw image data for all frames.",
-                "line": 2793,
+                "line": 3539,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114228,7 +114447,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Pick result {x, y, level, surface, distance, hit_x, hit_y, u, v, cell_value?, side?, texture?, ray_angle, id?, wall_height?, feature?} or nil. `feature` mirrors `getWallFeatureCell()` and adds `section` for the solid band/panel that was hit.",
-                "line": 2822,
+                "line": 3568,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114269,7 +114488,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Pick result or nil when nothing was hit. Wall hits may also include `wall_height` plus `feature = {kind, section, ...}` for half walls, windows, and doors.",
-                "line": 2979,
+                "line": 3733,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114278,8 +114497,8 @@
                 "kind": "method",
                 "owner_type": "LRaycaster",
                 "description": "Builds a complete textured raycaster scene for GPU rendering. Stores the output internally.",
-                "full_doc": "Builds a complete textured raycaster scene for GPU rendering. Stores the output internally.\nfor the renderer to consume on the next frame. Returns the number of quads generated.\n@param | params | table | Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b?, camera_height?, horizon_offset?}.\n@param | lights | table? | Array of render light tables {x, y, radius, r?, g?, b?, color?, intensity?, level?}.\n@param | sprites | table|LSpriteManager? | Array of sprite tables {x, y, texture?, size?, front_texture?, right_texture?, back_texture?, left_texture?, angle?} or an LSpriteManager with integer/LImage textures.\n@param | wallTextures | table? | Map of cell_value -> texture for wall surfaces.\n@return | integer | Total number of quads in the built scene.",
-                "params_doc": "- `params` â€” `table`: Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b?, camera_height?, horizon_offset?}.\n- `lights` â€” `table?`: Array of render light tables {x, y, radius, r?, g?, b?, color?, intensity?, level?}.\n- `sprites` â€” `table|LSpriteManager?`: Array of sprite tables {x, y, texture?, size?, front_texture?, right_texture?, back_texture?, left_texture?, angle?} or an LSpriteManager with integer/LImage textures.\n- `wallTextures` â€” `table?`: Map of cell_value -> texture for wall surfaces.",
+                "full_doc": "Builds a complete textured raycaster scene for GPU rendering. Stores the output internally.\nfor the renderer to consume on the next frame. Returns the number of quads generated.\nStored wall, floor, ceiling, and particle-emitter overrides from this map are included automatically.\n@param | params | table | Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b?, camera_height?, horizon_offset?, time_seconds?, background?, overlays?}. `background` accepts solid, gradient, skybox, or shader descriptors. `overlays` accepts fog, depth fog, snow, or shader descriptors.\n@param | lights | table? | Array of render light tables {x, y, radius, r?, g?, b?, color?, intensity?, level?}.\n@param | sprites | table|LSpriteManager? | Array of sprite tables {x, y, texture?, size?, front_texture?, right_texture?, back_texture?, left_texture?, angle?} or an LSpriteManager with integer/LImage textures.\n@param | wallTextures | table? | Map of cell_value -> texture for wall surfaces.\n@return | integer | Total number of quads in the built scene.",
+                "params_doc": "- `params` â€” `table`: Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b?, camera_height?, horizon_offset?, time_seconds?, background?, overlays?}. `background` accepts solid, gradient, skybox, or shader descriptors. `overlays` accepts fog, depth fog, snow, or shader descriptors.\n- `lights` â€” `table?`: Array of render light tables {x, y, radius, r?, g?, b?, color?, intensity?, level?}.\n- `sprites` â€” `table|LSpriteManager?`: Array of sprite tables {x, y, texture?, size?, front_texture?, right_texture?, back_texture?, left_texture?, angle?} or an LSpriteManager with integer/LImage textures.\n- `wallTextures` â€” `table?`: Map of cell_value -> texture for wall surfaces.",
                 "returns_doc": "integer",
                 "inferred_sig": "",
                 "typed_params": [
@@ -114287,7 +114506,7 @@
                     "params",
                     "table",
                     false,
-                    "Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b?, camera_height?, horizon_offset?}."
+                    "Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b?, camera_height?, horizon_offset?, time_seconds?, background?, overlays?}. `background` accepts solid, gradient, skybox, or shader descriptors. `overlays` accepts fog, depth fog, snow, or shader descriptors."
                   ],
                   [
                     "lights",
@@ -114310,7 +114529,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Total number of quads in the built scene.",
-                "line": 3120,
+                "line": 3882,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114345,7 +114564,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Total number of quads in the built scene.",
-                "line": 3165,
+                "line": 3948,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114392,7 +114611,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Total number of quads in the built scene.",
-                "line": 3264,
+                "line": 4062,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114408,7 +114627,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Type name string.",
-                "line": 3358,
+                "line": 4176,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114431,7 +114650,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if this object is of the given type.",
-                "line": 3363,
+                "line": 4181,
                 "file": "src/lua_api/raycaster_api.rs"
               }
             ]
@@ -114472,7 +114691,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3382,
+                "line": 4200,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114501,7 +114720,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Cell value (0 = empty, 1+ = wall type).",
-                "line": 3394,
+                "line": 4212,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114536,7 +114755,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3404,
+                "line": 4222,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114565,7 +114784,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3424,
+                "line": 4242,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114594,7 +114813,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Feature table {kind, alpha, ...} or nil.",
-                "line": 3445,
+                "line": 4263,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114617,7 +114836,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3459,
+                "line": 4277,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114633,7 +114852,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Raw texture id or nil.",
-                "line": 3475,
+                "line": 4293,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114668,7 +114887,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3486,
+                "line": 4304,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114697,7 +114916,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Raw texture id or nil.",
-                "line": 3509,
+                "line": 4327,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114720,7 +114939,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3526,
+                "line": 4344,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114736,7 +114955,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Raw texture id or nil.",
-                "line": 3542,
+                "line": 4360,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114771,7 +114990,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3555,
+                "line": 4373,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114800,7 +115019,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Raw texture id or nil.",
-                "line": 3578,
+                "line": 4396,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114835,7 +115054,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3598,
+                "line": 4416,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114864,7 +115083,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Table {texture, depth, r, g, b, blocked} or nil.",
-                "line": 3659,
+                "line": 4477,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114899,7 +115118,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3682,
+                "line": 4500,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114928,7 +115147,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the floor is open at this cell.",
-                "line": 3696,
+                "line": 4514,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114963,7 +115182,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3707,
+                "line": 4525,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114992,7 +115211,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the ceiling is open at this cell.",
-                "line": 3724,
+                "line": 4542,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115015,7 +115234,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Zero-based level index of the appended level.",
-                "line": 3734,
+                "line": 4552,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115031,7 +115250,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Level count.",
-                "line": 3747,
+                "line": 4565,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115047,7 +115266,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Active level index.",
-                "line": 3753,
+                "line": 4571,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115063,7 +115282,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Active-level floor offset.",
-                "line": 3759,
+                "line": 4577,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115086,7 +115305,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3769,
+                "line": 4587,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115102,7 +115321,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Active-level ceiling height.",
-                "line": 3784,
+                "line": 4602,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115125,7 +115344,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3794,
+                "line": 4612,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115148,7 +115367,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3806,
+                "line": 4624,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115157,8 +115376,8 @@
                 "kind": "method",
                 "owner_type": "LMultiLevelGrid",
                 "description": "Builds a textured multilevel raycaster scene from this persistent world and stores it for rendering.",
-                "full_doc": "Builds a textured multilevel raycaster scene from this persistent world and stores it for rendering.\n@param | params | table | Scene params for the current camera.\n@param | lights | table? | Array of render light tables.\n@param | sprites | table|LSpriteManager? | Array of level sprite tables or an LSpriteManager.\n@param | wallTextures | table? | Map of cell_value -> texture for wall surfaces.\n@return | integer | Total number of quads in the built scene.",
-                "params_doc": "- `params` â€” `table`: Scene params for the current camera.\n- `lights` â€” `table?`: Array of render light tables.\n- `sprites` â€” `table|LSpriteManager?`: Array of level sprite tables or an LSpriteManager.\n- `wallTextures` â€” `table?`: Map of cell_value -> texture for wall surfaces.",
+                "full_doc": "Builds a textured multilevel raycaster scene from this persistent world and stores it for rendering.\n@param | params | table | Scene params for the current camera, including optional `time_seconds`, `background`, and `overlays` descriptors.\n@param | lights | table? | Array of render light tables.\n@param | sprites | table|LSpriteManager? | Array of level sprite tables or an LSpriteManager.\n@param | wallTextures | table? | Map of cell_value -> texture for wall surfaces.\n@return | integer | Total number of quads in the built scene.",
+                "params_doc": "- `params` â€” `table`: Scene params for the current camera, including optional `time_seconds`, `background`, and `overlays` descriptors.\n- `lights` â€” `table?`: Array of render light tables.\n- `sprites` â€” `table|LSpriteManager?`: Array of level sprite tables or an LSpriteManager.\n- `wallTextures` â€” `table?`: Map of cell_value -> texture for wall surfaces.",
                 "returns_doc": "integer",
                 "inferred_sig": "",
                 "typed_params": [
@@ -115166,7 +115385,7 @@
                     "params",
                     "table",
                     false,
-                    "Scene params for the current camera."
+                    "Scene params for the current camera, including optional `time_seconds`, `background`, and `overlays` descriptors."
                   ],
                   [
                     "lights",
@@ -115189,7 +115408,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Total number of quads in the built scene.",
-                "line": 3824,
+                "line": 4642,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115224,7 +115443,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Total number of quads in the built scene.",
-                "line": 3871,
+                "line": 4696,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115277,7 +115496,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Pick result {x, y, level, surface, distance, hit_x, hit_y, u, v, cell_value?, side?, texture?, ray_angle, id?, wall_height?, feature?} or nil. `feature` mirrors `getWallFeatureCell()` and adds `section` for the solid band/panel that was hit.",
-                "line": 3993,
+                "line": 4825,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115324,7 +115543,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Pick result or nil when nothing was hit. Wall hits may also include `wall_height` plus `feature = {kind, section, ...}` for half walls, windows, and doors.",
-                "line": 4186,
+                "line": 5023,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115340,7 +115559,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Type name string.",
-                "line": 4362,
+                "line": 5204,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115363,7 +115582,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if this object is of the given type.",
-                "line": 4367,
+                "line": 5209,
                 "file": "src/lua_api/raycaster_api.rs"
               }
             ]
@@ -115410,7 +115629,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4625,
+                "line": 5467,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115469,7 +115688,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4669,
+                "line": 5511,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115504,7 +115723,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4743,
+                "line": 5585,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115557,7 +115776,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4786,
+                "line": 5628,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115598,7 +115817,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4862,
+                "line": 5704,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115633,7 +115852,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4892,
+                "line": 5734,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115674,7 +115893,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4929,
+                "line": 5771,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115709,7 +115928,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4976,
+                "line": 5818,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115725,7 +115944,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Snapshot table for build/pick calls.",
-                "line": 5020,
+                "line": 5862,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115741,7 +115960,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5023,
+                "line": 5865,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115757,7 +115976,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5029,
+                "line": 5871,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115773,7 +115992,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5035,
+                "line": 5877,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115789,7 +116008,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5042,
+                "line": 5884,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115805,7 +116024,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always \"LSceneAdapter\".",
-                "line": 5049,
+                "line": 5891,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115828,7 +116047,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the name matches this userdata type.",
-                "line": 5054,
+                "line": 5896,
                 "file": "src/lua_api/raycaster_api.rs"
               }
             ]
@@ -115881,7 +116100,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Unique sprite id for later manipulation.",
-                "line": 5070,
+                "line": 5912,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115952,7 +116171,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Unique sprite id for later manipulation.",
-                "line": 5111,
+                "line": 5953,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115975,7 +116194,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5166,
+                "line": 6008,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116010,7 +116229,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5176,
+                "line": 6018,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116039,7 +116258,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5184,
+                "line": 6026,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116068,7 +116287,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5194,
+                "line": 6036,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116121,7 +116340,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5206,
+                "line": 6048,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116150,7 +116369,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5271,
+                "line": 6113,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116166,7 +116385,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5277,
+                "line": 6119,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116201,7 +116420,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array of {id, x, y, level?, texture?, texture_id?, scale, distance, variant?, facing_angle?} sorted back-to-front.",
-                "line": 5288,
+                "line": 6130,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116217,7 +116436,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Type name string.",
-                "line": 5381,
+                "line": 6223,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116240,7 +116459,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if this object is of the given type.",
-                "line": 5386,
+                "line": 6228,
                 "file": "src/lua_api/raycaster_api.rs"
               }
             ]
@@ -154705,7 +154924,7 @@
             ],
             "inferred_return": "LValidationEngine",
             "return_description": "A new validation engine instance.",
-            "line": 237,
+            "line": 234,
             "file": "src/lua_api/validator_api.rs"
           },
           {
@@ -154734,7 +154953,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Table with fields: errors (table), warnings (table), passed (boolean).",
-            "line": 252,
+            "line": 249,
             "file": "src/lua_api/validator_api.rs"
           },
           {
@@ -154763,7 +154982,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Table with fields: errors (table), warnings (table), passed (boolean).",
-            "line": 271,
+            "line": 268,
             "file": "src/lua_api/validator_api.rs"
           }
         ],
@@ -154792,7 +155011,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 76,
+                "line": 73,
                 "file": "src/lua_api/validator_api.rs"
               },
               {
@@ -154815,7 +155034,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 86,
+                "line": 83,
                 "file": "src/lua_api/validator_api.rs"
               },
               {
@@ -154838,7 +155057,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 95,
+                "line": 92,
                 "file": "src/lua_api/validator_api.rs"
               },
               {
@@ -154879,7 +155098,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 109,
+                "line": 106,
                 "file": "src/lua_api/validator_api.rs"
               },
               {
@@ -154914,7 +155133,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 124,
+                "line": 121,
                 "file": "src/lua_api/validator_api.rs"
               },
               {
@@ -154937,7 +155156,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 137,
+                "line": 134,
                 "file": "src/lua_api/validator_api.rs"
               },
               {
@@ -154953,7 +155172,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Report with violations, files_checked, duration_ms, error_count, warning_count.",
-                "line": 147,
+                "line": 144,
                 "file": "src/lua_api/validator_api.rs"
               },
               {
@@ -154976,7 +155195,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Report.",
-                "line": 156,
+                "line": 153,
                 "file": "src/lua_api/validator_api.rs"
               },
               {
@@ -154992,7 +155211,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Rule count.",
-                "line": 164,
+                "line": 161,
                 "file": "src/lua_api/validator_api.rs"
               }
             ]

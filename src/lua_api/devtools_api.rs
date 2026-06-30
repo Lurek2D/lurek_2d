@@ -55,8 +55,7 @@ impl DevtoolsShared {
     /// Creates default devtools shared state.
     fn new(log_sinks: Rc<RefCell<SinkRegistry>>) -> Self {
         let history_sink_id = {
-            let mut history_sink =
-                Sink::memory(0, DEVTOOLS_LOG_HISTORY_CAPACITY, SinkLevel::Info);
+            let mut history_sink = Sink::memory(0, DEVTOOLS_LOG_HISTORY_CAPACITY, SinkLevel::Info);
             history_sink.configure_output(
                 "plain",
                 false,
@@ -157,11 +156,10 @@ fn dispatch_devtools_log(shared: &mut DevtoolsShared, level_name: &str, message:
         }
     }
     ensure_devtools_file_sink(shared);
-    shared.log_sinks.borrow().dispatch(
-        sink_level_for_devtools(&level),
-        DEVTOOLS_LOG_TAG,
-        message,
-    );
+    shared
+        .log_sinks
+        .borrow()
+        .dispatch(sink_level_for_devtools(&level), DEVTOOLS_LOG_TAG, message);
 }
 
 fn devtools_history_entries(
@@ -465,7 +463,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "clearLog",
         lua.create_function(move |_, ()| {
             let shared = s.borrow();
-            if let Some(sink) = shared.log_sinks.borrow().get(shared.logging.history_sink_id) {
+            if let Some(sink) = shared
+                .log_sinks
+                .borrow()
+                .get(shared.logging.history_sink_id)
+            {
                 let _ = sink.read_memory(true);
             }
             Ok(())

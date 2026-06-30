@@ -61,6 +61,10 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
   `LCanvas:applyShader(shader, opts?)` and `lurek.render.applyShaderToCanvas(canvas, shader, opts?)` accept `postfx` shaders and queue a render-owned GPU pass that mutates the canvas render target after its queued draws. The postfx contract is reused because canvas passes operate over a source texture; no separate `canvas` shader target exists until canvas-specific semantic inputs are required.
 - Shader ownership:
   Feature modules such as `image`, `effect`, `overlay`, `particle`, `light`, `sprite`, `tilemap`, `province`, `minimap`, `terminal`, `ui`, `parallax`, `raycaster`, and `globe` may store shader handles and semantic binding choices, but WGSL validation, GPU modules, bind groups, pipeline selection, fallback, and frame execution stay in `render`.
+- Raycaster shader routing:
+  Raycaster surface materials use `draw` shaders. Raycaster shader backgrounds and fullscreen overlays accept `overlay`, `postfx`, or `draw` shaders because they are emitted through render-owned fullscreen/material passes. Raycaster projected emitters use `particle` shaders. The raycaster bridge also forwards semantic auto uniforms including `ray_player_pos`, `ray_screen_size`, `ray_camera_angle`, `ray_fov`, `ray_horizon`, `ray_camera_height`, and `ray_max_distance`.
+- Software capture boundary:
+  `lurek.raycaster.drawLastScene` and other CPU evidence paths do not execute WGSL. `render` preserves the fallback approximation contract instead: base texture/tint, UV animation, depth-fog composition, and projected particle placement remain visible, but shader code for raycaster materials, fullscreen overlays, and particle effects is skipped.
 
 ## Architecture Links
 

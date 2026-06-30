@@ -18,20 +18,23 @@ use crate::raycaster::{
     compute_lighting, distance_shade, project_column, DirectionalSpriteTextures, DoorDirection,
     DoorManager, DoorState, EntityPickResult, HeightMap, LevelSprite, ModelMesh, MultiLevelGrid,
     PickResult, PickSurface, PointLight, RayHit, Raycaster2D, RaycasterBackground,
-    RaycasterBuildStats, RaycasterLevel, RaycasterOverlayEffect, RaycasterScene, SceneAdapter,
+    RaycasterBuildStats, RaycasterLevel, RaycasterMaterial, RaycasterMaterialFrameLayout,
+    RaycasterOverlayEffect, RaycasterParticleEmitter, RaycasterScene, SceneAdapter,
     SceneAdapterLight, SceneAdapterSprite, SceneBuildParams, SceneTransform, ScreenPickParams,
     WallFeature, WallFeatureKind, WorldSprite,
 };
 #[cfg(feature = "obj-loader")]
 use crate::render::obj_loader::Vec3;
-use crate::render::ShaderTarget;
-use crate::runtime::resource_keys::TextureKey;
+use crate::render::renderer::ParticleRenderShape;
+use crate::render::shader::UniformValue;
+use crate::render::{BlendMode, ShaderTarget};
+use crate::runtime::resource_keys::{ShaderKey, TextureKey};
 use crate::tilefield::{CellCoord, TileChannel, TileField, TileObjectCatalog, TileRef};
 use crate::tileset::{TileCatalog, TileVisual};
 use mlua::prelude::*;
 use slotmap::Key;
 use std::cell::RefCell;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 /// Rebuilds a texture key and raw handle pair from the persisted numeric texture id.
 fn texture_key_from_raw_id(raw_id: u64) -> (TextureKey, u64) {
@@ -254,12 +257,157 @@ fn table_color(
     parse_rgba_value(&value, api_name, default)
 }
 
+fn blend_mode_from_name(value: &str, api_name: &str) -> LuaResult<BlendMode> {
+    match value.trim().to_ascii_lowercase().as_str() {
+        "" | "alpha" | "normal" => Ok(BlendMode::Alpha),
+        "add" | "additive" => Ok(BlendMode::Add),
+        "multiply" | "mul" => Ok(BlendMode::Multiply),
+        "replace" | "copy" => Ok(BlendMode::Replace),
+        "screen" => Ok(BlendMode::Screen),
+        other => Err(LuaError::RuntimeError(format!(
+            "{api_name}: unsupported blend mode '{other}'"
+        ))),
+    }
+}
+
+fn optional_table_vec2(
+    table: &LuaTable,
+    key: &str,
+    api_name: &str,
+    default: [f32; 2],
+) -> LuaResult<[f32; 2]> {
+    let Some(value) = table.get::<_, Option<LuaValue>>(key)? else {
+        return Ok(default);
+    };
+    match value {
+        LuaValue::Table(tbl) => Ok([
+            tbl.get::<_, Option<f32>>(1)?
+                .or(tbl.get::<_, Option<f32>>("x")?)
+                .unwrap_or(default[0]),
+            tbl.get::<_, Option<f32>>(2)?
+                .or(tbl.get::<_, Option<f32>>("y")?)
+                .unwrap_or(default[1]),
+        ]),
+        LuaValue::Number(number) => Ok([number as f32, number as f32]),
+        LuaValue::Integer(number) => Ok([number as f32, number as f32]),
+        other => Err(LuaError::RuntimeError(format!(
+            "{api_name}: {key} must be a number or vec2-like table, got {}",
+            other.type_name()
+        ))),
+    }
+}
+
+fn shader_target_list(targets: &[ShaderTarget]) -> String {
+    targets
+        .iter()
+        .map(|target| target.as_str())
+        .collect::<Vec<_>>()
+        .join(", ")
+}
+
+fn ensure_shader_target_any(
+    state: &SharedState,
+    key: ShaderKey,
+    expected: &[ShaderTarget],
+    api_name: &str,
+) -> LuaResult<()> {
+    let shader = state
+        .shaders
+        .get(key)
+        .ok_or_else(|| LuaError::RuntimeError(format!("{api_name}: shader handle is not valid")))?;
+    if expected.iter().any(|target| shader.target() == *target) {
+        return Ok(());
+    }
+    Err(LuaError::RuntimeError(format!(
+        "{api_name}: expected one of [{}] shader targets, got {}",
+        shader_target_list(expected),
+        shader.target().as_str()
+    )))
+}
+
+fn parse_optional_shader_key(
+    value: &LuaValue,
+    state: &SharedState,
+    expected: &[ShaderTarget],
+    api_name: &str,
+) -> LuaResult<Option<ShaderKey>> {
+    match value {
+        LuaValue::Nil => Ok(None),
+        LuaValue::UserData(ud) => {
+            let key = shader_key_from_userdata(ud)?;
+            ensure_shader_target_any(state, key, expected, api_name)?;
+            Ok(Some(key))
+        }
+        other => Err(LuaError::RuntimeError(format!(
+            "{api_name}: shader must be LShader userdata or nil, got {}",
+            other.type_name()
+        ))),
+    }
+}
+
+fn material_frame_layout_from_name(
+    value: Option<String>,
+    api_name: &str,
+) -> LuaResult<RaycasterMaterialFrameLayout> {
+    match value
+        .unwrap_or_else(|| "horizontal".to_string())
+        .trim()
+        .to_ascii_lowercase()
+        .as_str()
+    {
+        "" | "horizontal" | "x" | "row" => Ok(RaycasterMaterialFrameLayout::Horizontal),
+        "vertical" | "y" | "column" => Ok(RaycasterMaterialFrameLayout::Vertical),
+        other => Err(LuaError::RuntimeError(format!(
+            "{api_name}: unsupported frame layout '{other}'"
+        ))),
+    }
+}
+
+fn parse_particle_shape(table: &LuaTable, api_name: &str) -> LuaResult<ParticleRenderShape> {
+    let shape = table
+        .get::<_, Option<String>>("shape")?
+        .unwrap_or_else(|| "puff".to_string())
+        .to_ascii_lowercase();
+    match shape.as_str() {
+        "square" => Ok(ParticleRenderShape::Square),
+        "circle" => Ok(ParticleRenderShape::Circle),
+        "triangle" => Ok(ParticleRenderShape::Triangle),
+        "spark" => Ok(ParticleRenderShape::Spark),
+        "diamond" => Ok(ParticleRenderShape::Diamond),
+        "puff" => Ok(ParticleRenderShape::Puff),
+        "capsule" => Ok(ParticleRenderShape::Capsule),
+        "shrapnel" => Ok(ParticleRenderShape::Shrapnel {
+            edges: table
+                .get::<_, Option<u8>>("edges")?
+                .unwrap_or(6)
+                .clamp(3, 12),
+            seed: table.get::<_, Option<u32>>("shape_seed")?.unwrap_or(0),
+        }),
+        "ray" => Ok(ParticleRenderShape::Ray {
+            aspect: table
+                .get::<_, Option<f32>>("aspect")?
+                .unwrap_or(4.0)
+                .max(0.1),
+        }),
+        "ring" => Ok(ParticleRenderShape::Ring {
+            thickness: table
+                .get::<_, Option<f32>>("thickness")?
+                .unwrap_or(0.35)
+                .clamp(0.05, 1.0),
+        }),
+        other => Err(LuaError::RuntimeError(format!(
+            "{api_name}: unsupported particle shape '{other}'"
+        ))),
+    }
+}
+
 struct RaycasterLuaParser;
 
 impl RaycasterLuaParser {
     fn parse_background_value(
         value: &LuaValue,
         api_name: &str,
+        state: Option<&SharedState>,
     ) -> LuaResult<Option<RaycasterBackground>> {
         match value {
             LuaValue::Nil => Ok(None),
@@ -314,6 +462,33 @@ impl RaycasterLuaParser {
                             offset: tbl.get::<_, Option<f32>>("offset")?.unwrap_or(0.0),
                         }))
                     }
+                    "shader" => {
+                        let state = state.ok_or_else(|| {
+                            LuaError::RuntimeError(format!(
+                                "{}: shader backgrounds require runtime shader access",
+                                api_name
+                            ))
+                        })?;
+                        let material = parse_material_spec(
+                            tbl,
+                            state,
+                            api_name,
+                            0,
+                            &[
+                                ShaderTarget::Overlay,
+                                ShaderTarget::PostFx,
+                                ShaderTarget::Draw,
+                            ],
+                        )?
+                        .material;
+                        if material.shader_key.is_none() {
+                            return Err(LuaError::RuntimeError(format!(
+                                "{}: shader backgrounds require a shader field",
+                                api_name
+                            )));
+                        }
+                        Ok(Some(RaycasterBackground::Shader { material }))
+                    }
                     other => Err(LuaError::RuntimeError(format!(
                         "{}: unsupported background type {:?}",
                         api_name, other
@@ -338,16 +513,10 @@ impl RaycasterLuaParser {
     }
 }
 
-fn parse_background_value(
-    value: &LuaValue,
-    api_name: &str,
-) -> LuaResult<Option<RaycasterBackground>> {
-    RaycasterLuaParser::parse_background_value(value, api_name)
-}
-
 fn parse_overlay_effect_value(
     value: LuaValue,
     api_name: &str,
+    state: Option<&SharedState>,
 ) -> LuaResult<RaycasterOverlayEffect> {
     let LuaValue::Table(tbl) = value else {
         return Err(LuaError::RuntimeError(format!(
@@ -361,12 +530,43 @@ fn parse_overlay_effect_value(
         .unwrap_or_else(|| "fog".to_string())
         .to_ascii_lowercase();
     match kind.as_str() {
+        "fog"
+            if matches!(
+                tbl.get::<_, Option<String>>("mode")?
+                    .unwrap_or_default()
+                    .to_ascii_lowercase()
+                    .as_str(),
+                "depth" | "distance"
+            ) =>
+        {
+            Ok(RaycasterOverlayEffect::DepthFog {
+                color: table_color(&tbl, "color", api_name, [0.55, 0.62, 0.70, 0.35])?,
+                density: tbl
+                    .get::<_, Option<f32>>("density")?
+                    .unwrap_or(0.35)
+                    .clamp(0.0, 2.0),
+                near: tbl.get::<_, Option<f32>>("near")?.unwrap_or(1.0).max(0.0),
+                far: tbl
+                    .get::<_, Option<f32>>("far")?
+                    .unwrap_or(12.0)
+                    .max(tbl.get::<_, Option<f32>>("near")?.unwrap_or(1.0) + 0.01),
+            })
+        }
         "fog" => Ok(RaycasterOverlayEffect::Fog {
             color: table_color(&tbl, "color", api_name, [0.55, 0.62, 0.70, 0.35])?,
             density: tbl
                 .get::<_, Option<f32>>("density")?
                 .unwrap_or(0.35)
                 .clamp(0.0, 1.0),
+        }),
+        "depth_fog" | "depthfog" => Ok(RaycasterOverlayEffect::DepthFog {
+            color: table_color(&tbl, "color", api_name, [0.55, 0.62, 0.70, 0.35])?,
+            density: tbl
+                .get::<_, Option<f32>>("density")?
+                .unwrap_or(0.35)
+                .clamp(0.0, 2.0),
+            near: tbl.get::<_, Option<f32>>("near")?.unwrap_or(1.0).max(0.0),
+            far: tbl.get::<_, Option<f32>>("far")?.unwrap_or(12.0).max(1.01),
         }),
         "snow" => Ok(RaycasterOverlayEffect::Snow {
             color: table_color(&tbl, "color", api_name, [1.0, 1.0, 1.0, 0.70])?,
@@ -376,6 +576,33 @@ fn parse_overlay_effect_value(
                 .clamp(0.0, 2.0),
             wind: tbl.get::<_, Option<f32>>("wind")?.unwrap_or(0.0),
         }),
+        "shader" => {
+            let state = state.ok_or_else(|| {
+                LuaError::RuntimeError(format!(
+                    "{}: shader overlays require runtime shader access",
+                    api_name
+                ))
+            })?;
+            let material = parse_material_spec(
+                &tbl,
+                state,
+                api_name,
+                0,
+                &[
+                    ShaderTarget::Overlay,
+                    ShaderTarget::PostFx,
+                    ShaderTarget::Draw,
+                ],
+            )?
+            .material;
+            if material.shader_key.is_none() {
+                return Err(LuaError::RuntimeError(format!(
+                    "{}: shader overlays require a shader field",
+                    api_name
+                )));
+            }
+            Ok(RaycasterOverlayEffect::Shader { material })
+        }
         other => Err(LuaError::RuntimeError(format!(
             "{}: unsupported overlay effect {:?}",
             api_name, other
@@ -386,6 +613,7 @@ fn parse_overlay_effect_value(
 fn parse_overlay_effects(
     value: LuaValue,
     api_name: &str,
+    state: Option<&SharedState>,
 ) -> LuaResult<Vec<RaycasterOverlayEffect>> {
     match value {
         LuaValue::Nil => Ok(Vec::new()),
@@ -394,10 +622,14 @@ fn parse_overlay_effects(
             let has_kind = tbl.get::<_, Option<String>>("type")?.is_some()
                 || tbl.get::<_, Option<String>>("effect")?.is_some();
             if has_kind {
-                overlays.push(parse_overlay_effect_value(LuaValue::Table(tbl), api_name)?);
+                overlays.push(parse_overlay_effect_value(
+                    LuaValue::Table(tbl),
+                    api_name,
+                    state,
+                )?);
             } else {
                 for value in tbl.sequence_values::<LuaValue>() {
-                    overlays.push(parse_overlay_effect_value(value?, api_name)?);
+                    overlays.push(parse_overlay_effect_value(value?, api_name, state)?);
                 }
             }
             Ok(overlays)
@@ -410,7 +642,12 @@ fn parse_overlay_effects(
     }
 }
 
-fn parse_scene_build_params(params_tbl: &LuaTable, api_name: &str) -> LuaResult<SceneBuildParams> {
+fn parse_scene_build_params_with_default_time(
+    params_tbl: &LuaTable,
+    api_name: &str,
+    default_time_seconds: f64,
+    state: Option<&SharedState>,
+) -> LuaResult<SceneBuildParams> {
     // add_method
     let sun_r = table_opt_f32(params_tbl, "sun_r")?
         .or(table_opt_f32(params_tbl, "global_r")?)
@@ -432,23 +669,26 @@ fn parse_scene_build_params(params_tbl: &LuaTable, api_name: &str) -> LuaResult<
     let roof_darkness = table_opt_f32(params_tbl, "roof_darkness")?
         .unwrap_or(0.8)
         .clamp(0.0, 1.0);
-    let background = parse_background_value(
+    let background = RaycasterLuaParser::parse_background_value(
         &params_tbl
             .get::<_, Option<LuaValue>>("background")?
             .unwrap_or(LuaValue::Nil),
         api_name,
+        state,
     )?
-    .or(parse_background_value(
+    .or(RaycasterLuaParser::parse_background_value(
         &params_tbl
             .get::<_, Option<LuaValue>>("skybox")?
             .unwrap_or(LuaValue::Nil),
         api_name,
+        state,
     )?);
     let overlays = parse_overlay_effects(
         params_tbl
             .get::<_, Option<LuaValue>>("overlays")?
             .unwrap_or(LuaValue::Nil),
         api_name,
+        state,
     )?;
     let params = SceneBuildParams {
         player_x: params_tbl.get::<_, f32>("px").map_err(|e| {
@@ -506,10 +746,28 @@ fn parse_scene_build_params(params_tbl: &LuaTable, api_name: &str) -> LuaResult<
         horizon_offset: params_tbl
             .get::<_, Option<f32>>("horizon_offset")?
             .unwrap_or(0.0),
+        time_seconds: params_tbl
+            .get::<_, Option<f32>>("time_seconds")?
+            .or(params_tbl.get::<_, Option<f32>>("time")?)
+            .unwrap_or(default_time_seconds as f32),
         background,
         overlays,
     };
     Ok(params)
+}
+
+fn parse_scene_build_params_for_state(
+    params_tbl: &LuaTable,
+    api_name: &str,
+    default_time_seconds: f64,
+    state: &SharedState,
+) -> LuaResult<SceneBuildParams> {
+    parse_scene_build_params_with_default_time(
+        params_tbl,
+        api_name,
+        default_time_seconds,
+        Some(state),
+    )
 }
 /// Serializes one raycaster hit result into the Lua table layout returned by cast helpers.
 fn ray_hit_to_table<'lua>(lua: &'lua Lua, hit: &RayHit) -> LuaResult<LuaTable<'lua>> {
@@ -2227,6 +2485,12 @@ pub struct LuaRaycaster {
     state: Rc<RefCell<SharedState>>,
     floor_cell_textures: HashMap<(u32, u32), (TextureKey, u64)>,
     ceiling_cell_textures: HashMap<(u32, u32), (TextureKey, u64)>,
+    wall_materials: HashMap<u32, LuaRaycasterMaterialSpec>,
+    floor_cell_materials: HashMap<(u32, u32), LuaRaycasterMaterialSpec>,
+    ceiling_cell_materials: HashMap<(u32, u32), LuaRaycasterMaterialSpec>,
+    particle_emitters: Vec<RaycasterParticleEmitter>,
+    next_material_id: u32,
+    next_emitter_id: u32,
     lowered_floor_cells: HashMap<(u32, u32), LuaLoweredFloorCell>,
 }
 #[derive(Clone, Copy)]
@@ -2237,6 +2501,324 @@ struct LuaLoweredFloorCell {
     depth_offset: f32,
     tint: [f32; 3],
     blocked: bool,
+}
+
+#[derive(Clone)]
+struct LuaRaycasterMaterialSpec {
+    material: RaycasterMaterial,
+    texture_raw_id: Option<u64>,
+}
+
+fn parse_material_spec(
+    table: &LuaTable,
+    state: &SharedState,
+    api_name: &str,
+    material_id: u32,
+    shader_targets: &[ShaderTarget],
+) -> LuaResult<LuaRaycasterMaterialSpec> {
+    let texture_value = table
+        .get::<_, Option<LuaValue>>("texture")?
+        .or(table.get::<_, Option<LuaValue>>("image")?)
+        .or(table.get::<_, Option<LuaValue>>("textureId")?)
+        .unwrap_or(LuaValue::Nil);
+    let texture = parse_texture_key_value(&texture_value, api_name)?;
+    let shader_value = table
+        .get::<_, Option<LuaValue>>("shader")?
+        .unwrap_or(LuaValue::Nil);
+    let shader_key = parse_optional_shader_key(&shader_value, state, shader_targets, api_name)?;
+    let blend_mode = blend_mode_from_name(
+        &table
+            .get::<_, Option<String>>("blend")?
+            .or(table.get::<_, Option<String>>("blend_mode")?)
+            .unwrap_or_else(|| "alpha".to_string()),
+        api_name,
+    )?;
+    let uv_scroll = optional_table_vec2(table, "uv_scroll", api_name, [0.0, 0.0])?;
+    let uv_scroll = if uv_scroll == [0.0, 0.0] {
+        [
+            table.get::<_, Option<f32>>("scroll_x")?.unwrap_or(0.0),
+            table.get::<_, Option<f32>>("scroll_y")?.unwrap_or(0.0),
+        ]
+    } else {
+        uv_scroll
+    };
+    let uv_scale = optional_table_vec2(table, "uv_scale", api_name, [1.0, 1.0])?;
+    let uv_offset = optional_table_vec2(table, "uv_offset", api_name, [0.0, 0.0])?;
+    let frame_count = table
+        .get::<_, Option<u32>>("frame_count")?
+        .unwrap_or(1)
+        .max(1);
+    let frame_rate = table
+        .get::<_, Option<f32>>("frame_rate")?
+        .unwrap_or(0.0)
+        .max(0.0);
+    let frame_layout =
+        material_frame_layout_from_name(table.get::<_, Option<String>>("frame_layout")?, api_name)?;
+    let tint = table_color(table, "tint", api_name, [1.0, 1.0, 1.0, 1.0])?;
+    Ok(LuaRaycasterMaterialSpec {
+        material: RaycasterMaterial {
+            material_id,
+            texture_key: texture.map(|entry| entry.0),
+            shader_key,
+            blend_mode,
+            uv_scroll,
+            uv_scale,
+            uv_offset,
+            frame_count,
+            frame_rate,
+            frame_layout,
+            tint,
+        },
+        texture_raw_id: texture.map(|entry| entry.1),
+    })
+}
+
+fn material_spec_to_lua_value<'lua>(
+    lua: &'lua Lua,
+    state: Rc<RefCell<SharedState>>,
+    spec: &LuaRaycasterMaterialSpec,
+) -> LuaResult<LuaValue<'lua>> {
+    let table = lua.create_table()?;
+    if let Some(texture_id) = spec.texture_raw_id {
+        table.set("texture", texture_id)?;
+    }
+    if let Some(shader_key) = spec.material.shader_key {
+        table.set(
+            "shader",
+            LuaShader {
+                state,
+                key: shader_key,
+            },
+        )?;
+    }
+    table.set(
+        "blend",
+        match spec.material.blend_mode {
+            BlendMode::Alpha => "alpha",
+            BlendMode::Add => "add",
+            BlendMode::Multiply => "multiply",
+            BlendMode::Replace => "replace",
+            BlendMode::Screen => "screen",
+        },
+    )?;
+    let uv_scroll = lua.create_table()?;
+    uv_scroll.set(1, spec.material.uv_scroll[0])?;
+    uv_scroll.set(2, spec.material.uv_scroll[1])?;
+    table.set("uv_scroll", uv_scroll)?;
+    let uv_scale = lua.create_table()?;
+    uv_scale.set(1, spec.material.uv_scale[0])?;
+    uv_scale.set(2, spec.material.uv_scale[1])?;
+    table.set("uv_scale", uv_scale)?;
+    let uv_offset = lua.create_table()?;
+    uv_offset.set(1, spec.material.uv_offset[0])?;
+    uv_offset.set(2, spec.material.uv_offset[1])?;
+    table.set("uv_offset", uv_offset)?;
+    table.set("frame_count", spec.material.frame_count)?;
+    table.set("frame_rate", spec.material.frame_rate)?;
+    table.set(
+        "frame_layout",
+        match spec.material.frame_layout {
+            RaycasterMaterialFrameLayout::Horizontal => "horizontal",
+            RaycasterMaterialFrameLayout::Vertical => "vertical",
+        },
+    )?;
+    table.set("tint", lua.create_sequence_from(spec.material.tint)?)?;
+    table.set("material_id", spec.material.material_id)?;
+    Ok(LuaValue::Table(table))
+}
+
+fn parse_particle_emitter_spec(
+    table: &LuaTable,
+    state: &SharedState,
+    api_name: &str,
+    emitter_id: u32,
+) -> LuaResult<RaycasterParticleEmitter> {
+    let texture_value = table
+        .get::<_, Option<LuaValue>>("texture")?
+        .or(table.get::<_, Option<LuaValue>>("image")?)
+        .unwrap_or(LuaValue::Nil);
+    let texture = parse_texture_key_value(&texture_value, api_name)?;
+    let shader_value = table
+        .get::<_, Option<LuaValue>>("shader")?
+        .unwrap_or(LuaValue::Nil);
+    let shader_key =
+        parse_optional_shader_key(&shader_value, state, &[ShaderTarget::Particle], api_name)?;
+    let rate = table.get::<_, Option<f32>>("rate")?.unwrap_or(8.0).max(0.0);
+    let lifetime = table
+        .get::<_, Option<f32>>("lifetime")?
+        .unwrap_or(1.0)
+        .max(0.01);
+    let lifetime_range =
+        optional_table_vec2(table, "lifetime_range", api_name, [lifetime, lifetime])?;
+    let size = table
+        .get::<_, Option<f32>>("size")?
+        .unwrap_or(12.0)
+        .max(0.1);
+    let size_range = optional_table_vec2(table, "size_range", api_name, [size, size])?;
+    let velocity_xy = optional_table_vec2(table, "velocity", api_name, [0.0, 0.0])?;
+    let jitter_xy = optional_table_vec2(table, "velocity_jitter", api_name, [0.0, 0.0])?;
+    Ok(RaycasterParticleEmitter {
+        emitter_id,
+        level_index: 0,
+        world_x: table.get::<_, f32>("x")?,
+        world_y: table.get::<_, f32>("y")?,
+        world_z: table
+            .get::<_, Option<f32>>("z")?
+            .or(table.get::<_, Option<f32>>("height_offset")?)
+            .unwrap_or(0.0),
+        radius: table
+            .get::<_, Option<f32>>("radius")?
+            .unwrap_or(0.1)
+            .max(0.0),
+        height: table
+            .get::<_, Option<f32>>("height")?
+            .unwrap_or(0.2)
+            .max(0.0),
+        rate,
+        lifetime_range: [
+            lifetime_range[0].min(lifetime_range[1]).max(0.01),
+            lifetime_range[0].max(lifetime_range[1]).max(0.01),
+        ],
+        velocity: [
+            table
+                .get::<_, Option<f32>>("velocity_x")?
+                .unwrap_or(velocity_xy[0]),
+            table
+                .get::<_, Option<f32>>("velocity_y")?
+                .unwrap_or(velocity_xy[1]),
+            table.get::<_, Option<f32>>("velocity_z")?.unwrap_or(0.0),
+        ],
+        velocity_jitter: [
+            table
+                .get::<_, Option<f32>>("jitter_x")?
+                .unwrap_or(jitter_xy[0]),
+            table
+                .get::<_, Option<f32>>("jitter_y")?
+                .unwrap_or(jitter_xy[1]),
+            table.get::<_, Option<f32>>("jitter_z")?.unwrap_or(0.0),
+        ],
+        size_range: [
+            size_range[0].min(size_range[1]).max(0.1),
+            size_range[0].max(size_range[1]).max(0.1),
+        ],
+        color: table_color(table, "color", api_name, [1.0, 1.0, 1.0, 0.9])?,
+        shape: parse_particle_shape(table, api_name)?,
+        texture_key: texture.map(|entry| entry.0),
+        shader_key,
+        blend_mode: blend_mode_from_name(
+            &table
+                .get::<_, Option<String>>("blend")?
+                .or(table.get::<_, Option<String>>("blend_mode")?)
+                .unwrap_or_else(|| "alpha".to_string()),
+            api_name,
+        )?,
+        occlude_walls: table
+            .get::<_, Option<bool>>("occlude_walls")?
+            .unwrap_or(true),
+        seed: table.get::<_, Option<u32>>("seed")?.unwrap_or(emitter_id),
+    })
+}
+
+fn lowered_floor_cell_to_runtime(
+    cell: &LuaLoweredFloorCell,
+) -> crate::raycaster::build_scene::LoweredFloorCell {
+    crate::raycaster::build_scene::LoweredFloorCell {
+        texture_key: cell.texture_key,
+        depth_offset: cell.depth_offset,
+        tint: cell.tint,
+        blocked: cell.blocked,
+    }
+}
+
+fn collect_scene_shader_keys(
+    scene: &RaycasterScene,
+    scene_shader: Option<ShaderKey>,
+) -> HashSet<ShaderKey> {
+    let mut keys = HashSet::new();
+    if let Some(key) = scene_shader {
+        keys.insert(key);
+    }
+    if let Some(RaycasterBackground::Shader { material }) = &scene.background {
+        if let Some(key) = material.shader_key {
+            keys.insert(key);
+        }
+    }
+    for overlay in &scene.overlays {
+        if let RaycasterOverlayEffect::Shader { material } = overlay {
+            if let Some(key) = material.shader_key {
+                keys.insert(key);
+            }
+        }
+    }
+    for wall in &scene.walls {
+        if let Some(key) = wall
+            .material
+            .as_ref()
+            .and_then(|material| material.shader_key)
+        {
+            keys.insert(key);
+        }
+    }
+    for floor in &scene.floors {
+        if let Some(key) = floor
+            .material
+            .as_ref()
+            .and_then(|material| material.shader_key)
+        {
+            keys.insert(key);
+        }
+    }
+    for ceiling in &scene.ceilings {
+        if let Some(key) = ceiling
+            .material
+            .as_ref()
+            .and_then(|material| material.shader_key)
+        {
+            keys.insert(key);
+        }
+    }
+    for particle in &scene.particles {
+        if let Some(key) = particle.shader_key {
+            keys.insert(key);
+        }
+    }
+    keys
+}
+
+fn send_raycaster_shader_uniforms(
+    state: &mut SharedState,
+    params: &SceneBuildParams,
+    scene: &RaycasterScene,
+) {
+    let shader_keys = collect_scene_shader_keys(scene, state.raycaster_shader);
+    let horizon = params.screen_height * 0.5 - params.horizon_offset;
+    for key in shader_keys {
+        let Some(shader) = state.shaders.get_mut(key) else {
+            continue;
+        };
+        let _ = shader.send(
+            "ray_player_pos".to_string(),
+            UniformValue::Vec2([params.player_x, params.player_y]),
+        );
+        let _ = shader.send(
+            "ray_screen_size".to_string(),
+            UniformValue::Vec2([params.screen_width, params.screen_height]),
+        );
+        let _ = shader.send(
+            "ray_camera_angle".to_string(),
+            UniformValue::Float(params.player_angle),
+        );
+        let _ = shader.send("ray_fov".to_string(), UniformValue::Float(params.fov));
+        let _ = shader.send("ray_horizon".to_string(), UniformValue::Float(horizon));
+        let _ = shader.send(
+            "ray_camera_height".to_string(),
+            UniformValue::Float(params.camera_height),
+        );
+        let _ = shader.send(
+            "ray_max_distance".to_string(),
+            UniformValue::Float(params.max_distance),
+        );
+    }
 }
 impl LuaUserData for LuaRaycaster {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -2431,6 +3013,170 @@ impl LuaUserData for LuaRaycaster {
         /// @return | integer | Raw texture id or nil.
         methods.add_method("getCeilingTextureCell", |_, this, (x, y): (u32, u32)| {
             Ok(this.ceiling_cell_textures.get(&(x, y)).map(|entry| entry.1))
+        });
+        // -- setWallMaterial --
+        /// Assigns a render material override to a wall tile type. Pass nil to clear.
+        /// @param | cellValue | integer | Wall tile value to style.
+        /// @param | material | table? | Material table with optional texture, shader, tint, blend, uv_scroll, uv_scale, uv_offset, frame_count, frame_rate, and frame_layout.
+        methods.add_method_mut(
+            "setWallMaterial",
+            |_, this, (cell_value, material): (u32, LuaValue)| {
+                match material {
+                    LuaValue::Nil => {
+                        this.wall_materials.remove(&cell_value);
+                    }
+                    LuaValue::Table(tbl) => {
+                        let spec = {
+                            let state = this.state.borrow();
+                            parse_material_spec(
+                                &tbl,
+                                &state,
+                                "lurek.raycaster.LRaycaster:setWallMaterial",
+                                this.next_material_id,
+                                &[ShaderTarget::Draw],
+                            )?
+                        };
+                        this.next_material_id = this.next_material_id.saturating_add(1);
+                        this.wall_materials.insert(cell_value, spec);
+                    }
+                    other => {
+                        return Err(LuaError::RuntimeError(format!(
+                            "lurek.raycaster.LRaycaster:setWallMaterial: material must be a table or nil, got {}",
+                            other.type_name()
+                        )));
+                    }
+                }
+                Ok(())
+            },
+        );
+        // -- getWallMaterial --
+        /// Returns the material override for a wall tile type, or nil when none is set.
+        /// @param | cellValue | integer | Wall tile value to query.
+        /// @return | table? | Material table or nil.
+        methods.add_method("getWallMaterial", |lua, this, cell_value: u32| {
+            match this.wall_materials.get(&cell_value) {
+                Some(spec) => material_spec_to_lua_value(lua, this.state.clone(), spec),
+                None => Ok(LuaValue::Nil),
+            }
+        });
+        // -- setFloorMaterialCell --
+        /// Assigns a render material override to one floor cell. Pass nil to clear.
+        /// @param | x | integer | Grid column.
+        /// @param | y | integer | Grid row.
+        /// @param | material | table? | Material table with optional texture, shader, tint, blend, uv_scroll, uv_scale, uv_offset, frame_count, frame_rate, and frame_layout.
+        methods.add_method_mut(
+            "setFloorMaterialCell",
+            |_, this, (x, y, material): (u32, u32, LuaValue)| {
+                match material {
+                    LuaValue::Nil => {
+                        this.floor_cell_materials.remove(&(x, y));
+                    }
+                    LuaValue::Table(tbl) => {
+                        let spec = {
+                            let state = this.state.borrow();
+                            parse_material_spec(
+                                &tbl,
+                                &state,
+                                "lurek.raycaster.LRaycaster:setFloorMaterialCell",
+                                this.next_material_id,
+                                &[ShaderTarget::Draw],
+                            )?
+                        };
+                        this.next_material_id = this.next_material_id.saturating_add(1);
+                        this.floor_cell_materials.insert((x, y), spec);
+                    }
+                    other => {
+                        return Err(LuaError::RuntimeError(format!(
+                            "lurek.raycaster.LRaycaster:setFloorMaterialCell: material must be a table or nil, got {}",
+                            other.type_name()
+                        )));
+                    }
+                }
+                Ok(())
+            },
+        );
+        // -- getFloorMaterialCell --
+        /// Returns the floor material override for one cell, or nil when none is set.
+        /// @param | x | integer | Grid column.
+        /// @param | y | integer | Grid row.
+        /// @return | table? | Material table or nil.
+        methods.add_method(
+            "getFloorMaterialCell",
+            |lua, this, (x, y): (u32, u32)| match this.floor_cell_materials.get(&(x, y)) {
+                Some(spec) => material_spec_to_lua_value(lua, this.state.clone(), spec),
+                None => Ok(LuaValue::Nil),
+            },
+        );
+        // -- setCeilingMaterialCell --
+        /// Assigns a render material override to one ceiling cell. Pass nil to clear.
+        /// @param | x | integer | Grid column.
+        /// @param | y | integer | Grid row.
+        /// @param | material | table? | Material table with optional texture, shader, tint, blend, uv_scroll, uv_scale, uv_offset, frame_count, frame_rate, and frame_layout.
+        methods.add_method_mut(
+            "setCeilingMaterialCell",
+            |_, this, (x, y, material): (u32, u32, LuaValue)| {
+                match material {
+                    LuaValue::Nil => {
+                        this.ceiling_cell_materials.remove(&(x, y));
+                    }
+                    LuaValue::Table(tbl) => {
+                        let spec = {
+                            let state = this.state.borrow();
+                            parse_material_spec(
+                                &tbl,
+                                &state,
+                                "lurek.raycaster.LRaycaster:setCeilingMaterialCell",
+                                this.next_material_id,
+                                &[ShaderTarget::Draw],
+                            )?
+                        };
+                        this.next_material_id = this.next_material_id.saturating_add(1);
+                        this.ceiling_cell_materials.insert((x, y), spec);
+                    }
+                    other => {
+                        return Err(LuaError::RuntimeError(format!(
+                            "lurek.raycaster.LRaycaster:setCeilingMaterialCell: material must be a table or nil, got {}",
+                            other.type_name()
+                        )));
+                    }
+                }
+                Ok(())
+            },
+        );
+        // -- getCeilingMaterialCell --
+        /// Returns the ceiling material override for one cell, or nil when none is set.
+        /// @param | x | integer | Grid column.
+        /// @param | y | integer | Grid row.
+        /// @return | table? | Material table or nil.
+        methods.add_method(
+            "getCeilingMaterialCell",
+            |lua, this, (x, y): (u32, u32)| match this.ceiling_cell_materials.get(&(x, y)) {
+                Some(spec) => material_spec_to_lua_value(lua, this.state.clone(), spec),
+                None => Ok(LuaValue::Nil),
+            },
+        );
+        // -- addParticleEmitter --
+        /// Adds a projected raycaster particle emitter that spawns during scene builds.
+        /// @param | emitter | table | Emitter table with x, y, optional z, rate, lifetime, lifetime_range, size, size_range, radius, height, velocity_x/y, jitter_x/y, color, shape, texture, shader, blend, occlude_walls, and seed.
+        methods.add_method_mut("addParticleEmitter", |_, this, emitter: LuaTable| {
+            let parsed = {
+                let state = this.state.borrow();
+                parse_particle_emitter_spec(
+                    &emitter,
+                    &state,
+                    "lurek.raycaster.LRaycaster:addParticleEmitter",
+                    this.next_emitter_id,
+                )?
+            };
+            this.next_emitter_id = this.next_emitter_id.saturating_add(1);
+            this.particle_emitters.push(parsed);
+            Ok(())
+        });
+        // -- clearParticleEmitters --
+        /// Removes all projected particle emitters from this map.
+        methods.add_method_mut("clearParticleEmitters", |_, this, ()| {
+            this.particle_emitters.clear();
+            Ok(())
         });
         // -- setLoweredFloorCell --
         /// Marks a cell as a lowered floor (pit) with its own texture, depth, tint, and blocking flag.
@@ -2832,7 +3578,15 @@ impl LuaUserData for LuaRaycaster {
             )| {
                 let sprites_tbl = sprites_tbl.unwrap_or(LuaValue::Nil);
                 let models_tbl = models_tbl.unwrap_or(LuaValue::Nil);
-                let params = parse_scene_build_params(&params_tbl, "lurek.raycaster.pickScreen")?;
+                let params = {
+                    let state = this.state.borrow();
+                    parse_scene_build_params_for_state(
+                        &params_tbl,
+                        "lurek.raycaster.pickScreen",
+                        state.total_time,
+                        &state,
+                    )?
+                };
                 let pick_params = ScreenPickParams {
                     player_x: params.player_x,
                     player_y: params.player_y,
@@ -2979,8 +3733,15 @@ impl LuaUserData for LuaRaycaster {
         methods.add_method(
             "pickScreenFromAdapter",
             |lua, this, (sx, sy, params_tbl, adapter_ud): (f32, f32, LuaTable, LuaAnyUserData)| {
-                let params =
-                    parse_scene_build_params(&params_tbl, "lurek.raycaster.pickScreenFromAdapter")?;
+                let params = {
+                    let state = this.state.borrow();
+                    parse_scene_build_params_for_state(
+                        &params_tbl,
+                        "lurek.raycaster.pickScreenFromAdapter",
+                        state.total_time,
+                        &state,
+                    )?
+                };
                 let (_lights_tbl, sprites_tbl, models_tbl) = scene_input_tables_from_adapter(
                     lua,
                     &adapter_ud,
@@ -3112,7 +3873,8 @@ impl LuaUserData for LuaRaycaster {
         // -- buildScene --
         /// Builds a complete textured raycaster scene for GPU rendering. Stores the output internally.
         /// for the renderer to consume on the next frame. Returns the number of quads generated.
-        /// @param | params | table | Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b?, camera_height?, horizon_offset?}.
+        /// Stored wall, floor, ceiling, and particle-emitter overrides from this map are included automatically.
+        /// @param | params | table | Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b?, camera_height?, horizon_offset?, time_seconds?, background?, overlays?}. `background` accepts solid, gradient, skybox, or shader descriptors. `overlays` accepts fog, depth fog, snow, or shader descriptors.
         /// @param | lights | table? | Array of render light tables {x, y, radius, r?, g?, b?, color?, intensity?, level?}.
         /// @param | sprites | table|LSpriteManager? | Array of sprite tables {x, y, texture?, size?, front_texture?, right_texture?, back_texture?, left_texture?, angle?} or an LSpriteManager with integer/LImage textures.
         /// @param | wallTextures | table? | Map of cell_value -> texture for wall surfaces.
@@ -3127,32 +3889,53 @@ impl LuaUserData for LuaRaycaster {
                 LuaValue,
                 LuaValue,
             )| {
-                let params = parse_scene_build_params(&params_tbl, "lurek.raycaster.buildScene")?;
+                let params = {
+                    let state = this.state.borrow();
+                    parse_scene_build_params_for_state(
+                        &params_tbl,
+                        "lurek.raycaster.buildScene",
+                        state.total_time,
+                        &state,
+                    )?
+                };
                 let lights = parse_point_lights(lights_tbl, "lurek.raycaster.buildScene")?;
                 let sprites = parse_world_sprites(sprites_tbl, "lurek.raycaster.buildScene")?;
                 let wall_tex_map =
                     parse_wall_texture_map(wall_tex_tbl, "lurek.raycaster.buildScene")?;
-                let scene = RaycasterScene::build(
+                let scene = RaycasterScene::build_with_scene_features(
                     &this.inner,
                     &params,
                     &lights,
                     &sprites,
+                    &this.particle_emitters,
                     &|cell_value| wall_tex_map.get(&cell_value).copied(),
+                    &|cell_value| {
+                        this.wall_materials
+                            .get(&cell_value)
+                            .map(|spec| spec.material.clone())
+                    },
                     &|x, y| this.floor_cell_textures.get(&(x, y)).map(|entry| entry.0),
                     &|x, y| this.ceiling_cell_textures.get(&(x, y)).map(|entry| entry.0),
                     &|x, y| {
-                        this.lowered_floor_cells.get(&(x, y)).map(|cell| {
-                            crate::raycaster::build_scene::LoweredFloorCell {
-                                texture_key: cell.texture_key,
-                                depth_offset: cell.depth_offset,
-                                tint: cell.tint,
-                                blocked: cell.blocked,
-                            }
-                        })
+                        this.floor_cell_materials
+                            .get(&(x, y))
+                            .map(|spec| spec.material.clone())
+                    },
+                    &|x, y| {
+                        this.ceiling_cell_materials
+                            .get(&(x, y))
+                            .map(|spec| spec.material.clone())
+                    },
+                    &|x, y| {
+                        this.lowered_floor_cells
+                            .get(&(x, y))
+                            .map(lowered_floor_cell_to_runtime)
                     },
                 );
                 let quad_count = scene.quad_count();
-                this.state.borrow_mut().raycaster_output = Some(scene);
+                let mut state = this.state.borrow_mut();
+                send_raycaster_shader_uniforms(&mut state, &params, &scene);
+                state.raycaster_output = Some(scene);
                 Ok(quad_count)
             },
         );
@@ -3167,10 +3950,15 @@ impl LuaUserData for LuaRaycaster {
             |lua,
              this,
              (params_tbl, adapter_ud, wall_tex_tbl): (LuaTable, LuaAnyUserData, LuaValue)| {
-                let params = parse_scene_build_params(
-                    &params_tbl,
-                    "lurek.raycaster.buildSceneFromAdapter",
-                )?;
+                let params = {
+                    let state = this.state.borrow();
+                    parse_scene_build_params_for_state(
+                        &params_tbl,
+                        "lurek.raycaster.buildSceneFromAdapter",
+                        state.total_time,
+                        &state,
+                    )?
+                };
                 let (lights_tbl, sprites_tbl, models_tbl) = scene_input_tables_from_adapter(
                     lua,
                     &adapter_ud,
@@ -3188,24 +3976,32 @@ impl LuaUserData for LuaRaycaster {
                     wall_tex_tbl,
                     "lurek.raycaster.buildSceneFromAdapter",
                 )?;
-                let mut scene = RaycasterScene::build(
+                let mut scene = RaycasterScene::build_with_scene_features(
                     &this.inner,
                     &params,
                     &lights,
                     &sprites,
+                    &this.particle_emitters,
                     &|cell_value| wall_tex_map.get(&cell_value).copied(),
+                    &|cell_value| {
+                        this.wall_materials
+                            .get(&cell_value)
+                            .map(|spec| spec.material.clone())
+                    },
                     &|x, y| this.floor_cell_textures.get(&(x, y)).map(|entry| entry.0),
                     &|x, y| this.ceiling_cell_textures.get(&(x, y)).map(|entry| entry.0),
-                    &|x, y| {
-                        this.lowered_floor_cells.get(&(x, y)).map(|cell| {
-                            crate::raycaster::build_scene::LoweredFloorCell {
-                                texture_key: cell.texture_key,
-                                depth_offset: cell.depth_offset,
-                                tint: cell.tint,
-                                blocked: cell.blocked,
-                            }
-                        })
-                    },
+                    &|x, y| this
+                        .floor_cell_materials
+                        .get(&(x, y))
+                        .map(|spec| spec.material.clone()),
+                    &|x, y| this
+                        .ceiling_cell_materials
+                        .get(&(x, y))
+                        .map(|spec| spec.material.clone()),
+                    &|x, y| this
+                        .lowered_floor_cells
+                        .get(&(x, y))
+                        .map(lowered_floor_cell_to_runtime),
                 );
                 #[cfg(feature = "obj-loader")]
                 {
@@ -3248,7 +4044,9 @@ impl LuaUserData for LuaRaycaster {
                     }
                 }
                 let quad_count = scene.quad_count();
-                this.state.borrow_mut().raycaster_output = Some(scene);
+                let mut state = this.state.borrow_mut();
+                send_raycaster_shader_uniforms(&mut state, &params, &scene);
+                state.raycaster_output = Some(scene);
                 Ok(quad_count)
             },
         );
@@ -3272,31 +4070,49 @@ impl LuaUserData for LuaRaycaster {
                 LuaValue,
                 LuaValue,
             )| {
-                let params =
-                    parse_scene_build_params(&params_tbl, "lurek.raycaster.buildSceneWithModels")?;
+                let params = {
+                    let state = this.state.borrow();
+                    parse_scene_build_params_for_state(
+                        &params_tbl,
+                        "lurek.raycaster.buildSceneWithModels",
+                        state.total_time,
+                        &state,
+                    )?
+                };
                 let lights =
                     parse_point_lights(lights_tbl, "lurek.raycaster.buildSceneWithModels")?;
                 let sprites =
                     parse_world_sprites(sprites_tbl, "lurek.raycaster.buildSceneWithModels")?;
                 let wall_tex_map =
                     parse_wall_texture_map(wall_tex_tbl, "lurek.raycaster.buildSceneWithModels")?;
-                let mut scene = RaycasterScene::build(
+                let mut scene = RaycasterScene::build_with_scene_features(
                     &this.inner,
                     &params,
                     &lights,
                     &sprites,
+                    &this.particle_emitters,
                     &|cell_value| wall_tex_map.get(&cell_value).copied(),
+                    &|cell_value| {
+                        this.wall_materials
+                            .get(&cell_value)
+                            .map(|spec| spec.material.clone())
+                    },
                     &|x, y| this.floor_cell_textures.get(&(x, y)).map(|entry| entry.0),
                     &|x, y| this.ceiling_cell_textures.get(&(x, y)).map(|entry| entry.0),
                     &|x, y| {
-                        this.lowered_floor_cells.get(&(x, y)).map(|cell| {
-                            crate::raycaster::build_scene::LoweredFloorCell {
-                                texture_key: cell.texture_key,
-                                depth_offset: cell.depth_offset,
-                                tint: cell.tint,
-                                blocked: cell.blocked,
-                            }
-                        })
+                        this.floor_cell_materials
+                            .get(&(x, y))
+                            .map(|spec| spec.material.clone())
+                    },
+                    &|x, y| {
+                        this.ceiling_cell_materials
+                            .get(&(x, y))
+                            .map(|spec| spec.material.clone())
+                    },
+                    &|x, y| {
+                        this.lowered_floor_cells
+                            .get(&(x, y))
+                            .map(lowered_floor_cell_to_runtime)
                     },
                 );
                 if let LuaValue::Table(tbl) = models_tbl {
@@ -3348,7 +4164,9 @@ impl LuaUserData for LuaRaycaster {
                     }
                 }
                 let quad_count = scene.quad_count();
-                this.state.borrow_mut().raycaster_output = Some(scene);
+                let mut state = this.state.borrow_mut();
+                send_raycaster_shader_uniforms(&mut state, &params, &scene);
+                state.raycaster_output = Some(scene);
                 Ok(quad_count)
             },
         );
@@ -3816,7 +4634,7 @@ impl LuaUserData for LuaMultiLevelGrid {
         });
         // -- buildScene --
         /// Builds a textured multilevel raycaster scene from this persistent world and stores it for rendering.
-        /// @param | params | table | Scene params for the current camera.
+        /// @param | params | table | Scene params for the current camera, including optional `time_seconds`, `background`, and `overlays` descriptors.
         /// @param | lights | table? | Array of render light tables.
         /// @param | sprites | table|LSpriteManager? | Array of level sprite tables or an LSpriteManager.
         /// @param | wallTextures | table? | Map of cell_value -> texture for wall surfaces.
@@ -3831,10 +4649,15 @@ impl LuaUserData for LuaMultiLevelGrid {
                 LuaValue,
                 LuaValue,
             )| {
-                let params = parse_scene_build_params(
-                    &params_tbl,
-                    "lurek.raycaster.LMultiLevelGrid:buildScene",
-                )?;
+                let params = {
+                    let state = this.state.borrow();
+                    parse_scene_build_params_for_state(
+                        &params_tbl,
+                        "lurek.raycaster.LMultiLevelGrid:buildScene",
+                        state.total_time,
+                        &state,
+                    )?
+                };
                 let lights =
                     parse_point_lights(lights_tbl, "lurek.raycaster.LMultiLevelGrid:buildScene")?;
                 let active_level = this.inner.borrow().active_level();
@@ -3858,7 +4681,9 @@ impl LuaUserData for LuaMultiLevelGrid {
                     &|_, _, _| None,
                 );
                 let quad_count = scene.quad_count();
-                this.state.borrow_mut().raycaster_output = Some(scene);
+                let mut state = this.state.borrow_mut();
+                send_raycaster_shader_uniforms(&mut state, &params, &scene);
+                state.raycaster_output = Some(scene);
                 Ok(quad_count)
             },
         );
@@ -3873,10 +4698,15 @@ impl LuaUserData for LuaMultiLevelGrid {
             |lua,
              this,
              (params_tbl, adapter_ud, wall_tex_tbl): (LuaTable, LuaAnyUserData, LuaValue)| {
-                let params = parse_scene_build_params(
-                    &params_tbl,
-                    "lurek.raycaster.LMultiLevelGrid:buildSceneFromAdapter",
-                )?;
+                let params = {
+                    let state = this.state.borrow();
+                    parse_scene_build_params_for_state(
+                        &params_tbl,
+                        "lurek.raycaster.LMultiLevelGrid:buildSceneFromAdapter",
+                        state.total_time,
+                        &state,
+                    )?
+                };
                 let (lights_tbl, sprites_tbl, models_tbl) = scene_input_tables_from_adapter(
                     lua,
                     &adapter_ud,
@@ -3975,7 +4805,9 @@ impl LuaUserData for LuaMultiLevelGrid {
                     }
                 }
                 let quad_count = scene.quad_count();
-                this.state.borrow_mut().raycaster_output = Some(scene);
+                let mut state = this.state.borrow_mut();
+                send_raycaster_shader_uniforms(&mut state, &params, &scene);
+                state.raycaster_output = Some(scene);
                 Ok(quad_count)
             },
         );
@@ -4004,10 +4836,15 @@ impl LuaUserData for LuaMultiLevelGrid {
             )| {
                 let sprites_tbl = sprites_tbl.unwrap_or(LuaValue::Nil);
                 let models_tbl = models_tbl.unwrap_or(LuaValue::Nil);
-                let params = parse_scene_build_params(
-                    &params_tbl,
-                    "lurek.raycaster.LMultiLevelGrid:pickScreen",
-                )?;
+                let params = {
+                    let state = this.state.borrow();
+                    parse_scene_build_params_for_state(
+                        &params_tbl,
+                        "lurek.raycaster.LMultiLevelGrid:pickScreen",
+                        state.total_time,
+                        &state,
+                    )?
+                };
                 let wall_tex_map = parse_wall_texture_map(
                     wall_tex_tbl,
                     "lurek.raycaster.LMultiLevelGrid:pickScreen",
@@ -4194,10 +5031,15 @@ impl LuaUserData for LuaMultiLevelGrid {
                 LuaValue,
                 LuaAnyUserData,
             )| {
-                let params = parse_scene_build_params(
-                    &params_tbl,
-                    "lurek.raycaster.LMultiLevelGrid:pickScreenFromAdapter",
-                )?;
+                let params = {
+                    let state = this.state.borrow();
+                    parse_scene_build_params_for_state(
+                        &params_tbl,
+                        "lurek.raycaster.LMultiLevelGrid:pickScreenFromAdapter",
+                        state.total_time,
+                        &state,
+                    )?
+                };
                 let wall_tex_map = parse_wall_texture_map(
                     wall_tex_tbl,
                     "lurek.raycaster.LMultiLevelGrid:pickScreenFromAdapter",
@@ -5406,6 +6248,12 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 state: s.clone(),
                 floor_cell_textures: HashMap::new(),
                 ceiling_cell_textures: HashMap::new(),
+                wall_materials: HashMap::new(),
+                floor_cell_materials: HashMap::new(),
+                ceiling_cell_materials: HashMap::new(),
+                particle_emitters: Vec::new(),
+                next_material_id: 1,
+                next_emitter_id: 1,
                 lowered_floor_cells: HashMap::new(),
             })
         })?,
@@ -5424,6 +6272,12 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 state: s.clone(),
                 floor_cell_textures: HashMap::new(),
                 ceiling_cell_textures: HashMap::new(),
+                wall_materials: HashMap::new(),
+                floor_cell_materials: HashMap::new(),
+                ceiling_cell_materials: HashMap::new(),
+                particle_emitters: Vec::new(),
+                next_material_id: 1,
+                next_emitter_id: 1,
                 lowered_floor_cells: HashMap::new(),
             })
         })?,
@@ -5471,8 +6325,15 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             )| {
                 let sprites_tbl = sprites_tbl.unwrap_or(LuaValue::Nil);
                 let models_tbl = models_tbl.unwrap_or(LuaValue::Nil);
-                let params =
-                    parse_scene_build_params(&params_tbl, "lurek.raycaster.pickScreenMultiLevel")?;
+                let params = {
+                    let state = pick_multilevel_state.borrow();
+                    parse_scene_build_params_for_state(
+                        &params_tbl,
+                        "lurek.raycaster.pickScreenMultiLevel",
+                        state.total_time,
+                        &state,
+                    )?
+                };
                 let active_level = parse_active_level(&params_tbl)?;
                 let wall_tex_map = parse_wall_texture_map(
                     wall_tex_tbl,
@@ -5668,10 +6529,15 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 LuaValue,
                 LuaAnyUserData,
             )| {
-                let params = parse_scene_build_params(
-                    &params_tbl,
-                    "lurek.raycaster.pickScreenMultiLevelFromAdapter",
-                )?;
+                let params = {
+                    let state = pick_multilevel_adapter_state.borrow();
+                    parse_scene_build_params_for_state(
+                        &params_tbl,
+                        "lurek.raycaster.pickScreenMultiLevelFromAdapter",
+                        state.total_time,
+                        &state,
+                    )?
+                };
                 let active_level = parse_active_level(&params_tbl)?;
                 let wall_tex_map = parse_wall_texture_map(
                     wall_tex_tbl,
@@ -5841,7 +6707,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     // -- buildMultiLevelScene --
     /// Builds a multilevel raycaster scene from a stack of plain Lua level tables.
-    /// @param | params | table | Scene params plus optional active_level.
+    /// @param | params | table | Scene params plus optional `active_level`, `time_seconds`, `background`, and `overlays`.
     /// @param | levels | table|LMultiLevelGrid | Array of level tables or a persistent LMultiLevelGrid.
     /// @param | lights | table? | Array of render light tables.
     /// @param | sprites | table|LSpriteManager? | Array of sprite tables {x, y, texture?, size?, level?, front_texture?, right_texture?, back_texture?, left_texture?, angle?} or an LSpriteManager whose sprites use their own optional level indices and default to active_level.
@@ -5861,8 +6727,15 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 LuaValue,
                 LuaValue,
             )| {
-                let params =
-                    parse_scene_build_params(&params_tbl, "lurek.raycaster.buildMultiLevelScene")?;
+                let params = {
+                    let state = s.borrow();
+                    parse_scene_build_params_for_state(
+                        &params_tbl,
+                        "lurek.raycaster.buildMultiLevelScene",
+                        state.total_time,
+                        &state,
+                    )?
+                };
                 let active_level = parse_active_level(&params_tbl)?;
                 let lights =
                     parse_point_lights(lights_tbl, "lurek.raycaster.buildMultiLevelScene")?;
@@ -5986,7 +6859,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                     }
                 }
                 let quad_count = scene.quad_count();
-                s.borrow_mut().raycaster_output = Some(scene);
+                let mut state = s.borrow_mut();
+                send_raycaster_shader_uniforms(&mut state, &params, &scene);
+                state.raycaster_output = Some(scene);
                 Ok(quad_count)
             },
         )?,
@@ -6013,10 +6888,15 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 LuaValue,
                 LuaValue,
             )| {
-                let mut params = parse_scene_build_params(
-                    &params_tbl,
-                    "lurek.raycaster.buildMultiLevelSceneFromField",
-                )?;
+                let mut params = {
+                    let state = build_field_state.borrow();
+                    parse_scene_build_params_for_state(
+                        &params_tbl,
+                        "lurek.raycaster.buildMultiLevelSceneFromField",
+                        state.total_time,
+                        &state,
+                    )?
+                };
                 let active_level = parse_active_level(&params_tbl)?;
                 let options = parse_tilefield_raycaster_options(
                     opts_tbl.as_ref(),
@@ -6153,7 +7033,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                     &|_, _, _| None,
                 );
                 let quad_count = scene.quad_count();
-                build_field_state.borrow_mut().raycaster_output = Some(scene);
+                let mut state = build_field_state.borrow_mut();
+                send_raycaster_shader_uniforms(&mut state, &params, &scene);
+                state.raycaster_output = Some(scene);
                 Ok(quad_count)
             },
         )?,
@@ -6176,10 +7058,15 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 LuaAnyUserData,
                 LuaValue,
             )| {
-                let params = parse_scene_build_params(
-                    &params_tbl,
-                    "lurek.raycaster.buildMultiLevelSceneFromAdapter",
-                )?;
+                let params = {
+                    let state = build_multilevel_adapter_state.borrow();
+                    parse_scene_build_params_for_state(
+                        &params_tbl,
+                        "lurek.raycaster.buildMultiLevelSceneFromAdapter",
+                        state.total_time,
+                        &state,
+                    )?
+                };
                 let active_level = parse_active_level(&params_tbl)?;
                 let (lights_tbl, sprites_tbl, models_tbl) = scene_input_tables_from_adapter(
                     lua,
@@ -6289,7 +7176,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                     }
                 }
                 let quad_count = scene.quad_count();
-                build_multilevel_adapter_state.borrow_mut().raycaster_output = Some(scene);
+                let mut state = build_multilevel_adapter_state.borrow_mut();
+                send_raycaster_shader_uniforms(&mut state, &params, &scene);
+                state.raycaster_output = Some(scene);
                 Ok(quad_count)
             },
         )?,
@@ -6365,6 +7254,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // -- drawLastScene --
     /// Rasterizes the most recently built raycaster scene to raw image data.
     /// This captures the prepared floor, ceiling, wall, sprite, model, and lighting quads produced by `buildScene`, `buildMultiLevelScene`, `buildMultiLevelSceneFromField`, or their adapter variants.
+    /// GPU WGSL shaders are not executed in this CPU fallback path: shader backgrounds, fullscreen overlays, surface materials, and particle shaders are approximated with their bound textures, tint, UV animation, depth fog, and projected particle placement.
     /// @param | width | integer | Output image width in pixels.
     /// @param | height | integer | Output image height in pixels.
     /// @return | LImageData | Rasterized image data for the last built scene.

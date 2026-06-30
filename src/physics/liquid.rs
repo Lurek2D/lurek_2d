@@ -259,12 +259,7 @@ impl LiquidMap {
         Some(self.cell_index(cx as u32, cy as u32))
     }
 
-    fn linked_amount_at(
-        &self,
-        wx: f32,
-        wy: f32,
-        terrain: Option<&TerrainMap>,
-    ) -> f32 {
+    fn linked_amount_at(&self, wx: f32, wy: f32, terrain: Option<&TerrainMap>) -> f32 {
         let Some((cx, cy)) = self.world_to_cell(wx, wy) else {
             return 0.0;
         };
@@ -335,9 +330,7 @@ impl LiquidMap {
                 }
 
                 if let Some(down_idx) = self.neighbor_index(cx as i32, cy as i32 + 1) {
-                    if !terrain.is_some_and(|map| {
-                        self.is_blocked_by_terrain(cx, cy + 1, map)
-                    }) {
+                    if !terrain.is_some_and(|map| self.is_blocked_by_terrain(cx, cy + 1, map)) {
                         let flowed = self.transfer(
                             &current,
                             &mut delta,
@@ -366,10 +359,7 @@ impl LiquidMap {
                         if diff <= LIQUID_EPSILON {
                             continue;
                         }
-                        let requested = options
-                            .sideways_flow
-                            .min(diff * 0.5)
-                            .min(remaining);
+                        let requested = options.sideways_flow.min(diff * 0.5).min(remaining);
                         let flowed = self.transfer(
                             &current,
                             &mut delta,
@@ -442,7 +432,11 @@ impl LiquidMap {
         }
     }
 
-    fn sample_submerged_fraction(&self, body: &super::body::Body, terrain: Option<&TerrainMap>) -> f32 {
+    fn sample_submerged_fraction(
+        &self,
+        body: &super::body::Body,
+        terrain: Option<&TerrainMap>,
+    ) -> f32 {
         let sample_half_w = (body.width * 0.25).max(0.0);
         let sample_half_h = (body.height * 0.25).max(0.0);
         let samples = [
@@ -507,16 +501,16 @@ impl LiquidMap {
             },
             offset_x: 0.0,
             offset_y: 0.0,
-            cells: vec![LiquidCell::default(); usize::try_from(width.max(1) * height.max(1)).unwrap_or(1)],
+            cells: vec![
+                LiquidCell::default();
+                usize::try_from(width.max(1) * height.max(1)).unwrap_or(1)
+            ],
             dirty_chunks: HashSet::new(),
         })
     }
 
     /// Validates that a linked terrain grid shares the same size, cell size, and origin.
-    pub fn validate_terrain_compatibility(
-        &self,
-        terrain: &TerrainMap,
-    ) -> Result<(), PhysicsError> {
+    pub fn validate_terrain_compatibility(&self, terrain: &TerrainMap) -> Result<(), PhysicsError> {
         let same_cell_size = (terrain.cell_size - self.cell_size).abs() <= f32::EPSILON;
         let same_offsets = (terrain.offset_x - self.offset_x).abs() <= f32::EPSILON
             && (terrain.offset_y - self.offset_y).abs() <= f32::EPSILON;
@@ -553,7 +547,12 @@ impl LiquidMap {
         amount: f32,
         kind: LiquidKind,
     ) -> Result<(), PhysicsError> {
-        validate_range("amount", f64::from(amount), 0.0, f64::from(LIQUID_MAX_AMOUNT))?;
+        validate_range(
+            "amount",
+            f64::from(amount),
+            0.0,
+            f64::from(LIQUID_MAX_AMOUNT),
+        )?;
         if cx >= self.width || cy >= self.height {
             return Ok(());
         }
@@ -593,7 +592,12 @@ impl LiquidMap {
         amount: f32,
         kind: LiquidKind,
     ) -> Result<(), PhysicsError> {
-        validate_range("amount", f64::from(amount), 0.0, f64::from(LIQUID_MAX_AMOUNT))?;
+        validate_range(
+            "amount",
+            f64::from(amount),
+            0.0,
+            f64::from(LIQUID_MAX_AMOUNT),
+        )?;
         let x1 = x.saturating_add(width).min(self.width);
         let y1 = y.saturating_add(height).min(self.height);
         for cy in y..y1 {
@@ -626,7 +630,12 @@ impl LiquidMap {
         height: u32,
         amount: f32,
     ) -> Result<(), PhysicsError> {
-        validate_range("amount", f64::from(amount), 0.0, f64::from(LIQUID_MAX_AMOUNT))?;
+        validate_range(
+            "amount",
+            f64::from(amount),
+            0.0,
+            f64::from(LIQUID_MAX_AMOUNT),
+        )?;
         let x1 = x.saturating_add(width).min(self.width);
         let y1 = y.saturating_add(height).min(self.height);
         for cy in y..y1 {
@@ -785,8 +794,8 @@ impl LiquidMap {
                 continue;
             }
             let cell_top = self.offset_y + cy as f32 * self.cell_size;
-            let fill_offset = (LIQUID_MAX_AMOUNT - cell.amount.clamp(0.0, LIQUID_MAX_AMOUNT))
-                * self.cell_size;
+            let fill_offset =
+                (LIQUID_MAX_AMOUNT - cell.amount.clamp(0.0, LIQUID_MAX_AMOUNT)) * self.cell_size;
             return Some(cell_top + fill_offset);
         }
         None

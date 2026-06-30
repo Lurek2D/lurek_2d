@@ -1,10 +1,10 @@
 {
   "meta": {
-    "generated": "2026-06-29T21:54:14.046555+00:00",
+    "generated": "2026-06-30T22:00:57.710560+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "rust_items": 3138,
+      "rust_items": 3144,
       "rust_modules": 727,
       "rust_tests": 502,
       "lua_tests": 285
@@ -12,8 +12,8 @@
   },
   "rust_api": {
     "summary": {
-      "total_items": 3138,
-      "documented": 3134,
+      "total_items": 3144,
+      "documented": 3140,
       "modules": 727
     },
     "modules": {
@@ -1816,14 +1816,14 @@
             "kind": "struct",
             "description": "Thin bootstrap wrapper that owns startup config and launches `LurekApp` event loop.",
             "file": "src/app/app.rs",
-            "line": 4089
+            "line": 3855
           },
           {
             "name": "AppRunOptions",
             "kind": "struct",
             "description": "Startup options passed to the GUI/TUI/CLI application runner.",
             "file": "src/app/app.rs",
-            "line": 4097
+            "line": 3863
           }
         ]
       },
@@ -17449,49 +17449,63 @@
             "kind": "struct",
             "description": "A floor cell that sits below the standard floor plane, used for pits and step-down areas.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 31
+            "line": 34
           },
           {
             "name": "LevelSprite",
             "kind": "struct",
             "description": "A billboard sprite attached to a specific multi-level slice.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 44
+            "line": 47
+          },
+          {
+            "name": "LevelParticleEmitter",
+            "kind": "struct",
+            "description": "A world-space projected particle emitter attached to a specific multi-level slice.",
+            "file": "src/raycaster/build_scene.rs",
+            "line": 56
           },
           {
             "name": "SceneBuildParams",
             "kind": "struct",
             "description": "All camera and world parameters consumed by `RaycasterScene::build` each frame.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 1478
+            "line": 1576
           },
           {
             "name": "DirectionalSpriteTextures",
             "kind": "struct",
             "description": "Optional 4-direction texture set for bitmap actors that should read as front/side/back sprites.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 1533
+            "line": 1691
           },
           {
             "name": "WorldSprite",
             "kind": "struct",
             "description": "A billboard sprite placed in world space and projected to screen by `RaycasterScene::build`.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 1572
+            "line": 1730
+          },
+          {
+            "name": "RaycasterParticleEmitter",
+            "kind": "struct",
+            "description": "A deterministic world-space particle emitter projected into the raycaster view.",
+            "file": "src/raycaster/build_scene.rs",
+            "line": 1749
           },
           {
             "name": "TextureLookup",
             "kind": "type",
             "description": "Callback type mapping a wall cell value to an optional `TextureKey`.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 1589
+            "line": 1790
           },
           {
             "name": "CellTextureLookup",
             "kind": "type",
             "description": "Callback type mapping a grid `(x, y)` cell to an optional `TextureKey`.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 1591
+            "line": 1792
           }
         ]
       },
@@ -17868,9 +17882,17 @@
         ]
       },
       "raycaster::render": {
-        "module_doc": "This file owns the render-command bridge that turns a prepared `RaycasterScene` into generic engine draw commands. It emits textured quads or flat rectangles for ceilings, floors, walls, sprites, and transient meshes in scene order. Because the scene already contains geometry, UVs, lighting, and depth intent, this file mostly translates existing data. It is the handoff point where raycaster-specific presentation becomes backend-agnostic `RenderCommand` work. Open this file when command translation or draw ordering changes; CPU rasterization and scene assembly live in siblings.",
+        "module_doc": "This file owns the render-command bridge that turns a prepared `RaycasterScene` into generic engine draw commands. It emits textured quads, fullscreen overlays, particle batches, and transient meshes while preserving raycaster depth order. Material metadata stays render-facing here: the scene already carries UVs, light, blend intent, and optional shader handles. The bridge deliberately reuses existing render-owned shader and particle infrastructure instead of adding GPU ownership to raycaster. Open this file when raycaster presentation ordering or command translation changes; CPU rasterization and scene assembly live in siblings.",
         "source_file": "src/raycaster/render.rs",
-        "items": []
+        "items": [
+          {
+            "name": "RaycasterRenderState",
+            "kind": "struct",
+            "description": "Runtime presentation state used while translating a raycaster scene into render commands.",
+            "file": "src/raycaster/render.rs",
+            "line": 19
+          }
+        ]
       },
       "raycaster::scene": {
         "module_doc": "This file owns `RaycasterScene` and its quad, sprite, mesh, pick, and build-stat record types for one frame. It stores walls, floors, ceilings, billboard sprites, transient models, viewport size, and build counters. Quad records carry corners, UVs, texture routing, light tint, depth, and perspective data for later draw paths. Picking helpers resolve screen pixels against projected sprites and model triangles, with optional sprite alpha tests. `EntityPickResult` and related enums define the stable payload returned when higher layers query scene selections. This file is the staging boundary between raycaster world reasoning and renderer or CPU draw translation. Open this file when prepared-scene data or picking semantics change; build and render flow live in siblings.",
@@ -17881,77 +17903,98 @@
             "kind": "struct",
             "description": "Build-time counters captured while assembling a `RaycasterScene`.",
             "file": "src/raycaster/scene.rs",
-            "line": 15
+            "line": 17
           },
           {
             "name": "EntityPickKind",
             "kind": "enum",
             "description": "Entity class resolved by scene-space picking.",
             "file": "src/raycaster/scene.rs",
-            "line": 26
+            "line": 28
           },
           {
             "name": "EntityPickResult",
             "kind": "struct",
             "description": "Result of picking a projected sprite or model from a prepared raycaster scene.",
             "file": "src/raycaster/scene.rs",
-            "line": 45
+            "line": 47
           },
           {
             "name": "WallQuad",
             "kind": "struct",
             "description": "A textured or flat-shaded wall slice quad emitted for one raycaster column or face.",
             "file": "src/raycaster/scene.rs",
-            "line": 68
+            "line": 70
           },
           {
             "name": "FloorQuad",
             "kind": "struct",
             "description": "A perspective-correct floor quad covering one screen column strip.",
             "file": "src/raycaster/scene.rs",
-            "line": 86
+            "line": 92
           },
           {
             "name": "CeilingQuad",
             "kind": "struct",
             "description": "A perspective-correct ceiling quad covering one screen column strip.",
             "file": "src/raycaster/scene.rs",
-            "line": 102
+            "line": 112
           },
           {
             "name": "BillboardSprite",
             "kind": "struct",
             "description": "An axis-aligned billboard sprite quad, sorted by depth relative to walls.",
             "file": "src/raycaster/scene.rs",
-            "line": 118
+            "line": 132
+          },
+          {
+            "name": "RaycasterMaterialFrameLayout",
+            "kind": "enum",
+            "description": "Atlas-frame layout used by a raycaster material animation strip.",
+            "file": "src/raycaster/scene.rs",
+            "line": 155
+          },
+          {
+            "name": "RaycasterMaterial",
+            "kind": "struct",
+            "description": "Render-facing material metadata attached to raycaster surfaces and fullscreen effects.",
+            "file": "src/raycaster/scene.rs",
+            "line": 164
           },
           {
             "name": "RaycasterBackground",
             "kind": "enum",
             "description": "Full-frame background drawn before raycaster geometry.",
             "file": "src/raycaster/scene.rs",
-            "line": 141
+            "line": 209
           },
           {
             "name": "RaycasterOverlayEffect",
             "kind": "enum",
             "description": "Screen-space presentation effect drawn over the raycaster frame.",
             "file": "src/raycaster/scene.rs",
-            "line": 156
+            "line": 226
+          },
+          {
+            "name": "RaycasterParticle",
+            "kind": "struct",
+            "description": "A projected world-space particle prepared for transparent composition within a raycaster scene.",
+            "file": "src/raycaster/scene.rs",
+            "line": 248
           },
           {
             "name": "ModelMesh",
             "kind": "struct",
             "description": "A static mesh injected into the raycaster scene with an associated depth.",
             "file": "src/raycaster/scene.rs",
-            "line": 168
+            "line": 294
           },
           {
             "name": "RaycasterScene",
             "kind": "struct",
             "description": "Full frame scene produced by `RaycasterScene::build`; consumed by `render::generate_render_commands`.",
             "file": "src/raycaster/scene.rs",
-            "line": 186
+            "line": 312
           }
         ]
       },
@@ -29805,21 +29848,21 @@
         "module": "workbench_smoke",
         "name": "workbench_headless_boots_and_processes",
         "description": "",
-        "line": 88
+        "line": 95
       },
       {
         "file": "tests/workbench_smoke_tests.rs",
         "module": "workbench_smoke",
         "name": "workbench_headless_buttons_accept_clicks",
         "description": "",
-        "line": 146
+        "line": 168
       },
       {
         "file": "tests/workbench_smoke_tests.rs",
         "module": "workbench_smoke",
         "name": "workbench_window_screenshot_smoke",
         "description": "",
-        "line": 225
+        "line": 255
       }
     ],
     "lua": [

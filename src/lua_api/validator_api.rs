@@ -27,10 +27,7 @@ fn parse_known_api_list(value: LuaValue, api: &str) -> LuaResult<Vec<String>> {
     }
 }
 
-fn known_api_list_from_opts(
-    opts: &Option<LuaTable>,
-    api: &str,
-) -> LuaResult<Option<Vec<String>>> {
+fn known_api_list_from_opts(opts: &Option<LuaTable>, api: &str) -> LuaResult<Option<Vec<String>>> {
     let Some(opts) = opts else {
         return Ok(None);
     };
