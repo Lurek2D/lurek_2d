@@ -8,7 +8,7 @@ Static validator verifying APIs, assets, and imports.
 
 - The `validator` module is the content-checking surface for users who want assets, imports, and API usage to be verified as a structured workflow instead of informal manual review.
 - Rule types, execution policy, engine orchestration, and report structures work together so several validation checks can be run through one reusable framework.
-- That matters because a project often needs to catch different classes of mistakes, such as missing assets or invalid `lurek.*` usage, before those problems become runtime failures.
+- That matters because a project often needs to catch different classes of mistakes, such as missing assets or invalid configured API-root usage, before those problems become runtime failures.
 - It is therefore useful for CI, local authoring passes, and package or mod checks.
 - Read it as the engine's validation coordinator. Individual rules know what they are checking, but `validator` owns how those rules are configured, executed, and reported.
 
@@ -61,7 +61,7 @@ end
 Runs all validation rules against a project root directory and returns a report table.
 
 ```lua
-lurek.validator.validate(path)
+lurek.validator.validate(path, opts)
 ```
 
 **Parameters**
@@ -69,6 +69,7 @@ lurek.validator.validate(path)
 | Name | Type | Description |
 |------|------|-------------|
 | `path` | string | Root directory path of the project to validate. |
+| `opts?` | table | Optional validation options. Supports `api = {"game.quest", "game.items"}` to override the built-in `lurek.*` list. |
 
 **Returns**
 
@@ -81,10 +82,19 @@ lurek.validator.validate(path)
 ```lua
 do
 
-    local report = lurek.validator.validate("content/examples")
+    local root = "save/_validator_example"
+    local file = root .. "/custom_api.lua"
+    if not lurek.filesystem.exists(root) then
+        lurek.filesystem.createDirectory(root)
+    end
+    lurek.filesystem.write(file, "game.quest.start()\n")
+    local default_report = lurek.validator.validate(root)
+    local report = lurek.validator.validate(root, {
+        api = { "game.quest" },
+    })
     lurek.log.info(tostring("lurek.validator.validate files_checked=" .. report.files_checked))
-    lurek.log.info(tostring("errors=" .. report.error_count))
-    lurek.log.info(tostring("warnings=" .. report.warning_count))
+    lurek.log.info(tostring("default warnings=" .. default_report.warning_count))
+    lurek.log.info(tostring("custom warnings=" .. report.warning_count))
     lurek.log.info(tostring("is_clean=" .. tostring(report.is_clean)))
 end
 ```
@@ -96,7 +106,7 @@ end
 Runs API validation rules against a single Lua file and returns a report table.
 
 ```lua
-lurek.validator.validateFile(path)
+lurek.validator.validateFile(path, opts)
 ```
 
 **Parameters**
@@ -104,6 +114,7 @@ lurek.validator.validateFile(path)
 | Name | Type | Description |
 |------|------|-------------|
 | `path` | string | Absolute or relative path to the Lua file to validate. |
+| `opts?` | table | Optional validation options. Supports `api = {"game.quest", "game.items"}` to override the built-in `lurek.*` list. |
 
 **Returns**
 
@@ -116,9 +127,19 @@ lurek.validator.validateFile(path)
 ```lua
 do
 
-    local report = lurek.validator.validateFile("content/examples/math.lua")
+    local root = "save/_validator_example"
+    local file = root .. "/custom_api.lua"
+    if not lurek.filesystem.exists(root) then
+        lurek.filesystem.createDirectory(root)
+    end
+    lurek.filesystem.write(file, "game.quest.start()\n")
+    local default_report = lurek.validator.validateFile(file)
+    local report = lurek.validator.validateFile(file, {
+        api = { "game.quest" },
+    })
     lurek.log.info(tostring("lurek.validator.validateFile files_checked=" .. report.files_checked))
-    lurek.log.info(tostring("warnings=" .. report.warning_count))
+    lurek.log.info(tostring("default warnings=" .. default_report.warning_count))
+    lurek.log.info(tostring("custom warnings=" .. report.warning_count))
     lurek.log.info(tostring("errors=" .. report.error_count))
     lurek.log.info(tostring("violations=" .. #report.violations))
 end
@@ -151,18 +172,30 @@ end
 Add the built-in API compliance rule.
 
 ```lua
-LValidationEngine:addApiRule()
+LValidationEngine:addApiRule(api)
 ```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `api?` | string|string[] | Optional dotted API prefixes to treat as known roots instead of the default `lurek.*` list. |
 
 **Example**
 
 ```lua
 do
 
-    local eng = lurek.validator.newEngine("content/examples")
+    local root = "save/_validator_example"
+    local file = root .. "/custom_api.lua"
+    if not lurek.filesystem.exists(root) then
+        lurek.filesystem.createDirectory(root)
+    end
+    lurek.filesystem.write(file, "game.quest.start()\n")
+    local eng = lurek.validator.newEngine(root)
     local before = eng:ruleCount()
-    eng:addApiRule()
-    local report = eng:runFile("content/examples/math.lua")
+    eng:addApiRule({ "game.quest" })
+    local report = eng:runFile(file)
     lurek.log.info(tostring("LValidationEngine:addApiRule rules before=" .. before))
     lurek.log.info(tostring("LValidationEngine:addApiRule rules after=" .. eng:ruleCount()))
     lurek.log.info(tostring("runFile warnings=" .. report.warning_count))

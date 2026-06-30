@@ -15,8 +15,9 @@ This module primarily collaborates with `binary`, `runtime`. Its responsibility 
 
 ## Notes
 
-- No additional module-specific notes.
+- The shared sink registry can host hidden internal sinks alongside user-visible sinks; `listSinks`, `removeSink`, and `clearSinks` operate only on visible user-managed sinks.
+- Memory sink reads now expose per-entry timestamps so downstream tooling can correlate retained log history with other diagnostics surfaces.
 
 ## Architecture Links
 
-- Intentionally empty.
+- [Runtime Tooling Boundaries](../../architecture/runtime-tooling-boundaries.md)

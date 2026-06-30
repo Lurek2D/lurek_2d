@@ -158,8 +158,10 @@ fn matches_field_type(value: &FieldValue, expected: &FieldType) -> bool {
         FieldType::String | FieldType::Userdata(_) | FieldType::Function => {
             matches!(value, FieldValue::String(_))
         }
+        FieldType::Number | FieldType::Float => {
+            matches!(value, FieldValue::Float(_) | FieldValue::Integer(_))
+        }
         FieldType::Integer => matches!(value, FieldValue::Integer(_)),
-        FieldType::Float => matches!(value, FieldValue::Float(_) | FieldValue::Integer(_)),
         FieldType::Boolean => matches!(value, FieldValue::Boolean(_)),
         FieldType::Table => matches!(value, FieldValue::Table(_)),
         FieldType::Any => true,

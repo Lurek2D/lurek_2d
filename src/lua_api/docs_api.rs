@@ -902,10 +902,8 @@ fn docs_issues_to_json(issues: &[docs::DocsIssue]) -> Vec<serde_json::Value> {
         })
         .collect()
 }
-#[allow(clippy::only_used_in_recursion)]
 /// Recursively scans Lua tables and records function entries up to bounded depth.
 fn scan_table(
-    lua: &Lua,
     table: &LuaTable,
     prefix: &str,
     module_name: &str,
@@ -933,12 +931,21 @@ fn scan_table(
                 });
             }
             LuaValue::Table(sub) => {
-                scan_table(lua, sub, &qualified, &key, entries, depth + 1)?;
+                scan_table(sub, &qualified, &key, entries, depth + 1)?;
             }
             _ => {}
         }
     }
     Ok(())
+}
+
+/// Return the last dotted segment from a namespace string.
+fn namespace_leaf(namespace: &str) -> String {
+    namespace
+        .rsplit('.')
+        .next()
+        .unwrap_or(namespace)
+        .to_string()
 }
 /// Registers the `lurek.docs` API table with the Lua VM.
 pub fn register(
@@ -950,16 +957,34 @@ pub fn register(
     let state = Rc::new(RefCell::new(DocsState::new()));
 
     // -- scan --
-    /// Reflects the live `lurek` table and builds a catalog of callable APIs.
-    /// @param | opts | table? | Optional scan options table reserved for future filters.
+    /// Reflects the live `lurek` table or a supplied custom table into a callable API catalog.
+    /// @param | opts | table? | Optional scan options with `table`, `namespace` or `name`, and `module` fields; omitted scans live `lurek`.
     /// @return | LApiCatalog | Catalog populated from the currently registered `lurek` table.
     docs_tbl.set(
         "scan",
-        lua.create_function(|lua, _opts: Option<LuaTable>| {
+        lua.create_function(|lua, opts: Option<LuaTable>| {
+            let mut entries = Vec::new();
+            if let Some(opts_tbl) = opts {
+                if let Some(custom_table) = opts_tbl.get::<_, Option<LuaTable>>("table").ok().flatten() {
+                    let namespace = opts_tbl
+                        .get::<_, Option<String>>("namespace")
+                        .ok()
+                        .flatten()
+                        .or_else(|| opts_tbl.get::<_, Option<String>>("name").ok().flatten())
+                        .unwrap_or_else(|| "lurek".to_string());
+                    let module_name = opts_tbl
+                        .get::<_, Option<String>>("module")
+                        .ok()
+                        .flatten()
+                        .unwrap_or_else(|| namespace_leaf(&namespace));
+                    scan_table(&custom_table, &namespace, &module_name, &mut entries, 0)?;
+                    return Ok(ApiCatalog(entries));
+                }
+            }
+
             let globals = lua.globals();
             let luna_tbl: LuaTable = globals.get("lurek")?;
-            let mut entries = Vec::new();
-            scan_table(lua, &luna_tbl, "lurek", "lurek", &mut entries, 0)?;
+            scan_table(&luna_tbl, "lurek", "lurek", &mut entries, 0)?;
             Ok(ApiCatalog(entries))
         })?,
     )?;
@@ -976,7 +1001,7 @@ pub fn register(
             let sub: LuaTable = luna_tbl.get(module_name.clone())?;
             let prefix = format!("lurek.{}", module_name);
             let mut entries = Vec::new();
-            scan_table(lua, &sub, &prefix, &module_name, &mut entries, 0)?;
+            scan_table(&sub, &prefix, &module_name, &mut entries, 0)?;
             Ok(ApiCatalog(entries))
         })?,
     )?;
@@ -1077,21 +1102,9 @@ pub fn register(
             {
                 entry.description = description;
             } else {
-                let parts: Vec<&str> = qualified_name.rsplitn(2, '.').collect();
-                let name = parts[0].to_string();
-                let module = if parts.len() > 1 {
-                    parts[1].to_string()
-                } else {
-                    String::new()
-                };
-                st.entries.push(docs::DocEntry {
-                    name,
-                    qualified_name,
-                    module,
-                    kind: "function".to_string(),
-                    description,
-                    ..Default::default()
-                });
+                let mut entry = docs::DocEntry::from_qualified_name(&qualified_name, "function");
+                entry.description = description;
+                st.entries.push(entry);
             }
             Ok(())
         })?,
@@ -1188,7 +1201,7 @@ pub fn register(
             let globals = lua.globals();
             let luna_tbl: LuaTable = globals.get("lurek")?;
             let mut live_entries = Vec::new();
-            scan_table(lua, &luna_tbl, "lurek", "lurek", &mut live_entries, 0)?;
+            scan_table(&luna_tbl, "lurek", "lurek", &mut live_entries, 0)?;
             Ok(ValidationReport(docs::ValidationReport::compare(
                 &doc_entries,
                 &live_entries,
@@ -1214,7 +1227,7 @@ pub fn register(
                 let sub: LuaTable = luna_tbl.get(module_name.clone())?;
                 let prefix = format!("lurek.{}", module_name);
                 let mut live_entries = Vec::new();
-                scan_table(lua, &sub, &prefix, &module_name, &mut live_entries, 0)?;
+                scan_table(&sub, &prefix, &module_name, &mut live_entries, 0)?;
                 let module_doc_entries: Vec<docs::DocEntry> = doc_entries
                     .iter()
                     .filter(|e| e.module == module_name)
@@ -1316,7 +1329,7 @@ pub fn register(
             let globals = lua.globals();
             let luna_tbl: LuaTable = globals.get("lurek")?;
             let mut live = Vec::new();
-            scan_table(lua, &luna_tbl, "lurek", "lurek", &mut live, 0)?;
+            scan_table(&luna_tbl, "lurek", "lurek", &mut live, 0)?;
             let total = live.len();
             let documented = match catalog_ud {
                 Some(ud) => ud.borrow::<ApiCatalog>()?.0.len(),
@@ -1341,7 +1354,7 @@ pub fn register(
                 let sub: LuaTable = luna_tbl.get(module_name.clone())?;
                 let prefix = format!("lurek.{}", module_name);
                 let mut live = Vec::new();
-                scan_table(lua, &sub, &prefix, &module_name, &mut live, 0)?;
+                scan_table(&sub, &prefix, &module_name, &mut live, 0)?;
                 let total = live.len();
                 let documented = match catalog_ud {
                     Some(ud) => ud

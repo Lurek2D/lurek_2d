@@ -1,10 +1,22 @@
 //! Registers the `lurek.devtools` Lua API for profiling zones, debug tables, and developer-facing runtime tools.
 
-use crate::devtools::{FileWatcher, FrameStats, Logger, ProfileZone, Profiler, ReplConsole};
+use crate::devtools::{FileWatcher, FrameStats, LogLevel, ProfileZone, Profiler, ReplConsole};
+use crate::log::sinks::{Sink, SinkLevel, SinkRegistry};
 use crate::runtime::SharedState;
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
+
+const DEVTOOLS_LOG_TAG: &str = "Devtools";
+const DEVTOOLS_LOG_HISTORY_CAPACITY: usize = 1_000;
+
+struct DevtoolsLogState {
+    min_level: LogLevel,
+    console_enabled: bool,
+    log_file: String,
+    history_sink_id: u64,
+    file_sink_id: Option<u64>,
+}
 /// Stored devtools watch expression with display metadata.
 struct WatchEntry {
     /// Watch display name exposed by the lurek engine.
@@ -16,8 +28,10 @@ struct WatchEntry {
 }
 /// Shared devtools state captured by module closures.
 struct DevtoolsShared {
-    /// In-memory logger and log settings.
-    logger: Logger,
+    /// Shared log routing and devtools log settings.
+    logging: DevtoolsLogState,
+    /// Shared Lua log sink registry also used by `lurek.log`.
+    log_sinks: Rc<RefCell<SinkRegistry>>,
     /// CPU profiler state and recorded frames.
     profiler: Profiler,
     /// CPU frame timing history exposed by the lurek engine.
@@ -39,9 +53,28 @@ struct DevtoolsShared {
 }
 impl DevtoolsShared {
     /// Creates default devtools shared state.
-    fn new() -> Self {
+    fn new(log_sinks: Rc<RefCell<SinkRegistry>>) -> Self {
+        let history_sink_id = {
+            let mut history_sink =
+                Sink::memory(0, DEVTOOLS_LOG_HISTORY_CAPACITY, SinkLevel::Info);
+            history_sink.configure_output(
+                "plain",
+                false,
+                false,
+                Some(vec![DEVTOOLS_LOG_TAG.to_string()]),
+            );
+            history_sink.set_visible(false);
+            log_sinks.borrow_mut().add(history_sink)
+        };
         Self {
-            logger: Logger::new(),
+            logging: DevtoolsLogState {
+                min_level: LogLevel::Info,
+                console_enabled: true,
+                log_file: String::new(),
+                history_sink_id,
+                file_sink_id: None,
+            },
+            log_sinks,
             profiler: Profiler::new(),
             frame_stats: FrameStats::default(),
             gpu_frame_stats: FrameStats::default(),
@@ -53,6 +86,100 @@ impl DevtoolsShared {
             next_watch_id: 1,
         }
     }
+}
+
+fn sink_level_for_devtools(level: &LogLevel) -> SinkLevel {
+    match level {
+        LogLevel::Trace => SinkLevel::Trace,
+        LogLevel::Debug => SinkLevel::Debug,
+        LogLevel::Info => SinkLevel::Info,
+        LogLevel::Warn => SinkLevel::Warn,
+        LogLevel::Error | LogLevel::Fatal => SinkLevel::Error,
+    }
+}
+
+fn parsed_devtools_level(level: &str) -> LogLevel {
+    LogLevel::from_str(level).unwrap_or(LogLevel::Info)
+}
+
+fn update_devtools_sink_levels(shared: &mut DevtoolsShared) {
+    let min_level = sink_level_for_devtools(&shared.logging.min_level);
+    let history_sink_id = shared.logging.history_sink_id;
+    let file_sink_id = shared.logging.file_sink_id;
+    let mut registry = shared.log_sinks.borrow_mut();
+    for sink in &mut registry.sinks {
+        if sink.id == history_sink_id || Some(sink.id) == file_sink_id {
+            sink.min_level = min_level;
+        }
+    }
+}
+
+fn ensure_devtools_file_sink(shared: &mut DevtoolsShared) {
+    if shared.logging.log_file.is_empty() || shared.logging.file_sink_id.is_some() {
+        return;
+    }
+    let min_level = sink_level_for_devtools(&shared.logging.min_level);
+    let Ok(mut sink) = Sink::file(0, &shared.logging.log_file, min_level) else {
+        return;
+    };
+    sink.configure_output(
+        "plain",
+        false,
+        false,
+        Some(vec![DEVTOOLS_LOG_TAG.to_string()]),
+    );
+    sink.set_visible(false);
+    let id = shared.log_sinks.borrow_mut().add(sink);
+    shared.logging.file_sink_id = Some(id);
+}
+
+fn remove_devtools_file_sink(shared: &mut DevtoolsShared) {
+    let Some(id) = shared.logging.file_sink_id.take() else {
+        return;
+    };
+    shared.log_sinks.borrow_mut().remove(id);
+}
+
+fn dispatch_devtools_log(shared: &mut DevtoolsShared, level_name: &str, message: &str) {
+    let level = parsed_devtools_level(level_name);
+    if level < shared.logging.min_level {
+        return;
+    }
+    if shared.logging.console_enabled {
+        match level {
+            LogLevel::Trace => log::trace!("[{}] {}", DEVTOOLS_LOG_TAG, message),
+            LogLevel::Debug => log::debug!("[{}] {}", DEVTOOLS_LOG_TAG, message),
+            LogLevel::Info => log::info!("[{}] {}", DEVTOOLS_LOG_TAG, message),
+            LogLevel::Warn => log::warn!("[{}] {}", DEVTOOLS_LOG_TAG, message),
+            LogLevel::Error | LogLevel::Fatal => {
+                log::error!("[{}] {}", DEVTOOLS_LOG_TAG, message)
+            }
+        }
+    }
+    ensure_devtools_file_sink(shared);
+    shared.log_sinks.borrow().dispatch(
+        sink_level_for_devtools(&level),
+        DEVTOOLS_LOG_TAG,
+        message,
+    );
+}
+
+fn devtools_history_entries(
+    shared: &DevtoolsShared,
+    count: Option<usize>,
+) -> Vec<crate::log::MemoryEntry> {
+    let entries = shared
+        .log_sinks
+        .borrow()
+        .get(shared.logging.history_sink_id)
+        .and_then(|sink| sink.read_memory(false))
+        .unwrap_or_default();
+    let total = entries.len();
+    let n = match count {
+        None | Some(0) => total,
+        Some(value) => value.min(total),
+    };
+    entries.into_iter().skip(total.saturating_sub(n)).collect()
 }
 /// Converts a profiler zone tree into a Lua table.
 fn zone_to_table<'a>(lua: &'a Lua, zone: &ProfileZone) -> LuaResult<LuaTable<'a>> {
@@ -137,9 +264,10 @@ impl LuaUserData for LuaFileWatcher {
     }
 }
 /// Registers the `lurek.devtools` API table with the Lua VM.
-pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let dt = lua.create_table()?;
-    let shared = Rc::new(RefCell::new(DevtoolsShared::new()));
+    let log_sinks = state.borrow().log_sinks.clone();
+    let shared = Rc::new(RefCell::new(DevtoolsShared::new(log_sinks)));
 
     // -- log --
     /// Adds a message to the devtools log using an explicit severity level.
@@ -149,7 +277,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     dt.set(
         "log",
         lua.create_function(move |_, (level, message): (String, String)| {
-            s.borrow_mut().logger.push(&level, &message, "?", 0, None);
+            dispatch_devtools_log(&mut s.borrow_mut(), &level, &message);
             Ok(())
         })?,
     )?;
@@ -161,7 +289,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     dt.set(
         "trace",
         lua.create_function(move |_, message: String| {
-            s.borrow_mut().logger.push("trace", &message, "?", 0, None);
+            dispatch_devtools_log(&mut s.borrow_mut(), "trace", &message);
             Ok(())
         })?,
     )?;
@@ -173,7 +301,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     dt.set(
         "debug",
         lua.create_function(move |_, message: String| {
-            s.borrow_mut().logger.push("debug", &message, "?", 0, None);
+            dispatch_devtools_log(&mut s.borrow_mut(), "debug", &message);
             Ok(())
         })?,
     )?;
@@ -185,7 +313,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     dt.set(
         "info",
         lua.create_function(move |_, message: String| {
-            s.borrow_mut().logger.push("info", &message, "?", 0, None);
+            dispatch_devtools_log(&mut s.borrow_mut(), "info", &message);
             Ok(())
         })?,
     )?;
@@ -197,7 +325,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     dt.set(
         "warn",
         lua.create_function(move |_, message: String| {
-            s.borrow_mut().logger.push("warn", &message, "?", 0, None);
+            dispatch_devtools_log(&mut s.borrow_mut(), "warn", &message);
             Ok(())
         })?,
     )?;
@@ -209,7 +337,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     dt.set(
         "error",
         lua.create_function(move |_, message: String| {
-            s.borrow_mut().logger.push("error", &message, "?", 0, None);
+            dispatch_devtools_log(&mut s.borrow_mut(), "error", &message);
             Ok(())
         })?,
     )?;
@@ -221,7 +349,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     dt.set(
         "fatal",
         lua.create_function(move |_, message: String| {
-            s.borrow_mut().logger.push("fatal", &message, "?", 0, None);
+            dispatch_devtools_log(&mut s.borrow_mut(), "fatal", &message);
             Ok(())
         })?,
     )?;
@@ -233,9 +361,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     dt.set(
         "setLogLevel",
         lua.create_function(move |_, level: String| {
-            use crate::devtools::LogLevel;
             if let Some(lv) = LogLevel::from_str(&level) {
-                s.borrow_mut().logger.min_level = lv;
+                let mut shared = s.borrow_mut();
+                shared.logging.min_level = lv;
+                update_devtools_sink_levels(&mut shared);
             }
             Ok(())
         })?,
@@ -247,7 +376,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     let s = shared.clone();
     dt.set(
         "getLogLevel",
-        lua.create_function(move |_, ()| Ok(s.borrow().logger.min_level.as_str().to_string()))?,
+        lua.create_function(move |_, ()| Ok(s.borrow().logging.min_level.as_str().to_string()))?,
     )?;
 
     // -- setLogConsole --
@@ -257,7 +386,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     dt.set(
         "setLogConsole",
         lua.create_function(move |_, enabled: bool| {
-            s.borrow_mut().logger.console_enabled = enabled;
+            s.borrow_mut().logging.console_enabled = enabled;
             Ok(())
         })?,
     )?;
@@ -268,7 +397,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     let s = shared.clone();
     dt.set(
         "getLogConsole",
-        lua.create_function(move |_, ()| Ok(s.borrow().logger.console_enabled))?,
+        lua.create_function(move |_, ()| Ok(s.borrow().logging.console_enabled))?,
     )?;
 
     // -- setLogFile --
@@ -278,7 +407,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     dt.set(
         "setLogFile",
         lua.create_function(move |_, path: String| {
-            s.borrow_mut().logger.log_file = path;
+            let mut shared = s.borrow_mut();
+            remove_devtools_file_sink(&mut shared);
+            shared.logging.log_file = path;
             Ok(())
         })?,
     )?;
@@ -289,7 +420,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     let s = shared.clone();
     dt.set(
         "getLogFile",
-        lua.create_function(move |_, ()| Ok(s.borrow().logger.log_file.clone()))?,
+        lua.create_function(move |_, ()| Ok(s.borrow().logging.log_file.clone()))?,
     )?;
 
     // -- getLogHistory --
@@ -307,24 +438,20 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         "getLogHistory",
         lua.create_function(move |lua, count: Option<usize>| {
             let st = s.borrow();
-            let entries = st.logger.tail(count);
+            let entries = devtools_history_entries(&st, count);
             let tbl = lua.create_table()?;
             for (i, entry) in entries.iter().enumerate() {
                 let e = lua.create_table()?;
                 /// Performs the 'level' operation.
-                e.set("level", entry.level.clone())?;
+                e.set("level", entry.level.as_str().to_lowercase())?;
                 /// Performs the 'timestamp' operation.
-                e.set("timestamp", entry.timestamp)?;
+                e.set("timestamp", entry.timestamp_ms.unwrap_or(0) as f64)?;
                 /// Performs the 'message' operation.
-                e.set("message", entry.message.clone())?;
+                e.set("message", entry.message.as_str())?;
                 /// Performs the 'source' operation.
-                e.set("source", entry.source.clone())?;
+                e.set("source", entry.tag.as_str())?;
                 /// Performs the 'line' operation.
-                e.set("line", entry.line)?;
-                if let Some(ref cat) = entry.category {
-                    /// Performs the 'category' operation.
-                    e.set("category", cat.clone())?;
-                }
+                e.set("line", 0)?;
                 tbl.set(i + 1, e)?;
             }
             Ok(tbl)
@@ -337,7 +464,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     dt.set(
         "clearLog",
         lua.create_function(move |_, ()| {
-            s.borrow_mut().logger.clear();
+            let shared = s.borrow();
+            if let Some(sink) = shared.log_sinks.borrow().get(shared.logging.history_sink_id) {
+                let _ = sink.read_memory(true);
+            }
             Ok(())
         })?,
     )?;
@@ -910,14 +1040,14 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             /// Performs the 'profile' operation.
             snap.set("profile", profile_tbl)?;
             let log_tbl = lua.create_table()?;
-            for (i, entry) in st.logger.tail(Some(10)).iter().enumerate() {
+            for (i, entry) in devtools_history_entries(&st, Some(10)).iter().enumerate() {
                 let et = lua.create_table()?;
                 /// Performs the 'level' operation.
-                et.set("level", entry.level.clone())?;
+                et.set("level", entry.level.as_str().to_lowercase())?;
                 /// Performs the 'message' operation.
-                et.set("message", entry.message.clone())?;
+                et.set("message", entry.message.as_str())?;
                 /// Performs the 'source' operation.
-                et.set("source", entry.source.clone())?;
+                et.set("source", entry.tag.as_str())?;
                 log_tbl.set(i + 1, et)?;
             }
             /// The 'log' field value exposed to Lua scripts.

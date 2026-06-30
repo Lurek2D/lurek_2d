@@ -86,21 +86,47 @@ end
 --@api: lurek.grep.search
 do
 
-    local root = "work/grep_unit"
+    local root = "save/_grep_example"
     local paths = {
         root = root,
         search = root .. "/search",
         alpha = root .. "/search/alpha.lua",
         beta = root .. "/search/beta.lua",
-        notes = root .. "/search/notes.txt",
-        json = root .. "/sample.json",
-        log = root .. "/sample.log",
     }
-    local result = lurek.grep.search(paths.search, "needle")
+    if not lurek.filesystem.exists(root) then
+        lurek.filesystem.createDirectory(root)
+    end
+    if not lurek.filesystem.exists(paths.search) then
+        lurek.filesystem.createDirectory(paths.search)
+    end
+    lurek.filesystem.write(paths.alpha, "local needle = 'alpha'\nprint('needle alpha')\n")
+    lurek.filesystem.write(paths.beta, "local needle = 'beta'\n")
+
+    local root_abs = lurek.filesystem.getSaveDirectory() .. "/_grep_example"
+    local mod = lurek.mods.newMod({
+        id = "grep_runtime_example",
+        sandbox = {
+            api_mode = "allow_list",
+            apis = { "grep" },
+            hook_mode = "allow_list",
+            hooks = { "on_load" },
+            read_mode = "allow_list",
+            read_roots = { root_abs },
+        },
+    })
+    mod:setHook("on_load", function()
+        local allowed = lurek.grep.search(paths.search, "needle")
+        local blocked_ok = pcall(function()
+            lurek.grep.search("content/examples", "needle")
+        end)
+        return allowed, blocked_ok
+    end)
+
+    local result, blocked_ok = mod:runHook("on_load")
     local first = result.matches[1]
-    local line = first and first.lines and first.lines[1]
-    local line_no = line and line.line or -1
-    lurek.log.info("search files=" .. result.files_searched .. " matched=" .. result.files_matched .. " first_line=" .. line_no)
+    local path = first and first.path or "nil"
+    lurek.log.info("search files=" .. result.files_searched .. " matched=" .. result.files_matched .. " first_path=" .. tostring(path))
+    lurek.log.info("sandbox blocked content/examples=" .. tostring(not blocked_ok))
 end
 
 --@api: lurek.grep.jsonSearch
@@ -191,21 +217,48 @@ end
 --@api: LGrepEngine:search
 do
 
-    local root = "work/grep_unit"
+    local root = "save/_grep_engine_example"
     local paths = {
         root = root,
         search = root .. "/search",
         alpha = root .. "/search/alpha.lua",
         beta = root .. "/search/beta.lua",
-        notes = root .. "/search/notes.txt",
-        json = root .. "/sample.json",
-        log = root .. "/sample.log",
     }
-    local engine = lurek.grep.newEngine()
-    local result = engine:search(paths.search, "needle")
+    if not lurek.filesystem.exists(root) then
+        lurek.filesystem.createDirectory(root)
+    end
+    if not lurek.filesystem.exists(paths.search) then
+        lurek.filesystem.createDirectory(paths.search)
+    end
+    lurek.filesystem.write(paths.alpha, "local needle = 'alpha'\n")
+    lurek.filesystem.write(paths.beta, "local needle = 'beta'\n")
+
+    local root_abs = lurek.filesystem.getSaveDirectory() .. "/_grep_engine_example"
+    local mod = lurek.mods.newMod({
+        id = "grep_engine_runtime_example",
+        sandbox = {
+            api_mode = "allow_list",
+            apis = { "grep" },
+            hook_mode = "allow_list",
+            hooks = { "on_load" },
+            read_mode = "allow_list",
+            read_roots = { root_abs },
+        },
+    })
+    mod:setHook("on_load", function()
+        local engine = lurek.grep.newEngine()
+        local allowed = engine:search(paths.search, "needle")
+        local blocked_ok = pcall(function()
+            engine:search("content/examples", "needle")
+        end)
+        return allowed, blocked_ok
+    end)
+
+    local result, blocked_ok = mod:runHook("on_load")
     local first = result.matches[1]
     local path = first and first.path or "nil"
     lurek.log.info("LGrepEngine:search files=" .. result.files_searched .. " total=" .. result.total_matches .. " first_path=" .. tostring(path))
+    lurek.log.info("LGrepEngine:search sandbox blocked content/examples=" .. tostring(not blocked_ok))
 end
 
 --@api: LGrepEngine:searchExt

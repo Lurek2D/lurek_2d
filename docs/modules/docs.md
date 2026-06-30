@@ -270,17 +270,23 @@ lurek.docs.exportCompletions(catalog_ud, path)
 
 ```lua
 do
-    local docs_example_cat = lurek.docs.scanModule("math")
-    local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
-    local docs_example_validate = lurek.docs.validate(docs_example_cat)
-    local docs_example_quality = lurek.docs.quality(docs_example_cat)
-
-    local cat = docs_example_cat
+    lurek.docs.resetCatalog()
+    lurek.docs.describe("game.quest.start", "Start a quest step.")
+    lurek.docs.setParamInfo("game.quest.start", {
+        { name = "value", type = "number", description = "Quest stage", optional = false },
+    })
+    lurek.docs.setReturnInfo("game.quest.start", {
+        { type = "boolean", description = "True when the step can begin" },
+    })
+    local cat = lurek.docs.getCatalog()
     local path = "save/docs_completions.json"
     lurek.docs.exportCompletions(cat, path)
+    local payload = lurek.filesystem.read(path)
     lurek.log.info("completions exported")
     lurek.log.info("completions target = " .. path)
     lurek.log.info("catalog entries exported = " .. cat:entryCount())
+    lurek.log.info("custom namespace preserved = " .. tostring(string.find(payload, "game.quest.start", 1, true) ~= nil))
+    lurek.docs.resetCatalog()
 end
 ```
 
@@ -305,17 +311,23 @@ lurek.docs.exportHover(catalog_ud, path)
 
 ```lua
 do
-    local docs_example_cat = lurek.docs.scanModule("math")
-    local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
-    local docs_example_validate = lurek.docs.validate(docs_example_cat)
-    local docs_example_quality = lurek.docs.quality(docs_example_cat)
-
-    local cat = docs_example_cat
+    lurek.docs.resetCatalog()
+    lurek.docs.describe("game.quest.hover", "Hover text for a quest action.")
+    lurek.docs.setParamInfo("game.quest.hover", {
+        { name = "value", type = "string", description = "Quest id", optional = false },
+    })
+    lurek.docs.setReturnInfo("game.quest.hover", {
+        { type = "string", description = "Rendered hover text" },
+    })
+    local cat = lurek.docs.getCatalog()
     local path = "save/docs_hover.json"
     lurek.docs.exportHover(cat, path)
+    local payload = lurek.filesystem.read(path)
     lurek.log.info("hover exported")
     lurek.log.info("hover target = " .. path)
     lurek.log.info("catalog entries exported = " .. cat:entryCount())
+    lurek.log.info("custom hover key preserved = " .. tostring(string.find(payload, "game.quest.hover", 1, true) ~= nil))
+    lurek.docs.resetCatalog()
 end
 ```
 
@@ -375,17 +387,20 @@ lurek.docs.exportSignatures(catalog_ud, path)
 
 ```lua
 do
-    local docs_example_cat = lurek.docs.scanModule("math")
-    local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
-    local docs_example_validate = lurek.docs.validate(docs_example_cat)
-    local docs_example_quality = lurek.docs.quality(docs_example_cat)
-
-    local cat = docs_example_cat
+    lurek.docs.resetCatalog()
+    lurek.docs.describe("game.quest.signature", "Signature payload for a quest action.")
+    lurek.docs.setParamInfo("game.quest.signature", {
+        { name = "value", type = "number", description = "Quest stage", optional = false },
+    })
+    local cat = lurek.docs.getCatalog()
     local path = "save/docs_signatures.json"
     lurek.docs.exportSignatures(cat, path)
+    local payload = lurek.filesystem.read(path)
     lurek.log.info("signatures exported")
     lurek.log.info("signatures target = " .. path)
     lurek.log.info("catalog entries exported = " .. cat:entryCount())
+    lurek.log.info("custom signature key preserved = " .. tostring(string.find(payload, "game.quest.signature", 1, true) ~= nil))
+    lurek.docs.resetCatalog()
 end
 ```
 
@@ -649,15 +664,11 @@ lurek.docs.reflectTable(tbl, name)
 
 ```lua
 do
-    local docs_example_cat = lurek.docs.scanModule("math")
-    local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
-    local docs_example_validate = lurek.docs.validate(docs_example_cat)
-    local docs_example_quality = lurek.docs.quality(docs_example_cat)
-
     local t = {foo = 1, bar = "hello"}
-    local rows = lurek.docs.reflectTable(t, "mymod")
+    local rows = lurek.docs.reflectTable(t, "game.quest")
     lurek.log.info("reflected rows = " .. #rows)
     lurek.log.info("first reflected name = " .. tostring(rows[1] and rows[1].name))
+    lurek.log.info("first reflected qualified name = " .. tostring(rows[1] and rows[1].qualifiedName))
     lurek.log.info("first reflected type = " .. tostring(rows[1] and rows[1].type))
 end
 ```
@@ -693,7 +704,7 @@ end
 
 ### `lurek.docs.scan`
 
-Reflects the live `lurek` table and builds a catalog of callable APIs.
+Reflects the live `lurek` table or a supplied custom table into a callable API catalog.
 
 ```lua
 lurek.docs.scan(opts)
@@ -703,7 +714,7 @@ lurek.docs.scan(opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `opts?` | table | Optional scan options table reserved for future filters. |
+| `opts?` | table | Optional scan options with `table`, `namespace` or `name`, and `module` fields; omitted scans live `lurek`. |
 
 **Returns**
 
@@ -715,16 +726,18 @@ lurek.docs.scan(opts)
 
 ```lua
 do
-    local docs_example_cat = lurek.docs.scanModule("math")
-    local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
-    local docs_example_validate = lurek.docs.validate(docs_example_cat)
-    local docs_example_quality = lurek.docs.quality(docs_example_cat)
-
-    local cat = lurek.docs.scan()
-    local modules = cat:getModules()
+    local cat = lurek.docs.scan({
+        table = {
+            start = function() end,
+            state = "idle",
+        },
+        namespace = "game.quest",
+        module = "quest",
+    })
+    local entry = cat:getEntry("game.quest.start")
     lurek.log.info("scanned entries = " .. cat:entryCount())
-    lurek.log.info("catalog entries = " .. tostring(cat:entryCount()))
-    lurek.log.info("first module = " .. tostring(modules[1]))
+    lurek.log.info("custom entry = " .. tostring(entry and entry:getQualifiedName()))
+    lurek.log.info("custom module = " .. tostring(entry and entry:getModule()))
 end
 ```
 

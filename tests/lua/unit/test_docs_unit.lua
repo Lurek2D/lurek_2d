@@ -222,13 +222,13 @@ describe("Missing API Coverage", function()
     it("covers lurek.docs.exportCompletions", function()
         local path = docs_temp_path("docs_export_completions", ".json")
         lurek.docs.resetCatalog()
-        seed_catalog_entry("lurek.test.exportCompletions", "Completion entry")
+        seed_catalog_entry("game.quest.start", "Completion entry")
 
         local cat = lurek.docs.getCatalog()
         lurek.docs.exportCompletions(cat, path)
 
         expect_true(file_exists(path))
-        expect_true(string.find(read_text_file(path), "exportCompletions", 1, true) ~= nil)
+        expect_true(string.find(read_text_file(path), "game.quest.start", 1, true) ~= nil)
 
         os.remove(path)
         lurek.docs.resetCatalog()
@@ -238,13 +238,13 @@ describe("Missing API Coverage", function()
     it("covers lurek.docs.exportHover", function()
         local path = docs_temp_path("docs_export_hover", ".json")
         lurek.docs.resetCatalog()
-        seed_catalog_entry("lurek.test.exportHover", "Hover entry")
+        seed_catalog_entry("game.quest.hover", "Hover entry")
 
         local cat = lurek.docs.getCatalog()
         lurek.docs.exportHover(cat, path)
 
         expect_true(file_exists(path))
-        expect_true(string.find(read_text_file(path), "lurek.test.exportHover", 1, true) ~= nil)
+        expect_true(string.find(read_text_file(path), "game.quest.hover", 1, true) ~= nil)
 
         os.remove(path)
         lurek.docs.resetCatalog()
@@ -254,13 +254,13 @@ describe("Missing API Coverage", function()
     it("covers lurek.docs.exportSignatures", function()
         local path = docs_temp_path("docs_export_signatures", ".json")
         lurek.docs.resetCatalog()
-        seed_catalog_entry("lurek.test.exportSignatures", "Signature entry")
+        seed_catalog_entry("game.quest.signature", "Signature entry")
 
         local cat = lurek.docs.getCatalog()
         lurek.docs.exportSignatures(cat, path)
 
         expect_true(file_exists(path))
-        expect_true(string.find(read_text_file(path), "value", 1, true) ~= nil)
+        expect_true(string.find(read_text_file(path), "game.quest.signature", 1, true) ~= nil)
 
         os.remove(path)
         lurek.docs.resetCatalog()
@@ -338,18 +338,18 @@ describe("Missing API Coverage", function()
         local reflected = lurek.docs.reflectTable({
             alpha = 1,
             beta = function() end,
-        }, "demo")
+        }, "game.quest")
 
         local seen_alpha = false
         local seen_beta = false
         for _, item in ipairs(reflected) do
             if item.name == "alpha" then
                 seen_alpha = true
-                expect_equal("demo.alpha", item.qualifiedName)
+                expect_equal("game.quest.alpha", item.qualifiedName)
                 expect_equal("integer", item.type)
             elseif item.name == "beta" then
                 seen_beta = true
-                expect_equal("demo.beta", item.qualifiedName)
+                expect_equal("game.quest.beta", item.qualifiedName)
                 expect_equal("function", item.type)
             end
         end
@@ -611,9 +611,20 @@ describe("lurek.docs", function()
     -- ============= scan =============
 
     -- @covers lurek.docs.scan
-    it("should scan the lurek namespace", function()
-        local catalog = lurek.docs.scan()
+    it("should scan a custom namespace", function()
+        local catalog = lurek.docs.scan({
+            table = {
+                start = function() end,
+                state = "idle",
+            },
+            namespace = "game.quest",
+            module = "quest",
+        })
+        local entry = catalog:getEntry("game.quest.start")
         expect_not_nil(catalog, "scan() should return an ApiCatalog")
+        expect_not_nil(entry, "custom namespace entry should exist")
+        expect_equal("game.quest.start", entry:getQualifiedName())
+        expect_equal("quest", entry:getModule())
     end)
 
     -- @covers LApiCatalog:getModules

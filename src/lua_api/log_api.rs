@@ -141,9 +141,9 @@ fn config_string(config: &LuaTable, key: &str, default: &str) -> String {
         .unwrap_or_else(|| default.to_string())
 }
 /// Registers `lurek.log` severity helpers, sink management, and structured logging functions.
-pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
-    let sinks: Rc<RefCell<SinkRegistry>> = Rc::new(RefCell::new(SinkRegistry::new()));
+    let sinks = state.borrow().log_sinks.clone();
     let callback_keys: Rc<RefCell<BTreeMap<u64, LuaRegistryKey>>> =
         Rc::new(RefCell::new(BTreeMap::new()));
     let callback_keys_all = callback_keys.clone();
@@ -344,6 +344,14 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     tbl.set(
         "removeSink",
         lua.create_function(move |lua, id: u64| {
+            if !s
+                .borrow()
+                .get(id)
+                .map(|sink| sink.is_visible())
+                .unwrap_or(false)
+            {
+                return Ok(false);
+            }
             let removed = s.borrow_mut().remove(id);
             if removed {
                 if let Some(key) = callback_keys_for_remove.borrow_mut().remove(&id) {
@@ -360,8 +368,23 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     tbl.set(
         "clearSinks",
         lua.create_function(move |lua, ()| {
-            s.borrow_mut().clear();
-            for (_, key) in std::mem::take(&mut *callback_keys_for_clear.borrow_mut()) {
+            let visible_callback_ids: Vec<u64> = {
+                let registry = s.borrow();
+                registry
+                    .sinks
+                    .iter()
+                    .filter(|sink| sink.is_visible())
+                    .filter_map(|sink| {
+                        matches!(&sink.kind, SinkKind::Callback { .. }).then_some(sink.id)
+                    })
+                    .collect()
+            };
+            s.borrow_mut().clear_visible();
+            let mut callback_keys = callback_keys_for_clear.borrow_mut();
+            for id in visible_callback_ids {
+                let Some(key) = callback_keys.remove(&id) else {
+                    continue;
+                };
                 let _ = lua.remove_registry_value(key);
             }
             Ok(())
@@ -379,7 +402,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         "listSinks",
         lua.create_function(move |lua, ()| {
             let out = lua.create_table()?;
-            for (i, sink) in s.borrow().sinks.iter().enumerate() {
+            let mut visible_index = 1;
+            for sink in s.borrow().sinks.iter().filter(|sink| sink.is_visible()) {
                 let st = lua.create_table()?;
                 /// The 'id' field value exposed to Lua scripts.
                 st.set("id", sink.id)?;
@@ -391,7 +415,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                     /// Performs the 'path' operation.
                     st.set("path", p)?;
                 }
-                out.set(i + 1, st)?;
+                out.set(visible_index, st)?;
+                visible_index += 1;
             }
             Ok(out)
         })?,
@@ -427,6 +452,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                         et.set("tag", entry.tag.as_str())?;
                         /// Performs the 'message' operation.
                         et.set("message", entry.message.as_str())?;
+                        if let Some(timestamp) = entry.timestamp_ms {
+                            et.set("timestamp", timestamp as f64)?;
+                        }
                         if let Some(ref fields) = entry.fields {
                             let ft = lua.create_table()?;
                             for (k, v) in fields {

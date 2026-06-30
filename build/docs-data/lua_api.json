@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-06-29T20:24:31.576284+00:00",
+    "generated": "2026-06-29T21:54:17.027484+00:00",
     "generator": "tools/gen_lua_api_data.py",
     "version": "1.1.0",
     "stats": {
@@ -34644,7 +34644,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 149,
+            "line": 277,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -34667,7 +34667,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 161,
+            "line": 289,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -34690,7 +34690,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 173,
+            "line": 301,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -34713,7 +34713,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 185,
+            "line": 313,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -34736,7 +34736,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 197,
+            "line": 325,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -34759,7 +34759,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 209,
+            "line": 337,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -34782,7 +34782,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 221,
+            "line": 349,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -34805,7 +34805,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 233,
+            "line": 361,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -34821,7 +34821,7 @@
             "typed_params": [],
             "inferred_return": "string",
             "return_description": "Current minimum log level name.",
-            "line": 248,
+            "line": 377,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -34844,7 +34844,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 257,
+            "line": 386,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -34860,7 +34860,7 @@
             "typed_params": [],
             "inferred_return": "boolean",
             "return_description": "True when console logging is enabled.",
-            "line": 269,
+            "line": 398,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -34883,7 +34883,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 278,
+            "line": 407,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -34899,7 +34899,7 @@
             "typed_params": [],
             "inferred_return": "string",
             "return_description": "Current log file path.",
-            "line": 290,
+            "line": 421,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -34922,7 +34922,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Array table containing level, timestamp, message, source, line, and optional category fields.",
-            "line": 306,
+            "line": 437,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -34938,7 +34938,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 337,
+            "line": 464,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -34961,7 +34961,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 349,
+            "line": 479,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -34977,7 +34977,7 @@
             "typed_params": [],
             "inferred_return": "boolean",
             "return_description": "True when profiler recording is enabled.",
-            "line": 361,
+            "line": 491,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35000,7 +35000,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 370,
+            "line": 500,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35023,7 +35023,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 382,
+            "line": 512,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35039,7 +35039,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 393,
+            "line": 523,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35055,7 +35055,7 @@
             "typed_params": [],
             "inferred_return": "integer",
             "return_description": "Number of retained profiler frames.",
-            "line": 405,
+            "line": 535,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35078,7 +35078,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Array of profiler zones with name, time, selfTime, startTime, and children fields.",
-            "line": 420,
+            "line": 550,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35094,7 +35094,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 438,
+            "line": 568,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35117,7 +35117,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 450,
+            "line": 580,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35133,7 +35133,7 @@
             "typed_params": [],
             "inferred_return": "table",
             "return_description": "Table containing fps, dt, avg, min, max, p50, p95, p99, and samples fields.",
-            "line": 471,
+            "line": 601,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35156,7 +35156,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 502,
+            "line": 632,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35172,7 +35172,7 @@
             "typed_params": [],
             "inferred_return": "table",
             "return_description": "Table containing fps, dt, avg, min, max, p50, p95, p99, and samples fields.",
-            "line": 523,
+            "line": 653,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35188,7 +35188,7 @@
             "typed_params": [],
             "inferred_return": "number[]",
             "return_description": "Array table of CPU frame durations in seconds.",
-            "line": 554,
+            "line": 684,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35211,7 +35211,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 570,
+            "line": 700,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35227,7 +35227,7 @@
             "typed_params": [],
             "inferred_return": "integer",
             "return_description": "Maximum number of retained CPU frame duration samples.",
-            "line": 582,
+            "line": 712,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35250,7 +35250,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when the path was newly added; false when it was already watched.",
-            "line": 592,
+            "line": 722,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35273,7 +35273,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when the path was removed.",
-            "line": 609,
+            "line": 739,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35289,7 +35289,7 @@
             "typed_params": [],
             "inferred_return": "string[]",
             "return_description": "Sorted array table of watched path strings.",
-            "line": 618,
+            "line": 748,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35305,7 +35305,7 @@
             "typed_params": [],
             "inferred_return": "string[]",
             "return_description": "Changed path strings.",
-            "line": 636,
+            "line": 766,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35321,7 +35321,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 652,
+            "line": 782,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35337,7 +35337,7 @@
             "typed_params": [],
             "inferred_return": "number",
             "return_description": "Watch interval in seconds.",
-            "line": 664,
+            "line": 794,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35360,7 +35360,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 673,
+            "line": 803,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35383,7 +35383,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Array of frame tables; each has source (string), line (integer), name (string), and what (string) fields.",
-            "line": 685,
+            "line": 815,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35406,7 +35406,7 @@
             ],
             "inferred_return": "LuaValue",
             "return_description": "Multi-return where the first value is a boolean success flag followed by result values or an error string.",
-            "line": 713,
+            "line": 843,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35422,7 +35422,7 @@
             "typed_params": [],
             "inferred_return": "boolean",
             "return_description": "Always returns true after setting the console-open flag.",
-            "line": 735,
+            "line": 865,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35438,7 +35438,7 @@
             "typed_params": [],
             "inferred_return": "boolean",
             "return_description": "True when the console-open flag is set.",
-            "line": 747,
+            "line": 877,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35454,7 +35454,7 @@
             "typed_params": [],
             "inferred_return": "boolean",
             "return_description": "Always returns true after setting the entity-inspector flag.",
-            "line": 756,
+            "line": 886,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35470,7 +35470,7 @@
             "typed_params": [],
             "inferred_return": "boolean",
             "return_description": "True when the entity-inspector-open flag is set.",
-            "line": 768,
+            "line": 898,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35505,7 +35505,7 @@
             ],
             "inferred_return": "integer",
             "return_description": "Numeric watch id that can be passed to `removeWatch`.",
-            "line": 780,
+            "line": 910,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35528,7 +35528,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when a watch entry was removed.",
-            "line": 803,
+            "line": 933,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35544,7 +35544,7 @@
             "typed_params": [],
             "inferred_return": "table",
             "return_description": "Array of watch rows with name, category, and value fields.",
-            "line": 826,
+            "line": 956,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35560,7 +35560,7 @@
             "typed_params": [],
             "inferred_return": "table",
             "return_description": "Snapshot table with frameStats, watches, profile, log, and watchCount fields.",
-            "line": 863,
+            "line": 993,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35576,7 +35576,7 @@
             "typed_params": [],
             "inferred_return": "table",
             "return_description": "Array table with zone name, call count, total_ms, avg_ms, min_ms, max_ms, and self_ms fields.",
-            "line": 942,
+            "line": 1072,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35599,7 +35599,7 @@
             ],
             "inferred_return": "LFileWatcher",
             "return_description": "File watcher handle with polling and callback methods.",
-            "line": 1001,
+            "line": 1131,
             "file": "src/lua_api/devtools_api.rs"
           },
           {
@@ -35622,7 +35622,7 @@
             ],
             "inferred_return": "LReplConsole",
             "return_description": "REPL console handle for eval and history management.",
-            "line": 1018,
+            "line": 1148,
             "file": "src/lua_api/devtools_api.rs"
           }
         ],
@@ -35651,7 +35651,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 91,
+                "line": 218,
                 "file": "src/lua_api/devtools_api.rs"
               },
               {
@@ -35667,7 +35667,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True when at least one change was detected.",
-                "line": 101,
+                "line": 228,
                 "file": "src/lua_api/devtools_api.rs"
               },
               {
@@ -35683,7 +35683,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Watched path string.",
-                "line": 116,
+                "line": 243,
                 "file": "src/lua_api/devtools_api.rs"
               },
               {
@@ -35699,7 +35699,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 119,
+                "line": 246,
                 "file": "src/lua_api/devtools_api.rs"
               },
               {
@@ -35715,7 +35715,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LFileWatcher`.",
-                "line": 129,
+                "line": 256,
                 "file": "src/lua_api/devtools_api.rs"
               },
               {
@@ -35738,7 +35738,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 134,
+                "line": 261,
                 "file": "src/lua_api/devtools_api.rs"
               }
             ]
@@ -35767,7 +35767,7 @@
                 ],
                 "inferred_return": "LuaValue",
                 "return_description": "Evaluation result shape produced by the devtools REPL backend.",
-                "line": 1042,
+                "line": 1172,
                 "file": "src/lua_api/devtools_api.rs"
               },
               {
@@ -35783,7 +35783,7 @@
                 "typed_params": [],
                 "inferred_return": "string[]",
                 "return_description": "History entry strings.",
-                "line": 1048,
+                "line": 1178,
                 "file": "src/lua_api/devtools_api.rs"
               },
               {
@@ -35799,7 +35799,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1057,
+                "line": 1187,
                 "file": "src/lua_api/devtools_api.rs"
               },
               {
@@ -35815,7 +35815,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "History entry count.",
-                "line": 1064,
+                "line": 1194,
                 "file": "src/lua_api/devtools_api.rs"
               },
               {
@@ -35831,7 +35831,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LReplConsole`.",
-                "line": 1068,
+                "line": 1198,
                 "file": "src/lua_api/devtools_api.rs"
               },
               {
@@ -35854,7 +35854,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 1073,
+                "line": 1203,
                 "file": "src/lua_api/devtools_api.rs"
               }
             ]
@@ -37171,9 +37171,9 @@
             "lua_name": "lurek.docs.scan",
             "kind": "function",
             "owner_type": "",
-            "description": "Reflects the live `lurek` table and builds a catalog of callable APIs.",
-            "full_doc": "Reflects the live `lurek` table and builds a catalog of callable APIs.\n@param | opts | table? | Optional scan options table reserved for future filters.\n@return | LApiCatalog | Catalog populated from the currently registered `lurek` table.",
-            "params_doc": "- `opts` â€” `table?`: Optional scan options table reserved for future filters.",
+            "description": "Reflects the live `lurek` table or a supplied custom table into a callable API catalog.",
+            "full_doc": "Reflects the live `lurek` table or a supplied custom table into a callable API catalog.\n@param | opts | table? | Optional scan options with `table`, `namespace` or `name`, and `module` fields; omitted scans live `lurek`.\n@return | LApiCatalog | Catalog populated from the currently registered `lurek` table.",
+            "params_doc": "- `opts` â€” `table?`: Optional scan options with `table`, `namespace` or `name`, and `module` fields; omitted scans live `lurek`.",
             "returns_doc": "LApiCatalog",
             "inferred_sig": "([opts])",
             "typed_params": [
@@ -37181,12 +37181,12 @@
                 "opts",
                 "table?",
                 true,
-                "Optional scan options table reserved for future filters."
+                "Optional scan options with `table`, `namespace` or `name`, and `module` fields; omitted scans live `lurek`."
               ]
             ],
             "inferred_return": "LApiCatalog",
             "return_description": "Catalog populated from the currently registered `lurek` table.",
-            "line": 956,
+            "line": 963,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37209,7 +37209,7 @@
             ],
             "inferred_return": "LApiCatalog",
             "return_description": "Catalog populated from the live module table.",
-            "line": 971,
+            "line": 996,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37232,7 +37232,7 @@
             ],
             "inferred_return": "LApiCatalog",
             "return_description": "Catalog loaded from the TOML file.",
-            "line": 988,
+            "line": 1013,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37255,7 +37255,7 @@
             ],
             "inferred_return": "LApiCatalog",
             "return_description": "Catalog containing entries parsed from every readable TOML file.",
-            "line": 1022,
+            "line": 1047,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37284,7 +37284,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1069,
+            "line": 1094,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37313,7 +37313,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1105,
+            "line": 1118,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37342,7 +37342,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1135,
+            "line": 1148,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37358,7 +37358,7 @@
             "typed_params": [],
             "inferred_return": "LApiCatalog",
             "return_description": "Catalog containing entries built by the editing functions.",
-            "line": 1161,
+            "line": 1174,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37374,7 +37374,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 1169,
+            "line": 1182,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37397,7 +37397,7 @@
             ],
             "inferred_return": "LValidationReport",
             "return_description": "Report containing missing, phantom, and incomplete API names.",
-            "line": 1181,
+            "line": 1194,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37426,7 +37426,7 @@
             ],
             "inferred_return": "LValidationReport",
             "return_description": "Report containing missing, phantom, and incomplete API names for the module.",
-            "line": 1204,
+            "line": 1217,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37455,7 +37455,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Table with stale, current, and missing arrays.",
-            "line": 1239,
+            "line": 1252,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37478,7 +37478,7 @@
             ],
             "inferred_return": "LQualityReport",
             "return_description": "Quality report with overall and module-level scores.",
-            "line": 1274,
+            "line": 1287,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37507,7 +37507,7 @@
             ],
             "inferred_return": "LQualityReport",
             "return_description": "Quality report for the filtered module entries.",
-            "line": 1291,
+            "line": 1304,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37530,7 +37530,7 @@
             ],
             "inferred_return": "integer",
             "return_description": "Number of catalog entries supplied as documented.",
-            "line": 1313,
+            "line": 1326,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37559,7 +37559,7 @@
             ],
             "inferred_return": "integer",
             "return_description": "Number of catalog entries for the module.",
-            "line": 1335,
+            "line": 1348,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37588,7 +37588,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1364,
+            "line": 1377,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37617,7 +37617,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1376,
+            "line": 1389,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37646,7 +37646,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1388,
+            "line": 1401,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37675,7 +37675,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1400,
+            "line": 1413,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37704,7 +37704,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1412,
+            "line": 1425,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37733,7 +37733,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1460,
+            "line": 1473,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37762,7 +37762,7 @@
             ],
             "inferred_return": "LSchema",
             "return_description": "Schema handle that can validate Lua tables.",
-            "line": 1496,
+            "line": 1509,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37785,7 +37785,7 @@
             ],
             "inferred_return": "LSchema",
             "return_description": "Schema handle parsed from the TOML text.",
-            "line": 1537,
+            "line": 1550,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37808,7 +37808,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Reflection table keyed by module name or containing the requested module entry.",
-            "line": 1549,
+            "line": 1562,
             "file": "src/lua_api/docs_api.rs"
           },
           {
@@ -37837,7 +37837,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Array table of reflected item rows.",
-            "line": 1609,
+            "line": 1622,
             "file": "src/lua_api/docs_api.rs"
           }
         ],
@@ -53864,7 +53864,7 @@
             "typed_params": [],
             "inferred_return": "LGrepEngine",
             "return_description": "Grep engine instance.",
-            "line": 166,
+            "line": 274,
             "file": "src/lua_api/grep_api.rs"
           },
           {
@@ -53887,7 +53887,7 @@
             ],
             "inferred_return": "LGrepEngine",
             "return_description": "Grep engine instance.",
-            "line": 178,
+            "line": 288,
             "file": "src/lua_api/grep_api.rs"
           },
           {
@@ -53903,7 +53903,7 @@
             "typed_params": [],
             "inferred_return": "LFileFilter",
             "return_description": "File filter instance.",
-            "line": 200,
+            "line": 311,
             "file": "src/lua_api/grep_api.rs"
           },
           {
@@ -53919,7 +53919,7 @@
             "typed_params": [],
             "inferred_return": "LFileFilter",
             "return_description": "Pre-configured Lua filter.",
-            "line": 211,
+            "line": 322,
             "file": "src/lua_api/grep_api.rs"
           },
           {
@@ -53948,7 +53948,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Search result.",
-            "line": 224,
+            "line": 336,
             "file": "src/lua_api/grep_api.rs"
           },
           {
@@ -53977,7 +53977,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Array of matches with path and value.",
-            "line": 238,
+            "line": 356,
             "file": "src/lua_api/grep_api.rs"
           },
           {
@@ -54012,7 +54012,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Array of matching log entries.",
-            "line": 258,
+            "line": 378,
             "file": "src/lua_api/grep_api.rs"
           }
         ],
@@ -54047,7 +54047,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Search result with matches, files_searched, total_matches, duration_ms.",
-                "line": 21,
+                "line": 98,
                 "file": "src/lua_api/grep_api.rs"
               },
               {
@@ -54082,7 +54082,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Search result.",
-                "line": 35,
+                "line": 117,
                 "file": "src/lua_api/grep_api.rs"
               },
               {
@@ -54111,7 +54111,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Search result.",
-                "line": 52,
+                "line": 139,
                 "file": "src/lua_api/grep_api.rs"
               },
               {
@@ -54140,7 +54140,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Total match count.",
-                "line": 68,
+                "line": 160,
                 "file": "src/lua_api/grep_api.rs"
               },
               {
@@ -54169,7 +54169,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Search result.",
-                "line": 80,
+                "line": 173,
                 "file": "src/lua_api/grep_api.rs"
               }
             ]
@@ -54198,7 +54198,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 100,
+                "line": 207,
                 "file": "src/lua_api/grep_api.rs"
               },
               {
@@ -54221,7 +54221,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 107,
+                "line": 214,
                 "file": "src/lua_api/grep_api.rs"
               },
               {
@@ -54244,7 +54244,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 114,
+                "line": 221,
                 "file": "src/lua_api/grep_api.rs"
               },
               {
@@ -54267,7 +54267,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 121,
+                "line": 228,
                 "file": "src/lua_api/grep_api.rs"
               }
             ]
@@ -66626,7 +66626,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 360,
+            "line": 368,
             "file": "src/lua_api/log_api.rs"
           },
           {
@@ -66642,7 +66642,7 @@
             "typed_params": [],
             "inferred_return": "table",
             "return_description": "Array of sink records with id, type, level, and optional path.",
-            "line": 378,
+            "line": 401,
             "file": "src/lua_api/log_api.rs"
           },
           {
@@ -66671,7 +66671,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Array table of memory log entries.",
-            "line": 409,
+            "line": 434,
             "file": "src/lua_api/log_api.rs"
           },
           {
@@ -66694,7 +66694,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 453,
+            "line": 481,
             "file": "src/lua_api/log_api.rs"
           },
           {
@@ -66729,7 +66729,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 469,
+            "line": 497,
             "file": "src/lua_api/log_api.rs"
           },
           {
@@ -66758,7 +66758,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 495,
+            "line": 523,
             "file": "src/lua_api/log_api.rs"
           },
           {
@@ -66787,7 +66787,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 519,
+            "line": 547,
             "file": "src/lua_api/log_api.rs"
           },
           {
@@ -66816,7 +66816,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 543,
+            "line": 571,
             "file": "src/lua_api/log_api.rs"
           },
           {
@@ -66845,7 +66845,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 567,
+            "line": 595,
             "file": "src/lua_api/log_api.rs"
           }
         ],
@@ -154705,7 +154705,7 @@
             ],
             "inferred_return": "LValidationEngine",
             "return_description": "A new validation engine instance.",
-            "line": 181,
+            "line": 237,
             "file": "src/lua_api/validator_api.rs"
           },
           {
@@ -154714,21 +154714,27 @@
             "kind": "function",
             "owner_type": "",
             "description": "Runs all validation rules against a project root directory and returns a report table.",
-            "full_doc": "Runs all validation rules against a project root directory and returns a report table.\n\n@param | path | string | Root directory path of the project to validate.\n@return | table | Table with fields: errors (table), warnings (table), passed (boolean).",
-            "params_doc": "- `path` â€” `string`: Root directory path of the project to validate.",
+            "full_doc": "Runs all validation rules against a project root directory and returns a report table.\n\n@param | path | string | Root directory path of the project to validate.\n@param | opts | table? | Optional validation options. Supports `api = {\"game.quest\", \"game.items\"}` to override the built-in `lurek.*` list.\n@return | table | Table with fields: errors (table), warnings (table), passed (boolean).",
+            "params_doc": "- `path` â€” `string`: Root directory path of the project to validate.\n- `opts` â€” `table?`: Optional validation options. Supports `api = {\"game.quest\", \"game.items\"}` to override the built-in `lurek.*` list.",
             "returns_doc": "table",
-            "inferred_sig": "(path)",
+            "inferred_sig": "(path, [opts])",
             "typed_params": [
               [
                 "path",
                 "string",
                 false,
                 "Root directory path of the project to validate."
+              ],
+              [
+                "opts",
+                "table?",
+                true,
+                "Optional validation options. Supports `api = {\"game.quest\", \"game.items\"}` to override the built-in `lurek.*` list."
               ]
             ],
             "inferred_return": "table",
             "return_description": "Table with fields: errors (table), warnings (table), passed (boolean).",
-            "line": 195,
+            "line": 252,
             "file": "src/lua_api/validator_api.rs"
           },
           {
@@ -154737,21 +154743,27 @@
             "kind": "function",
             "owner_type": "",
             "description": "Runs API validation rules against a single Lua file and returns a report table.",
-            "full_doc": "Runs API validation rules against a single Lua file and returns a report table.\n\n@param | path | string | Absolute or relative path to the Lua file to validate.\n@return | table | Table with fields: errors (table), warnings (table), passed (boolean).",
-            "params_doc": "- `path` â€” `string`: Absolute or relative path to the Lua file to validate.",
+            "full_doc": "Runs API validation rules against a single Lua file and returns a report table.\n\n@param | path | string | Absolute or relative path to the Lua file to validate.\n@param | opts | table? | Optional validation options. Supports `api = {\"game.quest\", \"game.items\"}` to override the built-in `lurek.*` list.\n@return | table | Table with fields: errors (table), warnings (table), passed (boolean).",
+            "params_doc": "- `path` â€” `string`: Absolute or relative path to the Lua file to validate.\n- `opts` â€” `table?`: Optional validation options. Supports `api = {\"game.quest\", \"game.items\"}` to override the built-in `lurek.*` list.",
             "returns_doc": "table",
-            "inferred_sig": "(path)",
+            "inferred_sig": "(path, [opts])",
             "typed_params": [
               [
                 "path",
                 "string",
                 false,
                 "Absolute or relative path to the Lua file to validate."
+              ],
+              [
+                "opts",
+                "table?",
+                true,
+                "Optional validation options. Supports `api = {\"game.quest\", \"game.items\"}` to override the built-in `lurek.*` list."
               ]
             ],
             "inferred_return": "table",
             "return_description": "Table with fields: errors (table), warnings (table), passed (boolean).",
-            "line": 212,
+            "line": 271,
             "file": "src/lua_api/validator_api.rs"
           }
         ],
@@ -154780,7 +154792,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 26,
+                "line": 76,
                 "file": "src/lua_api/validator_api.rs"
               },
               {
@@ -154803,7 +154815,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 36,
+                "line": 86,
                 "file": "src/lua_api/validator_api.rs"
               },
               {
@@ -154812,14 +154824,21 @@
                 "kind": "method",
                 "owner_type": "LValidationEngine",
                 "description": "Add the built-in API compliance rule.",
-                "full_doc": "Add the built-in API compliance rule.",
-                "params_doc": "",
+                "full_doc": "Add the built-in API compliance rule.\n@param | api | string|string[]? | Optional dotted API prefixes to treat as known roots instead of the default `lurek.*` list.",
+                "params_doc": "- `api` â€” `string|string[]?`: Optional dotted API prefixes to treat as known roots instead of the default `lurek.*` list.",
                 "returns_doc": "",
-                "inferred_sig": "()",
-                "typed_params": [],
+                "inferred_sig": "([api])",
+                "typed_params": [
+                  [
+                    "api",
+                    "string|string[]?",
+                    true,
+                    "Optional dotted API prefixes to treat as known roots instead of the default `lurek.*` list."
+                  ]
+                ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 44,
+                "line": 95,
                 "file": "src/lua_api/validator_api.rs"
               },
               {
@@ -154860,7 +154879,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 55,
+                "line": 109,
                 "file": "src/lua_api/validator_api.rs"
               },
               {
@@ -154895,7 +154914,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 70,
+                "line": 124,
                 "file": "src/lua_api/validator_api.rs"
               },
               {
@@ -154918,7 +154937,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 83,
+                "line": 137,
                 "file": "src/lua_api/validator_api.rs"
               },
               {
@@ -154934,7 +154953,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Report with violations, files_checked, duration_ms, error_count, warning_count.",
-                "line": 93,
+                "line": 147,
                 "file": "src/lua_api/validator_api.rs"
               },
               {
@@ -154957,7 +154976,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Report.",
-                "line": 102,
+                "line": 156,
                 "file": "src/lua_api/validator_api.rs"
               },
               {
@@ -154973,7 +154992,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Rule count.",
-                "line": 110,
+                "line": 164,
                 "file": "src/lua_api/validator_api.rs"
               }
             ]

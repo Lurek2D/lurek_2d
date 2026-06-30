@@ -8,7 +8,7 @@
 
 - The `validator` module is the content-checking surface for users who want assets, imports, and API usage to be verified as a structured workflow instead of informal manual review.
 - Rule types, execution policy, engine orchestration, and report structures work together so several validation checks can be run through one reusable framework.
-- That matters because a project often needs to catch different classes of mistakes, such as missing assets or invalid `lurek.*` usage, before those problems become runtime failures.
+- That matters because a project often needs to catch different classes of mistakes, such as missing assets or invalid configured API-root usage, before those problems become runtime failures.
 - It is therefore useful for CI, local authoring passes, and package or mod checks.
 - Read it as the engine's validation coordinator. Individual rules know what they are checking, but `validator` owns how those rules are configured, executed, and reported.
 
@@ -16,8 +16,8 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 ## Notes
 
-- No additional module-specific notes.
+- `validate(...)`, `validateFile(...)`, and `LValidationEngine:addApiRule(...)` accept explicit dotted API-prefix lists when the caller is validating a non-`lurek` namespace such as game-specific scripting APIs.
 
 ## Architecture Links
 
-- Intentionally empty.
+- [Runtime Tooling Boundaries](../../architecture/runtime-tooling-boundaries.md)

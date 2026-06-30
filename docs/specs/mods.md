@@ -60,11 +60,10 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ### api_schema.rs
 
-- `src/mods/api_schema.rs` defines schema types that describe mod fields, methods, and asset requirements.
-- It owns `FieldType`, `FieldDef`, `MethodDef`, and `AssetRequirement`, including helper builders and type-name parsing.
-- Optional, array, and userdata type encoding lives here so manifests and generated API metadata share one contract shape.
-- This file carries schema data only; it does not register types, load manifests, or coordinate live mod lifecycles.
-- Read it when mod schema fields, type parsing semantics, or API-description payload shapes need to change.
+- Compatibility reexports for mod schema types backed by the shared `lurek_schema` crate.
+- Keep this file as the mod-facing import boundary while docs, mods, and validator converge on one schema model.
+- These reexports preserve existing module paths so internal callers can migrate without a flag day.
+- Runtime validation logic still lives in `api_registry.rs`; this file only defines the shared contract types.
 
 ### mod.rs
 
@@ -324,7 +323,8 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ## Architecture Links
 
-- Intentionally empty.
+- [Module Scope Boundaries](../../architecture/module-scope-boundaries.md)
+- [Runtime Tooling Boundaries](../../architecture/runtime-tooling-boundaries.md)
 
 ## Notes
 
@@ -332,4 +332,4 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - Allowed read paths are canonical roots; prefix-only string matching is not sufficient for mod sandbox reads.
 - `ModScanPolicy`, `ModScanReport`, `ModLoadPlan`, and `ModReloadReport` are the authoritative diagnostics surfaces for scans, dependency validation, and hot reload outcomes.
 - Manifest validation now enforces identifier, capability, asset-path, config-schema, and byte/count limits before a mod joins the registry.
-- Capability enforcement currently includes runtime boundary checks for `lurek.filesystem` and top-level `lurek.network` entry points, including write denial when a mod sandbox disables file writes.
+- Capability enforcement currently includes runtime boundary checks for `lurek.filesystem`, `lurek.grep`, and top-level `lurek.network` entry points, including write denial when a mod sandbox disables file writes.

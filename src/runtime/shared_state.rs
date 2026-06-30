@@ -18,6 +18,7 @@ use crate::input::{
     GamepadMappings, GamepadState, GamepadVibrationRequest, KeyboardState, MouseState, TouchState,
 };
 use crate::light::LightWorld;
+use crate::log::SinkRegistry;
 use crate::mods::ModSandbox;
 use crate::parallax::ParallaxLayer;
 use crate::particle::ParticleSystem;
@@ -512,6 +513,8 @@ pub struct SharedState {
     pub async_loader: Option<crate::filesystem::AsyncLoader>,
     /// Stores fs state.
     pub fs: GameFS,
+    /// Shared Lua log sink registry used by `lurek.log` and devtools routing.
+    pub log_sinks: Rc<RefCell<SinkRegistry>>,
     /// Stores pending_screenshot state.
     pub pending_screenshot: Option<ScreenshotRequest>,
     /// Stores pending_screen_capture state.
@@ -643,6 +646,7 @@ impl SharedState {
             last_shader_compile_error: None,
             async_loader: None,
             fs,
+            log_sinks: Rc::new(RefCell::new(SinkRegistry::new())),
             pending_screenshot: None,
             pending_screen_capture: false,
             captured_screen_image: None,

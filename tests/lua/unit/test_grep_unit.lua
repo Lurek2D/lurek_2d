@@ -37,6 +37,26 @@ local function new_engine()
     return lurek.grep.newEngine()
 end
 
+local function grep_sandbox_root_abs()
+    return lurek.filesystem.getWorkingDirectory() .. "/" .. WORK_ROOT
+end
+
+local function new_grep_mod(hook)
+    local mod = lurek.mods.newMod({
+        id = "grep_sandbox_mod",
+        sandbox = {
+            api_mode = "allow_list",
+            apis = { "grep" },
+            hook_mode = "allow_list",
+            hooks = { "on_load" },
+            read_mode = "allow_list",
+            read_roots = { grep_sandbox_root_abs() },
+        },
+    })
+    mod:setHook("on_load", hook)
+    return mod
+end
+
 -- @describe lurek.grep module
 describe("lurek.grep module", function()
     before_each(function()
@@ -70,14 +90,29 @@ describe("lurek.grep module", function()
     end)
 
     -- @covers lurek.grep.search
-    it("search returns literal match metadata for lua files", function()
+    it("search returns logical paths and respects mod sandbox reads", function()
         local result = lurek.grep.search(SEARCH_DIR, "needle")
         expect_equal(3, result.files_searched)
         expect_equal(3, result.files_matched)
         expect_equal(4, result.total_matches)
         expect_equal(3, #result.matches)
         expect_contains(result.matches[1].path, SEARCH_DIR)
+        expect_true(string.find(result.matches[1].path, lurek.filesystem.getWorkingDirectory(), 1, true) == nil)
         expect_type("table", result.matches[1].lines)
+
+        local mod = new_grep_mod(function()
+            local allowed = lurek.grep.search(SEARCH_DIR, "needle")
+            local blocked_ok, blocked_err = pcall(function()
+                return lurek.grep.search("content/examples", "needle")
+            end)
+            local first_path = allowed.matches[1] and allowed.matches[1].path or ""
+            return first_path, blocked_ok, blocked_err
+        end)
+
+        local first_path, blocked_ok, blocked_err = mod:runHook("on_load")
+        expect_contains(first_path, SEARCH_DIR)
+        expect_false(blocked_ok)
+        expect_not_nil(blocked_err)
     end)
 
     -- @covers lurek.grep.jsonSearch
@@ -141,11 +176,27 @@ describe("grep engine methods", function()
     end)
 
     -- @covers LGrepEngine:search
-    it("search scans the provided directory for literal matches", function()
+    it("search scans the provided directory for literal matches inside sandbox policy", function()
         local result = new_engine():search(SEARCH_DIR, "needle")
         expect_equal(3, result.files_searched)
         expect_equal(4, result.total_matches)
         expect_equal(3, #result.matches)
+        expect_true(string.find(result.matches[1].path, lurek.filesystem.getWorkingDirectory(), 1, true) == nil)
+
+        local mod = new_grep_mod(function()
+            local engine = lurek.grep.newEngine()
+            local allowed = engine:search(SEARCH_DIR, "needle")
+            local blocked_ok, blocked_err = pcall(function()
+                return engine:search("content/examples", "needle")
+            end)
+            local first_path = allowed.matches[1] and allowed.matches[1].path or ""
+            return first_path, blocked_ok, blocked_err
+        end)
+
+        local first_path, blocked_ok, blocked_err = mod:runHook("on_load")
+        expect_contains(first_path, SEARCH_DIR)
+        expect_false(blocked_ok)
+        expect_not_nil(blocked_err)
     end)
 
     -- @covers LGrepEngine:searchExt
@@ -173,6 +224,7 @@ describe("grep engine methods", function()
         expect_equal(1, result.files_searched)
         expect_equal(2, result.total_matches)
         expect_equal(FILE_A, result.matches[1].path)
+        expect_true(string.find(result.matches[1].path, lurek.filesystem.getWorkingDirectory(), 1, true) == nil)
     end)
 end)
 

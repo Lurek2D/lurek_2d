@@ -185,8 +185,10 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 ## Architecture Links
 
-- Intentionally empty.
+- [Runtime Tooling Boundaries](../../architecture/runtime-tooling-boundaries.md)
 
 ## Notes
 
 - The current implementation is intentionally narrower than the older docs: no mmap reader, no rayon-specific engine contract, and no promise of full regex semantics.
+- Lua-facing grep reads now resolve through `GameFS` and active mod sandbox enforcement instead of bypassing runtime path policy.
+- Lua-facing grep results now report logical GameFS-style paths back to scripts rather than leaking host filesystem paths.

@@ -4168,7 +4168,7 @@ lurek.docs.qualityModule( module_name : string, catalog_ud : LApiCatalog ) -> LQ
 lurek.docs.reflectLive( ns : string? ) -> table  -- Reflects live `lurek` module tables into plain name and type rows
 lurek.docs.reflectTable( tbl : table, name : string ) -> table  -- Reflects an arbitrary Lua table into name, qualifiedName, and type rows
 lurek.docs.resetCatalog()  -- Clears the editable in-memory documentation catalog
-lurek.docs.scan( opts : table? ) -> LApiCatalog  -- Reflects the live `lurek` table and builds a catalog of callable APIs
+lurek.docs.scan( opts : table? ) -> LApiCatalog  -- Reflects the live `lurek` table or a supplied custom table into a callable API catalog
 lurek.docs.scanModule( module_name : string ) -> LApiCatalog  -- Reflects one live `lurek.<module>` table and builds a catalog for that module
 lurek.docs.schema( rules : table, name : string ) -> LSchema  -- Builds a schema validator from Lua table rules
 lurek.docs.schemaFromToml( toml_text : string ) -> LSchema  -- Builds a schema validator from TOML schema text
@@ -9604,8 +9604,8 @@ LUiWidget:unbind()  -- Removes the data binding from this widget
 
 ```lua
 lurek.validator.newEngine( root : string ) -> LValidationEngine  -- Creates a new validation engine rooted at the given filesystem path
-lurek.validator.validate( path : string ) -> table  -- Runs all validation rules against a project root directory and returns a report table
-lurek.validator.validateFile( path : string ) -> table  -- Runs API validation rules against a single Lua file and returns a report table
+lurek.validator.validate( path : string, opts : table? ) -> table  -- Runs all validation rules against a project root directory and returns a report table
+lurek.validator.validateFile( path : string, opts : table? ) -> table  -- Runs API validation rules against a single Lua file and returns a report table
 ```
 
 ### `LValidationEngine`
@@ -9613,7 +9613,7 @@ lurek.validator.validateFile( path : string ) -> table  -- Runs API validation r
 Lua userdata that runs schema and constraint validation on data tables and files.
 
 ```lua
-LValidationEngine:addApiRule()  -- Add the built-in API compliance rule
+LValidationEngine:addApiRule( api : string|string[]? )  -- Add the built-in API compliance rule
 LValidationEngine:addAssetRule( asset_root : string )  -- Add the built-in asset existence rule
 LValidationEngine:addImportRule( paths : table )  -- Add the built-in import resolution rule
 LValidationEngine:addPatternRule( id : string, pattern : string, message : string, severity : string )  -- Add a custom regex pattern rule to the validation engine

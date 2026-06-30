@@ -20,7 +20,7 @@
 
 - The `validator` module is the content-checking surface for users who want assets, imports, and API usage to be verified as a structured workflow instead of informal manual review.
 - Rule types, execution policy, engine orchestration, and report structures work together so several validation checks can be run through one reusable framework.
-- That matters because a project often needs to catch different classes of mistakes, such as missing assets or invalid `lurek.*` usage, before those problems become runtime failures.
+- That matters because a project often needs to catch different classes of mistakes, such as missing assets or invalid configured API-root usage, before those problems become runtime failures.
 - It is therefore useful for CI, local authoring passes, and package or mod checks.
 - Read it as the engine's validation coordinator. Individual rules know what they are checking, but `validator` owns how those rules are configured, executed, and reported.
 
@@ -42,9 +42,9 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 ### api_check.rs
 
-- This file owns `ApiComplianceRule`, the validator check that scans Lua content for known `lurek.*` calls.
+- This file owns `ApiComplianceRule`, the validator check that scans Lua content for known dotted API prefixes.
 - It stores the allowlist of supported API prefixes and uses it to flag unknown namespaces at source lines.
-- Default construction seeds built-in engine module names so projects get API drift detection without setup.
+- Default construction seeds built-in engine module names so projects get Lurek API drift detection without setup.
 - The validate path searches textual call sites, extracts module segments, and emits structured warnings.
 - Open this file when accepted public API names change; asset, import, and custom rule logic live in siblings.
 
@@ -129,8 +129,8 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 ### Functions
 
 - `lurek.validator.newEngine(root) -> LValidationEngine`: Creates a new validation engine rooted at the given filesystem path.
-- `lurek.validator.validate(path) -> table`: Runs all validation rules against a project root directory and returns a report table.
-- `lurek.validator.validateFile(path) -> table`: Runs API validation rules against a single Lua file and returns a report table.
+- `lurek.validator.validate(path, opts?) -> table`: Runs all validation rules against a project root directory and returns a report table.
+- `lurek.validator.validateFile(path, opts?) -> table`: Runs API validation rules against a single Lua file and returns a report table.
 
 ### Callbacks
 
@@ -152,7 +152,7 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 ##### Methods
 
-- `LValidationEngine:addApiRule() -> nil`: Add the built-in API compliance rule.
+- `LValidationEngine:addApiRule(api?) -> nil`: Add the built-in API compliance rule.
 - `LValidationEngine:addAssetRule(asset_root) -> nil`: Add the built-in asset existence rule.
 - `LValidationEngine:addImportRule(paths) -> nil`: Add the built-in import resolution rule.
 - `LValidationEngine:addPatternRule(id, pattern, message, severity) -> nil`: Add a custom regex pattern rule to the validation engine.
@@ -168,8 +168,8 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 ## Architecture Links
 
-- Intentionally empty.
+- [Runtime Tooling Boundaries](../../architecture/runtime-tooling-boundaries.md)
 
 ## Notes
 
-- No additional module-specific notes.
+- `validate(...)`, `validateFile(...)`, and `LValidationEngine:addApiRule(...)` accept explicit dotted API-prefix lists when the caller is validating a non-`lurek` namespace such as game-specific scripting APIs.

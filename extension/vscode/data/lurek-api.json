@@ -7219,12 +7219,12 @@
           "name": "scan",
           "fullPath": "lurek.docs.scan",
           "signature": "([opts])",
-          "description": "Reflects the live `lurek` table and builds a catalog of callable APIs.",
+          "description": "Reflects the live `lurek` table or a supplied custom table into a callable API catalog.",
           "parameters": [
             {
               "name": "opts",
               "type": "table",
-              "description": "Optional scan options table reserved for future filters.",
+              "description": "Optional scan options with `table`, `namespace` or `name`, and `module` fields; omitted scans live `lurek`.",
               "optional": true
             }
           ],
@@ -32798,7 +32798,7 @@
         {
           "name": "validate",
           "fullPath": "lurek.validator.validate",
-          "signature": "(path)",
+          "signature": "(path, [opts])",
           "description": "Runs all validation rules against a project root directory and returns a report table.",
           "parameters": [
             {
@@ -32806,6 +32806,12 @@
               "type": "string",
               "description": "Root directory path of the project to validate.",
               "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional validation options. Supports `api = {\"game.quest\", \"game.items\"}` to override the built-in `lurek.*` list.",
+              "optional": true
             }
           ],
           "returns": "table",
@@ -32816,7 +32822,7 @@
         {
           "name": "validateFile",
           "fullPath": "lurek.validator.validateFile",
-          "signature": "(path)",
+          "signature": "(path, [opts])",
           "description": "Runs API validation rules against a single Lua file and returns a report table.",
           "parameters": [
             {
@@ -32824,6 +32830,12 @@
               "type": "string",
               "description": "Absolute or relative path to the Lua file to validate.",
               "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional validation options. Supports `api = {\"game.quest\", \"game.items\"}` to override the built-in `lurek.*` list.",
+              "optional": true
             }
           ],
           "returns": "table",
@@ -177730,9 +177742,16 @@
         {
           "name": "addApiRule",
           "fullPath": "LValidationEngine:addApiRule",
-          "signature": "()",
+          "signature": "([api])",
           "description": "Add the built-in API compliance rule.",
-          "parameters": [],
+          "parameters": [
+            {
+              "name": "api",
+              "type": "string|string[]",
+              "description": "Optional dotted API prefixes to treat as known roots instead of the default `lurek.*` list.",
+              "optional": true
+            }
+          ],
           "returns": "nil",
           "returnType": "nil",
           "isMethod": true,

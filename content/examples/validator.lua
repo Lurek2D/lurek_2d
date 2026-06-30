@@ -23,19 +23,38 @@ end
 --@api: lurek.validator.validate
 do
 
-    local report = lurek.validator.validate("content/examples")
+    local root = "save/_validator_example"
+    local file = root .. "/custom_api.lua"
+    if not lurek.filesystem.exists(root) then
+        lurek.filesystem.createDirectory(root)
+    end
+    lurek.filesystem.write(file, "game.quest.start()\ngame.missing.call()\n")
+    local default_report = lurek.validator.validate(root)
+    local report = lurek.validator.validate(root, {
+        api = { "game.quest" },
+    })
     lurek.log.info(tostring("lurek.validator.validate files_checked=" .. report.files_checked))
-    lurek.log.info(tostring("errors=" .. report.error_count))
-    lurek.log.info(tostring("warnings=" .. report.warning_count))
-    lurek.log.info(tostring("is_clean=" .. tostring(report.is_clean)))
+    lurek.log.info(tostring("default warnings=" .. default_report.warning_count))
+    lurek.log.info(tostring("custom warnings=" .. report.warning_count))
+    lurek.log.info(tostring("first custom violation=" .. tostring(report.violations[1] and report.violations[1].message or "nil")))
 end
 
 --@api: lurek.validator.validateFile
 do
 
-    local report = lurek.validator.validateFile("content/examples/math.lua")
+    local root = "save/_validator_example"
+    local file = root .. "/custom_api.lua"
+    if not lurek.filesystem.exists(root) then
+        lurek.filesystem.createDirectory(root)
+    end
+    lurek.filesystem.write(file, "game.quest.start()\ngame.missing.call()\n")
+    local default_report = lurek.validator.validateFile(file)
+    local report = lurek.validator.validateFile(file, {
+        api = { "game.quest" },
+    })
     lurek.log.info(tostring("lurek.validator.validateFile files_checked=" .. report.files_checked))
-    lurek.log.info(tostring("warnings=" .. report.warning_count))
+    lurek.log.info(tostring("default warnings=" .. default_report.warning_count))
+    lurek.log.info(tostring("custom warnings=" .. report.warning_count))
     lurek.log.info(tostring("errors=" .. report.error_count))
     lurek.log.info(tostring("violations=" .. #report.violations))
 end
@@ -65,13 +84,20 @@ end
 --@api: LValidationEngine:addApiRule
 do
 
-    local eng = lurek.validator.newEngine("content/examples")
+    local root = "save/_validator_example"
+    local file = root .. "/custom_api.lua"
+    if not lurek.filesystem.exists(root) then
+        lurek.filesystem.createDirectory(root)
+    end
+    lurek.filesystem.write(file, "game.quest.start()\ngame.missing.call()\n")
+    local eng = lurek.validator.newEngine(root)
     local before = eng:ruleCount()
-    eng:addApiRule()
-    local report = eng:runFile("content/examples/math.lua")
+    eng:addApiRule({ "game.quest" })
+    local report = eng:runFile(file)
     lurek.log.info(tostring("LValidationEngine:addApiRule rules before=" .. before))
     lurek.log.info(tostring("LValidationEngine:addApiRule rules after=" .. eng:ruleCount()))
     lurek.log.info(tostring("runFile warnings=" .. report.warning_count))
+    lurek.log.info(tostring("first violation=" .. tostring(report.violations[1] and report.violations[1].message or "nil")))
 end
 
 --@api: LValidationEngine:addPatternRule

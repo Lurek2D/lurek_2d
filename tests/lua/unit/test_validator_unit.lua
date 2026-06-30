@@ -3,6 +3,9 @@
 local VALIDATOR_ROOT = "content/examples"
 local VALIDATOR_FILE = "tests/fixtures/validator_subject.lua"
 local TOML_RULES = "tests/fixtures/validator_rules_unit.toml"
+local CUSTOM_API_ROOT = "work/validator_unit"
+local CUSTOM_API_FILE = CUSTOM_API_ROOT .. "/custom_api.lua"
+local CUSTOM_API_SOURCE = "game.quest.start()\ngame.missing.call()\n"
 
 local function new_engine()
     return lurek.validator.newEngine(VALIDATOR_ROOT)
@@ -18,23 +21,36 @@ describe("lurek.validator module", function()
     end)
 
     -- @covers lurek.validator.validate
-    it("validate returns a report for a directory root", function()
-        local report = lurek.validator.validate(VALIDATOR_ROOT)
+    it("validate accepts explicit custom API prefixes", function()
+        write_file(CUSTOM_API_FILE, CUSTOM_API_SOURCE)
+        local default_report = lurek.validator.validate(CUSTOM_API_ROOT)
+        local report = lurek.validator.validate(CUSTOM_API_ROOT, {
+            api = { "game.quest" },
+        })
+        expect_equal(0, default_report.warning_count)
         expect_type("table", report)
-        expect_true(report.files_checked > 0)
+        expect_equal(1, report.files_checked)
         expect_type("number", report.duration_ms)
-        expect_type("number", report.error_count)
-        expect_type("number", report.warning_count)
-        expect_type("boolean", report.is_clean)
-        expect_type("table", report.violations)
+        expect_equal(0, report.error_count)
+        expect_equal(1, report.warning_count)
+        expect_equal(false, report.is_clean)
+        expect_equal("api-compliance", report.violations[1].rule)
+        expect_contains(report.violations[1].message, "game.missing")
     end)
 
     -- @covers lurek.validator.validateFile
-    it("validateFile returns a single-file report", function()
-        local report = lurek.validator.validateFile(VALIDATOR_FILE)
+    it("validateFile accepts explicit custom API prefixes", function()
+        write_file(CUSTOM_API_FILE, CUSTOM_API_SOURCE)
+        local default_report = lurek.validator.validateFile(CUSTOM_API_FILE)
+        local report = lurek.validator.validateFile(CUSTOM_API_FILE, {
+            api = { "game.quest" },
+        })
+        expect_equal(0, default_report.warning_count)
         expect_type("table", report)
         expect_equal(1, report.files_checked)
-        expect_type("table", report.violations)
+        expect_equal(1, report.warning_count)
+        expect_equal("api-compliance", report.violations[1].rule)
+        expect_contains(report.violations[1].message, "game.missing")
     end)
 end)
 
@@ -55,10 +71,19 @@ describe("validator engine methods", function()
     end)
 
     -- @covers LValidationEngine:addApiRule
-    it("addApiRule registers one additional rule", function()
-        local engine = new_engine()
-        engine:addApiRule()
+    it("addApiRule accepts custom API prefix lists", function()
+        write_file(CUSTOM_API_FILE, CUSTOM_API_SOURCE)
+        local default_engine = lurek.validator.newEngine(CUSTOM_API_ROOT)
+        default_engine:addApiRule()
+        local default_report = default_engine:runFile(CUSTOM_API_FILE)
+        local engine = lurek.validator.newEngine(CUSTOM_API_ROOT)
+        engine:addApiRule({ "game.quest" })
+        local report = engine:runFile(CUSTOM_API_FILE)
+        expect_equal(0, default_report.warning_count)
         expect_equal(1, engine:ruleCount())
+        expect_equal(1, report.warning_count)
+        expect_equal("api-compliance", report.violations[1].rule)
+        expect_contains(report.violations[1].message, "game.missing")
     end)
 
     -- @covers LValidationEngine:addPatternRule

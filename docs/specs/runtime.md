@@ -42,7 +42,7 @@ This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`
 - Owning tier: `Core Runtime`
 - Plugin tier: `not_evaluated`
 - Lua binding owner: `src/lua_api/system_api.rs`
-- Referenced engine modules: `asset`, `audio`, `camera`, `event`, `filesystem`, `font`, `image`, `input`, `light`, `lua_api`, `mods`, `parallax`, `particle`, `province`, `raycaster`, `render`, `repl`, `sprite`, `tilemap`, `timer`, `ui`
+- Referenced engine modules: `asset`, `audio`, `camera`, `event`, `filesystem`, `font`, `image`, `input`, `light`, `log`, `lua_api`, `mods`, `parallax`, `particle`, `province`, `raycaster`, `render`, `repl`, `sprite`, `tilemap`, `timer`, `ui`
 
 ## Imports
 
@@ -55,6 +55,7 @@ This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`
 - `image`: Imports or references `src/image/`. Cross-group dependency from `Core Runtime` into `Platform Services`.
 - `input`: Imports or references `src/input/`. Cross-group dependency from `Core Runtime` into `Platform Services`.
 - `light`: Imports or references `src/light/`. Cross-group dependency from `Core Runtime` into `Platform Services`.
+- `log`: Imports or references `src/log/`. Cross-group dependency from `Core Runtime` into `Foundations`.
 - `lua_api`: Imports or references `src/lua_api/`. Cross-group dependency from `Core Runtime` into `Edge/Integration`.
 - `mods`: Imports or references `src/mods/`. Cross-group dependency from `Core Runtime` into `Feature Systems`.
 - `parallax`: Imports or references `src/parallax/`. Cross-group dependency from `Core Runtime` into `Feature Systems`.

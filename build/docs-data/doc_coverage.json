@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-06-29T20:24:48.735919+00:00",
+  "generated_at": "2026-06-29T21:54:45.708591+00:00",
   "summary": {
     "rust": {
-      "total": 8944,
-      "covered": 8938,
+      "total": 8937,
+      "covered": 8931,
       "missing": 6,
       "pct": 99.9
     },
@@ -14,8 +14,8 @@
       "pct": 81.8
     },
     "total": {
-      "total": 9164,
-      "covered": 9118,
+      "total": 9157,
+      "covered": 9111,
       "missing": 46,
       "pct": 99.5
     }
@@ -18369,27 +18369,27 @@
       "source": "rust",
       "module": "docs",
       "file": "src/docs/entry.rs",
-      "line": 71,
+      "line": 65,
       "kind": "fn",
-      "name": "is_complete",
+      "name": "new_in_namespace",
       "has_doc": true
     },
     {
       "source": "rust",
       "module": "docs",
       "file": "src/docs/entry.rs",
-      "line": 81,
+      "line": 82,
       "kind": "fn",
-      "name": "missing_fields",
+      "name": "new_lurek",
       "has_doc": true
     },
     {
       "source": "rust",
       "module": "docs",
       "file": "src/docs/entry.rs",
-      "line": 95,
+      "line": 87,
       "kind": "fn",
-      "name": "has_complete_parameter_docs",
+      "name": "from_qualified_name",
       "has_doc": true
     },
     {
@@ -18398,6 +18398,33 @@
       "file": "src/docs/entry.rs",
       "line": 101,
       "kind": "fn",
+      "name": "is_complete",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "docs",
+      "file": "src/docs/entry.rs",
+      "line": 111,
+      "kind": "fn",
+      "name": "missing_fields",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "docs",
+      "file": "src/docs/entry.rs",
+      "line": 125,
+      "kind": "fn",
+      "name": "has_complete_parameter_docs",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "docs",
+      "file": "src/docs/entry.rs",
+      "line": 131,
+      "kind": "fn",
       "name": "has_complete_return_docs",
       "has_doc": true
     },
@@ -18405,7 +18432,7 @@
       "source": "rust",
       "module": "docs",
       "file": "src/docs/entry.rs",
-      "line": 107,
+      "line": 137,
       "kind": "fn",
       "name": "has_example",
       "has_doc": true
@@ -18414,7 +18441,7 @@
       "source": "rust",
       "module": "docs",
       "file": "src/docs/entry.rs",
-      "line": 114,
+      "line": 144,
       "kind": "fn",
       "name": "has_since",
       "has_doc": true
@@ -18423,7 +18450,7 @@
       "source": "rust",
       "module": "docs",
       "file": "src/docs/entry.rs",
-      "line": 121,
+      "line": 151,
       "kind": "fn",
       "name": "normalized_search_text",
       "has_doc": true
@@ -33372,7 +33399,7 @@
       "source": "rust",
       "module": "log",
       "file": "src/log/sinks.rs",
-      "line": 168,
+      "line": 170,
       "kind": "struct",
       "name": "RotatingFileSink",
       "has_doc": true
@@ -33381,7 +33408,7 @@
       "source": "rust",
       "module": "log",
       "file": "src/log/sinks.rs",
-      "line": 182,
+      "line": 184,
       "kind": "fn",
       "name": "open",
       "has_doc": true
@@ -33390,7 +33417,7 @@
       "source": "rust",
       "module": "log",
       "file": "src/log/sinks.rs",
-      "line": 205,
+      "line": 207,
       "kind": "fn",
       "name": "write_with_rotation",
       "has_doc": true
@@ -33399,7 +33426,7 @@
       "source": "rust",
       "module": "log",
       "file": "src/log/sinks.rs",
-      "line": 230,
+      "line": 232,
       "kind": "fn",
       "name": "flush",
       "has_doc": true
@@ -33408,7 +33435,7 @@
       "source": "rust",
       "module": "log",
       "file": "src/log/sinks.rs",
-      "line": 296,
+      "line": 298,
       "kind": "enum",
       "name": "SinkKind",
       "has_doc": true
@@ -33417,7 +33444,7 @@
       "source": "rust",
       "module": "log",
       "file": "src/log/sinks.rs",
-      "line": 339,
+      "line": 341,
       "kind": "struct",
       "name": "Sink",
       "has_doc": true
@@ -33426,7 +33453,7 @@
       "source": "rust",
       "module": "log",
       "file": "src/log/sinks.rs",
-      "line": 361,
+      "line": 365,
       "kind": "fn",
       "name": "file",
       "has_doc": true
@@ -33435,7 +33462,7 @@
       "source": "rust",
       "module": "log",
       "file": "src/log/sinks.rs",
-      "line": 383,
+      "line": 388,
       "kind": "fn",
       "name": "memory",
       "has_doc": true
@@ -33444,7 +33471,7 @@
       "source": "rust",
       "module": "log",
       "file": "src/log/sinks.rs",
-      "line": 400,
+      "line": 406,
       "kind": "fn",
       "name": "rotating_file",
       "has_doc": true
@@ -33453,7 +33480,7 @@
       "source": "rust",
       "module": "log",
       "file": "src/log/sinks.rs",
-      "line": 424,
+      "line": 431,
       "kind": "fn",
       "name": "callback",
       "has_doc": true
@@ -33462,7 +33489,7 @@
       "source": "rust",
       "module": "log",
       "file": "src/log/sinks.rs",
-      "line": 438,
+      "line": 446,
       "kind": "fn",
       "name": "configure_output",
       "has_doc": true
@@ -33471,7 +33498,25 @@
       "source": "rust",
       "module": "log",
       "file": "src/log/sinks.rs",
-      "line": 464,
+      "line": 463,
+      "kind": "fn",
+      "name": "set_visible",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "log",
+      "file": "src/log/sinks.rs",
+      "line": 467,
+      "kind": "fn",
+      "name": "is_visible",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "log",
+      "file": "src/log/sinks.rs",
+      "line": 480,
       "kind": "fn",
       "name": "accepts",
       "has_doc": true
@@ -33480,7 +33525,7 @@
       "source": "rust",
       "module": "log",
       "file": "src/log/sinks.rs",
-      "line": 537,
+      "line": 553,
       "kind": "fn",
       "name": "write",
       "has_doc": true
@@ -33489,7 +33534,7 @@
       "source": "rust",
       "module": "log",
       "file": "src/log/sinks.rs",
-      "line": 576,
+      "line": 593,
       "kind": "fn",
       "name": "write_structured",
       "has_doc": true
@@ -33498,7 +33543,7 @@
       "source": "rust",
       "module": "log",
       "file": "src/log/sinks.rs",
-      "line": 622,
+      "line": 640,
       "kind": "fn",
       "name": "type_name",
       "has_doc": true
@@ -33507,7 +33552,7 @@
       "source": "rust",
       "module": "log",
       "file": "src/log/sinks.rs",
-      "line": 631,
+      "line": 649,
       "kind": "fn",
       "name": "path",
       "has_doc": true
@@ -33516,7 +33561,7 @@
       "source": "rust",
       "module": "log",
       "file": "src/log/sinks.rs",
-      "line": 640,
+      "line": 658,
       "kind": "fn",
       "name": "read_memory",
       "has_doc": true
@@ -33525,7 +33570,7 @@
       "source": "rust",
       "module": "log",
       "file": "src/log/sinks.rs",
-      "line": 659,
+      "line": 677,
       "kind": "fn",
       "name": "flush",
       "has_doc": true
@@ -33534,7 +33579,7 @@
       "source": "rust",
       "module": "log",
       "file": "src/log/sinks.rs",
-      "line": 681,
+      "line": 699,
       "kind": "struct",
       "name": "SinkRegistry",
       "has_doc": true
@@ -33543,7 +33588,7 @@
       "source": "rust",
       "module": "log",
       "file": "src/log/sinks.rs",
-      "line": 689,
+      "line": 707,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -33552,7 +33597,7 @@
       "source": "rust",
       "module": "log",
       "file": "src/log/sinks.rs",
-      "line": 696,
+      "line": 714,
       "kind": "fn",
       "name": "add",
       "has_doc": true
@@ -33561,7 +33606,7 @@
       "source": "rust",
       "module": "log",
       "file": "src/log/sinks.rs",
-      "line": 704,
+      "line": 722,
       "kind": "fn",
       "name": "remove",
       "has_doc": true
@@ -33570,7 +33615,7 @@
       "source": "rust",
       "module": "log",
       "file": "src/log/sinks.rs",
-      "line": 710,
+      "line": 728,
       "kind": "fn",
       "name": "clear",
       "has_doc": true
@@ -33579,7 +33624,16 @@
       "source": "rust",
       "module": "log",
       "file": "src/log/sinks.rs",
-      "line": 714,
+      "line": 732,
+      "kind": "fn",
+      "name": "clear_visible",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "log",
+      "file": "src/log/sinks.rs",
+      "line": 736,
       "kind": "fn",
       "name": "dispatch",
       "has_doc": true
@@ -33588,7 +33642,7 @@
       "source": "rust",
       "module": "log",
       "file": "src/log/sinks.rs",
-      "line": 720,
+      "line": 742,
       "kind": "fn",
       "name": "dispatch_structured",
       "has_doc": true
@@ -33597,7 +33651,7 @@
       "source": "rust",
       "module": "log",
       "file": "src/log/sinks.rs",
-      "line": 732,
+      "line": 754,
       "kind": "fn",
       "name": "get",
       "has_doc": true
@@ -34767,7 +34821,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/devtools_api.rs",
-      "line": 140,
+      "line": 267,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -34776,7 +34830,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/devtools_api.rs",
-      "line": 1031,
+      "line": 1161,
       "kind": "struct",
       "name": "LuaReplConsole",
       "has_doc": true
@@ -34830,7 +34884,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/docs_api.rs",
-      "line": 944,
+      "line": 951,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -35046,7 +35100,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/grep_api.rs",
-      "line": 161,
+      "line": 268,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -36864,7 +36918,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/validator_api.rs",
-      "line": 174,
+      "line": 230,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -42303,141 +42357,6 @@
       "line": 145,
       "kind": "fn",
       "name": "type_count",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "mods",
-      "file": "src/mods/api_schema.rs",
-      "line": 9,
-      "kind": "enum",
-      "name": "FieldType",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "mods",
-      "file": "src/mods/api_schema.rs",
-      "line": 24,
-      "kind": "fn",
-      "name": "from_name",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "mods",
-      "file": "src/mods/api_schema.rs",
-      "line": 46,
-      "kind": "fn",
-      "name": "as_str",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "mods",
-      "file": "src/mods/api_schema.rs",
-      "line": 62,
-      "kind": "fn",
-      "name": "is_known_config_type",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "mods",
-      "file": "src/mods/api_schema.rs",
-      "line": 76,
-      "kind": "fn",
-      "name": "parse_config_type_name",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "mods",
-      "file": "src/mods/api_schema.rs",
-      "line": 88,
-      "kind": "struct",
-      "name": "FieldDef",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "mods",
-      "file": "src/mods/api_schema.rs",
-      "line": 103,
-      "kind": "fn",
-      "name": "new",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "mods",
-      "file": "src/mods/api_schema.rs",
-      "line": 114,
-      "kind": "fn",
-      "name": "optional",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "mods",
-      "file": "src/mods/api_schema.rs",
-      "line": 120,
-      "kind": "fn",
-      "name": "with_default",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "mods",
-      "file": "src/mods/api_schema.rs",
-      "line": 127,
-      "kind": "fn",
-      "name": "with_description",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "mods",
-      "file": "src/mods/api_schema.rs",
-      "line": 135,
-      "kind": "struct",
-      "name": "MethodDef",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "mods",
-      "file": "src/mods/api_schema.rs",
-      "line": 148,
-      "kind": "fn",
-      "name": "new",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "mods",
-      "file": "src/mods/api_schema.rs",
-      "line": 158,
-      "kind": "fn",
-      "name": "with_param",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "mods",
-      "file": "src/mods/api_schema.rs",
-      "line": 164,
-      "kind": "fn",
-      "name": "with_return",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "mods",
-      "file": "src/mods/api_schema.rs",
-      "line": 172,
-      "kind": "struct",
-      "name": "AssetRequirement",
       "has_doc": true
     },
     {
@@ -66132,7 +66051,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 49,
+      "line": 50,
       "kind": "struct",
       "name": "ProvinceSegmentTextureCache",
       "has_doc": true
@@ -66141,7 +66060,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 70,
+      "line": 71,
       "kind": "enum",
       "name": "FullscreenType",
       "has_doc": true
@@ -66150,7 +66069,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 79,
+      "line": 80,
       "kind": "struct",
       "name": "WindowState",
       "has_doc": true
@@ -66159,7 +66078,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 191,
+      "line": 192,
       "kind": "struct",
       "name": "ErrorInfo",
       "has_doc": true
@@ -66168,7 +66087,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 204,
+      "line": 205,
       "kind": "struct",
       "name": "ScreenshotRequest",
       "has_doc": true
@@ -66177,7 +66096,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 211,
+      "line": 212,
       "kind": "struct",
       "name": "FrameProfile",
       "has_doc": true
@@ -66186,7 +66105,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 238,
+      "line": 239,
       "kind": "fn",
       "name": "sanitize_in_place",
       "has_doc": true
@@ -66195,7 +66114,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 277,
+      "line": 278,
       "kind": "struct",
       "name": "ResourceMemoryStats",
       "has_doc": true
@@ -66204,7 +66123,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 306,
+      "line": 307,
       "kind": "struct",
       "name": "ResourceBudgetReport",
       "has_doc": true
@@ -66213,7 +66132,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 327,
+      "line": 328,
       "kind": "struct",
       "name": "ReleasedTextureHandle",
       "has_doc": true
@@ -66222,7 +66141,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 338,
+      "line": 339,
       "kind": "struct",
       "name": "SharedStateValidationReport",
       "has_doc": true
@@ -66231,7 +66150,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 347,
+      "line": 348,
       "kind": "fn",
       "name": "is_clean",
       "has_doc": true
@@ -66240,7 +66159,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 354,
+      "line": 355,
       "kind": "struct",
       "name": "PhysicsRunConfig",
       "has_doc": true
@@ -66249,7 +66168,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 378,
+      "line": 379,
       "kind": "struct",
       "name": "SharedState",
       "has_doc": true
@@ -66258,7 +66177,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 575,
+      "line": 578,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -66267,7 +66186,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 677,
+      "line": 681,
       "kind": "fn",
       "name": "step_timer",
       "has_doc": true
@@ -66276,7 +66195,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 689,
+      "line": 693,
       "kind": "fn",
       "name": "touch_texture",
       "has_doc": true
@@ -66285,7 +66204,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 693,
+      "line": 697,
       "kind": "fn",
       "name": "touch_canvas",
       "has_doc": true
@@ -66294,7 +66213,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 698,
+      "line": 702,
       "kind": "fn",
       "name": "queue_released_texture_handle",
       "has_doc": true
@@ -66303,7 +66222,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 710,
+      "line": 714,
       "kind": "fn",
       "name": "clear_released_texture_handle",
       "has_doc": true
@@ -66312,7 +66231,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 717,
+      "line": 721,
       "kind": "fn",
       "name": "ack_released_texture_handle",
       "has_doc": true
@@ -66321,7 +66240,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 729,
+      "line": 733,
       "kind": "fn",
       "name": "pending_texture_release_count",
       "has_doc": true
@@ -66330,7 +66249,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 734,
+      "line": 738,
       "kind": "fn",
       "name": "release_texture",
       "has_doc": true
@@ -66339,7 +66258,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 744,
+      "line": 748,
       "kind": "fn",
       "name": "evict_lru_resources",
       "has_doc": true
@@ -66348,7 +66267,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 810,
+      "line": 814,
       "kind": "fn",
       "name": "resource_memory_stats",
       "has_doc": true
@@ -66357,7 +66276,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 856,
+      "line": 860,
       "kind": "fn",
       "name": "validate_frame_state",
       "has_doc": true
@@ -66366,7 +66285,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 949,
+      "line": 953,
       "kind": "fn",
       "name": "resource_budget_report",
       "has_doc": true
@@ -66375,7 +66294,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 973,
+      "line": 977,
       "kind": "fn",
       "name": "request_async_load",
       "has_doc": true
@@ -66384,7 +66303,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 988,
+      "line": 992,
       "kind": "fn",
       "name": "request_async_write",
       "has_doc": true
@@ -66393,7 +66312,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1027,
+      "line": 1031,
       "kind": "fn",
       "name": "set_configured_default_font",
       "has_doc": true
@@ -66402,7 +66321,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1036,
+      "line": 1040,
       "kind": "fn",
       "name": "set_active_builtin_font",
       "has_doc": true
@@ -66411,7 +66330,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1046,
+      "line": 1050,
       "kind": "fn",
       "name": "load_default_fonts",
       "has_doc": true
@@ -66420,7 +66339,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1066,
+      "line": 1070,
       "kind": "fn",
       "name": "poll_async_load",
       "has_doc": true
@@ -66429,7 +66348,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1082,
+      "line": 1086,
       "kind": "fn",
       "name": "poll_async_write",
       "has_doc": true
@@ -66438,7 +66357,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1098,
+      "line": 1102,
       "kind": "fn",
       "name": "set_active_mod_sandbox",
       "has_doc": true
@@ -66447,7 +66366,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1104,
+      "line": 1108,
       "kind": "fn",
       "name": "clear_active_mod_sandbox",
       "has_doc": true
@@ -66456,7 +66375,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1110,
+      "line": 1114,
       "kind": "fn",
       "name": "active_mod_context",
       "has_doc": true
@@ -66465,7 +66384,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1115,
+      "line": 1119,
       "kind": "fn",
       "name": "restore_active_mod_context",
       "has_doc": true
@@ -66474,7 +66393,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1125,
+      "line": 1129,
       "kind": "fn",
       "name": "ensure_mod_api_allowed",
       "has_doc": true
@@ -66483,7 +66402,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1151,
+      "line": 1155,
       "kind": "fn",
       "name": "ensure_mod_file_read",
       "has_doc": true
@@ -66492,7 +66411,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1166,
+      "line": 1170,
       "kind": "fn",
       "name": "ensure_mod_file_write",
       "has_doc": true
@@ -66501,7 +66420,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1251,
+      "line": 1255,
       "kind": "struct",
       "name": "RendererStats",
       "has_doc": true
@@ -66510,7 +66429,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1266,
+      "line": 1270,
       "kind": "fn",
       "name": "compute_stats",
       "has_doc": true
@@ -79976,6 +79895,15 @@
       "file": "src/validator/api_check.rs",
       "line": 24,
       "kind": "fn",
+      "name": "default_known_apis",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "validator",
+      "file": "src/validator/api_check.rs",
+      "line": 96,
+      "kind": "fn",
       "name": "with_defaults",
       "has_doc": true
     },
@@ -80055,7 +79983,16 @@
       "source": "rust",
       "module": "validator",
       "file": "src/validator/engine.rs",
-      "line": 55,
+      "line": 54,
+      "kind": "fn",
+      "name": "add_api_rule_with_known_apis",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "validator",
+      "file": "src/validator/engine.rs",
+      "line": 59,
       "kind": "fn",
       "name": "add_pattern_rule",
       "has_doc": true
@@ -80064,7 +80001,7 @@
       "source": "rust",
       "module": "validator",
       "file": "src/validator/engine.rs",
-      "line": 60,
+      "line": 64,
       "kind": "fn",
       "name": "load_toml_rules",
       "has_doc": true
@@ -80073,7 +80010,7 @@
       "source": "rust",
       "module": "validator",
       "file": "src/validator/engine.rs",
-      "line": 68,
+      "line": 72,
       "kind": "fn",
       "name": "run",
       "has_doc": true
@@ -80082,7 +80019,7 @@
       "source": "rust",
       "module": "validator",
       "file": "src/validator/engine.rs",
-      "line": 74,
+      "line": 78,
       "kind": "fn",
       "name": "run_files",
       "has_doc": true
@@ -80091,7 +80028,7 @@
       "source": "rust",
       "module": "validator",
       "file": "src/validator/engine.rs",
-      "line": 79,
+      "line": 83,
       "kind": "fn",
       "name": "run_single",
       "has_doc": true
@@ -80100,7 +80037,7 @@
       "source": "rust",
       "module": "validator",
       "file": "src/validator/engine.rs",
-      "line": 96,
+      "line": 100,
       "kind": "fn",
       "name": "rule_count",
       "has_doc": true
@@ -80109,7 +80046,7 @@
       "source": "rust",
       "module": "validator",
       "file": "src/validator/engine.rs",
-      "line": 101,
+      "line": 105,
       "kind": "fn",
       "name": "root",
       "has_doc": true
@@ -81063,7 +81000,7 @@
       "source": "lua_api",
       "module": "devtools_api",
       "file": "src/lua_api/devtools_api.rs",
-      "line": 61,
+      "line": 188,
       "kind": "fn",
       "name": "name",
       "has_doc": true
@@ -81072,7 +81009,7 @@
       "source": "lua_api",
       "module": "devtools_api",
       "file": "src/lua_api/devtools_api.rs",
-      "line": 63,
+      "line": 190,
       "kind": "fn",
       "name": "time",
       "has_doc": true
@@ -81081,7 +81018,7 @@
       "source": "lua_api",
       "module": "devtools_api",
       "file": "src/lua_api/devtools_api.rs",
-      "line": 65,
+      "line": 192,
       "kind": "fn",
       "name": "selfTime",
       "has_doc": true
@@ -81090,7 +81027,7 @@
       "source": "lua_api",
       "module": "devtools_api",
       "file": "src/lua_api/devtools_api.rs",
-      "line": 67,
+      "line": 194,
       "kind": "fn",
       "name": "startTime",
       "has_doc": true
@@ -81099,7 +81036,7 @@
       "source": "lua_api",
       "module": "devtools_api",
       "file": "src/lua_api/devtools_api.rs",
-      "line": 73,
+      "line": 200,
       "kind": "fn",
       "name": "children",
       "has_doc": true
@@ -81108,7 +81045,7 @@
       "source": "lua_api",
       "module": "devtools_api",
       "file": "src/lua_api/devtools_api.rs",
-      "line": 477,
+      "line": 607,
       "kind": "fn",
       "name": "fps",
       "has_doc": true
@@ -81117,7 +81054,7 @@
       "source": "lua_api",
       "module": "devtools_api",
       "file": "src/lua_api/devtools_api.rs",
-      "line": 479,
+      "line": 609,
       "kind": "fn",
       "name": "dt",
       "has_doc": true
@@ -81126,7 +81063,7 @@
       "source": "lua_api",
       "module": "devtools_api",
       "file": "src/lua_api/devtools_api.rs",
-      "line": 481,
+      "line": 611,
       "kind": "fn",
       "name": "avg",
       "has_doc": true
@@ -81135,7 +81072,7 @@
       "source": "lua_api",
       "module": "devtools_api",
       "file": "src/lua_api/devtools_api.rs",
-      "line": 483,
+      "line": 613,
       "kind": "fn",
       "name": "min",
       "has_doc": true
@@ -81144,7 +81081,7 @@
       "source": "lua_api",
       "module": "devtools_api",
       "file": "src/lua_api/devtools_api.rs",
-      "line": 485,
+      "line": 615,
       "kind": "fn",
       "name": "max",
       "has_doc": true
@@ -81153,7 +81090,7 @@
       "source": "lua_api",
       "module": "devtools_api",
       "file": "src/lua_api/devtools_api.rs",
-      "line": 487,
+      "line": 617,
       "kind": "fn",
       "name": "p50",
       "has_doc": true
@@ -81162,7 +81099,7 @@
       "source": "lua_api",
       "module": "devtools_api",
       "file": "src/lua_api/devtools_api.rs",
-      "line": 489,
+      "line": 619,
       "kind": "fn",
       "name": "p95",
       "has_doc": true
@@ -81171,7 +81108,7 @@
       "source": "lua_api",
       "module": "devtools_api",
       "file": "src/lua_api/devtools_api.rs",
-      "line": 491,
+      "line": 621,
       "kind": "fn",
       "name": "p99",
       "has_doc": true
@@ -81180,7 +81117,7 @@
       "source": "lua_api",
       "module": "devtools_api",
       "file": "src/lua_api/devtools_api.rs",
-      "line": 493,
+      "line": 623,
       "kind": "fn",
       "name": "samples",
       "has_doc": true
@@ -81189,7 +81126,7 @@
       "source": "lua_api",
       "module": "devtools_api",
       "file": "src/lua_api/devtools_api.rs",
-      "line": 529,
+      "line": 659,
       "kind": "fn",
       "name": "fps",
       "has_doc": true
@@ -81198,7 +81135,7 @@
       "source": "lua_api",
       "module": "devtools_api",
       "file": "src/lua_api/devtools_api.rs",
-      "line": 531,
+      "line": 661,
       "kind": "fn",
       "name": "dt",
       "has_doc": true
@@ -81207,7 +81144,7 @@
       "source": "lua_api",
       "module": "devtools_api",
       "file": "src/lua_api/devtools_api.rs",
-      "line": 533,
+      "line": 663,
       "kind": "fn",
       "name": "avg",
       "has_doc": true
@@ -81216,7 +81153,7 @@
       "source": "lua_api",
       "module": "devtools_api",
       "file": "src/lua_api/devtools_api.rs",
-      "line": 535,
+      "line": 665,
       "kind": "fn",
       "name": "min",
       "has_doc": true
@@ -81225,7 +81162,7 @@
       "source": "lua_api",
       "module": "devtools_api",
       "file": "src/lua_api/devtools_api.rs",
-      "line": 537,
+      "line": 667,
       "kind": "fn",
       "name": "max",
       "has_doc": true
@@ -81234,7 +81171,7 @@
       "source": "lua_api",
       "module": "devtools_api",
       "file": "src/lua_api/devtools_api.rs",
-      "line": 539,
+      "line": 669,
       "kind": "fn",
       "name": "p50",
       "has_doc": true
@@ -81243,7 +81180,7 @@
       "source": "lua_api",
       "module": "devtools_api",
       "file": "src/lua_api/devtools_api.rs",
-      "line": 541,
+      "line": 671,
       "kind": "fn",
       "name": "p95",
       "has_doc": true
@@ -81252,7 +81189,7 @@
       "source": "lua_api",
       "module": "devtools_api",
       "file": "src/lua_api/devtools_api.rs",
-      "line": 543,
+      "line": 673,
       "kind": "fn",
       "name": "p99",
       "has_doc": true
@@ -81261,7 +81198,7 @@
       "source": "lua_api",
       "module": "devtools_api",
       "file": "src/lua_api/devtools_api.rs",
-      "line": 545,
+      "line": 675,
       "kind": "fn",
       "name": "samples",
       "has_doc": true
@@ -81360,7 +81297,7 @@
       "source": "lua_api",
       "module": "docs_api",
       "file": "src/lua_api/docs_api.rs",
-      "line": 1258,
+      "line": 1271,
       "kind": "fn",
       "name": "stale",
       "has_doc": true
@@ -81369,7 +81306,7 @@
       "source": "lua_api",
       "module": "docs_api",
       "file": "src/lua_api/docs_api.rs",
-      "line": 1261,
+      "line": 1274,
       "kind": "fn",
       "name": "current",
       "has_doc": true
@@ -81378,7 +81315,7 @@
       "source": "lua_api",
       "module": "docs_api",
       "file": "src/lua_api/docs_api.rs",
-      "line": 1264,
+      "line": 1277,
       "kind": "fn",
       "name": "missing",
       "has_doc": true
@@ -81450,7 +81387,7 @@
       "source": "lua_api",
       "module": "grep_api",
       "file": "src/lua_api/grep_api.rs",
-      "line": 155,
+      "line": 262,
       "kind": "fn",
       "name": "matches",
       "has_doc": true
@@ -82863,7 +82800,7 @@
       "source": "lua_api",
       "module": "validator_api",
       "file": "src/lua_api/validator_api.rs",
-      "line": 147,
+      "line": 201,
       "kind": "fn",
       "name": "violations",
       "has_doc": true

@@ -28,7 +28,7 @@ pub struct ReturnInfo {
     pub description: String,
 }
 #[derive(Debug, Clone, Default)]
-/// Hold one normalized documentation record for a lurek API symbol.
+/// Hold one normalized documentation record for an API symbol.
 pub struct DocEntry {
     /// Store the short symbol name without module prefix.
     pub name: String,
@@ -56,13 +56,43 @@ pub struct DocEntry {
     pub extra: HashMap<String, String>,
 }
 impl DocEntry {
-    /// Create an entry shell and return it with a computed qualified name.
+    /// Create a `lurek.*` entry shell and return it with a computed qualified name.
     pub fn new(name: &str, module: &str, kind: &str) -> Self {
-        let qualified_name = format!("lurek.{}.{}", module, name);
+        Self::new_lurek(name, module, kind)
+    }
+
+    /// Create an entry shell under an arbitrary namespace and module path.
+    pub fn new_in_namespace(namespace: &str, module: &str, name: &str, kind: &str) -> Self {
+        let qualified_name = match (namespace.is_empty(), module.is_empty()) {
+            (true, true) => name.to_string(),
+            (true, false) => format!("{}.{}", module, name),
+            (false, true) => format!("{}.{}", namespace, name),
+            (false, false) => format!("{}.{}.{}", namespace, module, name),
+        };
         Self {
             name: name.to_string(),
             qualified_name,
             module: module.to_string(),
+            kind: kind.to_string(),
+            ..Default::default()
+        }
+    }
+
+    /// Create a `lurek.*` entry shell and return it with a computed qualified name.
+    pub fn new_lurek(name: &str, module: &str, kind: &str) -> Self {
+        Self::new_in_namespace("lurek", module, name, kind)
+    }
+
+    /// Create an entry shell from an already qualified API name.
+    pub fn from_qualified_name(qualified_name: &str, kind: &str) -> Self {
+        let (module, name) = match qualified_name.rsplit_once('.') {
+            Some((module, name)) => (module.to_string(), name.to_string()),
+            None => (String::new(), qualified_name.to_string()),
+        };
+        Self {
+            name,
+            qualified_name: qualified_name.to_string(),
+            module,
             kind: kind.to_string(),
             ..Default::default()
         }

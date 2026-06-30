@@ -79,6 +79,8 @@ pub struct MemoryEntry {
     pub message: String,
     /// Source tag (module name or "Lua") for filtering.
     pub tag: String,
+    /// Capture timestamp in UNIX milliseconds when the entry was recorded.
+    pub timestamp_ms: Option<u128>,
     /// Optional structured key-value pairs from a `write_structured` call.
     pub fields: Option<BTreeMap<String, String>>,
 }
@@ -343,6 +345,8 @@ pub struct Sink {
     pub min_level: SinkLevel,
     /// Storage backend for this sink.
     pub kind: SinkKind,
+    /// Whether this sink is visible through the public `lurek.log` sink-management API.
+    visible: bool,
     /// Plain, JSON, or NDJSON output format.
     format: SinkFormat,
     /// Whether millisecond timestamps are prepended to each log line.
@@ -371,6 +375,7 @@ impl Sink {
                 file: Mutex::new(file),
                 path: path.to_string(),
             },
+            visible: true,
             format: SinkFormat::Plain,
             timestamp: false,
             use_color: false,
@@ -388,6 +393,7 @@ impl Sink {
                 entries: Mutex::new(RingBuffer::new(capacity.max(1))),
                 capacity: capacity.max(1),
             },
+            visible: true,
             format: SinkFormat::Plain,
             timestamp: false,
             use_color: false,
@@ -412,6 +418,7 @@ impl Sink {
                 sink: Mutex::new(inner),
                 path: path.to_string(),
             },
+            visible: true,
             format: SinkFormat::Plain,
             timestamp: false,
             use_color: false,
@@ -426,6 +433,7 @@ impl Sink {
             id,
             min_level,
             kind: SinkKind::Callback { callback_id },
+            visible: true,
             format: SinkFormat::Plain,
             timestamp: false,
             use_color: false,
@@ -450,6 +458,14 @@ impl Sink {
         self.timestamp = timestamp;
         self.use_color = use_color;
         self.tag_filters = tag_filters;
+    }
+    /// Mark whether this sink is visible through public sink-management APIs.
+    pub(crate) fn set_visible(&mut self, visible: bool) {
+        self.visible = visible;
+    }
+    /// Return whether this sink is visible through public sink-management APIs.
+    pub fn is_visible(&self) -> bool {
+        self.visible
     }
     /// Return `true` if `tag` is allowed through the tag filter; `true` when no filter is set.
     fn allows_tag(&self, tag: &str) -> bool {
@@ -555,6 +571,7 @@ impl Sink {
                         level,
                         message: message.to_string(),
                         tag: tag.to_string(),
+                        timestamp_ms: timestamp_millis(),
                         fields: None,
                     });
                 }
@@ -601,6 +618,7 @@ impl Sink {
                         level,
                         message: plain,
                         tag: tag.to_string(),
+                        timestamp_ms: timestamp_millis(),
                         fields: Some(fields.clone()),
                     });
                 }
@@ -709,6 +727,10 @@ impl SinkRegistry {
     /// Remove all registered sinks.
     pub fn clear(&mut self) {
         self.sinks.clear();
+    }
+    /// Remove only sinks that are visible through the public `lurek.log` API.
+    pub fn clear_visible(&mut self) {
+        self.sinks.retain(|sink| !sink.is_visible());
     }
     /// Dispatch an unstructured message to all sinks that accept `level` and `tag`.
     pub fn dispatch(&self, level: SinkLevel, tag: &str, message: &str) {

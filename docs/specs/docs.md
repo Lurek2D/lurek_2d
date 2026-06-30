@@ -132,7 +132,7 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 - `lurek.docs.reflectLive(ns?) -> table`: Reflects live `lurek` module tables into plain name and type rows.
 - `lurek.docs.reflectTable(tbl, name?) -> table`: Reflects an arbitrary Lua table into name, qualifiedName, and type rows.
 - `lurek.docs.resetCatalog() -> nil`: Clears the editable in-memory documentation catalog.
-- `lurek.docs.scan(opts?) -> LApiCatalog`: Reflects the live `lurek` table and builds a catalog of callable APIs.
+- `lurek.docs.scan(opts?) -> LApiCatalog`: Reflects the live `lurek` table or a supplied custom table into a callable API catalog.
 - `lurek.docs.scanModule(module_name) -> LApiCatalog`: Reflects one live `lurek.<module>` table and builds a catalog for that module.
 - `lurek.docs.schema(rules, name?) -> LSchema`: Builds a schema validator from Lua table rules.
 - `lurek.docs.schemaFromToml(toml_text) -> LSchema`: Builds a schema validator from TOML schema text.
@@ -433,10 +433,13 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 
 ## Architecture Links
 
-- Intentionally empty.
+- [Documentation System](../../architecture/docs-system.md)
+- [Runtime Tooling Boundaries](../../architecture/runtime-tooling-boundaries.md)
 
 ## Notes
 
+- `scan(opts)` can now reflect arbitrary Lua tables under caller-provided namespaces and module names instead of assuming every catalog entry lives under `lurek.*`.
+- Editable catalog paths such as `describe(...)` and legacy `export*` helpers preserve fully qualified names outside the `lurek` namespace, so custom tool APIs round-trip without renaming.
 - The Rust docs backend now supports strict export options with safe roots, JSON-only file targets, atomic writes, byte limits, and versioned payload envelopes. The current Lua `export*` helpers remain compatible with the legacy flat payload shapes.
 - Catalog mutation is now deterministic by qualified name: duplicate entries can be rejected in checked mode and default merges replace the earlier entry in insertion order.
 - Catalog search now uses cached normalized search text and supports explicit result caps through `SearchOptions`, so repeated case-insensitive queries do not rebuild lowercase strings for every entry.

@@ -9,6 +9,56 @@ use std::cell::RefCell;
 use std::path::PathBuf;
 use std::rc::Rc;
 
+fn parse_known_api_list(value: LuaValue, api: &str) -> LuaResult<Vec<String>> {
+    match value {
+        LuaValue::Nil => Ok(Vec::new()),
+        LuaValue::String(value) => Ok(vec![value.to_str()?.to_string()]),
+        LuaValue::Table(values) => {
+            let mut known_apis = Vec::new();
+            for entry in values.sequence_values::<String>() {
+                known_apis.push(entry?);
+            }
+            Ok(known_apis)
+        }
+        other => Err(LuaError::RuntimeError(format!(
+            "{api}: expected a string or array table of API prefixes, got {}",
+            other.type_name()
+        ))),
+    }
+}
+
+fn known_api_list_from_opts(
+    opts: &Option<LuaTable>,
+    api: &str,
+) -> LuaResult<Option<Vec<String>>> {
+    let Some(opts) = opts else {
+        return Ok(None);
+    };
+    let value = opts
+        .get::<_, Option<LuaValue>>("api")
+        .map_err(|err| LuaError::RuntimeError(format!("{api}: invalid api option: {err}")))?;
+    let Some(value) = value else {
+        return Ok(None);
+    };
+    let known_apis = parse_known_api_list(value, api)?;
+    if known_apis.is_empty() {
+        Ok(None)
+    } else {
+        Ok(Some(known_apis))
+    }
+}
+
+fn add_api_rule_with_optional_known_apis(
+    engine: &mut ValidationEngine,
+    known_apis: Option<Vec<String>>,
+) {
+    if let Some(known_apis) = known_apis {
+        engine.add_api_rule_with_known_apis(known_apis);
+    } else {
+        engine.add_api_rule();
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Wrapper: LuaValidationEngine
 // ---------------------------------------------------------------------------
@@ -41,8 +91,12 @@ impl LuaUserData for LuaValidationEngine {
 
         // -- addApiRule --
         /// Add the built-in API compliance rule.
-        methods.add_method("addApiRule", |_, this, ()| {
-            this.inner.borrow_mut().add_api_rule();
+        /// @param | api | string|string[]? | Optional dotted API prefixes to treat as known roots instead of the default `lurek.*` list.
+        methods.add_method("addApiRule", |_, this, api: Option<LuaValue>| {
+            let known_apis = api
+                .map(|value| parse_known_api_list(value, "LValidationEngine:addApiRule"))
+                .transpose()?;
+            add_api_rule_with_optional_known_apis(&mut this.inner.borrow_mut(), known_apis);
             Ok(())
         });
 
@@ -165,11 +219,13 @@ fn report_to_table<'lua>(
 /// ### validate (see lurek Lua API reference for details).
 /// Quick validate: run asset + import + API rules on a directory.
 /// @param | path | string | Directory path.
+/// @param | opts | table? | Optional validation options. Supports `api = {"game.quest", "game.items"}` to override the known API prefix list.
 /// @return | table | Validation report.
 ///
 /// ### validateFile (see lurek Lua API reference for details).
 /// Validate a single Lua file with default rules.
 /// @param | path | string | File path.
+/// @param | opts | table? | Optional validation options. Supports `api = {"game.quest", "game.items"}` to override the known API prefix list.
 /// @return | table | Validation report.
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let module = lua.create_table()?;
@@ -191,15 +247,17 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Runs all validation rules against a project root directory and returns a report table.
     ///
     /// @param | path | string | Root directory path of the project to validate.
+    /// @param | opts | table? | Optional validation options. Supports `api = {"game.quest", "game.items"}` to override the built-in `lurek.*` list.
     /// @return | table | Table with fields: errors (table), warnings (table), passed (boolean).
     module.set(
         "validate",
-        lua.create_function(|lua, path: String| {
+        lua.create_function(|lua, (path, opts): (String, Option<LuaTable>)| {
             let root = PathBuf::from(&path);
             let mut engine = ValidationEngine::new(&root, ValidatorConfig::default());
             engine.add_asset_rule(&root);
             engine.add_import_rule(vec![root.clone()]);
-            engine.add_api_rule();
+            let known_apis = known_api_list_from_opts(&opts, "lurek.validator.validate")?;
+            add_api_rule_with_optional_known_apis(&mut engine, known_apis);
             let report = engine.run();
             report_to_table(lua, &report)
         })?,
@@ -208,14 +266,16 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Runs API validation rules against a single Lua file and returns a report table.
     ///
     /// @param | path | string | Absolute or relative path to the Lua file to validate.
+    /// @param | opts | table? | Optional validation options. Supports `api = {"game.quest", "game.items"}` to override the built-in `lurek.*` list.
     /// @return | table | Table with fields: errors (table), warnings (table), passed (boolean).
     module.set(
         "validateFile",
-        lua.create_function(|lua, path: String| {
+        lua.create_function(|lua, (path, opts): (String, Option<LuaTable>)| {
             let file_path = PathBuf::from(&path);
             let root = file_path.parent().unwrap_or(&file_path).to_path_buf();
             let mut engine = ValidationEngine::new(&root, ValidatorConfig::default());
-            engine.add_api_rule();
+            let known_apis = known_api_list_from_opts(&opts, "lurek.validator.validateFile")?;
+            add_api_rule_with_optional_known_apis(&mut engine, known_apis);
             let report = engine.run_single(&file_path);
             report_to_table(lua, &report)
         })?,

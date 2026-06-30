@@ -22,6 +22,8 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 
 ## Notes
 
+- `scan(opts)` can now reflect arbitrary Lua tables under caller-provided namespaces and module names instead of assuming every catalog entry lives under `lurek.*`.
+- Editable catalog paths such as `describe(...)` and legacy `export*` helpers preserve fully qualified names outside the `lurek` namespace, so custom tool APIs round-trip without renaming.
 - The Rust docs backend now supports strict export options with safe roots, JSON-only file targets, atomic writes, byte limits, and versioned payload envelopes. The current Lua `export*` helpers remain compatible with the legacy flat payload shapes.
 - Catalog mutation is now deterministic by qualified name: duplicate entries can be rejected in checked mode and default merges replace the earlier entry in insertion order.
 - Catalog search now uses cached normalized search text and supports explicit result caps through `SearchOptions`, so repeated case-insensitive queries do not rebuild lowercase strings for every entry.
@@ -31,4 +33,5 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 
 ## Architecture Links
 
-- Intentionally empty.
+- [Documentation System](../../architecture/docs-system.md)
+- [Runtime Tooling Boundaries](../../architecture/runtime-tooling-boundaries.md)

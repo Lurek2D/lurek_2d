@@ -1,10 +1,10 @@
 {
   "meta": {
-    "generated": "2026-06-29T20:24:29.855039+00:00",
+    "generated": "2026-06-29T21:54:14.046555+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "rust_items": 3142,
+      "rust_items": 3138,
       "rust_modules": 727,
       "rust_tests": 502,
       "lua_tests": 285
@@ -12,8 +12,8 @@
   },
   "rust_api": {
     "summary": {
-      "total_items": 3142,
-      "documented": 3138,
+      "total_items": 3138,
+      "documented": 3134,
       "modules": 727
     },
     "modules": {
@@ -5573,7 +5573,7 @@
           {
             "name": "DocEntry",
             "kind": "struct",
-            "description": "Hold one normalized documentation record for a lurek API symbol.",
+            "description": "Hold one normalized documentation record for an API symbol.",
             "file": "src/docs/entry.rs",
             "line": 32
           }
@@ -10760,28 +10760,28 @@
             "kind": "struct",
             "description": "Rotating file sink that renames old log files and truncates when `max_bytes` is reached.",
             "file": "src/log/sinks.rs",
-            "line": 168
+            "line": 170
           },
           {
             "name": "SinkKind",
             "kind": "enum",
             "description": "Internal storage variant for a `Sink`, determining where messages are written.",
             "file": "src/log/sinks.rs",
-            "line": 296
+            "line": 298
           },
           {
             "name": "Sink",
             "kind": "struct",
             "description": "Individual named sink with level filtering, output format, tag filters, and internal write buffer.",
             "file": "src/log/sinks.rs",
-            "line": 339
+            "line": 341
           },
           {
             "name": "SinkRegistry",
             "kind": "struct",
             "description": "Registry that holds all active `Sink` instances and dispatches incoming log messages to each.",
             "file": "src/log/sinks.rs",
-            "line": 681
+            "line": 699
           }
         ]
       },
@@ -12196,38 +12196,9 @@
         ]
       },
       "mods::api_schema": {
-        "module_doc": "`src/mods/api_schema.rs` defines schema types that describe mod fields, methods, and asset requirements. It owns `FieldType`, `FieldDef`, `MethodDef`, and `AssetRequirement`, including helper builders and type-name parsing. Optional, array, and userdata type encoding lives here so manifests and generated API metadata share one contract shape. This file carries schema data only; it does not register types, load manifests, or coordinate live mod lifecycles. Read it when mod schema fields, type parsing semantics, or API-description payload shapes need to change.",
+        "module_doc": "Compatibility reexports for mod schema types backed by the shared `lurek_schema` crate. Keep this file as the mod-facing import boundary while docs, mods, and validator converge on one schema model. These reexports preserve existing module paths so internal callers can migrate without a flag day. Runtime validation logic still lives in `api_registry.rs`; this file only defines the shared contract types.",
         "source_file": "src/mods/api_schema.rs",
-        "items": [
-          {
-            "name": "FieldType",
-            "kind": "enum",
-            "description": "Field type variant for an API schema.",
-            "file": "src/mods/api_schema.rs",
-            "line": 9
-          },
-          {
-            "name": "FieldDef",
-            "kind": "struct",
-            "description": "A single field definition in an API schema.",
-            "file": "src/mods/api_schema.rs",
-            "line": 88
-          },
-          {
-            "name": "MethodDef",
-            "kind": "struct",
-            "description": "A method definition in an API schema.",
-            "file": "src/mods/api_schema.rs",
-            "line": 135
-          },
-          {
-            "name": "AssetRequirement",
-            "kind": "struct",
-            "description": "Asset requirement declared by an API type.",
-            "file": "src/mods/api_schema.rs",
-            "line": 172
-          }
-        ]
+        "items": []
       },
       "mods": {
         "module_doc": "`src/mods/mod.rs` is the module index for mod schemas, registries, loading, sandboxing, and lifecycle management. It declares the files that own API contracts, manifest parsing, runtime coordination, and Lua-facing safety boundaries. This file reexports the main mod types so higher layers can use the subsystem without importing deep internal paths. No manifest parsing or runtime mod state lives here; it only defines visibility and the public module surface. Read this index first when tracing mod support, because it shows where schema, loader, manager, and sandbox logic split. Changes here affect reachability and API shape, not dependency ordering, sandbox policy, or manifest interpretation.",
@@ -21933,91 +21904,91 @@
             "kind": "struct",
             "description": "Cached texture handle for engine-generated province segment rasters.",
             "file": "src/runtime/shared_state.rs",
-            "line": 49
+            "line": 50
           },
           {
             "name": "FullscreenType",
             "kind": "enum",
             "description": "Runtime enum for FullscreenType.",
             "file": "src/runtime/shared_state.rs",
-            "line": 70
+            "line": 71
           },
           {
             "name": "WindowState",
             "kind": "struct",
             "description": "Runtime data model for deferred and observed window state shared across Lua bindings and the app loop. # Fields",
             "file": "src/runtime/shared_state.rs",
-            "line": 79
+            "line": 80
           },
           {
             "name": "ErrorInfo",
             "kind": "struct",
             "description": "Runtime data model for the latest engine error snapshot exposed to Lua and diagnostics. # Fields",
             "file": "src/runtime/shared_state.rs",
-            "line": 191
+            "line": 192
           },
           {
             "name": "ScreenshotRequest",
             "kind": "struct",
             "description": "Runtime data model for a deferred screenshot capture request. # Fields",
             "file": "src/runtime/shared_state.rs",
-            "line": 204
+            "line": 205
           },
           {
             "name": "FrameProfile",
             "kind": "struct",
             "description": "Runtime data model for per-frame timing buckets captured by the runtime. # Fields",
             "file": "src/runtime/shared_state.rs",
-            "line": 211
+            "line": 212
           },
           {
             "name": "ResourceMemoryStats",
             "kind": "struct",
             "description": "Runtime data model for aggregate resource memory and object-count statistics. # Fields",
             "file": "src/runtime/shared_state.rs",
-            "line": 277
+            "line": 278
           },
           {
             "name": "ResourceBudgetReport",
             "kind": "struct",
             "description": "Summary of one resource-budget enforcement pass.",
             "file": "src/runtime/shared_state.rs",
-            "line": 306
+            "line": 307
           },
           {
             "name": "ReleasedTextureHandle",
             "kind": "struct",
             "description": "Deferred texture release tracked until a later acknowledgement.",
             "file": "src/runtime/shared_state.rs",
-            "line": 327
+            "line": 328
           },
           {
             "name": "SharedStateValidationReport",
             "kind": "struct",
             "description": "Diagnostics produced by `SharedState::validate_frame_state`.",
             "file": "src/runtime/shared_state.rs",
-            "line": 338
+            "line": 339
           },
           {
             "name": "PhysicsRunConfig",
             "kind": "struct",
             "description": "Runtime data model for fixed-step physics and fixed-update scheduling. # Fields",
             "file": "src/runtime/shared_state.rs",
-            "line": 354
+            "line": 355
           },
           {
             "name": "SharedState",
             "kind": "struct",
             "description": "Runtime data model for the engine's shared mutable runtime container. # Fields",
             "file": "src/runtime/shared_state.rs",
-            "line": 378
+            "line": 379
           },
           {
             "name": "RendererStats",
             "kind": "struct",
             "description": "Runtime data model for aggregate renderer counters derived from the current frame state. # Fields",
             "file": "src/runtime/shared_state.rs",
-            "line": 1251
+            "line": 1255
           }
         ]
       },
@@ -25662,7 +25633,7 @@
         ]
       },
       "validator::api_check": {
-        "module_doc": "This file owns `ApiComplianceRule`, the validator check that scans Lua content for known `lurek.*` calls. It stores the allowlist of supported API prefixes and uses it to flag unknown namespaces at source lines. Default construction seeds built-in engine module names so projects get API drift detection without setup. The validate path searches textual call sites, extracts module segments, and emits structured warnings. Open this file when accepted public API names change; asset, import, and custom rule logic live in siblings.",
+        "module_doc": "This file owns `ApiComplianceRule`, the validator check that scans Lua content for known dotted API prefixes. It stores the allowlist of supported API prefixes and uses it to flag unknown namespaces at source lines. Default construction seeds built-in engine module names so projects get Lurek API drift detection without setup. The validate path searches textual call sites, extracts module segments, and emits structured warnings. Open this file when accepted public API names change; asset, import, and custom rule logic live in siblings.",
         "source_file": "src/validator/api_check.rs",
         "items": [
           {

@@ -29,8 +29,9 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - Allowed read paths are canonical roots; prefix-only string matching is not sufficient for mod sandbox reads.
 - `ModScanPolicy`, `ModScanReport`, `ModLoadPlan`, and `ModReloadReport` are the authoritative diagnostics surfaces for scans, dependency validation, and hot reload outcomes.
 - Manifest validation now enforces identifier, capability, asset-path, config-schema, and byte/count limits before a mod joins the registry.
-- Capability enforcement currently includes runtime boundary checks for `lurek.filesystem` and top-level `lurek.network` entry points, including write denial when a mod sandbox disables file writes.
+- Capability enforcement currently includes runtime boundary checks for `lurek.filesystem`, `lurek.grep`, and top-level `lurek.network` entry points, including write denial when a mod sandbox disables file writes.
 
 ## Architecture Links
 
-- Intentionally empty.
+- [Module Scope Boundaries](../../architecture/module-scope-boundaries.md)
+- [Runtime Tooling Boundaries](../../architecture/runtime-tooling-boundaries.md)

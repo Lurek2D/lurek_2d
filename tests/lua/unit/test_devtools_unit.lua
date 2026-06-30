@@ -6,12 +6,32 @@ do
 -- tests/lua/test_devtools.lua
 -- BDD-style integration tests for lurek.devtools module
 
+local function reset_devtools_logger_state()
+    lurek.devtools.clearLog()
+    lurek.devtools.setLogConsole(true)
+    lurek.devtools.setLogLevel("info")
+    lurek.devtools.setLogFile("")
+    lurek.log.clearSinks()
+end
+
+local function new_devtools_memory_sink()
+    return lurek.log.addSink({
+        type = "memory",
+        level = "debug",
+        capacity = 16,
+        tags = { "Devtools" },
+    })
+end
+
 -- ===================================================================
 -- Logger
 -- ===================================================================
 
 -- @describe lurek.devtools logger
 describe("lurek.devtools logger", function()
+    before_each(reset_devtools_logger_state)
+    after_each(reset_devtools_logger_state)
+
     -- @covers lurek.devtools.getLogLevel
     it("defaults log level to info", function()
         expect_equal("info", lurek.devtools.getLogLevel())
@@ -44,13 +64,21 @@ describe("lurek.devtools logger", function()
     end)
 
     -- @covers lurek.devtools.setLogFile
-    it("stores the active log file path", function()
-        expect_no_error(function()
-            lurek.devtools.setLogFile("test.log")
-        end)
-        expect_no_error(function()
-            lurek.devtools.setLogFile("")
-        end)
+    it("stores the active log file path without exposing hidden sinks", function()
+        local path = "save/_fs_tests/devtools_hidden_output.log"
+        lurek.filesystem.createDirectory("save/_fs_tests")
+        if lurek.filesystem.exists(path) then
+            lurek.filesystem.remove(path)
+        end
+
+        lurek.devtools.setLogConsole(false)
+        lurek.devtools.setLogFile(path)
+        lurek.devtools.info("hidden-file-sink-check")
+        local current = lurek.devtools.getLogFile()
+        lurek.devtools.setLogFile("")
+
+        expect_equal(path, current)
+        expect_equal(0, #lurek.log.listSinks())
     end)
 
     -- @covers lurek.devtools.getLogFile
@@ -61,22 +89,16 @@ describe("lurek.devtools logger", function()
     end)
 
     -- @covers lurek.devtools.info
-    it("writes log entries to the configured file", function()
-        local path = "save/_fs_tests/devtools_logger_output.log"
-        lurek.filesystem.createDirectory("save/_fs_tests")
-        if lurek.filesystem.exists(path) then
-            lurek.filesystem.remove(path)
-        end
-
+    it("dispatches log entries through shared lurek.log sinks", function()
+        local id = new_devtools_memory_sink()
         lurek.devtools.setLogConsole(false)
-        lurek.devtools.setLogFile(path)
-        lurek.devtools.info("file-output-check")
+        lurek.devtools.info("shared-sink-check")
 
-        local text = lurek.filesystem.read(path)
-        expect_match(text, "file%-output%-check")
-
-        lurek.devtools.setLogFile("")
-        lurek.devtools.setLogConsole(true)
+        local entries = lurek.log.readMemory(id, true)
+        expect_true(#entries >= 1)
+        expect_equal("Devtools", entries[#entries].tag)
+        expect_equal("shared-sink-check", entries[#entries].message)
+        expect_equal("info", string.lower(entries[#entries].level))
     end)
 
     -- @covers lurek.devtools.getLogHistory
@@ -88,6 +110,8 @@ describe("lurek.devtools logger", function()
         expect_true(#history >= 1)
         expect_equal("info", history[#history].level)
         expect_equal("test message", history[#history].message)
+        expect_equal("Devtools", history[#history].source)
+        expect_true(history[#history].timestamp > 0)
         lurek.devtools.info("a")
         lurek.devtools.info("b")
         lurek.devtools.info("c")
@@ -99,12 +123,15 @@ describe("lurek.devtools logger", function()
     end)
 
     -- @covers lurek.devtools.clearLog
-    it("clearLog empties history", function()
+    it("clearLog empties devtools history without clearing visible sinks", function()
+        local id = new_devtools_memory_sink()
         lurek.devtools.setLogConsole(false)
         lurek.devtools.info("will be cleared")
         lurek.devtools.clearLog()
         expect_equal(0, #lurek.devtools.getLogHistory())
-        lurek.devtools.setLogConsole(true)
+        local entries = lurek.log.readMemory(id, false)
+        expect_true(#entries >= 1)
+        expect_equal("will be cleared", entries[#entries].message)
     end)
 end)
 

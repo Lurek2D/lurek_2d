@@ -11153,8 +11153,8 @@ lurek.docs.reflectTable = function(tbl, name) end
 --- Clears the editable in-memory documentation catalog.
 lurek.docs.resetCatalog = function() end
 
---- Reflects the live `lurek` table and builds a catalog of callable APIs.
----@param opts? table Optional scan options table reserved for future filters.
+--- Reflects the live `lurek` table or a supplied custom table into a callable API catalog.
+---@param opts? table Optional scan options with `table`, `namespace` or `name`, and `module` fields; omitted scans live `lurek`.
 ---@return LApiCatalog Catalog populated from the currently registered `lurek` table.
 lurek.docs.scan = function(opts) end
 
@@ -34806,7 +34806,8 @@ lurek.ui.visibleRange = function(widget, item_count, item_height) end
 lurek.ui.wheelmoved = function(x, y) end
 
 --- Add the built-in API compliance rule.
-function LValidationEngine:addApiRule() end
+---@param api? string|string[] Optional dotted API prefixes to treat as known roots instead of the default `lurek.*` list.
+function LValidationEngine:addApiRule(api) end
 
 --- Add the built-in asset existence rule.
 ---@param asset_root string Root directory for asset files.
@@ -34853,13 +34854,15 @@ lurek.validator.newEngine = function(root) end
 
 --- Runs all validation rules against a project root directory and returns a report table.
 ---@param path string Root directory path of the project to validate.
+---@param opts? table Optional validation options. Supports `api = {"game.quest", "game.items"}` to override the built-in `lurek.*` list.
 ---@return table Table with fields: errors (table), warnings (table), passed (boolean).
-lurek.validator.validate = function(path) end
+lurek.validator.validate = function(path, opts) end
 
 --- Runs API validation rules against a single Lua file and returns a report table.
 ---@param path string Absolute or relative path to the Lua file to validate.
+---@param opts? table Optional validation options. Supports `api = {"game.quest", "game.items"}` to override the built-in `lurek.*` list.
 ---@return table Table with fields: errors (table), warnings (table), passed (boolean).
-lurek.validator.validateFile = function(path) end
+lurek.validator.validateFile = function(path, opts) end
 
 --- Closes the window and signals the engine to shut down.
 lurek.window.close = function() end

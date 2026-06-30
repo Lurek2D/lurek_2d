@@ -37,12 +37,21 @@ lurek.devtools.clearLog()
 ```lua
 do
 
+    lurek.log.clearSinks()
+    local sink = lurek.log.addSink({
+        type = "memory",
+        level = "debug",
+        capacity = 8,
+        tags = { "Devtools" },
+    })
     lurek.devtools.info("will be cleared")
     local beforeClear = lurek.devtools.getLogHistory()
     lurek.devtools.clearLog()
     local afterClear = lurek.devtools.getLogHistory()
+    local shared = lurek.log.readMemory(sink, false)
     lurek.log.info("log rows before clear=" .. tostring(#beforeClear))
     lurek.log.info("log rows after clear=" .. tostring(#afterClear))
+    lurek.log.info("shared sink rows after clear=" .. tostring(#shared))
 end
 ```
 
@@ -477,8 +486,11 @@ do
     local entries = lurek.devtools.getLogHistory(5)
     lurek.devtools.warn("second test entry")
     local latestEntries = lurek.devtools.getLogHistory(5)
+    local last = latestEntries[#latestEntries]
     lurek.log.info("log history entries=" .. tostring(#entries))
     lurek.log.info("log history after second entry=" .. tostring(#latestEntries))
+    lurek.log.info("latest history source=" .. tostring(last and last.source or "nil"))
+    lurek.log.info("latest history timestamp>0=" .. tostring(last and last.timestamp and last.timestamp > 0))
 end
 ```
 
@@ -693,12 +705,21 @@ lurek.devtools.info(message)
 ```lua
 do
 
+    lurek.log.clearSinks()
+    local sink = lurek.log.addSink({
+        type = "memory",
+        level = "debug",
+        capacity = 8,
+        tags = { "Devtools" },
+    })
     lurek.devtools.info("level loaded")
     lurek.devtools.info("checkpoint state restored")
     local level = lurek.devtools.getLogLevel()
     local history = lurek.devtools.getLogHistory(2)
+    local shared = lurek.log.readMemory(sink, true)
     lurek.log.info("info level gate=" .. tostring(level))
     lurek.log.info("info history rows=" .. tostring(#history))
+    lurek.log.info("shared sink rows=" .. tostring(#shared))
 end
 ```
 
@@ -1307,12 +1328,16 @@ lurek.devtools.setLogFile(path)
 ```lua
 do
 
+    lurek.log.clearSinks()
     lurek.devtools.setLogFile("save/devtools_example.log")
     lurek.devtools.info("writing runtime diagnostics to save/devtools_example.log")
     local logFile = lurek.devtools.getLogFile()
     local history = lurek.devtools.getLogHistory(1)
+    local fileText = lurek.filesystem.read(logFile)
     lurek.log.info("log file path=" .. tostring(logFile))
     lurek.log.info("history rows after file target change=" .. tostring(#history))
+    lurek.log.info("hidden sinks visible to lurek.log=" .. tostring(#lurek.log.listSinks()))
+    lurek.log.info("file contains devtools message=" .. tostring(string.find(fileText, "runtime diagnostics", 1, true) ~= nil))
 end
 ```
 

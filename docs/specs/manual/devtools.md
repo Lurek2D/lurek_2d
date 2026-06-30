@@ -21,8 +21,9 @@ This module primarily collaborates with `filesystem`, `repl`. Its responsibility
 
 ## Notes
 
-- No additional module-specific notes.
+- Devtools log history and optional devtools log-file output now route through the shared `lurek.log` sink registry under the `Devtools` tag.
+- The devtools-owned history/file sinks are intentionally hidden, so public `lurek.log` sink-management calls only affect user-visible sinks.
 
 ## Architecture Links
 
-- Intentionally empty.
+- [Runtime Tooling Boundaries](../../architecture/runtime-tooling-boundaries.md)
