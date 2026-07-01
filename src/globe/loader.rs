@@ -8,6 +8,10 @@
 //! Open this owner when content formats change or when load-time diagnostics need more exact, source-level coverage.
 
 use crate::globe::types::{Region, RegionId, RegionPart};
+use crate::globe::validation::{
+    resolve_sandboxed_globe_path, validate_file_size_limit, validate_png_pixel_limit,
+    validate_region_set, GlobeLoadOptions,
+};
 use crate::math::voronoi::voronoi_from_points;
 use crate::province::province_grid::ProvinceGrid;
 use std::collections::HashMap;
@@ -32,12 +36,36 @@ struct TomlRegion {
 /// Load regions from a TOML string or return a parse error.
 pub fn load_from_toml_str(src: &str) -> Result<Vec<Region>, String> {
     let doc = parse_toml_region_list(src)?;
-    Ok(doc.into_iter().map(toml_region_to_region).collect())
+    let regions: Vec<Region> = doc.into_iter().map(toml_region_to_region).collect();
+    validate_region_set(&regions, "globe TOML")?;
+    Ok(regions)
 }
 /// Load regions from a TOML file path or return a parse or I/O error.
 pub fn load_from_toml_file(path: &str) -> Result<Vec<Region>, String> {
-    let src =
-        std::fs::read_to_string(path).map_err(|e| format!("cannot read '{}': {}", path, e))?;
+    load_from_toml_file_safe(path, &GlobeLoadOptions::default())
+}
+/// Load regions from a TOML file path using a sandbox root and size limits.
+pub fn load_from_toml_file_safe(
+    path: &str,
+    load_options: &GlobeLoadOptions,
+) -> Result<Vec<Region>, String> {
+    let resolved = resolve_sandboxed_globe_path(&load_options.sandbox_root, path)?;
+    let metadata = std::fs::metadata(&resolved)
+        .map_err(|error| format!("cannot stat '{}': {}", resolved.display(), error))?;
+    if !metadata.is_file() {
+        return Err(format!(
+            "globe TOML path '{}' is not a file",
+            resolved.display()
+        ));
+    }
+    validate_file_size_limit(
+        &resolved,
+        metadata.len(),
+        load_options.max_toml_bytes,
+        "globe TOML",
+    )?;
+    let src = std::fs::read_to_string(&resolved)
+        .map_err(|error| format!("cannot read '{}': {}", resolved.display(), error))?;
     load_from_toml_str(&src)
 }
 /// Convert a parsed TOML region into the shared region type.
@@ -289,9 +317,39 @@ fn parse_toml_f32(value: &toml::Value, label: &str) -> Result<f32, String> {
     Err(format!("{label} must be a number"))
 }
 /// Load regions from a PNG province grid or return a decode or I/O error.
-pub fn load_from_png_file(_path: &str) -> Result<Vec<Region>, String> {
-    let grid = ProvinceGrid::from_file(_path)?;
-    Ok(load_from_province_grid(&grid))
+pub fn load_from_png_file(path: &str) -> Result<Vec<Region>, String> {
+    load_from_png_file_safe(path, &GlobeLoadOptions::default())
+}
+/// Load regions from a PNG province grid using a sandbox root and size limits.
+pub fn load_from_png_file_safe(
+    path: &str,
+    load_options: &GlobeLoadOptions,
+) -> Result<Vec<Region>, String> {
+    let resolved = resolve_sandboxed_globe_path(&load_options.sandbox_root, path)?;
+    let metadata = std::fs::metadata(&resolved)
+        .map_err(|error| format!("cannot stat '{}': {}", resolved.display(), error))?;
+    if !metadata.is_file() {
+        return Err(format!(
+            "globe PNG path '{}' is not a file",
+            resolved.display()
+        ));
+    }
+    validate_file_size_limit(
+        &resolved,
+        metadata.len(),
+        load_options.max_png_bytes,
+        "globe PNG",
+    )?;
+    let (width, height) = image::image_dimensions(&resolved)
+        .map_err(|error| format!("cannot inspect '{}': {}", resolved.display(), error))?;
+    validate_png_pixel_limit(width, height, load_options.max_png_pixels, "globe PNG")?;
+    let resolved_str = resolved
+        .to_str()
+        .ok_or_else(|| format!("globe PNG path '{}' is not valid UTF-8", resolved.display()))?;
+    let grid = ProvinceGrid::from_file(resolved_str)?;
+    let regions = load_from_province_grid(&grid);
+    validate_region_set(&regions, "globe PNG")?;
+    Ok(regions)
 }
 
 /// Convert a province grid into approximate globe regions using traced province contours.
@@ -341,7 +399,7 @@ pub fn generate_voronoi_provinces(points: &[(f32, f32)]) -> Vec<Region> {
     for (i, cell) in cells.iter().enumerate() {
         let id = RegionId((i + 1) as u32);
         let mut vertices = Vec::with_capacity(cell.vertices.len().max(3));
-        if cell.vertices.is_empty() {
+        if cell.vertices.len() < 3 {
             let (x, y) = cell.site;
             vertices.push((y - 0.5, x - 0.5));
             vertices.push((y - 0.5, x + 0.5));

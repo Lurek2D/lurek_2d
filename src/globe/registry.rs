@@ -6,7 +6,7 @@
 //! This file matters when globe state semantics, sector grouping, or cached reachability rules need coordinated edits.
 //! Open this owner when multiple globe features drift together, because it is the main state hub for the subsystem.
 
-use crate::globe::draw::emit_globe_frame;
+use crate::globe::draw::emit_globe_frame_with_stats;
 use crate::globe::fog::FogStore;
 use crate::globe::label::LabelStore;
 use crate::globe::layer::LayerStore;
@@ -20,13 +20,20 @@ use crate::globe::projection::{
     build_view_matrix, project_point_on_shell, screen_delta_to_pan, OrbitCamera,
 };
 use crate::globe::sphere::great_circle_distance;
-use crate::globe::topology::RegionGraph;
+use crate::globe::topology::{
+    geo_bounds_from_ordered_points, region_geo_bounds, RegionGeoBounds, RegionGraph, RegionMut,
+};
 use crate::globe::types::{
-    Arc as GlobeArc, GlobeError, GlobeOrbit, GlobeSpec, HeatLayer, Region, RegionId, MAX_REGIONS,
+    Arc as GlobeArc, GlobeError, GlobeOrbit, GlobeRegionQueryStats, GlobeRenderStats, GlobeSpec,
+    HeatLayer, Region, RegionId, MAX_REGIONS,
+};
+use crate::globe::validation::{
+    validate_arc, validate_heat_layer, validate_marker_placement, validate_region,
 };
 use crate::render::renderer::RenderCommand;
 use crate::runtime::resource_keys::{FontKey, ShaderKey};
 use std::collections::{HashMap, HashSet};
+use std::marker::PhantomData;
 
 #[inline]
 fn wrap_lon_delta(delta: f32) -> f32 {
@@ -45,6 +52,52 @@ struct OrbitHitCandidate {
     z_order: i32,
     altitude_px: f32,
     hit: ObjectHit,
+}
+
+#[derive(Debug, Clone, Copy)]
+enum RegionCacheKind {
+    Terrain,
+    Semantic,
+}
+
+/// Mutable region guard that refreshes the owning globe's semantic or terrain bounds on drop.
+pub struct GlobeRegionMut<'a> {
+    globe: *mut Globe,
+    region: *mut Region,
+    cache_kind: RegionCacheKind,
+    _marker: PhantomData<&'a mut Globe>,
+}
+
+impl std::ops::Deref for GlobeRegionMut<'_> {
+    type Target = Region;
+
+    fn deref(&self) -> &Self::Target {
+        // SAFETY: `GlobeRegionMut` is created from a unique `&mut Globe` borrow and holds the
+        // pointed-to region for that same lifetime.
+        unsafe { &*self.region }
+    }
+}
+
+impl std::ops::DerefMut for GlobeRegionMut<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        // SAFETY: `GlobeRegionMut` owns the only mutable borrow of the region while alive.
+        unsafe { &mut *self.region }
+    }
+}
+
+impl Drop for GlobeRegionMut<'_> {
+    fn drop(&mut self) {
+        // SAFETY: `globe` points back to the uniquely borrowed globe that created this guard.
+        unsafe {
+            match self.cache_kind {
+                RegionCacheKind::Terrain => {
+                    (*self.globe).rebuild_terrain_bounds();
+                    (*self.globe).rebuild_region_bounds();
+                }
+                RegionCacheKind::Semantic => (*self.globe).rebuild_region_bounds(),
+            }
+        }
+    }
 }
 
 #[inline]
@@ -103,8 +156,12 @@ pub struct Globe {
     pub graph: RegionGraph,
     /// Base terrain polygon patches rendered before province and region overlays.
     pub terrain: HashMap<RegionId, Region>,
+    /// Cached terrain candidate bounds keyed by region id.
+    terrain_bounds: HashMap<u32, RegionGeoBounds>,
     /// Semantic regions that may overlap and do not participate in province rendering.
     pub regions: HashMap<RegionId, Region>,
+    /// Cached semantic-region candidate bounds keyed by region id.
+    region_bounds: HashMap<u32, RegionGeoBounds>,
     /// Fog state per viewer.
     pub fog: FogStore,
     /// Marker collection for the globe.
@@ -125,6 +182,8 @@ pub struct Globe {
     pub heat_layers: Vec<HeatLayer>,
     /// Region ids grouped by sector name.
     pub sectors: HashMap<String, HashSet<RegionId>>,
+    /// Reverse region-to-sector lookup used by constant-time membership queries.
+    region_to_sector: HashMap<RegionId, String>,
     /// Cached reachability per faction name.
     pub reachability_cache: HashMap<String, HashMap<RegionId, f64>>,
     /// Simulation time in seconds.
@@ -188,6 +247,7 @@ impl Globe {
     }
     /// Add a marker on one named orbit shell after orbit validation.
     pub fn add_marker_placed(&mut self, placement: MarkerPlacement) -> Result<u32, String> {
+        validate_marker_placement(&placement, "marker")?;
         let orbit = placement.orbit.as_str();
         let orbit_def = self
             .orbits
@@ -223,20 +283,38 @@ impl Globe {
         if self.terrain.len() >= MAX_REGIONS {
             return Err(GlobeError::TooManyRegions);
         }
-        self.terrain.insert(patch.id, patch);
+        validate_region(&patch, "terrain patch").map_err(GlobeError::LoadError)?;
+        let patch_id = patch.id;
+        if let Some(bounds) = region_geo_bounds(&patch) {
+            self.terrain_bounds.insert(patch.id.0, bounds);
+        } else {
+            self.terrain_bounds.remove(&patch.id.0);
+        }
+        self.terrain.insert(patch_id, patch);
+        self.rebuild_region_bounds();
         Ok(())
     }
     /// Remove a terrain patch by id and return it when present.
     pub fn remove_terrain_patch(&mut self, id: RegionId) -> Option<Region> {
-        self.terrain.remove(&id)
+        let removed = self.terrain.remove(&id)?;
+        self.terrain_bounds.remove(&id.0);
+        self.rebuild_region_bounds();
+        self.clear_region_sector_assignment(id);
+        Some(removed)
     }
     /// Return a shared terrain patch reference when the id exists.
     pub fn get_terrain_patch(&self, id: RegionId) -> Option<&Region> {
         self.terrain.get(&id)
     }
     /// Return a mutable terrain patch reference when the id exists.
-    pub fn get_terrain_patch_mut(&mut self, id: RegionId) -> Option<&mut Region> {
-        self.terrain.get_mut(&id)
+    pub fn get_terrain_patch_mut(&mut self, id: RegionId) -> Option<GlobeRegionMut<'_>> {
+        let region = self.terrain.get_mut(&id)? as *mut Region;
+        Some(GlobeRegionMut {
+            globe: self as *mut Globe,
+            region,
+            cache_kind: RegionCacheKind::Terrain,
+            _marker: PhantomData,
+        })
     }
     /// Return the number of stored terrain patches.
     pub fn terrain_patch_count(&self) -> usize {
@@ -260,8 +338,15 @@ impl Globe {
                 samples += 1;
                 if self
                     .terrain
-                    .values()
-                    .any(|patch| patch.visible && point_in_geo_region(patch, lat, lon))
+                    .iter()
+                    .filter(|(id, patch)| {
+                        patch.visible
+                            && self
+                                .terrain_bounds
+                                .get(&id.0)
+                                .is_some_and(|bounds| bounds.contains(lat, lon))
+                    })
+                    .any(|(_, patch)| point_in_geo_region(patch, lat, lon))
                 {
                     covered_samples += 1;
                 } else {
@@ -283,20 +368,44 @@ impl Globe {
         if self.regions.len() >= MAX_REGIONS {
             return Err(GlobeError::TooManyRegions);
         }
+        let mut region = region;
+        if region.parts.is_empty()
+            && region.vertices.is_empty()
+            && !region.member_terrain_ids.is_empty()
+        {
+            if let Some((lat, lon)) = self.member_region_centroid(&region) {
+                region.centroid = (lat, lon);
+            }
+        }
+        validate_region(&region, "semantic region").map_err(GlobeError::LoadError)?;
+        if let Some(bounds) = self.semantic_region_bounds(&region) {
+            self.region_bounds.insert(region.id.0, bounds);
+        } else {
+            self.region_bounds.remove(&region.id.0);
+        }
         self.regions.insert(region.id, region);
         Ok(())
     }
     /// Remove a region by id and return it when present.
     pub fn remove_region(&mut self, id: RegionId) -> Option<Region> {
-        self.regions.remove(&id)
+        let removed = self.regions.remove(&id)?;
+        self.region_bounds.remove(&id.0);
+        self.clear_region_sector_assignment(id);
+        Some(removed)
     }
     /// Return a shared region reference when the id exists.
     pub fn get_region(&self, id: RegionId) -> Option<&Region> {
         self.regions.get(&id)
     }
     /// Return a mutable region reference when the id exists.
-    pub fn get_region_mut(&mut self, id: RegionId) -> Option<&mut Region> {
-        self.regions.get_mut(&id)
+    pub fn get_region_mut(&mut self, id: RegionId) -> Option<GlobeRegionMut<'_>> {
+        let region = self.regions.get_mut(&id)? as *mut Region;
+        Some(GlobeRegionMut {
+            globe: self as *mut Globe,
+            region,
+            cache_kind: RegionCacheKind::Semantic,
+            _marker: PhantomData,
+        })
     }
     /// Return the number of stored regions.
     pub fn region_count(&self) -> usize {
@@ -308,13 +417,16 @@ impl Globe {
         if self.graph.len() >= MAX_REGIONS {
             return Err(GlobeError::TooManyRegions);
         }
+        validate_region(&province, "province").map_err(GlobeError::LoadError)?;
         self.graph.insert(province)?;
         Ok(())
     }
     /// Backward compatibility: remove a region by id.
     #[inline]
     pub fn remove_province(&mut self, id: RegionId) -> Option<Region> {
-        self.graph.remove(id)
+        let removed = self.graph.remove(id)?;
+        self.clear_region_sector_assignment(id);
+        Some(removed)
     }
     /// Backward compatibility: get a region reference.
     #[inline]
@@ -323,7 +435,7 @@ impl Globe {
     }
     /// Backward compatibility: get a mutable region reference.
     #[inline]
-    pub fn get_province_mut(&mut self, id: RegionId) -> Option<&mut Region> {
+    pub fn get_province_mut(&mut self, id: RegionId) -> Option<RegionMut<'_>> {
         self.graph.get_mut(id)
     }
     /// Backward compatibility: return region count.
@@ -332,11 +444,12 @@ impl Globe {
         self.graph.len()
     }
     /// Insert an arc and return its assigned id.
-    pub fn add_arc(&mut self, arc: GlobeArc) -> u32 {
+    pub fn add_arc(&mut self, arc: GlobeArc) -> Result<u32, GlobeError> {
+        validate_arc(&arc, "globe arc").map_err(GlobeError::LoadError)?;
         let id = self.arc_next_id;
         self.arc_next_id += 1;
         self.arcs.insert(id, arc);
-        id
+        Ok(id)
     }
     /// Remove an arc by id and return true when it existed.
     pub fn remove_arc(&mut self, id: u32) -> bool {
@@ -402,22 +515,57 @@ impl Globe {
     }
     /// Return all semantic region ids that contain the supplied surface position.
     pub fn regions_at_lat_lon(&self, lat_deg: f32, lon_deg: f32) -> Vec<RegionId> {
-        let mut ids: Vec<RegionId> = self
-            .regions
-            .values()
-            .filter(|region| {
-                region.visible
-                    && (point_in_geo_region(region, lat_deg, lon_deg)
-                        || region.member_terrain_ids.iter().any(|id| {
-                            self.terrain
-                                .get(id)
-                                .is_some_and(|patch| point_in_geo_region(patch, lat_deg, lon_deg))
-                        }))
-            })
-            .map(|region| region.id)
-            .collect();
+        self.regions_at_lat_lon_with_stats(lat_deg, lon_deg).0
+    }
+    /// Return semantic region ids and candidate-filter stats for one surface position query.
+    pub fn regions_at_lat_lon_with_stats(
+        &self,
+        lat_deg: f32,
+        lon_deg: f32,
+    ) -> (Vec<RegionId>, GlobeRegionQueryStats) {
+        let candidate_ids = self.candidate_region_ids_at(lat_deg, lon_deg);
+        let mut stats = GlobeRegionQueryStats {
+            total_regions: self.regions.len(),
+            candidate_regions: candidate_ids.len(),
+            ..Default::default()
+        };
+        let mut ids = Vec::new();
+        for id in candidate_ids {
+            let Some(region) = self.regions.get(&id) else {
+                continue;
+            };
+            if !region.visible {
+                continue;
+            }
+            let mut matched = point_in_geo_region(region, lat_deg, lon_deg);
+            if !matched {
+                for member_id in &region.member_terrain_ids {
+                    let Some(patch) = self.terrain.get(member_id) else {
+                        continue;
+                    };
+                    if !patch.visible {
+                        continue;
+                    }
+                    let Some(bounds) = self.terrain_bounds.get(&member_id.0) else {
+                        continue;
+                    };
+                    if !bounds.contains(lat_deg, lon_deg) {
+                        continue;
+                    }
+                    stats.candidate_member_patches += 1;
+                    if point_in_geo_region(patch, lat_deg, lon_deg) {
+                        matched = true;
+                        break;
+                    }
+                }
+            }
+            if matched {
+                ids.push(region.id);
+            }
+        }
         ids.sort();
-        ids
+        stats.matched_regions = ids.len();
+        (ids, stats)
     }
     /// Return all semantic region ids that contain the supplied screen-space hit.
     pub fn pick_regions_at_screen(&self, sx: f32, sy: f32) -> Vec<RegionId> {
@@ -631,7 +779,14 @@ impl Globe {
     }
     /// Emit render commands for the current globe state.
     pub fn emit_frame(&self, default_font: Option<FontKey>) -> Vec<RenderCommand> {
-        emit_globe_frame(
+        self.emit_frame_with_stats(default_font).0
+    }
+    /// Emit render commands together with frame-assembly counters for the current globe state.
+    pub fn emit_frame_with_stats(
+        &self,
+        default_font: Option<FontKey>,
+    ) -> (Vec<RenderCommand>, GlobeRenderStats) {
+        emit_globe_frame_with_stats(
             &self.spec,
             &self.camera,
             &self.terrain,
@@ -651,12 +806,14 @@ impl Globe {
         )
     }
     /// Add or replace a heat layer by name.
-    pub fn set_heat_layer(&mut self, layer: HeatLayer) {
+    pub fn set_heat_layer(&mut self, layer: HeatLayer) -> Result<(), GlobeError> {
+        validate_heat_layer(&layer, "heat layer").map_err(GlobeError::LoadError)?;
         if let Some(existing) = self.heat_layers.iter_mut().find(|l| l.name == layer.name) {
             *existing = layer;
-            return;
+            return Ok(());
         }
         self.heat_layers.push(layer);
+        Ok(())
     }
     /// Remove a heat layer by name and return true when one was removed.
     pub fn remove_heat_layer(&mut self, name: &str) -> bool {
@@ -667,27 +824,31 @@ impl Globe {
     /// Assign a region to a named sector.
     pub fn set_region_sector(&mut self, id: RegionId, sector: impl Into<String>) {
         let sector = sector.into();
-        for ids in self.sectors.values_mut() {
-            ids.remove(&id);
+        if let Some(previous) = self.region_to_sector.insert(id, sector.clone()) {
+            let mut remove_previous = false;
+            if let Some(ids) = self.sectors.get_mut(&previous) {
+                ids.remove(&id);
+                remove_previous = ids.is_empty();
+            }
+            if remove_previous {
+                self.sectors.remove(&previous);
+            }
         }
         self.sectors.entry(sector).or_default().insert(id);
     }
     /// Return the sector name that contains a region when one exists.
     pub fn region_sector(&self, id: RegionId) -> Option<&str> {
-        self.sectors.iter().find_map(|(name, ids)| {
-            if ids.contains(&id) {
-                Some(name.as_str())
-            } else {
-                None
-            }
-        })
+        self.region_to_sector.get(&id).map(String::as_str)
     }
     /// Return all region ids for a named sector.
     pub fn sector_regions(&self, sector: &str) -> Vec<RegionId> {
-        self.sectors
+        let mut ids: Vec<RegionId> = self
+            .sectors
             .get(sector)
             .map(|set| set.iter().copied().collect())
-            .unwrap_or_default()
+            .unwrap_or_default();
+        ids.sort();
+        ids
     }
     /// Backward compatibility: assign a region to a sector.
     #[inline]
@@ -718,6 +879,103 @@ impl Globe {
     pub fn cached_reachability(&self, faction: &str) -> Option<&HashMap<RegionId, f64>> {
         self.reachability_cache.get(faction)
     }
+
+    pub(crate) fn rebuild_region_sector_index(&mut self) {
+        self.region_to_sector.clear();
+        for (sector, ids) in &self.sectors {
+            for id in ids {
+                self.region_to_sector.insert(*id, sector.clone());
+            }
+        }
+    }
+
+    fn candidate_region_ids_at(&self, lat_deg: f32, lon_deg: f32) -> Vec<RegionId> {
+        let mut ids: Vec<RegionId> = self
+            .region_bounds
+            .iter()
+            .filter_map(|(id, bounds)| bounds.contains(lat_deg, lon_deg).then_some(RegionId(*id)))
+            .collect();
+        ids.sort();
+        ids
+    }
+
+    pub(crate) fn rebuild_terrain_bounds(&mut self) {
+        self.terrain_bounds.clear();
+        for (id, patch) in &self.terrain {
+            if let Some(bounds) = region_geo_bounds(patch) {
+                self.terrain_bounds.insert(id.0, bounds);
+            }
+        }
+    }
+
+    pub(crate) fn rebuild_region_bounds(&mut self) {
+        self.region_bounds.clear();
+        for (id, region) in &self.regions {
+            if let Some(bounds) = self.semantic_region_bounds(region) {
+                self.region_bounds.insert(id.0, bounds);
+            }
+        }
+    }
+
+    fn semantic_region_bounds(&self, region: &Region) -> Option<RegionGeoBounds> {
+        let mut points = Vec::new();
+        append_region_points(&mut points, region);
+        for member_id in &region.member_terrain_ids {
+            if let Some(patch) = self.terrain.get(member_id) {
+                append_region_points(&mut points, patch);
+            }
+        }
+        let origin_lon = if region.parts.is_empty() && region.vertices.is_empty() {
+            self.member_region_centroid(region)
+                .map(|(_, lon)| lon)
+                .unwrap_or(region.centroid.1)
+        } else {
+            region.centroid.1
+        };
+        geo_bounds_from_ordered_points(&points, origin_lon)
+    }
+
+    fn member_region_centroid(&self, region: &Region) -> Option<(f32, f32)> {
+        let mut centroids = region
+            .member_terrain_ids
+            .iter()
+            .filter_map(|id| self.terrain.get(id).map(|patch| patch.centroid));
+        let (first_lat, first_lon) = centroids.next()?;
+        let mut lat_sum = first_lat;
+        let mut lon_accum = first_lon;
+        let mut count = 1.0_f32;
+        for (lat, lon) in centroids {
+            lat_sum += lat;
+            let delta = wrap_lon_delta(lon - lon_accum);
+            lon_accum = wrap_lon_delta(lon_accum + delta / (count + 1.0));
+            count += 1.0;
+        }
+        Some((lat_sum / count, lon_accum))
+    }
+
+    fn clear_region_sector_assignment(&mut self, id: RegionId) {
+        let Some(previous) = self.region_to_sector.remove(&id) else {
+            return;
+        };
+        let mut remove_previous = false;
+        if let Some(ids) = self.sectors.get_mut(&previous) {
+            ids.remove(&id);
+            remove_previous = ids.is_empty();
+        }
+        if remove_previous {
+            self.sectors.remove(&previous);
+        }
+    }
+}
+
+fn append_region_points(points: &mut Vec<(f32, f32)>, region: &Region) {
+    if !region.parts.is_empty() {
+        for part in &region.parts {
+            points.extend(part.outer.iter().copied());
+        }
+        return;
+    }
+    points.extend(region.vertices.iter().copied());
 }
 /// Named globe registry keyed by globe name.
 #[derive(Debug, Default)]

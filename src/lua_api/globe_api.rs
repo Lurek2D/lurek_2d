@@ -15,10 +15,15 @@ use crate::globe::types::{
     FogState, GlobeOrbit, GlobeOrbitKind, GlobeSpec, HeatLayer, LabelStyle, Layer, LodTier, Marker,
     MarkerShape, MarkerStyle, Region, RegionId, RegionPart, MAX_REGIONS,
 };
-use crate::lua_api::render_api::{ensure_shader_target, shader_key_from_userdata, LuaShader};
+use crate::globe::validation::{validate_globe_spec, GlobeLoadOptions};
+use crate::lua_api::render_api::{
+    ensure_shader_target, shader_key_from_userdata, LuaImage, LuaShader,
+};
 use crate::pathfind::graph_path::GraphCostFn;
 use crate::render::ShaderTarget;
+use crate::runtime::resource_keys::TextureKey;
 use mlua::prelude::*;
+use slotmap::Key;
 use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
@@ -82,6 +87,97 @@ fn finite_non_negative_f64(value: f64, label: &str) -> LuaResult<f64> {
     Ok(value)
 }
 
+fn unit_interval_f32(value: f32, label: &str) -> LuaResult<f32> {
+    let value = finite_f32(value, label)?;
+    if !(0.0..=1.0).contains(&value) {
+        return Err(LuaError::RuntimeError(format!(
+            "lurek.globe: {label} must be in 0..1"
+        )));
+    }
+    Ok(value)
+}
+
+fn texture_key_from_raw_id(raw_id: u64) -> (TextureKey, u64) {
+    (TextureKey::from(slotmap::KeyData::from_ffi(raw_id)), raw_id)
+}
+
+fn parse_texture_integer(
+    value: i64,
+    api_name: &str,
+) -> LuaResult<Option<(TextureKey, u64)>> {
+    if value < 0 {
+        return Err(LuaError::RuntimeError(format!(
+            "{api_name}: texture id must be >= 0"
+        )));
+    }
+    Ok(Some(texture_key_from_raw_id(value as u64)))
+}
+
+fn parse_texture_number(value: f64, api_name: &str) -> LuaResult<Option<(TextureKey, u64)>> {
+    if !value.is_finite() {
+        return Err(LuaError::RuntimeError(format!(
+            "{api_name}: texture id must be a finite number"
+        )));
+    }
+    if value.fract().abs() > f64::EPSILON {
+        return Err(LuaError::RuntimeError(format!(
+            "{api_name}: texture id must be an integer"
+        )));
+    }
+    parse_texture_integer(value as i64, api_name)
+}
+
+fn parse_texture_userdata(
+    userdata: &LuaAnyUserData,
+    api_name: &str,
+) -> LuaResult<Option<(TextureKey, u64)>> {
+    let image = userdata.borrow::<LuaImage>().map_err(|_| {
+        LuaError::RuntimeError(format!(
+            "{api_name}: texture must be an integer id, LImage userdata, or nil"
+        ))
+    })?;
+    Ok(Some((image.key, image.key.data().as_ffi())))
+}
+
+fn parse_texture_key_value(
+    value: &LuaValue,
+    api_name: &str,
+) -> LuaResult<Option<(TextureKey, u64)>> {
+    match value {
+        LuaValue::Nil => Ok(None),
+        LuaValue::Integer(value) => parse_texture_integer(*value, api_name),
+        LuaValue::Number(value) => parse_texture_number(*value, api_name),
+        LuaValue::UserData(userdata) => parse_texture_userdata(userdata, api_name),
+        _ => Err(LuaError::RuntimeError(format!(
+            "{api_name}: texture must be an integer id, LImage userdata, or nil"
+        ))),
+    }
+}
+
+fn validate_texture_key_live(
+    state: &SharedState,
+    api_name: &str,
+    entry: Option<(TextureKey, u64)>,
+) -> LuaResult<Option<(TextureKey, u64)>> {
+    let Some((key, raw_id)) = entry else {
+        return Ok(None);
+    };
+    if !state.textures.contains_key(key) {
+        return Err(LuaError::RuntimeError(format!(
+            "{api_name}: texture id {raw_id} does not exist in the current resource registry"
+        )));
+    }
+    Ok(Some((key, raw_id)))
+}
+
+fn parse_texture_key_value_checked(
+    value: &LuaValue,
+    api_name: &str,
+    state: &SharedState,
+) -> LuaResult<Option<(TextureKey, u64)>> {
+    validate_texture_key_live(state, api_name, parse_texture_key_value(value, api_name)?)
+}
+
 fn validate_lat_lon(lat: f32, lon: f32, label: &str) -> LuaResult<(f32, f32)> {
     let lat = finite_f32(lat, &format!("{label} latitude"))?;
     let lon = finite_f32(lon, &format!("{label} longitude"))?;
@@ -109,8 +205,8 @@ fn parse_color_table(
     let mut out = fallback;
     for (index, slot) in out.iter_mut().enumerate() {
         if let Ok(value) = tbl.get::<_, f32>(index + 1) {
-            let value = finite_f32(value, label)?;
-            *slot = value.clamp(0.0, 1.0);
+            let value = unit_interval_f32(value, &format!("{label}[{}]", index + 1))?;
+            *slot = value;
         }
     }
     Ok(out)
@@ -416,6 +512,7 @@ fn parse_orbit_table(tbl: LuaTable, label: &str) -> LuaResult<GlobeOrbit> {
 struct ParsedGlobeConfig {
     spec: GlobeSpec,
     orbits: Vec<GlobeOrbit>,
+    load_options: GlobeLoadOptions,
 }
 
 #[derive(Clone)]
@@ -431,7 +528,7 @@ struct ParsedMarkerInput {
     attrs: HashMap<String, String>,
 }
 
-fn parse_marker_ex_table(tbl: LuaTable) -> LuaResult<ParsedMarkerInput> {
+fn parse_marker_ex_table(tbl: LuaTable, state: &SharedState) -> LuaResult<ParsedMarkerInput> {
     let marker_type: String = tbl.get("type").map_err(|_| {
         LuaError::RuntimeError("lurek.globe.addMarkerEx: marker table requires 'type'".to_string())
     })?;
@@ -459,7 +556,12 @@ fn parse_marker_ex_table(tbl: LuaTable) -> LuaResult<ParsedMarkerInput> {
     };
     let mut style = MarkerStyle::default();
     if let Ok(size) = tbl.get::<_, f32>("size") {
-        style.size = finite_f32(size, "addMarkerEx size")?.max(1.0);
+        style.size = finite_f32(size, "addMarkerEx size")?;
+        if style.size < 1.0 {
+            return Err(LuaError::RuntimeError(
+                "lurek.globe.addMarkerEx: size must be >= 1".to_string(),
+            ));
+        }
     }
     if let Ok(shape) = tbl.get::<_, String>("shape") {
         style.shape = parse_marker_shape(shape.as_str())?;
@@ -467,17 +569,25 @@ fn parse_marker_ex_table(tbl: LuaTable) -> LuaResult<ParsedMarkerInput> {
     if let Ok(color_tbl) = tbl.get::<_, LuaTable>("color") {
         style.color = parse_color_table(Some(color_tbl), style.color, "addMarkerEx color")?;
     }
-    if let Ok(icon) = tbl.get::<_, u64>("icon") {
-        style.icon_texture = Some(icon.to_string());
-    } else if let Ok(icon_texture) = tbl.get::<_, u64>("icon_texture") {
-        style.icon_texture = Some(icon_texture.to_string());
+    let icon_value = tbl
+        .get::<_, LuaValue>("icon")
+        .or_else(|_| tbl.get::<_, LuaValue>("icon_texture"))
+        .unwrap_or(LuaValue::Nil);
+    if let Some((texture_key, _)) =
+        parse_texture_key_value_checked(&icon_value, "lurek.globe.addMarkerEx", state)?
+    {
+        style.icon_texture_key = Some(texture_key);
     }
     if let Ok(pulse_hz) = tbl.get::<_, f32>("pulse_hz") {
-        style.pulse_hz = finite_f32(pulse_hz, "addMarkerEx pulse_hz")?.max(0.0);
+        style.pulse_hz = finite_f32(pulse_hz, "addMarkerEx pulse_hz")?;
+        if style.pulse_hz < 0.0 {
+            return Err(LuaError::RuntimeError(
+                "lurek.globe.addMarkerEx: pulse_hz must be >= 0".to_string(),
+            ));
+        }
     }
     if let Ok(pulse_amplitude) = tbl.get::<_, f32>("pulse_amplitude") {
-        style.pulse_amplitude =
-            finite_f32(pulse_amplitude, "addMarkerEx pulse_amplitude")?.clamp(0.0, 1.0);
+        style.pulse_amplitude = unit_interval_f32(pulse_amplitude, "addMarkerEx pulse_amplitude")?;
     }
     if let Ok(rotation) = tbl.get::<_, f32>("rotation_deg_per_sec") {
         style.rotation_deg_per_sec = finite_f32(rotation, "addMarkerEx rotation_deg_per_sec")?;
@@ -535,8 +645,48 @@ fn parse_object_pick_options(tbl: Option<LuaTable>, label: &str) -> LuaResult<Ob
     Ok(opts)
 }
 
+fn parse_globe_load_options(tbl: Option<&LuaTable>, label: &str) -> LuaResult<GlobeLoadOptions> {
+    let mut options = GlobeLoadOptions::default();
+    let Some(tbl) = tbl else {
+        return Ok(options);
+    };
+    let load_options = tbl.get::<_, LuaTable>("load_options").ok();
+    let Some(load_options) = load_options else {
+        return Ok(options);
+    };
+    if let Some(root) = load_options.get::<_, Option<String>>("sandbox_root")? {
+        options.sandbox_root = std::path::PathBuf::from(root);
+    }
+    if let Ok(max_toml_bytes) = load_options.get::<_, u64>("max_toml_bytes") {
+        if max_toml_bytes == 0 {
+            return Err(LuaError::RuntimeError(format!(
+                "lurek.globe.{label}: load_options.max_toml_bytes must be > 0"
+            )));
+        }
+        options.max_toml_bytes = max_toml_bytes;
+    }
+    if let Ok(max_png_bytes) = load_options.get::<_, u64>("max_png_bytes") {
+        if max_png_bytes == 0 {
+            return Err(LuaError::RuntimeError(format!(
+                "lurek.globe.{label}: load_options.max_png_bytes must be > 0"
+            )));
+        }
+        options.max_png_bytes = max_png_bytes;
+    }
+    if let Ok(max_png_pixels) = load_options.get::<_, u64>("max_png_pixels") {
+        if max_png_pixels == 0 {
+            return Err(LuaError::RuntimeError(format!(
+                "lurek.globe.{label}: load_options.max_png_pixels must be > 0"
+            )));
+        }
+        options.max_png_pixels = max_png_pixels;
+    }
+    Ok(options)
+}
+
 fn parse_globe_config(tbl: Option<LuaTable>, label: &str) -> LuaResult<ParsedGlobeConfig> {
-    let spec = parse_globe_spec(tbl.clone());
+    let spec = parse_globe_spec(tbl.clone(), label)?;
+    let load_options = parse_globe_load_options(tbl.as_ref(), label)?;
     let mut orbits = Vec::new();
     if let Some(tbl) = tbl {
         if let Ok(orbits_tbl) = tbl.get::<_, LuaTable>("orbits") {
@@ -545,7 +695,11 @@ fn parse_globe_config(tbl: Option<LuaTable>, label: &str) -> LuaResult<ParsedGlo
             }
         }
     }
-    Ok(ParsedGlobeConfig { spec, orbits })
+    Ok(ParsedGlobeConfig {
+        spec,
+        orbits,
+        load_options,
+    })
 }
 
 fn apply_orbits_to_globe(globe: &mut Globe, orbits: &[GlobeOrbit], label: &str) -> LuaResult<()> {
@@ -588,7 +742,7 @@ fn marker_style_snapshot_table<'lua>(
     table.set("color", color_table(lua, style.color)?)?;
     table.set("size", style.size)?;
     table.set("shape", marker_shape_name(style.shape))?;
-    table.set("icon_texture", style.icon_texture.clone())?;
+    table.set("icon_texture", style.icon_texture_key.map(|key| key.data().as_ffi()))?;
     table.set("pulse_hz", style.pulse_hz)?;
     table.set("pulse_amplitude", style.pulse_amplitude)?;
     table.set("rotation_deg_per_sec", style.rotation_deg_per_sec)?;
@@ -883,7 +1037,7 @@ impl LuaUserData for LuaGlobe {
             "setProvinceAttr",
             |_, this, (id, key, val): (u32, String, String)| {
                 this.with_mut(|g| {
-                    if let Some(p) = g.get_province_mut(RegionId(id)) {
+                    if let Some(mut p) = g.get_province_mut(RegionId(id)) {
                         p.attrs.insert(key, val);
                         true
                     } else {
@@ -913,7 +1067,7 @@ impl LuaUserData for LuaGlobe {
             "setRegionAttr",
             |_, this, (id, key, val): (u32, String, String)| {
                 this.with_mut(|g| {
-                    if let Some(region) = g.get_region_mut(RegionId(id)) {
+                    if let Some(mut region) = g.get_region_mut(RegionId(id)) {
                         region.attrs.insert(key, val);
                         true
                     } else {
@@ -943,7 +1097,7 @@ impl LuaUserData for LuaGlobe {
             "setTerrainPatchAttr",
             |_, this, (id, key, val): (u32, String, String)| {
                 this.with_mut(|g| {
-                    if let Some(patch) = g.get_terrain_patch_mut(RegionId(id)) {
+                    if let Some(mut patch) = g.get_terrain_patch_mut(RegionId(id)) {
                         patch.attrs.insert(key, val);
                         true
                     } else {
@@ -978,13 +1132,13 @@ impl LuaUserData for LuaGlobe {
             "setRegionColor",
             |_, this, (id, r, g, b, a): (u32, f32, f32, f32, f32)| {
                 let color = [
-                    finite_f32(r, "region color red")?.clamp(0.0, 1.0),
-                    finite_f32(g, "region color green")?.clamp(0.0, 1.0),
-                    finite_f32(b, "region color blue")?.clamp(0.0, 1.0),
-                    finite_f32(a, "region color alpha")?.clamp(0.0, 1.0),
+                    unit_interval_f32(r, "region color red")?,
+                    unit_interval_f32(g, "region color green")?,
+                    unit_interval_f32(b, "region color blue")?,
+                    unit_interval_f32(a, "region color alpha")?,
                 ];
                 this.with_mut(|g| {
-                    if let Some(region) = g.get_region_mut(RegionId(id)) {
+                    if let Some(mut region) = g.get_region_mut(RegionId(id)) {
                         region.overlay_color = Some(color);
                         true
                     } else {
@@ -1000,7 +1154,7 @@ impl LuaUserData for LuaGlobe {
         /// @return | boolean | True when the semantic region exists.
         methods.add_method_mut("setRegionVisible", |_, this, (id, visible): (u32, bool)| {
             this.with_mut(|g| {
-                if let Some(region) = g.get_region_mut(RegionId(id)) {
+                if let Some(mut region) = g.get_region_mut(RegionId(id)) {
                     region.visible = visible;
                     true
                 } else {
@@ -1009,9 +1163,9 @@ impl LuaUserData for LuaGlobe {
             })
         });
         // -- setProvinceTexture --
-        /// Assigns a raw texture handle and UV rectangle to a province.
+        /// Assigns a live texture handle and UV rectangle to a province.
         /// @param | id | integer | Province id.
-        /// @param | tex_raw | integer | Raw texture identifier stored in province attributes.
+        /// @param | tex_raw | integer or LImage | Live texture identifier or image userdata.
         /// @param | u0 | number | Left UV coordinate.
         /// @param | v0 | number | Top UV coordinate.
         /// @param | u1 | number | Right UV coordinate.
@@ -1019,12 +1173,37 @@ impl LuaUserData for LuaGlobe {
         /// @return | boolean | True when the province exists.
         methods.add_method_mut(
             "setProvinceTexture",
-            |_, this, (id, tex_raw, u0, v0, u1, v1): (u32, u64, f32, f32, f32, f32)| {
+            |_, this, (id, tex_value, u0, v0, u1, v1): (u32, LuaValue, f32, f32, f32, f32)| {
+                let texture_key = {
+                    let state = this.state.borrow();
+                    parse_texture_key_value_checked(
+                        &tex_value,
+                        "lurek.globe.setProvinceTexture",
+                        &state,
+                    )?
+                    .map(|(key, _)| key)
+                }
+                .ok_or_else(|| {
+                    LuaError::RuntimeError(
+                        "lurek.globe.setProvinceTexture: texture must not be nil".to_string(),
+                    )
+                })?;
+                let rect = [
+                    unit_interval_f32(u0, "province texture u0")?,
+                    unit_interval_f32(v0, "province texture v0")?,
+                    unit_interval_f32(u1, "province texture u1")?,
+                    unit_interval_f32(v1, "province texture v1")?,
+                ];
+                if rect[2] < rect[0] || rect[3] < rect[1] {
+                    return Err(LuaError::RuntimeError(
+                        "lurek.globe.setProvinceTexture: expected u1 >= u0 and v1 >= v0"
+                            .to_string(),
+                    ));
+                }
                 this.with_mut(|g| {
-                    if let Some(p) = g.get_province_mut(RegionId(id)) {
-                        p.attrs
-                            .insert("__texture_raw".to_string(), tex_raw.to_string());
-                        p.texture_uv_rect = Some([u0, v0, u1, v1]);
+                    if let Some(mut p) = g.get_province_mut(RegionId(id)) {
+                        p.texture_key = Some(texture_key);
+                        p.texture_uv_rect = Some(rect);
                         true
                     } else {
                         false
@@ -1038,8 +1217,8 @@ impl LuaUserData for LuaGlobe {
         /// @return | boolean | True when the province exists.
         methods.add_method_mut("clearProvinceTexture", |_, this, id: u32| {
             this.with_mut(|g| {
-                if let Some(p) = g.get_province_mut(RegionId(id)) {
-                    p.attrs.remove("__texture_raw");
+                if let Some(mut p) = g.get_province_mut(RegionId(id)) {
+                    p.texture_key = None;
                     p.texture_uv_rect = None;
                     true
                 } else {
@@ -1048,9 +1227,9 @@ impl LuaUserData for LuaGlobe {
             })
         });
         // -- setTerrainPatchTexture --
-        /// Assigns a raw texture handle and UV rectangle to a terrain patch.
+        /// Assigns a live texture handle and UV rectangle to a terrain patch.
         /// @param | id | integer | Terrain patch id.
-        /// @param | tex_raw | integer | Raw texture identifier stored in terrain attributes.
+        /// @param | tex_raw | integer or LImage | Live texture identifier or image userdata.
         /// @param | u0 | number | Left UV coordinate.
         /// @param | v0 | number | Top UV coordinate.
         /// @param | u1 | number | Right UV coordinate.
@@ -1058,13 +1237,37 @@ impl LuaUserData for LuaGlobe {
         /// @return | boolean | True when the terrain patch exists.
         methods.add_method_mut(
             "setTerrainPatchTexture",
-            |_, this, (id, tex_raw, u0, v0, u1, v1): (u32, u64, f32, f32, f32, f32)| {
+            |_, this, (id, tex_value, u0, v0, u1, v1): (u32, LuaValue, f32, f32, f32, f32)| {
+                let texture_key = {
+                    let state = this.state.borrow();
+                    parse_texture_key_value_checked(
+                        &tex_value,
+                        "lurek.globe.setTerrainPatchTexture",
+                        &state,
+                    )?
+                    .map(|(key, _)| key)
+                }
+                .ok_or_else(|| {
+                    LuaError::RuntimeError(
+                        "lurek.globe.setTerrainPatchTexture: texture must not be nil".to_string(),
+                    )
+                })?;
+                let rect = [
+                    unit_interval_f32(u0, "terrain texture u0")?,
+                    unit_interval_f32(v0, "terrain texture v0")?,
+                    unit_interval_f32(u1, "terrain texture u1")?,
+                    unit_interval_f32(v1, "terrain texture v1")?,
+                ];
+                if rect[2] < rect[0] || rect[3] < rect[1] {
+                    return Err(LuaError::RuntimeError(
+                        "lurek.globe.setTerrainPatchTexture: expected u1 >= u0 and v1 >= v0"
+                            .to_string(),
+                    ));
+                }
                 this.with_mut(|g| {
-                    if let Some(patch) = g.get_terrain_patch_mut(RegionId(id)) {
-                        patch
-                            .attrs
-                            .insert("__texture_raw".to_string(), tex_raw.to_string());
-                        patch.texture_uv_rect = Some([u0, v0, u1, v1]);
+                    if let Some(mut patch) = g.get_terrain_patch_mut(RegionId(id)) {
+                        patch.texture_key = Some(texture_key);
+                        patch.texture_uv_rect = Some(rect);
                         true
                     } else {
                         false
@@ -1078,8 +1281,8 @@ impl LuaUserData for LuaGlobe {
         /// @return | boolean | True when the terrain patch exists.
         methods.add_method_mut("clearTerrainPatchTexture", |_, this, id: u32| {
             this.with_mut(|g| {
-                if let Some(patch) = g.get_terrain_patch_mut(RegionId(id)) {
-                    patch.attrs.remove("__texture_raw");
+                if let Some(mut patch) = g.get_terrain_patch_mut(RegionId(id)) {
+                    patch.texture_key = None;
                     patch.texture_uv_rect = None;
                     true
                 } else {
@@ -1156,10 +1359,13 @@ impl LuaUserData for LuaGlobe {
         /// @param | attr_key | string | Province attribute key read as a numeric value.
         /// @param | min | number | Attribute value mapped to cold color.
         /// @param | max | number | Attribute value mapped to hot color.
-        /// @param | alpha | number | Layer alpha clamped to 0.0 through 1.0.
+        /// @param | alpha | number | Layer alpha in the 0.0 through 1.0 range.
         methods.add_method_mut(
             "setHeatLayer",
             |_, this, (name, attr_key, min, max, alpha): (String, String, f32, f32, f32)| {
+                let min = finite_f32(min, "setHeatLayer min")?;
+                let max = finite_f32(max, "setHeatLayer max")?;
+                let alpha = unit_interval_f32(alpha, "setHeatLayer alpha")?;
                 this.with_mut(|g| {
                     g.set_heat_layer(HeatLayer {
                         name,
@@ -1168,11 +1374,14 @@ impl LuaUserData for LuaGlobe {
                         max_value: max,
                         cold_color: [0.1, 0.2, 0.9, 1.0],
                         hot_color: [0.9, 0.2, 0.1, 1.0],
-                        alpha: alpha.clamp(0.0, 1.0),
+                        alpha,
                         visible: true,
                         z_order: 0,
                     })
-                })
+                    .map_err(|err| {
+                        LuaError::RuntimeError(format!("lurek.globe.setHeatLayer: {err}"))
+                    })
+                })?
             },
         );
         // -- removeHeatLayer --
@@ -1187,24 +1396,39 @@ impl LuaUserData for LuaGlobe {
         /// @param | dlat | number | Latitude delta in degrees.
         /// @param | dlon | number | Longitude delta in degrees.
         methods.add_method_mut("pan", |_, this, (dlat, dlon): (f32, f32)| {
+            let dlat = finite_f32(dlat, "pan latitude delta")?;
+            let dlon = finite_f32(dlon, "pan longitude delta")?;
             this.with_mut(|g| g.camera.pan(dlat, dlon))
         });
         // -- zoom --
         /// Multiplies the globe camera zoom by a factor.
         /// @param | factor | number | Zoom factor.
         methods.add_method_mut("zoom", |_, this, factor: f32| {
+            let factor = finite_f32(factor, "zoom factor")?;
+            if factor <= 0.0 {
+                return Err(LuaError::RuntimeError(
+                    "lurek.globe.zoom: factor must be > 0".to_string(),
+                ));
+            }
             this.with_mut(|g| g.camera.zoom_by(factor))
         });
         // -- setCamera --
         /// Sets camera latitude, longitude, and zoom.
         /// @param | lat | number | Camera latitude in degrees.
         /// @param | lon | number | Camera longitude in degrees.
-        /// @param | z | number | Camera zoom, clamped to at least 0.1.
+        /// @param | z | number | Camera zoom, must be at least 0.1.
         methods.add_method_mut("setCamera", |_, this, (lat, lon, z): (f32, f32, f32)| {
+            let (lat, lon) = validate_lat_lon(lat, lon, "setCamera")?;
+            let z = finite_f32(z, "setCamera zoom")?;
+            if z < 0.1 {
+                return Err(LuaError::RuntimeError(
+                    "lurek.globe.setCamera: zoom must be >= 0.1".to_string(),
+                ));
+            }
             this.with_mut(|g| {
                 g.camera.lat_deg = lat;
                 g.camera.lon_deg = lon;
-                g.camera.zoom = z.max(0.1);
+                g.camera.zoom = z;
                 g.camera.clamp();
             })
         });
@@ -1241,6 +1465,7 @@ impl LuaUserData for LuaGlobe {
         /// Applies a wheel delta using an exponential zoom scale.
         /// @param | delta | number | Wheel delta where positive zooms in and negative zooms out.
         methods.add_method_mut("applyWheelZoom", |_, this, delta: f32| {
+            let delta = finite_f32(delta, "applyWheelZoom delta")?;
             this.with_mut(|g| {
                 let factor = 1.1_f32.powf(delta);
                 g.camera.zoom_by(factor);
@@ -1649,7 +1874,10 @@ impl LuaUserData for LuaGlobe {
         /// @param | marker_tbl | table | Marker table with `type`, `lat`, `lon`, optional `orbit`, optional `altitude_px`, optional style fields, and optional `attrs`.
         /// @return | integer | New marker id.
         methods.add_method_mut("addMarkerEx", |_, this, marker_tbl: LuaTable| {
-            let marker = parse_marker_ex_table(marker_tbl)?;
+            let marker = {
+                let state = this.state.borrow();
+                parse_marker_ex_table(marker_tbl, &state)?
+            };
             let ParsedMarkerInput {
                 marker_type,
                 lat_deg,
@@ -1710,16 +1938,23 @@ impl LuaUserData for LuaGlobe {
         // -- setMarkerPulse --
         /// Sets marker pulse frequency and amplitude.
         /// @param | id | integer | Marker id.
-        /// @param | hz | number | Pulse frequency in hertz, clamped to at least zero.
-        /// @param | amp | number | Pulse amplitude clamped to 0.0 through 1.0.
+        /// @param | hz | number | Pulse frequency in hertz, must be >= 0.
+        /// @param | amp | number | Pulse amplitude in the 0.0 through 1.0 range.
         /// @return | boolean | True when the marker exists.
         methods.add_method_mut(
             "setMarkerPulse",
             |_, this, (id, hz, amp): (u32, f32, f32)| {
+                let hz = finite_f32(hz, "setMarkerPulse hz")?;
+                if hz < 0.0 {
+                    return Err(LuaError::RuntimeError(
+                        "lurek.globe.setMarkerPulse: hz must be >= 0".to_string(),
+                    ));
+                }
+                let amp = unit_interval_f32(amp, "setMarkerPulse amp")?;
                 this.with_mut(|g| {
                     if let Some(m) = g.markers.get_mut(id) {
-                        m.style.pulse_hz = hz.max(0.0);
-                        m.style.pulse_amplitude = amp.clamp(0.0, 1.0);
+                        m.style.pulse_hz = hz;
+                        m.style.pulse_amplitude = amp;
                         true
                     } else {
                         false
@@ -1733,6 +1968,7 @@ impl LuaUserData for LuaGlobe {
         /// @param | dps | number | Rotation speed in degrees per second.
         /// @return | boolean | True when the marker exists.
         methods.add_method_mut("setMarkerRotation", |_, this, (id, dps): (u32, f32)| {
+            let dps = finite_f32(dps, "setMarkerRotation dps")?;
             this.with_mut(|g| {
                 if let Some(m) = g.markers.get_mut(id) {
                     m.style.rotation_deg_per_sec = dps;
@@ -1824,10 +2060,10 @@ impl LuaUserData for LuaGlobe {
             "setMarkerColor",
             |_, this, (id, r, g, b, a): (u32, f32, f32, f32, Option<f32>)| {
                 let color = [
-                    finite_f32(r, "marker color red")?.clamp(0.0, 1.0),
-                    finite_f32(g, "marker color green")?.clamp(0.0, 1.0),
-                    finite_f32(b, "marker color blue")?.clamp(0.0, 1.0),
-                    finite_f32(a.unwrap_or(1.0), "marker color alpha")?.clamp(0.0, 1.0),
+                    unit_interval_f32(r, "marker color red")?,
+                    unit_interval_f32(g, "marker color green")?,
+                    unit_interval_f32(b, "marker color blue")?,
+                    unit_interval_f32(a.unwrap_or(1.0), "marker color alpha")?,
                 ];
                 this.with_mut(|g| {
                     if let Some(marker) = g.markers.get_mut(id) {
@@ -1842,10 +2078,15 @@ impl LuaUserData for LuaGlobe {
         // -- setMarkerSize --
         /// Sets the marker size in screen units for rendering.
         /// @param | id | integer | Marker id.
-        /// @param | size | number | Marker size, clamped to at least 1.0.
+        /// @param | size | number | Marker size, must be at least 1.0.
         /// @return | boolean | True when the marker exists.
         methods.add_method_mut("setMarkerSize", |_, this, (id, size): (u32, f32)| {
-            let size = finite_f32(size, "marker size")?.max(1.0);
+            let size = finite_f32(size, "marker size")?;
+            if size < 1.0 {
+                return Err(LuaError::RuntimeError(
+                    "lurek.globe.setMarkerSize: size must be >= 1".to_string(),
+                ));
+            }
             this.with_mut(|g| {
                 if let Some(marker) = g.markers.get_mut(id) {
                     marker.style.size = size;
@@ -1872,16 +2113,26 @@ impl LuaUserData for LuaGlobe {
             })
         });
         // -- setMarkerIconTexture --
-        /// Assigns or clears a raw texture handle for a marker icon.
+        /// Assigns or clears a live texture handle for a marker icon.
         /// @param | id | integer | Marker id.
-        /// @param | tex_raw | integer? | Raw texture handle, or nil to clear the icon.
+        /// @param | tex_raw | integer, LImage, or nil | Live texture handle, image userdata, or nil to clear the icon.
         /// @return | boolean | True when the marker exists.
         methods.add_method_mut(
             "setMarkerIconTexture",
-            |_, this, (id, tex_raw): (u32, Option<u64>)| {
+            |_, this, (id, tex_value): (u32, LuaValue)| {
+                let texture_key = {
+                    let state = this.state.borrow();
+                    parse_texture_key_value_checked(
+                        &tex_value,
+                        "lurek.globe.setMarkerIconTexture",
+                        &state,
+                    )?
+                    .map(|(key, _)| key)
+                };
                 this.with_mut(|g| {
                     if let Some(marker) = g.markers.get_mut(id) {
-                        marker.style.icon_texture = tex_raw.map(|raw| raw.to_string());
+                        marker.style.icon_texture = None;
+                        marker.style.icon_texture_key = texture_key;
                         true
                     } else {
                         false
@@ -1911,7 +2162,10 @@ impl LuaUserData for LuaGlobe {
                 this.with_mut(|g| {
                     g.labels
                         .add(ltype, lat, lon, text, LabelStyle::default(), 0)
-                })
+                        .map_err(|err| {
+                            LuaError::RuntimeError(format!("lurek.globe.addLabel: {err}"))
+                        })
+                })?
             },
         );
         // -- setLabelText --
@@ -1945,7 +2199,8 @@ impl LuaUserData for LuaGlobe {
             "addLayer",
             |_, this, (name, z_order): (String, Option<i32>)| {
                 this.with_mut(|g| {
-                    g.layers.add(Layer {
+                    g.layers
+                        .add(Layer {
                         name,
                         visible: true,
                         alpha: 1.0,
@@ -1953,7 +2208,10 @@ impl LuaUserData for LuaGlobe {
                         kind: String::new(),
                         region_colors: HashMap::new(),
                     })
-                })
+                        .map_err(|err| {
+                            LuaError::RuntimeError(format!("lurek.globe.addLayer: {err}"))
+                        })
+                })?
             },
         );
         // -- removeLayer --
@@ -1979,7 +2237,10 @@ impl LuaUserData for LuaGlobe {
                     globe
                         .layers
                         .set_province_color(&layer, RegionId(id), [r, g, b, a])
-                })
+                        .map_err(|err| {
+                            LuaError::RuntimeError(format!("lurek.globe.setLayerColor: {err}"))
+                        })
+                })?
             },
         );
         // -- setLayerVisible --
@@ -1993,10 +2254,14 @@ impl LuaUserData for LuaGlobe {
         // -- setLayerAlpha --
         /// Sets render layer alpha. This method is available to Lua scripts.
         /// @param | name | string | Layer name.
-        /// @param | alpha | number | Layer alpha.
+        /// @param | alpha | number | Layer alpha in the 0.0 through 1.0 range.
         /// @return | boolean | True when the layer exists.
         methods.add_method_mut("setLayerAlpha", |_, this, (name, alpha): (String, f32)| {
-            this.with_mut(|g| g.layers.set_alpha(&name, alpha))
+            this.with_mut(|g| {
+                g.layers.set_alpha(&name, alpha).map_err(|err| {
+                    LuaError::RuntimeError(format!("lurek.globe.setLayerAlpha: {err}"))
+                })
+            })?
         });
         // -- setTimeOfDay --
         /// Sets globe time of day modulo 24 hours.
@@ -2263,12 +2528,17 @@ impl LuaUserData for LuaGlobe {
         methods.add_method_mut(
             "addArc",
             |_, this, (lat1, lon1, lat2, lon2, steps): (f32, f32, f32, f32, Option<u32>)| {
+                let (lat1, lon1) = validate_lat_lon(lat1, lon1, "addArc from")?;
+                let (lat2, lon2) = validate_lat_lon(lat2, lon2, "addArc to")?;
                 let steps = steps.unwrap_or(24);
+                if steps < 2 {
+                    return Err(LuaError::RuntimeError(
+                        "lurek.globe.addArc: steps must be >= 2".to_string(),
+                    ));
+                }
                 this.with_mut(|g| {
-                    let arc_id = g.arc_next_id;
-                    g.arc_next_id += 1;
                     let arc = crate::globe::types::Arc {
-                        id: arc_id,
+                        id: g.arc_next_id,
                         arc_type: "route".to_string(),
                         screen_points: Vec::new(),
                         color: [1.0, 1.0, 0.0, 1.0],
@@ -2278,9 +2548,10 @@ impl LuaUserData for LuaGlobe {
                         steps,
                         visible: true,
                     };
-                    g.arcs.insert(arc_id, arc);
-                    arc_id
-                })
+                    g.add_arc(arc).map_err(|err| {
+                        LuaError::RuntimeError(format!("lurek.globe.addArc: {err}"))
+                    })
+                })?
             },
         );
         // -- removeArc --
@@ -2405,41 +2676,87 @@ impl LuaUserData for LuaGlobeRegistry {
     }
 }
 /// Parses optional Lua table fields into a globe specification.
-fn parse_globe_spec(tbl: Option<LuaTable>) -> GlobeSpec {
+fn parse_globe_spec(tbl: Option<LuaTable>, label: &str) -> LuaResult<GlobeSpec> {
     let mut spec = GlobeSpec::default();
     if let Some(t) = tbl {
         if let Ok(v) = t.get::<_, f32>("radius") {
-            spec.radius = v.max(1.0);
+            let v = finite_f32(v, &format!("{label} radius"))?;
+            if v < 1.0 {
+                return Err(LuaError::RuntimeError(
+                    format!("lurek.globe.{label}: radius must be >= 1"),
+                ));
+            }
+            spec.radius = v;
         }
         if let Ok(v) = t.get::<_, f32>("axial_tilt_deg") {
-            spec.axial_tilt_deg = v;
+            spec.axial_tilt_deg = finite_f32(v, &format!("{label} axial_tilt_deg"))?;
         }
         if let Ok(v) = t.get::<_, f32>("rotation_deg") {
-            spec.rotation_deg = v.rem_euclid(360.0);
+            spec.rotation_deg = finite_f32(v, &format!("{label} rotation_deg"))?.rem_euclid(360.0);
         }
         if let Ok(v) = t.get::<_, f32>("time_of_day") {
-            spec.time_of_day = v.rem_euclid(24.0);
+            spec.time_of_day = finite_f32(v, &format!("{label} time_of_day"))?.rem_euclid(24.0);
         }
         if let Ok(Some(v)) = t.get::<_, Option<bool>>("render_borders") {
             spec.render_borders = v;
         }
         if let Ok(v) = t.get::<_, f32>("border_width") {
-            spec.border_width = v.max(0.0);
+            let v = finite_f32(v, &format!("{label} border_width"))?;
+            if v < 0.0 {
+                return Err(LuaError::RuntimeError(
+                    format!("lurek.globe.{label}: border_width must be >= 0"),
+                ));
+            }
+            spec.border_width = v;
         }
         if let Ok(v) = t.get::<_, f32>("ambient") {
-            spec.ambient = v.clamp(0.0, 1.0);
+            spec.ambient = unit_interval_f32(v, &format!("{label} ambient"))?;
         }
         if let Ok(v) = t.get::<_, f32>("auto_rotation_deg_per_sec") {
-            spec.auto_rotation_deg_per_sec = v;
+            spec.auto_rotation_deg_per_sec =
+                finite_f32(v, &format!("{label} auto_rotation_deg_per_sec"))?;
         }
         if let Ok(v) = t.get::<_, f32>("atmosphere_width") {
-            spec.atmosphere_width = v.max(0.0);
+            let v = finite_f32(v, &format!("{label} atmosphere_width"))?;
+            if v < 0.0 {
+                return Err(LuaError::RuntimeError(
+                    format!("lurek.globe.{label}: atmosphere_width must be >= 0"),
+                ));
+            }
+            spec.atmosphere_width = v;
         }
         if let Ok(v) = t.get::<_, u8>("border_smoothing_passes") {
             spec.border_smoothing_passes = v;
         }
+        if let Ok(Some(v)) = t.get::<_, Option<bool>>("show_atmosphere") {
+            spec.show_atmosphere = v;
+        }
+        if let Ok(border_color) = t.get::<_, LuaTable>("border_color") {
+            spec.border_color = parse_color_table(
+                Some(border_color),
+                spec.border_color,
+                &format!("{label} border_color"),
+            )?;
+        }
+        if let Ok(atmosphere_color) = t.get::<_, LuaTable>("atmosphere_color") {
+            spec.atmosphere_color = parse_color_table(
+                Some(atmosphere_color),
+                spec.atmosphere_color,
+                &format!("{label} atmosphere_color"),
+            )?;
+        }
+        if let Ok(background_color) = t.get::<_, LuaTable>("background_color") {
+            spec.background_color = parse_color_table(
+                Some(background_color),
+                spec.background_color,
+                &format!("{label} background_color"),
+            )?;
+        }
     }
-    spec
+    validate_globe_spec(&spec).map_err(|error| {
+        LuaError::RuntimeError(format!("lurek.globe.{label}: {error}"))
+    })?;
+    Ok(spec)
 }
 /// Registers `lurek.globe` constructors, geometry helpers, and constants.
 pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
@@ -2464,7 +2781,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     // -- new --
     /// Creates a named globe with optional specification fields in the module registry.
     /// @param | name | string | Globe registry name.
-    /// @param | spec_tbl | table? | Globe specification table.
+    /// @param | spec_tbl | table? | Globe specification table. Optional `load_options = { sandbox_root?, max_toml_bytes?, max_png_bytes?, max_png_pixels? }` applies to file-backed loaders.
     /// @return | LGlobe | New globe handle.
     tbl.set(
         "new",
@@ -2539,8 +2856,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         lua.create_function(
             move |_, (name, path, spec_tbl): (String, String, Option<LuaTable>)| {
                 let config = parse_globe_config(spec_tbl, "loadFromTOMLFile")?;
-                let provinces =
-                    loader::load_from_toml_file(&path).map_err(mlua::Error::RuntimeError)?;
+                let provinces = loader::load_from_toml_file_safe(&path, &config.load_options)
+                    .map_err(mlua::Error::RuntimeError)?;
                 {
                     let mut guard = load_toml_file_reg.lock().map_err(|e| {
                         mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))
@@ -2568,7 +2885,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// Creates a globe and populates provinces from TOML source text.
     /// @param | name | string | Globe registry name.
     /// @param | toml_src | string | TOML province document source supporting either `vertices` or multipart `parts = [{ outer = ..., holes = ... }]`.
-    /// @param | spec_tbl | table? | Globe specification table.
+    /// @param | spec_tbl | table? | Globe specification table. Optional `load_options = { sandbox_root?, max_toml_bytes?, max_png_bytes?, max_png_pixels? }` applies to file-backed loaders.
     /// @return | LGlobe | New populated globe handle.
     tbl.set(
         "loadFromTOML",
@@ -2611,8 +2928,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         lua.create_function(
             move |_, (name, png_path, spec_tbl): (String, String, Option<LuaTable>)| {
                 let config = parse_globe_config(spec_tbl, "loadFromPNG")?;
-                let provinces =
-                    loader::load_from_png_file(&png_path).map_err(mlua::Error::RuntimeError)?;
+                let provinces = loader::load_from_png_file_safe(&png_path, &config.load_options)
+                    .map_err(mlua::Error::RuntimeError)?;
                 {
                     let mut guard = load_png_reg.lock().map_err(|e| {
                         mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))

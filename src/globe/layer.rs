@@ -4,6 +4,7 @@
 //! Open this owner when layer stacking, alpha policy, or region color override semantics need to be revised.
 
 use crate::globe::types::{Layer, RegionId};
+use crate::globe::validation::validate_layer;
 use std::collections::HashMap;
 /// Named layer collection keyed by layer name.
 #[derive(Debug, Clone, Default)]
@@ -17,8 +18,9 @@ impl LayerStore {
         Self::default()
     }
     /// Insert a layer and return true when a layer with the same name was replaced.
-    pub fn add(&mut self, layer: Layer) -> bool {
-        self.layers.insert(layer.name.clone(), layer).is_some()
+    pub fn add(&mut self, layer: Layer) -> Result<bool, String> {
+        validate_layer(&layer, "globe layer")?;
+        Ok(self.layers.insert(layer.name.clone(), layer).is_some())
     }
     /// Remove a layer by name and return it when found.
     pub fn remove(&mut self, name: &str) -> Option<Layer> {
@@ -33,13 +35,28 @@ impl LayerStore {
         self.layers.get_mut(name)
     }
     /// Set a region color override for a layer and return true when the layer exists.
-    pub fn set_province_color(&mut self, layer: &str, id: RegionId, color: [f32; 4]) -> bool {
-        if let Some(l) = self.layers.get_mut(layer) {
-            l.region_colors.insert(id, color);
-            true
-        } else {
-            false
+    pub fn set_province_color(
+        &mut self,
+        layer: &str,
+        id: RegionId,
+        color: [f32; 4],
+    ) -> Result<bool, String> {
+        let Some(layer_entry) = self.layers.get_mut(layer) else {
+            return Ok(false);
+        };
+        let previous = layer_entry.region_colors.insert(id, color);
+        if let Err(error) = validate_layer(layer_entry, "globe layer") {
+            match previous {
+                Some(color) => {
+                    layer_entry.region_colors.insert(id, color);
+                }
+                None => {
+                    layer_entry.region_colors.remove(&id);
+                }
+            }
+            return Err(error);
         }
+        Ok(true)
     }
     /// Clear all region color overrides from a layer.
     pub fn clear_province_colors(&mut self, layer: &str) {
@@ -57,13 +74,17 @@ impl LayerStore {
         }
     }
     /// Set layer alpha and clamp it to the 0..=1 range.
-    pub fn set_alpha(&mut self, name: &str, alpha: f32) -> bool {
-        if let Some(l) = self.layers.get_mut(name) {
-            l.alpha = alpha.clamp(0.0, 1.0);
-            true
-        } else {
-            false
+    pub fn set_alpha(&mut self, name: &str, alpha: f32) -> Result<bool, String> {
+        let Some(layer) = self.layers.get_mut(name) else {
+            return Ok(false);
+        };
+        let previous = layer.alpha;
+        layer.alpha = alpha;
+        if let Err(error) = validate_layer(layer, "globe layer") {
+            layer.alpha = previous;
+            return Err(error);
         }
+        Ok(true)
     }
     /// Resolve the effective region color by applying visible layers in z-order.
     pub fn effective_color(&self, id: RegionId) -> Option<[f32; 4]> {

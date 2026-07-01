@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-07-01T15:49:02.458087+00:00",
+  "generated_at": "2026-07-01T19:12:18.173593+00:00",
   "summary": {
     "rust": {
-      "total": 9054,
-      "covered": 9048,
-      "missing": 6,
+      "total": 9086,
+      "covered": 9077,
+      "missing": 9,
       "pct": 99.9
     },
     "lua_api": {
@@ -14,13 +14,40 @@
       "pct": 81.8
     },
     "total": {
-      "total": 9274,
-      "covered": 9228,
-      "missing": 46,
+      "total": 9306,
+      "covered": 9257,
+      "missing": 49,
       "pct": 99.5
     }
   },
   "missing": [
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/registry.rs",
+      "line": 883,
+      "kind": "fn",
+      "name": "rebuild_region_sector_index",
+      "has_doc": false
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/registry.rs",
+      "line": 902,
+      "kind": "fn",
+      "name": "rebuild_terrain_bounds",
+      "has_doc": false
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/registry.rs",
+      "line": 911,
+      "kind": "fn",
+      "name": "rebuild_region_bounds",
+      "has_doc": false
+    },
     {
       "source": "rust",
       "module": "lua_api",
@@ -24579,7 +24606,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/draw.rs",
-      "line": 37,
+      "line": 65,
       "kind": "fn",
       "name": "emit_globe_frame",
       "has_doc": true
@@ -24588,7 +24615,16 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/draw.rs",
-      "line": 863,
+      "line": 106,
+      "kind": "fn",
+      "name": "emit_globe_frame_with_stats",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/draw.rs",
+      "line": 1003,
       "kind": "fn",
       "name": "project_arc",
       "has_doc": true
@@ -24930,7 +24966,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/label.rs",
-      "line": 11,
+      "line": 12,
       "kind": "struct",
       "name": "LabelStore",
       "has_doc": true
@@ -24939,7 +24975,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/label.rs",
-      "line": 19,
+      "line": 20,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -24948,7 +24984,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/label.rs",
-      "line": 23,
+      "line": 24,
       "kind": "fn",
       "name": "add",
       "has_doc": true
@@ -25047,7 +25083,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/layer.rs",
-      "line": 10,
+      "line": 11,
       "kind": "struct",
       "name": "LayerStore",
       "has_doc": true
@@ -25056,7 +25092,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/layer.rs",
-      "line": 16,
+      "line": 17,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -25065,7 +25101,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/layer.rs",
-      "line": 20,
+      "line": 21,
       "kind": "fn",
       "name": "add",
       "has_doc": true
@@ -25074,7 +25110,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/layer.rs",
-      "line": 24,
+      "line": 26,
       "kind": "fn",
       "name": "remove",
       "has_doc": true
@@ -25083,7 +25119,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/layer.rs",
-      "line": 28,
+      "line": 30,
       "kind": "fn",
       "name": "get",
       "has_doc": true
@@ -25092,7 +25128,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/layer.rs",
-      "line": 32,
+      "line": 34,
       "kind": "fn",
       "name": "get_mut",
       "has_doc": true
@@ -25101,7 +25137,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/layer.rs",
-      "line": 36,
+      "line": 38,
       "kind": "fn",
       "name": "set_province_color",
       "has_doc": true
@@ -25110,7 +25146,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/layer.rs",
-      "line": 45,
+      "line": 62,
       "kind": "fn",
       "name": "clear_province_colors",
       "has_doc": true
@@ -25119,7 +25155,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/layer.rs",
-      "line": 51,
+      "line": 68,
       "kind": "fn",
       "name": "set_visible",
       "has_doc": true
@@ -25128,7 +25164,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/layer.rs",
-      "line": 60,
+      "line": 77,
       "kind": "fn",
       "name": "set_alpha",
       "has_doc": true
@@ -25137,7 +25173,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/layer.rs",
-      "line": 69,
+      "line": 90,
       "kind": "fn",
       "name": "effective_color",
       "has_doc": true
@@ -25146,7 +25182,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/layer.rs",
-      "line": 82,
+      "line": 103,
       "kind": "fn",
       "name": "visible_sorted",
       "has_doc": true
@@ -25155,7 +25191,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/layer.rs",
-      "line": 88,
+      "line": 109,
       "kind": "fn",
       "name": "len",
       "has_doc": true
@@ -25164,7 +25200,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/layer.rs",
-      "line": 92,
+      "line": 113,
       "kind": "fn",
       "name": "is_empty",
       "has_doc": true
@@ -25209,7 +25245,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/loader.rs",
-      "line": 33,
+      "line": 37,
       "kind": "fn",
       "name": "load_from_toml_str",
       "has_doc": true
@@ -25218,7 +25254,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/loader.rs",
-      "line": 38,
+      "line": 44,
       "kind": "fn",
       "name": "load_from_toml_file",
       "has_doc": true
@@ -25227,7 +25263,16 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/loader.rs",
-      "line": 292,
+      "line": 48,
+      "kind": "fn",
+      "name": "load_from_toml_file_safe",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/loader.rs",
+      "line": 320,
       "kind": "fn",
       "name": "load_from_png_file",
       "has_doc": true
@@ -25236,7 +25281,16 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/loader.rs",
-      "line": 298,
+      "line": 324,
+      "kind": "fn",
+      "name": "load_from_png_file_safe",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/loader.rs",
+      "line": 356,
       "kind": "fn",
       "name": "load_from_province_grid",
       "has_doc": true
@@ -25245,7 +25299,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/loader.rs",
-      "line": 334,
+      "line": 392,
       "kind": "fn",
       "name": "generate_voronoi_provinces",
       "has_doc": true
@@ -25677,7 +25731,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/picking.rs",
-      "line": 155,
+      "line": 164,
       "kind": "fn",
       "name": "point_in_geo_polygon",
       "has_doc": true
@@ -25686,7 +25740,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/picking.rs",
-      "line": 168,
+      "line": 177,
       "kind": "fn",
       "name": "point_in_geo_region",
       "has_doc": true
@@ -25695,7 +25749,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/picking.rs",
-      "line": 188,
+      "line": 197,
       "kind": "fn",
       "name": "screen_to_shell",
       "has_doc": true
@@ -25704,7 +25758,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/picking.rs",
-      "line": 218,
+      "line": 227,
       "kind": "fn",
       "name": "screen_to_surface",
       "has_doc": true
@@ -25713,7 +25767,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/picking.rs",
-      "line": 234,
+      "line": 243,
       "kind": "fn",
       "name": "pick",
       "has_doc": true
@@ -25866,7 +25920,16 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 95,
+      "line": 64,
+      "kind": "struct",
+      "name": "GlobeRegionMut",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/registry.rs",
+      "line": 148,
       "kind": "struct",
       "name": "Globe",
       "has_doc": true
@@ -25875,7 +25938,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 138,
+      "line": 197,
       "kind": "struct",
       "name": "TerrainCoverageReport",
       "has_doc": true
@@ -25884,54 +25947,9 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 151,
+      "line": 210,
       "kind": "fn",
       "name": "new",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "globe",
-      "file": "src/globe/registry.rs",
-      "line": 159,
-      "kind": "fn",
-      "name": "add_orbit",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "globe",
-      "file": "src/globe/registry.rs",
-      "line": 163,
-      "kind": "fn",
-      "name": "remove_orbit",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "globe",
-      "file": "src/globe/registry.rs",
-      "line": 180,
-      "kind": "fn",
-      "name": "orbit_shell_radius",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "globe",
-      "file": "src/globe/registry.rs",
-      "line": 190,
-      "kind": "fn",
-      "name": "add_marker_placed",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "globe",
-      "file": "src/globe/registry.rs",
-      "line": 208,
-      "kind": "fn",
-      "name": "set_marker_orbit",
       "has_doc": true
     },
     {
@@ -25940,7 +25958,7 @@
       "file": "src/globe/registry.rs",
       "line": 218,
       "kind": "fn",
-      "name": "set_marker_altitude",
+      "name": "add_orbit",
       "has_doc": true
     },
     {
@@ -25949,52 +25967,43 @@
       "file": "src/globe/registry.rs",
       "line": 222,
       "kind": "fn",
-      "name": "add_terrain_patch",
+      "name": "remove_orbit",
       "has_doc": true
     },
     {
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 230,
+      "line": 239,
       "kind": "fn",
-      "name": "remove_terrain_patch",
+      "name": "orbit_shell_radius",
       "has_doc": true
     },
     {
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 234,
+      "line": 249,
       "kind": "fn",
-      "name": "get_terrain_patch",
+      "name": "add_marker_placed",
       "has_doc": true
     },
     {
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 238,
+      "line": 268,
       "kind": "fn",
-      "name": "get_terrain_patch_mut",
+      "name": "set_marker_orbit",
       "has_doc": true
     },
     {
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 242,
+      "line": 278,
       "kind": "fn",
-      "name": "terrain_patch_count",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "globe",
-      "file": "src/globe/registry.rs",
-      "line": 246,
-      "kind": "fn",
-      "name": "validate_terrain_coverage",
+      "name": "set_marker_altitude",
       "has_doc": true
     },
     {
@@ -26003,25 +26012,7 @@
       "file": "src/globe/registry.rs",
       "line": 282,
       "kind": "fn",
-      "name": "add_region",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "globe",
-      "file": "src/globe/registry.rs",
-      "line": 290,
-      "kind": "fn",
-      "name": "remove_region",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "globe",
-      "file": "src/globe/registry.rs",
-      "line": 294,
-      "kind": "fn",
-      "name": "get_region",
+      "name": "add_terrain_patch",
       "has_doc": true
     },
     {
@@ -26030,6 +26021,78 @@
       "file": "src/globe/registry.rs",
       "line": 298,
       "kind": "fn",
+      "name": "remove_terrain_patch",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/registry.rs",
+      "line": 306,
+      "kind": "fn",
+      "name": "get_terrain_patch",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/registry.rs",
+      "line": 310,
+      "kind": "fn",
+      "name": "get_terrain_patch_mut",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/registry.rs",
+      "line": 320,
+      "kind": "fn",
+      "name": "terrain_patch_count",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/registry.rs",
+      "line": 324,
+      "kind": "fn",
+      "name": "validate_terrain_coverage",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/registry.rs",
+      "line": 367,
+      "kind": "fn",
+      "name": "add_region",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/registry.rs",
+      "line": 390,
+      "kind": "fn",
+      "name": "remove_region",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/registry.rs",
+      "line": 397,
+      "kind": "fn",
+      "name": "get_region",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/registry.rs",
+      "line": 401,
+      "kind": "fn",
       "name": "get_region_mut",
       "has_doc": true
     },
@@ -26037,7 +26100,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 302,
+      "line": 411,
       "kind": "fn",
       "name": "region_count",
       "has_doc": true
@@ -26046,7 +26109,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 307,
+      "line": 416,
       "kind": "fn",
       "name": "add_province",
       "has_doc": true
@@ -26055,7 +26118,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 316,
+      "line": 426,
       "kind": "fn",
       "name": "remove_province",
       "has_doc": true
@@ -26064,7 +26127,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 321,
+      "line": 433,
       "kind": "fn",
       "name": "get_province",
       "has_doc": true
@@ -26073,7 +26136,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 326,
+      "line": 438,
       "kind": "fn",
       "name": "get_province_mut",
       "has_doc": true
@@ -26082,7 +26145,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 331,
+      "line": 443,
       "kind": "fn",
       "name": "province_count",
       "has_doc": true
@@ -26091,7 +26154,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 335,
+      "line": 447,
       "kind": "fn",
       "name": "add_arc",
       "has_doc": true
@@ -26100,7 +26163,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 342,
+      "line": 455,
       "kind": "fn",
       "name": "remove_arc",
       "has_doc": true
@@ -26109,7 +26172,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 346,
+      "line": 459,
       "kind": "fn",
       "name": "update",
       "has_doc": true
@@ -26118,7 +26181,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 354,
+      "line": 467,
       "kind": "fn",
       "name": "screen_to_surface",
       "has_doc": true
@@ -26127,7 +26190,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 358,
+      "line": 471,
       "kind": "fn",
       "name": "screen_to_orbit",
       "has_doc": true
@@ -26136,7 +26199,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 373,
+      "line": 486,
       "kind": "fn",
       "name": "screen_to_shells",
       "has_doc": true
@@ -26145,7 +26208,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 385,
+      "line": 498,
       "kind": "fn",
       "name": "apply_mouse_drag",
       "has_doc": true
@@ -26154,7 +26217,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 400,
+      "line": 513,
       "kind": "fn",
       "name": "pick_screen",
       "has_doc": true
@@ -26163,7 +26226,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 404,
+      "line": 517,
       "kind": "fn",
       "name": "regions_at_lat_lon",
       "has_doc": true
@@ -26172,7 +26235,16 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 423,
+      "line": 521,
+      "kind": "fn",
+      "name": "regions_at_lat_lon_with_stats",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/registry.rs",
+      "line": 571,
       "kind": "fn",
       "name": "pick_regions_at_screen",
       "has_doc": true
@@ -26181,7 +26253,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 430,
+      "line": 578,
       "kind": "fn",
       "name": "pick_marker_screen",
       "has_doc": true
@@ -26190,7 +26262,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 441,
+      "line": 589,
       "kind": "fn",
       "name": "pick_object",
       "has_doc": true
@@ -26199,7 +26271,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 445,
+      "line": 593,
       "kind": "fn",
       "name": "pick_all_objects",
       "has_doc": true
@@ -26208,7 +26280,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 625,
+      "line": 773,
       "kind": "fn",
       "name": "marker_distance",
       "has_doc": true
@@ -26217,7 +26289,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 633,
+      "line": 781,
       "kind": "fn",
       "name": "emit_frame",
       "has_doc": true
@@ -26226,7 +26298,16 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 654,
+      "line": 785,
+      "kind": "fn",
+      "name": "emit_frame_with_stats",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/registry.rs",
+      "line": 809,
       "kind": "fn",
       "name": "set_heat_layer",
       "has_doc": true
@@ -26235,7 +26316,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 662,
+      "line": 819,
       "kind": "fn",
       "name": "remove_heat_layer",
       "has_doc": true
@@ -26244,7 +26325,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 668,
+      "line": 825,
       "kind": "fn",
       "name": "set_region_sector",
       "has_doc": true
@@ -26253,7 +26334,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 676,
+      "line": 840,
       "kind": "fn",
       "name": "region_sector",
       "has_doc": true
@@ -26262,7 +26343,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 686,
+      "line": 844,
       "kind": "fn",
       "name": "sector_regions",
       "has_doc": true
@@ -26271,7 +26352,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 694,
+      "line": 855,
       "kind": "fn",
       "name": "set_province_sector",
       "has_doc": true
@@ -26280,7 +26361,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 699,
+      "line": 860,
       "kind": "fn",
       "name": "province_sector",
       "has_doc": true
@@ -26289,7 +26370,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 704,
+      "line": 865,
       "kind": "fn",
       "name": "sector_provinces",
       "has_doc": true
@@ -26298,7 +26379,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 708,
+      "line": 869,
       "kind": "fn",
       "name": "cache_reachability_default",
       "has_doc": true
@@ -26307,7 +26388,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 718,
+      "line": 879,
       "kind": "fn",
       "name": "cached_reachability",
       "has_doc": true
@@ -26316,7 +26397,34 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 724,
+      "line": 883,
+      "kind": "fn",
+      "name": "rebuild_region_sector_index",
+      "has_doc": false
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/registry.rs",
+      "line": 902,
+      "kind": "fn",
+      "name": "rebuild_terrain_bounds",
+      "has_doc": false
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/registry.rs",
+      "line": 911,
+      "kind": "fn",
+      "name": "rebuild_region_bounds",
+      "has_doc": false
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/registry.rs",
+      "line": 982,
       "kind": "struct",
       "name": "GlobeRegistry",
       "has_doc": true
@@ -26325,7 +26433,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 730,
+      "line": 988,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -26334,7 +26442,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 734,
+      "line": 992,
       "kind": "fn",
       "name": "create",
       "has_doc": true
@@ -26343,7 +26451,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 741,
+      "line": 999,
       "kind": "fn",
       "name": "get",
       "has_doc": true
@@ -26352,7 +26460,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 745,
+      "line": 1003,
       "kind": "fn",
       "name": "get_mut",
       "has_doc": true
@@ -26361,7 +26469,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 749,
+      "line": 1007,
       "kind": "fn",
       "name": "remove",
       "has_doc": true
@@ -26370,7 +26478,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 753,
+      "line": 1011,
       "kind": "fn",
       "name": "names",
       "has_doc": true
@@ -26379,7 +26487,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 757,
+      "line": 1015,
       "kind": "fn",
       "name": "len",
       "has_doc": true
@@ -26388,7 +26496,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/registry.rs",
-      "line": 761,
+      "line": 1019,
       "kind": "fn",
       "name": "is_empty",
       "has_doc": true
@@ -26568,7 +26676,61 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/topology.rs",
-      "line": 23,
+      "line": 39,
+      "kind": "struct",
+      "name": "RegionGeoBounds",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/topology.rs",
+      "line": 49,
+      "kind": "fn",
+      "name": "contains",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/topology.rs",
+      "line": 59,
+      "kind": "fn",
+      "name": "geo_bounds_from_points",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/topology.rs",
+      "line": 109,
+      "kind": "fn",
+      "name": "geo_bounds_from_ordered_points",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/topology.rs",
+      "line": 118,
+      "kind": "fn",
+      "name": "region_geo_bounds",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/topology.rs",
+      "line": 131,
+      "kind": "struct",
+      "name": "RegionMut",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/topology.rs",
+      "line": 166,
       "kind": "struct",
       "name": "RegionGraph",
       "has_doc": true
@@ -26577,7 +26739,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/topology.rs",
-      "line": 36,
+      "line": 181,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -26586,7 +26748,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/topology.rs",
-      "line": 40,
+      "line": 185,
       "kind": "fn",
       "name": "insert",
       "has_doc": true
@@ -26595,7 +26757,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/topology.rs",
-      "line": 55,
+      "line": 208,
       "kind": "fn",
       "name": "remove",
       "has_doc": true
@@ -26604,7 +26766,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/topology.rs",
-      "line": 65,
+      "line": 218,
       "kind": "fn",
       "name": "get",
       "has_doc": true
@@ -26613,7 +26775,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/topology.rs",
-      "line": 69,
+      "line": 222,
       "kind": "fn",
       "name": "get_mut",
       "has_doc": true
@@ -26622,7 +26784,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/topology.rs",
-      "line": 73,
+      "line": 231,
       "kind": "fn",
       "name": "iter",
       "has_doc": true
@@ -26631,7 +26793,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/topology.rs",
-      "line": 77,
+      "line": 235,
       "kind": "fn",
       "name": "len",
       "has_doc": true
@@ -26640,7 +26802,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/topology.rs",
-      "line": 81,
+      "line": 239,
       "kind": "fn",
       "name": "is_empty",
       "has_doc": true
@@ -26649,7 +26811,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/topology.rs",
-      "line": 85,
+      "line": 243,
       "kind": "fn",
       "name": "find_path",
       "has_doc": true
@@ -26658,7 +26820,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/topology.rs",
-      "line": 102,
+      "line": 260,
       "kind": "fn",
       "name": "reachable",
       "has_doc": true
@@ -26667,7 +26829,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/topology.rs",
-      "line": 112,
+      "line": 270,
       "kind": "fn",
       "name": "neighbors_of",
       "has_doc": true
@@ -26676,7 +26838,16 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/topology.rs",
-      "line": 119,
+      "line": 277,
+      "kind": "fn",
+      "name": "candidate_ids_at",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/topology.rs",
+      "line": 287,
       "kind": "fn",
       "name": "set_attr",
       "has_doc": true
@@ -26685,7 +26856,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/topology.rs",
-      "line": 128,
+      "line": 296,
       "kind": "fn",
       "name": "get_attr",
       "has_doc": true
@@ -26694,7 +26865,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/topology.rs",
-      "line": 132,
+      "line": 300,
       "kind": "fn",
       "name": "set_edge_tags",
       "has_doc": true
@@ -26703,7 +26874,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/topology.rs",
-      "line": 174,
+      "line": 342,
       "kind": "fn",
       "name": "edge_tags",
       "has_doc": true
@@ -26712,7 +26883,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/topology.rs",
-      "line": 184,
+      "line": 352,
       "kind": "fn",
       "name": "find_path_default",
       "has_doc": true
@@ -26721,7 +26892,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/topology.rs",
-      "line": 189,
+      "line": 357,
       "kind": "fn",
       "name": "reachable_default",
       "has_doc": true
@@ -26730,7 +26901,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/topology.rs",
-      "line": 194,
+      "line": 362,
       "kind": "fn",
       "name": "rebuild_caches",
       "has_doc": true
@@ -26739,7 +26910,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/topology.rs",
-      "line": 210,
+      "line": 382,
       "kind": "type",
       "name": "ProvinceGraph",
       "has_doc": true
@@ -26811,7 +26982,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/types.rs",
-      "line": 153,
+      "line": 155,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -26820,7 +26991,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/types.rs",
-      "line": 177,
+      "line": 180,
       "kind": "fn",
       "name": "with_data",
       "has_doc": true
@@ -26829,7 +27000,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/types.rs",
-      "line": 206,
+      "line": 210,
       "kind": "fn",
       "name": "with_parts_data",
       "has_doc": true
@@ -26838,7 +27009,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/types.rs",
-      "line": 234,
+      "line": 239,
       "kind": "fn",
       "name": "from_parts",
       "has_doc": true
@@ -26847,7 +27018,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/types.rs",
-      "line": 239,
+      "line": 244,
       "kind": "fn",
       "name": "primary_vertices",
       "has_doc": true
@@ -26856,7 +27027,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/types.rs",
-      "line": 247,
+      "line": 252,
       "kind": "fn",
       "name": "outer_loops",
       "has_doc": true
@@ -26865,7 +27036,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/types.rs",
-      "line": 263,
+      "line": 268,
       "kind": "fn",
       "name": "hole_loops",
       "has_doc": true
@@ -26874,7 +27045,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/types.rs",
-      "line": 273,
+      "line": 278,
       "kind": "enum",
       "name": "FogState",
       "has_doc": true
@@ -26883,7 +27054,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/types.rs",
-      "line": 283,
+      "line": 288,
       "kind": "struct",
       "name": "HeatLayer",
       "has_doc": true
@@ -26892,7 +27063,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/types.rs",
-      "line": 305,
+      "line": 310,
       "kind": "struct",
       "name": "GlobeSpec",
       "has_doc": true
@@ -26901,7 +27072,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/types.rs",
-      "line": 357,
+      "line": 362,
       "kind": "enum",
       "name": "GlobeOrbitKind",
       "has_doc": true
@@ -26910,7 +27081,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/types.rs",
-      "line": 369,
+      "line": 374,
       "kind": "struct",
       "name": "GlobeOrbit",
       "has_doc": true
@@ -26919,7 +27090,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/types.rs",
-      "line": 397,
+      "line": 402,
       "kind": "fn",
       "name": "surface",
       "has_doc": true
@@ -26928,7 +27099,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/types.rs",
-      "line": 416,
+      "line": 421,
       "kind": "struct",
       "name": "Marker",
       "has_doc": true
@@ -26937,7 +27108,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/types.rs",
-      "line": 440,
+      "line": 445,
       "kind": "struct",
       "name": "MarkerStyle",
       "has_doc": true
@@ -26946,7 +27117,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/types.rs",
-      "line": 458,
+      "line": 465,
       "kind": "enum",
       "name": "MarkerShape",
       "has_doc": true
@@ -26955,7 +27126,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/types.rs",
-      "line": 486,
+      "line": 494,
       "kind": "struct",
       "name": "Label",
       "has_doc": true
@@ -26964,7 +27135,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/types.rs",
-      "line": 506,
+      "line": 514,
       "kind": "struct",
       "name": "LabelStyle",
       "has_doc": true
@@ -26973,7 +27144,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/types.rs",
-      "line": 526,
+      "line": 534,
       "kind": "struct",
       "name": "Layer",
       "has_doc": true
@@ -26982,7 +27153,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/types.rs",
-      "line": 542,
+      "line": 550,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -26991,7 +27162,25 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/types.rs",
-      "line": 555,
+      "line": 563,
+      "kind": "struct",
+      "name": "GlobeRegionQueryStats",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/types.rs",
+      "line": 575,
+      "kind": "struct",
+      "name": "GlobeRenderStats",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/types.rs",
+      "line": 607,
       "kind": "enum",
       "name": "LodTier",
       "has_doc": true
@@ -27000,7 +27189,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/types.rs",
-      "line": 565,
+      "line": 617,
       "kind": "struct",
       "name": "ProjectedRegion",
       "has_doc": true
@@ -27009,7 +27198,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/types.rs",
-      "line": 581,
+      "line": 633,
       "kind": "struct",
       "name": "Arc",
       "has_doc": true
@@ -27018,7 +27207,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/types.rs",
-      "line": 603,
+      "line": 655,
       "kind": "enum",
       "name": "GlobeError",
       "has_doc": true
@@ -27027,7 +27216,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/types.rs",
-      "line": 633,
+      "line": 685,
       "kind": "type",
       "name": "Province",
       "has_doc": true
@@ -27036,7 +27225,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/types.rs",
-      "line": 635,
+      "line": 687,
       "kind": "type",
       "name": "ProvinceId",
       "has_doc": true
@@ -27045,7 +27234,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/types.rs",
-      "line": 637,
+      "line": 689,
       "kind": "type",
       "name": "ProjectedProvince",
       "has_doc": true
@@ -27054,9 +27243,135 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/types.rs",
-      "line": 639,
+      "line": 691,
       "kind": "const",
       "name": "MAX_PROVINCES",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/validation.rs",
+      "line": 20,
+      "kind": "struct",
+      "name": "GlobeLoadOptions",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/validation.rs",
+      "line": 43,
+      "kind": "fn",
+      "name": "resolve_sandboxed_globe_path",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/validation.rs",
+      "line": 75,
+      "kind": "fn",
+      "name": "validate_png_pixel_limit",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/validation.rs",
+      "line": 91,
+      "kind": "fn",
+      "name": "validate_file_size_limit",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/validation.rs",
+      "line": 109,
+      "kind": "fn",
+      "name": "validate_globe_spec",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/validation.rs",
+      "line": 146,
+      "kind": "fn",
+      "name": "validate_region",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/validation.rs",
+      "line": 234,
+      "kind": "fn",
+      "name": "validate_region_set",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/validation.rs",
+      "line": 262,
+      "kind": "fn",
+      "name": "validate_marker_placement",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/validation.rs",
+      "line": 281,
+      "kind": "fn",
+      "name": "validate_marker_style",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/validation.rs",
+      "line": 306,
+      "kind": "fn",
+      "name": "validate_label",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/validation.rs",
+      "line": 316,
+      "kind": "fn",
+      "name": "validate_label_style",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/validation.rs",
+      "line": 333,
+      "kind": "fn",
+      "name": "validate_layer",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/validation.rs",
+      "line": 348,
+      "kind": "fn",
+      "name": "validate_heat_layer",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "globe",
+      "file": "src/globe/validation.rs",
+      "line": 370,
+      "kind": "fn",
+      "name": "validate_arc",
       "has_doc": true
     },
     {
@@ -35478,7 +35793,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 28,
+      "line": 33,
       "kind": "struct",
       "name": "LuaGlobe",
       "has_doc": true
@@ -35487,7 +35802,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 2315,
+      "line": 2586,
       "kind": "struct",
       "name": "LuaGlobeRegistry",
       "has_doc": true
@@ -35496,7 +35811,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 2445,
+      "line": 2762,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -59004,7 +59319,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/contract.rs",
-      "line": 27,
+      "line": 22,
       "kind": "struct",
       "name": "RaycasterLimits",
       "has_doc": true
@@ -59013,7 +59328,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/contract.rs",
-      "line": 81,
+      "line": 76,
       "kind": "fn",
       "name": "validate_grid_dimensions",
       "has_doc": true
@@ -59022,7 +59337,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/contract.rs",
-      "line": 108,
+      "line": 103,
       "kind": "fn",
       "name": "validate_grid_dimensions_usize",
       "has_doc": true
@@ -59031,7 +59346,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/contract.rs",
-      "line": 147,
+      "line": 142,
       "kind": "fn",
       "name": "sanitize_grid_dimensions",
       "has_doc": true
@@ -59040,7 +59355,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/contract.rs",
-      "line": 155,
+      "line": 150,
       "kind": "fn",
       "name": "validate_finite",
       "has_doc": true
@@ -59049,7 +59364,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/contract.rs",
-      "line": 164,
+      "line": 159,
       "kind": "fn",
       "name": "validate_screen_axis",
       "has_doc": true
@@ -59058,7 +59373,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/contract.rs",
-      "line": 178,
+      "line": 173,
       "kind": "fn",
       "name": "validate_screen_dimensions",
       "has_doc": true
@@ -59067,7 +59382,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/contract.rs",
-      "line": 189,
+      "line": 184,
       "kind": "fn",
       "name": "validate_max_distance",
       "has_doc": true
@@ -59076,7 +59391,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/contract.rs",
-      "line": 201,
+      "line": 196,
       "kind": "fn",
       "name": "validate_fov",
       "has_doc": true
@@ -59085,7 +59400,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/contract.rs",
-      "line": 214,
+      "line": 209,
       "kind": "fn",
       "name": "validate_scene_counts",
       "has_doc": true
@@ -59094,7 +59409,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/contract.rs",
-      "line": 241,
+      "line": 236,
       "kind": "struct",
       "name": "RaycastParams",
       "has_doc": true
@@ -59103,7 +59418,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/contract.rs",
-      "line": 260,
+      "line": 255,
       "kind": "fn",
       "name": "validate",
       "has_doc": true
@@ -59112,7 +59427,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/contract.rs",
-      "line": 290,
+      "line": 285,
       "kind": "struct",
       "name": "ProjectionParams",
       "has_doc": true
@@ -59121,7 +59436,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/contract.rs",
-      "line": 301,
+      "line": 296,
       "kind": "fn",
       "name": "validate",
       "has_doc": true
@@ -59130,7 +59445,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/contract.rs",
-      "line": 315,
+      "line": 310,
       "kind": "enum",
       "name": "RaycasterError",
       "has_doc": true
@@ -82395,7 +82710,7 @@
       "source": "lua_api",
       "module": "globe_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 2756,
+      "line": 3073,
       "kind": "fn",
       "name": "MAX_PROVINCES",
       "has_doc": true
@@ -82404,7 +82719,7 @@
       "source": "lua_api",
       "module": "globe_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 2758,
+      "line": 3075,
       "kind": "fn",
       "name": "MAX_REGIONS",
       "has_doc": true
@@ -82413,7 +82728,7 @@
       "source": "lua_api",
       "module": "globe_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 2760,
+      "line": 3077,
       "kind": "fn",
       "name": "LOD_FAR",
       "has_doc": true
@@ -82422,7 +82737,7 @@
       "source": "lua_api",
       "module": "globe_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 2762,
+      "line": 3079,
       "kind": "fn",
       "name": "LOD_MID",
       "has_doc": true
@@ -82431,7 +82746,7 @@
       "source": "lua_api",
       "module": "globe_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 2764,
+      "line": 3081,
       "kind": "fn",
       "name": "LOD_NEAR",
       "has_doc": true

@@ -6579,7 +6579,7 @@ LGlobe:setLayerVisible( name : string, vis : boolean ) -> boolean  -- Shows or h
 LGlobe:setMarkerAltitude( id : integer, altitude_px : number? ) -> boolean  -- Sets or clears a marker-specific shell offset above its assigned orbit
 LGlobe:setMarkerAttr( id : integer, key : string, val : string ) -> boolean  -- Sets a string attribute on a marker
 LGlobe:setMarkerColor( id : integer, r : number, g : number, b : number, a : number? ) -> boolean  -- Sets the RGBA tint color used to render a marker
-LGlobe:setMarkerIconTexture( id : integer, tex_raw : integer? ) -> boolean  -- Assigns or clears a raw texture handle for a marker icon
+LGlobe:setMarkerIconTexture( id : integer, tex_raw : integer, LImage, or nil ) -> boolean  -- Assigns or clears a live texture handle for a marker icon
 LGlobe:setMarkerOrbit( id : integer, orbit : string ) -> boolean  -- Reassigns a marker to one named orbit shell
 LGlobe:setMarkerPulse( id : integer, hz : number, amp : number ) -> boolean  -- Sets marker pulse frequency and amplitude
 LGlobe:setMarkerRotation( id : integer, dps : number ) -> boolean  -- Sets marker rotation speed. This method is available to Lua scripts
@@ -6591,14 +6591,14 @@ LGlobe:setOrbitShader( orbit : string, shader : LShader ) -> boolean  -- Binds a
 LGlobe:setOrbitVisible( name : string, visible : boolean ) -> boolean  -- Shows or hides one orbit shell and its markers
 LGlobe:setProvinceAttr( id : integer, key : string, val : string ) -> boolean  -- Sets a string attribute on a province
 LGlobe:setProvinceSector( id : integer, sector : string ) -> boolean  -- Assigns a province to a named sector
-LGlobe:setProvinceTexture( id : integer, tex_raw : integer, u0 : number, v0 : number, u1 : number, v1 : number ) -> boolean  -- Assigns a raw texture handle and UV rectangle to a province
+LGlobe:setProvinceTexture( id : integer, tex_raw : integer or LImage, u0 : number, v0 : number, u1 : number, v1 : number ) -> boolean  -- Assigns a live texture handle and UV rectangle to a province
 LGlobe:setRegionAttr( id : integer, key : string, val : string ) -> boolean  -- Sets a string attribute on a semantic region
 LGlobe:setRegionColor( id : integer, r : number, g : number, b : number, a : number ) -> boolean  -- Sets the RGBA color used to render a semantic region overlay
 LGlobe:setRegionVisible( id : integer, visible : boolean ) -> boolean  -- Shows or hides a semantic region overlay and its picking participation
 LGlobe:setRotation( deg : number )  -- Sets globe rotation angle. This method is available to Lua scripts
 LGlobe:setShader( shader : LShader? )  -- Binds a mapviz-target shader to this globe's generated render commands. Pass nil to clear
 LGlobe:setTerrainPatchAttr( id : integer, key : string, val : string ) -> boolean  -- Sets a string attribute on a terrain patch
-LGlobe:setTerrainPatchTexture( id : integer, tex_raw : integer, u0 : number, v0 : number, u1 : number, v1 : number ) -> boolean  -- Assigns a raw texture handle and UV rectangle to a terrain patch
+LGlobe:setTerrainPatchTexture( id : integer, tex_raw : integer or LImage, u0 : number, v0 : number, u1 : number, v1 : number ) -> boolean  -- Assigns a live texture handle and UV rectangle to a terrain patch
 LGlobe:setTimeOfDay( t : number )  -- Sets globe time of day modulo 24 hours
 LGlobe:terrainPatchCount() -> integer  -- Returns the number of stored base terrain patches
 LGlobe:type() -> string  -- Returns the Lua-visible type name for this globe handle

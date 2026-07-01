@@ -13969,7 +13969,7 @@ function LGlobe:setBorders(show) end
 --- Sets camera latitude, longitude, and zoom.
 ---@param lat number Camera latitude in degrees.
 ---@param lon number Camera longitude in degrees.
----@param z number Camera zoom, clamped to at least 0.1.
+---@param z number Camera zoom, must be at least 0.1.
 function LGlobe:setCamera(lat, lon, z) end
 
 --- Replaces the tag set stored on an existing province edge.
@@ -13990,7 +13990,7 @@ function LGlobe:setFogState(viewer, id, state) end
 ---@param attr_key string Province attribute key read as a numeric value.
 ---@param min number Attribute value mapped to cold color.
 ---@param max number Attribute value mapped to hot color.
----@param alpha number Layer alpha clamped to 0.0 through 1.0.
+---@param alpha number Layer alpha in the 0.0 through 1.0 range.
 function LGlobe:setHeatLayer(name, attr_key, min, max, alpha) end
 
 --- Changes text for an existing label.
@@ -14007,7 +14007,7 @@ function LGlobe:setLabelVisible(id, vis) end
 
 --- Sets render layer alpha. This method is available to Lua scripts.
 ---@param name string Layer name.
----@param alpha number Layer alpha.
+---@param alpha number Layer alpha in the 0.0 through 1.0 range.
 ---@return boolean True when the layer exists.
 function LGlobe:setLayerAlpha(name, alpha) end
 
@@ -14049,9 +14049,9 @@ function LGlobe:setMarkerAttr(id, key, val) end
 ---@return boolean True when the marker exists.
 function LGlobe:setMarkerColor(id, r, g, b, a) end
 
---- Assigns or clears a raw texture handle for a marker icon.
+--- Assigns or clears a live texture handle for a marker icon.
 ---@param id number Marker id.
----@param tex_raw? number Raw texture handle, or nil to clear the icon.
+---@param tex_raw number, Live texture handle, image userdata, or nil to clear the icon.
 ---@return boolean True when the marker exists.
 function LGlobe:setMarkerIconTexture(id, tex_raw) end
 
@@ -14063,8 +14063,8 @@ function LGlobe:setMarkerOrbit(id, orbit) end
 
 --- Sets marker pulse frequency and amplitude.
 ---@param id number Marker id.
----@param hz number Pulse frequency in hertz, clamped to at least zero.
----@param amp number Pulse amplitude clamped to 0.0 through 1.0.
+---@param hz number Pulse frequency in hertz, must be >= 0.
+---@param amp number Pulse amplitude in the 0.0 through 1.0 range.
 ---@return boolean True when the marker exists.
 function LGlobe:setMarkerPulse(id, hz, amp) end
 
@@ -14082,7 +14082,7 @@ function LGlobe:setMarkerShape(id, shape) end
 
 --- Sets the marker size in screen units for rendering.
 ---@param id number Marker id.
----@param size number Marker size, clamped to at least 1.0.
+---@param size number Marker size, must be at least 1.0.
 ---@return boolean True when the marker exists.
 function LGlobe:setMarkerSize(id, size) end
 
@@ -14124,9 +14124,9 @@ function LGlobe:setProvinceAttr(id, key, val) end
 ---@return boolean True when the province sector was set.
 function LGlobe:setProvinceSector(id, sector) end
 
---- Assigns a raw texture handle and UV rectangle to a province.
+--- Assigns a live texture handle and UV rectangle to a province.
 ---@param id number Province id.
----@param tex_raw number Raw texture identifier stored in province attributes.
+---@param tex_raw number Live texture identifier or image userdata.
 ---@param u0 number Left UV coordinate.
 ---@param v0 number Top UV coordinate.
 ---@param u1 number Right UV coordinate.
@@ -14171,9 +14171,9 @@ function LGlobe:setShader(shader) end
 ---@return boolean True when the terrain patch exists.
 function LGlobe:setTerrainPatchAttr(id, key, val) end
 
---- Assigns a raw texture handle and UV rectangle to a terrain patch.
+--- Assigns a live texture handle and UV rectangle to a terrain patch.
 ---@param id number Terrain patch id.
----@param tex_raw number Raw texture identifier stored in terrain attributes.
+---@param tex_raw number Live texture identifier or image userdata.
 ---@param u0 number Left UV coordinate.
 ---@param v0 number Top UV coordinate.
 ---@param u1 number Right UV coordinate.
@@ -14285,7 +14285,7 @@ lurek.globe.loadFromPNG = function(name, png_path, spec_tbl) end
 --- Creates a globe and populates provinces from TOML source text.
 ---@param name string Globe registry name.
 ---@param toml_src string TOML province document source supporting either `vertices` or multipart `parts = [{ outer = ..., holes = ... }]`.
----@param spec_tbl? table Globe specification table.
+---@param spec_tbl? table Globe specification table. Optional `load_options = { sandbox_root?, max_toml_bytes?, max_png_bytes?, max_png_pixels? }` applies to file-backed loaders.
 ---@return LGlobe New populated globe handle.
 lurek.globe.loadFromTOML = function(name, toml_src, spec_tbl) end
 
@@ -14298,7 +14298,7 @@ lurek.globe.loadFromTOMLFile = function(name, path, spec_tbl) end
 
 --- Creates a named globe with optional specification fields in the module registry.
 ---@param name string Globe registry name.
----@param spec_tbl? table Globe specification table.
+---@param spec_tbl? table Globe specification table. Optional `load_options = { sandbox_root?, max_toml_bytes?, max_png_bytes?, max_png_pixels? }` applies to file-backed loaders.
 ---@return LGlobe New globe handle.
 lurek.globe.new = function(name, spec_tbl) end
 

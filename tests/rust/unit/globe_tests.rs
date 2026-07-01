@@ -888,11 +888,55 @@ mod topology_tests {
         g.rebuild_caches(); // Should not panic.
         assert!(g.is_empty());
     }
+
+    #[test]
+    fn get_mut_rebuilds_neighbor_cache_after_in_place_mutation() {
+        let mut g = ProvinceGraph::new();
+        g.insert(make_province(1, vec![])).unwrap();
+        {
+            let mut province = g
+                .get_mut(RegionId(1))
+                .expect("province mutation guard should exist");
+            province.neighbors.push(RegionId(2));
+        }
+        assert_eq!(g.neighbors_of(RegionId(1)), vec![RegionId(2)]);
+    }
+
+    #[test]
+    fn insert_duplicate_region_returns_load_error() {
+        let mut g = ProvinceGraph::new();
+        g.insert(make_province(1, vec![])).unwrap();
+        let err = g
+            .insert(make_province(1, vec![]))
+            .expect_err("duplicate ids should be rejected");
+        assert!(matches!(err, GlobeError::LoadError(_)));
+    }
+
+    #[test]
+    fn candidate_ids_at_respects_wrapped_longitude_bounds() {
+        let mut g = ProvinceGraph::new();
+        g.insert(Province::with_data(
+            RegionId(1),
+            (0.0, 180.0),
+            vec![(-5.0, 170.0), (-5.0, -170.0), (5.0, -170.0), (5.0, 170.0)],
+            Vec::new(),
+            [0.5, 0.5, 0.5, 1.0],
+        ))
+        .unwrap();
+        g.insert(make_province(2, vec![])).unwrap();
+        assert_eq!(g.candidate_ids_at(0.0, 179.0), vec![RegionId(1)]);
+        assert_eq!(g.candidate_ids_at(0.0, 0.0), vec![RegionId(2)]);
+    }
 }
 
 mod registry_and_picking_tests {
     use lurek2d::globe::export::export_regions_to_obj;
-    use lurek2d::globe::loader::{load_from_province_grid, load_from_toml_str};
+    use lurek2d::globe::label::LabelStore;
+    use lurek2d::globe::loader::{
+        load_from_png_file_safe, load_from_province_grid, load_from_toml_file_safe,
+        load_from_toml_str,
+    };
+    use lurek2d::globe::layer::LayerStore;
     use lurek2d::globe::marker::MarkerPlacement;
     use lurek2d::globe::picking::{
         point_in_geo_polygon, point_in_geo_region, screen_to_shell, screen_to_surface,
@@ -900,11 +944,16 @@ mod registry_and_picking_tests {
     use lurek2d::globe::projection::{project_region, OrbitCamera};
     use lurek2d::globe::registry::Globe;
     use lurek2d::globe::types::{
-        GlobeOrbit, GlobeOrbitKind, GlobeSpec, MarkerStyle, Region, RegionId, RegionPart,
+        GlobeOrbit, GlobeOrbitKind, GlobeSpec, LabelStyle, Layer, MarkerStyle, Region, RegionId,
+        RegionPart,
     };
+    use lurek2d::globe::validation::GlobeLoadOptions;
     use lurek2d::image::ImageData;
+    use lurek2d::lua_api::create_test_vm;
     use lurek2d::province::ProvinceGrid;
     use lurek2d::render::renderer::RenderCommand;
+    use lurek2d::runtime::resource_keys::{FontKey, TextureKey};
+    use slotmap::KeyData;
 
     fn make_region(id: u32, centroid: (f32, f32), verts: Vec<(f32, f32)>) -> Region {
         Region::with_data(
@@ -943,11 +992,15 @@ mod registry_and_picking_tests {
 
     #[test]
     fn screen_to_shell_maps_centre_on_elevated_orbits() {
-        let mut spec = GlobeSpec::default();
-        spec.axial_tilt_deg = 0.0;
-        let mut camera = lurek2d::globe::projection::OrbitCamera::default();
-        camera.lat_deg = 0.0;
-        camera.lon_deg = 0.0;
+        let spec = GlobeSpec {
+            axial_tilt_deg: 0.0,
+            ..GlobeSpec::default()
+        };
+        let camera = lurek2d::globe::projection::OrbitCamera {
+            lat_deg: 0.0,
+            lon_deg: 0.0,
+            ..lurek2d::globe::projection::OrbitCamera::default()
+        };
         let hit = screen_to_shell(
             camera.screen_cx,
             camera.screen_cy,
@@ -1010,9 +1063,14 @@ neighbors = [2]
 
 [province.attrs]
 owner = "player"
+
+[[province]]
+id = 2
+vertices = [[-12.0, 110.0], [-12.0, 130.0], [12.0, 130.0], [12.0, 110.0]]
+neighbors = [1]
 "#;
         let regions = load_from_toml_str(src).expect("TOML should parse");
-        assert_eq!(regions.len(), 1);
+        assert_eq!(regions.len(), 2);
         let region = &regions[0];
         assert_eq!(region.parts.len(), 1);
         assert_eq!(region.parts[0].holes.len(), 1);
@@ -1020,6 +1078,79 @@ owner = "player"
         assert_eq!(region.attrs.get("owner"), Some(&"player".to_string()));
         assert!(!point_in_geo_region(region, 0.0, 90.0));
         assert!(point_in_geo_region(region, 8.0, 90.0));
+    }
+
+    #[test]
+    fn load_from_toml_str_rejects_unknown_neighbor_ids() {
+        let src = r#"
+[[province]]
+id = 1
+vertices = [[-5.0, 80.0], [-5.0, 100.0], [5.0, 100.0], [5.0, 80.0]]
+neighbors = [99]
+"#;
+        let err = load_from_toml_str(src).expect_err("unknown neighbors should be rejected");
+        assert!(err.contains("unknown neighbor"));
+    }
+
+    #[test]
+    fn load_from_toml_str_rejects_asymmetric_neighbors() {
+        let src = r#"
+[[province]]
+id = 1
+vertices = [[-5.0, 80.0], [-5.0, 100.0], [5.0, 100.0], [5.0, 80.0]]
+neighbors = [2]
+
+[[province]]
+id = 2
+vertices = [[-5.0, 105.0], [-5.0, 125.0], [5.0, 125.0], [5.0, 105.0]]
+"#;
+        let err = load_from_toml_str(src).expect_err("asymmetric neighbors should be rejected");
+        assert!(err.contains("reverse edge"));
+    }
+
+    #[test]
+    fn load_from_toml_str_rejects_self_neighbors() {
+        let src = r#"
+[[province]]
+id = 1
+vertices = [[-5.0, 80.0], [-5.0, 100.0], [5.0, 100.0], [5.0, 80.0]]
+neighbors = [1]
+"#;
+        let err = load_from_toml_str(src).expect_err("self neighbors should be rejected");
+        assert!(err.contains("must not list itself as a neighbor"));
+    }
+
+    #[test]
+    fn file_backed_loaders_enforce_sandbox_and_size_limits() {
+        let cwd = std::env::current_dir().expect("cwd should resolve");
+
+        let toml_options = GlobeLoadOptions {
+            max_toml_bytes: 1,
+            ..GlobeLoadOptions::default()
+        };
+        let toml_err = load_from_toml_file_safe("save/globe_example.toml", &toml_options)
+            .expect_err("tiny TOML limit should fail");
+        assert!(toml_err.contains("too large"));
+
+        let sandboxed = GlobeLoadOptions {
+            sandbox_root: cwd.join("save"),
+            ..GlobeLoadOptions::default()
+        };
+        let outside_path = cwd.join("Cargo.toml");
+        let outside_err = load_from_toml_file_safe(
+            outside_path.to_str().expect("path should be valid UTF-8"),
+            &sandboxed,
+        )
+        .expect_err("path outside sandbox should fail");
+        assert!(outside_err.contains("outside sandbox root"));
+
+        let png_options = GlobeLoadOptions {
+            max_png_pixels: 1,
+            ..GlobeLoadOptions::default()
+        };
+        let png_err = load_from_png_file_safe("assets/icon.png", &png_options)
+            .expect_err("tiny PNG pixel limit should fail");
+        assert!(png_err.contains("pixels exceeds limit"));
     }
 
     #[test]
@@ -1090,6 +1221,183 @@ owner = "player"
             .unwrap();
         let ids = globe.pick_regions_at_screen(globe.camera.screen_cx, globe.camera.screen_cy);
         assert!(ids.is_empty());
+    }
+
+    #[test]
+    fn regions_at_lat_lon_reflects_semantic_region_mutation_without_manual_rebuild() {
+        let mut globe = Globe::new("region_mutation", GlobeSpec::default());
+        globe
+            .add_region(make_region(
+                500,
+                (30.0, 30.0),
+                vec![(25.0, 25.0), (25.0, 35.0), (35.0, 35.0), (35.0, 25.0)],
+            ))
+            .unwrap();
+        assert!(globe.regions_at_lat_lon(0.0, 0.0).is_empty());
+        {
+            let mut region = globe
+                .get_region_mut(RegionId(500))
+                .expect("semantic region should exist");
+            region.centroid = (0.0, 0.0);
+            region.vertices = vec![(-4.0, -4.0), (-4.0, 4.0), (4.0, 4.0), (4.0, -4.0)];
+            region.parts = vec![RegionPart::new(region.vertices.clone())];
+        }
+        assert_eq!(globe.regions_at_lat_lon(0.0, 0.0), vec![RegionId(500)]);
+    }
+
+    #[test]
+    fn regions_at_lat_lon_reflects_member_terrain_mutation_without_manual_rebuild() {
+        let mut globe = Globe::new("terrain_member_mutation", GlobeSpec::default());
+        globe
+            .add_terrain_patch(make_region(
+                600,
+                (30.0, 30.0),
+                vec![(25.0, 25.0), (25.0, 35.0), (35.0, 35.0), (35.0, 25.0)],
+            ))
+            .unwrap();
+        globe
+            .add_region(Region {
+                id: RegionId(601),
+                member_terrain_ids: vec![RegionId(600)],
+                ..make_region(601, (0.0, 0.0), Vec::new())
+            })
+            .unwrap();
+        assert!(globe.regions_at_lat_lon(0.0, 0.0).is_empty());
+        {
+            let mut patch = globe
+                .get_terrain_patch_mut(RegionId(600))
+                .expect("terrain patch should exist");
+            patch.centroid = (0.0, 0.0);
+            patch.vertices = vec![(-4.0, -4.0), (-4.0, 4.0), (4.0, 4.0), (4.0, -4.0)];
+            patch.parts = vec![RegionPart::new(patch.vertices.clone())];
+        }
+        assert_eq!(globe.regions_at_lat_lon(0.0, 0.0), vec![RegionId(601)]);
+    }
+
+    #[test]
+    fn regions_at_lat_lon_resolves_member_only_region_from_static_terrain_bounds() {
+        let mut globe = Globe::new("terrain_member_static", GlobeSpec::default());
+        globe
+            .add_terrain_patch(make_region(
+                610,
+                (-45.0, -90.0),
+                vec![(-90.0, -180.0), (-90.0, 0.0), (0.0, 0.0), (0.0, -180.0)],
+            ))
+            .unwrap();
+        globe
+            .add_region(Region {
+                id: RegionId(611),
+                member_terrain_ids: vec![RegionId(610)],
+                ..make_region(611, (0.0, 0.0), Vec::new())
+            })
+            .unwrap();
+
+        assert_eq!(globe.regions_at_lat_lon(-45.0, -90.0), vec![RegionId(611)]);
+    }
+
+    #[test]
+    fn regions_at_lat_lon_with_stats_reports_candidate_reduction_and_member_hits() {
+        let mut globe = Globe::new("terrain_member_stats", GlobeSpec::default());
+        globe
+            .add_terrain_patch(make_region(
+                620,
+                (-45.0, -90.0),
+                vec![(-90.0, -180.0), (-90.0, 0.0), (0.0, 0.0), (0.0, -180.0)],
+            ))
+            .unwrap();
+        globe
+            .add_region(Region {
+                id: RegionId(621),
+                member_terrain_ids: vec![RegionId(620)],
+                ..make_region(621, (0.0, 0.0), Vec::new())
+            })
+            .unwrap();
+        globe
+            .add_region(make_region(
+                622,
+                (45.0, 90.0),
+                vec![(35.0, 80.0), (35.0, 100.0), (55.0, 100.0), (55.0, 80.0)],
+            ))
+            .unwrap();
+
+        let (hits, stats) = globe.regions_at_lat_lon_with_stats(-45.0, -90.0);
+
+        assert_eq!(hits, vec![RegionId(621)]);
+        assert_eq!(stats.total_regions, 2);
+        assert_eq!(stats.candidate_regions, 1);
+        assert_eq!(stats.candidate_member_patches, 1);
+        assert_eq!(stats.matched_regions, 1);
+    }
+
+    #[test]
+    fn label_store_rejects_invalid_runtime_style() {
+        let mut labels = LabelStore::new();
+        let err = labels
+            .add(
+                "city",
+                10.0,
+                20.0,
+                "Capital",
+                LabelStyle {
+                    color: [1.0, 1.0, 1.0, 1.0],
+                    font_size: 0.0,
+                    font: None,
+                },
+                0,
+            )
+            .expect_err("zero font size should be rejected");
+        assert!(err.contains("font_size must be > 0"));
+    }
+
+    #[test]
+    fn layer_store_rejects_invalid_alpha_updates() {
+        let mut layers = LayerStore::new();
+        layers
+            .add(Layer::new("overlay", "", 0))
+            .expect("valid layer should insert");
+
+        let err = layers
+            .set_alpha("overlay", 1.5)
+            .expect_err("alpha above one should be rejected");
+        assert!(err.contains("alpha must be in 0..1"));
+    }
+
+    #[test]
+    fn lua_member_only_region_queries_static_terrain_patch() {
+        let lua = create_test_vm().expect("test vm should build");
+        let (hit, explicit_hit, count): (Option<u32>, Option<u32>, i64) = lua
+            .load(
+                r#"
+local function terrain_patch(id, min_lat, min_lon, max_lat, max_lon)
+    return {
+        id = id,
+        vertices = {
+            {min_lat, min_lon},
+            {min_lat, max_lon},
+            {max_lat, max_lon},
+            {max_lat, min_lon},
+        },
+        base_color = {0.1 + id * 0.01, 0.4, 0.2, 1.0},
+    }
+end
+
+local g = lurek.globe.new("lua_member_region", { axial_tilt_deg = 0.0 })
+assert(g:addTerrainPatch(terrain_patch(1, -90.0, -180.0, 0.0, 0.0)))
+assert(g:addTerrainPatch(terrain_patch(2, -90.0, 0.0, 0.0, 180.0)))
+assert(g:addTerrainPatch(terrain_patch(3, 0.0, -180.0, 90.0, 0.0)))
+assert(g:addTerrainPatch(terrain_patch(4, 0.0, 0.0, 90.0, 180.0)))
+assert(g:addRegion({ id = 31, members = {1} }))
+assert(g:addRegion({ id = 32, centroid = {-45.0, -90.0}, members = {1} }))
+local hits = g:regionsAtLatLon(-45.0, -90.0)
+return hits[1], hits[2], g:regionCount()
+"#,
+            )
+            .eval()
+            .expect("Lua region query should run");
+
+        assert_eq!(count, 2);
+        assert_eq!(hit, Some(31));
+        assert_eq!(explicit_hit, Some(32));
     }
 
     #[test]
@@ -1189,7 +1497,7 @@ owner = "player"
         globe.spec.axial_tilt_deg = 0.0;
         globe.sim_time_sec = 1.0;
         let style = MarkerStyle {
-            icon_texture: Some("1".to_string()),
+            icon_texture_key: Some(TextureKey::from(KeyData::from_ffi(1))),
             rotation_deg_per_sec: 90.0,
             ..Default::default()
         };
@@ -1243,6 +1551,92 @@ owner = "player"
             cmd,
             RenderCommand::SetStencilTest(Some((lurek2d::render::renderer::CompareMode::Equal, 1)))
         )));
+    }
+
+    #[test]
+    fn emit_frame_with_stats_counts_drawn_elements_and_scratch_buffers() {
+        let mut globe = Globe::new("frame_stats", GlobeSpec::default());
+        globe.spec.axial_tilt_deg = 0.0;
+        globe.camera.zoom = 2.0;
+        globe
+            .add_province(Region::with_parts_data(
+                RegionId(402),
+                (30.0, 0.0),
+                vec![RegionPart {
+                    outer: vec![(20.0, -12.0), (20.0, 12.0), (40.0, 12.0), (40.0, -12.0)],
+                    holes: vec![vec![(26.0, -4.0), (26.0, 4.0), (34.0, 4.0), (34.0, -4.0)]],
+                }],
+                Vec::new(),
+                [0.6, 0.6, 0.7, 1.0],
+            ))
+            .unwrap();
+        globe
+            .add_region(make_region(
+                403,
+                (30.0, 0.0),
+                vec![(22.0, -10.0), (22.0, 10.0), (38.0, 10.0), (38.0, -10.0)],
+            ))
+            .unwrap();
+        globe.markers.add("poi", 30.0, 0.0, None, Default::default());
+        globe
+            .labels
+            .add("city", 30.0, 0.0, "Capital", LabelStyle::default(), 0)
+            .expect("valid label should insert");
+
+        let font_key = FontKey::from(KeyData::from_ffi(2));
+        let (cmds, stats) = globe.emit_frame_with_stats(Some(font_key));
+
+        assert!(stats.commands_emitted > 0);
+        assert_eq!(stats.commands_emitted, cmds.len());
+        assert_eq!(stats.province_regions_total, 1);
+        assert_eq!(stats.province_regions_drawn, 1);
+        assert_eq!(stats.province_regions_culled, 0);
+        assert_eq!(stats.semantic_regions_total, 1);
+        assert_eq!(stats.semantic_regions_drawn, 1);
+        assert_eq!(stats.markers_drawn, 1);
+        assert_eq!(stats.labels_drawn, 1);
+        assert!(stats.scratch_hole_loops_high_water >= 1);
+        assert!(stats.scratch_hole_vertices_high_water >= 4);
+        assert!(stats.scratch_border_vertices_high_water >= 4);
+    }
+
+    #[test]
+    fn sector_reassignment_and_removal_keep_reverse_lookup_in_sync() {
+        let mut globe = Globe::new("sectors", GlobeSpec::default());
+        globe
+            .add_province(make_region(
+                1,
+                (0.0, 90.0),
+                vec![(-5.0, 85.0), (-5.0, 95.0), (5.0, 95.0), (5.0, 85.0)],
+            ))
+            .unwrap();
+        globe.set_region_sector(RegionId(1), "west");
+        assert_eq!(globe.region_sector(RegionId(1)), Some("west"));
+        assert_eq!(globe.sector_regions("west"), vec![RegionId(1)]);
+        globe.set_region_sector(RegionId(1), "east");
+        assert_eq!(globe.region_sector(RegionId(1)), Some("east"));
+        assert!(globe.sector_regions("west").is_empty());
+        globe.remove_province(RegionId(1)).expect("province should be removed");
+        assert_eq!(globe.region_sector(RegionId(1)), None);
+        assert!(globe.sector_regions("east").is_empty());
+    }
+
+    #[test]
+    fn add_marker_placed_rejects_invalid_style_values() {
+        let mut globe = Globe::new("invalid_marker", GlobeSpec::default());
+        let err = globe
+            .add_marker_placed(MarkerPlacement::surface(
+                "poi",
+                0.0,
+                0.0,
+                None,
+                MarkerStyle {
+                    size: 0.0,
+                    ..Default::default()
+                },
+            ))
+            .expect_err("invalid marker style should be rejected");
+        assert!(err.contains("size must be >= 1"));
     }
 
     #[test]
@@ -1405,17 +1799,19 @@ mod sync_tests {
         source
             .markers
             .set_attr(marker_id, "owner".to_string(), "blue".to_string());
-        source.add_arc(lurek2d::globe::types::Arc {
-            id: 0,
-            arc_type: "flight".to_string(),
-            screen_points: Vec::new(),
-            color: [1.0, 0.5, 0.2, 1.0],
-            width: 2.0,
-            from: (0.0, 0.0),
-            to: (10.0, 10.0),
-            steps: 8,
-            visible: true,
-        });
+        source
+            .add_arc(lurek2d::globe::types::Arc {
+                id: 0,
+                arc_type: "flight".to_string(),
+                screen_points: Vec::new(),
+                color: [1.0, 0.5, 0.2, 1.0],
+                width: 2.0,
+                from: (0.0, 0.0),
+                to: (10.0, 10.0),
+                steps: 8,
+                visible: true,
+            })
+            .expect("arc should validate");
         source.active_viewer = Some("player".to_string());
         source.sim_time_sec = 42.0;
 

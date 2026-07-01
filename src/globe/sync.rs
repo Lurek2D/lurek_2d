@@ -112,7 +112,9 @@ pub fn apply_snapshot(globe: &mut Globe, snap: &GlobeSyncSnapshot) {
     globe.camera.clamp();
     globe.graph = snap.graph.clone();
     globe.terrain = snap.terrain.clone();
+    globe.rebuild_terrain_bounds();
     globe.regions = snap.regions.clone();
+    globe.rebuild_region_bounds();
     globe.fog = snap.fog.clone();
     globe.markers = snap.markers.clone();
     globe.orbits = snap.orbits.clone();
@@ -123,6 +125,7 @@ pub fn apply_snapshot(globe: &mut Globe, snap: &GlobeSyncSnapshot) {
     globe.active_viewer = snap.active_viewer.clone();
     globe.heat_layers = snap.heat_layers.clone();
     globe.sectors = snap.sectors.clone();
+    globe.rebuild_region_sector_index();
     globe.reachability_cache = snap.reachability_cache.clone();
     globe.sim_time_sec = snap.sim_time_sec;
     globe.shader = snap.shader;

@@ -43,6 +43,8 @@ pub mod sync;
 pub mod topology;
 /// Globe shared value types. This module is publicly re-exported.
 pub mod types;
+/// Globe validation and safe loader policy helpers.
+pub mod validation;
 /// Fog state and mask types.
 pub use fog::{FogMask, FogStore};
 /// Orbit shell helpers and constants.
@@ -67,8 +69,9 @@ pub use types::ProjectedProvince;
 pub use types::ProjectedRegion;
 /// Shared globe value types (primary names).
 pub use types::{
-    FogState, GlobeError, GlobeOrbit, GlobeOrbitKind, GlobeSpec, HeatLayer, Label, LabelStyle,
-    Layer, LodTier, Marker, MarkerShape, MarkerStyle, Region, RegionId, MAX_REGIONS,
+    FogState, GlobeError, GlobeOrbit, GlobeOrbitKind, GlobeRegionQueryStats, GlobeRenderStats,
+    GlobeSpec, HeatLayer, Label, LabelStyle, Layer, LodTier, Marker, MarkerShape, MarkerStyle,
+    Region, RegionId, MAX_REGIONS,
 };
 /// Backward compatibility re-exports.
 pub use types::{Province, ProvinceId, MAX_PROVINCES};

@@ -219,6 +219,13 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - Neighboring edits usually involve loader parsing, projection outputs, registry state, and draw-time expectations.
 - Open this owner for shape-independent globe schema changes before touching behavior-specific sibling modules.
 
+### validation.rs
+
+- Centralizes globe validation and file-load safety shared by loaders, registries, and Lua bindings.
+- Owns numeric range checks, region topology diagnostics, sandboxed file-path resolution, and loader size limits.
+- Keeps geometry and load-policy invariants in one place so globe callers do not drift into inconsistent error rules.
+- Open this owner when globe specs, multipart regions, or file-loader trust boundaries need coordinated updates.
+
 
 
 ## Lua API Ref
@@ -347,7 +354,7 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - `LGlobe:setMarkerAltitude(id, altitude_px?) -> boolean`: Sets or clears a marker-specific shell offset above its assigned orbit.
 - `LGlobe:setMarkerAttr(id, key, val) -> boolean`: Sets a string attribute on a marker.
 - `LGlobe:setMarkerColor(id, r, g, b, a?) -> boolean`: Sets the RGBA tint color used to render a marker.
-- `LGlobe:setMarkerIconTexture(id, tex_raw?) -> boolean`: Assigns or clears a raw texture handle for a marker icon.
+- `LGlobe:setMarkerIconTexture(id, tex_raw) -> boolean`: Assigns or clears a live texture handle for a marker icon.
 - `LGlobe:setMarkerOrbit(id, orbit) -> boolean`: Reassigns a marker to one named orbit shell.
 - `LGlobe:setMarkerPulse(id, hz, amp) -> boolean`: Sets marker pulse frequency and amplitude.
 - `LGlobe:setMarkerRotation(id, dps) -> boolean`: Sets marker rotation speed. This method is available to Lua scripts.
@@ -359,14 +366,14 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - `LGlobe:setOrbitVisible(name, visible) -> boolean`: Shows or hides one orbit shell and its markers.
 - `LGlobe:setProvinceAttr(id, key, val) -> boolean`: Sets a string attribute on a province.
 - `LGlobe:setProvinceSector(id, sector) -> boolean`: Assigns a province to a named sector.
-- `LGlobe:setProvinceTexture(id, tex_raw, u0, v0, u1, v1) -> boolean`: Assigns a raw texture handle and UV rectangle to a province.
+- `LGlobe:setProvinceTexture(id, tex_raw, u0, v0, u1, v1) -> boolean`: Assigns a live texture handle and UV rectangle to a province.
 - `LGlobe:setRegionAttr(id, key, val) -> boolean`: Sets a string attribute on a semantic region.
 - `LGlobe:setRegionColor(id, r, g, b, a) -> boolean`: Sets the RGBA color used to render a semantic region overlay.
 - `LGlobe:setRegionVisible(id, visible) -> boolean`: Shows or hides a semantic region overlay and its picking participation.
 - `LGlobe:setRotation(deg) -> nil`: Sets globe rotation angle. This method is available to Lua scripts.
 - `LGlobe:setShader(shader?) -> nil`: Binds a mapviz-target shader to this globe's generated render commands. Pass nil to clear.
 - `LGlobe:setTerrainPatchAttr(id, key, val) -> boolean`: Sets a string attribute on a terrain patch.
-- `LGlobe:setTerrainPatchTexture(id, tex_raw, u0, v0, u1, v1) -> boolean`: Assigns a raw texture handle and UV rectangle to a terrain patch.
+- `LGlobe:setTerrainPatchTexture(id, tex_raw, u0, v0, u1, v1) -> boolean`: Assigns a live texture handle and UV rectangle to a terrain patch.
 - `LGlobe:setTimeOfDay(t) -> nil`: Sets globe time of day modulo 24 hours.
 - `LGlobe:terrainPatchCount() -> integer`: Returns the number of stored base terrain patches.
 - `LGlobe:type() -> string`: Returns the Lua-visible type name for this globe handle.
@@ -432,3 +439,11 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - `LGlobe:setShader(shaderOrNil)` still accepts only `mapviz` shaders created through `lurek.render.newShader`, and now orbit shells can also bind their own `mapviz` shader scope through `LGlobe:setOrbitShader(...)` without leaking into unrelated shell or surface passes.
 - Orbit shells are named, always include the canonical `surface` shell, and add `altitude_px` to `GlobeSpec.radius` before zoom so shell projection, shell picking, and orbit marker placement stay radius-based and deterministic.
 - Globe shaders are intended for atmospheric bands, tactical heatmap styling, fog/visibility tinting, orbital overlays, and map visualization treatments over the generated command stream. Globe topology, picking, routes, and fog state remain CPU-owned gameplay/tooling data.
+- File-backed loaders now resolve paths inside a sandbox root and enforce explicit TOML byte, PNG byte, and PNG pixel limits. The default sandbox root is the current project directory, and Lua callers can tighten or redirect it through `load_options`.
+- Province topology is the authoritative graph used for routing, cached neighbors, and province picking. Semantic `addRegion(...)` overlays remain separate lookup surfaces that may overlap or map onto terrain members without changing province adjacency.
+- Globe region imports now reject duplicate ids, self-neighbors, unknown neighbors, and asymmetric neighbor lists instead of silently accepting partial topology.
+- Semantic overlay bounds now include member terrain patch geometry, and terrain or region in-place mutation refreshes those cached bounds automatically so member-only `addRegion(...)` overlays keep participating in `regionsAtLatLon(...)` and screen picking without manual rebuild calls.
+- Strict Lua globe entry points now reject invalid label styles, invalid layer alpha/color updates, and out-of-range marker or heat-layer values instead of silently clamping them on insert.
+- Runtime texture bindings for provinces, terrain patches, and marker icons are stored as typed engine handles instead of passing raw ids through region attrs or marker string fields.
+- Province picking now uses cached geographic candidate bounds before point-in-polygon tests so large globes do not full-scan every province on each click.
+- Rust-side debug surfaces now expose `Globe::regions_at_lat_lon_with_stats(...)` and `Globe::emit_frame_with_stats(...)`, which report candidate-filter counts and frame scratch high-water marks so globe query and render regressions are measurable in tests and tooling.

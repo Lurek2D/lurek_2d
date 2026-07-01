@@ -9,7 +9,7 @@
 
 use crate::globe::sphere::{lat_lon_to_unit, unit_to_lat_lon};
 use crate::math::{Vec2, Vec3};
-use crate::runtime::resource_keys::ShaderKey;
+use crate::runtime::resource_keys::{ShaderKey, TextureKey};
 use std::collections::{HashMap, HashSet};
 /// Maximum region count supported by globe data structures.
 pub const MAX_REGIONS: usize = 8192;
@@ -137,6 +137,8 @@ pub struct Region {
     pub edge_tags: HashMap<(RegionId, RegionId), HashSet<String>>,
     /// Optional texture name used when rendering the region.
     pub texture: Option<String>,
+    /// Optional runtime texture handle used by the renderer.
+    pub texture_key: Option<TextureKey>,
     /// Optional normalized texture rectangle in UV space.
     pub texture_uv_rect: Option<[f32; 4]>,
     /// Base RGBA color used when no overlay overrides it.
@@ -166,6 +168,7 @@ impl Region {
             attrs: HashMap::new(),
             edge_tags: HashMap::new(),
             texture: None,
+            texture_key: None,
             texture_uv_rect: None,
             base_color: [0.5, 0.5, 0.5, 1.0],
             member_terrain_ids: Vec::new(),
@@ -195,6 +198,7 @@ impl Region {
             attrs: HashMap::new(),
             edge_tags: HashMap::new(),
             texture: None,
+            texture_key: None,
             texture_uv_rect: None,
             base_color,
             member_terrain_ids: Vec::new(),
@@ -223,6 +227,7 @@ impl Region {
             attrs: HashMap::new(),
             edge_tags: HashMap::new(),
             texture: None,
+            texture_key: None,
             texture_uv_rect: None,
             base_color,
             member_terrain_ids: Vec::new(),
@@ -444,6 +449,8 @@ pub struct MarkerStyle {
     pub size: f32,
     /// Optional icon texture name.
     pub icon_texture: Option<String>,
+    /// Optional runtime icon texture handle.
+    pub icon_texture_key: Option<TextureKey>,
     /// Shape used when no icon texture is present.
     pub shape: MarkerShape,
     /// Pulse frequency in hertz.
@@ -474,6 +481,7 @@ impl Default for MarkerStyle {
             color: [1.0, 1.0, 0.0, 1.0],
             size: 8.0,
             icon_texture: None,
+            icon_texture_key: None,
             shape: MarkerShape::Circle,
             pulse_hz: 0.0,
             pulse_amplitude: 0.0,
@@ -549,6 +557,50 @@ impl Layer {
             region_colors: HashMap::new(),
         }
     }
+}
+/// Region-query debug counters captured while filtering semantic overlays.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct GlobeRegionQueryStats {
+    /// Total number of semantic regions stored on the globe.
+    pub total_regions: usize,
+    /// Semantic regions whose cached bounds admitted the query point.
+    pub candidate_regions: usize,
+    /// Terrain member patches whose cached bounds admitted the query point.
+    pub candidate_member_patches: usize,
+    /// Semantic regions that ultimately matched the query point.
+    pub matched_regions: usize,
+}
+/// Globe-frame counters captured while assembling one render-command batch.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct GlobeRenderStats {
+    /// Total visible terrain patches examined for the frame.
+    pub terrain_regions_total: usize,
+    /// Terrain patches that emitted at least one draw primitive.
+    pub terrain_regions_drawn: usize,
+    /// Total stored provinces examined for the frame.
+    pub province_regions_total: usize,
+    /// Provinces that emitted at least one draw primitive.
+    pub province_regions_drawn: usize,
+    /// Provinces culled before command emission.
+    pub province_regions_culled: usize,
+    /// Total visible semantic overlays examined for the frame.
+    pub semantic_regions_total: usize,
+    /// Semantic overlays that emitted at least one draw primitive.
+    pub semantic_regions_drawn: usize,
+    /// Visible route arcs that emitted a polyline.
+    pub arcs_drawn: usize,
+    /// Visible orbit-aware markers that emitted a primitive.
+    pub markers_drawn: usize,
+    /// Visible labels that emitted a print command.
+    pub labels_drawn: usize,
+    /// Final render-command count for the frame.
+    pub commands_emitted: usize,
+    /// Maximum temporary hole-loop count held in frame-local scratch.
+    pub scratch_hole_loops_high_water: usize,
+    /// Maximum temporary hole-vertex count held in frame-local scratch.
+    pub scratch_hole_vertices_high_water: usize,
+    /// Maximum temporary smoothed-border vertex count held in frame-local scratch.
+    pub scratch_border_vertices_high_water: usize,
 }
 /// Level-of-detail tier used by globe render decisions.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]

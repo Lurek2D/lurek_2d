@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-07-01T15:48:26.654037+00:00",
+    "generated": "2026-07-01T19:12:00.796945+00:00",
     "generator": "tools/gen_lua_api_data.py",
     "version": "1.1.0",
     "stats": {
@@ -50511,7 +50511,7 @@
             "typed_params": [],
             "inferred_return": "LGlobeRegistry",
             "return_description": "New globe registry handle.",
-            "line": 2452,
+            "line": 2769,
             "file": "src/lua_api/globe_api.rs"
           },
           {
@@ -50520,8 +50520,8 @@
             "kind": "function",
             "owner_type": "",
             "description": "Creates a named globe with optional specification fields in the module registry.",
-            "full_doc": "Creates a named globe with optional specification fields in the module registry.\n@param | name | string | Globe registry name.\n@param | spec_tbl | table? | Globe specification table.\n@return | LGlobe | New globe handle.",
-            "params_doc": "- `name` â€” `string`: Globe registry name.\n- `spec_tbl` â€” `table?`: Globe specification table.",
+            "full_doc": "Creates a named globe with optional specification fields in the module registry.\n@param | name | string | Globe registry name.\n@param | spec_tbl | table? | Globe specification table. Optional `load_options = { sandbox_root?, max_toml_bytes?, max_png_bytes?, max_png_pixels? }` applies to file-backed loaders.\n@return | LGlobe | New globe handle.",
+            "params_doc": "- `name` â€” `string`: Globe registry name.\n- `spec_tbl` â€” `table?`: Globe specification table. Optional `load_options = { sandbox_root?, max_toml_bytes?, max_png_bytes?, max_png_pixels? }` applies to file-backed loaders.",
             "returns_doc": "LGlobe",
             "inferred_sig": "(name, [spec_tbl])",
             "typed_params": [
@@ -50535,12 +50535,12 @@
                 "spec_tbl",
                 "table?",
                 true,
-                "Globe specification table."
+                "Globe specification table. Optional `load_options = { sandbox_root?, max_toml_bytes?, max_png_bytes?, max_png_pixels? }` applies to file-backed loaders."
               ]
             ],
             "inferred_return": "LGlobe",
             "return_description": "New globe handle.",
-            "line": 2469,
+            "line": 2786,
             "file": "src/lua_api/globe_api.rs"
           },
           {
@@ -50563,7 +50563,7 @@
             ],
             "inferred_return": "LGlobe",
             "return_description": "Globe handle, or nil when no globe exists with that name.",
-            "line": 2494,
+            "line": 2811,
             "file": "src/lua_api/globe_api.rs"
           },
           {
@@ -50586,7 +50586,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when a globe was removed.",
-            "line": 2520,
+            "line": 2837,
             "file": "src/lua_api/globe_api.rs"
           },
           {
@@ -50621,7 +50621,7 @@
             ],
             "inferred_return": "LGlobe",
             "return_description": "New populated globe handle.",
-            "line": 2537,
+            "line": 2854,
             "file": "src/lua_api/globe_api.rs"
           },
           {
@@ -50630,8 +50630,8 @@
             "kind": "function",
             "owner_type": "",
             "description": "Creates a globe and populates provinces from TOML source text.",
-            "full_doc": "Creates a globe and populates provinces from TOML source text.\n@param | name | string | Globe registry name.\n@param | toml_src | string | TOML province document source supporting either `vertices` or multipart `parts = [{ outer = ..., holes = ... }]`.\n@param | spec_tbl | table? | Globe specification table.\n@return | LGlobe | New populated globe handle.",
-            "params_doc": "- `name` â€” `string`: Globe registry name.\n- `toml_src` â€” `string`: TOML province document source supporting either `vertices` or multipart `parts = [{ outer = ..., holes = ... }]`.\n- `spec_tbl` â€” `table?`: Globe specification table.",
+            "full_doc": "Creates a globe and populates provinces from TOML source text.\n@param | name | string | Globe registry name.\n@param | toml_src | string | TOML province document source supporting either `vertices` or multipart `parts = [{ outer = ..., holes = ... }]`.\n@param | spec_tbl | table? | Globe specification table. Optional `load_options = { sandbox_root?, max_toml_bytes?, max_png_bytes?, max_png_pixels? }` applies to file-backed loaders.\n@return | LGlobe | New populated globe handle.",
+            "params_doc": "- `name` â€” `string`: Globe registry name.\n- `toml_src` â€” `string`: TOML province document source supporting either `vertices` or multipart `parts = [{ outer = ..., holes = ... }]`.\n- `spec_tbl` â€” `table?`: Globe specification table. Optional `load_options = { sandbox_root?, max_toml_bytes?, max_png_bytes?, max_png_pixels? }` applies to file-backed loaders.",
             "returns_doc": "LGlobe",
             "inferred_sig": "(name, toml_src, [spec_tbl])",
             "typed_params": [
@@ -50651,12 +50651,12 @@
                 "spec_tbl",
                 "table?",
                 true,
-                "Globe specification table."
+                "Globe specification table. Optional `load_options = { sandbox_root?, max_toml_bytes?, max_png_bytes?, max_png_pixels? }` applies to file-backed loaders."
               ]
             ],
             "inferred_return": "LGlobe",
             "return_description": "New populated globe handle.",
-            "line": 2573,
+            "line": 2890,
             "file": "src/lua_api/globe_api.rs"
           },
           {
@@ -50691,7 +50691,7 @@
             ],
             "inferred_return": "LGlobe",
             "return_description": "New populated globe handle.",
-            "line": 2609,
+            "line": 2926,
             "file": "src/lua_api/globe_api.rs"
           },
           {
@@ -50726,7 +50726,7 @@
             ],
             "inferred_return": "LGlobe",
             "return_description": "New generated globe handle.",
-            "line": 2644,
+            "line": 2961,
             "file": "src/lua_api/globe_api.rs"
           },
           {
@@ -50767,7 +50767,7 @@
             ],
             "inferred_return": "number",
             "return_description": "Great-circle distance on the unit sphere.",
-            "line": 2684,
+            "line": 3001,
             "file": "src/lua_api/globe_api.rs"
           },
           {
@@ -50814,7 +50814,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Array table of `{lat, lon}` point tables.",
-            "line": 2700,
+            "line": 3017,
             "file": "src/lua_api/globe_api.rs"
           },
           {
@@ -50843,7 +50843,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Array table `{x, y, z}` on the unit sphere.",
-            "line": 2722,
+            "line": 3039,
             "file": "src/lua_api/globe_api.rs"
           },
           {
@@ -50902,7 +50902,7 @@
             ],
             "inferred_return": "number",
             "return_description": "Hit distance `t`, or nil when the ray misses.",
-            "line": 2743,
+            "line": 3060,
             "file": "src/lua_api/globe_api.rs"
           }
         ],
@@ -50931,7 +50931,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the province was accepted by the globe.",
-                "line": 728,
+                "line": 882,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -50954,7 +50954,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when a region was removed.",
-                "line": 746,
+                "line": 900,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -50977,7 +50977,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the region was accepted by the globe.",
-                "line": 753,
+                "line": 907,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51000,7 +51000,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when a region was removed.",
-                "line": 777,
+                "line": 931,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51023,7 +51023,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the terrain patch was accepted by the globe.",
-                "line": 784,
+                "line": 938,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51046,7 +51046,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when a terrain patch was removed.",
-                "line": 808,
+                "line": 962,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51062,7 +51062,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Terrain patch count.",
-                "line": 814,
+                "line": 968,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51078,7 +51078,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Province count.",
-                "line": 820,
+                "line": 974,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51094,7 +51094,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Semantic region count.",
-                "line": 826,
+                "line": 980,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51117,7 +51117,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of neighboring province ids.",
-                "line": 831,
+                "line": 985,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51152,7 +51152,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the edge exists and the tags were stored.",
-                "line": 849,
+                "line": 1003,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51181,7 +51181,7 @@
                 ],
                 "inferred_return": "string[]",
                 "return_description": "Sequential table of edge tag strings, empty when none are set.",
-                "line": 868,
+                "line": 1022,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51216,7 +51216,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the province exists.",
-                "line": 882,
+                "line": 1036,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51245,7 +51245,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Attribute string, or nil when the province or key is missing.",
-                "line": 900,
+                "line": 1054,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51280,7 +51280,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the region exists.",
-                "line": 912,
+                "line": 1066,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51309,7 +51309,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Attribute string, or nil when the region or key is missing.",
-                "line": 930,
+                "line": 1084,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51344,7 +51344,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the terrain patch exists.",
-                "line": 942,
+                "line": 1096,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51373,7 +51373,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Attribute string, or nil when the patch or key is missing.",
-                "line": 960,
+                "line": 1114,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51420,7 +51420,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the semantic region exists.",
-                "line": 977,
+                "line": 1131,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51449,7 +51449,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the semantic region exists.",
-                "line": 1001,
+                "line": 1155,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51457,11 +51457,11 @@
                 "lua_name": "LGlobe:setProvinceTexture",
                 "kind": "method",
                 "owner_type": "LGlobe",
-                "description": "Assigns a raw texture handle and UV rectangle to a province.",
-                "full_doc": "Assigns a raw texture handle and UV rectangle to a province.\n@param | id | integer | Province id.\n@param | tex_raw | integer | Raw texture identifier stored in province attributes.\n@param | u0 | number | Left UV coordinate.\n@param | v0 | number | Top UV coordinate.\n@param | u1 | number | Right UV coordinate.\n@param | v1 | number | Bottom UV coordinate.\n@return | boolean | True when the province exists.",
-                "params_doc": "- `id` â€” `integer`: Province id.\n- `tex_raw` â€” `integer`: Raw texture identifier stored in province attributes.\n- `u0` â€” `number`: Left UV coordinate.\n- `v0` â€” `number`: Top UV coordinate.\n- `u1` â€” `number`: Right UV coordinate.\n- `v1` â€” `number`: Bottom UV coordinate.",
+                "description": "Assigns a live texture handle and UV rectangle to a province.",
+                "full_doc": "Assigns a live texture handle and UV rectangle to a province.\n@param | id | integer | Province id.\n@param | tex_raw | integer or LImage | Live texture identifier or image userdata.\n@param | u0 | number | Left UV coordinate.\n@param | v0 | number | Top UV coordinate.\n@param | u1 | number | Right UV coordinate.\n@param | v1 | number | Bottom UV coordinate.\n@return | boolean | True when the province exists.",
+                "params_doc": "- `id` â€” `integer`: Province id.\n- `tex_raw` â€” `integer or LImage`: Live texture identifier or image userdata.\n- `u0` â€” `number`: Left UV coordinate.\n- `v0` â€” `number`: Top UV coordinate.\n- `u1` â€” `number`: Right UV coordinate.\n- `v1` â€” `number`: Bottom UV coordinate.",
                 "returns_doc": "boolean",
-                "inferred_sig": "(id, tex_raw, u0, v0, u1, v1)",
+                "inferred_sig": "(id, tex_value, u0, v0, u1, v1)",
                 "typed_params": [
                   [
                     "id",
@@ -51471,9 +51471,9 @@
                   ],
                   [
                     "tex_raw",
-                    "integer",
+                    "integer or LImage",
                     false,
-                    "Raw texture identifier stored in province attributes."
+                    "Live texture identifier or image userdata."
                   ],
                   [
                     "u0",
@@ -51502,7 +51502,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the province exists.",
-                "line": 1020,
+                "line": 1174,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51525,7 +51525,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the province exists.",
-                "line": 1039,
+                "line": 1218,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51533,11 +51533,11 @@
                 "lua_name": "LGlobe:setTerrainPatchTexture",
                 "kind": "method",
                 "owner_type": "LGlobe",
-                "description": "Assigns a raw texture handle and UV rectangle to a terrain patch.",
-                "full_doc": "Assigns a raw texture handle and UV rectangle to a terrain patch.\n@param | id | integer | Terrain patch id.\n@param | tex_raw | integer | Raw texture identifier stored in terrain attributes.\n@param | u0 | number | Left UV coordinate.\n@param | v0 | number | Top UV coordinate.\n@param | u1 | number | Right UV coordinate.\n@param | v1 | number | Bottom UV coordinate.\n@return | boolean | True when the terrain patch exists.",
-                "params_doc": "- `id` â€” `integer`: Terrain patch id.\n- `tex_raw` â€” `integer`: Raw texture identifier stored in terrain attributes.\n- `u0` â€” `number`: Left UV coordinate.\n- `v0` â€” `number`: Top UV coordinate.\n- `u1` â€” `number`: Right UV coordinate.\n- `v1` â€” `number`: Bottom UV coordinate.",
+                "description": "Assigns a live texture handle and UV rectangle to a terrain patch.",
+                "full_doc": "Assigns a live texture handle and UV rectangle to a terrain patch.\n@param | id | integer | Terrain patch id.\n@param | tex_raw | integer or LImage | Live texture identifier or image userdata.\n@param | u0 | number | Left UV coordinate.\n@param | v0 | number | Top UV coordinate.\n@param | u1 | number | Right UV coordinate.\n@param | v1 | number | Bottom UV coordinate.\n@return | boolean | True when the terrain patch exists.",
+                "params_doc": "- `id` â€” `integer`: Terrain patch id.\n- `tex_raw` â€” `integer or LImage`: Live texture identifier or image userdata.\n- `u0` â€” `number`: Left UV coordinate.\n- `v0` â€” `number`: Top UV coordinate.\n- `u1` â€” `number`: Right UV coordinate.\n- `v1` â€” `number`: Bottom UV coordinate.",
                 "returns_doc": "boolean",
-                "inferred_sig": "(id, tex_raw, u0, v0, u1, v1)",
+                "inferred_sig": "(id, tex_value, u0, v0, u1, v1)",
                 "typed_params": [
                   [
                     "id",
@@ -51547,9 +51547,9 @@
                   ],
                   [
                     "tex_raw",
-                    "integer",
+                    "integer or LImage",
                     false,
-                    "Raw texture identifier stored in terrain attributes."
+                    "Live texture identifier or image userdata."
                   ],
                   [
                     "u0",
@@ -51578,7 +51578,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the terrain patch exists.",
-                "line": 1059,
+                "line": 1238,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51601,7 +51601,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the terrain patch exists.",
-                "line": 1079,
+                "line": 1282,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51624,7 +51624,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Coverage report with `ok`, `samples`, `covered_samples`, and `gaps`.",
-                "line": 1094,
+                "line": 1297,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51653,7 +51653,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the province sector was set.",
-                "line": 1128,
+                "line": 1331,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51676,7 +51676,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Sector string, or nil when absent.",
-                "line": 1138,
+                "line": 1341,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51699,7 +51699,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of province ids.",
-                "line": 1145,
+                "line": 1348,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51708,8 +51708,8 @@
                 "kind": "method",
                 "owner_type": "LGlobe",
                 "description": "Creates or replaces a heat layer that maps province attributes into colors.",
-                "full_doc": "Creates or replaces a heat layer that maps province attributes into colors.\n@param | name | string | Heat layer name.\n@param | attr_key | string | Province attribute key read as a numeric value.\n@param | min | number | Attribute value mapped to cold color.\n@param | max | number | Attribute value mapped to hot color.\n@param | alpha | number | Layer alpha clamped to 0.0 through 1.0.",
-                "params_doc": "- `name` â€” `string`: Heat layer name.\n- `attr_key` â€” `string`: Province attribute key read as a numeric value.\n- `min` â€” `number`: Attribute value mapped to cold color.\n- `max` â€” `number`: Attribute value mapped to hot color.\n- `alpha` â€” `number`: Layer alpha clamped to 0.0 through 1.0.",
+                "full_doc": "Creates or replaces a heat layer that maps province attributes into colors.\n@param | name | string | Heat layer name.\n@param | attr_key | string | Province attribute key read as a numeric value.\n@param | min | number | Attribute value mapped to cold color.\n@param | max | number | Attribute value mapped to hot color.\n@param | alpha | number | Layer alpha in the 0.0 through 1.0 range.",
+                "params_doc": "- `name` â€” `string`: Heat layer name.\n- `attr_key` â€” `string`: Province attribute key read as a numeric value.\n- `min` â€” `number`: Attribute value mapped to cold color.\n- `max` â€” `number`: Attribute value mapped to hot color.\n- `alpha` â€” `number`: Layer alpha in the 0.0 through 1.0 range.",
                 "returns_doc": "",
                 "inferred_sig": "(name, attr_key, min, max, alpha)",
                 "typed_params": [
@@ -51741,12 +51741,12 @@
                     "alpha",
                     "number",
                     false,
-                    "Layer alpha clamped to 0.0 through 1.0."
+                    "Layer alpha in the 0.0 through 1.0 range."
                   ]
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1160,
+                "line": 1363,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51769,7 +51769,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when a layer was removed.",
-                "line": 1182,
+                "line": 1391,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51798,7 +51798,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1189,
+                "line": 1398,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51821,7 +51821,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1195,
+                "line": 1406,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51830,8 +51830,8 @@
                 "kind": "method",
                 "owner_type": "LGlobe",
                 "description": "Sets camera latitude, longitude, and zoom.",
-                "full_doc": "Sets camera latitude, longitude, and zoom.\n@param | lat | number | Camera latitude in degrees.\n@param | lon | number | Camera longitude in degrees.\n@param | z | number | Camera zoom, clamped to at least 0.1.",
-                "params_doc": "- `lat` â€” `number`: Camera latitude in degrees.\n- `lon` â€” `number`: Camera longitude in degrees.\n- `z` â€” `number`: Camera zoom, clamped to at least 0.1.",
+                "full_doc": "Sets camera latitude, longitude, and zoom.\n@param | lat | number | Camera latitude in degrees.\n@param | lon | number | Camera longitude in degrees.\n@param | z | number | Camera zoom, must be at least 0.1.",
+                "params_doc": "- `lat` â€” `number`: Camera latitude in degrees.\n- `lon` â€” `number`: Camera longitude in degrees.\n- `z` â€” `number`: Camera zoom, must be at least 0.1.",
                 "returns_doc": "",
                 "inferred_sig": "(lat, lon, z)",
                 "typed_params": [
@@ -51851,12 +51851,12 @@
                     "z",
                     "number",
                     false,
-                    "Camera zoom, clamped to at least 0.1."
+                    "Camera zoom, must be at least 0.1."
                   ]
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1203,
+                "line": 1420,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51872,7 +51872,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Camera latitude in degrees.",
-                "line": 1216,
+                "line": 1440,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51901,7 +51901,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Latitude delta in degrees.",
-                "line": 1225,
+                "line": 1449,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51942,7 +51942,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1234,
+                "line": 1458,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51965,7 +51965,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1243,
+                "line": 1467,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51981,7 +51981,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "One of `far`, `mid`, or `near`.",
-                "line": 1252,
+                "line": 1477,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52010,7 +52010,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Province id, or nil when nothing is hit.",
-                "line": 1267,
+                "line": 1492,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52039,7 +52039,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Latitude in degrees, or nil when the point is off the globe.",
-                "line": 1279,
+                "line": 1504,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52074,7 +52074,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Latitude in degrees, or nil when the point is off that shell.",
-                "line": 1298,
+                "line": 1523,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52103,7 +52103,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Table keyed by orbit name with shell-hit snapshots.",
-                "line": 1312,
+                "line": 1537,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52138,7 +52138,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Province id, or nil when no sample hits.",
-                "line": 1326,
+                "line": 1551,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52167,7 +52167,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Latitude in degrees, or nil when nothing is hit.",
-                "line": 1353,
+                "line": 1578,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52196,7 +52196,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of semantic region ids.",
-                "line": 1364,
+                "line": 1589,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52225,7 +52225,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of semantic region ids.",
-                "line": 1377,
+                "line": 1602,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52260,7 +52260,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Marker id, or nil when no visible marker is within range.",
-                "line": 1392,
+                "line": 1617,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52295,7 +52295,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Hit snapshot table, or nil when nothing matched.",
-                "line": 1404,
+                "line": 1629,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52330,7 +52330,7 @@
                 ],
                 "inferred_return": "table[]",
                 "return_description": "Array table of hit snapshots.",
-                "line": 1421,
+                "line": 1646,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52365,7 +52365,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Pick result table, or nil when the screen point is off the globe.",
-                "line": 1439,
+                "line": 1664,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52388,7 +52388,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1469,
+                "line": 1694,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52423,7 +52423,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1477,
+                "line": 1702,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52452,7 +52452,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "`visible`, `explored`, or `hidden`.",
-                "line": 1493,
+                "line": 1718,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52475,7 +52475,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Base64-encoded fog state, or an empty string on encode failure.",
-                "line": 1507,
+                "line": 1732,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52504,7 +52504,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the payload was decoded.",
-                "line": 1515,
+                "line": 1740,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52533,7 +52533,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1525,
+                "line": 1750,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52562,7 +52562,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1532,
+                "line": 1757,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52591,7 +52591,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the province is visible.",
-                "line": 1540,
+                "line": 1765,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52614,7 +52614,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1546,
+                "line": 1771,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52637,7 +52637,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the orbit definition was accepted.",
-                "line": 1558,
+                "line": 1783,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52660,7 +52660,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the orbit existed and was removed.",
-                "line": 1570,
+                "line": 1795,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52689,7 +52689,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the orbit exists.",
-                "line": 1578,
+                "line": 1803,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52724,7 +52724,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the orbit exists.",
-                "line": 1590,
+                "line": 1815,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52753,7 +52753,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Attribute value, or nil when missing.",
-                "line": 1601,
+                "line": 1826,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52769,7 +52769,7 @@
                 "typed_params": [],
                 "inferred_return": "string[]",
                 "return_description": "Array table of orbit names.",
-                "line": 1611,
+                "line": 1836,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52792,7 +52792,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Orbit snapshot table, or nil when missing.",
-                "line": 1623,
+                "line": 1848,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52833,7 +52833,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "New marker id.",
-                "line": 1637,
+                "line": 1862,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52856,7 +52856,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "New marker id.",
-                "line": 1651,
+                "line": 1876,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52879,7 +52879,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when a marker was removed.",
-                "line": 1689,
+                "line": 1917,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52914,7 +52914,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the marker exists.",
-                "line": 1698,
+                "line": 1926,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52943,7 +52943,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the marker exists.",
-                "line": 1707,
+                "line": 1935,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52952,8 +52952,8 @@
                 "kind": "method",
                 "owner_type": "LGlobe",
                 "description": "Sets marker pulse frequency and amplitude.",
-                "full_doc": "Sets marker pulse frequency and amplitude.\n@param | id | integer | Marker id.\n@param | hz | number | Pulse frequency in hertz, clamped to at least zero.\n@param | amp | number | Pulse amplitude clamped to 0.0 through 1.0.\n@return | boolean | True when the marker exists.",
-                "params_doc": "- `id` â€” `integer`: Marker id.\n- `hz` â€” `number`: Pulse frequency in hertz, clamped to at least zero.\n- `amp` â€” `number`: Pulse amplitude clamped to 0.0 through 1.0.",
+                "full_doc": "Sets marker pulse frequency and amplitude.\n@param | id | integer | Marker id.\n@param | hz | number | Pulse frequency in hertz, must be >= 0.\n@param | amp | number | Pulse amplitude in the 0.0 through 1.0 range.\n@return | boolean | True when the marker exists.",
+                "params_doc": "- `id` â€” `integer`: Marker id.\n- `hz` â€” `number`: Pulse frequency in hertz, must be >= 0.\n- `amp` â€” `number`: Pulse amplitude in the 0.0 through 1.0 range.",
                 "returns_doc": "boolean",
                 "inferred_sig": "(id, hz, amp)",
                 "typed_params": [
@@ -52967,18 +52967,18 @@
                     "hz",
                     "number",
                     false,
-                    "Pulse frequency in hertz, clamped to at least zero."
+                    "Pulse frequency in hertz, must be >= 0."
                   ],
                   [
                     "amp",
                     "number",
                     false,
-                    "Pulse amplitude clamped to 0.0 through 1.0."
+                    "Pulse amplitude in the 0.0 through 1.0 range."
                   ]
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the marker exists.",
-                "line": 1716,
+                "line": 1944,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53007,7 +53007,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the marker exists.",
-                "line": 1735,
+                "line": 1970,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53042,7 +53042,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the marker exists.",
-                "line": 1751,
+                "line": 1987,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53071,7 +53071,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Attribute string, or nil when missing.",
-                "line": 1762,
+                "line": 1998,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53100,7 +53100,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the marker exists and the orbit accepts markers.",
-                "line": 1770,
+                "line": 2006,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53129,7 +53129,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the marker exists.",
-                "line": 1778,
+                "line": 2014,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53152,7 +53152,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Orbit shell name, or nil when the marker is missing.",
-                "line": 1801,
+                "line": 2037,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53175,7 +53175,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Marker snapshot table, or nil when missing.",
-                "line": 1808,
+                "line": 2044,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53222,7 +53222,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the marker exists.",
-                "line": 1823,
+                "line": 2059,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53231,8 +53231,8 @@
                 "kind": "method",
                 "owner_type": "LGlobe",
                 "description": "Sets the marker size in screen units for rendering.",
-                "full_doc": "Sets the marker size in screen units for rendering.\n@param | id | integer | Marker id.\n@param | size | number | Marker size, clamped to at least 1.0.\n@return | boolean | True when the marker exists.",
-                "params_doc": "- `id` â€” `integer`: Marker id.\n- `size` â€” `number`: Marker size, clamped to at least 1.0.",
+                "full_doc": "Sets the marker size in screen units for rendering.\n@param | id | integer | Marker id.\n@param | size | number | Marker size, must be at least 1.0.\n@return | boolean | True when the marker exists.",
+                "params_doc": "- `id` â€” `integer`: Marker id.\n- `size` â€” `number`: Marker size, must be at least 1.0.",
                 "returns_doc": "boolean",
                 "inferred_sig": "(id, size)",
                 "typed_params": [
@@ -53246,12 +53246,12 @@
                     "size",
                     "number",
                     false,
-                    "Marker size, clamped to at least 1.0."
+                    "Marker size, must be at least 1.0."
                   ]
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the marker exists.",
-                "line": 1847,
+                "line": 2083,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53280,7 +53280,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the marker exists.",
-                "line": 1863,
+                "line": 2104,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53288,11 +53288,11 @@
                 "lua_name": "LGlobe:setMarkerIconTexture",
                 "kind": "method",
                 "owner_type": "LGlobe",
-                "description": "Assigns or clears a raw texture handle for a marker icon.",
-                "full_doc": "Assigns or clears a raw texture handle for a marker icon.\n@param | id | integer | Marker id.\n@param | tex_raw | integer? | Raw texture handle, or nil to clear the icon.\n@return | boolean | True when the marker exists.",
-                "params_doc": "- `id` â€” `integer`: Marker id.\n- `tex_raw` â€” `integer?`: Raw texture handle, or nil to clear the icon.",
+                "description": "Assigns or clears a live texture handle for a marker icon.",
+                "full_doc": "Assigns or clears a live texture handle for a marker icon.\n@param | id | integer | Marker id.\n@param | tex_raw | integer, LImage, or nil | Live texture handle, image userdata, or nil to clear the icon.\n@return | boolean | True when the marker exists.",
+                "params_doc": "- `id` â€” `integer`: Marker id.\n- `tex_raw` â€” `integer, LImage, or nil`: Live texture handle, image userdata, or nil to clear the icon.",
                 "returns_doc": "boolean",
-                "inferred_sig": "(id, [tex_raw])",
+                "inferred_sig": "(id, tex_value)",
                 "typed_params": [
                   [
                     "id",
@@ -53302,14 +53302,14 @@
                   ],
                   [
                     "tex_raw",
-                    "integer?",
-                    true,
-                    "Raw texture handle, or nil to clear the icon."
+                    "integer, LImage, or nil",
+                    false,
+                    "Live texture handle, image userdata, or nil to clear the icon."
                   ]
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the marker exists.",
-                "line": 1879,
+                "line": 2120,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53338,7 +53338,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Great-circle distance, or nil when either marker is missing.",
-                "line": 1897,
+                "line": 2148,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53379,7 +53379,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "New label id.",
-                "line": 1907,
+                "line": 2158,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53408,7 +53408,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the label exists.",
-                "line": 1922,
+                "line": 2176,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53437,7 +53437,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the label exists.",
-                "line": 1930,
+                "line": 2184,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53460,7 +53460,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when a label was removed.",
-                "line": 1937,
+                "line": 2191,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53489,7 +53489,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1944,
+                "line": 2198,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53512,7 +53512,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when a layer was removed.",
-                "line": 1963,
+                "line": 2221,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53565,7 +53565,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the layer exists.",
-                "line": 1975,
+                "line": 2233,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53594,7 +53594,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the layer exists.",
-                "line": 1990,
+                "line": 2251,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53603,8 +53603,8 @@
                 "kind": "method",
                 "owner_type": "LGlobe",
                 "description": "Sets render layer alpha. This method is available to Lua scripts.",
-                "full_doc": "Sets render layer alpha. This method is available to Lua scripts.\n@param | name | string | Layer name.\n@param | alpha | number | Layer alpha.\n@return | boolean | True when the layer exists.",
-                "params_doc": "- `name` â€” `string`: Layer name.\n- `alpha` â€” `number`: Layer alpha.",
+                "full_doc": "Sets render layer alpha. This method is available to Lua scripts.\n@param | name | string | Layer name.\n@param | alpha | number | Layer alpha in the 0.0 through 1.0 range.\n@return | boolean | True when the layer exists.",
+                "params_doc": "- `name` â€” `string`: Layer name.\n- `alpha` â€” `number`: Layer alpha in the 0.0 through 1.0 range.",
                 "returns_doc": "boolean",
                 "inferred_sig": "(name, alpha)",
                 "typed_params": [
@@ -53618,12 +53618,12 @@
                     "alpha",
                     "number",
                     false,
-                    "Layer alpha."
+                    "Layer alpha in the 0.0 through 1.0 range."
                   ]
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the layer exists.",
-                "line": 1998,
+                "line": 2259,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53646,7 +53646,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2004,
+                "line": 2269,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53662,7 +53662,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Time of day in hours.",
-                "line": 2011,
+                "line": 2276,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53685,7 +53685,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2017,
+                "line": 2282,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53708,7 +53708,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2024,
+                "line": 2289,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53731,7 +53731,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2031,
+                "line": 2296,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53754,7 +53754,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2035,
+                "line": 2300,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53783,7 +53783,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the orbit exists.",
-                "line": 2043,
+                "line": 2308,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53806,7 +53806,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the orbit exists.",
-                "line": 2064,
+                "line": 2329,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53829,7 +53829,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2077,
+                "line": 2342,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53845,7 +53845,7 @@
                 "typed_params": [],
                 "inferred_return": "LShader?",
                 "return_description": "Bound shader handle, or nil.",
-                "line": 2092,
+                "line": 2357,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53868,7 +53868,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2102,
+                "line": 2367,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53897,7 +53897,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Province ids, or nil when no path exists.",
-                "line": 2139,
+                "line": 2404,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53932,7 +53932,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Result table with `ids` and `total_cost`, or nil when no path exists.",
-                "line": 2161,
+                "line": 2426,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53961,7 +53961,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Map table from province id (integer key) to accumulated traversal cost (number).",
-                "line": 2188,
+                "line": 2453,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53996,7 +53996,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Map table from province id (integer key) to accumulated traversal cost (number).",
-                "line": 2207,
+                "line": 2472,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -54031,7 +54031,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2226,
+                "line": 2491,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -54054,7 +54054,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Map table from province id (integer key) to accumulated traversal cost (number), empty when missing.",
-                "line": 2239,
+                "line": 2504,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -54070,7 +54070,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "OBJ text for the current provinces, including grouped boundary loops and any available fill geometry.",
-                "line": 2252,
+                "line": 2517,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -54117,7 +54117,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "New arc id.",
-                "line": 2263,
+                "line": 2528,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -54140,7 +54140,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when an arc was removed.",
-                "line": 2290,
+                "line": 2561,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -54156,7 +54156,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Globe registry name.",
-                "line": 2296,
+                "line": 2567,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -54172,7 +54172,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LGlobe`.",
-                "line": 2303,
+                "line": 2574,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -54195,7 +54195,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 2308,
+                "line": 2579,
                 "file": "src/lua_api/globe_api.rs"
               }
             ]
@@ -54230,7 +54230,7 @@
                 ],
                 "inferred_return": "LGlobe",
                 "return_description": "New globe handle.",
-                "line": 2329,
+                "line": 2600,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -54253,7 +54253,7 @@
                 ],
                 "inferred_return": "LGlobe",
                 "return_description": "Globe handle, or nil when no globe exists with that name.",
-                "line": 2351,
+                "line": 2622,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -54276,7 +54276,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when a globe was removed.",
-                "line": 2372,
+                "line": 2643,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -54292,7 +54292,7 @@
                 "typed_params": [],
                 "inferred_return": "string[]",
                 "return_description": "Globe names.",
-                "line": 2382,
+                "line": 2653,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -54308,7 +54308,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LGlobeRegistry`.",
-                "line": 2397,
+                "line": 2668,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -54331,7 +54331,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 2402,
+                "line": 2673,
                 "file": "src/lua_api/globe_api.rs"
               }
             ]

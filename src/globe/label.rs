@@ -5,6 +5,7 @@
 //! Open this owner when label lifecycle, text edits, or LOD gating behavior changes across the globe UI.
 
 use crate::globe::types::{Label, LabelStyle};
+use crate::globe::validation::validate_label;
 use std::collections::HashMap;
 /// Label collection keyed by stable id.
 #[derive(Debug, Clone, Default)]
@@ -28,23 +29,22 @@ impl LabelStore {
         text: impl Into<String>,
         style: LabelStyle,
         min_lod: u8,
-    ) -> u32 {
+    ) -> Result<u32, String> {
         let id = self.next_id;
-        self.next_id += 1;
-        self.labels.insert(
+        let label = Label {
             id,
-            Label {
-                id,
-                label_type: label_type.into(),
-                lat_deg,
-                lon_deg,
-                text: text.into(),
-                visible: true,
-                style,
-                min_lod,
-            },
-        );
-        id
+            label_type: label_type.into(),
+            lat_deg,
+            lon_deg,
+            text: text.into(),
+            visible: true,
+            style,
+            min_lod,
+        };
+        validate_label(&label, "globe label")?;
+        self.next_id += 1;
+        self.labels.insert(id, label);
+        Ok(id)
     }
     /// Remove a label by id and return it when found.
     pub fn remove(&mut self, id: u32) -> Option<Label> {

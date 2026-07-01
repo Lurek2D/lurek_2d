@@ -29,6 +29,14 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - `LGlobe:setShader(shaderOrNil)` still accepts only `mapviz` shaders created through `lurek.render.newShader`, and now orbit shells can also bind their own `mapviz` shader scope through `LGlobe:setOrbitShader(...)` without leaking into unrelated shell or surface passes.
 - Orbit shells are named, always include the canonical `surface` shell, and add `altitude_px` to `GlobeSpec.radius` before zoom so shell projection, shell picking, and orbit marker placement stay radius-based and deterministic.
 - Globe shaders are intended for atmospheric bands, tactical heatmap styling, fog/visibility tinting, orbital overlays, and map visualization treatments over the generated command stream. Globe topology, picking, routes, and fog state remain CPU-owned gameplay/tooling data.
+- File-backed loaders now resolve paths inside a sandbox root and enforce explicit TOML byte, PNG byte, and PNG pixel limits. The default sandbox root is the current project directory, and Lua callers can tighten or redirect it through `load_options`.
+- Province topology is the authoritative graph used for routing, cached neighbors, and province picking. Semantic `addRegion(...)` overlays remain separate lookup surfaces that may overlap or map onto terrain members without changing province adjacency.
+- Globe region imports now reject duplicate ids, self-neighbors, unknown neighbors, and asymmetric neighbor lists instead of silently accepting partial topology.
+- Semantic overlay bounds now include member terrain patch geometry, and terrain or region in-place mutation refreshes those cached bounds automatically so member-only `addRegion(...)` overlays keep participating in `regionsAtLatLon(...)` and screen picking without manual rebuild calls.
+- Strict Lua globe entry points now reject invalid label styles, invalid layer alpha/color updates, and out-of-range marker or heat-layer values instead of silently clamping them on insert.
+- Runtime texture bindings for provinces, terrain patches, and marker icons are stored as typed engine handles instead of passing raw ids through region attrs or marker string fields.
+- Province picking now uses cached geographic candidate bounds before point-in-polygon tests so large globes do not full-scan every province on each click.
+- Rust-side debug surfaces now expose `Globe::regions_at_lat_lon_with_stats(...)` and `Globe::emit_frame_with_stats(...)`, which report candidate-filter counts and frame scratch high-water marks so globe query and render regressions are measurable in tests and tooling.
 
 ## Architecture Links
 

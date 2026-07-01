@@ -20,17 +20,45 @@ use crate::globe::projection::{
 };
 use crate::globe::topology::RegionGraph;
 use crate::globe::types::{
-    Arc as GlobeArc, FogState, GlobeOrbit, GlobeOrbitKind, GlobeSpec, HeatLayer, LodTier,
-    MarkerShape, Region, RegionId,
+    Arc as GlobeArc, FogState, GlobeOrbit, GlobeOrbitKind, GlobeRenderStats, GlobeSpec,
+    HeatLayer, LodTier, MarkerShape, Region, RegionId,
 };
 use crate::math::{polygon, Vec2, Vec3};
 use crate::render::mesh::{Mesh, MeshDrawMode, MeshVertex};
 use crate::render::renderer::{BlendMode, DrawMode, RenderCommand, StencilAction};
 use crate::runtime::resource_keys::{FontKey, ShaderKey, TextureKey};
-use slotmap::KeyData;
 use std::collections::HashMap;
 
 type RegionRenderPart<'a> = (&'a [(f32, f32)], &'a [Vec<(f32, f32)>]);
+
+#[derive(Default)]
+struct GlobeFrameScratch {
+    projected_holes: Vec<Vec<Vec2>>,
+    smoothed_border: Vec<Vec2>,
+    smoothed_border_work: Vec<Vec2>,
+}
+
+impl GlobeFrameScratch {
+    fn clear_projected_holes(&mut self) {
+        for hole in &mut self.projected_holes {
+            hole.clear();
+        }
+        self.projected_holes.clear();
+    }
+
+    fn note_hole_high_water(&self, stats: &mut GlobeRenderStats) {
+        stats.scratch_hole_loops_high_water = stats
+            .scratch_hole_loops_high_water
+            .max(self.projected_holes.len());
+        let hole_vertices = self
+            .projected_holes
+            .iter()
+            .map(Vec::len)
+            .sum::<usize>();
+        stats.scratch_hole_vertices_high_water =
+            stats.scratch_hole_vertices_high_water.max(hole_vertices);
+    }
+}
 
 /// Emit a full globe frame as render commands for the current globe state.
 #[allow(clippy::too_many_arguments)]
@@ -52,7 +80,50 @@ pub fn emit_globe_frame(
     sim_time_sec: f32,
     base_shader: Option<ShaderKey>,
 ) -> Vec<RenderCommand> {
+    emit_globe_frame_with_stats(
+        spec,
+        camera,
+        terrain,
+        graph,
+        semantic_regions,
+        fog,
+        markers,
+        orbits,
+        labels,
+        layers,
+        heat_layers,
+        arcs,
+        active_viewer,
+        default_font,
+        sim_time_sec,
+        base_shader,
+    )
+    .0
+}
+
+/// Emit a full globe frame together with high-level draw counters.
+#[allow(clippy::too_many_arguments)]
+pub fn emit_globe_frame_with_stats(
+    spec: &GlobeSpec,
+    camera: &OrbitCamera,
+    terrain: &HashMap<RegionId, Region>,
+    graph: &RegionGraph,
+    semantic_regions: &HashMap<RegionId, Region>,
+    fog: &FogStore,
+    markers: &MarkerStore,
+    orbits: &OrbitStore,
+    labels: &LabelStore,
+    layers: &LayerStore,
+    heat_layers: &[HeatLayer],
+    arcs: &HashMap<u32, GlobeArc>,
+    active_viewer: Option<&str>,
+    default_font: Option<FontKey>,
+    sim_time_sec: f32,
+    base_shader: Option<ShaderKey>,
+) -> (Vec<RenderCommand>, GlobeRenderStats) {
     let mut cmds: Vec<RenderCommand> = Vec::new();
+    let mut stats = GlobeRenderStats::default();
+    let mut scratch = GlobeFrameScratch::default();
     if let Some(shader) = base_shader {
         cmds.push(RenderCommand::SetShader(Some(shader)));
     }
@@ -67,8 +138,9 @@ pub fn emit_globe_frame(
     emit_atmosphere_halo(&mut cmds, spec, camera);
     let mut terrain_regions: Vec<&Region> = terrain.values().filter(|r| r.visible).collect();
     terrain_regions.sort_by_key(|region| region.id);
+    stats.terrain_regions_total = terrain_regions.len();
     for region in terrain_regions {
-        emit_region_draw(
+        if emit_region_draw(
             &mut cmds,
             region,
             spec,
@@ -82,10 +154,15 @@ pub fn emit_globe_frame(
             true,
             heat_layers,
             lod,
-        );
+            &mut scratch,
+            &mut stats,
+        ) {
+            stats.terrain_regions_drawn += 1;
+        }
     }
+    stats.province_regions_total = graph.len();
     for region in graph.iter() {
-        emit_region_draw(
+        if emit_region_draw(
             &mut cmds,
             region,
             spec,
@@ -99,13 +176,20 @@ pub fn emit_globe_frame(
             true,
             heat_layers,
             lod,
-        );
+            &mut scratch,
+            &mut stats,
+        ) {
+            stats.province_regions_drawn += 1;
+        } else {
+            stats.province_regions_culled += 1;
+        }
     }
     let mut overlays: Vec<&Region> = semantic_regions
         .values()
         .filter(|region| region.visible)
         .collect();
     overlays.sort_by_key(|region| region.id);
+    stats.semantic_regions_total = overlays.len();
     for region in overlays {
         let overlay_color = region.overlay_color.unwrap_or([
             region.base_color[0],
@@ -116,8 +200,9 @@ pub fn emit_globe_frame(
         if overlay_color[3] <= 0.0 {
             continue;
         }
+        let mut drew_region = false;
         if region.member_terrain_ids.is_empty() {
-            emit_region_draw_with_color(
+            drew_region = emit_region_draw_with_color(
                 &mut cmds,
                 region,
                 spec,
@@ -127,11 +212,13 @@ pub fn emit_globe_frame(
                 overlay_color,
                 false,
                 lod,
+                &mut scratch,
+                &mut stats,
             );
         } else {
             for member_id in &region.member_terrain_ids {
                 if let Some(patch) = terrain.get(member_id) {
-                    emit_region_draw_with_color(
+                    drew_region |= emit_region_draw_with_color(
                         &mut cmds,
                         patch,
                         spec,
@@ -141,9 +228,14 @@ pub fn emit_globe_frame(
                         overlay_color,
                         false,
                         lod,
+                        &mut scratch,
+                        &mut stats,
                     );
                 }
             }
+        }
+        if drew_region {
+            stats.semantic_regions_drawn += 1;
         }
     }
     for arc in arcs.values() {
@@ -160,9 +252,10 @@ pub fn emit_globe_frame(
         cmds.push(RenderCommand::SetLineWidth(arc.width));
         cmds.push(RenderCommand::SetColor(ar, ag, ab, aa));
         cmds.push(RenderCommand::Polyline { points: pts });
+        stats.arcs_drawn += 1;
     }
     if let Some(surface_orbit) = orbits.get(SURFACE_ORBIT_NAME) {
-        emit_orbit_layer(
+        stats.markers_drawn += emit_orbit_layer(
             &mut cmds,
             surface_orbit,
             spec,
@@ -178,7 +271,7 @@ pub fn emit_globe_frame(
         if orbit.name == SURFACE_ORBIT_NAME {
             continue;
         }
-        emit_orbit_layer(
+        stats.markers_drawn += emit_orbit_layer(
             &mut cmds,
             orbit,
             spec,
@@ -206,6 +299,7 @@ pub fn emit_globe_frame(
                         y: screen.y,
                         scale,
                     });
+                    stats.labels_drawn += 1;
                 }
             }
         }
@@ -213,7 +307,8 @@ pub fn emit_globe_frame(
     if base_shader.is_some() {
         cmds.push(RenderCommand::SetShader(None));
     }
-    cmds
+    stats.commands_emitted = cmds.len();
+    (cmds, stats)
 }
 fn with_shader_scope(
     cmds: &mut Vec<RenderCommand>,
@@ -249,20 +344,21 @@ fn emit_orbit_layer(
     default_font: Option<FontKey>,
     sim_time_sec: f32,
     base_shader: Option<ShaderKey>,
-) {
+) -> usize {
     if !orbit.visible {
-        return;
+        return 0;
     }
     let has_markers = orbit.accepts_markers && orbit_has_visible_markers(markers, &orbit.name);
     if !orbit.draw_shell && !has_markers {
-        return;
+        return 0;
     }
+    let mut drawn_markers = 0;
     with_shader_scope(cmds, orbit.shader, base_shader, |cmds| {
         if orbit.draw_shell {
             emit_orbit_shell(cmds, orbit, spec, camera);
         }
         if has_markers {
-            emit_markers_for_orbit(
+            drawn_markers = emit_markers_for_orbit(
                 cmds,
                 orbit,
                 markers,
@@ -274,6 +370,7 @@ fn emit_orbit_layer(
             );
         }
     });
+    drawn_markers
 }
 
 fn emit_orbit_shell(
@@ -327,7 +424,8 @@ fn emit_markers_for_orbit(
     camera: &OrbitCamera,
     default_font: Option<FontKey>,
     sim_time_sec: f32,
-) {
+) -> usize {
+    let mut drawn = 0;
     for marker in markers.iter_visible_sorted() {
         if marker.orbit != orbit.name {
             continue;
@@ -355,13 +453,7 @@ fn emit_markers_for_orbit(
         let r = (marker.style.size * (0.5 + pulse)).max(2.0);
         let rotation = sim_time_sec * marker.style.rotation_deg_per_sec.to_radians();
         cmds.push(RenderCommand::SetColor(mr, mg, mb, ma));
-        if let Some(texture_key) = marker
-            .style
-            .icon_texture
-            .as_deref()
-            .and_then(|raw| raw.parse::<u64>().ok())
-            .map(|raw| TextureKey::from(KeyData::from_ffi(raw)))
-        {
+        if let Some(texture_key) = marker.style.icon_texture_key {
             cmds.push(RenderCommand::DrawImageEx {
                 texture_key,
                 x: screen.x,
@@ -386,7 +478,9 @@ fn emit_markers_for_orbit(
                 scale: 0.75,
             });
         }
+        drawn += 1;
     }
+    drawn
 }
 /// Emit a marker primitive matching the configured shape.
 fn emit_marker_shape(
@@ -480,10 +574,12 @@ fn emit_region_draw(
     allow_texture: bool,
     heat_layers: &[HeatLayer],
     lod: LodTier,
-) {
+    scratch: &mut GlobeFrameScratch,
+    stats: &mut GlobeRenderStats,
+) -> bool {
     if let Some((fog, viewer)) = fog_viewer {
         if let FogState::Hidden = fog.state(viewer, region.id) {
-            emit_region_draw_with_color(
+            return emit_region_draw_with_color(
                 cmds,
                 region,
                 spec,
@@ -493,8 +589,9 @@ fn emit_region_draw(
                 [0.05, 0.05, 0.05, 1.0],
                 false,
                 lod,
+                scratch,
+                stats,
             );
-            return;
         }
     }
     let mut base = if use_layers {
@@ -524,7 +621,9 @@ fn emit_region_draw(
         base,
         allow_texture,
         lod,
-    );
+        scratch,
+        stats,
+    )
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -538,18 +637,17 @@ fn emit_region_draw_with_color(
     base: [f32; 4],
     allow_texture: bool,
     lod: LodTier,
-) {
+    scratch: &mut GlobeFrameScratch,
+    stats: &mut GlobeRenderStats,
+) -> bool {
     let centroid_intensity =
         province_intensity(region.centroid.0, region.centroid.1, sun, spec.ambient);
     let texture_key = if allow_texture {
-        region
-            .attrs
-            .get("__texture_raw")
-            .and_then(|v| v.parse::<u64>().ok())
-            .map(|raw| TextureKey::from(KeyData::from_ffi(raw)))
+        region.texture_key
     } else {
         None
     };
+    let mut drew_any = false;
     for (outer_vertices, hole_loops) in region_render_parts(region) {
         let Some(proj) = project_geo_loop(
             region.id,
@@ -562,23 +660,24 @@ fn emit_region_draw_with_color(
         ) else {
             continue;
         };
-        let projected_holes: Vec<Vec<Vec2>> = hole_loops
-            .iter()
-            .filter_map(|hole| {
-                project_geo_loop(
-                    region.id,
-                    hole,
-                    region.centroid,
-                    view,
-                    spec,
-                    camera,
-                    centroid_intensity,
-                )
-                .map(|proj_hole| proj_hole.screen_verts)
-            })
-            .filter(|verts| verts.len() >= 3)
-            .collect();
-        let has_holes = !projected_holes.is_empty();
+        scratch.clear_projected_holes();
+        for hole in hole_loops {
+            if let Some(proj_hole) = project_geo_loop(
+                region.id,
+                hole,
+                region.centroid,
+                view,
+                spec,
+                camera,
+                centroid_intensity,
+            ) {
+                if proj_hole.screen_verts.len() >= 3 {
+                    scratch.projected_holes.push(proj_hole.screen_verts);
+                }
+            }
+        }
+        scratch.note_hole_high_water(stats);
+        let has_holes = !scratch.projected_holes.is_empty();
         if has_holes {
             cmds.push(RenderCommand::SetColorMask(false, false, false, false));
             cmds.push(RenderCommand::StencilBegin {
@@ -591,7 +690,7 @@ fn emit_region_draw_with_color(
                 action: StencilAction::Zero,
                 value: 0,
             });
-            for hole in &projected_holes {
+            for hole in &scratch.projected_holes {
                 emit_stencil_triangles(cmds, hole);
             }
             cmds.push(RenderCommand::StencilEnd);
@@ -638,6 +737,7 @@ fn emit_region_draw_with_color(
                 mode: DrawMode::Fill,
             });
         }
+        drew_any = true;
         let night_alpha =
             (1.0 - terminator_alpha(region.centroid.0, region.centroid.1, sun, 24.0)) * 0.45;
         if night_alpha > 0.01 {
@@ -653,12 +753,27 @@ fn emit_region_draw_with_color(
             cmds.push(RenderCommand::SetStencilTest(None));
         }
         if spec.render_borders && lod >= LodTier::Mid {
-            emit_border_polyline(cmds, spec, &proj.screen_verts);
-            for hole in &projected_holes {
-                emit_border_polyline(cmds, spec, hole);
+            emit_border_polyline(
+                cmds,
+                spec,
+                &proj.screen_verts,
+                &mut scratch.smoothed_border,
+                &mut scratch.smoothed_border_work,
+                stats,
+            );
+            for hole in &scratch.projected_holes {
+                emit_border_polyline(
+                    cmds,
+                    spec,
+                    hole,
+                    &mut scratch.smoothed_border,
+                    &mut scratch.smoothed_border_work,
+                    stats,
+                );
             }
         }
     }
+    drew_any
 }
 
 fn emit_stencil_triangles(cmds: &mut Vec<RenderCommand>, vertices: &[Vec2]) {
@@ -724,16 +839,34 @@ fn emit_textured_region_fill(
     });
 }
 
-fn emit_border_polyline(cmds: &mut Vec<RenderCommand>, spec: &GlobeSpec, vertices: &[Vec2]) {
+fn emit_border_polyline(
+    cmds: &mut Vec<RenderCommand>,
+    spec: &GlobeSpec,
+    vertices: &[Vec2],
+    smoothed_border: &mut Vec<Vec2>,
+    smoothed_border_work: &mut Vec<Vec2>,
+    stats: &mut GlobeRenderStats,
+) {
     if vertices.len() < 2 {
         return;
     }
     let [br, bg, bb, ba] = spec.border_color;
     cmds.push(RenderCommand::SetLineWidth(spec.border_width));
     cmds.push(RenderCommand::SetColor(br, bg, bb, ba));
-    let border_verts = smooth_polyline(vertices, spec.border_smoothing_passes);
-    let mut pts: Vec<f32> = border_verts.iter().flat_map(|v| [v.x, v.y]).collect();
-    if let Some(first) = border_verts.first() {
+    smooth_polyline_into(
+        vertices,
+        spec.border_smoothing_passes,
+        smoothed_border,
+        smoothed_border_work,
+    );
+    stats.scratch_border_vertices_high_water = stats
+        .scratch_border_vertices_high_water
+        .max(smoothed_border.len().max(smoothed_border_work.len()));
+    let mut pts: Vec<f32> = smoothed_border
+        .iter()
+        .flat_map(|v| [v.x, v.y])
+        .collect();
+    if let Some(first) = smoothed_border.first() {
         pts.push(first.x);
         pts.push(first.y);
     }
@@ -838,25 +971,32 @@ fn emit_atmosphere_halo(cmds: &mut Vec<RenderCommand>, spec: &GlobeSpec, camera:
     });
 }
 /// Smooth a closed polyline by repeated corner subdivision.
-fn smooth_polyline(points: &[Vec2], passes: u8) -> Vec<Vec2> {
+fn smooth_polyline_into(
+    points: &[Vec2],
+    passes: u8,
+    out: &mut Vec<Vec2>,
+    work: &mut Vec<Vec2>,
+) {
+    out.clear();
     if points.len() < 3 || passes == 0 {
-        return points.to_vec();
+        out.extend_from_slice(points);
+        return;
     }
-    let mut current = points.to_vec();
+    out.extend_from_slice(points);
     for _ in 0..passes {
-        if current.len() < 3 {
+        if out.len() < 3 {
             break;
         }
-        let mut out = Vec::with_capacity(current.len() * 2);
-        for i in 0..current.len() {
-            let a = current[i];
-            let b = current[(i + 1) % current.len()];
-            out.push(Vec2::new(0.75 * a.x + 0.25 * b.x, 0.75 * a.y + 0.25 * b.y));
-            out.push(Vec2::new(0.25 * a.x + 0.75 * b.x, 0.25 * a.y + 0.75 * b.y));
+        work.clear();
+        work.reserve(out.len() * 2);
+        for i in 0..out.len() {
+            let a = out[i];
+            let b = out[(i + 1) % out.len()];
+            work.push(Vec2::new(0.75 * a.x + 0.25 * b.x, 0.75 * a.y + 0.25 * b.y));
+            work.push(Vec2::new(0.25 * a.x + 0.75 * b.x, 0.25 * a.y + 0.75 * b.y));
         }
-        current = out;
+        std::mem::swap(out, work);
     }
-    current
 }
 /// Project a great-circle arc into a flat polyline of screen coordinates.
 #[allow(clippy::too_many_arguments)]

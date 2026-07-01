@@ -9,7 +9,7 @@ use crate::province::registry::ProvinceRegistry;
 pub fn apply_political_colors(globe: &mut Globe, registry: &ProvinceRegistry) {
     for id in registry.province_ids() {
         let rid = RegionId(id.0);
-        if let (Some(snap), Some(gp)) = (registry.get_province(id), globe.get_province_mut(rid)) {
+        if let (Some(snap), Some(mut gp)) = (registry.get_province(id), globe.get_province_mut(rid)) {
             gp.base_color = snap.style.political_color;
         }
     }

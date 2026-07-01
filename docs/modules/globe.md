@@ -265,7 +265,7 @@ lurek.globe.loadFromTOML(name, toml_src, spec_tbl)
 |------|------|-------------|
 | `name` | string | Globe registry name. |
 | `toml_src` | string | TOML province document source supporting either `vertices` or multipart `parts = [{ outer = ..., holes = ... }]`. |
-| `spec_tbl?` | table | Globe specification table. |
+| `spec_tbl?` | table | Globe specification table. Optional `load_options = { sandbox_root?, max_toml_bytes?, max_png_bytes?, max_png_pixels? }` applies to file-backed loaders. |
 
 **Returns**
 
@@ -340,7 +340,7 @@ lurek.globe.new(name, spec_tbl)
 | Name | Type | Description |
 |------|------|-------------|
 | `name` | string | Globe registry name. |
-| `spec_tbl?` | table | Globe specification table. |
+| `spec_tbl?` | table | Globe specification table. Optional `load_options = { sandbox_root?, max_toml_bytes?, max_png_bytes?, max_png_pixels? }` applies to file-backed loaders. |
 
 **Returns**
 
@@ -3354,7 +3354,7 @@ LGlobe:setCamera(lat, lon, z)
 |------|------|-------------|
 | `lat` | number | Camera latitude in degrees. |
 | `lon` | number | Camera longitude in degrees. |
-| `z` | number | Camera zoom, clamped to at least 0.1. |
+| `z` | number | Camera zoom, must be at least 0.1. |
 
 **Example**
 
@@ -3466,7 +3466,7 @@ LGlobe:setHeatLayer(name, attr_key, min, max, alpha)
 | `attr_key` | string | Province attribute key read as a numeric value. |
 | `min` | number | Attribute value mapped to cold color. |
 | `max` | number | Attribute value mapped to hot color. |
-| `alpha` | number | Layer alpha clamped to 0.0 through 1.0. |
+| `alpha` | number | Layer alpha in the 0.0 through 1.0 range. |
 
 **Example**
 
@@ -3573,7 +3573,7 @@ LGlobe:setLayerAlpha(name, alpha)
 | Name | Type | Description |
 |------|------|-------------|
 | `name` | string | Layer name. |
-| `alpha` | number | Layer alpha. |
+| `alpha` | number | Layer alpha in the 0.0 through 1.0 range. |
 
 **Returns**
 
@@ -3802,7 +3802,7 @@ end
 
 #### `LGlobe:setMarkerIconTexture`
 
-Assigns or clears a raw texture handle for a marker icon.
+Assigns or clears a live texture handle for a marker icon.
 
 ```lua
 LGlobe:setMarkerIconTexture(id, tex_raw)
@@ -3813,7 +3813,7 @@ LGlobe:setMarkerIconTexture(id, tex_raw)
 | Name | Type | Description |
 |------|------|-------------|
 | `id` | number | Marker id. |
-| `tex_raw?` | number | Raw texture handle, or nil to clear the icon. |
+| `tex_raw` | number, | Live texture handle, image userdata, or nil to clear the icon. |
 
 **Returns**
 
@@ -3892,8 +3892,8 @@ LGlobe:setMarkerPulse(id, hz, amp)
 | Name | Type | Description |
 |------|------|-------------|
 | `id` | number | Marker id. |
-| `hz` | number | Pulse frequency in hertz, clamped to at least zero. |
-| `amp` | number | Pulse amplitude clamped to 0.0 through 1.0. |
+| `hz` | number | Pulse frequency in hertz, must be >= 0. |
+| `amp` | number | Pulse amplitude in the 0.0 through 1.0 range. |
 
 **Returns**
 
@@ -4013,7 +4013,7 @@ LGlobe:setMarkerSize(id, size)
 | Name | Type | Description |
 |------|------|-------------|
 | `id` | number | Marker id. |
-| `size` | number | Marker size, clamped to at least 1.0. |
+| `size` | number | Marker size, must be at least 1.0. |
 
 **Returns**
 
@@ -4271,7 +4271,7 @@ end
 
 #### `LGlobe:setProvinceTexture`
 
-Assigns a raw texture handle and UV rectangle to a province.
+Assigns a live texture handle and UV rectangle to a province.
 
 ```lua
 LGlobe:setProvinceTexture(id, tex_raw, u0, v0, u1, v1)
@@ -4282,7 +4282,7 @@ LGlobe:setProvinceTexture(id, tex_raw, u0, v0, u1, v1)
 | Name | Type | Description |
 |------|------|-------------|
 | `id` | number | Province id. |
-| `tex_raw` | number | Raw texture identifier stored in province attributes. |
+| `tex_raw` | number | Live texture identifier or image userdata. |
 | `u0` | number | Left UV coordinate. |
 | `v0` | number | Top UV coordinate. |
 | `u1` | number | Right UV coordinate. |
@@ -4538,7 +4538,7 @@ end
 
 #### `LGlobe:setTerrainPatchTexture`
 
-Assigns a raw texture handle and UV rectangle to a terrain patch.
+Assigns a live texture handle and UV rectangle to a terrain patch.
 
 ```lua
 LGlobe:setTerrainPatchTexture(id, tex_raw, u0, v0, u1, v1)
@@ -4549,7 +4549,7 @@ LGlobe:setTerrainPatchTexture(id, tex_raw, u0, v0, u1, v1)
 | Name | Type | Description |
 |------|------|-------------|
 | `id` | number | Terrain patch id. |
-| `tex_raw` | number | Raw texture identifier stored in terrain attributes. |
+| `tex_raw` | number | Live texture identifier or image userdata. |
 | `u0` | number | Left UV coordinate. |
 | `v0` | number | Top UV coordinate. |
 | `u1` | number | Right UV coordinate. |

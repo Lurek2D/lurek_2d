@@ -136,16 +136,25 @@ fn point_in_polygon_2d(pt: Vec2, verts: &[Vec2]) -> bool {
     if verts.len() < 3 {
         return false;
     }
+    const EDGE_EPSILON: f32 = 1e-6;
     let mut inside = false;
     let n = verts.len();
     let mut j = n - 1;
     for i in 0..n {
         let vi = verts[i];
         let vj = verts[j];
-        if ((vi.y > pt.y) != (vj.y > pt.y))
-            && (pt.x < (vj.x - vi.x) * (pt.y - vi.y) / (vj.y - vi.y) + vi.x)
-        {
-            inside = !inside;
+        if (vi.y > pt.y) != (vj.y > pt.y) {
+            let mut denom = vj.y - vi.y;
+            if denom.abs() < EDGE_EPSILON {
+                denom = if denom.is_sign_negative() {
+                    -EDGE_EPSILON
+                } else {
+                    EDGE_EPSILON
+                };
+            }
+            if pt.x < (vj.x - vi.x) * (pt.y - vi.y) / denom + vi.x {
+                inside = !inside;
+            }
         }
         j = i;
     }
@@ -244,7 +253,10 @@ pub fn pick(
     let cx = camera.screen_cx;
     let cy = camera.screen_cy;
     let mut best: Option<(f32, PickResult)> = None;
-    for region in graph.regions.values() {
+    for region_id in graph.candidate_ids_at(surface.lat_deg, surface.lon_deg) {
+        let Some(region) = graph.get(region_id) else {
+            continue;
+        };
         if !point_in_geo_region(region, surface.lat_deg, surface.lon_deg) {
             continue;
         }

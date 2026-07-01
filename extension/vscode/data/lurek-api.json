@@ -10705,7 +10705,7 @@
             {
               "name": "spec_tbl",
               "type": "table",
-              "description": "Globe specification table.",
+              "description": "Globe specification table. Optional `load_options = { sandbox_root?, max_toml_bytes?, max_png_bytes?, max_png_pixels? }` applies to file-backed loaders.",
               "optional": true
             }
           ],
@@ -10801,7 +10801,7 @@
             {
               "name": "spec_tbl",
               "type": "table",
-              "description": "Globe specification table.",
+              "description": "Globe specification table. Optional `load_options = { sandbox_root?, max_toml_bytes?, max_png_bytes?, max_png_pixels? }` applies to file-backed loaders.",
               "optional": true
             }
           ],
@@ -71154,8 +71154,8 @@
         {
           "name": "setProvinceTexture",
           "fullPath": "LGlobe:setProvinceTexture",
-          "signature": "(id, tex_raw, u0, v0, u1, v1)",
-          "description": "Assigns a raw texture handle and UV rectangle to a province.",
+          "signature": "(id, tex_value, u0, v0, u1, v1)",
+          "description": "Assigns a live texture handle and UV rectangle to a province.",
           "parameters": [
             {
               "name": "id",
@@ -71165,8 +71165,8 @@
             },
             {
               "name": "tex_raw",
-              "type": "integer",
-              "description": "Raw texture identifier stored in province attributes.",
+              "type": "integer or LImage",
+              "description": "Live texture identifier or image userdata.",
               "optional": false
             },
             {
@@ -71220,8 +71220,8 @@
         {
           "name": "setTerrainPatchTexture",
           "fullPath": "LGlobe:setTerrainPatchTexture",
-          "signature": "(id, tex_raw, u0, v0, u1, v1)",
-          "description": "Assigns a raw texture handle and UV rectangle to a terrain patch.",
+          "signature": "(id, tex_value, u0, v0, u1, v1)",
+          "description": "Assigns a live texture handle and UV rectangle to a terrain patch.",
           "parameters": [
             {
               "name": "id",
@@ -71231,8 +71231,8 @@
             },
             {
               "name": "tex_raw",
-              "type": "integer",
-              "description": "Raw texture identifier stored in terrain attributes.",
+              "type": "integer or LImage",
+              "description": "Live texture identifier or image userdata.",
               "optional": false
             },
             {
@@ -71394,7 +71394,7 @@
             {
               "name": "alpha",
               "type": "number",
-              "description": "Layer alpha clamped to 0.0 through 1.0.",
+              "description": "Layer alpha in the 0.0 through 1.0 range.",
               "optional": false
             }
           ],
@@ -71484,7 +71484,7 @@
             {
               "name": "z",
               "type": "number",
-              "description": "Camera zoom, clamped to at least 0.1.",
+              "description": "Camera zoom, must be at least 0.1.",
               "optional": false
             }
           ],
@@ -72405,13 +72405,13 @@
             {
               "name": "hz",
               "type": "number",
-              "description": "Pulse frequency in hertz, clamped to at least zero.",
+              "description": "Pulse frequency in hertz, must be >= 0.",
               "optional": false
             },
             {
               "name": "amp",
               "type": "number",
-              "description": "Pulse amplitude clamped to 0.0 through 1.0.",
+              "description": "Pulse amplitude in the 0.0 through 1.0 range.",
               "optional": false
             }
           ],
@@ -72639,7 +72639,7 @@
             {
               "name": "size",
               "type": "number",
-              "description": "Marker size, clamped to at least 1.0.",
+              "description": "Marker size, must be at least 1.0.",
               "optional": false
             }
           ],
@@ -72675,8 +72675,8 @@
         {
           "name": "setMarkerIconTexture",
           "fullPath": "LGlobe:setMarkerIconTexture",
-          "signature": "(id, [tex_raw])",
-          "description": "Assigns or clears a raw texture handle for a marker icon.",
+          "signature": "(id, tex_value)",
+          "description": "Assigns or clears a live texture handle for a marker icon.",
           "parameters": [
             {
               "name": "id",
@@ -72686,9 +72686,9 @@
             },
             {
               "name": "tex_raw",
-              "type": "integer",
-              "description": "Raw texture handle, or nil to clear the icon.",
-              "optional": true
+              "type": "integer, LImage, or nil",
+              "description": "Live texture handle, image userdata, or nil to clear the icon.",
+              "optional": false
             }
           ],
           "returns": "boolean",
@@ -72951,7 +72951,7 @@
             {
               "name": "alpha",
               "type": "number",
-              "description": "Layer alpha.",
+              "description": "Layer alpha in the 0.0 through 1.0 range.",
               "optional": false
             }
           ],

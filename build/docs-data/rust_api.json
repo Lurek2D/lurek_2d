@@ -1,20 +1,20 @@
 {
   "meta": {
-    "generated": "2026-07-01T15:48:23.896327+00:00",
+    "generated": "2026-07-01T19:11:59.247046+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "rust_items": 3179,
-      "rust_modules": 729,
+      "rust_items": 3201,
+      "rust_modules": 730,
       "rust_tests": 502,
       "lua_tests": 285
     }
   },
   "rust_api": {
     "summary": {
-      "total_items": 3179,
-      "documented": 3175,
-      "modules": 729
+      "total_items": 3201,
+      "documented": 3197,
+      "modules": 730
     },
     "modules": {
       "agent::chat": {
@@ -7370,14 +7370,21 @@
             "kind": "fn",
             "description": "Emit a full globe frame as render commands for the current globe state.",
             "file": "src/globe/draw.rs",
-            "line": 37
+            "line": 65
+          },
+          {
+            "name": "emit_globe_frame_with_stats",
+            "kind": "fn",
+            "description": "Emit a full globe frame together with high-level draw counters.",
+            "file": "src/globe/draw.rs",
+            "line": 106
           },
           {
             "name": "project_arc",
             "kind": "fn",
             "description": "Project a great-circle arc into a flat polyline of screen coordinates.",
             "file": "src/globe/draw.rs",
-            "line": 863
+            "line": 1003
           }
         ]
       },
@@ -7430,7 +7437,7 @@
             "kind": "struct",
             "description": "Label collection keyed by stable id.",
             "file": "src/globe/label.rs",
-            "line": 11
+            "line": 12
           }
         ]
       },
@@ -7443,7 +7450,7 @@
             "kind": "struct",
             "description": "Named layer collection keyed by layer name.",
             "file": "src/globe/layer.rs",
-            "line": 10
+            "line": 11
           }
         ]
       },
@@ -7490,35 +7497,49 @@
             "kind": "fn",
             "description": "Load regions from a TOML string or return a parse error.",
             "file": "src/globe/loader.rs",
-            "line": 33
+            "line": 37
           },
           {
             "name": "load_from_toml_file",
             "kind": "fn",
             "description": "Load regions from a TOML file path or return a parse or I/O error.",
             "file": "src/globe/loader.rs",
-            "line": 38
+            "line": 44
+          },
+          {
+            "name": "load_from_toml_file_safe",
+            "kind": "fn",
+            "description": "Load regions from a TOML file path using a sandbox root and size limits.",
+            "file": "src/globe/loader.rs",
+            "line": 48
           },
           {
             "name": "load_from_png_file",
             "kind": "fn",
             "description": "Load regions from a PNG province grid or return a decode or I/O error.",
             "file": "src/globe/loader.rs",
-            "line": 292
+            "line": 320
+          },
+          {
+            "name": "load_from_png_file_safe",
+            "kind": "fn",
+            "description": "Load regions from a PNG province grid using a sandbox root and size limits.",
+            "file": "src/globe/loader.rs",
+            "line": 324
           },
           {
             "name": "load_from_province_grid",
             "kind": "fn",
             "description": "Convert a province grid into approximate globe regions using traced province contours.",
             "file": "src/globe/loader.rs",
-            "line": 298
+            "line": 356
           },
           {
             "name": "generate_voronoi_provinces",
             "kind": "fn",
             "description": "Generate approximate regions from Voronoi input points.",
             "file": "src/globe/loader.rs",
-            "line": 334
+            "line": 392
           }
         ]
       },
@@ -7671,6 +7692,13 @@
             "description": "Globe shared value types. This module is publicly re-exported.",
             "file": "src/globe/mod.rs",
             "line": 45
+          },
+          {
+            "name": "validation",
+            "kind": "mod",
+            "description": "Globe validation and safe loader policy helpers.",
+            "file": "src/globe/mod.rs",
+            "line": 47
           }
         ]
       },
@@ -7752,35 +7780,35 @@
             "kind": "fn",
             "description": "Return true when a latitude/longitude point lies inside a polygon in geographic space.",
             "file": "src/globe/picking.rs",
-            "line": 155
+            "line": 164
           },
           {
             "name": "point_in_geo_region",
             "kind": "fn",
             "description": "Return true when a latitude/longitude point lies inside one connected region part.",
             "file": "src/globe/picking.rs",
-            "line": 168
+            "line": 177
           },
           {
             "name": "screen_to_shell",
             "kind": "fn",
             "description": "Convert a screen-space point into a front-hemisphere hit on one named shell radius.",
             "file": "src/globe/picking.rs",
-            "line": 188
+            "line": 197
           },
           {
             "name": "screen_to_surface",
             "kind": "fn",
             "description": "Convert a screen-space point into a front-hemisphere unit-sphere hit.",
             "file": "src/globe/picking.rs",
-            "line": 218
+            "line": 227
           },
           {
             "name": "pick",
             "kind": "fn",
             "description": "Pick the topmost region under a screen-space point or return None when no region matches.",
             "file": "src/globe/picking.rs",
-            "line": 234
+            "line": 243
           }
         ]
       },
@@ -7885,25 +7913,32 @@
         "source_file": "src/globe/registry.rs",
         "items": [
           {
+            "name": "GlobeRegionMut",
+            "kind": "struct",
+            "description": "Mutable region guard that refreshes the owning globe's semantic or terrain bounds on drop.",
+            "file": "src/globe/registry.rs",
+            "line": 64
+          },
+          {
             "name": "Globe",
             "kind": "struct",
             "description": "Mutable globe state used by the renderer and sync layers.",
             "file": "src/globe/registry.rs",
-            "line": 95
+            "line": 148
           },
           {
             "name": "TerrainCoverageReport",
             "kind": "struct",
             "description": "Sampled terrain coverage report for a globe.",
             "file": "src/globe/registry.rs",
-            "line": 138
+            "line": 197
           },
           {
             "name": "GlobeRegistry",
             "kind": "struct",
             "description": "Named globe registry keyed by globe name.",
             "file": "src/globe/registry.rs",
-            "line": 724
+            "line": 982
           }
         ]
       },
@@ -7994,18 +8029,25 @@
         "source_file": "src/globe/topology.rs",
         "items": [
           {
+            "name": "RegionMut",
+            "kind": "struct",
+            "description": "Mutable region guard that rebuilds topology caches after in-place edits.",
+            "file": "src/globe/topology.rs",
+            "line": 131
+          },
+          {
             "name": "RegionGraph",
             "kind": "struct",
             "description": "Region graph with cached adjacency, centroids, and edge tags.",
             "file": "src/globe/topology.rs",
-            "line": 23
+            "line": 166
           },
           {
             "name": "ProvinceGraph",
             "kind": "type",
             "description": "Backward compatibility alias.",
             "file": "src/globe/topology.rs",
-            "line": 210
+            "line": 382
           }
         ]
       },
@@ -8046,133 +8088,251 @@
             "kind": "enum",
             "description": "Fog-of-war state for a region.",
             "file": "src/globe/types.rs",
-            "line": 273
+            "line": 278
           },
           {
             "name": "HeatLayer",
             "kind": "struct",
             "description": "Heat overlay parameters used by globe color mapping.",
             "file": "src/globe/types.rs",
-            "line": 283
+            "line": 288
           },
           {
             "name": "GlobeSpec",
             "kind": "struct",
             "description": "Render-time globe parameters shared by loaders and draw code.",
             "file": "src/globe/types.rs",
-            "line": 305
+            "line": 310
           },
           {
             "name": "GlobeOrbitKind",
             "kind": "enum",
             "description": "Globe shell classification used by rendering and picking policies.",
             "file": "src/globe/types.rs",
-            "line": 357
+            "line": 362
           },
           {
             "name": "GlobeOrbit",
             "kind": "struct",
             "description": "Globe shell definition with style, shader, and marker-placement policy.",
             "file": "src/globe/types.rs",
-            "line": 369
+            "line": 374
           },
           {
             "name": "Marker",
             "kind": "struct",
             "description": "Globe marker with position, label, style, and custom attributes.",
             "file": "src/globe/types.rs",
-            "line": 416
+            "line": 421
           },
           {
             "name": "MarkerStyle",
             "kind": "struct",
             "description": "Marker drawing style shared by globe markers.",
             "file": "src/globe/types.rs",
-            "line": 440
+            "line": 445
           },
           {
             "name": "MarkerShape",
             "kind": "enum",
             "description": "Marker shape selection used by the renderer.",
             "file": "src/globe/types.rs",
-            "line": 458
+            "line": 465
           },
           {
             "name": "Label",
             "kind": "struct",
             "description": "Globe label with text, position, style, and LOD gating.",
             "file": "src/globe/types.rs",
-            "line": 486
+            "line": 494
           },
           {
             "name": "LabelStyle",
             "kind": "struct",
             "description": "Label styling shared by globe labels.",
             "file": "src/globe/types.rs",
-            "line": 506
+            "line": 514
           },
           {
             "name": "Layer",
             "kind": "struct",
             "description": "Named globe overlay layer with per-region color overrides.",
             "file": "src/globe/types.rs",
-            "line": 526
+            "line": 534
+          },
+          {
+            "name": "GlobeRegionQueryStats",
+            "kind": "struct",
+            "description": "Region-query debug counters captured while filtering semantic overlays.",
+            "file": "src/globe/types.rs",
+            "line": 563
+          },
+          {
+            "name": "GlobeRenderStats",
+            "kind": "struct",
+            "description": "Globe-frame counters captured while assembling one render-command batch.",
+            "file": "src/globe/types.rs",
+            "line": 575
           },
           {
             "name": "LodTier",
             "kind": "enum",
             "description": "Level-of-detail tier used by globe render decisions.",
             "file": "src/globe/types.rs",
-            "line": 555
+            "line": 607
           },
           {
             "name": "ProjectedRegion",
             "kind": "struct",
             "description": "Projected region with screen-space geometry and lighting state.",
             "file": "src/globe/types.rs",
-            "line": 565
+            "line": 617
           },
           {
             "name": "Arc",
             "kind": "struct",
             "description": "Projected arc with path geometry and render parameters.",
             "file": "src/globe/types.rs",
-            "line": 581
+            "line": 633
           },
           {
             "name": "GlobeError",
             "kind": "enum",
             "description": "Globe-level errors for loading, lookup, and pathfinding failures.",
             "file": "src/globe/types.rs",
-            "line": 603
+            "line": 655
           },
           {
             "name": "Province",
             "kind": "type",
             "description": "Backward compatibility aliases.",
             "file": "src/globe/types.rs",
-            "line": 633
+            "line": 685
           },
           {
             "name": "ProvinceId",
             "kind": "type",
             "description": "Backward-compatible type alias for `RegionId`.",
             "file": "src/globe/types.rs",
-            "line": 635
+            "line": 687
           },
           {
             "name": "ProjectedProvince",
             "kind": "type",
             "description": "Backward-compatible type alias for `ProjectedRegion`.",
             "file": "src/globe/types.rs",
-            "line": 637
+            "line": 689
           },
           {
             "name": "MAX_PROVINCES",
             "kind": "const",
             "description": "Maximum number of provinces (regions) supported per globe — backward-compat alias for `MAX_REGIONS`.",
             "file": "src/globe/types.rs",
-            "line": 639
+            "line": 691
+          }
+        ]
+      },
+      "globe::validation": {
+        "module_doc": "Centralizes globe validation and file-load safety shared by loaders, registries, and Lua bindings. Owns numeric range checks, region topology diagnostics, sandboxed file-path resolution, and loader size limits. Keeps geometry and load-policy invariants in one place so globe callers do not drift into inconsistent error rules. Open this owner when globe specs, multipart regions, or file-loader trust boundaries need coordinated updates.",
+        "source_file": "src/globe/validation.rs",
+        "items": [
+          {
+            "name": "GlobeLoadOptions",
+            "kind": "struct",
+            "description": "Loader policy applied to file-backed globe imports.",
+            "file": "src/globe/validation.rs",
+            "line": 20
+          },
+          {
+            "name": "resolve_sandboxed_globe_path",
+            "kind": "fn",
+            "description": "Resolve one globe loader path inside the configured sandbox root.",
+            "file": "src/globe/validation.rs",
+            "line": 43
+          },
+          {
+            "name": "validate_png_pixel_limit",
+            "kind": "fn",
+            "description": "Enforce one decoded image pixel-count limit.",
+            "file": "src/globe/validation.rs",
+            "line": 75
+          },
+          {
+            "name": "validate_file_size_limit",
+            "kind": "fn",
+            "description": "Enforce one file-size limit.",
+            "file": "src/globe/validation.rs",
+            "line": 91
+          },
+          {
+            "name": "validate_globe_spec",
+            "kind": "fn",
+            "description": "Validate one shared globe spec after parsing or mutation.",
+            "file": "src/globe/validation.rs",
+            "line": 109
+          },
+          {
+            "name": "validate_region",
+            "kind": "fn",
+            "description": "Validate one region-like record before it enters globe storage.",
+            "file": "src/globe/validation.rs",
+            "line": 146
+          },
+          {
+            "name": "validate_region_set",
+            "kind": "fn",
+            "description": "Validate one full region set, including cross-region topology references.",
+            "file": "src/globe/validation.rs",
+            "line": 234
+          },
+          {
+            "name": "validate_marker_placement",
+            "kind": "fn",
+            "description": "Validate one marker style and placement payload before it enters runtime storage.",
+            "file": "src/globe/validation.rs",
+            "line": 262
+          },
+          {
+            "name": "validate_marker_style",
+            "kind": "fn",
+            "description": "Validate one marker style independent from placement.",
+            "file": "src/globe/validation.rs",
+            "line": 281
+          },
+          {
+            "name": "validate_label",
+            "kind": "fn",
+            "description": "Validate one label record before it enters runtime storage.",
+            "file": "src/globe/validation.rs",
+            "line": 306
+          },
+          {
+            "name": "validate_label_style",
+            "kind": "fn",
+            "description": "Validate one label style independent from label placement.",
+            "file": "src/globe/validation.rs",
+            "line": 316
+          },
+          {
+            "name": "validate_layer",
+            "kind": "fn",
+            "description": "Validate one render layer before it is stored or mutated.",
+            "file": "src/globe/validation.rs",
+            "line": 333
+          },
+          {
+            "name": "validate_heat_layer",
+            "kind": "fn",
+            "description": "Validate one heat layer definition before it is stored.",
+            "file": "src/globe/validation.rs",
+            "line": 348
+          },
+          {
+            "name": "validate_arc",
+            "kind": "fn",
+            "description": "Validate one render arc definition before it is stored.",
+            "file": "src/globe/validation.rs",
+            "line": 370
           }
         ]
       },
@@ -17705,28 +17865,28 @@
             "kind": "struct",
             "description": "Shared safety limits for grid allocation, ray fan size, and screen-facing projection inputs.",
             "file": "src/raycaster/contract.rs",
-            "line": 27
+            "line": 22
           },
           {
             "name": "RaycastParams",
             "kind": "struct",
             "description": "Shared ray-step parameter bundle used by strict DDA entrypoints.",
             "file": "src/raycaster/contract.rs",
-            "line": 241
+            "line": 236
           },
           {
             "name": "ProjectionParams",
             "kind": "struct",
             "description": "Shared wall-column projection parameters used by strict projection entrypoints.",
             "file": "src/raycaster/contract.rs",
-            "line": 290
+            "line": 285
           },
           {
             "name": "RaycasterError",
             "kind": "enum",
             "description": "Structured failures used by strict raycaster constructors, validators, and scene adapters.",
             "file": "src/raycaster/contract.rs",
-            "line": 315
+            "line": 310
           }
         ]
       },

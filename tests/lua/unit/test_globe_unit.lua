@@ -37,6 +37,9 @@ describe("Globe creation", function()
         expect_type("userdata", g)
         g = lurek.globe.new("spec_globe", { radius = 200.0, axial_tilt_deg = 23.5 })
         expect_type("userdata", g)
+        expect_error(function()
+            lurek.globe.new("bad_globe", { radius = 0.0 })
+        end)
     end)
 
     -- @covers LGlobe:getName
@@ -157,6 +160,12 @@ describe("Camera and LOD", function()
         expect_type("number", lat)
         expect_type("number", lon)
         expect_type("number", zoom)
+        expect_error(function()
+            g:setCamera(120.0, 45.0, 2.0)
+        end)
+        expect_error(function()
+            g:setCamera(30.0, 45.0, 0.01)
+        end)
     end)
 
     -- @covers LGlobe:getLod
@@ -389,6 +398,9 @@ describe("Arcs", function()
         local g = lurek.globe.new("arc_globe")
         local id = g:addArc(51.5, -0.1, 48.8, 2.3)
         expect_type("number", id)
+        expect_error(function()
+            g:addArc(51.5, -0.1, 48.8, 2.3, 1)
+        end)
     end)
 
     -- @covers LGlobe:removeArc
@@ -662,6 +674,11 @@ describe("globe extended feature coverage", function()
             lurek.globe.loadFromPNG("cov_png", "assets/textures/nonexistent.png", {})
         end)
         expect_type("boolean", ok)
+        expect_error(function()
+            lurek.globe.loadFromPNG("cov_png_limit", "assets/icon.png", {
+                load_options = { max_png_pixels = 1 },
+            })
+        end)
     end)
 
     -- @covers lurek.globe.generateVoronoi
@@ -673,8 +690,9 @@ describe("globe extended feature coverage", function()
     -- @covers LGlobe:getSectorProvinces
     it("province texture + sector APIs are callable", function()
         local g = lurek.globe.new("cov_prov_ext")
+        local tex = lurek.render.newImage(lurek.image.newImageData(1, 1))
         g:addProvince({ id = 1, centroid = {0,0}, vertices = {{0,0},{1,0},{1,1}} })
-        expect_equal(true, g:setProvinceTexture(1, 0, 0.0, 0.0, 1.0, 1.0))
+        expect_equal(true, g:setProvinceTexture(1, tex, 0.0, 0.0, 1.0, 1.0))
         expect_equal(true, g:clearProvinceTexture(1))
         g:setProvinceSector(1, "west")
         expect_equal("west", g:getProvinceSector(1))
@@ -836,6 +854,11 @@ describe("globe missing explicit coverage", function()
         local g = lurek.globe.loadFromTOMLFile("coverage_globe_toml_file", "save/globe_example.toml")
         expect_type("userdata", g)
         expect_true(g:provinceCount() >= 1)
+        expect_error(function()
+            lurek.globe.loadFromTOMLFile("coverage_globe_toml_file_limited", "save/globe_example.toml", {
+                load_options = { max_toml_bytes = 1 },
+            })
+        end)
     end)
 
     -- @covers lurek.globe.raySphereIntersect
@@ -863,15 +886,17 @@ describe("globe missing explicit coverage", function()
     -- @covers LGlobe:setProvinceTexture
     it("setProvinceTexture stores texture metadata for a province", function()
         local g = new_globe("coverage_set_province_texture")
+        local tex = lurek.render.newImage(lurek.image.newImageData(1, 1))
         g:addProvince(province(1))
-        expect_true(g:setProvinceTexture(1, 42, 0.0, 0.0, 1.0, 1.0))
+        expect_true(g:setProvinceTexture(1, tex, 0.0, 0.0, 1.0, 1.0))
     end)
 
     -- @covers LGlobe:clearProvinceTexture
     it("clearProvinceTexture removes stored texture metadata", function()
         local g = new_globe("coverage_clear_province_texture")
+        local tex = lurek.render.newImage(lurek.image.newImageData(1, 1))
         g:addProvince(province(1))
-        g:setProvinceTexture(1, 42, 0.0, 0.0, 1.0, 1.0)
+        g:setProvinceTexture(1, tex, 0.0, 0.0, 1.0, 1.0)
         expect_true(g:clearProvinceTexture(1))
     end)
 
@@ -897,6 +922,9 @@ describe("globe missing explicit coverage", function()
         local g = new_globe("coverage_set_heat_layer")
         expect_no_error(function() g:setHeatLayer("population", "pop", 0, 100, 0.6) end)
         expect_true(g:removeHeatLayer("population"))
+        expect_error(function()
+            g:setHeatLayer("population_bad", "pop", 100, 0, 0.6)
+        end)
     end)
 
     -- @covers LGlobe:getCamera
@@ -1245,10 +1273,11 @@ describe("globe surface interaction and semantic region coverage", function()
     end)
 
     -- @covers LGlobe:setMarkerIconTexture
-    it("setMarkerIconTexture stores or clears raw icon handles", function()
+    it("setMarkerIconTexture stores or clears live icon handles", function()
         local g = lurek.globe.new("coverage_set_marker_icon")
+        local tex = lurek.render.newImage(lurek.image.newImageData(1, 1))
         local id = g:addMarker("poi", 0.0, 0.0, "A")
-        expect_true(g:setMarkerIconTexture(id, 0))
+        expect_true(g:setMarkerIconTexture(id, tex))
         expect_true(g:setMarkerIconTexture(id, nil))
     end)
 
@@ -1336,18 +1365,20 @@ describe("globe terrain polygon layer coverage", function()
     end)
 
     -- @covers LGlobe:setTerrainPatchTexture
-    it("setTerrainPatchTexture stores raw texture metadata for terrain", function()
+    it("setTerrainPatchTexture stores live texture metadata for terrain", function()
         local g = lurek.globe.new("coverage_set_terrain_patch_texture")
+        local tex = lurek.render.newImage(lurek.image.newImageData(1, 1))
         g:addTerrainPatch(terrain_patch(15, -10.0, -10.0, 10.0, 10.0))
-        expect_true(g:setTerrainPatchTexture(15, 42, 0.0, 0.0, 1.0, 1.0))
-        expect_equal("42", g:getTerrainPatchAttr(15, "__texture_raw"))
+        expect_true(g:setTerrainPatchTexture(15, tex, 0.0, 0.0, 1.0, 1.0))
+        expect_nil(g:getTerrainPatchAttr(15, "__texture_raw"))
     end)
 
     -- @covers LGlobe:clearTerrainPatchTexture
-    it("clearTerrainPatchTexture removes raw texture metadata from terrain", function()
+    it("clearTerrainPatchTexture removes stored texture metadata from terrain", function()
         local g = lurek.globe.new("coverage_clear_terrain_patch_texture")
+        local tex = lurek.render.newImage(lurek.image.newImageData(1, 1))
         g:addTerrainPatch(terrain_patch(16, -10.0, -10.0, 10.0, 10.0))
-        g:setTerrainPatchTexture(16, 42, 0.0, 0.0, 1.0, 1.0)
+        g:setTerrainPatchTexture(16, tex, 0.0, 0.0, 1.0, 1.0)
         expect_true(g:clearTerrainPatchTexture(16))
         expect_nil(g:getTerrainPatchAttr(16, "__texture_raw"))
     end)
@@ -1482,6 +1513,15 @@ describe("globe orbit shell APIs", function()
         })
         expect_type("number", id)
         expect_equal("low_orbit", g:getMarkerOrbit(id))
+        expect_error(function()
+            g:addMarkerEx({
+                type = "satellite",
+                lat = 0.0,
+                lon = 90.0,
+                orbit = "low_orbit",
+                size = 0.0,
+            })
+        end)
     end)
 
     -- @covers LGlobe:setMarkerOrbit
