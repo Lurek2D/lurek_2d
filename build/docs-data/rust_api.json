@@ -1,10 +1,10 @@
 {
   "meta": {
-    "generated": "2026-06-30T22:44:19.376417+00:00",
+    "generated": "2026-07-01T13:28:09.916600+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "rust_items": 3156,
+      "rust_items": 3172,
       "rust_modules": 728,
       "rust_tests": 502,
       "lua_tests": 285
@@ -12,8 +12,8 @@
   },
   "rust_api": {
     "summary": {
-      "total_items": 3156,
-      "documented": 3152,
+      "total_items": 3172,
+      "documented": 3168,
       "modules": 728
     },
     "modules": {
@@ -7377,7 +7377,7 @@
             "kind": "fn",
             "description": "Project a great-circle arc into a flat polyline of screen coordinates.",
             "file": "src/globe/draw.rs",
-            "line": 864
+            "line": 863
           }
         ]
       },
@@ -7527,11 +7527,18 @@
         "source_file": "src/globe/marker.rs",
         "items": [
           {
+            "name": "MarkerPlacement",
+            "kind": "struct",
+            "description": "Authored marker placement payload shared by registry validation and marker storage.",
+            "file": "src/globe/marker.rs",
+            "line": 13
+          },
+          {
             "name": "MarkerStore",
             "kind": "struct",
             "description": "Marker collection keyed by stable id.",
             "file": "src/globe/marker.rs",
-            "line": 11
+            "line": 74
           }
         ]
       },
@@ -7882,14 +7889,14 @@
             "kind": "struct",
             "description": "Mutable globe state used by the renderer and sync layers.",
             "file": "src/globe/registry.rs",
-            "line": 94
+            "line": 95
           },
           {
             "name": "TerrainCoverageReport",
             "kind": "struct",
             "description": "Sampled terrain coverage report for a globe.",
             "file": "src/globe/registry.rs",
-            "line": 137
+            "line": 138
           },
           {
             "name": "GlobeRegistry",
@@ -16917,7 +16924,7 @@
             "kind": "enum",
             "description": "High-level map signal emitted to Lua callbacks after province mutations are batched.",
             "file": "src/province/events.rs",
-            "line": 77
+            "line": 84
           }
         ]
       },
@@ -16937,28 +16944,28 @@
             "kind": "struct",
             "description": "Per-border-pair GPU style record laid out for direct storage-buffer upload.",
             "file": "src/province/gpu_bridge.rs",
-            "line": 35
+            "line": 39
           },
           {
             "name": "build_gpu_records",
             "kind": "fn",
             "description": "Build a sorted Vec of ProvinceGpuRecord from registry province ids; result order follows sorted ids.",
             "file": "src/province/gpu_bridge.rs",
-            "line": 49
+            "line": 53
           },
           {
             "name": "build_dense_gpu_records",
             "kind": "fn",
             "description": "Build province records indexed directly by raw province id, including slot 0 for empty/ocean pixels.",
             "file": "src/province/gpu_bridge.rs",
-            "line": 65
+            "line": 76
           },
           {
             "name": "build_border_style_gpu_records",
             "kind": "fn",
             "description": "Build border style GPU records aligned to `ProvinceBorderIndex::id_to_pair`.",
             "file": "src/province/gpu_bridge.rs",
-            "line": 118
+            "line": 138
           }
         ]
       },
@@ -17279,14 +17286,14 @@
             "kind": "struct",
             "description": "Full mutable record for a single province stored inside ProvinceRegistry.",
             "file": "src/province/registry.rs",
-            "line": 22
+            "line": 23
           },
           {
             "name": "ProvinceRegistry",
             "kind": "struct",
             "description": "Central authoritative store for all province state: geometry, style, labels, adjacency, and change log.",
             "file": "src/province/registry.rs",
-            "line": 39
+            "line": 40
           }
         ]
       },
@@ -17299,77 +17306,77 @@
             "kind": "struct",
             "description": "CPU raster output for the segment province renderer.",
             "file": "src/province/render.rs",
-            "line": 20
+            "line": 21
           },
           {
             "name": "ProvinceSegmentRasterOptions",
             "kind": "struct",
             "description": "Options for the segment province renderer.",
             "file": "src/province/render.rs",
-            "line": 30
+            "line": 31
           },
           {
             "name": "ProvinceZoomMode",
             "kind": "enum",
             "description": "Strategic/tactical map rendering mode.",
             "file": "src/province/render.rs",
-            "line": 75
+            "line": 76
           },
           {
             "name": "ProvinceRenderOptions",
             "kind": "struct",
             "description": "Options controlling what gets rendered and how the province map is projected onto the screen.",
             "file": "src/province/render.rs",
-            "line": 86
+            "line": 87
           },
           {
             "name": "ProvinceCapitalPathMode",
             "kind": "enum",
             "description": "Shape used for capital-to-capital route rendering.",
             "file": "src/province/render.rs",
-            "line": 129
+            "line": 130
           },
           {
             "name": "ProvinceCapitalPathOptions",
             "kind": "struct",
             "description": "Render-command settings for converting a province-id route into capital-to-capital lines.",
             "file": "src/province/render.rs",
-            "line": 138
+            "line": 139
           },
           {
             "name": "generate_capital_path_commands",
             "kind": "fn",
             "description": "Generate render commands for a route by connecting consecutive province capitals.",
             "file": "src/province/render.rs",
-            "line": 194
+            "line": 195
           },
           {
             "name": "viewport_bounds",
             "kind": "fn",
             "description": "Compute the visible province-space bounds (left, top, right, bottom) from the render options.",
             "file": "src/province/render.rs",
-            "line": 290
+            "line": 291
           },
           {
             "name": "resolve_zoom_mode",
             "kind": "fn",
             "description": "Resolve explicit or automatic province zoom mode for render backends.",
             "file": "src/province/render.rs",
-            "line": 343
+            "line": 344
           },
           {
             "name": "render_segment_raster",
             "kind": "fn",
             "description": "Rasterize a province map using registry spans and border segments.",
             "file": "src/province/render.rs",
-            "line": 557
+            "line": 606
           },
           {
             "name": "generate_render_commands",
             "kind": "fn",
             "description": "Generate a RenderCommand Vec for the province map: fills, borders, capitals, and labels with viewport culling.",
             "file": "src/province/render.rs",
-            "line": 673
+            "line": 722
           }
         ]
       },
@@ -17481,18 +17488,81 @@
             "line": 131
           },
           {
+            "name": "ProvinceClimateKind",
+            "kind": "enum",
+            "description": "Built-in climate ids used by province-map shading when Lua passes symbolic names.",
+            "file": "src/province/types.rs",
+            "line": 153
+          },
+          {
+            "name": "ProvinceWeatherKind",
+            "kind": "enum",
+            "description": "Built-in weather ids used by province-map shading when Lua passes symbolic names.",
+            "file": "src/province/types.rs",
+            "line": 206
+          },
+          {
+            "name": "PROVINCE_EFFECT_WAVES",
+            "kind": "const",
+            "description": "Province visual-effect bit for animated water or coastal shimmer.",
+            "file": "src/province/types.rs",
+            "line": 248
+          },
+          {
+            "name": "PROVINCE_EFFECT_CONFLICT",
+            "kind": "const",
+            "description": "Province visual-effect bit for stronger conflict/frontline highlight.",
+            "file": "src/province/types.rs",
+            "line": 250
+          },
+          {
+            "name": "PROVINCE_EFFECT_FOG_NOISE",
+            "kind": "const",
+            "description": "Province visual-effect bit for additional fog-noise treatment.",
+            "file": "src/province/types.rs",
+            "line": 252
+          },
+          {
+            "name": "PROVINCE_EFFECT_HEAT_HAZE",
+            "kind": "const",
+            "description": "Province visual-effect bit for explicit heat-haze emphasis.",
+            "file": "src/province/types.rs",
+            "line": 254
+          },
+          {
+            "name": "PROVINCE_EFFECT_COAST_FOAM",
+            "kind": "const",
+            "description": "Province visual-effect bit for coastal foam emphasis.",
+            "file": "src/province/types.rs",
+            "line": 256
+          },
+          {
+            "name": "parse_province_effect_flag_token",
+            "kind": "fn",
+            "description": "Parse a canonical province visual-effect flag token into a bitmask.",
+            "file": "src/province/types.rs",
+            "line": 259
+          },
+          {
+            "name": "ProvinceVisualState",
+            "kind": "struct",
+            "description": "Compact shader-facing visual state attached to a province without owning gameplay simulation.",
+            "file": "src/province/types.rs",
+            "line": 272
+          },
+          {
             "name": "ProvinceStyle",
             "kind": "struct",
             "description": "Visual and gameplay state attached to a single province, stored in ProvinceRegistry.",
             "file": "src/province/types.rs",
-            "line": 152
+            "line": 299
           },
           {
             "name": "ProvinceSnapshot",
             "kind": "struct",
             "description": "Immutable point-in-time view of a province returned by ProvinceRegistry::get_province.",
             "file": "src/province/types.rs",
-            "line": 180
+            "line": 330
           }
         ]
       },
@@ -18553,7 +18623,7 @@
             "kind": "struct",
             "description": "Concrete hardware-accelerated 2D renderer backing all Lurek2D visual presentation.",
             "file": "src/render/gpu_renderer.rs",
-            "line": 539
+            "line": 529
           }
         ]
       },
@@ -18999,14 +19069,14 @@
             "kind": "fn",
             "description": "Validate one render command and attach its broad owner bucket to any failure.",
             "file": "src/render/input_validation.rs",
-            "line": 738
+            "line": 789
           },
           {
             "name": "validate_compound_shape",
             "kind": "fn",
             "description": "Validate a registered compound shape before replaying its nested commands in a backend.",
             "file": "src/render/input_validation.rs",
-            "line": 749
+            "line": 800
           }
         ]
       },
@@ -19385,14 +19455,14 @@
             "kind": "struct",
             "description": "Province map GPU pipeline and bind-group layouts.",
             "file": "src/render/province_map_pipeline.rs",
-            "line": 101
+            "line": 122
           },
           {
             "name": "ProvinceMapDataBindings",
             "kind": "struct",
             "description": "Texture and buffer inputs bound by the province map fullscreen shader.",
             "file": "src/render/province_map_pipeline.rs",
-            "line": 121
+            "line": 142
           }
         ]
       },
@@ -19484,95 +19554,137 @@
             "line": 167
           },
           {
+            "name": "ProvinceMapBorderNoiseOptions",
+            "kind": "struct",
+            "description": "Deterministic border-jitter controls for the dedicated province-map shader.",
+            "file": "src/render/renderer.rs",
+            "line": 197
+          },
+          {
+            "name": "ProvinceMapWaterOptions",
+            "kind": "struct",
+            "description": "Water shimmer configuration for province-map rendering.",
+            "file": "src/render/renderer.rs",
+            "line": 224
+          },
+          {
+            "name": "ProvinceMapWeatherOptions",
+            "kind": "struct",
+            "description": "Weather overlay configuration for province-map rendering.",
+            "file": "src/render/renderer.rs",
+            "line": 248
+          },
+          {
+            "name": "ProvinceMapFogOptions",
+            "kind": "struct",
+            "description": "Fog and visibility composition controls for province-map rendering.",
+            "file": "src/render/renderer.rs",
+            "line": 272
+          },
+          {
+            "name": "ProvinceMapClimateOptions",
+            "kind": "struct",
+            "description": "Climate and seasonal tint controls for province-map rendering.",
+            "file": "src/render/renderer.rs",
+            "line": 296
+          },
+          {
+            "name": "ProvinceMapEffectOptions",
+            "kind": "struct",
+            "description": "Aggregate visual-effect settings for the dedicated province-map pipeline.",
+            "file": "src/render/renderer.rs",
+            "line": 320
+          },
+          {
             "name": "RenderCommand",
             "kind": "enum",
             "description": "All draw, state, and control operations submitted to `GpuRenderer::render_frame`.",
             "file": "src/render/renderer.rs",
-            "line": 196
+            "line": 382
           },
           {
             "name": "RenderCommandCategory",
             "kind": "enum",
             "description": "Broad owner bucket for one `RenderCommand` variant.",
             "file": "src/render/renderer.rs",
-            "line": 628
+            "line": 804
           },
           {
             "name": "TextureData",
             "kind": "struct",
             "description": "Raw CPU-side texture pixel data passed to `GpuRenderer::upload_texture`.",
             "file": "src/render/renderer.rs",
-            "line": 739
+            "line": 915
           },
           {
             "name": "ParticleRenderShape",
             "kind": "enum",
             "description": "Shape used to render a single particle in `DrawParticleSystem`.",
             "file": "src/render/renderer.rs",
-            "line": 776
+            "line": 952
           },
           {
             "name": "ParticleInstance",
             "kind": "struct",
             "description": "A single particle snapshot submitted by `DrawParticleSystem`.",
             "file": "src/render/renderer.rs",
-            "line": 800
+            "line": 976
           },
           {
             "name": "DrawableKind",
             "kind": "enum",
             "description": "A renderable resource handle used by generic draw utilities.",
             "file": "src/render/renderer.rs",
-            "line": 842
+            "line": 1018
           },
           {
             "name": "PathSegment",
             "kind": "enum",
             "description": "A single segment in a `DrawPath` command.",
             "file": "src/render/renderer.rs",
-            "line": 854
+            "line": 1030
           },
           {
             "name": "GradientDirection",
             "kind": "enum",
             "description": "Direction of the color transition in a `DrawGradientRect` command.",
             "file": "src/render/renderer.rs",
-            "line": 898
+            "line": 1074
           },
           {
             "name": "HexOrientation",
             "kind": "enum",
             "description": "Hex tile axis orientation used by `DrawHexTile`.",
             "file": "src/render/renderer.rs",
-            "line": 912
+            "line": 1088
           },
           {
             "name": "BevelStyle",
             "kind": "enum",
             "description": "Lighting style for a `DrawBevelRect` command.",
             "file": "src/render/renderer.rs",
-            "line": 920
+            "line": 1096
           },
           {
             "name": "PhysicsDebugShape",
             "kind": "struct",
             "description": "A single physics collider shape record used in `DrawPhysicsDebug`.",
             "file": "src/render/renderer.rs",
-            "line": 934
+            "line": 1110
           },
           {
             "name": "PhysicsDebugConfig",
             "kind": "struct",
             "description": "Color and line-width settings for `DrawPhysicsDebug`.",
             "file": "src/render/renderer.rs",
-            "line": 958
+            "line": 1134
           },
           {
             "name": "SpineSlotDraw",
             "kind": "struct",
             "description": "One Spine animation slot draw record used in `DrawSpineSkeleton`.",
             "file": "src/render/renderer.rs",
-            "line": 984
+            "line": 1160
           }
         ]
       },

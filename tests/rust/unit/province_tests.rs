@@ -17,7 +17,10 @@ use lurek2d::province::render::{
     viewport_bounds, ProvinceCapitalPathMode, ProvinceCapitalPathOptions, ProvinceRenderOptions,
     ProvinceSegmentRasterOptions, ProvinceZoomMode,
 };
-use lurek2d::province::types::{BorderPairFlags, BorderPairStyle, BorderTypeConfig, ProvinceId};
+use lurek2d::province::types::{
+    BorderPairFlags, BorderPairStyle, BorderTypeConfig, ProvinceClimateKind, ProvinceId,
+    ProvinceVisualState, ProvinceWeatherKind,
+};
 use lurek2d::province::{
     border_index::{
         build_border_index_from_registry, build_styled_border_index_from_registry,
@@ -90,11 +93,62 @@ fn test_dense_gpu_records_are_indexed_by_raw_province_id() {
     let grid = sample_grid();
     let mut reg = ProvinceRegistry::from_grid(&grid);
     reg.set_political_color(ProvinceId(2), [0.25, 0.5, 0.75, 1.0]);
+    reg.set_visual_state(
+        ProvinceId(2),
+        ProvinceVisualState {
+            climate_type: ProvinceClimateKind::Temperate.id(),
+            weather_type: ProvinceWeatherKind::Snow.id(),
+            weather_strength: 0.6,
+            effect_flags: 0x05,
+            visual_seed: 42,
+        },
+    );
 
     let records = build_dense_gpu_records(&reg);
 
     assert!(records.len() >= 3);
     assert_eq!(records[2].political_color, [0.25, 0.5, 0.75, 1.0]);
+    assert_eq!(records[2].visual_u32, [4, 2, 0x05, 42]);
+    assert_eq!(records[2].visual_f32[0], 0.6);
+}
+
+#[test]
+fn test_visual_state_roundtrip_clamps_weather_strength_and_logs_change() {
+    let grid = sample_grid();
+    let mut reg = ProvinceRegistry::from_grid(&grid);
+
+    assert!(reg.set_visual_state(
+        ProvinceId(1),
+        ProvinceVisualState {
+            climate_type: ProvinceClimateKind::Arid.id(),
+            weather_type: ProvinceWeatherKind::Sandstorm.id(),
+            weather_strength: 4.0,
+            effect_flags: 0x03,
+            visual_seed: 99,
+        },
+    ));
+
+    let visual_state = reg.visual_state_for(ProvinceId(1)).expect("visual state");
+    assert_eq!(visual_state.climate_type, ProvinceClimateKind::Arid.id());
+    assert_eq!(
+        visual_state.weather_type,
+        ProvinceWeatherKind::Sandstorm.id()
+    );
+    assert_eq!(visual_state.weather_strength, 1.0);
+    assert_eq!(visual_state.effect_flags, 0x03);
+    assert_eq!(visual_state.visual_seed, 99);
+
+    let changes = reg.get_changes_since(0);
+    assert_eq!(changes.len(), 1);
+    assert!(matches!(
+        &changes[0].1,
+        lurek2d::province::ProvinceChange::VisualState {
+            province_id,
+            visual_state
+        } if *province_id == ProvinceId(1)
+            && visual_state.weather_strength == 1.0
+            && visual_state.visual_seed == 99
+    ));
 }
 
 #[test]

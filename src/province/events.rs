@@ -3,7 +3,7 @@
 //! Provides a narrow contract between registry mutation code and systems that mirror styles, labels, or border state.
 //! Read this file when adding new observable province mutations or tightening the meaning of emitted change reasons.
 
-use crate::province::types::{BorderType, ProvinceId};
+use crate::province::types::{BorderType, ProvinceId, ProvinceVisualState};
 
 /// Single field mutation recorded in the registry change log, keyed by revision.
 #[derive(Debug, Clone, PartialEq)]
@@ -42,6 +42,13 @@ pub enum ProvinceChange {
         province_id: ProvinceId,
         /// New visibility state byte.
         visibility_state: u8,
+    },
+    /// Climate, weather, or effect metadata was updated for the given province.
+    VisualState {
+        /// Province that changed.
+        province_id: ProvinceId,
+        /// New compact visual-state payload.
+        visual_state: ProvinceVisualState,
     },
     /// Shared border type between two provinces was updated.
     BorderType {
@@ -88,4 +95,6 @@ pub enum ProvinceEvent {
     BorderStyleChanged,
     /// Fog state changed across provinces; fog overlay needs update.
     FogStateChanged,
+    /// Province visual-state data changed; shader overlays need update.
+    VisualStateChanged,
 }

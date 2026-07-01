@@ -17,7 +17,8 @@ use lurek2d::render::postfx_pipeline::params_to_uniform;
 use lurek2d::render::province_map_pipeline::ProvinceMapUniforms;
 use lurek2d::render::renderer::{
     adaptive_circle_ellipse_segments, BlendMode, CompareMode, DepthMode, DrawMode,
-    PhysicsDebugConfig, RenderCommand, StencilAction, StencilMode, TextSpan, TextureData,
+    PhysicsDebugConfig, ProvinceMapEffectOptions, RenderCommand, StencilAction, StencilMode,
+    TextSpan, TextureData,
 };
 use lurek2d::render::shape::{CompoundShape, ShapeCommand};
 use lurek2d::render::software_capture::{
@@ -68,7 +69,14 @@ mod province_map_pipeline_tests {
             &[230.0 / 255.0, 48.0 / 255.0, 44.0 / 255.0, 245.0 / 255.0],
         );
         assert_f32_slice_eq(&u.border_palette_params, &[1.0, 0.15, 0.0, 0.0]);
+        assert_f32_slice_eq(&u.border_noise_params, &[0.07, 0.0, 1.0, 0.0]);
+        assert_f32_slice_eq(&u.water_params, &[0.0, 0.08, 48.0, 0.0]);
+        assert_f32_slice_eq(&u.weather_params, &[0.0, 1.0, 0.7, 1.0]);
+        assert_f32_slice_eq(&u.fog_params, &[1.0, 0.0, 0.0, 0.0]);
+        assert_f32_slice_eq(&u.fog_hidden_color, &[0.02, 0.02, 0.02, 1.0]);
+        assert_f32_slice_eq(&u.climate_params, &[0.0, 0.0, 0.0, 0.0]);
         assert_eq!(u.highlight_ids, [0, 0, 0, 0]);
+        assert_eq!(u.effect_seeds, [0, 0, 0, 0]);
     }
 
     #[test]
@@ -87,17 +95,20 @@ mod province_map_pipeline_tests {
             tint: [1.0, 1.0, 1.0, 1.0],
             province_tints: Vec::new(),
             terrain_texture: None,
-            terrain_texture_scale: 32.0,
-            terrain_texture_strength: 0.0,
-            edge_gradient_color: [0.0, 0.0, 0.0, 1.0],
-            edge_gradient_radius: 6.0,
-            edge_gradient_strength: 0.22,
-            edge_gradient_softness: 0.45,
-            border_palette_enabled: true,
-            province_border_color: [64.0 / 255.0, 64.0 / 255.0, 60.0 / 255.0, 1.0],
-            coast_border_color: [224.0 / 255.0, 196.0 / 255.0, 128.0 / 255.0, 1.0],
-            country_border_color: [230.0 / 255.0, 46.0 / 255.0, 42.0 / 255.0, 1.0],
-            sea_border_darken: 0.15,
+            effects: ProvinceMapEffectOptions {
+                terrain_texture_scale: 32.0,
+                terrain_texture_strength: 0.0,
+                edge_gradient_color: [0.0, 0.0, 0.0, 1.0],
+                edge_gradient_radius: 6.0,
+                edge_gradient_strength: 0.22,
+                edge_gradient_softness: 0.45,
+                border_palette_enabled: true,
+                province_border_color: [64.0 / 255.0, 64.0 / 255.0, 60.0 / 255.0, 1.0],
+                coast_border_color: [224.0 / 255.0, 196.0 / 255.0, 128.0 / 255.0, 1.0],
+                country_border_color: [230.0 / 255.0, 46.0 / 255.0, 42.0 / 255.0, 1.0],
+                sea_border_darken: 0.15,
+                ..ProvinceMapEffectOptions::default()
+            },
             selected_id: 0,
             hovered_id: 0,
             zoom_mode: 1,

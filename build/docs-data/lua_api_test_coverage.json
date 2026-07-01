@@ -1,15 +1,15 @@
 {
   "meta": {
-    "generated": "2026-06-30T22:45:31.438151+00:00",
+    "generated": "2026-07-01T13:29:11.969961+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
-    "total_api_functions": 6474,
-    "marker_covered": 6449,
+    "total_api_functions": 6475,
+    "marker_covered": 6450,
     "describe_covered": 150,
     "describe_coverage_pct": 2.3,
     "heuristic_covered": 0,
-    "total_covered": 6474,
+    "total_covered": 6475,
     "coverage_pct": 100.0
   },
   "modules": {
@@ -42511,14 +42511,14 @@
       ]
     },
     "province": {
-      "total": 64,
-      "marker_covered": 64,
+      "total": 65,
+      "marker_covered": 65,
       "describe_covered": 1,
       "heuristic_covered": 0,
-      "covered": 64,
+      "covered": 65,
       "coverage_pct": 100.0,
-      "describe_coverage_pct": 1.6,
-      "describe_score": 0.016,
+      "describe_coverage_pct": 1.5,
+      "describe_score": 0.015,
       "uncovered": [],
       "test_files": [
         "tests/lua/unit/test_province_unit.lua"
@@ -42988,6 +42988,15 @@
         },
         {
           "lua_name": "LProvinceRegistry:setVisibilityState",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProvinceRegistry:setVisualState",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,

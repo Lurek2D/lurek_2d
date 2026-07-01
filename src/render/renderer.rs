@@ -191,6 +191,192 @@ impl TextSpan {
         }
     }
 }
+
+/// Deterministic border-jitter controls for the dedicated province-map shader.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct ProvinceMapBorderNoiseOptions {
+    /// Enables visual-only border noise without changing province ids or picking.
+    pub enabled: bool,
+    /// Noise frequency in map-space UV units.
+    pub frequency: f32,
+    /// Jitter amplitude in output pixels.
+    pub amplitude_px: f32,
+    /// Alpha-threshold softness in output pixels.
+    pub softness_px: f32,
+    /// Deterministic global seed mixed with border-pair ids.
+    pub seed: u32,
+}
+
+impl Default for ProvinceMapBorderNoiseOptions {
+    fn default() -> Self {
+        Self {
+            enabled: false,
+            frequency: 0.07,
+            amplitude_px: 0.0,
+            softness_px: 1.0,
+            seed: 0,
+        }
+    }
+}
+
+/// Water shimmer configuration for province-map rendering.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct ProvinceMapWaterOptions {
+    /// Enables animated water shading for water provinces.
+    pub enabled: bool,
+    /// Water effect strength in the normalized [0, 1] range.
+    pub strength: f32,
+    /// Scroll speed multiplier for procedural waves.
+    pub speed: f32,
+    /// Map-space wave scale.
+    pub scale: f32,
+}
+
+impl Default for ProvinceMapWaterOptions {
+    fn default() -> Self {
+        Self {
+            enabled: false,
+            strength: 0.25,
+            speed: 0.08,
+            scale: 48.0,
+        }
+    }
+}
+
+/// Weather overlay configuration for province-map rendering.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct ProvinceMapWeatherOptions {
+    /// Enables weather overlays derived from per-province visual state.
+    pub enabled: bool,
+    /// Global multiplier applied to per-province weather strength.
+    pub global_strength: f32,
+    /// Shared weather direction vector in map space.
+    pub direction: [f32; 2],
+    /// Scroll or animation speed multiplier.
+    pub speed: f32,
+}
+
+impl Default for ProvinceMapWeatherOptions {
+    fn default() -> Self {
+        Self {
+            enabled: false,
+            global_strength: 1.0,
+            direction: [0.7, 1.0],
+            speed: 1.0,
+        }
+    }
+}
+
+/// Fog and visibility composition controls for province-map rendering.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct ProvinceMapFogOptions {
+    /// Enables configurable fog treatment over discovered or visible provinces.
+    pub enabled: bool,
+    /// Desaturation factor applied to discovered provinces.
+    pub discovered_desaturation: f32,
+    /// Hidden-province fallback color.
+    pub hidden_color: [f32; 4],
+    /// Noise amount mixed into discovered or fogged areas.
+    pub noise_strength: f32,
+}
+
+impl Default for ProvinceMapFogOptions {
+    fn default() -> Self {
+        Self {
+            enabled: false,
+            discovered_desaturation: 1.0,
+            hidden_color: [0.02, 0.02, 0.02, 1.0],
+            noise_strength: 0.0,
+        }
+    }
+}
+
+/// Climate and seasonal tint controls for province-map rendering.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct ProvinceMapClimateOptions {
+    /// Enables climate tinting derived from per-province climate ids.
+    pub enabled: bool,
+    /// Strength of the climate palette tint.
+    pub tint_strength: f32,
+    /// Normalized season phase used for subtle palette shifts.
+    pub season_phase: f32,
+    /// Strength of the seasonal tint modulation.
+    pub season_strength: f32,
+}
+
+impl Default for ProvinceMapClimateOptions {
+    fn default() -> Self {
+        Self {
+            enabled: false,
+            tint_strength: 0.3,
+            season_phase: 0.0,
+            season_strength: 0.0,
+        }
+    }
+}
+
+/// Aggregate visual-effect settings for the dedicated province-map pipeline.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct ProvinceMapEffectOptions {
+    /// Master enable flag for the newer shader-side visual effects.
+    pub enabled: bool,
+    /// Repeating terrain texture scale in map pixels per tile.
+    pub terrain_texture_scale: f32,
+    /// Strength of the terrain texture or watermark overlay.
+    pub terrain_texture_strength: f32,
+    /// Edge gradient color mixed into province interiors near borders.
+    pub edge_gradient_color: [f32; 4],
+    /// Edge gradient radius in output pixels.
+    pub edge_gradient_radius: f32,
+    /// Edge gradient opacity multiplier.
+    pub edge_gradient_strength: f32,
+    /// Edge gradient softness in output pixels.
+    pub edge_gradient_softness: f32,
+    /// Whether semantic border-palette colors override raw border colors.
+    pub border_palette_enabled: bool,
+    /// Default province-border color.
+    pub province_border_color: [f32; 4],
+    /// Default coast-border color.
+    pub coast_border_color: [f32; 4],
+    /// Default country-border color.
+    pub country_border_color: [f32; 4],
+    /// Amount used to darken sea borders relative to fill colors.
+    pub sea_border_darken: f32,
+    /// Border jitter and noisy-threshold settings.
+    pub border_noise: ProvinceMapBorderNoiseOptions,
+    /// Animated water settings.
+    pub water: ProvinceMapWaterOptions,
+    /// Weather overlay settings.
+    pub weather: ProvinceMapWeatherOptions,
+    /// Fog composition settings.
+    pub fog: ProvinceMapFogOptions,
+    /// Climate and season tint settings.
+    pub climate: ProvinceMapClimateOptions,
+}
+
+impl Default for ProvinceMapEffectOptions {
+    fn default() -> Self {
+        Self {
+            enabled: false,
+            terrain_texture_scale: 32.0,
+            terrain_texture_strength: 0.0,
+            edge_gradient_color: [64.0 / 255.0, 64.0 / 255.0, 60.0 / 255.0, 1.0],
+            edge_gradient_radius: 16.0,
+            edge_gradient_strength: 0.25,
+            edge_gradient_softness: 0.45,
+            border_palette_enabled: true,
+            province_border_color: [72.0 / 255.0, 58.0 / 255.0, 32.0 / 255.0, 1.0],
+            coast_border_color: [224.0 / 255.0, 196.0 / 255.0, 128.0 / 255.0, 238.0 / 255.0],
+            country_border_color: [230.0 / 255.0, 48.0 / 255.0, 44.0 / 255.0, 245.0 / 255.0],
+            sea_border_darken: 0.15,
+            border_noise: ProvinceMapBorderNoiseOptions::default(),
+            water: ProvinceMapWaterOptions::default(),
+            weather: ProvinceMapWeatherOptions::default(),
+            fog: ProvinceMapFogOptions::default(),
+            climate: ProvinceMapClimateOptions::default(),
+        }
+    }
+}
 /// All draw, state, and control operations submitted to `GpuRenderer::render_frame`.
 #[derive(Debug, Clone)]
 pub enum RenderCommand {
@@ -605,17 +791,7 @@ pub enum RenderCommand {
         tint: [f32; 4],
         province_tints: Vec<(u32, [f32; 4])>,
         terrain_texture: Option<TextureKey>,
-        terrain_texture_scale: f32,
-        terrain_texture_strength: f32,
-        edge_gradient_color: [f32; 4],
-        edge_gradient_radius: f32,
-        edge_gradient_strength: f32,
-        edge_gradient_softness: f32,
-        border_palette_enabled: bool,
-        province_border_color: [f32; 4],
-        coast_border_color: [f32; 4],
-        country_border_color: [f32; 4],
-        sea_border_darken: f32,
+        effects: ProvinceMapEffectOptions,
         selected_id: u32,
         hovered_id: u32,
         zoom_mode: u32,

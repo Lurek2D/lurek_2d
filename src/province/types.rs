@@ -147,6 +147,153 @@ impl Default for BorderPairStyle {
     }
 }
 
+/// Built-in climate ids used by province-map shading when Lua passes symbolic names.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[repr(u16)]
+pub enum ProvinceClimateKind {
+    /// No climate tinting.
+    None = 0,
+    /// Open-ocean or sea province.
+    Ocean = 1,
+    /// Cold polar climate.
+    Arctic = 2,
+    /// Transitional cold climate.
+    Subarctic = 3,
+    /// Mild default climate.
+    Temperate = 4,
+    /// Inland seasonal climate.
+    Continental = 5,
+    /// Hot wet climate.
+    Tropical = 6,
+    /// Dry arid or desert climate.
+    Arid = 7,
+    /// Dry grassland climate.
+    Steppe = 8,
+    /// High-altitude climate.
+    Mountain = 9,
+    /// Sparse or inhospitable climate.
+    Wasteland = 10,
+}
+
+impl ProvinceClimateKind {
+    /// Parse a built-in climate token used by Lua convenience APIs.
+    pub fn from_name(name: &str) -> Option<Self> {
+        match name {
+            "none" => Some(Self::None),
+            "ocean" => Some(Self::Ocean),
+            "arctic" => Some(Self::Arctic),
+            "subarctic" | "sub_arctic" | "sub-arctic" => Some(Self::Subarctic),
+            "temperate" => Some(Self::Temperate),
+            "continental" => Some(Self::Continental),
+            "tropical" => Some(Self::Tropical),
+            "arid" | "desert" | "arid_desert" | "arid-desert" => Some(Self::Arid),
+            "steppe" => Some(Self::Steppe),
+            "mountain" => Some(Self::Mountain),
+            "wasteland" => Some(Self::Wasteland),
+            _ => None,
+        }
+    }
+
+    /// Return the compact numeric id used in GPU records.
+    pub fn id(self) -> u16 {
+        self as u16
+    }
+}
+
+/// Built-in weather ids used by province-map shading when Lua passes symbolic names.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[repr(u16)]
+pub enum ProvinceWeatherKind {
+    /// No weather overlay.
+    None = 0,
+    /// Diagonal rain streaks and darker tint.
+    Rain = 1,
+    /// Snow accumulation and bright speckle.
+    Snow = 2,
+    /// Storm darkening plus deterministic flashes.
+    Storm = 3,
+    /// Low-frequency fog or mist overlay.
+    Fog = 4,
+    /// Warm directional dust or sand overlay.
+    Sandstorm = 5,
+    /// Tactical-zoom heat distortion.
+    HeatHaze = 6,
+    /// Ash or smoke tint overlay.
+    Ash = 7,
+}
+
+impl ProvinceWeatherKind {
+    /// Parse a built-in weather token used by Lua convenience APIs.
+    pub fn from_name(name: &str) -> Option<Self> {
+        match name {
+            "none" => Some(Self::None),
+            "rain" => Some(Self::Rain),
+            "snow" => Some(Self::Snow),
+            "storm" => Some(Self::Storm),
+            "fog" | "mist" => Some(Self::Fog),
+            "sandstorm" | "dust" => Some(Self::Sandstorm),
+            "heat_haze" | "heat-haze" | "heat haze" => Some(Self::HeatHaze),
+            "ash" | "smoke" => Some(Self::Ash),
+            _ => None,
+        }
+    }
+
+    /// Return the compact numeric id used in GPU records.
+    pub fn id(self) -> u16 {
+        self as u16
+    }
+}
+
+/// Province visual-effect bit for animated water or coastal shimmer.
+pub const PROVINCE_EFFECT_WAVES: u32 = 0x01;
+/// Province visual-effect bit for stronger conflict/frontline highlight.
+pub const PROVINCE_EFFECT_CONFLICT: u32 = 0x02;
+/// Province visual-effect bit for additional fog-noise treatment.
+pub const PROVINCE_EFFECT_FOG_NOISE: u32 = 0x04;
+/// Province visual-effect bit for explicit heat-haze emphasis.
+pub const PROVINCE_EFFECT_HEAT_HAZE: u32 = 0x08;
+/// Province visual-effect bit for coastal foam emphasis.
+pub const PROVINCE_EFFECT_COAST_FOAM: u32 = 0x10;
+
+/// Parse a canonical province visual-effect flag token into a bitmask.
+pub fn parse_province_effect_flag_token(token: &str) -> Option<u32> {
+    match token {
+        "waves" => Some(PROVINCE_EFFECT_WAVES),
+        "conflict" | "frontline" | "alert" => Some(PROVINCE_EFFECT_CONFLICT),
+        "fog_noise" | "fog-noise" | "mist" => Some(PROVINCE_EFFECT_FOG_NOISE),
+        "heat_haze" | "heat-haze" | "heat haze" => Some(PROVINCE_EFFECT_HEAT_HAZE),
+        "coast_foam" | "coast-foam" | "foam" => Some(PROVINCE_EFFECT_COAST_FOAM),
+        _ => None,
+    }
+}
+
+/// Compact shader-facing visual state attached to a province without owning gameplay simulation.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct ProvinceVisualState {
+    /// Climate classification id; 0 disables climate tinting.
+    pub climate_type: u16,
+    /// Weather classification id; 0 disables weather overlays.
+    pub weather_type: u16,
+    /// Overlay strength in the normalized [0, 1] range.
+    pub weather_strength: f32,
+    /// Semantic effect flags such as waves, fog noise, or heat haze.
+    pub effect_flags: u32,
+    /// Deterministic seed used by map shader noise for this province.
+    pub visual_seed: u32,
+}
+
+impl Default for ProvinceVisualState {
+    fn default() -> Self {
+        Self {
+            climate_type: ProvinceClimateKind::None.id(),
+            weather_type: ProvinceWeatherKind::None.id(),
+            weather_strength: 0.0,
+            effect_flags: 0,
+            visual_seed: 0,
+        }
+    }
+}
+
 /// Visual and gameplay state attached to a single province, stored in ProvinceRegistry.
 #[derive(Debug, Clone, PartialEq)]
 pub struct ProvinceStyle {
@@ -160,6 +307,8 @@ pub struct ProvinceStyle {
     pub fog_state: u8,
     /// Visibility state byte; 0 = hidden, 1 = discovered, 2+ = fully visible.
     pub visibility_state: u8,
+    /// Optional shader-oriented climate, weather, and effect metadata.
+    pub visual_state: ProvinceVisualState,
 }
 
 /// Default ProvinceStyle: grey political color, water terrain, no fog, visible.
@@ -171,6 +320,7 @@ impl Default for ProvinceStyle {
             border_style: 0,
             fog_state: 0,
             visibility_state: 2,
+            visual_state: ProvinceVisualState::default(),
         }
     }
 }

@@ -122775,7 +122775,7 @@
           "name": "getProvince",
           "fullPath": "LProvinceRegistry:getProvince",
           "signature": "(id)",
-          "description": "Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state), centroid, capital marker, and custom attributes.",
+          "description": "Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state, visual_state), centroid, capital marker, and custom attributes.",
           "parameters": [
             {
               "name": "id",
@@ -123293,6 +123293,30 @@
           "objectType": "LProvinceRegistry"
         },
         {
+          "name": "setVisualState",
+          "fullPath": "LProvinceRegistry:setVisualState",
+          "signature": "(id, state)",
+          "description": "Sets climate, weather, and shader-effect metadata for a province without moving simulation rules into `province`.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Province ID.",
+              "optional": false
+            },
+            {
+              "name": "state",
+              "type": "table",
+              "description": "Table with optional `climate`, `weather`, `weather_strength`, `effect_flags`, and `seed` fields.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LProvinceRegistry"
+        },
+        {
           "name": "setAttr",
           "fullPath": "LProvinceRegistry:setAttr",
           "signature": "(id, key, value)",
@@ -123444,7 +123468,7 @@
           "parameters": [
             {
               "name": "opts",
-              "type": "table?|Render options: backend (\"commands\"|\"gpu\"|\"segments\"?), map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), tint ({r,g,b,a?}?), province_tints (table<integer,{r,g,b,a?}>?), segment_reuse_cache (boolean?), terrain_texture (LImage?), terrain_texture_scale/terrain_texture_strength (number?), edge_gradient_radius (output pixels?), edge_gradient_strength/edge_gradient_softness (number?), edge_gradient_color ({r,g,b,a?}?), border_palette ({province_color|land_color,coast_color,country_color,sea_darken}?), province_border_color/coast_border_color/country_border_color ({r,g,b,a?}?), sea_border_darken (number?), draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads (boolean?), border_width (number?), zoom_mode (\"auto\"|\"strategic\"",
+              "type": "table?|Render options: backend (\"commands\"|\"gpu\"|\"segments\"?), map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), tint ({r,g,b,a?}?), province_tints (table<integer,{r,g,b,a?}>?), segment_reuse_cache (boolean?), terrain_texture (LImage?), terrain_texture_scale/terrain_texture_strength (number?), edge_gradient_radius (output pixels?), edge_gradient_strength/edge_gradient_softness (number?), edge_gradient_color ({r,g,b,a?}?), border_palette ({province_color|land_color,coast_color,country_color,sea_darken}?), province_border_color/coast_border_color/country_border_color ({r,g,b,a?}?), sea_border_darken (number?), visual_effects ({ enabled, border_noise, water, weather, fog, climate }?), draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads (boolean?), border_width (number?), zoom_mode (\"auto\"|\"strategic\"",
               "description": "\"tactical\"), tactical_zoom_threshold (number?), hovered_id/selected_id (integer?).",
               "optional": true
             }
@@ -123458,7 +123482,7 @@
           "name": "getChangesSince",
           "fullPath": "LProvinceRegistry:getChangesSince",
           "signature": "(revision)",
-          "description": "Returns all province changes that occurred after the given revision. Each entry contains the revision number and a change record describing what was modified (political_color, terrain_type, border_style, fog_state, visibility_state, or border_class).",
+          "description": "Returns all province changes that occurred after the given revision. Each entry contains the revision number and a change record describing what was modified (political_color, terrain_type, border_style, fog_state, visibility_state, visual_state, or border_class).",
           "parameters": [
             {
               "name": "revision",

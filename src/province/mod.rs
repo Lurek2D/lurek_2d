@@ -53,7 +53,9 @@ pub use import::{
 pub use properties::ProvinceProperties;
 pub use registry::ProvinceRegistry;
 pub use types::{
-    BorderPairFlags, BorderPairStyle, BorderType, BorderTypeConfig, ProvinceId, ProvinceSnapshot,
-    ProvinceStyle,
+    parse_province_effect_flag_token, BorderPairFlags, BorderPairStyle, BorderType,
+    BorderTypeConfig, ProvinceClimateKind, ProvinceId, ProvinceSnapshot, ProvinceStyle,
+    ProvinceVisualState, ProvinceWeatherKind, PROVINCE_EFFECT_COAST_FOAM, PROVINCE_EFFECT_CONFLICT,
+    PROVINCE_EFFECT_FOG_NOISE, PROVINCE_EFFECT_HEAT_HAZE, PROVINCE_EFFECT_WAVES,
 };
 pub use view_transform::{fit_camera_to_screen, map_to_cell, screen_to_map, zoom_camera_at};

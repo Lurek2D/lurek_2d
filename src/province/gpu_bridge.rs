@@ -27,6 +27,10 @@ pub struct ProvinceGpuRecord {
     pub fog_state: u32,
     /// Visibility state packed as u32 for alignment; matches ProvinceStyle::visibility_state.
     pub visibility_state: u32,
+    /// Climate id, weather id, effect flags, and deterministic province visual seed.
+    pub visual_u32: [u32; 4],
+    /// Weather strength plus reserved shader parameters for future expansion.
+    pub visual_f32: [f32; 4],
 }
 
 /// Per-border-pair GPU style record laid out for direct storage-buffer upload.
@@ -57,6 +61,13 @@ pub fn build_gpu_records(registry: &ProvinceRegistry) -> Vec<ProvinceGpuRecord> 
             border_style: snap.style.border_style,
             fog_state: snap.style.fog_state as u32,
             visibility_state: snap.style.visibility_state as u32,
+            visual_u32: [
+                snap.style.visual_state.climate_type as u32,
+                snap.style.visual_state.weather_type as u32,
+                snap.style.visual_state.effect_flags,
+                snap.style.visual_state.visual_seed,
+            ],
+            visual_f32: [snap.style.visual_state.weather_strength, 0.0, 0.0, 0.0],
         })
         .collect()
 }
@@ -74,6 +85,13 @@ pub fn build_dense_gpu_records(registry: &ProvinceRegistry) -> Vec<ProvinceGpuRe
                 border_style: snap.style.border_style,
                 fog_state: snap.style.fog_state as u32,
                 visibility_state: snap.style.visibility_state as u32,
+                visual_u32: [
+                    snap.style.visual_state.climate_type as u32,
+                    snap.style.visual_state.weather_type as u32,
+                    snap.style.visual_state.effect_flags,
+                    snap.style.visual_state.visual_seed,
+                ],
+                visual_f32: [snap.style.visual_state.weather_strength, 0.0, 0.0, 0.0],
             };
         }
     }
@@ -90,6 +108,8 @@ fn default_province_gpu_record() -> ProvinceGpuRecord {
         border_style: 0,
         fog_state: 0,
         visibility_state: 2,
+        visual_u32: [0, 0, 0, 0],
+        visual_f32: [0.0, 0.0, 0.0, 0.0],
     }
 }
 

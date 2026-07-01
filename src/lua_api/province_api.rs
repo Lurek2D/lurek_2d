@@ -13,13 +13,16 @@ use crate::province::render::{
     ProvinceRenderOptions, ProvinceSegmentRasterOptions, ProvinceZoomMode,
 };
 use crate::province::routing;
-use crate::province::types::{BorderPairFlags, BorderPairStyle, BorderTypeConfig, ProvinceId};
+use crate::province::types::{
+    parse_province_effect_flag_token, BorderPairFlags, BorderPairStyle, BorderTypeConfig,
+    ProvinceClimateKind, ProvinceId, ProvinceVisualState, ProvinceWeatherKind,
+};
 use crate::province::{fit_camera_to_screen, map_to_cell, screen_to_map, zoom_camera_at};
 use crate::province::{
     import_metadata_from_files, sanitize_marked_png, MarkerSanitizeOptions,
     ProvinceMetadataImportOptions,
 };
-use crate::render::renderer::{RenderCommand, TextureData};
+use crate::render::renderer::{ProvinceMapEffectOptions, RenderCommand, TextureData};
 use crate::render::ShaderTarget;
 use crate::runtime::shared_state::ProvinceSegmentTextureCache;
 use mlua::prelude::*;
@@ -266,6 +269,283 @@ fn parse_border_palette_from_lua(
     opts: Option<&LuaTable>,
 ) -> LuaResult<ProvinceRenderBorderPalette> {
     ProvinceLuaParser::parse_border_palette_from_lua(opts)
+}
+
+fn parse_u16_name_or_number(
+    value: LuaValue,
+    field: &str,
+    parse_name: fn(&str) -> Option<u16>,
+) -> LuaResult<u16> {
+    match value {
+        LuaValue::Nil => Ok(0),
+        LuaValue::Integer(v) if (0..=u16::MAX as i64).contains(&v) => Ok(v as u16),
+        LuaValue::Number(v)
+            if v.is_finite() && v.fract() == 0.0 && v >= 0.0 && v <= u16::MAX as f64 =>
+        {
+            Ok(v as u16)
+        }
+        LuaValue::String(s) => {
+            let token = s.to_str()?.to_lowercase();
+            parse_name(token.as_str()).ok_or_else(|| {
+                LuaError::RuntimeError(format!(
+                    "LProvinceRegistry:{} must be a known name or integer id",
+                    field
+                ))
+            })
+        }
+        _ => Err(LuaError::RuntimeError(format!(
+            "LProvinceRegistry:{} must be a string or integer id",
+            field
+        ))),
+    }
+}
+
+fn parse_effect_flags_from_lua(value: LuaValue, field: &str) -> LuaResult<u32> {
+    match value {
+        LuaValue::Nil => Ok(0),
+        LuaValue::Integer(v) if (0..=u32::MAX as i64).contains(&v) => Ok(v as u32),
+        LuaValue::Number(v)
+            if v.is_finite() && v.fract() == 0.0 && v >= 0.0 && v <= u32::MAX as f64 =>
+        {
+            Ok(v as u32)
+        }
+        LuaValue::String(s) => {
+            let token = s.to_str()?.to_lowercase();
+            parse_province_effect_flag_token(token.as_str()).ok_or_else(|| {
+                LuaError::RuntimeError(format!(
+                    "LProvinceRegistry:{} has unknown effect flag '{}'",
+                    field, token
+                ))
+            })
+        }
+        LuaValue::Table(t) => {
+            let mut flags = 0u32;
+            for value in t.sequence_values::<String>() {
+                let token = value?.to_lowercase();
+                let bit = parse_province_effect_flag_token(token.as_str()).ok_or_else(|| {
+                    LuaError::RuntimeError(format!(
+                        "LProvinceRegistry:{} has unknown effect flag '{}'",
+                        field, token
+                    ))
+                })?;
+                flags |= bit;
+            }
+            Ok(flags)
+        }
+        _ => Err(LuaError::RuntimeError(format!(
+            "LProvinceRegistry:{} must be an integer, string, or array of strings",
+            field
+        ))),
+    }
+}
+
+fn parse_vec2_table(value: Option<LuaTable>, field: &str) -> LuaResult<[f32; 2]> {
+    let Some(value) = value else {
+        return Ok([0.7, 1.0]);
+    };
+    let x = value.get::<_, Option<f32>>(1)?.ok_or_else(|| {
+        LuaError::RuntimeError(format!(
+            "LProvinceRegistry:render {} must contain x and y values",
+            field
+        ))
+    })?;
+    let y = value.get::<_, Option<f32>>(2)?.ok_or_else(|| {
+        LuaError::RuntimeError(format!(
+            "LProvinceRegistry:render {} must contain x and y values",
+            field
+        ))
+    })?;
+    if !x.is_finite() || !y.is_finite() {
+        return Err(LuaError::RuntimeError(format!(
+            "LProvinceRegistry:render {} must contain finite numbers",
+            field
+        )));
+    }
+    Ok([x, y])
+}
+
+fn parse_visual_state_from_lua(opts: &LuaTable) -> LuaResult<ProvinceVisualState> {
+    let climate_type = parse_u16_name_or_number(
+        opts.get::<_, Option<LuaValue>>("climate")?
+            .unwrap_or(LuaValue::Nil),
+        "setVisualState climate",
+        |token| ProvinceClimateKind::from_name(token).map(ProvinceClimateKind::id),
+    )?;
+    let weather_type = parse_u16_name_or_number(
+        opts.get::<_, Option<LuaValue>>("weather")?
+            .unwrap_or(LuaValue::Nil),
+        "setVisualState weather",
+        |token| ProvinceWeatherKind::from_name(token).map(ProvinceWeatherKind::id),
+    )?;
+    let weather_strength = opts
+        .get::<_, Option<f32>>("weather_strength")?
+        .unwrap_or(0.0);
+    if !weather_strength.is_finite() {
+        return Err(LuaError::RuntimeError(
+            "LProvinceRegistry:setVisualState weather_strength must be finite".to_string(),
+        ));
+    }
+    let effect_flags = parse_effect_flags_from_lua(
+        opts.get::<_, Option<LuaValue>>("effect_flags")?
+            .unwrap_or(LuaValue::Nil),
+        "setVisualState effect_flags",
+    )?;
+    let visual_seed = opts.get::<_, Option<u32>>("seed")?.unwrap_or(0);
+    Ok(ProvinceVisualState {
+        climate_type,
+        weather_type,
+        weather_strength: weather_strength.clamp(0.0, 1.0),
+        effect_flags,
+        visual_seed,
+    })
+}
+
+fn parse_visual_effects_from_lua(
+    opts: Option<&LuaTable>,
+    terrain_texture_present: bool,
+) -> LuaResult<ProvinceMapEffectOptions> {
+    let mut effects = ProvinceMapEffectOptions::default();
+    effects.terrain_texture_scale = opts
+        .and_then(|t| {
+            t.get::<_, Option<f32>>("terrain_texture_scale")
+                .ok()
+                .flatten()
+        })
+        .unwrap_or(32.0)
+        .max(1.0);
+    effects.terrain_texture_strength = opts
+        .and_then(|t| {
+            t.get::<_, Option<f32>>("terrain_texture_strength")
+                .ok()
+                .flatten()
+        })
+        .unwrap_or(if terrain_texture_present { 0.08 } else { 0.0 })
+        .clamp(0.0, 1.0);
+    effects.edge_gradient_color = opts
+        .and_then(|t| {
+            t.get::<_, Option<LuaTable>>("edge_gradient_color")
+                .ok()
+                .flatten()
+        })
+        .map(|t| parse_render_color_table(t, "edge_gradient_color"))
+        .transpose()?
+        .unwrap_or(effects.edge_gradient_color);
+    effects.edge_gradient_radius = opts
+        .and_then(|t| {
+            t.get::<_, Option<f32>>("edge_gradient_radius")
+                .ok()
+                .flatten()
+        })
+        .unwrap_or(effects.edge_gradient_radius)
+        .clamp(0.0, 32.0);
+    effects.edge_gradient_strength = opts
+        .and_then(|t| {
+            t.get::<_, Option<f32>>("edge_gradient_strength")
+                .ok()
+                .flatten()
+        })
+        .unwrap_or(effects.edge_gradient_strength)
+        .clamp(0.0, 1.0);
+    effects.edge_gradient_softness = opts
+        .and_then(|t| {
+            t.get::<_, Option<f32>>("edge_gradient_softness")
+                .ok()
+                .flatten()
+        })
+        .unwrap_or(effects.edge_gradient_softness)
+        .clamp(0.05, 2.0);
+
+    let border_palette = parse_border_palette_from_lua(opts)?;
+    effects.border_palette_enabled = border_palette.enabled;
+    effects.province_border_color = border_palette.province_border_color;
+    effects.coast_border_color = border_palette.coast_border_color;
+    effects.country_border_color = border_palette.country_border_color;
+    effects.sea_border_darken = border_palette.sea_border_darken;
+
+    let Some(opts) = opts else {
+        return Ok(effects);
+    };
+    let Some(visual_effects) = opts.get::<_, Option<LuaTable>>("visual_effects")? else {
+        return Ok(effects);
+    };
+
+    effects.enabled = visual_effects
+        .get::<_, Option<bool>>("enabled")?
+        .unwrap_or(true);
+
+    if let Some(border_noise) = visual_effects.get::<_, Option<LuaTable>>("border_noise")? {
+        effects.border_noise.enabled = border_noise
+            .get::<_, Option<bool>>("enabled")?
+            .unwrap_or(true);
+        if let Some(value) = border_noise.get::<_, Option<f32>>("frequency")? {
+            effects.border_noise.frequency = value.max(0.0);
+        }
+        if let Some(value) = border_noise.get::<_, Option<f32>>("amplitude_px")? {
+            effects.border_noise.amplitude_px = value.clamp(0.0, 8.0);
+        }
+        if let Some(value) = border_noise.get::<_, Option<f32>>("softness_px")? {
+            effects.border_noise.softness_px = value.clamp(0.05, 8.0);
+        }
+        if let Some(value) = border_noise.get::<_, Option<u32>>("seed")? {
+            effects.border_noise.seed = value;
+        }
+    }
+
+    if let Some(water) = visual_effects.get::<_, Option<LuaTable>>("water")? {
+        effects.water.enabled = water.get::<_, Option<bool>>("enabled")?.unwrap_or(true);
+        if let Some(value) = water.get::<_, Option<f32>>("strength")? {
+            effects.water.strength = value.clamp(0.0, 1.0);
+        }
+        if let Some(value) = water.get::<_, Option<f32>>("speed")? {
+            effects.water.speed = value.max(0.0);
+        }
+        if let Some(value) = water.get::<_, Option<f32>>("scale")? {
+            effects.water.scale = value.max(1.0);
+        }
+    }
+
+    if let Some(weather) = visual_effects.get::<_, Option<LuaTable>>("weather")? {
+        effects.weather.enabled = weather.get::<_, Option<bool>>("enabled")?.unwrap_or(true);
+        if let Some(value) = weather.get::<_, Option<f32>>("global_strength")? {
+            effects.weather.global_strength = value.clamp(0.0, 1.0);
+        }
+        effects.weather.direction = parse_vec2_table(
+            weather.get::<_, Option<LuaTable>>("direction")?,
+            "visual_effects.weather.direction",
+        )?;
+        if let Some(value) = weather.get::<_, Option<f32>>("speed")? {
+            effects.weather.speed = value.max(0.0);
+        }
+    }
+
+    if let Some(fog) = visual_effects.get::<_, Option<LuaTable>>("fog")? {
+        effects.fog.enabled = fog.get::<_, Option<bool>>("enabled")?.unwrap_or(true);
+        if let Some(value) = fog.get::<_, Option<f32>>("discovered_desaturation")? {
+            effects.fog.discovered_desaturation = value.clamp(0.0, 1.0);
+        }
+        if let Some(color) = fog.get::<_, Option<LuaTable>>("hidden_color")? {
+            effects.fog.hidden_color =
+                parse_render_color_table(color, "visual_effects.fog.hidden_color")?;
+        }
+        if let Some(value) = fog.get::<_, Option<f32>>("noise_strength")? {
+            effects.fog.noise_strength = value.clamp(0.0, 1.0);
+        }
+    }
+
+    if let Some(climate) = visual_effects.get::<_, Option<LuaTable>>("climate")? {
+        effects.climate.enabled = climate.get::<_, Option<bool>>("enabled")?.unwrap_or(true);
+        if let Some(value) = climate.get::<_, Option<f32>>("tint_strength")? {
+            effects.climate.tint_strength = value.clamp(0.0, 1.0);
+        }
+        if let Some(value) = climate.get::<_, Option<f32>>("season_phase")? {
+            effects.climate.season_phase = value.clamp(0.0, 1.0);
+        }
+        if let Some(value) = climate.get::<_, Option<f32>>("season_strength")? {
+            effects.climate.season_strength = value.clamp(0.0, 1.0);
+        }
+    }
+
+    Ok(effects)
 }
 
 fn parse_province_tint_key(key: LuaValue) -> LuaResult<ProvinceId> {
@@ -814,7 +1094,7 @@ impl LuaUserData for LuaProvinceRegistry {
             this.with_registry(|r| r.revision())
         });
         // -- getProvince --
-        /// Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state), centroid, capital marker, and custom attributes.
+        /// Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state, visual_state), centroid, capital marker, and custom attributes.
         /// @param | id | integer | Province ID to query.
         /// @return | table | Province snapshot table, or nil if the ID does not exist.
         /// @field | province_id | integer | Province id.
@@ -851,6 +1131,19 @@ impl LuaUserData for LuaProvinceRegistry {
             style.set("fog_state", snap.style.fog_state)?;
             /// Performs the 'visibility_state' operation.
             style.set("visibility_state", snap.style.visibility_state)?;
+            let visual_state = lua.create_table()?;
+            /// Performs the 'climate_type' operation.
+            visual_state.set("climate_type", snap.style.visual_state.climate_type)?;
+            /// Performs the 'weather_type' operation.
+            visual_state.set("weather_type", snap.style.visual_state.weather_type)?;
+            /// Performs the 'weather_strength' operation.
+            visual_state.set("weather_strength", snap.style.visual_state.weather_strength)?;
+            /// Performs the 'effect_flags' operation.
+            visual_state.set("effect_flags", snap.style.visual_state.effect_flags)?;
+            /// Performs the 'seed' operation.
+            visual_state.set("seed", snap.style.visual_state.visual_seed)?;
+            /// Performs the 'visual_state' operation.
+            style.set("visual_state", visual_state)?;
             /// Performs the 'style' operation.
             out.set("style", style)?;
             if let Some((cx, cy)) = snap.centroid {
@@ -1377,6 +1670,15 @@ impl LuaUserData for LuaProvinceRegistry {
                 })
             },
         );
+        // -- setVisualState --
+        /// Sets climate, weather, and shader-effect metadata for a province without moving simulation rules into `province`.
+        /// @param | id | integer | Province ID.
+        /// @param | state | table | Table with optional `climate`, `weather`, `weather_strength`, `effect_flags`, and `seed` fields.
+        /// @return | boolean | True if the province ID exists.
+        methods.add_method_mut("setVisualState", |_, this, (id, state): (u32, LuaTable)| {
+            let visual_state = parse_visual_state_from_lua(&state)?;
+            this.with_registry_mut(|reg| reg.set_visual_state(ProvinceId(id), visual_state))
+        });
         // -- setAttr --
         /// Sets a custom string attribute on a province. Attributes are returned in the `attrs` table of `getProvince` and can store arbitrary game metadata.
         /// @param | id | integer | Province ID.
@@ -1502,7 +1804,7 @@ impl LuaUserData for LuaProvinceRegistry {
         });
         // -- render --
         /// Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options. Optional `tint` multiplies all province fill colours for this render only, while `province_tints` supplies render-time fill colour overrides keyed by province id without mutating the registry.
-        /// @param | opts | table? | Render options: backend ("commands"|"gpu"|"segments"?), map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), tint ({r,g,b,a?}?), province_tints (table<integer,{r,g,b,a?}>?), segment_reuse_cache (boolean?), terrain_texture (LImage?), terrain_texture_scale/terrain_texture_strength (number?), edge_gradient_radius (output pixels?), edge_gradient_strength/edge_gradient_softness (number?), edge_gradient_color ({r,g,b,a?}?), border_palette ({province_color|land_color,coast_color,country_color,sea_darken}?), province_border_color/coast_border_color/country_border_color ({r,g,b,a?}?), sea_border_darken (number?), draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads (boolean?), border_width (number?), zoom_mode ("auto"|"strategic"|"tactical"), tactical_zoom_threshold (number?), hovered_id/selected_id (integer?).
+        /// @param | opts | table? | Render options: backend ("commands"|"gpu"|"segments"?), map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), tint ({r,g,b,a?}?), province_tints (table<integer,{r,g,b,a?}>?), segment_reuse_cache (boolean?), terrain_texture (LImage?), terrain_texture_scale/terrain_texture_strength (number?), edge_gradient_radius (output pixels?), edge_gradient_strength/edge_gradient_softness (number?), edge_gradient_color ({r,g,b,a?}?), border_palette ({province_color|land_color,coast_color,country_color,sea_darken}?), province_border_color/coast_border_color/country_border_color ({r,g,b,a?}?), sea_border_darken (number?), visual_effects ({ enabled, border_noise, water, weather, fog, climate }?), draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads (boolean?), border_width (number?), zoom_mode ("auto"|"strategic"|"tactical"), tactical_zoom_threshold (number?), hovered_id/selected_id (integer?).
         methods.add_method("render", |_, this, opts: Option<LuaTable>| {
             let opts = opts;
             let backend = if let Some(ref t) = opts {
@@ -1627,50 +1929,7 @@ impl LuaUserData for LuaProvinceRegistry {
                 } else {
                     None
                 };
-                let terrain_texture_scale = opts
-                    .as_ref()
-                    .and_then(|t| t.get::<_, Option<f32>>("terrain_texture_scale").ok().flatten())
-                    .unwrap_or(32.0)
-                    .max(1.0);
-                let terrain_texture_strength = opts
-                    .as_ref()
-                    .and_then(|t| {
-                        t.get::<_, Option<f32>>("terrain_texture_strength")
-                            .ok()
-                            .flatten()
-                    })
-                    .unwrap_or(if terrain_texture.is_some() { 0.08 } else { 0.0 })
-                    .clamp(0.0, 1.0);
-                let edge_gradient_color = opts
-                    .as_ref()
-                    .and_then(|t| t.get::<_, Option<LuaTable>>("edge_gradient_color").ok().flatten())
-                    .map(|t| parse_render_color_table(t, "edge_gradient_color"))
-                    .transpose()?
-                    .unwrap_or([64.0 / 255.0, 64.0 / 255.0, 60.0 / 255.0, 1.0]);
-                let edge_gradient_radius = opts
-                    .as_ref()
-                    .and_then(|t| t.get::<_, Option<f32>>("edge_gradient_radius").ok().flatten())
-                    .unwrap_or(16.0)
-                    .clamp(0.0, 32.0);
-                let edge_gradient_strength = opts
-                    .as_ref()
-                    .and_then(|t| {
-                        t.get::<_, Option<f32>>("edge_gradient_strength")
-                            .ok()
-                            .flatten()
-                    })
-                    .unwrap_or(0.25)
-                    .clamp(0.0, 1.0);
-                let edge_gradient_softness = opts
-                    .as_ref()
-                    .and_then(|t| {
-                        t.get::<_, Option<f32>>("edge_gradient_softness")
-                            .ok()
-                            .flatten()
-                    })
-                    .unwrap_or(0.45)
-                    .clamp(0.05, 2.0);
-                let border_palette = parse_border_palette_from_lua(opts.as_ref())?;
+                let effects = parse_visual_effects_from_lua(opts.as_ref(), terrain_texture.is_some())?;
                 this.state
                     .borrow_mut()
                     .render_commands
@@ -1685,17 +1944,7 @@ impl LuaUserData for LuaProvinceRegistry {
                             .map(|(id, color)| (id.raw(), *color))
                             .collect(),
                         terrain_texture,
-                        terrain_texture_scale,
-                        terrain_texture_strength,
-                        edge_gradient_color,
-                        edge_gradient_radius,
-                        edge_gradient_strength,
-                        edge_gradient_softness,
-                        border_palette_enabled: border_palette.enabled,
-                        province_border_color: border_palette.province_border_color,
-                        coast_border_color: border_palette.coast_border_color,
-                        country_border_color: border_palette.country_border_color,
-                        sea_border_darken: border_palette.sea_border_darken,
+                        effects,
                         selected_id: options.selected_id.map(|id| id.raw()).unwrap_or(0),
                         hovered_id: options.hovered_id.map(|id| id.raw()).unwrap_or(0),
                         zoom_mode,
@@ -1778,7 +2027,7 @@ impl LuaUserData for LuaProvinceRegistry {
             Ok(())
         });
         // -- getChangesSince --
-        /// Returns all province changes that occurred after the given revision. Each entry contains the revision number and a change record describing what was modified (political_color, terrain_type, border_style, fog_state, visibility_state, or border_class).
+        /// Returns all province changes that occurred after the given revision. Each entry contains the revision number and a change record describing what was modified (political_color, terrain_type, border_style, fog_state, visibility_state, visual_state, or border_class).
         /// @param | revision | integer | The revision to query from (exclusive). Pass the last known revision to get only new changes.
         /// @return | table | Array of change tables, each with a `revision` field and change-specific fields (kind, province_id, etc.).
         /// @field | revision | integer | Change revision number.
@@ -1848,6 +2097,25 @@ impl LuaUserData for LuaProvinceRegistry {
                         row.set("province_id", province_id.0)?;
                         /// Performs the 'visibility_state' operation.
                         row.set("visibility_state", visibility_state)?;
+                    }
+                    ProvinceChange::VisualState {
+                        province_id,
+                        visual_state,
+                    } => {
+                        /// Performs the 'kind' operation.
+                        row.set("kind", "visual_state")?;
+                        /// Performs the 'province_id' operation.
+                        row.set("province_id", province_id.0)?;
+                        /// Performs the 'climate_type' operation.
+                        row.set("climate_type", visual_state.climate_type)?;
+                        /// Performs the 'weather_type' operation.
+                        row.set("weather_type", visual_state.weather_type)?;
+                        /// Performs the 'weather_strength' operation.
+                        row.set("weather_strength", visual_state.weather_strength)?;
+                        /// Performs the 'effect_flags' operation.
+                        row.set("effect_flags", visual_state.effect_flags)?;
+                        /// Performs the 'seed' operation.
+                        row.set("seed", visual_state.visual_seed)?;
                     }
                     ProvinceChange::BorderType {
                         province_a,

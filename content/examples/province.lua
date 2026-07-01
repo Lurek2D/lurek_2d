@@ -175,6 +175,28 @@ do
     lurek.log.info("applied = " .. tostring(ok))
 end
 
+--@api: LProvinceRegistry:setVisualState
+do
+
+    local reg = lurek.province.newFromPng("style_visual", "content/examples/assets/textures/province_map.png")
+    local ids = reg:provinceIds()
+    local province_id = ids[1]
+    local ok = false
+
+    if province_id then
+        ok = reg:setVisualState(province_id, {
+            climate = "temperate",
+            weather = "rain",
+            weather_strength = 0.55,
+            effect_flags = { "waves", "fog_noise" },
+            seed = 4242,
+        })
+    end
+
+    lurek.log.info("province_id = " .. tostring(province_id))
+    lurek.log.info("applied = " .. tostring(ok))
+end
+
 --@api: LProvinceRegistry:setBorderStyle
 do
 
@@ -436,6 +458,24 @@ do
     for i = 1, math.min(#ids, 3) do
         reg:setTerrainType(ids[i], 1)
     end
+    if ids[1] then
+        reg:setVisualState(ids[1], {
+            climate = "temperate",
+            weather = "rain",
+            weather_strength = 0.45,
+            effect_flags = { "fog_noise" },
+            seed = 101,
+        })
+    end
+    if ids[2] then
+        reg:setVisualState(ids[2], {
+            climate = "arid",
+            weather = "sandstorm",
+            weather_strength = 0.65,
+            effect_flags = { "heat_haze" },
+            seed = 202,
+        })
+    end
 
     reg:render({
         backend = "gpu",
@@ -459,6 +499,40 @@ do
         edge_gradient_strength = 0.25,
         edge_gradient_softness = 0.45,
         edge_gradient_color = { 0.0, 0.0, 0.0, 1.0 },
+        visual_effects = {
+            enabled = true,
+            border_noise = {
+                enabled = true,
+                frequency = 0.07,
+                amplitude_px = 1.5,
+                softness_px = 0.9,
+                seed = 42,
+            },
+            water = {
+                enabled = true,
+                strength = 0.25,
+                speed = 0.08,
+                scale = 48.0,
+            },
+            weather = {
+                enabled = true,
+                global_strength = 1.0,
+                direction = { 0.7, 1.0 },
+                speed = 1.0,
+            },
+            fog = {
+                enabled = true,
+                discovered_desaturation = 0.65,
+                hidden_color = { 0.02, 0.02, 0.02, 1.0 },
+                noise_strength = 0.08,
+            },
+            climate = {
+                enabled = true,
+                tint_strength = 0.35,
+                season_phase = 0.25,
+                season_strength = 0.1,
+            },
+        },
         border_palette = {
             province_color = { 64 / 255, 64 / 255, 60 / 255, 1.0 },
             coast_color = { 224 / 255, 196 / 255, 128 / 255, 1.0 },

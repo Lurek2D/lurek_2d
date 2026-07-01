@@ -13,6 +13,7 @@ use crate::province::map_modes::{MapModeConfig, MapModeRegistry};
 use crate::province::topology::ProvinceGraph;
 use crate::province::types::{
     BorderPairStyle, BorderType, BorderTypeConfig, ProvinceId, ProvinceSnapshot, ProvinceStyle,
+    ProvinceVisualState,
 };
 use crate::runtime::resource_keys::ShaderKey;
 use std::collections::HashMap;
@@ -303,6 +304,10 @@ impl ProvinceRegistry {
             .get(&id)
             .and_then(|p| p.label_text.as_deref())
     }
+    /// Return the shader-oriented visual state for id, or None if the province is unknown.
+    pub fn visual_state_for(&self, id: ProvinceId) -> Option<ProvinceVisualState> {
+        self.provinces.get(&id).map(|p| p.style.visual_state)
+    }
     /// Increment revision and append the change to the change log.
     fn bump_change(&mut self, change: ProvinceChange) {
         self.revision = self.revision.saturating_add(1);
@@ -388,6 +393,30 @@ impl ProvinceRegistry {
         self.bump_change(ProvinceChange::VisibilityState {
             province_id: id,
             visibility_state,
+        });
+        true
+    }
+    /// Set the province visual-state payload and record a VisualState change; return false if id is unknown.
+    pub fn set_visual_state(
+        &mut self,
+        id: ProvinceId,
+        mut visual_state: ProvinceVisualState,
+    ) -> bool {
+        let Some(rec) = self.provinces.get_mut(&id) else {
+            return false;
+        };
+        if !visual_state.weather_strength.is_finite() {
+            visual_state.weather_strength = 0.0;
+        } else {
+            visual_state.weather_strength = visual_state.weather_strength.clamp(0.0, 1.0);
+        }
+        if rec.style.visual_state == visual_state {
+            return true;
+        }
+        rec.style.visual_state = visual_state;
+        self.bump_change(ProvinceChange::VisualState {
+            province_id: id,
+            visual_state,
         });
         true
     }

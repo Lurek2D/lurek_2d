@@ -212,6 +212,13 @@ describe("province strict uncovered symbols", function()
         local reg = lurek.province.newFromPng("test-province-strict-render", "content/games/eu2/map.png")
         local ids = reg:provinceIds()
         local province_id = ids[1]
+        reg:setVisualState(province_id, {
+            climate = "temperate",
+            weather = "rain",
+            weather_strength = 0.5,
+            effect_flags = { "waves", "fog_noise" },
+            seed = 77,
+        })
         local before = reg:getRevision()
 
         local ok_render = pcall(function()
@@ -233,6 +240,40 @@ describe("province strict uncovered symbols", function()
                 },
                 terrain_texture_strength = 0.05,
                 terrain_texture_scale = 8.0,
+                visual_effects = {
+                    enabled = true,
+                    border_noise = {
+                        enabled = true,
+                        frequency = 0.07,
+                        amplitude_px = 1.4,
+                        softness_px = 0.8,
+                        seed = 42,
+                    },
+                    water = {
+                        enabled = true,
+                        strength = 0.3,
+                        speed = 0.08,
+                        scale = 48.0,
+                    },
+                    weather = {
+                        enabled = true,
+                        global_strength = 1.0,
+                        direction = { 0.7, 1.0 },
+                        speed = 1.0,
+                    },
+                    fog = {
+                        enabled = true,
+                        discovered_desaturation = 0.65,
+                        hidden_color = { 0.02, 0.02, 0.02, 1.0 },
+                        noise_strength = 0.08,
+                    },
+                    climate = {
+                        enabled = true,
+                        tint_strength = 0.35,
+                        season_phase = 0.25,
+                        season_strength = 0.1,
+                    },
+                },
                 draw_borders = false,
                 draw_capitals = false,
             })
@@ -244,6 +285,17 @@ describe("province strict uncovered symbols", function()
             reg:render({ province_tints = { [province_id] = "blue" } })
         end)
         expect_false(bad_ok)
+
+        local bad_effects = pcall(function()
+            reg:render({
+                backend = "gpu",
+                visual_effects = {
+                    enabled = true,
+                    fog = { hidden_color = { 0.1, 0.2 } },
+                },
+            })
+        end)
+        expect_false(bad_effects)
     end)
 
     -- @covers LProvinceRegistry:setShader
@@ -718,6 +770,25 @@ describe("province explicit owner coverage", function()
         local id = reg:provinceIds()[1]
         expect_true(reg:setVisibilityState(id, 2))
         expect_equal(2, reg:getProvince(id).style.visibility_state)
+    end)
+
+    -- @covers LProvinceRegistry:setVisualState
+    it("stores compact climate and weather metadata on a province snapshot", function()
+        local reg = province_registry("set_visual_state", "content/games/eu2/map.png")
+        local id = 1
+        expect_true(reg:setVisualState(id, {
+            climate = "arid",
+            weather = "sandstorm",
+            weather_strength = 0.8,
+            effect_flags = { "waves", "heat_haze" },
+            seed = 12345,
+        }))
+        local snap = reg:getProvince(id)
+        expect_equal("number", type(snap.style.visual_state.climate_type))
+        expect_equal("number", type(snap.style.visual_state.weather_type))
+        expect_near(0.8, snap.style.visual_state.weather_strength, 0.0001)
+        expect_true(snap.style.visual_state.effect_flags > 0)
+        expect_equal(12345, snap.style.visual_state.seed)
     end)
 
     -- @covers LProvinceRegistry:setCapital

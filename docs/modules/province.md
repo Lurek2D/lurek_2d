@@ -12,6 +12,7 @@ Simulates region maps decoded from color-coded PNG cartographic assets. - Import
 - Ownership, labels, borders, and view helpers make the module useful for strategy maps, campaign layers, regional simulations, and UI-heavy territory systems where territory data must be both playable and readable.
 - Adjacency behavior extends the feature from passive map metadata into active game logic, because movement, logistics, diplomacy, and campaign progression often depend on region-to-region relationships. Reusable route search belongs to `pathfind`; `province` adapts registry topology into that navigation layer.
 - Property layers, events, and interaction helpers make the module useful both as a gameplay authority for territory logic and as a map-facing surface for highlighting, picking, overlays, and editor-style inspection.
+- Optional visual state now lets provinces carry climate ids, weather ids, fog intensity, effect flags, and deterministic seeds without turning the module into a weather or rendering simulator.
 - Import and cache support matter because province-heavy projects often operate on large authored maps where region definitions, border relationships, and property tables must be reused efficiently at runtime instead of reparsed or recomputed ad hoc.
 - Region properties broaden the feature beyond simple ownership maps. Provinces often carry economy, culture, terrain, danger, visibility, supply, or event flags, and the module gives those layers one shared place to live and change over time.
 - That shared province identity is what keeps strategy logic, labels, overlays, and player interaction pointed at the same region model instead of drifting apart.
@@ -1043,7 +1044,7 @@ end
 
 #### `LProvinceRegistry:getChangesSince`
 
-Returns all province changes that occurred after the given revision. Each entry contains the revision number and a change record describing what was modified (political_color, terrain_type, border_style, fog_state, visibility_state, or border_class).
+Returns all province changes that occurred after the given revision. Each entry contains the revision number and a change record describing what was modified (political_color, terrain_type, border_style, fog_state, visibility_state, visual_state, or border_class).
 
 ```lua
 LProvinceRegistry:getChangesSince(revision)
@@ -1251,7 +1252,7 @@ end
 
 #### `LProvinceRegistry:getProvince`
 
-Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state), centroid, capital marker, and custom attributes.
+Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state, visual_state), centroid, capital marker, and custom attributes.
 
 ```lua
 LProvinceRegistry:getProvince(id)
@@ -1664,6 +1665,24 @@ do
     for i = 1, math.min(#ids, 3) do
         reg:setTerrainType(ids[i], 1)
     end
+    if ids[1] then
+        reg:setVisualState(ids[1], {
+            climate = "temperate",
+            weather = "rain",
+            weather_strength = 0.45,
+            effect_flags = { "fog_noise" },
+            seed = 101,
+        })
+    end
+    if ids[2] then
+        reg:setVisualState(ids[2], {
+            climate = "arid",
+            weather = "sandstorm",
+            weather_strength = 0.65,
+            effect_flags = { "heat_haze" },
+            seed = 202,
+        })
+    end
 
     reg:render({
         backend = "gpu",
@@ -1687,6 +1706,40 @@ do
         edge_gradient_strength = 0.25,
         edge_gradient_softness = 0.45,
         edge_gradient_color = { 0.0, 0.0, 0.0, 1.0 },
+        visual_effects = {
+            enabled = true,
+            border_noise = {
+                enabled = true,
+                frequency = 0.07,
+                amplitude_px = 1.5,
+                softness_px = 0.9,
+                seed = 42,
+            },
+            water = {
+                enabled = true,
+                strength = 0.25,
+                speed = 0.08,
+                scale = 48.0,
+            },
+            weather = {
+                enabled = true,
+                global_strength = 1.0,
+                direction = { 0.7, 1.0 },
+                speed = 1.0,
+            },
+            fog = {
+                enabled = true,
+                discovered_desaturation = 0.65,
+                hidden_color = { 0.02, 0.02, 0.02, 1.0 },
+                noise_strength = 0.08,
+            },
+            climate = {
+                enabled = true,
+                tint_strength = 0.35,
+                season_phase = 0.25,
+                season_strength = 0.1,
+            },
+        },
         border_palette = {
             province_color = { 64 / 255, 64 / 255, 60 / 255, 1.0 },
             coast_color = { 224 / 255, 196 / 255, 128 / 255, 1.0 },
@@ -2372,6 +2425,54 @@ do
 
     if province_id then
         ok = reg:setVisibilityState(province_id, 2)
+    end
+
+    lurek.log.info("province_id = " .. tostring(province_id))
+    lurek.log.info("applied = " .. tostring(ok))
+end
+```
+
+---
+
+#### `LProvinceRegistry:setVisualState`
+
+Sets climate, weather, and shader-effect metadata for a province without moving simulation rules into `province`.
+
+```lua
+LProvinceRegistry:setVisualState(id, state)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Province ID. |
+| `state` | table | Table with optional `climate`, `weather`, `weather_strength`, `effect_flags`, and `seed` fields. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if the province ID exists. |
+
+**Example**
+
+```lua
+do
+
+    local reg = lurek.province.newFromPng("style_visual", "content/examples/assets/textures/province_map.png")
+    local ids = reg:provinceIds()
+    local province_id = ids[1]
+    local ok = false
+
+    if province_id then
+        ok = reg:setVisualState(province_id, {
+            climate = "temperate",
+            weather = "rain",
+            weather_strength = 0.55,
+            effect_flags = { "waves", "fog_noise" },
+            seed = 4242,
+        })
     end
 
     lurek.log.info("province_id = " .. tostring(province_id))

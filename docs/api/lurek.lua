@@ -25977,7 +25977,7 @@ function LProvinceRegistry:getBorderPairStyle(a, b) end
 ---@return number Border type ID, or nil.
 function LProvinceRegistry:getBorderType(a, b) end
 
---- Returns all province changes that occurred after the given revision. Each entry contains the revision number and a change record describing what was modified (political_color, terrain_type, border_style, fog_state, visibility_state, or border_class).
+--- Returns all province changes that occurred after the given revision. Each entry contains the revision number and a change record describing what was modified (political_color, terrain_type, border_style, fog_state, visibility_state, visual_state, or border_class).
 ---@param revision number The revision to query from (exclusive). Pass the last known revision to get only new changes.
 ---@return LProvinceRegistryGetChangesSinceResult Array of change tables, each with a `revision` field and change-specific fields (kind, province_id, etc.).
 function LProvinceRegistry:getChangesSince(revision) end
@@ -26003,7 +26003,7 @@ function LProvinceRegistry:getName() end
 ---@return number[] Array of neighboring province IDs.
 function LProvinceRegistry:getNeighbors(id) end
 
---- Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state), centroid, capital marker, and custom attributes.
+--- Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state, visual_state), centroid, capital marker, and custom attributes.
 ---@param id number Province ID to query.
 ---@return LProvinceRegistryGetProvinceResult Province snapshot table, or nil if the ID does not exist.
 function LProvinceRegistry:getProvince(id) end
@@ -26167,6 +26167,12 @@ function LProvinceRegistry:setTerrainType(id, terrain_type) end
 ---@param visibility_state number Visibility state byte.
 ---@return boolean True if the province ID exists.
 function LProvinceRegistry:setVisibilityState(id, visibility_state) end
+
+--- Sets climate, weather, and shader-effect metadata for a province without moving simulation rules into `province`.
+---@param id number Province ID.
+---@param state table Table with optional `climate`, `weather`, `weather_strength`, `effect_flags`, and `seed` fields.
+---@return boolean True if the province ID exists.
+function LProvinceRegistry:setVisualState(id, state) end
 
 --- Sums a numeric attribute for all provinces with matching owner value.
 ---@param owner_attr string Owner attribute key.

@@ -70,8 +70,22 @@ pub struct ProvinceMapUniforms {
     pub country_border_color: [f32; 4],
     /// Border palette parameters: enabled flag, sea darken amount, reserved, reserved.
     pub border_palette_params: [f32; 4],
+    /// Border-noise parameters: frequency, amplitude_px, softness_px, enabled flag.
+    pub border_noise_params: [f32; 4],
+    /// Water-effect parameters: strength, speed, scale, reserved.
+    pub water_params: [f32; 4],
+    /// Weather parameters: global strength, speed, direction x, direction y.
+    pub weather_params: [f32; 4],
+    /// Fog parameters: discovered desaturation, noise strength, enabled flag, reserved.
+    pub fog_params: [f32; 4],
+    /// Fog hidden-area fallback color.
+    pub fog_hidden_color: [f32; 4],
+    /// Climate parameters: tint strength, season phase, season strength, enabled flag.
+    pub climate_params: [f32; 4],
     /// Province highlight ids: selected id, hovered id, reserved, reserved.
     pub highlight_ids: [u32; 4],
+    /// Deterministic effect seeds: border noise seed plus reserved slots.
+    pub effect_seeds: [u32; 4],
 }
 
 impl ProvinceMapUniforms {
@@ -92,7 +106,14 @@ impl ProvinceMapUniforms {
             coast_border_color: [224.0 / 255.0, 196.0 / 255.0, 128.0 / 255.0, 238.0 / 255.0],
             country_border_color: [230.0 / 255.0, 48.0 / 255.0, 44.0 / 255.0, 245.0 / 255.0],
             border_palette_params: [1.0, 0.15, 0.0, 0.0],
+            border_noise_params: [0.07, 0.0, 1.0, 0.0],
+            water_params: [0.0, 0.08, 48.0, 0.0],
+            weather_params: [0.0, 1.0, 0.7, 1.0],
+            fog_params: [1.0, 0.0, 0.0, 0.0],
+            fog_hidden_color: [0.02, 0.02, 0.02, 1.0],
+            climate_params: [0.0, 0.0, 0.0, 0.0],
             highlight_ids: [0, 0, 0, 0],
+            effect_seeds: [0, 0, 0, 0],
         }
     }
 }

@@ -663,16 +663,7 @@ pub fn validate_render_command(
             screen_size,
             tint,
             province_tints,
-            terrain_texture_scale,
-            terrain_texture_strength,
-            edge_gradient_color,
-            edge_gradient_radius,
-            edge_gradient_strength,
-            edge_gradient_softness,
-            province_border_color,
-            coast_border_color,
-            country_border_color,
-            sea_border_darken,
+            effects,
             time,
             ..
         } => {
@@ -688,25 +679,85 @@ pub fn validate_render_command(
             for (_, color) in province_tints {
                 validate_color("province_map.province_tint", *color)?;
             }
-            validate_positive("province_map.terrain_texture_scale", *terrain_texture_scale)?;
+            validate_positive(
+                "province_map.terrain_texture_scale",
+                effects.terrain_texture_scale,
+            )?;
             validate_unit_interval(
                 "province_map.terrain_texture_strength",
-                *terrain_texture_strength,
+                effects.terrain_texture_strength,
             )?;
-            validate_color("province_map.edge_gradient_color", *edge_gradient_color)?;
-            validate_non_negative("province_map.edge_gradient_radius", *edge_gradient_radius)?;
+            validate_color(
+                "province_map.edge_gradient_color",
+                effects.edge_gradient_color,
+            )?;
+            validate_non_negative(
+                "province_map.edge_gradient_radius",
+                effects.edge_gradient_radius,
+            )?;
             validate_unit_interval(
                 "province_map.edge_gradient_strength",
-                *edge_gradient_strength,
+                effects.edge_gradient_strength,
             )?;
             validate_positive(
                 "province_map.edge_gradient_softness",
-                *edge_gradient_softness,
+                effects.edge_gradient_softness,
             )?;
-            validate_color("province_map.province_border_color", *province_border_color)?;
-            validate_color("province_map.coast_border_color", *coast_border_color)?;
-            validate_color("province_map.country_border_color", *country_border_color)?;
-            validate_unit_interval("province_map.sea_border_darken", *sea_border_darken)?;
+            validate_color(
+                "province_map.province_border_color",
+                effects.province_border_color,
+            )?;
+            validate_color(
+                "province_map.coast_border_color",
+                effects.coast_border_color,
+            )?;
+            validate_color(
+                "province_map.country_border_color",
+                effects.country_border_color,
+            )?;
+            validate_unit_interval("province_map.sea_border_darken", effects.sea_border_darken)?;
+            validate_non_negative(
+                "province_map.border_noise.frequency",
+                effects.border_noise.frequency,
+            )?;
+            validate_non_negative(
+                "province_map.border_noise.amplitude_px",
+                effects.border_noise.amplitude_px,
+            )?;
+            validate_positive(
+                "province_map.border_noise.softness_px",
+                effects.border_noise.softness_px,
+            )?;
+            validate_unit_interval("province_map.water.strength", effects.water.strength)?;
+            validate_non_negative("province_map.water.speed", effects.water.speed)?;
+            validate_positive("province_map.water.scale", effects.water.scale)?;
+            validate_unit_interval(
+                "province_map.weather.global_strength",
+                effects.weather.global_strength,
+            )?;
+            validate_finite_slice("province_map.weather.direction", &effects.weather.direction)?;
+            validate_non_negative("province_map.weather.speed", effects.weather.speed)?;
+            validate_unit_interval(
+                "province_map.fog.discovered_desaturation",
+                effects.fog.discovered_desaturation,
+            )?;
+            validate_color("province_map.fog.hidden_color", effects.fog.hidden_color)?;
+            validate_unit_interval(
+                "province_map.fog.noise_strength",
+                effects.fog.noise_strength,
+            )?;
+            validate_unit_interval(
+                "province_map.climate.tint_strength",
+                effects.climate.tint_strength,
+            )?;
+            validate_unit_interval(
+                "province_map.climate.season_phase",
+                effects.climate.season_phase,
+            )?;
+            validate_unit_interval(
+                "province_map.climate.season_strength",
+                effects.climate.season_strength,
+            )?;
             validate_finite("province_map.time", *time)
         }
         PushTransform

@@ -67,17 +67,7 @@ struct PendingProvinceMapDraw {
     tint: [f32; 4],
     province_tints: Vec<(u32, [f32; 4])>,
     terrain_texture: Option<TextureKey>,
-    terrain_texture_scale: f32,
-    terrain_texture_strength: f32,
-    edge_gradient_color: [f32; 4],
-    edge_gradient_radius: f32,
-    edge_gradient_strength: f32,
-    edge_gradient_softness: f32,
-    border_palette_enabled: bool,
-    province_border_color: [f32; 4],
-    coast_border_color: [f32; 4],
-    country_border_color: [f32; 4],
-    sea_border_darken: f32,
+    effects: crate::render::renderer::ProvinceMapEffectOptions,
     selected_id: u32,
     hovered_id: u32,
     zoom_mode: u32,
@@ -973,12 +963,12 @@ impl GpuRenderer {
             let terrain_texture = draw
                 .terrain_texture
                 .and_then(|key| self.gpu_textures.get(key))
-                .filter(|_| draw.terrain_texture_strength > 0.0);
+                .filter(|_| draw.effects.terrain_texture_strength > 0.0);
             if draw.terrain_texture.is_some() && terrain_texture.is_none() {
                 self.render_diagnostics.record_missing_texture();
             }
-            let terrain_texture_strength = if draw.terrain_texture_strength > 0.0 {
-                draw.terrain_texture_strength
+            let terrain_texture_strength = if draw.effects.terrain_texture_strength > 0.0 {
+                draw.effects.terrain_texture_strength
             } else {
                 0.0
             };
@@ -988,30 +978,86 @@ impl GpuRenderer {
                 screen_size: draw.screen_size,
                 zoom_mode: draw.zoom_mode,
                 time: draw.time,
-                terrain_texture_scale: draw.terrain_texture_scale,
+                terrain_texture_scale: draw.effects.terrain_texture_scale,
                 terrain_texture_strength,
                 fill_tint: draw.tint,
-                edge_gradient_color: draw.edge_gradient_color,
+                edge_gradient_color: draw.effects.edge_gradient_color,
                 edge_gradient_params: [
-                    draw.edge_gradient_radius,
-                    draw.edge_gradient_strength,
-                    draw.edge_gradient_softness,
+                    draw.effects.edge_gradient_radius,
+                    draw.effects.edge_gradient_strength,
+                    draw.effects.edge_gradient_softness,
                     255.0,
                 ],
-                province_border_color: draw.province_border_color,
-                coast_border_color: draw.coast_border_color,
-                country_border_color: draw.country_border_color,
+                province_border_color: draw.effects.province_border_color,
+                coast_border_color: draw.effects.coast_border_color,
+                country_border_color: draw.effects.country_border_color,
                 border_palette_params: [
-                    if draw.border_palette_enabled {
+                    if draw.effects.border_palette_enabled {
                         1.0
                     } else {
                         0.0
                     },
-                    draw.sea_border_darken,
+                    draw.effects.sea_border_darken,
                     0.0,
                     0.0,
                 ],
+                border_noise_params: [
+                    draw.effects.border_noise.frequency,
+                    if draw.effects.enabled && draw.effects.border_noise.enabled {
+                        draw.effects.border_noise.amplitude_px
+                    } else {
+                        0.0
+                    },
+                    draw.effects.border_noise.softness_px,
+                    if draw.effects.enabled && draw.effects.border_noise.enabled {
+                        1.0
+                    } else {
+                        0.0
+                    },
+                ],
+                water_params: [
+                    if draw.effects.enabled && draw.effects.water.enabled {
+                        draw.effects.water.strength
+                    } else {
+                        0.0
+                    },
+                    draw.effects.water.speed,
+                    draw.effects.water.scale,
+                    0.0,
+                ],
+                weather_params: [
+                    if draw.effects.enabled && draw.effects.weather.enabled {
+                        draw.effects.weather.global_strength
+                    } else {
+                        0.0
+                    },
+                    draw.effects.weather.speed,
+                    draw.effects.weather.direction[0],
+                    draw.effects.weather.direction[1],
+                ],
+                fog_params: [
+                    draw.effects.fog.discovered_desaturation,
+                    draw.effects.fog.noise_strength,
+                    if draw.effects.enabled && draw.effects.fog.enabled {
+                        1.0
+                    } else {
+                        0.0
+                    },
+                    0.0,
+                ],
+                fog_hidden_color: draw.effects.fog.hidden_color,
+                climate_params: [
+                    draw.effects.climate.tint_strength,
+                    draw.effects.climate.season_phase,
+                    draw.effects.climate.season_strength,
+                    if draw.effects.enabled && draw.effects.climate.enabled {
+                        1.0
+                    } else {
+                        0.0
+                    },
+                ],
                 highlight_ids: [draw.selected_id, draw.hovered_id, 0, 0],
+                effect_seeds: [draw.effects.border_noise.seed, 0, 0, 0],
             };
             self.province_map_pipeline
                 .update_uniforms(&self.queue, &uniforms);
@@ -3980,17 +4026,7 @@ impl GpuRenderer {
                     tint,
                     province_tints,
                     terrain_texture,
-                    terrain_texture_scale,
-                    terrain_texture_strength,
-                    edge_gradient_color,
-                    edge_gradient_radius,
-                    edge_gradient_strength,
-                    edge_gradient_softness,
-                    border_palette_enabled,
-                    province_border_color,
-                    coast_border_color,
-                    country_border_color,
-                    sea_border_darken,
+                    effects,
                     selected_id,
                     hovered_id,
                     zoom_mode,
@@ -4003,17 +4039,7 @@ impl GpuRenderer {
                         tint: *tint,
                         province_tints: province_tints.clone(),
                         terrain_texture: *terrain_texture,
-                        terrain_texture_scale: *terrain_texture_scale,
-                        terrain_texture_strength: *terrain_texture_strength,
-                        edge_gradient_color: *edge_gradient_color,
-                        edge_gradient_radius: *edge_gradient_radius,
-                        edge_gradient_strength: *edge_gradient_strength,
-                        edge_gradient_softness: *edge_gradient_softness,
-                        border_palette_enabled: *border_palette_enabled,
-                        province_border_color: *province_border_color,
-                        coast_border_color: *coast_border_color,
-                        country_border_color: *country_border_color,
-                        sea_border_darken: *sea_border_darken,
+                        effects: *effects,
                         selected_id: *selected_id,
                         hovered_id: *hovered_id,
                         zoom_mode: *zoom_mode,
