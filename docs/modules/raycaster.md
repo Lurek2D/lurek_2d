@@ -609,6 +609,11 @@ do
         lurek.log.info("lighting samples = " .. stats.lightingSamples)
         lurek.log.info("lighting cache hits = " .. stats.lightingCacheHits)
         lurek.log.info("lighting cache misses = " .. stats.lightingCacheMisses)
+        lurek.log.info("wall quads = " .. stats.wallQuads)
+        lurek.log.info("floor quads = " .. stats.floorQuads)
+        lurek.log.info("ceiling quads = " .. stats.ceilingQuads)
+        lurek.log.info("visible levels = " .. stats.visibleLevels)
+        lurek.log.info("depth columns = " .. stats.depthColumns)
     end
 end
 ```
@@ -1259,7 +1264,7 @@ LDoorManager:addDoor(x, y, direction, speed)
 | `x` | number | Grid column of the door cell. |
 | `y` | number | Grid row of the door cell. |
 | `direction` | string | Slide axis: "horizontal" or "vertical". |
-| `speed` | number | How fast the door opens/closes (units per second). |
+| `speed` | number | How fast the door opens/closes (units per second); must be finite and >= 0. |
 
 **Returns**
 
@@ -3387,7 +3392,7 @@ end
 Computes floor/ceiling texture UV coordinates for a single scanline row.
 
 ```lua
-LRaycaster:castFloorRow(camX, camY, dirX, dirY, planeX, planeY, row)
+LRaycaster:castFloorRow(camX, camY, dirX, dirY, planeX, planeY, row, screenWidth, screenHeight)
 ```
 
 **Parameters**
@@ -3401,6 +3406,8 @@ LRaycaster:castFloorRow(camX, camY, dirX, dirY, planeX, planeY, row)
 | `planeX` | number | Camera plane X (half-width of FOV). |
 | `planeY` | number | Camera plane Y (half-width of FOV). |
 | `row` | number | Scanline row offset from screen center. |
+| `screenWidth?` | number | Optional explicit viewport width. When omitted, legacy map width sampling is used. |
+| `screenHeight?` | number | Optional explicit viewport height. When omitted, legacy map height sampling is used. |
 
 **Returns**
 
@@ -3414,11 +3421,13 @@ LRaycaster:castFloorRow(camX, camY, dirX, dirY, planeX, planeY, row)
 do
 
     local map = lurek.raycaster.new(16, 16)
-    local uvs = map:castFloorRow(8, 8, 1, 0, 0, 0.66, 150)
+    local legacy_uvs = map:castFloorRow(8, 8, 1, 0, 0, 0.66, 150)
+    local viewport_uvs = map:castFloorRow(8, 8, 1, 0, 0, 0.66, 150, 320, 200)
 
-    lurek.log.info("uv count = " .. #uvs)
-    if uvs[1] then
-        lurek.log.info("first uv = " .. string.format("%.2f", uvs[1].u) .. "," .. string.format("%.2f", uvs[1].v))
+    lurek.log.info("legacy uv count = " .. #legacy_uvs)
+    lurek.log.info("viewport uv count = " .. #viewport_uvs)
+    if viewport_uvs[1] then
+        lurek.log.info("first viewport uv = " .. string.format("%.2f", viewport_uvs[1].u) .. "," .. string.format("%.2f", viewport_uvs[1].v))
     end
 end
 ```

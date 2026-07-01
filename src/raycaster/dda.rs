@@ -7,6 +7,7 @@
 //! Safe setters ignore invalid writes, and out-of-range reads fall back predictably for tools and runtime probes.
 //! Open this file when marching semantics or map-owned ray data change; debug views and scene building live in siblings.
 
+use super::contract::{OutOfBoundsPolicy, RaycastParams, RaycasterError, RaycasterLimits};
 use super::doors::DoorManager;
 use super::ray_hit::RayHit;
 use super::sprite_projection::SpriteProjection;
@@ -23,6 +24,8 @@ pub struct Raycaster2D {
     height: u32,
     /// Flat row-major tile values; 0 = open, non-zero = wall cell type.
     cells: Vec<u32>,
+    /// Policy used by checked cell queries when callers probe outside authored bounds.
+    oob_policy: OutOfBoundsPolicy,
     /// Per-tile-type alpha overrides for transparent walls; default 1.0 (opaque).
     wall_alphas: HashMap<u8, f32>,
     /// Per-cell wall feature descriptors used by rendering, picking, and ray probes.
@@ -35,14 +38,38 @@ impl Raycaster2D {
     /// Create a new empty grid of `width × height` open cells.
     pub fn new(width: u32, height: u32) -> Self {
         log_msg!(debug, RC01, "{}x{}", width, height);
+        let limits = RaycasterLimits::default();
+        let (width, height, cell_count) = limits.sanitize_grid_dimensions(width, height);
         Self {
             width,
             height,
-            cells: vec![0; (width * height) as usize],
+            cells: vec![0; cell_count],
+            oob_policy: limits.default_oob_policy,
             wall_alphas: HashMap::new(),
             wall_features: HashMap::new(),
             synced_door_cells: HashSet::new(),
         }
+    }
+    /// Create a validated empty grid using the shared raycaster limits.
+    pub fn try_new(width: u32, height: u32) -> Result<Self, RaycasterError> {
+        Self::try_new_with_limits(width, height, RaycasterLimits::default())
+    }
+    /// Create a validated empty grid using explicit raycaster limits.
+    pub fn try_new_with_limits(
+        width: u32,
+        height: u32,
+        limits: RaycasterLimits,
+    ) -> Result<Self, RaycasterError> {
+        let cell_count = limits.validate_grid_dimensions(width, height)?;
+        Ok(Self {
+            width,
+            height,
+            cells: vec![0; cell_count],
+            oob_policy: limits.default_oob_policy,
+            wall_alphas: HashMap::new(),
+            wall_features: HashMap::new(),
+            synced_door_cells: HashSet::new(),
+        })
     }
     /// Set the value of cell `(x, y)`; silently ignores out-of-bounds coordinates.
     pub fn set_cell(&mut self, x: u32, y: u32, value: u32) {
@@ -58,11 +85,41 @@ impl Raycaster2D {
             0
         }
     }
+    /// Return the configured out-of-bounds policy used by checked queries.
+    pub fn out_of_bounds_policy(&self) -> OutOfBoundsPolicy {
+        self.oob_policy
+    }
+    /// Set the policy used by checked out-of-bounds cell queries.
+    pub fn set_out_of_bounds_policy(&mut self, policy: OutOfBoundsPolicy) {
+        self.oob_policy = policy;
+    }
+    /// Return a checked cell value using the configured OOB policy.
+    pub fn get_cell_checked(&self, x: i32, y: i32) -> Option<u32> {
+        if x >= 0 && y >= 0 && x < self.width as i32 && y < self.height as i32 {
+            return Some(self.cells[(y as u32 * self.width + x as u32) as usize]);
+        }
+        match self.oob_policy {
+            OutOfBoundsPolicy::Open => Some(0),
+            OutOfBoundsPolicy::Blocked => Some(1),
+            OutOfBoundsPolicy::Stop => None,
+        }
+    }
     /// Replace the entire cell grid with `data`; no-op if length mismatches.
     pub fn set_cells(&mut self, data: Vec<u32>) {
-        if data.len() == (self.width * self.height) as usize {
-            self.cells = data;
+        let _ = self.try_set_cells(data);
+    }
+    /// Replace the entire cell grid with `data`, rejecting wrong lengths explicitly.
+    pub fn try_set_cells(&mut self, data: Vec<u32>) -> Result<(), RaycasterError> {
+        let expected = (self.width as usize).saturating_mul(self.height as usize);
+        if data.len() != expected {
+            return Err(RaycasterError::DataLengthMismatch {
+                context: "raycaster.set_cells",
+                expected,
+                actual: data.len(),
+            });
         }
+        self.cells = data;
+        Ok(())
     }
     /// Return true when cell `(x, y)` has a non-zero value (solid wall).
     pub fn is_blocked(&self, x: u32, y: u32) -> bool {
@@ -74,6 +131,23 @@ impl Raycaster2D {
             .copied()
             .map(|feature| feature.blocks_ray_hit())
             .unwrap_or(true)
+    }
+    /// Return a checked blocked result using the configured OOB policy.
+    pub fn is_blocked_checked(&self, x: i32, y: i32) -> Option<bool> {
+        let cell = self.get_cell_checked(x, y)?;
+        if cell == 0 {
+            return Some(false);
+        }
+        if x < 0 || y < 0 || x >= self.width as i32 || y >= self.height as i32 {
+            return Some(true);
+        }
+        Some(
+            self.wall_features
+                .get(&(x as u32, y as u32))
+                .copied()
+                .map(|feature| feature.blocks_ray_hit())
+                .unwrap_or(true),
+        )
     }
     /// Return true when cell `(x, y)` stops render visibility probes.
     pub fn blocks_render_visibility_at(&self, x: u32, y: u32) -> bool {
@@ -131,14 +205,33 @@ impl Raycaster2D {
     /// door manager controls openness over time. Cells that were previously synchronized but are
     /// no longer present in `doors` have their door feature removed.
     pub fn sync_doors(&mut self, doors: &DoorManager, alpha: f32) {
+        let _ = self.try_sync_doors(doors, alpha);
+    }
+    /// Synchronize doors strictly, rejecting out-of-bounds or empty-tile definitions.
+    pub fn try_sync_doors(
+        &mut self,
+        doors: &DoorManager,
+        alpha: f32,
+    ) -> Result<(), RaycasterError> {
         let mut next_cells = HashSet::new();
         let alpha = alpha.clamp(0.0, 1.0);
 
         for door in doors.doors() {
             let pos = (door.x, door.y);
             next_cells.insert(pos);
+            if door.x >= self.width || door.y >= self.height {
+                return Err(RaycasterError::DoorOutOfBounds {
+                    x: door.x,
+                    y: door.y,
+                    width: self.width,
+                    height: self.height,
+                });
+            }
             if self.get_cell(door.x, door.y) == 0 {
-                continue;
+                return Err(RaycasterError::DoorOnEmptyCell {
+                    x: door.x,
+                    y: door.y,
+                });
             }
             self.set_wall_feature(
                 door.x,
@@ -157,6 +250,7 @@ impl Raycaster2D {
         }
 
         self.synced_door_cells = next_cells;
+        Ok(())
     }
     /// Remove every door feature previously synchronized from a `DoorManager`.
     pub fn clear_synced_doors(&mut self) {
@@ -180,8 +274,7 @@ impl Raycaster2D {
             .map(|feature| feature.alpha())
             .unwrap_or_else(|| self.wall_alphas.get(&(cell as u8)).copied().unwrap_or(1.0))
     }
-    /// Cast a single DDA ray from `(ox, oy)` in direction `angle`; return the first solid hit or `None`.
-    pub fn cast_ray(&self, ox: f32, oy: f32, angle: f32, max_dist: f32) -> Option<RayHit> {
+    fn cast_ray_impl(&self, ox: f32, oy: f32, angle: f32, max_dist: f32) -> Option<RayHit> {
         let dir_x = angle.cos();
         let dir_y = angle.sin();
         let mut map_x = ox.floor() as i32;
@@ -259,8 +352,43 @@ impl Raycaster2D {
             }
         }
     }
-    /// Cast a ray and collect up to `max_hits` (≤ 8) consecutive hits, stopping at the first opaque wall.
-    pub fn cast_ray_multi(
+    /// Cast a single DDA ray from `(ox, oy)` in direction `angle`; return the first solid hit or `None`.
+    pub fn cast_ray(&self, ox: f32, oy: f32, angle: f32, max_dist: f32) -> Option<RayHit> {
+        let params = RaycastParams {
+            origin_x: ox,
+            origin_y: oy,
+            angle,
+            fov: None,
+            count: None,
+            max_distance: max_dist,
+            max_hits: None,
+        };
+        if params.validate(&RaycasterLimits::default()).is_err() {
+            return None;
+        }
+        self.cast_ray_impl(ox, oy, angle, max_dist)
+    }
+    /// Cast a validated DDA ray and return either the first hit or `None` on range exhaustion.
+    pub fn try_cast_ray(
+        &self,
+        ox: f32,
+        oy: f32,
+        angle: f32,
+        max_dist: f32,
+    ) -> Result<Option<RayHit>, RaycasterError> {
+        RaycastParams {
+            origin_x: ox,
+            origin_y: oy,
+            angle,
+            fov: None,
+            count: None,
+            max_distance: max_dist,
+            max_hits: None,
+        }
+        .validate(&RaycasterLimits::default())?;
+        Ok(self.cast_ray_impl(ox, oy, angle, max_dist))
+    }
+    fn cast_ray_multi_impl(
         &self,
         ox: f32,
         oy: f32,
@@ -381,6 +509,52 @@ impl Raycaster2D {
         }
         hits
     }
+    /// Cast a ray and collect up to `max_hits` (≤ 8) consecutive hits, stopping at the first opaque wall.
+    pub fn cast_ray_multi(
+        &self,
+        ox: f32,
+        oy: f32,
+        angle: f32,
+        max_dist: f32,
+        max_hits: u32,
+    ) -> Vec<RayHit> {
+        let limits = RaycasterLimits::default();
+        let max_hits = max_hits.clamp(1, limits.max_multi_hits);
+        let params = RaycastParams {
+            origin_x: ox,
+            origin_y: oy,
+            angle,
+            fov: None,
+            count: None,
+            max_distance: max_dist,
+            max_hits: Some(max_hits),
+        };
+        if params.validate(&limits).is_err() {
+            return Vec::new();
+        }
+        self.cast_ray_multi_impl(ox, oy, angle, max_dist, max_hits)
+    }
+    /// Cast a validated layered ray and return every transparent-wall hit until an opaque stop.
+    pub fn try_cast_ray_multi(
+        &self,
+        ox: f32,
+        oy: f32,
+        angle: f32,
+        max_dist: f32,
+        max_hits: u32,
+    ) -> Result<Vec<RayHit>, RaycasterError> {
+        RaycastParams {
+            origin_x: ox,
+            origin_y: oy,
+            angle,
+            fov: None,
+            count: None,
+            max_distance: max_dist,
+            max_hits: Some(max_hits),
+        }
+        .validate(&RaycasterLimits::default())?;
+        Ok(self.cast_ray_multi_impl(ox, oy, angle, max_dist, max_hits))
+    }
     /// Cast `count` rays spread across `fov` from `(ox, oy)`; return one `RayHit` per ray with fish-eye correction.
     pub fn cast_rays(
         &self,
@@ -391,6 +565,20 @@ impl Raycaster2D {
         count: u32,
         max_dist: f32,
     ) -> Vec<RayHit> {
+        let limits = RaycasterLimits::default();
+        let count = count.min(limits.max_rays);
+        let params = RaycastParams {
+            origin_x: ox,
+            origin_y: oy,
+            angle,
+            fov: Some(fov),
+            count: Some(count),
+            max_distance: max_dist,
+            max_hits: None,
+        };
+        if count == 0 || params.validate(&limits).is_err() {
+            return Vec::new();
+        }
         let mut results = Vec::with_capacity(count as usize);
         let half_fov = fov / 2.0;
         for i in 0..count {
@@ -400,7 +588,7 @@ impl Raycaster2D {
                 angle
             };
             let angle_diff = ray_angle - angle;
-            match self.cast_ray(ox, oy, ray_angle, max_dist) {
+            match self.cast_ray_impl(ox, oy, ray_angle, max_dist) {
                 Some(mut hit) => {
                     hit.raw_distance = hit.distance;
                     hit.distance *= angle_diff.cos();
@@ -423,6 +611,28 @@ impl Raycaster2D {
         }
         results
     }
+    /// Cast a validated ray fan and return one corrected hit per ray.
+    pub fn try_cast_rays(
+        &self,
+        ox: f32,
+        oy: f32,
+        angle: f32,
+        fov: f32,
+        count: u32,
+        max_dist: f32,
+    ) -> Result<Vec<RayHit>, RaycasterError> {
+        RaycastParams {
+            origin_x: ox,
+            origin_y: oy,
+            angle,
+            fov: Some(fov),
+            count: Some(count),
+            max_distance: max_dist,
+            max_hits: None,
+        }
+        .validate(&RaycasterLimits::default())?;
+        Ok(self.cast_rays(ox, oy, angle, fov, count, max_dist))
+    }
     /// Cast `count` rays and pack each hit as 5 floats `[dist, cell, side, tex_u, hit]`.
     pub fn cast_rays_flat(
         &self,
@@ -443,6 +653,19 @@ impl Raycaster2D {
             flat.push(if h.hit { 1.0 } else { 0.0 });
         }
         flat
+    }
+    /// Cast a validated ray fan and flatten the results into `[dist, cell, side, tex_u, hit]`.
+    pub fn try_cast_rays_flat(
+        &self,
+        ox: f32,
+        oy: f32,
+        angle: f32,
+        fov: f32,
+        count: u32,
+        max_dist: f32,
+    ) -> Result<Vec<f32>, RaycasterError> {
+        self.try_cast_rays(ox, oy, angle, fov, count, max_dist)?;
+        Ok(self.cast_rays_flat(ox, oy, angle, fov, count, max_dist))
     }
     /// Project world sprite at `(sx, sy)` onto the screen given player position and orientation; return a `SpriteProjection`.
     #[allow(clippy::too_many_arguments)]
@@ -479,6 +702,42 @@ impl Raycaster2D {
             distance: transform_y,
             visible: true,
         }
+    }
+    #[allow(clippy::too_many_arguments)]
+    fn cast_floor_row_impl(
+        &self,
+        cam_x: f32,
+        cam_y: f32,
+        dir_x: f32,
+        dir_y: f32,
+        plane_x: f32,
+        plane_y: f32,
+        row: i32,
+        screen_width: i32,
+        screen_height: i32,
+    ) -> Vec<(f32, f32)> {
+        let w = screen_width;
+        let h = screen_height;
+        let half_h = h / 2;
+        let p = row - half_h;
+        if p == 0 {
+            return vec![(0.0, 0.0); w as usize];
+        }
+        let row_distance = 0.5 * h as f32 / p.abs() as f32;
+        let floor_step_x = row_distance * (dir_x + plane_x - (dir_x - plane_x)) / w as f32;
+        let floor_step_y = row_distance * (dir_y + plane_y - (dir_y - plane_y)) / w as f32;
+        let mut floor_x = cam_x + row_distance * (dir_x - plane_x);
+        let mut floor_y = cam_y + row_distance * (dir_y - plane_y);
+        let mut result = Vec::with_capacity(w as usize);
+        for _ in 0..w {
+            let tx = floor_x - floor_x.floor();
+            let ty = floor_y - floor_y.floor();
+            floor_x += floor_step_x;
+            floor_y += floor_step_y;
+            result.push((tx, ty));
+        }
+        log::debug!("raycaster: cast_floor_row row={row} -> {} samples", result.len());
+        result
     }
     /// Return per-pixel `(tex_u, tex_v)` world UV coordinates for every pixel in floor row `row`.
     #[allow(clippy::too_many_arguments)]
@@ -517,5 +776,71 @@ impl Raycaster2D {
             result.len()
         );
         result
+    }
+    /// Return per-pixel floor-row UV coordinates using explicit viewport dimensions.
+    #[allow(clippy::too_many_arguments)]
+    pub fn cast_floor_row_with_viewport(
+        &self,
+        cam_x: f32,
+        cam_y: f32,
+        dir_x: f32,
+        dir_y: f32,
+        plane_x: f32,
+        plane_y: f32,
+        row: i32,
+        screen_width: u32,
+        screen_height: u32,
+    ) -> Vec<(f32, f32)> {
+        if RaycasterLimits::default()
+            .validate_screen_dimensions(screen_width as f32, screen_height as f32)
+            .is_err()
+        {
+            return Vec::new();
+        }
+        self.cast_floor_row_impl(
+            cam_x,
+            cam_y,
+            dir_x,
+            dir_y,
+            plane_x,
+            plane_y,
+            row,
+            screen_width as i32,
+            screen_height as i32,
+        )
+    }
+    /// Return per-pixel floor-row UV coordinates using validated viewport dimensions.
+    #[allow(clippy::too_many_arguments)]
+    pub fn try_cast_floor_row_with_viewport(
+        &self,
+        cam_x: f32,
+        cam_y: f32,
+        dir_x: f32,
+        dir_y: f32,
+        plane_x: f32,
+        plane_y: f32,
+        row: i32,
+        screen_width: u32,
+        screen_height: u32,
+    ) -> Result<Vec<(f32, f32)>, RaycasterError> {
+        let limits = RaycasterLimits::default();
+        limits.validate_finite("cam_x", cam_x)?;
+        limits.validate_finite("cam_y", cam_y)?;
+        limits.validate_finite("dir_x", dir_x)?;
+        limits.validate_finite("dir_y", dir_y)?;
+        limits.validate_finite("plane_x", plane_x)?;
+        limits.validate_finite("plane_y", plane_y)?;
+        limits.validate_screen_dimensions(screen_width as f32, screen_height as f32)?;
+        Ok(self.cast_floor_row_impl(
+            cam_x,
+            cam_y,
+            dir_x,
+            dir_y,
+            plane_x,
+            plane_y,
+            row,
+            screen_width as i32,
+            screen_height as i32,
+        ))
     }
 }

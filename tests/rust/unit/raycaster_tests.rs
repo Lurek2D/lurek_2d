@@ -451,7 +451,7 @@ mod render_tests {
             material: None,
         });
         let cmds = scene.generate_render_commands();
-        assert!(cmds.len() >= 1);
+        assert!(!cmds.is_empty());
     }
 
     #[test]
@@ -2333,5 +2333,86 @@ mod build_scene_tests {
             scene.ceilings.iter().any(|c| c.texture_key.is_none()),
             "Expected some ceiling quads to remain untextured for color fallback"
         );
+    }
+}
+
+mod contract_validation_tests {
+    use super::*;
+
+    #[test]
+    fn try_new_and_try_set_cells_reject_invalid_grid_shapes() {
+        assert!(matches!(
+            Raycaster2D::try_new(0, 4),
+            Err(RaycasterError::GridDimensionsZero {
+                width: 0,
+                height: 4
+            })
+        ));
+        assert!(matches!(
+            Raycaster2D::try_new(8_193, 1),
+            Err(RaycasterError::GridDimensionsTooLarge { .. })
+        ));
+        assert!(matches!(
+            Raycaster2D::try_new(2_049, 2_049),
+            Err(RaycasterError::GridCellLimitExceeded { .. })
+        ));
+
+        let mut rc = Raycaster2D::try_new(2, 2).expect("valid grid");
+        assert!(matches!(
+            rc.try_set_cells(vec![1, 2, 3]),
+            Err(RaycasterError::DataLengthMismatch {
+                context: "raycaster.set_cells",
+                expected: 4,
+                actual: 3
+            })
+        ));
+    }
+
+    #[test]
+    fn checked_oob_queries_follow_the_selected_policy() {
+        let mut rc = Raycaster2D::new(2, 2);
+        rc.set_cell(0, 0, 7);
+
+        assert_eq!(rc.get_cell_checked(-1, 0), Some(0));
+        assert_eq!(rc.is_blocked_checked(-1, 0), Some(false));
+
+        rc.set_out_of_bounds_policy(OutOfBoundsPolicy::Blocked);
+        assert_eq!(rc.get_cell_checked(-1, 0), Some(1));
+        assert_eq!(rc.is_blocked_checked(-1, 0), Some(true));
+
+        rc.set_out_of_bounds_policy(OutOfBoundsPolicy::Stop);
+        assert_eq!(rc.get_cell_checked(-1, 0), None);
+        assert_eq!(rc.is_blocked_checked(-1, 0), None);
+
+        assert_eq!(rc.get_cell_checked(0, 0), Some(7));
+        assert_eq!(rc.is_blocked_checked(0, 0), Some(true));
+    }
+
+    #[test]
+    fn tile_picker_pick_tile_matches_full_picker_surface_rules() {
+        let mut empty = TilePicker::new(8, 8, 1.0);
+        empty.set_camera(1.5, 1.5, 0.0);
+        empty.set_screen_size(320.0, 200.0);
+
+        assert!(
+            empty.pick_tile(160.0, 100.0).is_none(),
+            "center horizon should not fabricate a wall hit in empty space"
+        );
+
+        let floor = empty.pick_tile(160.0, 190.0).expect("floor pick");
+        assert_eq!(floor.surface, PickSurface::Floor);
+
+        let ceiling = empty.pick_tile(160.0, 10.0).expect("ceiling pick");
+        assert_eq!(ceiling.surface, PickSurface::Ceiling);
+
+        let mut walls = TilePicker::new(8, 8, 1.0);
+        walls.set_camera(1.5, 1.5, 0.0);
+        walls.set_screen_size(320.0, 200.0);
+        walls.set_cell(4, 1, 1);
+
+        let wall = walls.pick_tile(160.0, 100.0).expect("wall pick");
+        assert_eq!(wall.surface, PickSurface::Wall);
+        assert_eq!((wall.grid_x, wall.grid_y), (4, 1));
+        assert_eq!(wall.cell_value, 1);
     }
 }

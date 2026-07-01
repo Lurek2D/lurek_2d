@@ -66277,7 +66277,7 @@
             {
               "name": "speed",
               "type": "number",
-              "description": "How fast the door opens/closes (units per second).",
+              "description": "How fast the door opens/closes (units per second); must be finite and >= 0.",
               "optional": false
             }
           ],
@@ -127471,7 +127471,7 @@
         {
           "name": "castFloorRow",
           "fullPath": "LRaycaster:castFloorRow",
-          "signature": "LRaycaster:castFloorRow(camX, camY, dirX, dirY, planeX, planeY, row)",
+          "signature": "(...)",
           "description": "Computes floor/ceiling texture UV coordinates for a single scanline row.",
           "parameters": [
             {
@@ -127515,6 +127515,18 @@
               "type": "integer",
               "description": "Scanline row offset from screen center.",
               "optional": false
+            },
+            {
+              "name": "screenWidth",
+              "type": "integer",
+              "description": "Optional explicit viewport width. When omitted, legacy map width sampling is used.",
+              "optional": true
+            },
+            {
+              "name": "screenHeight",
+              "type": "integer",
+              "description": "Optional explicit viewport height. When omitted, legacy map height sampling is used.",
+              "optional": true
             }
           ],
           "returns": "table",

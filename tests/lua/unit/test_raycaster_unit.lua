@@ -174,6 +174,12 @@ fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
         local map = lurek.raycaster.new(16, 12)
         expect_equal(16, map:width())
         expect_equal(12, map:height())
+        expect_error(function()
+            lurek.raycaster.new(0, 12)
+        end)
+        expect_error(function()
+            lurek.raycaster.new(9000, 1)
+        end)
     end)
 
     -- @covers lurek.raycaster.newDoorManager
@@ -194,6 +200,9 @@ fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
         local map = lurek.raycaster.newMap(8, 6)
         expect_equal(8, map:width())
         expect_equal(6, map:height())
+        expect_error(function()
+            lurek.raycaster.newMap(1, 0)
+        end)
     end)
 
 
@@ -294,6 +303,12 @@ fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
         local height = lurek.raycaster.projectColumn(5.0, math.pi / 3, 200)
         expect_type("number", height)
         expect_true(height > 0)
+        expect_error(function()
+            lurek.raycaster.projectColumn(5.0, 0.0, 200)
+        end)
+        expect_error(function()
+            lurek.raycaster.projectColumn(5.0, math.pi / 3, 0)
+        end)
     end)
 
     -- @covers lurek.raycaster.buildMultiLevelScene
@@ -634,6 +649,14 @@ fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
             stats.lightingCacheHits + stats.lightingCacheMisses
         )
         expect_true(stats.lightingCacheHits > 0)
+        expect_true(stats.wallQuads > 0)
+        expect_true(stats.floorQuads > 0)
+        expect_true(stats.ceilingQuads > 0)
+        expect_equal(0, stats.sprites)
+        expect_equal(0, stats.models)
+        expect_equal(0, stats.particles)
+        expect_equal(1, stats.visibleLevels)
+        expect_true(stats.depthColumns > 0)
     end)
 
     -- @covers lurek.raycaster.pickScreenMultiLevel
@@ -996,6 +1019,9 @@ describe("LSceneAdapter methods", function()
         expect_near(4.0, sprite.y, 1e-5)
         expect_near(1.25, sprite.size, 1e-5)
         expect_type("number", sprite.texture)
+        expect_error(function()
+            adapter:addSprite(1.0, 1.0, 99999999)
+        end)
     end)
 
     -- @covers LSceneAdapter:addDirectionalSprite
@@ -1724,6 +1750,12 @@ describe("LDoorManager methods", function()
         local id = doors:addDoor(3, 5, "horizontal", 1.0)
         expect_equal(0, id)
         expect_equal(1, doors:count())
+        expect_error(function()
+            doors:addDoor(3, 5, "horizontal", 1.0)
+        end)
+        expect_error(function()
+            doors:addDoor(2, 4, "vertical", -0.1)
+        end)
     end)
 
     -- @covers LDoorManager:closeDoor
@@ -1783,6 +1815,9 @@ describe("LDoorManager methods", function()
         doors:openDoor(id)
         doors:update(0.5)
         expect_near(0.5, doors:getDoor(id).openAmount, 1e-5)
+        expect_error(function()
+            doors:update(-0.25)
+        end)
     end)
 end)
 
@@ -1942,6 +1977,11 @@ fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
             }
             map:buildScene(bad, {}, {}, { [1] = wall })
         end)
+        expect_error(function()
+            map:buildScene(scene_params(), {}, {
+                { x = 9.0, y = 8.0, size = 1.0, texture = 99999999 },
+            }, {})
+        end)
     end)
 
     -- @covers LRaycaster:buildSceneWithModels
@@ -1998,11 +2038,17 @@ fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
     it("castFloorRow returns per-pixel uv tables", function()
         local map = make_map(5, 5)
         local uvs = map:castFloorRow(2.5, 2.5, 1.0, 0.0, 0.0, 0.66, 100)
+        local viewport_uvs = map:castFloorRow(2.5, 2.5, 1.0, 0.0, 0.0, 0.66, 100, 320, 200)
         expect_type("table", uvs)
+        expect_equal(5, #uvs)
+        expect_equal(320, #viewport_uvs)
         if #uvs > 0 then
             expect_type("number", uvs[1].u)
             expect_type("number", uvs[1].v)
         end
+        expect_error(function()
+            map:castFloorRow(2.5, 2.5, 1.0, 0.0, 0.0, 0.66, 100, 0, 200)
+        end)
     end)
 
     -- @covers LRaycaster:castRay
@@ -2342,6 +2388,13 @@ fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
         map:applyDoorManager(empty, 0.8)
         expect_equal(nil, map:getWallFeatureCell(2, 1))
         expect_true(map:isBlocked(2, 1))
+
+        local invalid = lurek.raycaster.new(4, 4)
+        local orphan = lurek.raycaster.newDoorManager()
+        orphan:addDoor(1, 1, "horizontal", 1.0)
+        expect_error(function()
+            invalid:applyDoorManager(orphan, 0.8)
+        end)
     end)
 
     -- @covers LRaycaster:clearWallFeatureCell
@@ -2414,6 +2467,9 @@ fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
         local map = lurek.raycaster.new(2, 2)
         map:setCells({ 1, 2, 3, 4 })
         expect_equal(4, map:getCell(1, 1))
+        expect_error(function()
+            map:setCells({ 1, 2, 3 })
+        end)
     end)
 
     -- @covers LRaycaster:setFloorTextureCell

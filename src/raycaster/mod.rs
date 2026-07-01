@@ -11,6 +11,8 @@
 pub mod build_scene;
 /// Per-column batch data passed to the renderer.
 pub mod column_batch;
+/// Shared raycaster validation contracts and strict error types.
+pub mod contract;
 /// DDA (digital differential analysis) ray-stepping core.
 pub mod dda;
 /// Per-pixel depth buffer used for sprite occlusion.
@@ -57,6 +59,7 @@ pub use build_scene::{
     SceneBuildParams, WorldSprite,
 };
 pub use column_batch::{ColumnBatch, ColumnData};
+pub use contract::{OutOfBoundsPolicy, ProjectionParams, RaycastParams, RaycasterError, RaycasterLimits};
 pub use dda::Raycaster2D;
 pub use depth_buffer::DepthBuffer;
 pub use doors::{Door, DoorDirection, DoorManager, DoorState};

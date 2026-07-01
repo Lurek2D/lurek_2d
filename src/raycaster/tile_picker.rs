@@ -9,10 +9,12 @@
 //! This file is the boundary between first-person UI input and render-space selection on grid or multilevel data.
 //! Open this file when selection payloads or pick precedence change; scene building and ray hits live in siblings.
 
+use super::contract::{RaycasterError, RaycasterLimits};
 use super::dda::Raycaster2D;
 use super::doors::DoorDirection;
 use super::multilevel::MultiLevelGrid;
 use super::wall_feature::{WallFeature, WallFeatureKind};
+use std::collections::HashMap;
 
 /// Surface class resolved by a screen pick.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -94,6 +96,19 @@ impl ScreenPickParams {
     pub fn projection_distance(self) -> f32 {
         (self.screen_width * 0.5) / (self.fov * 0.5).tan()
     }
+
+    /// Validate picking parameters against the shared raycaster limits.
+    pub fn validate(self, limits: &RaycasterLimits) -> Result<(), RaycasterError> {
+        limits.validate_finite("player_x", self.player_x)?;
+        limits.validate_finite("player_y", self.player_y)?;
+        limits.validate_finite("player_angle", self.player_angle)?;
+        limits.validate_fov(self.fov)?;
+        limits.validate_screen_dimensions(self.screen_width, self.screen_height)?;
+        limits.validate_finite("camera_height", self.camera_height)?;
+        limits.validate_finite("horizon_offset", self.horizon_offset)?;
+        limits.validate_max_distance(self.max_distance)?;
+        Ok(())
+    }
 }
 
 /// Tile picker that maps screen coordinates to raycaster grid tiles.
@@ -115,6 +130,10 @@ pub struct TilePicker {
     pub screen_width: f32,
     /// Screen height.
     pub screen_height: f32,
+    /// Flat row-major tile values used when `pick_tile()` delegates to the full raycaster picker.
+    cells: Vec<u32>,
+    /// Per-cell wall feature descriptors used when `pick_tile()` delegates to the full raycaster picker.
+    wall_features: HashMap<(u32, u32), WallFeature>,
 }
 
 /// Result of a tile pick operation.
@@ -155,15 +174,24 @@ pub struct PickResult {
 impl TilePicker {
     /// Create a `TilePicker` for a grid of the given dimensions and tile size in world units.
     pub fn new(grid_width: usize, grid_height: usize, tile_size: f32) -> Self {
+        let size = RaycasterLimits::default()
+            .validate_grid_dimensions_usize(grid_width, grid_height)
+            .unwrap_or(0);
         Self {
-            grid_width,
-            grid_height,
-            tile_size,
+            grid_width: if size == 0 { 0 } else { grid_width },
+            grid_height: if size == 0 { 0 } else { grid_height },
+            tile_size: if tile_size.is_finite() && tile_size > 0.0 {
+                tile_size
+            } else {
+                1.0
+            },
             camera_x: 0.0,
             camera_y: 0.0,
             camera_angle: 0.0,
             screen_width: 800.0,
             screen_height: 600.0,
+            cells: vec![0; size],
+            wall_features: HashMap::new(),
         }
     }
 
@@ -180,94 +208,74 @@ impl TilePicker {
         self.screen_height = height;
     }
 
-    /// Pick a tile from screen coordinates using simplified raycasting.
-    pub fn pick_tile(&self, screen_x: f32, _screen_y: f32) -> Option<PickResult> {
-        let fov = std::f32::consts::FRAC_PI_3; // 60 degrees
-        let ray_angle = self.camera_angle + (screen_x / self.screen_width - 0.5) * fov;
+    /// Set the value of one cell in the picker-owned grid; out-of-bounds writes are ignored.
+    pub fn set_cell(&mut self, x: usize, y: usize, value: u32) {
+        if x < self.grid_width && y < self.grid_height {
+            self.cells[y * self.grid_width + x] = value;
+        }
+    }
 
-        let dir_x = ray_angle.cos();
-        let dir_y = ray_angle.sin();
+    /// Replace the picker-owned grid; no-op on wrong length for backward compatibility.
+    pub fn set_cells(&mut self, cells: Vec<u32>) {
+        let _ = self.try_set_cells(cells);
+    }
 
-        // Simple DDA for tile picking
-        let mut map_x = (self.camera_x / self.tile_size) as i32;
-        let mut map_y = (self.camera_y / self.tile_size) as i32;
-
-        let delta_x = if dir_x.abs() < 1e-10 {
-            f32::MAX
-        } else {
-            (self.tile_size / dir_x).abs()
-        };
-        let delta_y = if dir_y.abs() < 1e-10 {
-            f32::MAX
-        } else {
-            (self.tile_size / dir_y).abs()
-        };
-
-        let step_x: i32 = if dir_x > 0.0 { 1 } else { -1 };
-        let step_y: i32 = if dir_y > 0.0 { 1 } else { -1 };
-
-        let cell_x = self.camera_x / self.tile_size;
-        let cell_y = self.camera_y / self.tile_size;
-
-        let mut side_x = if dir_x > 0.0 {
-            ((map_x as f32 + 1.0) - cell_x) * delta_x
-        } else {
-            (cell_x - map_x as f32) * delta_x
-        };
-        let mut side_y = if dir_y > 0.0 {
-            ((map_y as f32 + 1.0) - cell_y) * delta_y
-        } else {
-            (cell_y - map_y as f32) * delta_y
-        };
-
-        let max_steps = (self.grid_width + self.grid_height) as i32;
-
-        if max_steps > 0 {
-            let wall_side = if side_x < side_y {
-                side_x += delta_x;
-                map_x += step_x;
-                0u8
-            } else {
-                side_y += delta_y;
-                map_y += step_y;
-                1u8
-            };
-
-            if map_x < 0
-                || map_y < 0
-                || map_x >= self.grid_width as i32
-                || map_y >= self.grid_height as i32
-            {
-                return None;
-            }
-
-            // Return the first grid cell hit
-            let distance = if wall_side == 0 {
-                side_x - delta_x
-            } else {
-                side_y - delta_y
-            };
-
-            return Some(PickResult {
-                level_index: 0,
-                grid_x: map_x as usize,
-                grid_y: map_y as usize,
-                distance,
-                wall_side: Some(wall_side),
-                surface: PickSurface::Wall,
-                hit_x: self.camera_x + dir_x * distance,
-                hit_y: self.camera_y + dir_y * distance,
-                tex_u: 0.0,
-                tex_v: 0.0,
-                wall_height: None,
-                cell_value: 0,
-                ray_angle,
-                wall_feature: None,
-                wall_section: None,
+    /// Replace the picker-owned grid strictly, rejecting wrong lengths.
+    pub fn try_set_cells(&mut self, cells: Vec<u32>) -> Result<(), RaycasterError> {
+        let expected = self.grid_width.saturating_mul(self.grid_height);
+        if cells.len() != expected {
+            return Err(RaycasterError::DataLengthMismatch {
+                context: "tile_picker.set_cells",
+                expected,
+                actual: cells.len(),
             });
         }
+        self.cells = cells;
+        Ok(())
+    }
 
-        None
+    /// Attach a wall feature override to one picker-owned cell.
+    pub fn set_wall_feature(&mut self, x: u32, y: u32, feature: WallFeature) {
+        if x < self.grid_width as u32 && y < self.grid_height as u32 {
+            self.wall_features.insert((x, y), feature);
+        }
+    }
+
+    /// Clear any wall feature override from one picker-owned cell.
+    pub fn clear_wall_feature(&mut self, x: u32, y: u32) {
+        self.wall_features.remove(&(x, y));
+    }
+
+    /// Pick a tile from screen coordinates using the same screen-volume picker as `Raycaster2D`.
+    pub fn pick_tile(&self, screen_x: f32, screen_y: f32) -> Option<PickResult> {
+        if self.grid_width == 0 || self.grid_height == 0 {
+            return None;
+        }
+        let mut raycaster = Raycaster2D::try_new(self.grid_width as u32, self.grid_height as u32).ok()?;
+        raycaster.try_set_cells(self.cells.clone()).ok()?;
+        for (pos, feature) in &self.wall_features {
+            raycaster.set_wall_feature(pos.0, pos.1, *feature);
+        }
+        let max_distance = ((self.grid_width.pow(2) + self.grid_height.pow(2)) as f32)
+            .sqrt()
+            .max(1.0)
+            + 1.0;
+        let params = ScreenPickParams {
+            player_x: self.camera_x / self.tile_size,
+            player_y: self.camera_y / self.tile_size,
+            player_angle: self.camera_angle,
+            fov: std::f32::consts::FRAC_PI_3,
+            screen_width: self.screen_width,
+            screen_height: self.screen_height,
+            camera_height: 0.5,
+            horizon_offset: 0.0,
+            max_distance,
+        };
+        let mut pick = raycaster.pick_screen(&params, screen_x, screen_y)?;
+        pick.distance *= self.tile_size;
+        pick.hit_x *= self.tile_size;
+        pick.hit_y *= self.tile_size;
+        Some(pick)
     }
 
     /// Get tile coordinates directly from world position.
@@ -723,7 +731,7 @@ impl Raycaster2D {
         floor_visible_at: &dyn Fn(u32, u32) -> bool,
         ceiling_visible_at: &dyn Fn(u32, u32) -> bool,
     ) -> Option<PickResult> {
-        if params.screen_width <= 0.0 || params.screen_height <= 0.0 || params.fov <= 0.0 {
+        if params.validate(&RaycasterLimits::default()).is_err() {
             return None;
         }
 

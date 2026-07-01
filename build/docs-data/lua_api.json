@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-07-01T13:28:12.630923+00:00",
+    "generated": "2026-07-01T15:48:26.654037+00:00",
     "generator": "tools/gen_lua_api_data.py",
     "version": "1.1.0",
     "stats": {
@@ -112681,7 +112681,7 @@
             "kind": "function",
             "owner_type": "",
             "description": "Creates a new raycaster map with the given grid dimensions.",
-            "full_doc": "Creates a new raycaster map with the given grid dimensions.\n@param | w | integer | Map width in cells.\n@param | h | integer | Map height in cells.\n@return | LRaycaster | A new raycaster map instance.",
+            "full_doc": "Creates a new raycaster map with the given grid dimensions.\nDimensions must be greater than zero and stay within the shared raycaster safety limits.\n@param | w | integer | Map width in cells.\n@param | h | integer | Map height in cells.\n@return | LRaycaster | A new raycaster map instance.",
             "params_doc": "- `w` â€” `integer`: Map width in cells.\n- `h` â€” `integer`: Map height in cells.",
             "returns_doc": "LRaycaster",
             "inferred_sig": "(w, h)",
@@ -112701,7 +112701,7 @@
             ],
             "inferred_return": "LRaycaster",
             "return_description": "A new raycaster map instance.",
-            "line": 6243,
+            "line": 6433,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -112710,7 +112710,7 @@
             "kind": "function",
             "owner_type": "",
             "description": "Creates a new raycaster map (alias for `new`).",
-            "full_doc": "Creates a new raycaster map (alias for `new`).\n@param | w | integer | Map width in cells.\n@param | h | integer | Map height in cells.\n@return | LRaycaster | A new raycaster map instance.",
+            "full_doc": "Creates a new raycaster map (alias for `new`).\nDimensions must be greater than zero and stay within the shared raycaster safety limits.\n@param | w | integer | Map width in cells.\n@param | h | integer | Map height in cells.\n@return | LRaycaster | A new raycaster map instance.",
             "params_doc": "- `w` â€” `integer`: Map width in cells.\n- `h` â€” `integer`: Map height in cells.",
             "returns_doc": "LRaycaster",
             "inferred_sig": "(w, h)",
@@ -112730,7 +112730,7 @@
             ],
             "inferred_return": "LRaycaster",
             "return_description": "A new raycaster map instance.",
-            "line": 6267,
+            "line": 6460,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -112753,7 +112753,7 @@
             ],
             "inferred_return": "LMultiLevelGrid",
             "return_description": "Persistent multi-level world handle.",
-            "line": 6290,
+            "line": 6485,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -112812,7 +112812,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Pick result {x, y, level, surface, distance, hit_x, hit_y, u, v, cell_value?, side?, texture?, ray_angle, id?, wall_height?, feature?} or nil. `feature` mirrors the owning wall-feature descriptor and adds `section` for the solid band/panel that was hit.",
-            "line": 6313,
+            "line": 6508,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -112865,7 +112865,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Pick result {x, y, level, surface, distance, hit_x, hit_y, u, v, cell_value?, side?, texture?, ray_angle, id?, wall_height?, feature?} or nil. `feature` mirrors the owning wall-feature descriptor and adds `section` for the solid band/panel that was hit.",
-            "line": 6520,
+            "line": 6719,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -112918,7 +112918,7 @@
             ],
             "inferred_return": "integer",
             "return_description": "Total number of quads in the built scene.",
-            "line": 6718,
+            "line": 6921,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -112971,7 +112971,7 @@
             ],
             "inferred_return": "integer",
             "return_description": "Total number of quads in the built scene.",
-            "line": 6879,
+            "line": 7086,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -113012,7 +113012,7 @@
             ],
             "inferred_return": "integer",
             "return_description": "Total number of quads in the built scene.",
-            "line": 7051,
+            "line": 7262,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -113021,14 +113021,14 @@
             "kind": "function",
             "owner_type": "",
             "description": "Returns stats for the last stored raycaster scene build.",
-            "full_doc": "Returns stats for the last stored raycaster scene build.\nThis reports the most recent scene saved by buildScene, buildSceneFromAdapter, buildMultiLevelScene,\nbuildMultiLevelSceneFromAdapter, or their userdata equivalents.\n@return | table | Nil if no raycaster scene has been built yet; otherwise a stats table.\n@field | lightingSamples | integer | Total lighting samples requested during the last build.\n@field | lightingCacheHits | integer | Number of reused lighting samples served from the per-build cache.\n@field | lightingCacheMisses | integer | Number of unique lighting samples computed during the last build.",
+            "full_doc": "Returns stats for the last stored raycaster scene build.\nThis reports the most recent scene saved by buildScene, buildSceneFromAdapter, buildMultiLevelScene,\nbuildMultiLevelSceneFromAdapter, or their userdata equivalents.\n@return | table | Nil if no raycaster scene has been built yet; otherwise a stats table.\n@field | lightingSamples | integer | Total lighting samples requested during the last build.\n@field | lightingCacheHits | integer | Number of reused lighting samples served from the per-build cache.\n@field | lightingCacheMisses | integer | Number of unique lighting samples computed during the last build.\n@field | wallQuads | integer | Number of wall quads emitted during the last build.\n@field | floorQuads | integer | Number of floor quads emitted during the last build.\n@field | ceilingQuads | integer | Number of ceiling quads emitted during the last build.\n@field | sprites | integer | Number of billboard sprites emitted during the last build.\n@field | models | integer | Number of projected model meshes emitted during the last build.\n@field | particles | integer | Number of projected particle quads emitted during the last build.\n@field | visibleLevels | integer | Number of multilevel slices traversed during the last build.\n@field | depthColumns | integer | Number of cached wall-depth columns available to overlays and picking.",
             "params_doc": "",
             "returns_doc": "table",
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "table",
             "return_description": "Nil if no raycaster scene has been built yet; otherwise a stats table.",
-            "line": 7195,
+            "line": 7418,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -113051,7 +113051,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 7217,
+            "line": 7440,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -113067,7 +113067,7 @@
             "typed_params": [],
             "inferred_return": "LShader?",
             "return_description": "Bound shader handle, or nil.",
-            "line": 7242,
+            "line": 7465,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -113096,7 +113096,7 @@
             ],
             "inferred_return": "LImageData",
             "return_description": "Rasterized image data for the last built scene.",
-            "line": 7262,
+            "line": 7485,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -113105,7 +113105,7 @@
             "kind": "function",
             "owner_type": "",
             "description": "Computes the projected wall-column height for a given distance, FOV, and screen height.",
-            "full_doc": "Computes the projected wall-column height for a given distance, FOV, and screen height.\n@param | distance | number | Perpendicular distance to the wall.\n@param | fov | number | Field of view in radians.\n@param | screenHeight | number | Screen height in pixels.\n@return | number | Projected column height in pixels.",
+            "full_doc": "Computes the projected wall-column height for a given distance, FOV, and screen height.\nInputs must be finite, use a supported FOV, and provide a positive screen height.\n@param | distance | number | Perpendicular distance to the wall.\n@param | fov | number | Field of view in radians.\n@param | screenHeight | number | Screen height in pixels.\n@return | number | Projected column height in pixels.",
             "params_doc": "- `distance` â€” `number`: Perpendicular distance to the wall.\n- `fov` â€” `number`: Field of view in radians.\n- `screenHeight` â€” `number`: Screen height in pixels.",
             "returns_doc": "number",
             "inferred_sig": "(distance, fov, screen_height)",
@@ -113131,7 +113131,7 @@
             ],
             "inferred_return": "number",
             "return_description": "Projected column height in pixels.",
-            "line": 7287,
+            "line": 7511,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -113160,7 +113160,7 @@
             ],
             "inferred_return": "number",
             "return_description": "Shade factor (1.0 at distance 0, approaching 0.0 at maxDistance).",
-            "line": 7298,
+            "line": 7525,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -113201,7 +113201,7 @@
             ],
             "inferred_return": "number",
             "return_description": "Shaded red channel.",
-            "line": 7313,
+            "line": 7540,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -113217,7 +113217,7 @@
             "typed_params": [],
             "inferred_return": "LDoorManager",
             "return_description": "A new empty door manager.",
-            "line": 7323,
+            "line": 7550,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -113246,7 +113246,7 @@
             ],
             "inferred_return": "LHeightMap",
             "return_description": "A new height map initialized to zero.",
-            "line": 7336,
+            "line": 7563,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -113262,7 +113262,7 @@
             "typed_params": [],
             "inferred_return": "LSpriteManager",
             "return_description": "A new empty sprite manager.",
-            "line": 7347,
+            "line": 7574,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -113278,7 +113278,7 @@
             "typed_params": [],
             "inferred_return": "LSceneAdapter",
             "return_description": "A new empty scene adapter.",
-            "line": 7360,
+            "line": 7587,
             "file": "src/lua_api/raycaster_api.rs"
           }
         ],
@@ -113293,8 +113293,8 @@
                 "kind": "method",
                 "owner_type": "LDoorManager",
                 "description": "Registers a new sliding door at the given grid cell.",
-                "full_doc": "Registers a new sliding door at the given grid cell.\n@param | x | integer | Grid column of the door cell.\n@param | y | integer | Grid row of the door cell.\n@param | direction | string | Slide axis: \"horizontal\" or \"vertical\".\n@param | speed | number | How fast the door opens/closes (units per second).\n@return | integer | Zero-based index of the newly added door.",
-                "params_doc": "- `x` â€” `integer`: Grid column of the door cell.\n- `y` â€” `integer`: Grid row of the door cell.\n- `direction` â€” `string`: Slide axis: \"horizontal\" or \"vertical\".\n- `speed` â€” `number`: How fast the door opens/closes (units per second).",
+                "full_doc": "Registers a new sliding door at the given grid cell.\n@param | x | integer | Grid column of the door cell.\n@param | y | integer | Grid row of the door cell.\n@param | direction | string | Slide axis: \"horizontal\" or \"vertical\".\n@param | speed | number | How fast the door opens/closes (units per second); must be finite and >= 0.\nDuplicate door tiles are rejected.\n@return | integer | Zero-based index of the newly added door.",
+                "params_doc": "- `x` â€” `integer`: Grid column of the door cell.\n- `y` â€” `integer`: Grid row of the door cell.\n- `direction` â€” `string`: Slide axis: \"horizontal\" or \"vertical\".\n- `speed` â€” `number`: How fast the door opens/closes (units per second); must be finite and >= 0.",
                 "returns_doc": "integer",
                 "inferred_sig": "(x, y, dir_str, speed)",
                 "typed_params": [
@@ -113320,12 +113320,12 @@
                     "speed",
                     "number",
                     false,
-                    "How fast the door opens/closes (units per second)."
+                    "How fast the door opens/closes (units per second); must be finite and >= 0."
                   ]
                 ],
                 "inferred_return": "integer",
                 "return_description": "Zero-based index of the newly added door.",
-                "line": 2348,
+                "line": 2412,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113348,7 +113348,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2361,
+                "line": 2425,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113371,7 +113371,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2368,
+                "line": 2432,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113394,7 +113394,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2375,
+                "line": 2439,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113417,7 +113417,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Door info table, or nil if not found.",
-                "line": 2388,
+                "line": 2455,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113433,7 +113433,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Door count.",
-                "line": 2414,
+                "line": 2481,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113449,7 +113449,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always \"LDoorManager\".",
-                "line": 2418,
+                "line": 2485,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113472,7 +113472,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the name matches this userdata type.",
-                "line": 2423,
+                "line": 2490,
                 "file": "src/lua_api/raycaster_api.rs"
               }
             ]
@@ -113513,7 +113513,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2439,
+                "line": 2506,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113548,7 +113548,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2448,
+                "line": 2515,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113577,7 +113577,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Floor height offset at that cell.",
-                "line": 2457,
+                "line": 2524,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113606,7 +113606,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Ceiling height offset at that cell.",
-                "line": 2465,
+                "line": 2532,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113622,7 +113622,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always \"LHeightMap\".",
-                "line": 2471,
+                "line": 2538,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113645,7 +113645,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the name matches this userdata type.",
-                "line": 2476,
+                "line": 2543,
                 "file": "src/lua_api/raycaster_api.rs"
               }
             ]
@@ -113686,7 +113686,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2830,
+                "line": 2897,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113715,7 +113715,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Cell value (0 = empty, 1+ = wall type).",
-                "line": 2839,
+                "line": 2906,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113750,7 +113750,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2847,
+                "line": 2914,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113759,7 +113759,7 @@
                 "kind": "method",
                 "owner_type": "LRaycaster",
                 "description": "Synchronizes animated doors from an `LDoorManager` into this map's per-cell wall features.",
-                "full_doc": "Synchronizes animated doors from an `LDoorManager` into this map's per-cell wall features.\nThe base map tile at each door position should remain non-zero so the door keeps its wall identity.\n@param | doors | LDoorManager | Door manager holding animated open amounts.\n@param | alpha | number? | Optional alpha multiplier for the synchronized door slabs.",
+                "full_doc": "Synchronizes animated doors from an `LDoorManager` into this map's per-cell wall features.\nThe base map tile at each door position must remain non-zero so the door keeps its wall identity.\n@param | doors | LDoorManager | Door manager holding animated open amounts.\n@param | alpha | number? | Optional alpha multiplier for the synchronized door slabs.",
                 "params_doc": "- `doors` â€” `LDoorManager`: Door manager holding animated open amounts.\n- `alpha` â€” `number?`: Optional alpha multiplier for the synchronized door slabs.",
                 "returns_doc": "",
                 "inferred_sig": "(doors_ud, [alpha])",
@@ -113779,7 +113779,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2863,
+                "line": 2930,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113808,7 +113808,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2880,
+                "line": 2948,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113837,7 +113837,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Feature table {kind, alpha, ...} or nil.",
-                "line": 2896,
+                "line": 2964,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113846,7 +113846,7 @@
                 "kind": "method",
                 "owner_type": "LRaycaster",
                 "description": "Replaces the entire map grid with a flat array of cell values (row-major order).",
-                "full_doc": "Replaces the entire map grid with a flat array of cell values (row-major order).\n@param | cells | table | Flat array of numbers with width*height elements.",
+                "full_doc": "Replaces the entire map grid with a flat array of cell values (row-major order).\nThe table must contain exactly `width * height` elements or this call errors.\n@param | cells | table | Flat array of numbers with width*height elements.",
                 "params_doc": "- `cells` â€” `table`: Flat array of numbers with width*height elements.",
                 "returns_doc": "",
                 "inferred_sig": "(cells_tbl)",
@@ -113860,7 +113860,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2940,
+                "line": 3009,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113889,7 +113889,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the cell blocks render rays.",
-                "line": 2952,
+                "line": 3023,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113905,7 +113905,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Map width.",
-                "line": 2958,
+                "line": 3029,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113921,7 +113921,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Map height.",
-                "line": 2962,
+                "line": 3033,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113956,7 +113956,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2968,
+                "line": 3039,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -113985,7 +113985,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Raw texture id or nil.",
-                "line": 2987,
+                "line": 3058,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114020,7 +114020,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2995,
+                "line": 3066,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114049,7 +114049,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Raw texture id or nil.",
-                "line": 3014,
+                "line": 3085,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114078,7 +114078,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3021,
+                "line": 3092,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114101,7 +114101,7 @@
                 ],
                 "inferred_return": "table?",
                 "return_description": "Material table or nil.",
-                "line": 3056,
+                "line": 3127,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114136,7 +114136,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3067,
+                "line": 3138,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114165,7 +114165,7 @@
                 ],
                 "inferred_return": "table?",
                 "return_description": "Material table or nil.",
-                "line": 3103,
+                "line": 3174,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114200,7 +114200,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3115,
+                "line": 3186,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114229,7 +114229,7 @@
                 ],
                 "inferred_return": "table?",
                 "return_description": "Material table or nil.",
-                "line": 3151,
+                "line": 3222,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114252,7 +114252,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3161,
+                "line": 3232,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114268,7 +114268,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3177,
+                "line": 3248,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114303,7 +114303,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3187,
+                "line": 3258,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114332,7 +114332,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Table {texture, depth, r, g, b, blocked} or nil.",
-                "line": 3254,
+                "line": 3325,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114373,7 +114373,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Hit table {distance, raw_distance, cell_value, alpha, side, tex_u, hit_x, hit_y, hit} or nil.",
-                "line": 3290,
+                "line": 3361,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114426,7 +114426,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of hit tables (same fields as castRay).",
-                "line": 3318,
+                "line": 3394,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114479,7 +114479,7 @@
                 ],
                 "inferred_return": "number[]",
                 "return_description": "Flat array of corrected distance values.",
-                "line": 3339,
+                "line": 3420,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114508,7 +114508,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3352,
+                "line": 3438,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114531,7 +114531,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Alpha value (0.0..1.0).",
-                "line": 3360,
+                "line": 3446,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114578,7 +114578,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of hit tables in distance order.",
-                "line": 3380,
+                "line": 3466,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114587,10 +114587,10 @@
                 "kind": "method",
                 "owner_type": "LRaycaster",
                 "description": "Computes floor/ceiling texture UV coordinates for a single scanline row.",
-                "full_doc": "Computes floor/ceiling texture UV coordinates for a single scanline row.\nUsed for software-rendered textured floors.\n@param | camX | number | Camera X position.\n@param | camY | number | Camera Y position.\n@param | dirX | number | Camera forward direction X.\n@param | dirY | number | Camera forward direction Y.\n@param | planeX | number | Camera plane X (half-width of FOV).\n@param | planeY | number | Camera plane Y (half-width of FOV).\n@param | row | integer | Scanline row offset from screen center.\n@return | table | Array of {u, v} tables for each pixel in the row.\n@field | u | number | U.\n@field | v | number | V.",
-                "params_doc": "- `camX` â€” `number`: Camera X position.\n- `camY` â€” `number`: Camera Y position.\n- `dirX` â€” `number`: Camera forward direction X.\n- `dirY` â€” `number`: Camera forward direction Y.\n- `planeX` â€” `number`: Camera plane X (half-width of FOV).\n- `planeY` â€” `number`: Camera plane Y (half-width of FOV).\n- `row` â€” `integer`: Scanline row offset from screen center.",
+                "full_doc": "Computes floor/ceiling texture UV coordinates for a single scanline row.\nUsed for software-rendered textured floors.\n@param | camX | number | Camera X position.\n@param | camY | number | Camera Y position.\n@param | dirX | number | Camera forward direction X.\n@param | dirY | number | Camera forward direction Y.\n@param | planeX | number | Camera plane X (half-width of FOV).\n@param | planeY | number | Camera plane Y (half-width of FOV).\n@param | row | integer | Scanline row offset from screen center.\n@param | screenWidth | integer? | Optional explicit viewport width. When omitted, legacy map width sampling is used.\n@param | screenHeight | integer? | Optional explicit viewport height. When omitted, legacy map height sampling is used.\n@return | table | Array of {u, v} tables for each pixel in the row.\n@field | u | number | U.\n@field | v | number | V.",
+                "params_doc": "- `camX` â€” `number`: Camera X position.\n- `camY` â€” `number`: Camera Y position.\n- `dirX` â€” `number`: Camera forward direction X.\n- `dirY` â€” `number`: Camera forward direction Y.\n- `planeX` â€” `number`: Camera plane X (half-width of FOV).\n- `planeY` â€” `number`: Camera plane Y (half-width of FOV).\n- `row` â€” `integer`: Scanline row offset from screen center.\n- `screenWidth` â€” `integer?`: Optional explicit viewport width. When omitted, legacy map width sampling is used.\n- `screenHeight` â€” `integer?`: Optional explicit viewport height. When omitted, legacy map height sampling is used.",
                 "returns_doc": "table",
-                "inferred_sig": "",
+                "inferred_sig": "(...)",
                 "typed_params": [
                   [
                     "camX",
@@ -114633,11 +114633,23 @@
                     "integer",
                     false,
                     "Scanline row offset from screen center."
+                  ],
+                  [
+                    "screenWidth",
+                    "integer?",
+                    true,
+                    "Optional explicit viewport width. When omitted, legacy map width sampling is used."
+                  ],
+                  [
+                    "screenHeight",
+                    "integer?",
+                    true,
+                    "Optional explicit viewport height. When omitted, legacy map height sampling is used."
                   ]
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of {u, v} tables for each pixel in the row.",
-                "line": 3405,
+                "line": 3500,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114696,7 +114708,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Projection info {screen_x, scale, distance, visible}.",
-                "line": 3447,
+                "line": 3566,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114737,7 +114749,7 @@
                 ],
                 "inferred_return": "LImageData",
                 "return_description": "Raw image data.",
-                "line": 3472,
+                "line": 3591,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114796,7 +114808,7 @@
                 ],
                 "inferred_return": "LImageData",
                 "return_description": "Raw image data.",
-                "line": 3489,
+                "line": 3608,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114861,7 +114873,7 @@
                 ],
                 "inferred_return": "LImageData",
                 "return_description": "Raw depth-map image data.",
-                "line": 3509,
+                "line": 3628,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114920,7 +114932,7 @@
                 ],
                 "inferred_return": "LImageData",
                 "return_description": "Raw image data for all frames.",
-                "line": 3539,
+                "line": 3658,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -114967,7 +114979,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Pick result {x, y, level, surface, distance, hit_x, hit_y, u, v, cell_value?, side?, texture?, ray_angle, id?, wall_height?, feature?} or nil. `feature` mirrors `getWallFeatureCell()` and adds `section` for the solid band/panel that was hit.",
-                "line": 3568,
+                "line": 3687,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115008,7 +115020,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Pick result or nil when nothing was hit. Wall hits may also include `wall_height` plus `feature = {kind, section, ...}` for half walls, windows, and doors.",
-                "line": 3733,
+                "line": 3855,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115049,7 +115061,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Total number of quads in the built scene.",
-                "line": 3882,
+                "line": 4008,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115084,7 +115096,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Total number of quads in the built scene.",
-                "line": 3948,
+                "line": 4077,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115131,7 +115143,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Total number of quads in the built scene.",
-                "line": 4062,
+                "line": 4195,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115147,7 +115159,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Type name string.",
-                "line": 4176,
+                "line": 4315,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115170,7 +115182,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if this object is of the given type.",
-                "line": 4181,
+                "line": 4320,
                 "file": "src/lua_api/raycaster_api.rs"
               }
             ]
@@ -115211,7 +115223,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4200,
+                "line": 4339,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115240,7 +115252,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Cell value (0 = empty, 1+ = wall type).",
-                "line": 4212,
+                "line": 4351,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115275,7 +115287,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4222,
+                "line": 4361,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115304,7 +115316,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4242,
+                "line": 4381,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115333,7 +115345,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Feature table {kind, alpha, ...} or nil.",
-                "line": 4263,
+                "line": 4402,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115356,7 +115368,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4277,
+                "line": 4416,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115372,7 +115384,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Raw texture id or nil.",
-                "line": 4293,
+                "line": 4432,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115407,7 +115419,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4304,
+                "line": 4443,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115436,7 +115448,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Raw texture id or nil.",
-                "line": 4327,
+                "line": 4466,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115459,7 +115471,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4344,
+                "line": 4483,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115475,7 +115487,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Raw texture id or nil.",
-                "line": 4360,
+                "line": 4499,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115510,7 +115522,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4373,
+                "line": 4512,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115539,7 +115551,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Raw texture id or nil.",
-                "line": 4396,
+                "line": 4535,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115574,7 +115586,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4416,
+                "line": 4555,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115603,7 +115615,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Table {texture, depth, r, g, b, blocked} or nil.",
-                "line": 4477,
+                "line": 4616,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115638,7 +115650,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4500,
+                "line": 4639,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115667,7 +115679,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the floor is open at this cell.",
-                "line": 4514,
+                "line": 4653,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115702,7 +115714,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4525,
+                "line": 4664,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115731,7 +115743,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the ceiling is open at this cell.",
-                "line": 4542,
+                "line": 4681,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115754,7 +115766,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Zero-based level index of the appended level.",
-                "line": 4552,
+                "line": 4691,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115770,7 +115782,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Level count.",
-                "line": 4565,
+                "line": 4704,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115786,7 +115798,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Active level index.",
-                "line": 4571,
+                "line": 4710,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115802,7 +115814,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Active-level floor offset.",
-                "line": 4577,
+                "line": 4716,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115825,7 +115837,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4587,
+                "line": 4726,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115841,7 +115853,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Active-level ceiling height.",
-                "line": 4602,
+                "line": 4741,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115864,7 +115876,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4612,
+                "line": 4751,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115887,7 +115899,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4624,
+                "line": 4763,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115928,7 +115940,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Total number of quads in the built scene.",
-                "line": 4642,
+                "line": 4781,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -115963,7 +115975,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Total number of quads in the built scene.",
-                "line": 4696,
+                "line": 4839,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116016,7 +116028,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Pick result {x, y, level, surface, distance, hit_x, hit_y, u, v, cell_value?, side?, texture?, ray_angle, id?, wall_height?, feature?} or nil. `feature` mirrors `getWallFeatureCell()` and adds `section` for the solid band/panel that was hit.",
-                "line": 4825,
+                "line": 4972,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116063,7 +116075,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Pick result or nil when nothing was hit. Wall hits may also include `wall_height` plus `feature = {kind, section, ...}` for half walls, windows, and doors.",
-                "line": 5023,
+                "line": 5174,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116079,7 +116091,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Type name string.",
-                "line": 5204,
+                "line": 5359,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116102,7 +116114,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if this object is of the given type.",
-                "line": 5209,
+                "line": 5364,
                 "file": "src/lua_api/raycaster_api.rs"
               }
             ]
@@ -116149,7 +116161,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5467,
+                "line": 5632,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116208,7 +116220,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5511,
+                "line": 5680,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116243,7 +116255,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5585,
+                "line": 5762,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116296,7 +116308,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5628,
+                "line": 5809,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116337,7 +116349,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5704,
+                "line": 5893,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116372,7 +116384,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5734,
+                "line": 5923,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116413,7 +116425,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5771,
+                "line": 5960,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116448,7 +116460,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5818,
+                "line": 6007,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116464,7 +116476,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Snapshot table for build/pick calls.",
-                "line": 5862,
+                "line": 6051,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116480,7 +116492,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5865,
+                "line": 6054,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116496,7 +116508,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5871,
+                "line": 6060,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116512,7 +116524,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5877,
+                "line": 6066,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116528,7 +116540,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5884,
+                "line": 6073,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116544,7 +116556,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always \"LSceneAdapter\".",
-                "line": 5891,
+                "line": 6080,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116567,7 +116579,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the name matches this userdata type.",
-                "line": 5896,
+                "line": 6085,
                 "file": "src/lua_api/raycaster_api.rs"
               }
             ]
@@ -116620,7 +116632,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Unique sprite id for later manipulation.",
-                "line": 5912,
+                "line": 6101,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116691,7 +116703,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Unique sprite id for later manipulation.",
-                "line": 5953,
+                "line": 6142,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116714,7 +116726,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 6008,
+                "line": 6197,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116749,7 +116761,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 6018,
+                "line": 6207,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116778,7 +116790,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 6026,
+                "line": 6215,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116807,7 +116819,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 6036,
+                "line": 6225,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116860,7 +116872,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 6048,
+                "line": 6237,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116889,7 +116901,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 6113,
+                "line": 6302,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116905,7 +116917,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 6119,
+                "line": 6308,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116940,7 +116952,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array of {id, x, y, level?, texture?, texture_id?, scale, distance, variant?, facing_angle?} sorted back-to-front.",
-                "line": 6130,
+                "line": 6319,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116956,7 +116968,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Type name string.",
-                "line": 6223,
+                "line": 6412,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -116979,7 +116991,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if this object is of the given type.",
-                "line": 6228,
+                "line": 6417,
                 "file": "src/lua_api/raycaster_api.rs"
               }
             ]

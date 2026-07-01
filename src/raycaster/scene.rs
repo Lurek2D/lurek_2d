@@ -21,6 +21,22 @@ pub struct RaycasterBuildStats {
     pub lighting_cache_hits: u32,
     /// Number of lighting samples that required a fresh visibility/light solve.
     pub lighting_cache_misses: u32,
+    /// Number of wall quads emitted into the prepared scene.
+    pub wall_quads: usize,
+    /// Number of floor quads emitted into the prepared scene.
+    pub floor_quads: usize,
+    /// Number of ceiling quads emitted into the prepared scene.
+    pub ceiling_quads: usize,
+    /// Number of projected billboard sprites emitted into the prepared scene.
+    pub sprites: usize,
+    /// Number of transient projected models emitted into the prepared scene.
+    pub models: usize,
+    /// Number of projected particles emitted into the prepared scene.
+    pub particles: usize,
+    /// Number of visible levels merged into the prepared scene.
+    pub visible_levels: usize,
+    /// Number of depth columns stored for wall occlusion and overlays.
+    pub depth_columns: usize,
 }
 
 /// Entity class resolved by scene-space picking.
@@ -386,6 +402,36 @@ impl RaycasterScene {
         screen_y: f32,
         sprite_alpha_test: &dyn Fn(TextureKey, f32, f32) -> bool,
     ) -> Option<EntityPickResult> {
+        fn wall_depth_at_screen_x(
+            depth_columns: &[f32],
+            screen_width: f32,
+            screen_x: f32,
+        ) -> Option<f32> {
+            if depth_columns.is_empty() || screen_width <= 0.0 {
+                return None;
+            }
+            let index = (((screen_x / screen_width.max(1.0)) * depth_columns.len() as f32).floor()
+                as isize)
+                .clamp(0, depth_columns.len().saturating_sub(1) as isize) as usize;
+            depth_columns.get(index).copied()
+        }
+
+        fn passes_wall_depth(
+            depth_columns: &[f32],
+            screen_width: f32,
+            screen_x: f32,
+            depth: f32,
+        ) -> bool {
+            let Some(wall_depth) = wall_depth_at_screen_x(depth_columns, screen_width, screen_x)
+            else {
+                return true;
+            };
+            if !wall_depth.is_finite() || wall_depth <= 0.0 {
+                return true;
+            }
+            depth <= wall_depth + 1e-4
+        }
+
         fn barycentric(p: Vec2, a: Vec2, b: Vec2, c: Vec2) -> Option<(f32, f32, f32)> {
             let v0 = Vec2::new(b.x - a.x, b.y - a.y);
             let v1 = Vec2::new(c.x - a.x, c.y - a.y);
@@ -423,6 +469,9 @@ impl RaycasterScene {
             if !sprite_alpha_test(sprite.texture_key, u, v) {
                 continue;
             }
+            if !passes_wall_depth(&self.depth_columns, self.screen_width, sx, sprite.depth) {
+                continue;
+            }
             let candidate = EntityPickResult {
                 kind: EntityPickKind::Sprite,
                 entity_id: sprite.entity_id,
@@ -457,6 +506,9 @@ impl RaycasterScene {
                     .get(tri_index)
                     .copied()
                     .unwrap_or(model.depth);
+                if !passes_wall_depth(&self.depth_columns, self.screen_width, sx, triangle_depth) {
+                    continue;
+                }
                 let candidate = EntityPickResult {
                     kind: EntityPickKind::Model,
                     entity_id: model.entity_id,

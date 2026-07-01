@@ -14,6 +14,7 @@
 
 use crate::color::Color;
 use crate::math::Vec2;
+use crate::raycaster::contract::{RaycasterError, RaycasterLimits};
 use crate::raycaster::dda::Raycaster2D;
 use crate::raycaster::lighting::{apply_global_light, compute_lighting, PointLight};
 use crate::raycaster::multilevel::MultiLevelGrid;
@@ -217,6 +218,14 @@ impl LightingSampleCache {
             lighting_samples: self.hits.saturating_add(self.misses),
             lighting_cache_hits: self.hits,
             lighting_cache_misses: self.misses,
+            wall_quads: 0,
+            floor_quads: 0,
+            ceiling_quads: 0,
+            sprites: 0,
+            models: 0,
+            particles: 0,
+            visible_levels: 0,
+            depth_columns: 0,
         }
     }
 }
@@ -1618,6 +1627,30 @@ pub struct SceneBuildParams {
     pub time_seconds: f32,
 }
 
+impl SceneBuildParams {
+    /// Validate scene-build parameters against shared raycaster limits.
+    pub fn validate(&self, limits: &RaycasterLimits) -> Result<(), RaycasterError> {
+        limits.validate_finite("player_x", self.player_x)?;
+        limits.validate_finite("player_y", self.player_y)?;
+        limits.validate_finite("player_angle", self.player_angle)?;
+        limits.validate_fov(self.fov)?;
+        limits.validate_max_distance(self.max_distance)?;
+        limits.validate_screen_dimensions(self.screen_width, self.screen_height)?;
+        if self.ray_count == 0 || self.ray_count > limits.max_rays {
+            return Err(RaycasterError::InvalidRayCount {
+                count: self.ray_count,
+                max: limits.max_rays,
+            });
+        }
+        limits.validate_finite("horizon_offset", self.horizon_offset)?;
+        limits.validate_finite("time_seconds", self.time_seconds)?;
+        if let Some(sun_angle) = self.sun_angle {
+            limits.validate_finite("sun_angle", sun_angle)?;
+        }
+        Ok(())
+    }
+}
+
 fn material_texture(
     material: Option<&RaycasterMaterial>,
     fallback: Option<TextureKey>,
@@ -2166,6 +2199,14 @@ impl RaycasterScene {
         scene.background = params.background.clone();
         scene.overlays = params.overlays.clone();
         scene.time_seconds = params.time_seconds;
+        let limits = RaycasterLimits::default();
+        if params.validate(&limits).is_err()
+            || limits
+                .validate_scene_counts(sprites.len(), 0, lights.len())
+                .is_err()
+        {
+            return scene;
+        }
         scene.depth_columns = build_depth_columns(raycaster, params);
         let mut lighting_cache = LightingSampleCache::default();
         scene.build_scene_into(
@@ -2199,7 +2240,17 @@ impl RaycasterScene {
                 .partial_cmp(&a.depth)
                 .unwrap_or(std::cmp::Ordering::Equal)
         });
-        scene.build_stats = lighting_cache.stats();
+        scene.build_stats = RaycasterBuildStats {
+            wall_quads: scene.walls.len(),
+            floor_quads: scene.floors.len(),
+            ceiling_quads: scene.ceilings.len(),
+            sprites: scene.sprites.len(),
+            models: scene.models.len(),
+            particles: scene.particles.len(),
+            visible_levels: 1,
+            depth_columns: scene.depth_columns.len(),
+            ..lighting_cache.stats()
+        };
         scene
     }
 
@@ -2251,6 +2302,14 @@ impl RaycasterScene {
         scene.background = params.background.clone();
         scene.overlays = params.overlays.clone();
         scene.time_seconds = params.time_seconds;
+        let limits = RaycasterLimits::default();
+        if params.validate(&limits).is_err()
+            || limits
+                .validate_scene_counts(sprites.len(), 0, lights.len())
+                .is_err()
+        {
+            return scene;
+        }
         let mut lighting_cache = LightingSampleCache::default();
         let eye = params.camera_height.clamp(0.1, 0.9);
         let camera_world_z = grid
@@ -2292,6 +2351,7 @@ impl RaycasterScene {
 
         let visible_levels =
             grid.visible_level_indices(params.player_x, params.player_y, params.max_distance);
+        let visible_level_count = visible_levels.len();
         for level_index in visible_levels {
             let _ = grid.with_runtime_level(level_index, |level, raycaster| {
                 scene.build_scene_into(
@@ -2337,7 +2397,17 @@ impl RaycasterScene {
                 .partial_cmp(&a.depth)
                 .unwrap_or(std::cmp::Ordering::Equal)
         });
-        scene.build_stats = lighting_cache.stats();
+        scene.build_stats = RaycasterBuildStats {
+            wall_quads: scene.walls.len(),
+            floor_quads: scene.floors.len(),
+            ceiling_quads: scene.ceilings.len(),
+            sprites: scene.sprites.len(),
+            models: scene.models.len(),
+            particles: scene.particles.len(),
+            visible_levels: visible_level_count,
+            depth_columns: scene.depth_columns.len(),
+            ..lighting_cache.stats()
+        };
         scene
     }
 

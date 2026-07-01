@@ -7,6 +7,7 @@
 //! Open this file when stacked-level data or cross-level visibility changes; scene assembly lives in siblings.
 
 use super::build_scene::LoweredFloorCell;
+use super::contract::{RaycasterError, RaycasterLimits};
 use super::dda::Raycaster2D;
 use super::wall_feature::WallFeature;
 use crate::runtime::resource_keys::TextureKey;
@@ -46,8 +47,37 @@ pub struct RaycasterLevel {
 impl RaycasterLevel {
     /// Create a new level grid of the given dimensions, all cells empty.
     pub fn new(width: usize, height: usize) -> Self {
-        let size = width * height;
+        let size = RaycasterLimits::default()
+            .validate_grid_dimensions_usize(width, height)
+            .unwrap_or(0);
         Self {
+            width: if size == 0 { 0 } else { width },
+            height: if size == 0 { 0 } else { height },
+            walls: vec![0; size],
+            wall_features: vec![None; size],
+            floor_texture: None,
+            floor_cell_textures: vec![None; size],
+            ceiling_texture: None,
+            ceiling_cell_textures: vec![None; size],
+            lowered_floor_cells: vec![None; size],
+            floor_holes: vec![false; size],
+            ceiling_holes: vec![false; size],
+            floor_offset: 0.0,
+            ceiling_height: 1.0,
+        }
+    }
+    /// Create a validated level grid using the shared raycaster limits.
+    pub fn try_new(width: usize, height: usize) -> Result<Self, RaycasterError> {
+        Self::try_new_with_limits(width, height, &RaycasterLimits::default())
+    }
+    /// Create a validated level grid using explicit raycaster limits.
+    pub fn try_new_with_limits(
+        width: usize,
+        height: usize,
+        limits: &RaycasterLimits,
+    ) -> Result<Self, RaycasterError> {
+        let size = limits.validate_grid_dimensions_usize(width, height)?;
+        Ok(Self {
             width,
             height,
             walls: vec![0; size],
@@ -61,7 +91,7 @@ impl RaycasterLevel {
             ceiling_holes: vec![false; size],
             floor_offset: 0.0,
             ceiling_height: 1.0,
-        }
+        })
     }
 
     /// Return the wall texture ID at `(x, y)`, returning 1 (solid) for out-of-bounds coordinates.
@@ -208,8 +238,9 @@ impl RaycasterLevel {
     /// This is `pub(crate)` because the runtime representation must stay synchronized
     /// with level-owned wall cells and wall-feature overrides.
     pub(crate) fn build_runtime_raycaster(&self) -> Raycaster2D {
-        let mut raycaster = Raycaster2D::new(self.width as u32, self.height as u32);
-        raycaster.set_cells(self.walls.clone());
+        let mut raycaster = Raycaster2D::try_new(self.width as u32, self.height as u32)
+            .unwrap_or_else(|_| Raycaster2D::new(0, 0));
+        let _ = raycaster.try_set_cells(self.walls.clone());
         for (cell_index, feature) in self.wall_features.iter().enumerate() {
             if let Some(feature) = feature {
                 let x = (cell_index % self.width) as u32;

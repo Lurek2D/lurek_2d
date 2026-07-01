@@ -86,6 +86,12 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - Downstream render paths can reuse one batch as a complete wall pass without rederiving projection or shading.
 - Open this file when per-column buffer shape changes; DDA casting and scene translation live in sibling owners.
 
+### contract.rs
+
+- Shared validation contracts for raycaster storage, ray parameters, projection, and scene input.
+- Strict `try_*` entrypoints surface `RaycasterError` through Rust and Lua, while legacy helpers can
+- sanitize or ignore invalid requests without panicking or allocating unbounded buffers.
+
 ### dda.rs
 
 - This file owns `Raycaster2D`, the grid-backed DDA engine that stores wall cells and answers render ray queries.
@@ -165,8 +171,8 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 
 ### projection.rs
 
-- This file owns the projection helpers that convert ray-hit distance into wall column height and draw bounds.
-- It also computes distance-based shading factors so raycaster rendering can fade geometry over viewing range.
+- Owns wall-column projection math and distance-based shading for the raycaster renderer.
+- Converts corrected ray distances into screen-space wall heights and brightness multipliers.
 - Open this file when wall projection math changes; hit records and sprite payloads live in sibling files.
 
 ### ray_hit.rs
@@ -438,7 +444,7 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - `LRaycaster:buildScene(params, lights?, sprites?, wallTextures?) -> integer`: Builds a complete textured raycaster scene for GPU rendering. Stores the output internally.
 - `LRaycaster:buildSceneFromAdapter(params, adapter, wallTextures?) -> integer`: Builds a textured raycaster scene from a runtime scene adapter that may follow physics bodies.
 - `LRaycaster:buildSceneWithModels(params, lights?, sprites?, wallTextures?, models?) -> integer`: Builds a textured raycaster scene with additional 3D .obj model instances projected into the view.
-- `LRaycaster:castFloorRow(camX, camY, dirX, dirY, planeX, planeY, row) -> table`: Computes floor/ceiling texture UV coordinates for a single scanline row.
+- `LRaycaster:castFloorRow(camX, camY, dirX, dirY, planeX, planeY, row, screenWidth?, screenHeight?) -> table`: Computes floor/ceiling texture UV coordinates for a single scanline row.
 - `LRaycaster:castRay(ox, oy, angle, maxDist) -> table`: Casts a single ray from (ox,oy) at the given angle and returns hit info or nil.
 - `LRaycaster:castRayMulti(ox, oy, angle, maxDist, maxHits?) -> table`: Casts a single ray that passes through transparent walls, returning multiple hits.
 - `LRaycaster:castRays(ox, oy, angle, fov, count, maxDist) -> table`: Casts multiple rays across a field of view and returns an array of hit tables.
@@ -556,9 +562,17 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 
 ##### Fields
 
+- `ceilingQuads` (`integer`): Number of ceiling quads emitted during the last build.
+- `depthColumns` (`integer`): Number of cached wall-depth columns available to overlays and picking.
+- `floorQuads` (`integer`): Number of floor quads emitted during the last build.
 - `lightingCacheHits` (`integer`): Number of reused lighting samples served from the per-build cache.
 - `lightingCacheMisses` (`integer`): Number of unique lighting samples computed during the last build.
 - `lightingSamples` (`integer`): Total lighting samples requested during the last build.
+- `models` (`integer`): Number of projected model meshes emitted during the last build.
+- `particles` (`integer`): Number of projected particle quads emitted during the last build.
+- `sprites` (`integer`): Number of billboard sprites emitted during the last build.
+- `visibleLevels` (`integer`): Number of multilevel slices traversed during the last build.
+- `wallQuads` (`integer`): Number of wall quads emitted during the last build.
 
 ##### Methods
 
@@ -701,6 +715,13 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 ## Notes
 
 - `raycaster` owns pseudo-3D projection, DDA-style rendering, wall/floor/ceiling composition, sprites, depth, picking, and render-facing scene assembly.
+- Strict constructors and validators now guard map dimensions, flat cell-buffer sizes, FOV, screen size, max distance, and scene texture ids. Invalid public Lua input should fail at the boundary instead of silently keeping stale state.
+- Checked Rust-only grid probes use `OutOfBoundsPolicy::{Open, Blocked, Stop}`. Legacy unchecked map reads still treat out-of-bounds as open space, but safety-sensitive owners should prefer the checked policy-aware helpers.
+- `TilePicker::pick_tile` is expected to match the full `Raycaster2D` screen-volume picker. Screen Y must distinguish wall vs floor vs ceiling hits rather than returning a stub first-step cell.
+- Wall features separate primary render-ray blocking from render visibility/light blocking. Windows stay open to visibility and lighting while doors block until mostly open; half walls still block primary wall hits but render shorter geometry.
+- Built-scene entity picking is depth-aware. Billboard and model picks should be rejected when the wall depth column at the clicked screen X is nearer than the candidate entity.
+- `LRaycaster:castFloorRow` keeps a legacy 7-argument form that samples by map dimensions, and also supports explicit `screenWidth`/`screenHeight` arguments for viewport-width per-pixel sampling.
+- `lurek.raycaster.getLastBuildStats()` should be treated as the public diagnostics surface for lighting cache counts, geometry counts, visible-level traversal, and cached wall-depth columns.
 - Tile gameplay semantics such as movement blockers, vision blockers, action blockers, point tile-light, global sunlight, and window/door/half-wall profile behavior belong in `lurek.tilefield`.
 - `raycaster` no longer exposes gameplay movement, line-of-sight, tile-light, or minimap-light helpers. Tile-based gameplay flows should build or export from `lurek.tilefield`, then pass render input to `raycaster`.
 - `lurek.raycaster.buildMultiLevelSceneFromField(params, field, opts)` is the field-consuming bridge for generated multilevel render input. It can read `tilefield` blocker channels as a fallback, but the preferred structured path is to map named field slots such as `wallSlot`, `doorSlot`, `windowSlot`, `floorSlot`, `ceilingSlot`, `objectSlot`, `spriteSlot`, `floorHoleSlot`, and `ceilingHoleSlot` into raycaster walls, wall features, surface textures, billboard sprites, holes, and render-only point-light samples. Presentation slots such as `backgroundSlot`, `skyboxSlot`, and `overlaySlot` let typed map refs select first-person sky/background and full-frame effects like fog or snow without moving gameplay semantics into raycaster. When `opts.catalog` or `opts.tileCatalog` is an `LTileCatalog`, typed tilefield refs reuse `tileset` visuals, texture ids, and object properties instead of requiring duplicate raycaster-only material maps.

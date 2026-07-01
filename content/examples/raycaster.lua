@@ -1495,6 +1495,11 @@ do
         lurek.log.info("lighting samples = " .. stats.lightingSamples)
         lurek.log.info("lighting cache hits = " .. stats.lightingCacheHits)
         lurek.log.info("lighting cache misses = " .. stats.lightingCacheMisses)
+        lurek.log.info("wall quads = " .. stats.wallQuads)
+        lurek.log.info("floor quads = " .. stats.floorQuads)
+        lurek.log.info("ceiling quads = " .. stats.ceilingQuads)
+        lurek.log.info("visible levels = " .. stats.visibleLevels)
+        lurek.log.info("depth columns = " .. stats.depthColumns)
     end
 end
 
@@ -2487,11 +2492,13 @@ end
 do
 
     local map = lurek.raycaster.new(16, 16)
-    local uvs = map:castFloorRow(8, 8, 1, 0, 0, 0.66, 150)
+    local legacy_uvs = map:castFloorRow(8, 8, 1, 0, 0, 0.66, 150)
+    local viewport_uvs = map:castFloorRow(8, 8, 1, 0, 0, 0.66, 150, 320, 200)
 
-    lurek.log.info("uv count = " .. #uvs)
-    if uvs[1] then
-        lurek.log.info("first uv = " .. string.format("%.2f", uvs[1].u) .. "," .. string.format("%.2f", uvs[1].v))
+    lurek.log.info("legacy uv count = " .. #legacy_uvs)
+    lurek.log.info("viewport uv count = " .. #viewport_uvs)
+    if viewport_uvs[1] then
+        lurek.log.info("first viewport uv = " .. string.format("%.2f", viewport_uvs[1].u) .. "," .. string.format("%.2f", viewport_uvs[1].v))
     end
 end
 

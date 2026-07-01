@@ -4,6 +4,8 @@
 //! Rendering and collision code can read one shared door registry, keeping passage state consistent across subsystems.
 //! Open this file when door lifecycle semantics change; wall descriptors and scene construction stay in siblings.
 
+use super::contract::RaycasterError;
+
 /// Slide axis of a door: horizontal (slides along X) or vertical (slides along Y).
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum DoorDirection {
@@ -52,16 +54,38 @@ impl DoorManager {
     }
     /// Register a new closed door at `(x, y)` with the given `direction` and `speed`; return its index handle.
     pub fn add_door(&mut self, x: u32, y: u32, direction: DoorDirection, speed: f32) -> usize {
+        if let Some(existing) = self.doors.iter().position(|door| door.x == x && door.y == y) {
+            let door = &mut self.doors[existing];
+            door.direction = direction;
+            door.speed = if speed.is_finite() { speed.max(0.0) } else { 0.0 };
+            return existing;
+        }
         let index = self.doors.len();
         self.doors.push(Door {
             x,
             y,
             open_amount: 0.0,
-            speed,
+            speed: if speed.is_finite() { speed.max(0.0) } else { 0.0 },
             direction,
             state: DoorState::Closed,
         });
         index
+    }
+    /// Register a new closed door strictly, rejecting duplicates and invalid speeds.
+    pub fn try_add_door(
+        &mut self,
+        x: u32,
+        y: u32,
+        direction: DoorDirection,
+        speed: f32,
+    ) -> Result<usize, RaycasterError> {
+        if !speed.is_finite() || speed < 0.0 {
+            return Err(RaycasterError::InvalidDoorSpeed { speed });
+        }
+        if self.doors.iter().any(|door| door.x == x && door.y == y) {
+            return Err(RaycasterError::DuplicateDoorTile { x, y });
+        }
+        Ok(self.add_door(x, y, direction, speed))
     }
     /// Start opening door `index` if it is Closed or Closing; no-op otherwise.
     pub fn open_door(&mut self, index: usize) {
@@ -81,6 +105,9 @@ impl DoorManager {
     }
     /// Advance all door animations by `dt` seconds.
     pub fn update(&mut self, dt: f32) {
+        if !dt.is_finite() || dt <= 0.0 {
+            return;
+        }
         for door in &mut self.doors {
             match door.state {
                 DoorState::Opening => {
@@ -100,6 +127,14 @@ impl DoorManager {
                 _ => {}
             }
         }
+    }
+    /// Advance all door animations strictly, rejecting negative or non-finite delta time.
+    pub fn try_update(&mut self, dt: f32) -> Result<(), RaycasterError> {
+        if !dt.is_finite() || dt < 0.0 {
+            return Err(RaycasterError::InvalidDoorDelta { dt });
+        }
+        self.update(dt);
+        Ok(())
     }
     /// Return the first door at grid tile `(x, y)`, or `None` if none is registered there.
     pub fn get_door_at(&self, x: u32, y: u32) -> Option<&Door> {

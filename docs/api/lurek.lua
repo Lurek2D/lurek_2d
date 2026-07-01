@@ -1082,9 +1082,17 @@ LRaycasterCastRayResult = {}
 LRaycasterCastRaysResult = {}
 
 ---@class LRaycasterGetLastBuildStatsResult
+---@field ceilingQuads number Number of ceiling quads emitted during the last build.
+---@field depthColumns number Number of cached wall-depth columns available to overlays and picking.
+---@field floorQuads number Number of floor quads emitted during the last build.
 ---@field lightingCacheHits number Number of reused lighting samples served from the per-build cache.
 ---@field lightingCacheMisses number Number of unique lighting samples computed during the last build.
 ---@field lightingSamples number Total lighting samples requested during the last build.
+---@field models number Number of projected model meshes emitted during the last build.
+---@field particles number Number of projected particle quads emitted during the last build.
+---@field sprites number Number of billboard sprites emitted during the last build.
+---@field visibleLevels number Number of multilevel slices traversed during the last build.
+---@field wallQuads number Number of wall quads emitted during the last build.
 LRaycasterGetLastBuildStatsResult = {}
 
 ---@class LRaycasterGetLoweredFloorCellResult
@@ -26287,7 +26295,7 @@ lurek.province.zoomCameraAt = function(anchor_x, anchor_y, cam_x, cam_y, old_zoo
 ---@param x number Grid column of the door cell.
 ---@param y number Grid row of the door cell.
 ---@param direction string Slide axis: "horizontal" or "vertical".
----@param speed number How fast the door opens/closes (units per second).
+---@param speed number How fast the door opens/closes (units per second); must be finite and >= 0.
 ---@return number Zero-based index of the newly added door.
 function LDoorManager:addDoor(x, y, direction, speed) end
 
@@ -26576,8 +26584,10 @@ function LRaycaster:buildSceneWithModels(params, lights, sprites, wallTextures, 
 ---@param planeX number Camera plane X (half-width of FOV).
 ---@param planeY number Camera plane Y (half-width of FOV).
 ---@param row number Scanline row offset from screen center.
+---@param screenWidth? number Optional explicit viewport width. When omitted, legacy map width sampling is used.
+---@param screenHeight? number Optional explicit viewport height. When omitted, legacy map height sampling is used.
 ---@return LRaycasterCastFloorRowResult Array of {u, v} tables for each pixel in the row.
-function LRaycaster:castFloorRow(camX, camY, dirX, dirY, planeX, planeY, row) end
+function LRaycaster:castFloorRow(camX, camY, dirX, dirY, planeX, planeY, row, screenWidth, screenHeight) end
 
 --- Casts a single ray from (ox,oy) at the given angle and returns hit info or nil.
 ---@param ox number Ray origin X.

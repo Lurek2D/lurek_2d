@@ -1,20 +1,20 @@
 {
   "meta": {
-    "generated": "2026-07-01T13:28:09.916600+00:00",
+    "generated": "2026-07-01T15:48:23.896327+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "rust_items": 3172,
-      "rust_modules": 728,
+      "rust_items": 3179,
+      "rust_modules": 729,
       "rust_tests": 502,
       "lua_tests": 285
     }
   },
   "rust_api": {
     "summary": {
-      "total_items": 3172,
-      "documented": 3168,
-      "modules": 728
+      "total_items": 3179,
+      "documented": 3175,
+      "modules": 729
     },
     "modules": {
       "agent::chat": {
@@ -17609,63 +17609,63 @@
             "kind": "struct",
             "description": "A floor cell that sits below the standard floor plane, used for pits and step-down areas.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 34
+            "line": 35
           },
           {
             "name": "LevelSprite",
             "kind": "struct",
             "description": "A billboard sprite attached to a specific multi-level slice.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 47
+            "line": 48
           },
           {
             "name": "LevelParticleEmitter",
             "kind": "struct",
             "description": "A world-space projected particle emitter attached to a specific multi-level slice.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 56
+            "line": 57
           },
           {
             "name": "SceneBuildParams",
             "kind": "struct",
             "description": "All camera and world parameters consumed by `RaycasterScene::build` each frame.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 1576
+            "line": 1585
           },
           {
             "name": "DirectionalSpriteTextures",
             "kind": "struct",
             "description": "Optional 4-direction texture set for bitmap actors that should read as front/side/back sprites.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 1691
+            "line": 1724
           },
           {
             "name": "WorldSprite",
             "kind": "struct",
             "description": "A billboard sprite placed in world space and projected to screen by `RaycasterScene::build`.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 1730
+            "line": 1763
           },
           {
             "name": "RaycasterParticleEmitter",
             "kind": "struct",
             "description": "A deterministic world-space particle emitter projected into the raycaster view.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 1749
+            "line": 1782
           },
           {
             "name": "TextureLookup",
             "kind": "type",
             "description": "Callback type mapping a wall cell value to an optional `TextureKey`.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 1790
+            "line": 1823
           },
           {
             "name": "CellTextureLookup",
             "kind": "type",
             "description": "Callback type mapping a grid `(x, y)` cell to an optional `TextureKey`.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 1792
+            "line": 1825
           }
         ]
       },
@@ -17689,6 +17689,47 @@
           }
         ]
       },
+      "raycaster::contract": {
+        "module_doc": "Shared validation contracts for raycaster storage, ray parameters, projection, and scene input. Strict `try_*` entrypoints surface `RaycasterError` through Rust and Lua, while legacy helpers can sanitize or ignore invalid requests without panicking or allocating unbounded buffers.",
+        "source_file": "src/raycaster/contract.rs",
+        "items": [
+          {
+            "name": "OutOfBoundsPolicy",
+            "kind": "enum",
+            "description": "Policy used by checked cell queries when the caller probes outside the authored map bounds.",
+            "file": "src/raycaster/contract.rs",
+            "line": 10
+          },
+          {
+            "name": "RaycasterLimits",
+            "kind": "struct",
+            "description": "Shared safety limits for grid allocation, ray fan size, and screen-facing projection inputs.",
+            "file": "src/raycaster/contract.rs",
+            "line": 27
+          },
+          {
+            "name": "RaycastParams",
+            "kind": "struct",
+            "description": "Shared ray-step parameter bundle used by strict DDA entrypoints.",
+            "file": "src/raycaster/contract.rs",
+            "line": 241
+          },
+          {
+            "name": "ProjectionParams",
+            "kind": "struct",
+            "description": "Shared wall-column projection parameters used by strict projection entrypoints.",
+            "file": "src/raycaster/contract.rs",
+            "line": 290
+          },
+          {
+            "name": "RaycasterError",
+            "kind": "enum",
+            "description": "Structured failures used by strict raycaster constructors, validators, and scene adapters.",
+            "file": "src/raycaster/contract.rs",
+            "line": 315
+          }
+        ]
+      },
       "raycaster::dda": {
         "module_doc": "This file owns `Raycaster2D`, the grid-backed DDA engine that stores wall cells and answers render ray queries. It stores map dimensions, row-major cells, wall alpha overrides, wall features, and synchronized door feature state. Core casting methods produce single hits, layered transparent hits, fan casts, and packed ray buffers from one model. Render visibility helpers reuse the same blocking rules so lighting and screen picking stay aligned with rendering. Door synchronization translates `DoorManager` openness into wall features without replacing underlying tile identity. Sprite and floor helpers project billboards and sample floor rows with the same camera conventions as wall casting. Safe setters ignore invalid writes, and out-of-range reads fall back predictably for tools and runtime probes. Open this file when marching semantics or map-owned ray data change; debug views and scene building live in siblings.",
         "source_file": "src/raycaster/dda.rs",
@@ -17698,7 +17739,7 @@
             "kind": "struct",
             "description": "2D grid map and DDA ray-stepping engine used by the raycaster subsystem.",
             "file": "src/raycaster/dda.rs",
-            "line": 19
+            "line": 20
           }
         ]
       },
@@ -17724,28 +17765,28 @@
             "kind": "enum",
             "description": "Slide axis of a door: horizontal (slides along X) or vertical (slides along Y).",
             "file": "src/raycaster/doors.rs",
-            "line": 9
+            "line": 11
           },
           {
             "name": "DoorState",
             "kind": "enum",
             "description": "Current animation phase of a door.",
             "file": "src/raycaster/doors.rs",
-            "line": 17
+            "line": 19
           },
           {
             "name": "Door",
             "kind": "struct",
             "description": "A single animated door placed at a grid tile.",
             "file": "src/raycaster/doors.rs",
-            "line": 29
+            "line": 31
           },
           {
             "name": "DoorManager",
             "kind": "struct",
             "description": "Registry and update driver for all doors in the current map.",
             "file": "src/raycaster/doors.rs",
-            "line": 44
+            "line": 46
           }
         ]
       },
@@ -17847,144 +17888,151 @@
             "line": 13
           },
           {
+            "name": "contract",
+            "kind": "mod",
+            "description": "Shared raycaster validation contracts and strict error types.",
+            "file": "src/raycaster/mod.rs",
+            "line": 15
+          },
+          {
             "name": "dda",
             "kind": "mod",
             "description": "DDA (digital differential analysis) ray-stepping core.",
             "file": "src/raycaster/mod.rs",
-            "line": 15
+            "line": 17
           },
           {
             "name": "depth_buffer",
             "kind": "mod",
             "description": "Per-pixel depth buffer used for sprite occlusion.",
             "file": "src/raycaster/mod.rs",
-            "line": 17
+            "line": 19
           },
           {
             "name": "doors",
             "kind": "mod",
             "description": "Door state machine and door manager.",
             "file": "src/raycaster/mod.rs",
-            "line": 19
+            "line": 21
           },
           {
             "name": "draw",
             "kind": "mod",
             "description": "High-level draw call assembly for a full raycasted frame.",
             "file": "src/raycaster/mod.rs",
-            "line": 21
+            "line": 23
           },
           {
             "name": "heightmap",
             "kind": "mod",
             "description": "Variable floor/ceiling height map.",
             "file": "src/raycaster/mod.rs",
-            "line": 23
+            "line": 25
           },
           {
             "name": "level_render",
             "kind": "mod",
             "description": "Level rendering helpers for multi-level raycaster.",
             "file": "src/raycaster/mod.rs",
-            "line": 25
+            "line": 27
           },
           {
             "name": "lighting",
             "kind": "mod",
             "description": "Distance-based wall and sprite lighting.",
             "file": "src/raycaster/mod.rs",
-            "line": 27
+            "line": 29
           },
           {
             "name": "multilevel",
             "kind": "mod",
             "description": "Multi-level grid with floor/ceiling holes.",
             "file": "src/raycaster/mod.rs",
-            "line": 29
+            "line": 31
           },
           {
             "name": "projection",
             "kind": "mod",
             "description": "Column projection math: wall slice height and screen coordinates.",
             "file": "src/raycaster/mod.rs",
-            "line": 31
+            "line": 33
           },
           {
             "name": "ray_hit",
             "kind": "mod",
             "description": "Ray-hit record produced by a single DDA ray.",
             "file": "src/raycaster/mod.rs",
-            "line": 33
+            "line": 35
           },
           {
             "name": "render",
             "kind": "mod",
             "description": "Top-level render dispatch for a raycaster frame.",
             "file": "src/raycaster/mod.rs",
-            "line": 35
+            "line": 37
           },
           {
             "name": "scene",
             "kind": "mod",
             "description": "`RaycasterScene` and its constituent quad/sprite/mesh types.",
             "file": "src/raycaster/mod.rs",
-            "line": 37
+            "line": 39
           },
           {
             "name": "scene_adapter",
             "kind": "mod",
             "description": "Runtime adapter for mapping static or physics-backed 2D entities into raycaster scene inputs.",
             "file": "src/raycaster/mod.rs",
-            "line": 39
+            "line": 41
           },
           {
             "name": "segment",
             "kind": "mod",
             "description": "2D line segment and `cast_ray_2d` entry point.",
             "file": "src/raycaster/mod.rs",
-            "line": 41
+            "line": 43
           },
           {
             "name": "sprite_manager",
             "kind": "mod",
             "description": "Sprite registry and frustum-sorted sprite list.",
             "file": "src/raycaster/mod.rs",
-            "line": 43
+            "line": 45
           },
           {
             "name": "sprite_projection",
             "kind": "mod",
             "description": "Screen-space sprite projection math.",
             "file": "src/raycaster/mod.rs",
-            "line": 45
+            "line": 47
           },
           {
             "name": "tile_picker",
             "kind": "mod",
             "description": "Tile picker: screen-to-tile coordinate mapping.",
             "file": "src/raycaster/mod.rs",
-            "line": 47
+            "line": 49
           },
           {
             "name": "visibility",
             "kind": "mod",
             "description": "Field-of-view visibility grid computation.",
             "file": "src/raycaster/mod.rs",
-            "line": 49
+            "line": 51
           },
           {
             "name": "visualization",
             "kind": "mod",
             "description": "Debug visualization helpers (ray paths, normals, tiles).",
             "file": "src/raycaster/mod.rs",
-            "line": 51
+            "line": 53
           },
           {
             "name": "wall_feature",
             "kind": "mod",
             "description": "Per-cell wall feature descriptors for doors, windows, and half-height walls.",
             "file": "src/raycaster/mod.rs",
-            "line": 53
+            "line": 55
           }
         ]
       },
@@ -17997,34 +18045,41 @@
             "kind": "struct",
             "description": "A single level in a multi-level raycaster world.",
             "file": "src/raycaster/multilevel.rs",
-            "line": 17
+            "line": 18
           },
           {
             "name": "MultiLevelGrid",
             "kind": "struct",
             "description": "Multi-level grid containing stacked raycaster levels.",
             "file": "src/raycaster/multilevel.rs",
-            "line": 265
+            "line": 296
           }
         ]
       },
       "raycaster::projection": {
-        "module_doc": "This file owns the projection helpers that convert ray-hit distance into wall column height and draw bounds. It also computes distance-based shading factors so raycaster rendering can fade geometry over viewing range. Open this file when wall projection math changes; hit records and sprite payloads live in sibling files.",
+        "module_doc": "Owns wall-column projection math and distance-based shading for the raycaster renderer. Converts corrected ray distances into screen-space wall heights and brightness multipliers. Open this file when wall projection math changes; hit records and sprite payloads live in sibling files.",
         "source_file": "src/raycaster/projection.rs",
         "items": [
           {
             "name": "project_column",
             "kind": "fn",
-            "description": "Project a wall column at `distance` using `fov` and `screen_height`;. return `(wall_height, draw_start_y, draw_end_y)` in screen pixels.",
+            "description": "Project a wall column at `distance` using `fov` and `screen_height`. Return `(wall_height, draw_start_y, draw_end_y)` in screen pixels.",
             "file": "src/raycaster/projection.rs",
-            "line": 7
+            "line": 9
+          },
+          {
+            "name": "try_project_column",
+            "kind": "fn",
+            "description": "Project a validated wall column, returning an error instead of NaN/Inf on invalid input.",
+            "file": "src/raycaster/projection.rs",
+            "line": 24
           },
           {
             "name": "distance_shade",
             "kind": "fn",
             "description": "Return a brightness multiplier 0.0..1.0 based on `distance` relative to `max_distance`.",
             "file": "src/raycaster/projection.rs",
-            "line": 21
+            "line": 49
           }
         ]
       },
@@ -18070,91 +18125,91 @@
             "kind": "enum",
             "description": "Entity class resolved by scene-space picking.",
             "file": "src/raycaster/scene.rs",
-            "line": 28
+            "line": 44
           },
           {
             "name": "EntityPickResult",
             "kind": "struct",
             "description": "Result of picking a projected sprite or model from a prepared raycaster scene.",
             "file": "src/raycaster/scene.rs",
-            "line": 47
+            "line": 63
           },
           {
             "name": "WallQuad",
             "kind": "struct",
             "description": "A textured or flat-shaded wall slice quad emitted for one raycaster column or face.",
             "file": "src/raycaster/scene.rs",
-            "line": 70
+            "line": 86
           },
           {
             "name": "FloorQuad",
             "kind": "struct",
             "description": "A perspective-correct floor quad covering one screen column strip.",
             "file": "src/raycaster/scene.rs",
-            "line": 92
+            "line": 108
           },
           {
             "name": "CeilingQuad",
             "kind": "struct",
             "description": "A perspective-correct ceiling quad covering one screen column strip.",
             "file": "src/raycaster/scene.rs",
-            "line": 112
+            "line": 128
           },
           {
             "name": "BillboardSprite",
             "kind": "struct",
             "description": "An axis-aligned billboard sprite quad, sorted by depth relative to walls.",
             "file": "src/raycaster/scene.rs",
-            "line": 132
+            "line": 148
           },
           {
             "name": "RaycasterMaterialFrameLayout",
             "kind": "enum",
             "description": "Atlas-frame layout used by a raycaster material animation strip.",
             "file": "src/raycaster/scene.rs",
-            "line": 155
+            "line": 171
           },
           {
             "name": "RaycasterMaterial",
             "kind": "struct",
             "description": "Render-facing material metadata attached to raycaster surfaces and fullscreen effects.",
             "file": "src/raycaster/scene.rs",
-            "line": 164
+            "line": 180
           },
           {
             "name": "RaycasterBackground",
             "kind": "enum",
             "description": "Full-frame background drawn before raycaster geometry.",
             "file": "src/raycaster/scene.rs",
-            "line": 209
+            "line": 225
           },
           {
             "name": "RaycasterOverlayEffect",
             "kind": "enum",
             "description": "Screen-space presentation effect drawn over the raycaster frame.",
             "file": "src/raycaster/scene.rs",
-            "line": 226
+            "line": 242
           },
           {
             "name": "RaycasterParticle",
             "kind": "struct",
             "description": "A projected world-space particle prepared for transparent composition within a raycaster scene.",
             "file": "src/raycaster/scene.rs",
-            "line": 248
+            "line": 264
           },
           {
             "name": "ModelMesh",
             "kind": "struct",
             "description": "A static mesh injected into the raycaster scene with an associated depth.",
             "file": "src/raycaster/scene.rs",
-            "line": 294
+            "line": 310
           },
           {
             "name": "RaycasterScene",
             "kind": "struct",
             "description": "Full frame scene produced by `RaycasterScene::build`; consumed by `render::generate_render_commands`.",
             "file": "src/raycaster/scene.rs",
-            "line": 312
+            "line": 328
           }
         ]
       },
@@ -18289,35 +18344,35 @@
             "kind": "enum",
             "description": "Surface class resolved by a screen pick.",
             "file": "src/raycaster/tile_picker.rs",
-            "line": 19
+            "line": 21
           },
           {
             "name": "PickWallSection",
             "kind": "enum",
             "description": "Solid wall section resolved inside a wall-feature cell.",
             "file": "src/raycaster/tile_picker.rs",
-            "line": 41
+            "line": 43
           },
           {
             "name": "ScreenPickParams",
             "kind": "struct",
             "description": "Camera and viewport parameters used for screen-to-world raycaster picking.",
             "file": "src/raycaster/tile_picker.rs",
-            "line": 66
+            "line": 68
           },
           {
             "name": "TilePicker",
             "kind": "struct",
             "description": "Tile picker that maps screen coordinates to raycaster grid tiles.",
             "file": "src/raycaster/tile_picker.rs",
-            "line": 101
+            "line": 116
           },
           {
             "name": "PickResult",
             "kind": "struct",
             "description": "Result of a tile pick operation.",
             "file": "src/raycaster/tile_picker.rs",
-            "line": 122
+            "line": 141
           }
         ]
       },

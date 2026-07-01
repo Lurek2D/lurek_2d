@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-07-01T13:28:49.863804+00:00",
+  "generated_at": "2026-07-01T15:49:02.458087+00:00",
   "summary": {
     "rust": {
-      "total": 9012,
-      "covered": 9006,
+      "total": 9054,
+      "covered": 9048,
       "missing": 6,
       "pct": 99.9
     },
@@ -14,8 +14,8 @@
       "pct": 81.8
     },
     "total": {
-      "total": 9232,
-      "covered": 9186,
+      "total": 9274,
+      "covered": 9228,
       "missing": 46,
       "pct": 99.5
     }
@@ -36666,7 +36666,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 2336,
+      "line": 2399,
       "kind": "struct",
       "name": "LuaDoorManager",
       "has_doc": true
@@ -36675,7 +36675,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 2429,
+      "line": 2496,
       "kind": "struct",
       "name": "LuaHeightMap",
       "has_doc": true
@@ -36684,7 +36684,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 2483,
+      "line": 2550,
       "kind": "struct",
       "name": "LuaRaycaster",
       "has_doc": true
@@ -36693,7 +36693,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 4188,
+      "line": 4327,
       "kind": "struct",
       "name": "LuaMultiLevelGrid",
       "has_doc": true
@@ -36702,7 +36702,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 5216,
+      "line": 5371,
       "kind": "struct",
       "name": "LuaSpriteManager",
       "has_doc": true
@@ -36711,7 +36711,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 5385,
+      "line": 5550,
       "kind": "struct",
       "name": "LuaRaycasterSceneAdapter",
       "has_doc": true
@@ -36720,7 +36720,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 6234,
+      "line": 6423,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -58752,7 +58752,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/build_scene.rs",
-      "line": 34,
+      "line": 35,
       "kind": "struct",
       "name": "LoweredFloorCell",
       "has_doc": true
@@ -58761,7 +58761,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/build_scene.rs",
-      "line": 47,
+      "line": 48,
       "kind": "struct",
       "name": "LevelSprite",
       "has_doc": true
@@ -58770,7 +58770,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/build_scene.rs",
-      "line": 56,
+      "line": 57,
       "kind": "struct",
       "name": "LevelParticleEmitter",
       "has_doc": true
@@ -58779,7 +58779,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/build_scene.rs",
-      "line": 1576,
+      "line": 1585,
       "kind": "struct",
       "name": "SceneBuildParams",
       "has_doc": true
@@ -58788,7 +58788,16 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/build_scene.rs",
-      "line": 1691,
+      "line": 1632,
+      "kind": "fn",
+      "name": "validate",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/build_scene.rs",
+      "line": 1724,
       "kind": "struct",
       "name": "DirectionalSpriteTextures",
       "has_doc": true
@@ -58797,7 +58806,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/build_scene.rs",
-      "line": 1730,
+      "line": 1763,
       "kind": "struct",
       "name": "WorldSprite",
       "has_doc": true
@@ -58806,7 +58815,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/build_scene.rs",
-      "line": 1749,
+      "line": 1782,
       "kind": "struct",
       "name": "RaycasterParticleEmitter",
       "has_doc": true
@@ -58815,7 +58824,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/build_scene.rs",
-      "line": 1790,
+      "line": 1823,
       "kind": "type",
       "name": "TextureLookup",
       "has_doc": true
@@ -58824,7 +58833,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/build_scene.rs",
-      "line": 1792,
+      "line": 1825,
       "kind": "type",
       "name": "CellTextureLookup",
       "has_doc": true
@@ -58833,7 +58842,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/build_scene.rs",
-      "line": 2151,
+      "line": 2184,
       "kind": "fn",
       "name": "build_with_scene_features",
       "has_doc": true
@@ -58842,7 +58851,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/build_scene.rs",
-      "line": 2208,
+      "line": 2259,
       "kind": "fn",
       "name": "build",
       "has_doc": true
@@ -58851,7 +58860,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/build_scene.rs",
-      "line": 2236,
+      "line": 2287,
       "kind": "fn",
       "name": "build_multilevel_with_scene_features",
       "has_doc": true
@@ -58860,7 +58869,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/build_scene.rs",
-      "line": 2346,
+      "line": 2416,
       "kind": "fn",
       "name": "build_multilevel",
       "has_doc": true
@@ -58985,8 +58994,152 @@
     {
       "source": "rust",
       "module": "raycaster",
+      "file": "src/raycaster/contract.rs",
+      "line": 10,
+      "kind": "enum",
+      "name": "OutOfBoundsPolicy",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/contract.rs",
+      "line": 27,
+      "kind": "struct",
+      "name": "RaycasterLimits",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/contract.rs",
+      "line": 81,
+      "kind": "fn",
+      "name": "validate_grid_dimensions",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/contract.rs",
+      "line": 108,
+      "kind": "fn",
+      "name": "validate_grid_dimensions_usize",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/contract.rs",
+      "line": 147,
+      "kind": "fn",
+      "name": "sanitize_grid_dimensions",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/contract.rs",
+      "line": 155,
+      "kind": "fn",
+      "name": "validate_finite",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/contract.rs",
+      "line": 164,
+      "kind": "fn",
+      "name": "validate_screen_axis",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/contract.rs",
+      "line": 178,
+      "kind": "fn",
+      "name": "validate_screen_dimensions",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/contract.rs",
+      "line": 189,
+      "kind": "fn",
+      "name": "validate_max_distance",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/contract.rs",
+      "line": 201,
+      "kind": "fn",
+      "name": "validate_fov",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/contract.rs",
+      "line": 214,
+      "kind": "fn",
+      "name": "validate_scene_counts",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/contract.rs",
+      "line": 241,
+      "kind": "struct",
+      "name": "RaycastParams",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/contract.rs",
+      "line": 260,
+      "kind": "fn",
+      "name": "validate",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/contract.rs",
+      "line": 290,
+      "kind": "struct",
+      "name": "ProjectionParams",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/contract.rs",
+      "line": 301,
+      "kind": "fn",
+      "name": "validate",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/contract.rs",
+      "line": 315,
+      "kind": "enum",
+      "name": "RaycasterError",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 19,
+      "line": 20,
       "kind": "struct",
       "name": "Raycaster2D",
       "has_doc": true
@@ -58995,7 +59148,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 36,
+      "line": 39,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -59004,7 +59157,25 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 48,
+      "line": 54,
+      "kind": "fn",
+      "name": "try_new",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/dda.rs",
+      "line": 58,
+      "kind": "fn",
+      "name": "try_new_with_limits",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/dda.rs",
+      "line": 75,
       "kind": "fn",
       "name": "set_cell",
       "has_doc": true
@@ -59013,7 +59184,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 54,
+      "line": 81,
       "kind": "fn",
       "name": "get_cell",
       "has_doc": true
@@ -59022,7 +59193,34 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 62,
+      "line": 89,
+      "kind": "fn",
+      "name": "out_of_bounds_policy",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/dda.rs",
+      "line": 93,
+      "kind": "fn",
+      "name": "set_out_of_bounds_policy",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/dda.rs",
+      "line": 97,
+      "kind": "fn",
+      "name": "get_cell_checked",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/dda.rs",
+      "line": 108,
       "kind": "fn",
       "name": "set_cells",
       "has_doc": true
@@ -59031,72 +59229,9 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 68,
+      "line": 112,
       "kind": "fn",
-      "name": "is_blocked",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "raycaster",
-      "file": "src/raycaster/dda.rs",
-      "line": 79,
-      "kind": "fn",
-      "name": "blocks_render_visibility_at",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "raycaster",
-      "file": "src/raycaster/dda.rs",
-      "line": 91,
-      "kind": "fn",
-      "name": "blocks_render_light_at",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "raycaster",
-      "file": "src/raycaster/dda.rs",
-      "line": 103,
-      "kind": "fn",
-      "name": "width",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "raycaster",
-      "file": "src/raycaster/dda.rs",
-      "line": 107,
-      "kind": "fn",
-      "name": "height",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "raycaster",
-      "file": "src/raycaster/dda.rs",
-      "line": 111,
-      "kind": "fn",
-      "name": "cells",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "raycaster",
-      "file": "src/raycaster/dda.rs",
-      "line": 115,
-      "kind": "fn",
-      "name": "set_wall_feature",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "raycaster",
-      "file": "src/raycaster/dda.rs",
-      "line": 121,
-      "kind": "fn",
-      "name": "clear_wall_feature",
+      "name": "try_set_cells",
       "has_doc": true
     },
     {
@@ -59105,6 +59240,87 @@
       "file": "src/raycaster/dda.rs",
       "line": 125,
       "kind": "fn",
+      "name": "is_blocked",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/dda.rs",
+      "line": 136,
+      "kind": "fn",
+      "name": "is_blocked_checked",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/dda.rs",
+      "line": 153,
+      "kind": "fn",
+      "name": "blocks_render_visibility_at",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/dda.rs",
+      "line": 165,
+      "kind": "fn",
+      "name": "blocks_render_light_at",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/dda.rs",
+      "line": 177,
+      "kind": "fn",
+      "name": "width",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/dda.rs",
+      "line": 181,
+      "kind": "fn",
+      "name": "height",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/dda.rs",
+      "line": 185,
+      "kind": "fn",
+      "name": "cells",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/dda.rs",
+      "line": 189,
+      "kind": "fn",
+      "name": "set_wall_feature",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/dda.rs",
+      "line": 195,
+      "kind": "fn",
+      "name": "clear_wall_feature",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/dda.rs",
+      "line": 199,
+      "kind": "fn",
       "name": "wall_feature",
       "has_doc": true
     },
@@ -59112,7 +59328,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 133,
+      "line": 207,
       "kind": "fn",
       "name": "sync_doors",
       "has_doc": true
@@ -59121,7 +59337,16 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 162,
+      "line": 211,
+      "kind": "fn",
+      "name": "try_sync_doors",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/dda.rs",
+      "line": 256,
       "kind": "fn",
       "name": "clear_synced_doors",
       "has_doc": true
@@ -59130,7 +59355,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 170,
+      "line": 264,
       "kind": "fn",
       "name": "set_wall_alpha",
       "has_doc": true
@@ -59139,7 +59364,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 174,
+      "line": 268,
       "kind": "fn",
       "name": "get_wall_alpha",
       "has_doc": true
@@ -59148,7 +59373,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 184,
+      "line": 356,
       "kind": "fn",
       "name": "cast_ray",
       "has_doc": true
@@ -59157,7 +59382,16 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 263,
+      "line": 372,
+      "kind": "fn",
+      "name": "try_cast_ray",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/dda.rs",
+      "line": 513,
       "kind": "fn",
       "name": "cast_ray_multi",
       "has_doc": true
@@ -59166,7 +59400,16 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 385,
+      "line": 538,
+      "kind": "fn",
+      "name": "try_cast_ray_multi",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/dda.rs",
+      "line": 559,
       "kind": "fn",
       "name": "cast_rays",
       "has_doc": true
@@ -59175,7 +59418,16 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 427,
+      "line": 615,
+      "kind": "fn",
+      "name": "try_cast_rays",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/dda.rs",
+      "line": 637,
       "kind": "fn",
       "name": "cast_rays_flat",
       "has_doc": true
@@ -59184,7 +59436,16 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 449,
+      "line": 658,
+      "kind": "fn",
+      "name": "try_cast_rays_flat",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/dda.rs",
+      "line": 672,
       "kind": "fn",
       "name": "project_sprite",
       "has_doc": true
@@ -59193,9 +59454,27 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 485,
+      "line": 744,
       "kind": "fn",
       "name": "cast_floor_row",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/dda.rs",
+      "line": 782,
+      "kind": "fn",
+      "name": "cast_floor_row_with_viewport",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/dda.rs",
+      "line": 814,
+      "kind": "fn",
+      "name": "try_cast_floor_row_with_viewport",
       "has_doc": true
     },
     {
@@ -59265,7 +59544,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/doors.rs",
-      "line": 9,
+      "line": 11,
       "kind": "enum",
       "name": "DoorDirection",
       "has_doc": true
@@ -59274,7 +59553,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/doors.rs",
-      "line": 17,
+      "line": 19,
       "kind": "enum",
       "name": "DoorState",
       "has_doc": true
@@ -59283,7 +59562,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/doors.rs",
-      "line": 29,
+      "line": 31,
       "kind": "struct",
       "name": "Door",
       "has_doc": true
@@ -59292,7 +59571,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/doors.rs",
-      "line": 44,
+      "line": 46,
       "kind": "struct",
       "name": "DoorManager",
       "has_doc": true
@@ -59301,7 +59580,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/doors.rs",
-      "line": 50,
+      "line": 52,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -59310,7 +59589,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/doors.rs",
-      "line": 54,
+      "line": 56,
       "kind": "fn",
       "name": "add_door",
       "has_doc": true
@@ -59319,7 +59598,16 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/doors.rs",
-      "line": 67,
+      "line": 75,
+      "kind": "fn",
+      "name": "try_add_door",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/doors.rs",
+      "line": 91,
       "kind": "fn",
       "name": "open_door",
       "has_doc": true
@@ -59328,7 +59616,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/doors.rs",
-      "line": 75,
+      "line": 99,
       "kind": "fn",
       "name": "close_door",
       "has_doc": true
@@ -59337,7 +59625,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/doors.rs",
-      "line": 83,
+      "line": 107,
       "kind": "fn",
       "name": "update",
       "has_doc": true
@@ -59346,7 +59634,16 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/doors.rs",
-      "line": 105,
+      "line": 132,
+      "kind": "fn",
+      "name": "try_update",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/doors.rs",
+      "line": 140,
       "kind": "fn",
       "name": "get_door_at",
       "has_doc": true
@@ -59355,7 +59652,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/doors.rs",
-      "line": 109,
+      "line": 144,
       "kind": "fn",
       "name": "doors",
       "has_doc": true
@@ -59553,7 +59850,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 17,
+      "line": 18,
       "kind": "struct",
       "name": "RaycasterLevel",
       "has_doc": true
@@ -59562,7 +59859,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 48,
+      "line": 49,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -59571,7 +59868,25 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 68,
+      "line": 70,
+      "kind": "fn",
+      "name": "try_new",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/multilevel.rs",
+      "line": 74,
+      "kind": "fn",
+      "name": "try_new_with_limits",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/multilevel.rs",
+      "line": 98,
       "kind": "fn",
       "name": "get_wall",
       "has_doc": true
@@ -59580,7 +59895,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 77,
+      "line": 107,
       "kind": "fn",
       "name": "set_wall",
       "has_doc": true
@@ -59589,7 +59904,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 84,
+      "line": 114,
       "kind": "fn",
       "name": "wall_feature",
       "has_doc": true
@@ -59598,7 +59913,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 93,
+      "line": 123,
       "kind": "fn",
       "name": "set_wall_feature",
       "has_doc": true
@@ -59607,7 +59922,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 100,
+      "line": 130,
       "kind": "fn",
       "name": "clear_wall_feature",
       "has_doc": true
@@ -59616,7 +59931,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 107,
+      "line": 137,
       "kind": "fn",
       "name": "floor_texture_at",
       "has_doc": true
@@ -59625,7 +59940,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 116,
+      "line": 146,
       "kind": "fn",
       "name": "set_floor_texture",
       "has_doc": true
@@ -59634,7 +59949,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 123,
+      "line": 153,
       "kind": "fn",
       "name": "clear_floor_texture",
       "has_doc": true
@@ -59643,7 +59958,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 130,
+      "line": 160,
       "kind": "fn",
       "name": "ceiling_texture_at",
       "has_doc": true
@@ -59652,7 +59967,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 139,
+      "line": 169,
       "kind": "fn",
       "name": "set_ceiling_texture",
       "has_doc": true
@@ -59661,7 +59976,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 146,
+      "line": 176,
       "kind": "fn",
       "name": "clear_ceiling_texture",
       "has_doc": true
@@ -59670,7 +59985,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 153,
+      "line": 183,
       "kind": "fn",
       "name": "lowered_floor",
       "has_doc": true
@@ -59679,7 +59994,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 162,
+      "line": 192,
       "kind": "fn",
       "name": "set_lowered_floor",
       "has_doc": true
@@ -59688,7 +60003,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 169,
+      "line": 199,
       "kind": "fn",
       "name": "clear_lowered_floor",
       "has_doc": true
@@ -59697,7 +60012,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 176,
+      "line": 206,
       "kind": "fn",
       "name": "is_floor_hole",
       "has_doc": true
@@ -59706,7 +60021,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 185,
+      "line": 215,
       "kind": "fn",
       "name": "set_floor_hole",
       "has_doc": true
@@ -59715,7 +60030,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 192,
+      "line": 222,
       "kind": "fn",
       "name": "is_ceiling_hole",
       "has_doc": true
@@ -59724,7 +60039,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 201,
+      "line": 231,
       "kind": "fn",
       "name": "set_ceiling_hole",
       "has_doc": true
@@ -59733,7 +60048,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 210,
+      "line": 240,
       "kind": "fn",
       "name": "build_runtime_raycaster",
       "has_doc": true
@@ -59742,7 +60057,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 265,
+      "line": 296,
       "kind": "struct",
       "name": "MultiLevelGrid",
       "has_doc": true
@@ -59751,7 +60066,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 273,
+      "line": 304,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -59760,7 +60075,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 282,
+      "line": 313,
       "kind": "fn",
       "name": "add_level",
       "has_doc": true
@@ -59769,7 +60084,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 288,
+      "line": 319,
       "kind": "fn",
       "name": "level_count",
       "has_doc": true
@@ -59778,7 +60093,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 293,
+      "line": 324,
       "kind": "fn",
       "name": "active_level",
       "has_doc": true
@@ -59787,7 +60102,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 298,
+      "line": 329,
       "kind": "fn",
       "name": "set_active_level",
       "has_doc": true
@@ -59796,7 +60111,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 305,
+      "line": 336,
       "kind": "fn",
       "name": "get_level",
       "has_doc": true
@@ -59805,7 +60120,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 310,
+      "line": 341,
       "kind": "fn",
       "name": "get_level_mut",
       "has_doc": true
@@ -59814,7 +60129,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 318,
+      "line": 349,
       "kind": "fn",
       "name": "get_active",
       "has_doc": true
@@ -59823,7 +60138,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 323,
+      "line": 354,
       "kind": "fn",
       "name": "get_active_mut",
       "has_doc": true
@@ -59832,7 +60147,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 328,
+      "line": 359,
       "kind": "fn",
       "name": "with_runtime_level",
       "has_doc": true
@@ -59841,7 +60156,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 349,
+      "line": 380,
       "kind": "fn",
       "name": "visible_level_indices",
       "has_doc": true
@@ -59850,7 +60165,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 391,
+      "line": 422,
       "kind": "fn",
       "name": "can_descend",
       "has_doc": true
@@ -59859,7 +60174,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 402,
+      "line": 433,
       "kind": "fn",
       "name": "can_ascend",
       "has_doc": true
@@ -59868,7 +60183,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/projection.rs",
-      "line": 7,
+      "line": 9,
       "kind": "fn",
       "name": "project_column",
       "has_doc": true
@@ -59877,7 +60192,16 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/projection.rs",
-      "line": 21,
+      "line": 24,
+      "kind": "fn",
+      "name": "try_project_column",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/projection.rs",
+      "line": 49,
       "kind": "fn",
       "name": "distance_shade",
       "has_doc": true
@@ -59931,7 +60255,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 28,
+      "line": 44,
       "kind": "enum",
       "name": "EntityPickKind",
       "has_doc": true
@@ -59940,7 +60264,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 37,
+      "line": 53,
       "kind": "fn",
       "name": "as_str",
       "has_doc": true
@@ -59949,7 +60273,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 47,
+      "line": 63,
       "kind": "struct",
       "name": "EntityPickResult",
       "has_doc": true
@@ -59958,7 +60282,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 70,
+      "line": 86,
       "kind": "struct",
       "name": "WallQuad",
       "has_doc": true
@@ -59967,7 +60291,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 92,
+      "line": 108,
       "kind": "struct",
       "name": "FloorQuad",
       "has_doc": true
@@ -59976,7 +60300,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 112,
+      "line": 128,
       "kind": "struct",
       "name": "CeilingQuad",
       "has_doc": true
@@ -59985,7 +60309,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 132,
+      "line": 148,
       "kind": "struct",
       "name": "BillboardSprite",
       "has_doc": true
@@ -59994,7 +60318,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 155,
+      "line": 171,
       "kind": "enum",
       "name": "RaycasterMaterialFrameLayout",
       "has_doc": true
@@ -60003,7 +60327,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 164,
+      "line": 180,
       "kind": "struct",
       "name": "RaycasterMaterial",
       "has_doc": true
@@ -60012,7 +60336,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 209,
+      "line": 225,
       "kind": "enum",
       "name": "RaycasterBackground",
       "has_doc": true
@@ -60021,7 +60345,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 226,
+      "line": 242,
       "kind": "enum",
       "name": "RaycasterOverlayEffect",
       "has_doc": true
@@ -60030,7 +60354,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 248,
+      "line": 264,
       "kind": "struct",
       "name": "RaycasterParticle",
       "has_doc": true
@@ -60039,7 +60363,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 294,
+      "line": 310,
       "kind": "struct",
       "name": "ModelMesh",
       "has_doc": true
@@ -60048,7 +60372,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 312,
+      "line": 328,
       "kind": "struct",
       "name": "RaycasterScene",
       "has_doc": true
@@ -60057,7 +60381,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 342,
+      "line": 358,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -60066,7 +60390,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 360,
+      "line": 376,
       "kind": "fn",
       "name": "quad_count",
       "has_doc": true
@@ -60075,7 +60399,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 369,
+      "line": 385,
       "kind": "fn",
       "name": "is_empty",
       "has_doc": true
@@ -60084,7 +60408,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 374,
+      "line": 390,
       "kind": "fn",
       "name": "pick_entity",
       "has_doc": true
@@ -60093,7 +60417,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 383,
+      "line": 399,
       "kind": "fn",
       "name": "pick_entity_with_sprite_alpha_test",
       "has_doc": true
@@ -60489,7 +60813,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 19,
+      "line": 21,
       "kind": "enum",
       "name": "PickSurface",
       "has_doc": true
@@ -60498,7 +60822,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 30,
+      "line": 32,
       "kind": "fn",
       "name": "as_str",
       "has_doc": true
@@ -60507,7 +60831,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 41,
+      "line": 43,
       "kind": "enum",
       "name": "PickWallSection",
       "has_doc": true
@@ -60516,7 +60840,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 54,
+      "line": 56,
       "kind": "fn",
       "name": "as_str",
       "has_doc": true
@@ -60525,7 +60849,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 66,
+      "line": 68,
       "kind": "struct",
       "name": "ScreenPickParams",
       "has_doc": true
@@ -60534,7 +60858,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 89,
+      "line": 91,
       "kind": "fn",
       "name": "horizon",
       "has_doc": true
@@ -60543,7 +60867,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 94,
+      "line": 96,
       "kind": "fn",
       "name": "projection_distance",
       "has_doc": true
@@ -60553,6 +60877,15 @@
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
       "line": 101,
+      "kind": "fn",
+      "name": "validate",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/tile_picker.rs",
+      "line": 116,
       "kind": "struct",
       "name": "TilePicker",
       "has_doc": true
@@ -60561,7 +60894,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 122,
+      "line": 141,
       "kind": "struct",
       "name": "PickResult",
       "has_doc": true
@@ -60570,7 +60903,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 157,
+      "line": 176,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -60579,7 +60912,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 171,
+      "line": 199,
       "kind": "fn",
       "name": "set_camera",
       "has_doc": true
@@ -60588,7 +60921,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 178,
+      "line": 206,
       "kind": "fn",
       "name": "set_screen_size",
       "has_doc": true
@@ -60597,7 +60930,52 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 184,
+      "line": 212,
+      "kind": "fn",
+      "name": "set_cell",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/tile_picker.rs",
+      "line": 219,
+      "kind": "fn",
+      "name": "set_cells",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/tile_picker.rs",
+      "line": 224,
+      "kind": "fn",
+      "name": "try_set_cells",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/tile_picker.rs",
+      "line": 238,
+      "kind": "fn",
+      "name": "set_wall_feature",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/tile_picker.rs",
+      "line": 245,
+      "kind": "fn",
+      "name": "clear_wall_feature",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/tile_picker.rs",
+      "line": 250,
       "kind": "fn",
       "name": "pick_tile",
       "has_doc": true
@@ -60606,7 +60984,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 274,
+      "line": 282,
       "kind": "fn",
       "name": "world_to_tile",
       "has_doc": true
@@ -60615,7 +60993,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 816,
+      "line": 824,
       "kind": "fn",
       "name": "pick_screen",
       "has_doc": true
@@ -60624,7 +61002,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 839,
+      "line": 847,
       "kind": "fn",
       "name": "pick_screen",
       "has_doc": true
@@ -82890,7 +83268,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 811,
+      "line": 852,
       "kind": "fn",
       "name": "cell_value",
       "has_doc": true
@@ -82899,7 +83277,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 813,
+      "line": 854,
       "kind": "fn",
       "name": "ray_angle",
       "has_doc": true
@@ -82908,7 +83286,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 816,
+      "line": 857,
       "kind": "fn",
       "name": "side",
       "has_doc": true
@@ -82917,7 +83295,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 824,
+      "line": 865,
       "kind": "fn",
       "name": "feature",
       "has_doc": true
@@ -82926,7 +83304,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 848,
+      "line": 889,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -82935,7 +83313,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 882,
+      "line": 931,
       "kind": "fn",
       "name": "kind",
       "has_doc": true
@@ -82944,7 +83322,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 884,
+      "line": 933,
       "kind": "fn",
       "name": "sill_height",
       "has_doc": true
@@ -82953,7 +83331,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 886,
+      "line": 935,
       "kind": "fn",
       "name": "lintel_height",
       "has_doc": true
@@ -82962,7 +83340,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 893,
+      "line": 942,
       "kind": "fn",
       "name": "kind",
       "has_doc": true
@@ -82971,7 +83349,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 899,
+      "line": 948,
       "kind": "fn",
       "name": "direction",
       "has_doc": true
@@ -82980,7 +83358,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 901,
+      "line": 950,
       "kind": "fn",
       "name": "open_amount",
       "has_doc": true
@@ -82989,7 +83367,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 2393,
+      "line": 2460,
       "kind": "fn",
       "name": "x",
       "has_doc": true
@@ -82998,7 +83376,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 2395,
+      "line": 2462,
       "kind": "fn",
       "name": "y",
       "has_doc": true
@@ -83007,7 +83385,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 2397,
+      "line": 2464,
       "kind": "fn",
       "name": "openAmount",
       "has_doc": true
@@ -83016,7 +83394,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 2405,
+      "line": 2472,
       "kind": "fn",
       "name": "state",
       "has_doc": true
@@ -83025,7 +83403,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 2912,
+      "line": 2980,
       "kind": "fn",
       "name": "kind",
       "has_doc": true
@@ -83034,7 +83412,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 2914,
+      "line": 2982,
       "kind": "fn",
       "name": "sill_height",
       "has_doc": true
@@ -83043,7 +83421,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 2916,
+      "line": 2984,
       "kind": "fn",
       "name": "lintel_height",
       "has_doc": true
@@ -83052,7 +83430,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 2923,
+      "line": 2991,
       "kind": "fn",
       "name": "kind",
       "has_doc": true
@@ -83061,7 +83439,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 2932,
+      "line": 3000,
       "kind": "fn",
       "name": "open_amount",
       "has_doc": true
@@ -83070,7 +83448,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 3258,
+      "line": 3329,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83079,7 +83457,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 3260,
+      "line": 3331,
       "kind": "fn",
       "name": "depth",
       "has_doc": true
@@ -83088,7 +83466,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 3262,
+      "line": 3333,
       "kind": "fn",
       "name": "r",
       "has_doc": true
@@ -83097,7 +83475,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 3264,
+      "line": 3335,
       "kind": "fn",
       "name": "g",
       "has_doc": true
@@ -83106,7 +83484,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 3266,
+      "line": 3337,
       "kind": "fn",
       "name": "b",
       "has_doc": true
@@ -83115,7 +83493,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 3268,
+      "line": 3339,
       "kind": "fn",
       "name": "blocked",
       "has_doc": true
@@ -83124,7 +83502,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 3701,
+      "line": 3823,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83133,7 +83511,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 3708,
+      "line": 3830,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83142,7 +83520,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 3718,
+      "line": 3840,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83151,7 +83529,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 3849,
+      "line": 3975,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83160,7 +83538,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 3855,
+      "line": 3981,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83169,7 +83547,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 3864,
+      "line": 3990,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83178,7 +83556,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 4988,
+      "line": 5139,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83187,7 +83565,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 4993,
+      "line": 5144,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83196,7 +83574,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 5001,
+      "line": 5152,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83205,7 +83583,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 5007,
+      "line": 5158,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83214,7 +83592,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 5174,
+      "line": 5329,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83223,7 +83601,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 5179,
+      "line": 5334,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83232,7 +83610,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 5187,
+      "line": 5342,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83241,7 +83619,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 5193,
+      "line": 5348,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83250,7 +83628,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 6482,
+      "line": 6681,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83259,7 +83637,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 6487,
+      "line": 6686,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83268,7 +83646,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 6495,
+      "line": 6694,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83277,7 +83655,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 6501,
+      "line": 6700,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83286,7 +83664,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 6680,
+      "line": 6883,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83295,7 +83673,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 6685,
+      "line": 6888,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83304,7 +83682,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 6693,
+      "line": 6896,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83313,7 +83691,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 6699,
+      "line": 6902,
       "kind": "fn",
       "name": "texture",
       "has_doc": true

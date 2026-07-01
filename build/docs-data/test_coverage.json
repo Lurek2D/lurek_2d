@@ -1,8 +1,8 @@
 {
   "rust": {
-    "total": 6968,
-    "covered": 3973,
-    "uncovered": 2995,
+    "total": 7005,
+    "covered": 3994,
+    "uncovered": 3011,
     "coverage_pct": 57.0,
     "covered_items": [
       {
@@ -11073,7 +11073,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 6234
+        "line": 6423
       },
       {
         "module": "lua_api",
@@ -15961,6 +15961,12 @@
       },
       {
         "module": "physics",
+        "name": "LiquidMap::try_set_cell",
+        "file": "src/physics/liquid.rs",
+        "line": 543
+      },
+      {
+        "module": "physics",
         "name": "LiquidMap::set_cell",
         "file": "src/physics/liquid.rs",
         "line": 573
@@ -18019,15 +18025,21 @@
       },
       {
         "module": "raycaster",
+        "name": "SceneBuildParams::validate",
+        "file": "src/raycaster/build_scene.rs",
+        "line": 1632
+      },
+      {
+        "module": "raycaster",
         "name": "RaycasterScene::build",
         "file": "src/raycaster/build_scene.rs",
-        "line": 2208
+        "line": 2259
       },
       {
         "module": "raycaster",
         "name": "RaycasterScene::build_multilevel",
         "file": "src/raycaster/build_scene.rs",
-        "line": 2346
+        "line": 2416
       },
       {
         "module": "raycaster",
@@ -18079,69 +18091,129 @@
       },
       {
         "module": "raycaster",
+        "name": "RaycastParams::validate",
+        "file": "src/raycaster/contract.rs",
+        "line": 260
+      },
+      {
+        "module": "raycaster",
+        "name": "ProjectionParams::validate",
+        "file": "src/raycaster/contract.rs",
+        "line": 301
+      },
+      {
+        "module": "raycaster",
         "name": "Raycaster2D::new",
         "file": "src/raycaster/dda.rs",
-        "line": 36
+        "line": 39
       },
       {
         "module": "raycaster",
-        "name": "Raycaster2D::set_cell",
-        "file": "src/raycaster/dda.rs",
-        "line": 48
-      },
-      {
-        "module": "raycaster",
-        "name": "Raycaster2D::get_cell",
+        "name": "Raycaster2D::try_new",
         "file": "src/raycaster/dda.rs",
         "line": 54
       },
       {
         "module": "raycaster",
+        "name": "Raycaster2D::try_new_with_limits",
+        "file": "src/raycaster/dda.rs",
+        "line": 58
+      },
+      {
+        "module": "raycaster",
+        "name": "Raycaster2D::set_cell",
+        "file": "src/raycaster/dda.rs",
+        "line": 75
+      },
+      {
+        "module": "raycaster",
+        "name": "Raycaster2D::get_cell",
+        "file": "src/raycaster/dda.rs",
+        "line": 81
+      },
+      {
+        "module": "raycaster",
+        "name": "Raycaster2D::out_of_bounds_policy",
+        "file": "src/raycaster/dda.rs",
+        "line": 89
+      },
+      {
+        "module": "raycaster",
+        "name": "Raycaster2D::set_out_of_bounds_policy",
+        "file": "src/raycaster/dda.rs",
+        "line": 93
+      },
+      {
+        "module": "raycaster",
+        "name": "Raycaster2D::get_cell_checked",
+        "file": "src/raycaster/dda.rs",
+        "line": 97
+      },
+      {
+        "module": "raycaster",
+        "name": "Raycaster2D::set_cells",
+        "file": "src/raycaster/dda.rs",
+        "line": 108
+      },
+      {
+        "module": "raycaster",
+        "name": "Raycaster2D::try_set_cells",
+        "file": "src/raycaster/dda.rs",
+        "line": 112
+      },
+      {
+        "module": "raycaster",
         "name": "Raycaster2D::is_blocked",
-        "file": "src/raycaster/dda.rs",
-        "line": 68
-      },
-      {
-        "module": "raycaster",
-        "name": "Raycaster2D::width",
-        "file": "src/raycaster/dda.rs",
-        "line": 103
-      },
-      {
-        "module": "raycaster",
-        "name": "Raycaster2D::height",
-        "file": "src/raycaster/dda.rs",
-        "line": 107
-      },
-      {
-        "module": "raycaster",
-        "name": "Raycaster2D::cells",
-        "file": "src/raycaster/dda.rs",
-        "line": 111
-      },
-      {
-        "module": "raycaster",
-        "name": "Raycaster2D::set_wall_feature",
-        "file": "src/raycaster/dda.rs",
-        "line": 115
-      },
-      {
-        "module": "raycaster",
-        "name": "Raycaster2D::wall_feature",
         "file": "src/raycaster/dda.rs",
         "line": 125
       },
       {
         "module": "raycaster",
+        "name": "Raycaster2D::is_blocked_checked",
+        "file": "src/raycaster/dda.rs",
+        "line": 136
+      },
+      {
+        "module": "raycaster",
+        "name": "Raycaster2D::width",
+        "file": "src/raycaster/dda.rs",
+        "line": 177
+      },
+      {
+        "module": "raycaster",
+        "name": "Raycaster2D::height",
+        "file": "src/raycaster/dda.rs",
+        "line": 181
+      },
+      {
+        "module": "raycaster",
+        "name": "Raycaster2D::cells",
+        "file": "src/raycaster/dda.rs",
+        "line": 185
+      },
+      {
+        "module": "raycaster",
+        "name": "Raycaster2D::set_wall_feature",
+        "file": "src/raycaster/dda.rs",
+        "line": 189
+      },
+      {
+        "module": "raycaster",
+        "name": "Raycaster2D::wall_feature",
+        "file": "src/raycaster/dda.rs",
+        "line": 199
+      },
+      {
+        "module": "raycaster",
         "name": "Raycaster2D::sync_doors",
         "file": "src/raycaster/dda.rs",
-        "line": 133
+        "line": 207
       },
       {
         "module": "raycaster",
         "name": "Raycaster2D::cast_ray",
         "file": "src/raycaster/dda.rs",
-        "line": 184
+        "line": 356
       },
       {
         "module": "raycaster",
@@ -18183,37 +18255,37 @@
         "module": "raycaster",
         "name": "DoorManager::new",
         "file": "src/raycaster/doors.rs",
-        "line": 50
+        "line": 52
       },
       {
         "module": "raycaster",
         "name": "DoorManager::add_door",
         "file": "src/raycaster/doors.rs",
-        "line": 54
+        "line": 56
       },
       {
         "module": "raycaster",
         "name": "DoorManager::open_door",
         "file": "src/raycaster/doors.rs",
-        "line": 67
+        "line": 91
       },
       {
         "module": "raycaster",
         "name": "DoorManager::update",
         "file": "src/raycaster/doors.rs",
-        "line": 83
+        "line": 107
       },
       {
         "module": "raycaster",
         "name": "DoorManager::get_door_at",
         "file": "src/raycaster/doors.rs",
-        "line": 105
+        "line": 140
       },
       {
         "module": "raycaster",
         "name": "DoorManager::doors",
         "file": "src/raycaster/doors.rs",
-        "line": 109
+        "line": 144
       },
       {
         "module": "raycaster",
@@ -18291,109 +18363,121 @@
         "module": "raycaster",
         "name": "RaycasterLevel::new",
         "file": "src/raycaster/multilevel.rs",
-        "line": 48
+        "line": 49
+      },
+      {
+        "module": "raycaster",
+        "name": "RaycasterLevel::try_new",
+        "file": "src/raycaster/multilevel.rs",
+        "line": 70
+      },
+      {
+        "module": "raycaster",
+        "name": "RaycasterLevel::try_new_with_limits",
+        "file": "src/raycaster/multilevel.rs",
+        "line": 74
       },
       {
         "module": "raycaster",
         "name": "RaycasterLevel::set_wall",
         "file": "src/raycaster/multilevel.rs",
-        "line": 77
+        "line": 107
       },
       {
         "module": "raycaster",
         "name": "RaycasterLevel::wall_feature",
         "file": "src/raycaster/multilevel.rs",
-        "line": 84
+        "line": 114
       },
       {
         "module": "raycaster",
         "name": "RaycasterLevel::set_wall_feature",
         "file": "src/raycaster/multilevel.rs",
-        "line": 93
+        "line": 123
       },
       {
         "module": "raycaster",
         "name": "RaycasterLevel::set_floor_texture",
         "file": "src/raycaster/multilevel.rs",
-        "line": 116
+        "line": 146
       },
       {
         "module": "raycaster",
         "name": "RaycasterLevel::set_ceiling_texture",
         "file": "src/raycaster/multilevel.rs",
-        "line": 139
+        "line": 169
       },
       {
         "module": "raycaster",
         "name": "RaycasterLevel::lowered_floor",
         "file": "src/raycaster/multilevel.rs",
-        "line": 153
+        "line": 183
       },
       {
         "module": "raycaster",
         "name": "RaycasterLevel::set_lowered_floor",
         "file": "src/raycaster/multilevel.rs",
-        "line": 162
+        "line": 192
       },
       {
         "module": "raycaster",
         "name": "RaycasterLevel::set_floor_hole",
         "file": "src/raycaster/multilevel.rs",
-        "line": 185
+        "line": 215
       },
       {
         "module": "raycaster",
         "name": "RaycasterLevel::set_ceiling_hole",
         "file": "src/raycaster/multilevel.rs",
-        "line": 201
+        "line": 231
       },
       {
         "module": "raycaster",
         "name": "MultiLevelGrid::new",
         "file": "src/raycaster/multilevel.rs",
-        "line": 273
+        "line": 304
       },
       {
         "module": "raycaster",
         "name": "MultiLevelGrid::add_level",
         "file": "src/raycaster/multilevel.rs",
-        "line": 282
+        "line": 313
       },
       {
         "module": "raycaster",
         "name": "MultiLevelGrid::level_count",
         "file": "src/raycaster/multilevel.rs",
-        "line": 288
+        "line": 319
       },
       {
         "module": "raycaster",
         "name": "MultiLevelGrid::active_level",
         "file": "src/raycaster/multilevel.rs",
-        "line": 293
+        "line": 324
       },
       {
         "module": "raycaster",
         "name": "MultiLevelGrid::set_active_level",
         "file": "src/raycaster/multilevel.rs",
-        "line": 298
+        "line": 329
       },
       {
         "module": "raycaster",
         "name": "MultiLevelGrid::get_level",
         "file": "src/raycaster/multilevel.rs",
-        "line": 305
+        "line": 336
       },
       {
         "module": "raycaster",
         "name": "MultiLevelGrid::get_active",
         "file": "src/raycaster/multilevel.rs",
-        "line": 318
+        "line": 349
       },
       {
         "module": "raycaster",
         "name": "MultiLevelGrid::get_active_mut",
         "file": "src/raycaster/multilevel.rs",
-        "line": 323
+        "line": 354
       },
       {
         "module": "raycaster",
@@ -18405,37 +18489,37 @@
         "module": "raycaster",
         "name": "EntityPickKind::as_str",
         "file": "src/raycaster/scene.rs",
-        "line": 37
+        "line": 53
       },
       {
         "module": "raycaster",
         "name": "RaycasterScene::new",
         "file": "src/raycaster/scene.rs",
-        "line": 342
+        "line": 358
       },
       {
         "module": "raycaster",
         "name": "RaycasterScene::quad_count",
         "file": "src/raycaster/scene.rs",
-        "line": 360
+        "line": 376
       },
       {
         "module": "raycaster",
         "name": "RaycasterScene::is_empty",
         "file": "src/raycaster/scene.rs",
-        "line": 369
+        "line": 385
       },
       {
         "module": "raycaster",
         "name": "RaycasterScene::pick_entity",
         "file": "src/raycaster/scene.rs",
-        "line": 374
+        "line": 390
       },
       {
         "module": "raycaster",
         "name": "RaycasterScene::pick_entity_with_sprite_alpha_test",
         "file": "src/raycaster/scene.rs",
-        "line": 383
+        "line": 399
       },
       {
         "module": "raycaster",
@@ -18567,49 +18651,91 @@
         "module": "raycaster",
         "name": "PickSurface::as_str",
         "file": "src/raycaster/tile_picker.rs",
-        "line": 30
+        "line": 32
       },
       {
         "module": "raycaster",
         "name": "PickWallSection::as_str",
         "file": "src/raycaster/tile_picker.rs",
-        "line": 54
+        "line": 56
       },
       {
         "module": "raycaster",
         "name": "ScreenPickParams::horizon",
         "file": "src/raycaster/tile_picker.rs",
-        "line": 89
+        "line": 91
+      },
+      {
+        "module": "raycaster",
+        "name": "ScreenPickParams::validate",
+        "file": "src/raycaster/tile_picker.rs",
+        "line": 101
       },
       {
         "module": "raycaster",
         "name": "TilePicker::new",
         "file": "src/raycaster/tile_picker.rs",
-        "line": 157
+        "line": 176
       },
       {
         "module": "raycaster",
         "name": "TilePicker::set_camera",
         "file": "src/raycaster/tile_picker.rs",
-        "line": 171
+        "line": 199
+      },
+      {
+        "module": "raycaster",
+        "name": "TilePicker::set_screen_size",
+        "file": "src/raycaster/tile_picker.rs",
+        "line": 206
+      },
+      {
+        "module": "raycaster",
+        "name": "TilePicker::set_cell",
+        "file": "src/raycaster/tile_picker.rs",
+        "line": 212
+      },
+      {
+        "module": "raycaster",
+        "name": "TilePicker::set_cells",
+        "file": "src/raycaster/tile_picker.rs",
+        "line": 219
+      },
+      {
+        "module": "raycaster",
+        "name": "TilePicker::try_set_cells",
+        "file": "src/raycaster/tile_picker.rs",
+        "line": 224
+      },
+      {
+        "module": "raycaster",
+        "name": "TilePicker::set_wall_feature",
+        "file": "src/raycaster/tile_picker.rs",
+        "line": 238
+      },
+      {
+        "module": "raycaster",
+        "name": "TilePicker::pick_tile",
+        "file": "src/raycaster/tile_picker.rs",
+        "line": 250
       },
       {
         "module": "raycaster",
         "name": "TilePicker::world_to_tile",
         "file": "src/raycaster/tile_picker.rs",
-        "line": 274
+        "line": 282
       },
       {
         "module": "raycaster",
         "name": "Raycaster2D::pick_screen",
         "file": "src/raycaster/tile_picker.rs",
-        "line": 816
+        "line": 824
       },
       {
         "module": "raycaster",
         "name": "MultiLevelGrid::pick_screen",
         "file": "src/raycaster/tile_picker.rs",
-        "line": 839
+        "line": 847
       },
       {
         "module": "raycaster",
@@ -35553,12 +35679,6 @@
       },
       {
         "module": "physics",
-        "name": "LiquidMap::try_set_cell",
-        "file": "src/physics/liquid.rs",
-        "line": 543
-      },
-      {
-        "module": "physics",
         "name": "LiquidMap::try_fill_rect",
         "file": "src/physics/liquid.rs",
         "line": 586
@@ -37127,13 +37247,13 @@
         "module": "raycaster",
         "name": "RaycasterScene::build_with_scene_features",
         "file": "src/raycaster/build_scene.rs",
-        "line": 2151
+        "line": 2184
       },
       {
         "module": "raycaster",
         "name": "RaycasterScene::build_multilevel_with_scene_features",
         "file": "src/raycaster/build_scene.rs",
-        "line": 2236
+        "line": 2287
       },
       {
         "module": "raycaster",
@@ -37155,81 +37275,183 @@
       },
       {
         "module": "raycaster",
-        "name": "Raycaster2D::set_cells",
-        "file": "src/raycaster/dda.rs",
-        "line": 62
+        "name": "RaycasterLimits::validate_grid_dimensions",
+        "file": "src/raycaster/contract.rs",
+        "line": 81
+      },
+      {
+        "module": "raycaster",
+        "name": "RaycasterLimits::validate_grid_dimensions_usize",
+        "file": "src/raycaster/contract.rs",
+        "line": 108
+      },
+      {
+        "module": "raycaster",
+        "name": "RaycasterLimits::sanitize_grid_dimensions",
+        "file": "src/raycaster/contract.rs",
+        "line": 147
+      },
+      {
+        "module": "raycaster",
+        "name": "RaycasterLimits::validate_finite",
+        "file": "src/raycaster/contract.rs",
+        "line": 155
+      },
+      {
+        "module": "raycaster",
+        "name": "RaycasterLimits::validate_screen_axis",
+        "file": "src/raycaster/contract.rs",
+        "line": 164
+      },
+      {
+        "module": "raycaster",
+        "name": "RaycasterLimits::validate_screen_dimensions",
+        "file": "src/raycaster/contract.rs",
+        "line": 178
+      },
+      {
+        "module": "raycaster",
+        "name": "RaycasterLimits::validate_max_distance",
+        "file": "src/raycaster/contract.rs",
+        "line": 189
+      },
+      {
+        "module": "raycaster",
+        "name": "RaycasterLimits::validate_fov",
+        "file": "src/raycaster/contract.rs",
+        "line": 201
+      },
+      {
+        "module": "raycaster",
+        "name": "RaycasterLimits::validate_scene_counts",
+        "file": "src/raycaster/contract.rs",
+        "line": 214
       },
       {
         "module": "raycaster",
         "name": "Raycaster2D::blocks_render_visibility_at",
         "file": "src/raycaster/dda.rs",
-        "line": 79
+        "line": 153
       },
       {
         "module": "raycaster",
         "name": "Raycaster2D::blocks_render_light_at",
         "file": "src/raycaster/dda.rs",
-        "line": 91
+        "line": 165
       },
       {
         "module": "raycaster",
         "name": "Raycaster2D::clear_wall_feature",
         "file": "src/raycaster/dda.rs",
-        "line": 121
+        "line": 195
+      },
+      {
+        "module": "raycaster",
+        "name": "Raycaster2D::try_sync_doors",
+        "file": "src/raycaster/dda.rs",
+        "line": 211
       },
       {
         "module": "raycaster",
         "name": "Raycaster2D::clear_synced_doors",
         "file": "src/raycaster/dda.rs",
-        "line": 162
+        "line": 256
       },
       {
         "module": "raycaster",
         "name": "Raycaster2D::set_wall_alpha",
         "file": "src/raycaster/dda.rs",
-        "line": 170
+        "line": 264
       },
       {
         "module": "raycaster",
         "name": "Raycaster2D::get_wall_alpha",
         "file": "src/raycaster/dda.rs",
-        "line": 174
+        "line": 268
+      },
+      {
+        "module": "raycaster",
+        "name": "Raycaster2D::try_cast_ray",
+        "file": "src/raycaster/dda.rs",
+        "line": 372
       },
       {
         "module": "raycaster",
         "name": "Raycaster2D::cast_ray_multi",
         "file": "src/raycaster/dda.rs",
-        "line": 263
+        "line": 513
+      },
+      {
+        "module": "raycaster",
+        "name": "Raycaster2D::try_cast_ray_multi",
+        "file": "src/raycaster/dda.rs",
+        "line": 538
       },
       {
         "module": "raycaster",
         "name": "Raycaster2D::cast_rays",
         "file": "src/raycaster/dda.rs",
-        "line": 385
+        "line": 559
+      },
+      {
+        "module": "raycaster",
+        "name": "Raycaster2D::try_cast_rays",
+        "file": "src/raycaster/dda.rs",
+        "line": 615
       },
       {
         "module": "raycaster",
         "name": "Raycaster2D::cast_rays_flat",
         "file": "src/raycaster/dda.rs",
-        "line": 427
+        "line": 637
+      },
+      {
+        "module": "raycaster",
+        "name": "Raycaster2D::try_cast_rays_flat",
+        "file": "src/raycaster/dda.rs",
+        "line": 658
       },
       {
         "module": "raycaster",
         "name": "Raycaster2D::project_sprite",
         "file": "src/raycaster/dda.rs",
-        "line": 449
+        "line": 672
       },
       {
         "module": "raycaster",
         "name": "Raycaster2D::cast_floor_row",
         "file": "src/raycaster/dda.rs",
-        "line": 485
+        "line": 744
+      },
+      {
+        "module": "raycaster",
+        "name": "Raycaster2D::cast_floor_row_with_viewport",
+        "file": "src/raycaster/dda.rs",
+        "line": 782
+      },
+      {
+        "module": "raycaster",
+        "name": "Raycaster2D::try_cast_floor_row_with_viewport",
+        "file": "src/raycaster/dda.rs",
+        "line": 814
+      },
+      {
+        "module": "raycaster",
+        "name": "DoorManager::try_add_door",
+        "file": "src/raycaster/doors.rs",
+        "line": 75
       },
       {
         "module": "raycaster",
         "name": "DoorManager::close_door",
         "file": "src/raycaster/doors.rs",
-        "line": 75
+        "line": 99
+      },
+      {
+        "module": "raycaster",
+        "name": "DoorManager::try_update",
+        "file": "src/raycaster/doors.rs",
+        "line": 132
       },
       {
         "module": "raycaster",
@@ -37265,103 +37487,109 @@
         "module": "raycaster",
         "name": "RaycasterLevel::get_wall",
         "file": "src/raycaster/multilevel.rs",
-        "line": 68
+        "line": 98
       },
       {
         "module": "raycaster",
         "name": "RaycasterLevel::clear_wall_feature",
         "file": "src/raycaster/multilevel.rs",
-        "line": 100
+        "line": 130
       },
       {
         "module": "raycaster",
         "name": "RaycasterLevel::floor_texture_at",
         "file": "src/raycaster/multilevel.rs",
-        "line": 107
+        "line": 137
       },
       {
         "module": "raycaster",
         "name": "RaycasterLevel::clear_floor_texture",
         "file": "src/raycaster/multilevel.rs",
-        "line": 123
+        "line": 153
       },
       {
         "module": "raycaster",
         "name": "RaycasterLevel::ceiling_texture_at",
         "file": "src/raycaster/multilevel.rs",
-        "line": 130
+        "line": 160
       },
       {
         "module": "raycaster",
         "name": "RaycasterLevel::clear_ceiling_texture",
         "file": "src/raycaster/multilevel.rs",
-        "line": 146
+        "line": 176
       },
       {
         "module": "raycaster",
         "name": "RaycasterLevel::clear_lowered_floor",
         "file": "src/raycaster/multilevel.rs",
-        "line": 169
+        "line": 199
       },
       {
         "module": "raycaster",
         "name": "RaycasterLevel::is_floor_hole",
         "file": "src/raycaster/multilevel.rs",
-        "line": 176
+        "line": 206
       },
       {
         "module": "raycaster",
         "name": "RaycasterLevel::is_ceiling_hole",
         "file": "src/raycaster/multilevel.rs",
-        "line": 192
+        "line": 222
       },
       {
         "module": "raycaster",
         "name": "RaycasterLevel::build_runtime_raycaster",
         "file": "src/raycaster/multilevel.rs",
-        "line": 210
+        "line": 240
       },
       {
         "module": "raycaster",
         "name": "MultiLevelGrid::get_level_mut",
         "file": "src/raycaster/multilevel.rs",
-        "line": 310
+        "line": 341
       },
       {
         "module": "raycaster",
         "name": "MultiLevelGrid::with_runtime_level",
         "file": "src/raycaster/multilevel.rs",
-        "line": 328
+        "line": 359
       },
       {
         "module": "raycaster",
         "name": "MultiLevelGrid::visible_level_indices",
         "file": "src/raycaster/multilevel.rs",
-        "line": 349
+        "line": 380
       },
       {
         "module": "raycaster",
         "name": "MultiLevelGrid::can_descend",
         "file": "src/raycaster/multilevel.rs",
-        "line": 391
+        "line": 422
       },
       {
         "module": "raycaster",
         "name": "MultiLevelGrid::can_ascend",
         "file": "src/raycaster/multilevel.rs",
-        "line": 402
+        "line": 433
       },
       {
         "module": "raycaster",
         "name": "project_column",
         "file": "src/raycaster/projection.rs",
-        "line": 7
+        "line": 9
+      },
+      {
+        "module": "raycaster",
+        "name": "try_project_column",
+        "file": "src/raycaster/projection.rs",
+        "line": 24
       },
       {
         "module": "raycaster",
         "name": "distance_shade",
         "file": "src/raycaster/projection.rs",
-        "line": 21
+        "line": 49
       },
       {
         "module": "raycaster",
@@ -37427,19 +37655,13 @@
         "module": "raycaster",
         "name": "ScreenPickParams::projection_distance",
         "file": "src/raycaster/tile_picker.rs",
-        "line": 94
+        "line": 96
       },
       {
         "module": "raycaster",
-        "name": "TilePicker::set_screen_size",
+        "name": "TilePicker::clear_wall_feature",
         "file": "src/raycaster/tile_picker.rs",
-        "line": 178
-      },
-      {
-        "module": "raycaster",
-        "name": "TilePicker::pick_tile",
-        "file": "src/raycaster/tile_picker.rs",
-        "line": 184
+        "line": 245
       },
       {
         "module": "raycaster",
@@ -74651,952 +74873,952 @@
         "lua_name": "LDoorManager:addDoor",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 2348
+        "line": 2412
       },
       {
         "module": "raycaster",
         "lua_name": "LDoorManager:openDoor",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 2361
+        "line": 2425
       },
       {
         "module": "raycaster",
         "lua_name": "LDoorManager:closeDoor",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 2368
+        "line": 2432
       },
       {
         "module": "raycaster",
         "lua_name": "LDoorManager:update",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 2375
+        "line": 2439
       },
       {
         "module": "raycaster",
         "lua_name": "LDoorManager:getDoor",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 2388
+        "line": 2455
       },
       {
         "module": "raycaster",
         "lua_name": "LDoorManager:count",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 2414
+        "line": 2481
       },
       {
         "module": "raycaster",
         "lua_name": "LDoorManager:type",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 2418
+        "line": 2485
       },
       {
         "module": "raycaster",
         "lua_name": "LDoorManager:typeOf",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 2423
+        "line": 2490
       },
       {
         "module": "raycaster",
         "lua_name": "LHeightMap:setFloor",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 2439
+        "line": 2506
       },
       {
         "module": "raycaster",
         "lua_name": "LHeightMap:setCeiling",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 2448
+        "line": 2515
       },
       {
         "module": "raycaster",
         "lua_name": "LHeightMap:floorAt",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 2457
+        "line": 2524
       },
       {
         "module": "raycaster",
         "lua_name": "LHeightMap:ceilingAt",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 2465
+        "line": 2532
       },
       {
         "module": "raycaster",
         "lua_name": "LHeightMap:type",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 2471
+        "line": 2538
       },
       {
         "module": "raycaster",
         "lua_name": "LHeightMap:typeOf",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 2476
+        "line": 2543
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:setCell",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 2830
+        "line": 2897
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:getCell",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 2839
+        "line": 2906
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:setWallFeatureCell",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 2847
+        "line": 2914
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:applyDoorManager",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 2863
+        "line": 2930
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:clearWallFeatureCell",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 2880
+        "line": 2948
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:getWallFeatureCell",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 2896
+        "line": 2964
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:setCells",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 2940
+        "line": 3009
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:isBlocked",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 2952
+        "line": 3023
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:width",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 2958
+        "line": 3029
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:height",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 2962
+        "line": 3033
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:setFloorTextureCell",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 2968
+        "line": 3039
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:getFloorTextureCell",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 2987
+        "line": 3058
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:setCeilingTextureCell",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 2995
+        "line": 3066
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:getCeilingTextureCell",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 3014
+        "line": 3085
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:setWallMaterial",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 3021
+        "line": 3092
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:getWallMaterial",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 3056
+        "line": 3127
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:setFloorMaterialCell",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 3067
+        "line": 3138
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:getFloorMaterialCell",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 3103
+        "line": 3174
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:setCeilingMaterialCell",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 3115
+        "line": 3186
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:getCeilingMaterialCell",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 3151
+        "line": 3222
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:addParticleEmitter",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 3161
+        "line": 3232
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:clearParticleEmitters",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 3177
+        "line": 3248
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:setLoweredFloorCell",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 3187
+        "line": 3258
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:getLoweredFloorCell",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 3254
+        "line": 3325
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:castRay",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 3290
+        "line": 3361
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:castRays",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 3318
+        "line": 3394
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:castRaysFlat",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 3339
+        "line": 3420
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:setWallAlpha",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 3352
+        "line": 3438
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:getWallAlpha",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 3360
+        "line": 3446
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:castRayMulti",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 3380
+        "line": 3466
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:castFloorRow",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 3405
+        "line": 3500
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:projectSprite",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 3447
+        "line": 3566
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:drawTopDown",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 3472
+        "line": 3591
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:drawView",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 3489
+        "line": 3608
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:drawDepthMap",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 3509
+        "line": 3628
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:drawCameraSweep",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 3539
+        "line": 3658
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:pickScreen",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 3568
+        "line": 3687
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:pickScreenFromAdapter",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 3733
+        "line": 3855
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:buildScene",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 3882
+        "line": 4008
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:buildSceneFromAdapter",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 3948
+        "line": 4077
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:buildSceneWithModels",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 4062
+        "line": 4195
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:type",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 4176
+        "line": 4315
       },
       {
         "module": "raycaster",
         "lua_name": "LRaycaster:typeOf",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 4181
+        "line": 4320
       },
       {
         "module": "raycaster",
         "lua_name": "LMultiLevelGrid:setCell",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 4200
+        "line": 4339
       },
       {
         "module": "raycaster",
         "lua_name": "LMultiLevelGrid:getCell",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 4212
+        "line": 4351
       },
       {
         "module": "raycaster",
         "lua_name": "LMultiLevelGrid:setWallFeatureCell",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 4222
+        "line": 4361
       },
       {
         "module": "raycaster",
         "lua_name": "LMultiLevelGrid:clearWallFeatureCell",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 4242
+        "line": 4381
       },
       {
         "module": "raycaster",
         "lua_name": "LMultiLevelGrid:getWallFeatureCell",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 4263
+        "line": 4402
       },
       {
         "module": "raycaster",
         "lua_name": "LMultiLevelGrid:setFloorTexture",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 4277
+        "line": 4416
       },
       {
         "module": "raycaster",
         "lua_name": "LMultiLevelGrid:getFloorTexture",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 4293
+        "line": 4432
       },
       {
         "module": "raycaster",
         "lua_name": "LMultiLevelGrid:setFloorTextureCell",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 4304
+        "line": 4443
       },
       {
         "module": "raycaster",
         "lua_name": "LMultiLevelGrid:getFloorTextureCell",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 4327
+        "line": 4466
       },
       {
         "module": "raycaster",
         "lua_name": "LMultiLevelGrid:setCeilingTexture",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 4344
+        "line": 4483
       },
       {
         "module": "raycaster",
         "lua_name": "LMultiLevelGrid:getCeilingTexture",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 4360
+        "line": 4499
       },
       {
         "module": "raycaster",
         "lua_name": "LMultiLevelGrid:setCeilingTextureCell",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 4373
+        "line": 4512
       },
       {
         "module": "raycaster",
         "lua_name": "LMultiLevelGrid:getCeilingTextureCell",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 4396
+        "line": 4535
       },
       {
         "module": "raycaster",
         "lua_name": "LMultiLevelGrid:setLoweredFloorCell",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 4416
+        "line": 4555
       },
       {
         "module": "raycaster",
         "lua_name": "LMultiLevelGrid:getLoweredFloorCell",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 4477
+        "line": 4616
       },
       {
         "module": "raycaster",
         "lua_name": "LMultiLevelGrid:setFloorHole",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 4500
+        "line": 4639
       },
       {
         "module": "raycaster",
         "lua_name": "LMultiLevelGrid:isFloorHole",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 4514
+        "line": 4653
       },
       {
         "module": "raycaster",
         "lua_name": "LMultiLevelGrid:setCeilingHole",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 4525
+        "line": 4664
       },
       {
         "module": "raycaster",
         "lua_name": "LMultiLevelGrid:isCeilingHole",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 4542
+        "line": 4681
       },
       {
         "module": "raycaster",
         "lua_name": "LMultiLevelGrid:addLevel",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 4552
+        "line": 4691
       },
       {
         "module": "raycaster",
         "lua_name": "LMultiLevelGrid:levelCount",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 4565
+        "line": 4704
       },
       {
         "module": "raycaster",
         "lua_name": "LMultiLevelGrid:activeLevel",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 4571
+        "line": 4710
       },
       {
         "module": "raycaster",
         "lua_name": "LMultiLevelGrid:getFloorOffset",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 4577
+        "line": 4716
       },
       {
         "module": "raycaster",
         "lua_name": "LMultiLevelGrid:setFloorOffset",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 4587
+        "line": 4726
       },
       {
         "module": "raycaster",
         "lua_name": "LMultiLevelGrid:getCeilingHeight",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 4602
+        "line": 4741
       },
       {
         "module": "raycaster",
         "lua_name": "LMultiLevelGrid:setCeilingHeight",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 4612
+        "line": 4751
       },
       {
         "module": "raycaster",
         "lua_name": "LMultiLevelGrid:setActiveLevel",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 4624
+        "line": 4763
       },
       {
         "module": "raycaster",
         "lua_name": "LMultiLevelGrid:buildScene",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 4642
+        "line": 4781
       },
       {
         "module": "raycaster",
         "lua_name": "LMultiLevelGrid:buildSceneFromAdapter",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 4696
+        "line": 4839
       },
       {
         "module": "raycaster",
         "lua_name": "LMultiLevelGrid:pickScreen",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 4825
+        "line": 4972
       },
       {
         "module": "raycaster",
         "lua_name": "LMultiLevelGrid:pickScreenFromAdapter",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 5023
+        "line": 5174
       },
       {
         "module": "raycaster",
         "lua_name": "LMultiLevelGrid:type",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 5204
+        "line": 5359
       },
       {
         "module": "raycaster",
         "lua_name": "LMultiLevelGrid:typeOf",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 5209
+        "line": 5364
       },
       {
         "module": "raycaster",
         "lua_name": "LSceneAdapter:addSprite",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 5467
+        "line": 5632
       },
       {
         "module": "raycaster",
         "lua_name": "LSceneAdapter:addDirectionalSprite",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 5511
+        "line": 5680
       },
       {
         "module": "raycaster",
         "lua_name": "LSceneAdapter:bindBodySprite",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 5585
+        "line": 5762
       },
       {
         "module": "raycaster",
         "lua_name": "LSceneAdapter:bindBodyDirectionalSprite",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 5628
+        "line": 5809
       },
       {
         "module": "raycaster",
         "lua_name": "LSceneAdapter:addLight",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 5704
+        "line": 5893
       },
       {
         "module": "raycaster",
         "lua_name": "LSceneAdapter:bindBodyLight",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 5734
+        "line": 5923
       },
       {
         "module": "raycaster",
         "lua_name": "LSceneAdapter:addModel",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 5771
+        "line": 5960
       },
       {
         "module": "raycaster",
         "lua_name": "LSceneAdapter:bindBodyModel",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 5818
+        "line": 6007
       },
       {
         "module": "raycaster",
         "lua_name": "LSceneAdapter:sceneInputs",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 5862
+        "line": 6051
       },
       {
         "module": "raycaster",
         "lua_name": "LSceneAdapter:clear",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 5865
+        "line": 6054
       },
       {
         "module": "raycaster",
         "lua_name": "LSceneAdapter:clearSprites",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 5871
+        "line": 6060
       },
       {
         "module": "raycaster",
         "lua_name": "LSceneAdapter:clearLights",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 5877
+        "line": 6066
       },
       {
         "module": "raycaster",
         "lua_name": "LSceneAdapter:clearModels",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 5884
+        "line": 6073
       },
       {
         "module": "raycaster",
         "lua_name": "LSceneAdapter:type",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 5891
+        "line": 6080
       },
       {
         "module": "raycaster",
         "lua_name": "LSceneAdapter:typeOf",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 5896
+        "line": 6085
       },
       {
         "module": "raycaster",
         "lua_name": "LSpriteManager:add",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 5912
+        "line": 6101
       },
       {
         "module": "raycaster",
         "lua_name": "LSpriteManager:addDirectional",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 5953
+        "line": 6142
       },
       {
         "module": "raycaster",
         "lua_name": "LSpriteManager:remove",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 6008
+        "line": 6197
       },
       {
         "module": "raycaster",
         "lua_name": "LSpriteManager:setPosition",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 6018
+        "line": 6207
       },
       {
         "module": "raycaster",
         "lua_name": "LSpriteManager:setLevel",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 6026
+        "line": 6215
       },
       {
         "module": "raycaster",
         "lua_name": "LSpriteManager:setFacing",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 6036
+        "line": 6225
       },
       {
         "module": "raycaster",
         "lua_name": "LSpriteManager:setDirectionalTextures",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 6048
+        "line": 6237
       },
       {
         "module": "raycaster",
         "lua_name": "LSpriteManager:setVisible",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 6113
+        "line": 6302
       },
       {
         "module": "raycaster",
         "lua_name": "LSpriteManager:clear",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 6119
+        "line": 6308
       },
       {
         "module": "raycaster",
         "lua_name": "LSpriteManager:sortAndProject",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 6130
+        "line": 6319
       },
       {
         "module": "raycaster",
         "lua_name": "LSpriteManager:type",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 6223
+        "line": 6412
       },
       {
         "module": "raycaster",
         "lua_name": "LSpriteManager:typeOf",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 6228
+        "line": 6417
       },
       {
         "module": "raycaster",
         "lua_name": "lurek.raycaster.new",
         "kind": "function",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 6243
+        "line": 6433
       },
       {
         "module": "raycaster",
         "lua_name": "lurek.raycaster.newMap",
         "kind": "function",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 6267
+        "line": 6460
       },
       {
         "module": "raycaster",
         "lua_name": "lurek.raycaster.newMultiLevelGrid",
         "kind": "function",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 6290
+        "line": 6485
       },
       {
         "module": "raycaster",
         "lua_name": "lurek.raycaster.pickScreenMultiLevel",
         "kind": "function",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 6313
+        "line": 6508
       },
       {
         "module": "raycaster",
         "lua_name": "lurek.raycaster.pickScreenMultiLevelFromAdapter",
         "kind": "function",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 6520
+        "line": 6719
       },
       {
         "module": "raycaster",
         "lua_name": "lurek.raycaster.buildMultiLevelScene",
         "kind": "function",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 6718
+        "line": 6921
       },
       {
         "module": "raycaster",
         "lua_name": "lurek.raycaster.buildMultiLevelSceneFromField",
         "kind": "function",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 6879
+        "line": 7086
       },
       {
         "module": "raycaster",
         "lua_name": "lurek.raycaster.buildMultiLevelSceneFromAdapter",
         "kind": "function",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 7051
+        "line": 7262
       },
       {
         "module": "raycaster",
         "lua_name": "lurek.raycaster.getLastBuildStats",
         "kind": "function",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 7195
+        "line": 7418
       },
       {
         "module": "raycaster",
         "lua_name": "lurek.raycaster.setShader",
         "kind": "function",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 7217
+        "line": 7440
       },
       {
         "module": "raycaster",
         "lua_name": "lurek.raycaster.getShader",
         "kind": "function",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 7242
+        "line": 7465
       },
       {
         "module": "raycaster",
         "lua_name": "lurek.raycaster.drawLastScene",
         "kind": "function",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 7262
+        "line": 7485
       },
       {
         "module": "raycaster",
         "lua_name": "lurek.raycaster.projectColumn",
         "kind": "function",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 7287
+        "line": 7511
       },
       {
         "module": "raycaster",
         "lua_name": "lurek.raycaster.distanceShade",
         "kind": "function",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 7298
+        "line": 7525
       },
       {
         "module": "raycaster",
         "lua_name": "lurek.raycaster.applyLitShade",
         "kind": "function",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 7313
+        "line": 7540
       },
       {
         "module": "raycaster",
         "lua_name": "lurek.raycaster.newDoorManager",
         "kind": "function",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 7323
+        "line": 7550
       },
       {
         "module": "raycaster",
         "lua_name": "lurek.raycaster.newHeightMap",
         "kind": "function",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 7336
+        "line": 7563
       },
       {
         "module": "raycaster",
         "lua_name": "lurek.raycaster.newSpriteManager",
         "kind": "function",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 7347
+        "line": 7574
       },
       {
         "module": "raycaster",
         "lua_name": "lurek.raycaster.newSceneAdapter",
         "kind": "function",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 7360
+        "line": 7587
       },
       {
         "module": "render",
