@@ -34,6 +34,7 @@ pub fn emit_split_frame(
                 &globe.regions,
                 &globe.fog,
                 &globe.markers,
+                &globe.orbits,
                 &globe.labels,
                 &globe.layers,
                 &globe.heat_layers,
@@ -41,6 +42,7 @@ pub fn emit_split_frame(
                 globe.active_viewer.as_deref(),
                 font,
                 globe.sim_time_sec,
+                globe.shader,
             );
             out.append(&mut g);
         }

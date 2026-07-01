@@ -14,16 +14,19 @@ use crate::globe::label::LabelStore;
 use crate::globe::layer::LayerStore;
 use crate::globe::lighting::{province_intensity, sun_direction, terminator_alpha};
 use crate::globe::marker::MarkerStore;
-use crate::globe::projection::{build_view_matrix, project_geo_loop, project_point, OrbitCamera};
+use crate::globe::orbit::{OrbitStore, SURFACE_ORBIT_NAME};
+use crate::globe::projection::{
+    build_view_matrix, project_geo_loop, project_point, project_point_on_shell, OrbitCamera,
+};
 use crate::globe::topology::RegionGraph;
 use crate::globe::types::{
-    Arc as GlobeArc, FogState, GlobeSpec, HeatLayer, LodTier, MarkerShape, Region, RegionId,
+    Arc as GlobeArc, FogState, GlobeOrbit, GlobeOrbitKind, GlobeSpec, HeatLayer, LodTier,
+    MarkerShape, Region, RegionId,
 };
 use crate::math::{polygon, Vec2, Vec3};
 use crate::render::mesh::{Mesh, MeshDrawMode, MeshVertex};
 use crate::render::renderer::{BlendMode, DrawMode, RenderCommand, StencilAction};
-use crate::runtime::resource_keys::FontKey;
-use crate::runtime::resource_keys::TextureKey;
+use crate::runtime::resource_keys::{FontKey, ShaderKey, TextureKey};
 use slotmap::KeyData;
 use std::collections::HashMap;
 
@@ -39,6 +42,7 @@ pub fn emit_globe_frame(
     semantic_regions: &HashMap<RegionId, Region>,
     fog: &FogStore,
     markers: &MarkerStore,
+    orbits: &OrbitStore,
     labels: &LabelStore,
     layers: &LayerStore,
     heat_layers: &[HeatLayer],
@@ -46,8 +50,12 @@ pub fn emit_globe_frame(
     active_viewer: Option<&str>,
     default_font: Option<FontKey>,
     sim_time_sec: f32,
+    base_shader: Option<ShaderKey>,
 ) -> Vec<RenderCommand> {
     let mut cmds: Vec<RenderCommand> = Vec::new();
+    if let Some(shader) = base_shader {
+        cmds.push(RenderCommand::SetShader(Some(shader)));
+    }
     let view = build_view_matrix(spec, camera);
     let sun = sun_direction(spec);
     let lod = camera.lod();
@@ -153,59 +161,34 @@ pub fn emit_globe_frame(
         cmds.push(RenderCommand::SetColor(ar, ag, ab, aa));
         cmds.push(RenderCommand::Polyline { points: pts });
     }
-    for marker in markers.iter_visible() {
-        if let Some(screen) =
-            project_point(marker.lat_deg, marker.lon_deg, &view, radius, zoom, cx, cy)
-        {
-            let [mr, mg, mb, ma] = marker.style.color;
-            let pulse = if marker.style.pulse_hz > 0.0 {
-                (sim_time_sec * marker.style.pulse_hz * std::f32::consts::TAU).sin()
-                    * marker.style.pulse_amplitude
-            } else {
-                0.0
-            };
-            let r = (marker.style.size * (0.5 + pulse)).max(2.0);
-            let rotation = sim_time_sec * marker.style.rotation_deg_per_sec.to_radians();
-            cmds.push(RenderCommand::SetColor(mr, mg, mb, ma));
-            if let Some(texture_key) = marker
-                .style
-                .icon_texture
-                .as_deref()
-                .and_then(|raw| raw.parse::<u64>().ok())
-                .map(|raw| TextureKey::from(KeyData::from_ffi(raw)))
-            {
-                cmds.push(RenderCommand::DrawImageEx {
-                    texture_key,
-                    x: screen.x,
-                    y: screen.y,
-                    rotation,
-                    sx: (r / 8.0).max(0.125),
-                    sy: (r / 8.0).max(0.125),
-                    ox: 0.5,
-                    oy: 0.5,
-                    effect: None,
-                });
-            } else {
-                emit_marker_shape(
-                    &mut cmds,
-                    marker.style.shape,
-                    screen.x,
-                    screen.y,
-                    r,
-                    rotation,
-                );
-            }
-            if let (Some(label_text), Some(font_key)) = (&marker.label, default_font) {
-                cmds.push(RenderCommand::SetColor(1.0, 1.0, 1.0, 1.0));
-                cmds.push(RenderCommand::Print {
-                    font_key,
-                    text: label_text.clone(),
-                    x: screen.x + r + 2.0,
-                    y: screen.y - 6.0,
-                    scale: 0.75,
-                });
-            }
+    if let Some(surface_orbit) = orbits.get(SURFACE_ORBIT_NAME) {
+        emit_orbit_layer(
+            &mut cmds,
+            surface_orbit,
+            spec,
+            camera,
+            &view,
+            markers,
+            default_font,
+            sim_time_sec,
+            base_shader,
+        );
+    }
+    for orbit in orbits.visible_sorted() {
+        if orbit.name == SURFACE_ORBIT_NAME {
+            continue;
         }
+        emit_orbit_layer(
+            &mut cmds,
+            orbit,
+            spec,
+            camera,
+            &view,
+            markers,
+            default_font,
+            sim_time_sec,
+            base_shader,
+        );
     }
     if lod >= LodTier::Mid {
         if let Some(font_key) = default_font {
@@ -227,7 +210,183 @@ pub fn emit_globe_frame(
             }
         }
     }
+    if base_shader.is_some() {
+        cmds.push(RenderCommand::SetShader(None));
+    }
     cmds
+}
+fn with_shader_scope(
+    cmds: &mut Vec<RenderCommand>,
+    shader: Option<ShaderKey>,
+    restore_shader: Option<ShaderKey>,
+    emit: impl FnOnce(&mut Vec<RenderCommand>),
+) {
+    match shader {
+        Some(shader_key) if Some(shader_key) != restore_shader => {
+            cmds.push(RenderCommand::SetShader(Some(shader_key)));
+            emit(cmds);
+            cmds.push(RenderCommand::SetShader(restore_shader));
+        }
+        _ => emit(cmds),
+    }
+}
+
+fn orbit_has_visible_markers(markers: &MarkerStore, orbit_name: &str) -> bool {
+    markers
+        .iter_visible_sorted()
+        .into_iter()
+        .any(|marker| marker.orbit == orbit_name)
+}
+
+#[allow(clippy::too_many_arguments)]
+fn emit_orbit_layer(
+    cmds: &mut Vec<RenderCommand>,
+    orbit: &GlobeOrbit,
+    spec: &GlobeSpec,
+    camera: &OrbitCamera,
+    view: &crate::globe::sphere::Mat3x3,
+    markers: &MarkerStore,
+    default_font: Option<FontKey>,
+    sim_time_sec: f32,
+    base_shader: Option<ShaderKey>,
+) {
+    if !orbit.visible {
+        return;
+    }
+    let has_markers = orbit.accepts_markers && orbit_has_visible_markers(markers, &orbit.name);
+    if !orbit.draw_shell && !has_markers {
+        return;
+    }
+    with_shader_scope(cmds, orbit.shader, base_shader, |cmds| {
+        if orbit.draw_shell {
+            emit_orbit_shell(cmds, orbit, spec, camera);
+        }
+        if has_markers {
+            emit_markers_for_orbit(
+                cmds,
+                orbit,
+                markers,
+                view,
+                spec,
+                camera,
+                default_font,
+                sim_time_sec,
+            );
+        }
+    });
+}
+
+fn emit_orbit_shell(
+    cmds: &mut Vec<RenderCommand>,
+    orbit: &GlobeOrbit,
+    spec: &GlobeSpec,
+    camera: &OrbitCamera,
+) {
+    let radius = (spec.radius + orbit.altitude_px) * camera.zoom;
+    let [r, g, b, a] = orbit.color;
+    if a > 0.0
+        && matches!(
+            orbit.kind,
+            GlobeOrbitKind::Atmosphere | GlobeOrbitKind::Effect
+        )
+    {
+        cmds.push(RenderCommand::SetColor(r, g, b, (a * 0.18).clamp(0.0, 1.0)));
+        cmds.push(RenderCommand::Circle {
+            mode: DrawMode::Fill,
+            x: camera.screen_cx,
+            y: camera.screen_cy,
+            r: radius,
+        });
+    }
+    cmds.push(RenderCommand::SetLineWidth(orbit.width_px.max(1.0)));
+    cmds.push(RenderCommand::SetColor(r, g, b, a.clamp(0.0, 1.0)));
+    cmds.push(RenderCommand::Circle {
+        mode: DrawMode::Line,
+        x: camera.screen_cx,
+        y: camera.screen_cy,
+        r: radius,
+    });
+    if matches!(orbit.kind, GlobeOrbitKind::Atmosphere) {
+        cmds.push(RenderCommand::SetColor(r, g, b, (a * 0.45).clamp(0.0, 1.0)));
+        cmds.push(RenderCommand::Circle {
+            mode: DrawMode::Line,
+            x: camera.screen_cx,
+            y: camera.screen_cy,
+            r: radius + orbit.width_px.max(1.0) * 0.5,
+        });
+    }
+}
+
+#[allow(clippy::too_many_arguments)]
+fn emit_markers_for_orbit(
+    cmds: &mut Vec<RenderCommand>,
+    orbit: &GlobeOrbit,
+    markers: &MarkerStore,
+    view: &crate::globe::sphere::Mat3x3,
+    spec: &GlobeSpec,
+    camera: &OrbitCamera,
+    default_font: Option<FontKey>,
+    sim_time_sec: f32,
+) {
+    for marker in markers.iter_visible_sorted() {
+        if marker.orbit != orbit.name {
+            continue;
+        }
+        let shell_radius =
+            spec.radius + orbit.altitude_px + marker.altitude_px.unwrap_or(0.0).max(0.0);
+        let Some((screen, _)) = project_point_on_shell(
+            marker.lat_deg,
+            marker.lon_deg,
+            view,
+            shell_radius,
+            camera.zoom,
+            camera.screen_cx,
+            camera.screen_cy,
+        ) else {
+            continue;
+        };
+        let [mr, mg, mb, ma] = marker.style.color;
+        let pulse = if marker.style.pulse_hz > 0.0 {
+            (sim_time_sec * marker.style.pulse_hz * std::f32::consts::TAU).sin()
+                * marker.style.pulse_amplitude
+        } else {
+            0.0
+        };
+        let r = (marker.style.size * (0.5 + pulse)).max(2.0);
+        let rotation = sim_time_sec * marker.style.rotation_deg_per_sec.to_radians();
+        cmds.push(RenderCommand::SetColor(mr, mg, mb, ma));
+        if let Some(texture_key) = marker
+            .style
+            .icon_texture
+            .as_deref()
+            .and_then(|raw| raw.parse::<u64>().ok())
+            .map(|raw| TextureKey::from(KeyData::from_ffi(raw)))
+        {
+            cmds.push(RenderCommand::DrawImageEx {
+                texture_key,
+                x: screen.x,
+                y: screen.y,
+                rotation,
+                sx: (r / 8.0).max(0.125),
+                sy: (r / 8.0).max(0.125),
+                ox: 0.5,
+                oy: 0.5,
+                effect: None,
+            });
+        } else {
+            emit_marker_shape(cmds, marker.style.shape, screen.x, screen.y, r, rotation);
+        }
+        if let (Some(label_text), Some(font_key)) = (&marker.label, default_font) {
+            cmds.push(RenderCommand::SetColor(1.0, 1.0, 1.0, 1.0));
+            cmds.push(RenderCommand::Print {
+                font_key,
+                text: label_text.clone(),
+                x: screen.x + r + 2.0,
+                y: screen.y - 6.0,
+                scale: 0.75,
+            });
+        }
+    }
 }
 /// Emit a marker primitive matching the configured shape.
 fn emit_marker_shape(

@@ -1,20 +1,20 @@
 {
   "meta": {
-    "generated": "2026-06-30T22:00:57.710560+00:00",
+    "generated": "2026-06-30T22:44:19.376417+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "rust_items": 3144,
-      "rust_modules": 727,
+      "rust_items": 3156,
+      "rust_modules": 728,
       "rust_tests": 502,
       "lua_tests": 285
     }
   },
   "rust_api": {
     "summary": {
-      "total_items": 3144,
-      "documented": 3140,
-      "modules": 727
+      "total_items": 3156,
+      "documented": 3152,
+      "modules": 728
     },
     "modules": {
       "agent::chat": {
@@ -7370,14 +7370,14 @@
             "kind": "fn",
             "description": "Emit a full globe frame as render commands for the current globe state.",
             "file": "src/globe/draw.rs",
-            "line": 34
+            "line": 37
           },
           {
             "name": "project_arc",
             "kind": "fn",
             "description": "Project a great-circle arc into a flat polyline of screen coordinates.",
             "file": "src/globe/draw.rs",
-            "line": 704
+            "line": 864
           }
         ]
       },
@@ -7603,60 +7603,87 @@
             "line": 27
           },
           {
+            "name": "orbit",
+            "kind": "mod",
+            "description": "Globe orbit shell helpers. This module is publicly re-exported.",
+            "file": "src/globe/mod.rs",
+            "line": 29
+          },
+          {
             "name": "picking",
             "kind": "mod",
             "description": "Globe picking helpers. This module is publicly re-exported.",
             "file": "src/globe/mod.rs",
-            "line": 29
+            "line": 31
           },
           {
             "name": "projection",
             "kind": "mod",
             "description": "Globe camera projection helpers.",
             "file": "src/globe/mod.rs",
-            "line": 31
+            "line": 33
           },
           {
             "name": "province_adapter",
             "kind": "mod",
             "description": "Province adapter helpers. This module is publicly re-exported.",
             "file": "src/globe/mod.rs",
-            "line": 33
+            "line": 35
           },
           {
             "name": "registry",
             "kind": "mod",
             "description": "Globe registry state. This module is publicly re-exported.",
             "file": "src/globe/mod.rs",
-            "line": 35
+            "line": 37
           },
           {
             "name": "sphere",
             "kind": "mod",
             "description": "Sphere-surface coordinate helpers and rotation matrices.",
             "file": "src/globe/mod.rs",
-            "line": 37
+            "line": 39
           },
           {
             "name": "sync",
             "kind": "mod",
             "description": "Globe synchronization helpers.",
             "file": "src/globe/mod.rs",
-            "line": 39
+            "line": 41
           },
           {
             "name": "topology",
             "kind": "mod",
             "description": "Globe topology helpers. This module is publicly re-exported.",
             "file": "src/globe/mod.rs",
-            "line": 41
+            "line": 43
           },
           {
             "name": "types",
             "kind": "mod",
             "description": "Globe shared value types. This module is publicly re-exported.",
             "file": "src/globe/mod.rs",
-            "line": 43
+            "line": 45
+          }
+        ]
+      },
+      "globe::orbit": {
+        "module_doc": "Stores named globe orbit shells with deterministic ordering for render, picking, and marker placement. Owns shell insertion, updates, visibility, attrs, and the special always-present surface shell contract. Provides the state boundary between Lua-facing orbit configuration and the projection or draw code that consumes it. This file matters when shell ordering, pickability, or orbit metadata drift out of sync across globe features.",
+        "source_file": "src/globe/orbit.rs",
+        "items": [
+          {
+            "name": "SURFACE_ORBIT_NAME",
+            "kind": "const",
+            "description": "Canonical orbit name for the base globe surface shell.",
+            "file": "src/globe/orbit.rs",
+            "line": 10
+          },
+          {
+            "name": "OrbitStore",
+            "kind": "struct",
+            "description": "Named globe orbit collection keyed by orbit name.",
+            "file": "src/globe/orbit.rs",
+            "line": 14
           }
         ]
       },
@@ -7665,46 +7692,88 @@
         "source_file": "src/globe/picking.rs",
         "items": [
           {
+            "name": "ShellHit",
+            "kind": "struct",
+            "description": "Shell hit resolved from a screen-space position on one visible concentric globe shell.",
+            "file": "src/globe/picking.rs",
+            "line": 16
+          },
+          {
             "name": "SurfaceHit",
             "kind": "struct",
             "description": "Surface hit resolved from a screen-space position on the front hemisphere.",
             "file": "src/globe/picking.rs",
-            "line": 14
+            "line": 32
+          },
+          {
+            "name": "ObjectHitKind",
+            "kind": "enum",
+            "description": "Kind tag for the richer shell-aware object picker.",
+            "file": "src/globe/picking.rs",
+            "line": 46
+          },
+          {
+            "name": "ObjectPickOrder",
+            "kind": "enum",
+            "description": "Sorting mode for the richer shell-aware object picker.",
+            "file": "src/globe/picking.rs",
+            "line": 60
+          },
+          {
+            "name": "ObjectPickOptions",
+            "kind": "struct",
+            "description": "Options that control which shell-aware hits are returned.",
+            "file": "src/globe/picking.rs",
+            "line": 68
+          },
+          {
+            "name": "ObjectHit",
+            "kind": "struct",
+            "description": "Richer hit payload that can describe markers, shells, provinces, regions, or the base surface.",
+            "file": "src/globe/picking.rs",
+            "line": 96
           },
           {
             "name": "PickResult",
             "kind": "struct",
             "description": "Region selection result returned by globe picking.",
             "file": "src/globe/picking.rs",
-            "line": 28
+            "line": 122
           },
           {
             "name": "point_in_geo_polygon",
             "kind": "fn",
             "description": "Return true when a latitude/longitude point lies inside a polygon in geographic space.",
             "file": "src/globe/picking.rs",
-            "line": 61
+            "line": 155
           },
           {
             "name": "point_in_geo_region",
             "kind": "fn",
             "description": "Return true when a latitude/longitude point lies inside one connected region part.",
             "file": "src/globe/picking.rs",
-            "line": 74
+            "line": 168
+          },
+          {
+            "name": "screen_to_shell",
+            "kind": "fn",
+            "description": "Convert a screen-space point into a front-hemisphere hit on one named shell radius.",
+            "file": "src/globe/picking.rs",
+            "line": 188
           },
           {
             "name": "screen_to_surface",
             "kind": "fn",
             "description": "Convert a screen-space point into a front-hemisphere unit-sphere hit.",
             "file": "src/globe/picking.rs",
-            "line": 94
+            "line": 218
           },
           {
             "name": "pick",
             "kind": "fn",
             "description": "Pick the topmost region under a screen-space point or return None when no region matches.",
             "file": "src/globe/picking.rs",
-            "line": 121
+            "line": 234
           }
         ]
       },
@@ -7727,53 +7796,60 @@
             "line": 74
           },
           {
+            "name": "project_point_on_shell",
+            "kind": "fn",
+            "description": "Project a point on one concentric shell and return screen-space coordinates plus camera depth.",
+            "file": "src/globe/projection.rs",
+            "line": 82
+          },
+          {
             "name": "project_point",
             "kind": "fn",
             "description": "Project a globe point to screen space or return None when it is behind the camera.",
             "file": "src/globe/projection.rs",
-            "line": 82
+            "line": 101
           },
           {
             "name": "project_region",
             "kind": "fn",
             "description": "Project a region polygon into screen space or return None when any vertex is hidden.",
             "file": "src/globe/projection.rs",
-            "line": 100
+            "line": 113
           },
           {
             "name": "project_geo_loop",
             "kind": "fn",
             "description": "Project one geographic loop into screen space, clipping it to the visible hemisphere.",
             "file": "src/globe/projection.rs",
-            "line": 119
+            "line": 132
           },
           {
             "name": "project_province",
             "kind": "fn",
             "description": "Backward compatibility alias.",
             "file": "src/globe/projection.rs",
-            "line": 163
+            "line": 176
           },
           {
             "name": "project_point_with_z",
             "kind": "fn",
             "description": "Project a globe point and return the screen position with depth or None when hidden.",
             "file": "src/globe/projection.rs",
-            "line": 173
+            "line": 186
           },
           {
             "name": "screen_delta_to_pan",
             "kind": "fn",
             "description": "Convert a screen-space drag delta into latitude and longitude pan deltas.",
             "file": "src/globe/projection.rs",
-            "line": 190
+            "line": 204
           },
           {
             "name": "normalize_v3",
             "kind": "fn",
             "description": "Normalize a vector and return zero when its length is near zero.",
             "file": "src/globe/projection.rs",
-            "line": 197
+            "line": 211
           }
         ]
       },
@@ -7806,21 +7882,21 @@
             "kind": "struct",
             "description": "Mutable globe state used by the renderer and sync layers.",
             "file": "src/globe/registry.rs",
-            "line": 32
+            "line": 94
           },
           {
             "name": "TerrainCoverageReport",
             "kind": "struct",
             "description": "Sampled terrain coverage report for a globe.",
             "file": "src/globe/registry.rs",
-            "line": 73
+            "line": 137
           },
           {
             "name": "GlobeRegistry",
             "kind": "struct",
             "description": "Named globe registry keyed by globe name.",
             "file": "src/globe/registry.rs",
-            "line": 402
+            "line": 724
           }
         ]
       },
@@ -7881,28 +7957,28 @@
             "kind": "struct",
             "description": "Serializable globe state used for snapshot transfer.",
             "file": "src/globe/sync.rs",
-            "line": 19
+            "line": 21
           },
           {
             "name": "GlobeSyncChannel",
             "kind": "struct",
             "description": "Channel pair used to send and receive globe snapshots.",
             "file": "src/globe/sync.rs",
-            "line": 57
+            "line": 63
           },
           {
             "name": "build_snapshot",
             "kind": "fn",
             "description": "Build a snapshot from the current globe state.",
             "file": "src/globe/sync.rs",
-            "line": 78
+            "line": 84
           },
           {
             "name": "apply_snapshot",
             "kind": "fn",
             "description": "Apply a snapshot to a mutable globe instance.",
             "file": "src/globe/sync.rs",
-            "line": 100
+            "line": 108
           }
         ]
       },
@@ -7935,147 +8011,161 @@
             "kind": "const",
             "description": "Maximum region count supported by globe data structures.",
             "file": "src/globe/types.rs",
-            "line": 14
+            "line": 15
           },
           {
             "name": "RegionId",
             "kind": "struct",
             "description": "Unique identifier for a region on the globe.",
             "file": "src/globe/types.rs",
-            "line": 17
+            "line": 18
           },
           {
             "name": "RegionPart",
             "kind": "struct",
             "description": "One connected geographic part of a region, with one outer ring and optional holes.",
             "file": "src/globe/types.rs",
-            "line": 68
+            "line": 69
           },
           {
             "name": "Region",
             "kind": "struct",
             "description": "Geographic region with polygon geometry, adjacency, and render attributes.",
             "file": "src/globe/types.rs",
-            "line": 122
+            "line": 123
           },
           {
             "name": "FogState",
             "kind": "enum",
             "description": "Fog-of-war state for a region.",
             "file": "src/globe/types.rs",
-            "line": 272
+            "line": 273
           },
           {
             "name": "HeatLayer",
             "kind": "struct",
             "description": "Heat overlay parameters used by globe color mapping.",
             "file": "src/globe/types.rs",
-            "line": 282
+            "line": 283
           },
           {
             "name": "GlobeSpec",
             "kind": "struct",
             "description": "Render-time globe parameters shared by loaders and draw code.",
             "file": "src/globe/types.rs",
-            "line": 304
+            "line": 305
+          },
+          {
+            "name": "GlobeOrbitKind",
+            "kind": "enum",
+            "description": "Globe shell classification used by rendering and picking policies.",
+            "file": "src/globe/types.rs",
+            "line": 357
+          },
+          {
+            "name": "GlobeOrbit",
+            "kind": "struct",
+            "description": "Globe shell definition with style, shader, and marker-placement policy.",
+            "file": "src/globe/types.rs",
+            "line": 369
           },
           {
             "name": "Marker",
             "kind": "struct",
             "description": "Globe marker with position, label, style, and custom attributes.",
             "file": "src/globe/types.rs",
-            "line": 356
+            "line": 416
           },
           {
             "name": "MarkerStyle",
             "kind": "struct",
             "description": "Marker drawing style shared by globe markers.",
             "file": "src/globe/types.rs",
-            "line": 376
+            "line": 440
           },
           {
             "name": "MarkerShape",
             "kind": "enum",
             "description": "Marker shape selection used by the renderer.",
             "file": "src/globe/types.rs",
-            "line": 394
+            "line": 458
           },
           {
             "name": "Label",
             "kind": "struct",
             "description": "Globe label with text, position, style, and LOD gating.",
             "file": "src/globe/types.rs",
-            "line": 422
+            "line": 486
           },
           {
             "name": "LabelStyle",
             "kind": "struct",
             "description": "Label styling shared by globe labels.",
             "file": "src/globe/types.rs",
-            "line": 442
+            "line": 506
           },
           {
             "name": "Layer",
             "kind": "struct",
             "description": "Named globe overlay layer with per-region color overrides.",
             "file": "src/globe/types.rs",
-            "line": 462
+            "line": 526
           },
           {
             "name": "LodTier",
             "kind": "enum",
             "description": "Level-of-detail tier used by globe render decisions.",
             "file": "src/globe/types.rs",
-            "line": 491
+            "line": 555
           },
           {
             "name": "ProjectedRegion",
             "kind": "struct",
             "description": "Projected region with screen-space geometry and lighting state.",
             "file": "src/globe/types.rs",
-            "line": 501
+            "line": 565
           },
           {
             "name": "Arc",
             "kind": "struct",
             "description": "Projected arc with path geometry and render parameters.",
             "file": "src/globe/types.rs",
-            "line": 517
+            "line": 581
           },
           {
             "name": "GlobeError",
             "kind": "enum",
             "description": "Globe-level errors for loading, lookup, and pathfinding failures.",
             "file": "src/globe/types.rs",
-            "line": 539
+            "line": 603
           },
           {
             "name": "Province",
             "kind": "type",
             "description": "Backward compatibility aliases.",
             "file": "src/globe/types.rs",
-            "line": 569
+            "line": 633
           },
           {
             "name": "ProvinceId",
             "kind": "type",
             "description": "Backward-compatible type alias for `RegionId`.",
             "file": "src/globe/types.rs",
-            "line": 571
+            "line": 635
           },
           {
             "name": "ProjectedProvince",
             "kind": "type",
             "description": "Backward-compatible type alias for `ProjectedRegion`.",
             "file": "src/globe/types.rs",
-            "line": 573
+            "line": 637
           },
           {
             "name": "MAX_PROVINCES",
             "kind": "const",
             "description": "Maximum number of provinces (regions) supported per globe — backward-compat alias for `MAX_REGIONS`.",
             "file": "src/globe/types.rs",
-            "line": 575
+            "line": 639
           }
         ]
       },

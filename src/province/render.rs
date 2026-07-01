@@ -8,6 +8,7 @@
 //! This file is where province-specific drawing policy lives instead of the generic renderer or data registry layers.
 
 use std::collections::HashMap;
+use std::f32::consts::{FRAC_PI_2, PI};
 
 use crate::math::Vec2;
 use crate::province::map_modes::resolve_color_fallback;
@@ -369,6 +370,54 @@ fn color_to_u8(color: [f32; 4]) -> [u8; 4] {
         (color[2].clamp(0.0, 1.0) * 255.0).round() as u8,
         (color[3].clamp(0.0, 1.0) * 255.0).round() as u8,
     ]
+}
+
+const LABEL_FONT_WIDTH_HINT: f32 = 6.0;
+const LABEL_FONT_HEIGHT_HINT: f32 = 7.0;
+const LABEL_BASE_SCALE_PER_MAP_PIXEL: f32 = 0.6;
+const LABEL_MIN_SCALE: f32 = 0.8;
+const LABEL_MAX_SCALE: f32 = 6.0;
+const LABEL_MIN_SCREEN_HEIGHT: f32 = 4.5;
+
+fn label_transform(
+    text: &str,
+    opts: &ProvinceRenderOptions,
+    line: ((f32, f32), (f32, f32)),
+) -> Option<(f32, f32, f32, f32, f32, f32)> {
+    let ((ax, ay), (bx, by)) = line;
+    let dx = bx - ax;
+    let dy = by - ay;
+    let mut rotation = if dx.abs() <= f32::EPSILON && dy.abs() <= f32::EPSILON {
+        0.0
+    } else {
+        dy.atan2(dx)
+    };
+    if rotation > FRAC_PI_2 {
+        rotation -= PI;
+    } else if rotation < -FRAC_PI_2 {
+        rotation += PI;
+    }
+
+    let line_len = (dx * dx + dy * dy).sqrt().max(1.0) * opts.pixel_size.max(0.1);
+    let glyph_count = text.chars().count().max(1) as f32;
+    let text_width = glyph_count * LABEL_FONT_WIDTH_HINT;
+    let fit_scale = (line_len / ((glyph_count + 1.5) * LABEL_FONT_WIDTH_HINT))
+        .clamp(LABEL_MIN_SCALE, LABEL_MAX_SCALE);
+    let base_scale =
+        (opts.pixel_size * LABEL_BASE_SCALE_PER_MAP_PIXEL).clamp(LABEL_MIN_SCALE, LABEL_MAX_SCALE);
+    let scale = base_scale.min(fit_scale);
+    if scale * opts.zoom * LABEL_FONT_HEIGHT_HINT < LABEL_MIN_SCREEN_HEIGHT {
+        return None;
+    }
+
+    Some((
+        (ax + bx) * 0.5 * opts.pixel_size,
+        (ay + by) * 0.5 * opts.pixel_size,
+        rotation,
+        scale,
+        text_width * 0.5,
+        LABEL_FONT_HEIGHT_HINT * 0.5,
+    ))
 }
 
 fn put_pixel(pixels: &mut [u8], width: u32, height: u32, x: i32, y: i32, color: [u8; 4]) {
@@ -939,26 +988,41 @@ pub fn generate_render_commands(
                     .label_text_for(id)
                     .map(|s| s.to_string())
                     .unwrap_or_else(|| id.to_string());
-                let ((ax, ay), (bx, by)) = registry
+                let mid_y = (bb.1 + bb.3) as f32 * 0.5;
+                let line = registry
                     .label_line_for(id)
-                    .unwrap_or(((bb.0 as f32, bb.1 as f32), (bb.2 as f32, bb.3 as f32)));
-                let mx = (ax + bx) * 0.5;
-                let my = (ay + by) * 0.5;
+                    .unwrap_or(((bb.0 as f32, mid_y), (bb.2 as f32, mid_y)));
+                let Some((mx, my, rotation, label_scale, ox, oy)) =
+                    label_transform(text.as_str(), opts, line)
+                else {
+                    continue;
+                };
+                let shadow_offset = 1.0 / opts.zoom.max(0.001);
                 cmds.push(RenderCommand::SetColor(0.0, 0.0, 0.0, 0.65));
-                cmds.push(RenderCommand::Print {
+                cmds.push(RenderCommand::PrintTransformed {
                     font_key: font,
                     text: text.clone(),
-                    x: mx * opts.pixel_size + 1.0,
-                    y: my * opts.pixel_size + 1.0,
-                    scale: 0.8,
+                    x: mx + shadow_offset,
+                    y: my + shadow_offset,
+                    rotation,
+                    sx: label_scale,
+                    sy: label_scale,
+                    ox,
+                    oy,
+                    scale: 1.0,
                 });
                 cmds.push(RenderCommand::SetColor(0.92, 0.92, 0.86, 1.0));
-                cmds.push(RenderCommand::Print {
+                cmds.push(RenderCommand::PrintTransformed {
                     font_key: font,
                     text,
-                    x: mx * opts.pixel_size,
-                    y: my * opts.pixel_size,
-                    scale: 0.8,
+                    x: mx,
+                    y: my,
+                    rotation,
+                    sx: label_scale,
+                    sy: label_scale,
+                    ox,
+                    oy,
+                    scale: 1.0,
                 });
             }
         }

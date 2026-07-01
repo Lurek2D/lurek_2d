@@ -4,8 +4,71 @@
 //! Keeps iteration and id assignment deterministic so UI, render, and sync systems see stable marker identity.
 //! Open this owner when marker lifecycle, filtering, or per-marker metadata behavior needs adjustment.
 
+use crate::globe::orbit::SURFACE_ORBIT_NAME;
 use crate::globe::types::{Marker, MarkerStyle};
 use std::collections::HashMap;
+
+/// Authored marker placement payload shared by registry validation and marker storage.
+#[derive(Debug, Clone)]
+pub struct MarkerPlacement {
+    /// Marker category used by lookup and styling.
+    pub marker_type: String,
+    /// Latitude in degrees.
+    pub lat_deg: f32,
+    /// Longitude in degrees.
+    pub lon_deg: f32,
+    /// Named shell that owns this marker.
+    pub orbit: String,
+    /// Optional offset above the owning shell.
+    pub altitude_px: Option<f32>,
+    /// Optional marker label text.
+    pub label: Option<String>,
+    /// Visual style used when drawing the marker.
+    pub style: MarkerStyle,
+}
+
+impl MarkerPlacement {
+    /// Build a placement on the canonical surface shell.
+    pub fn surface(
+        marker_type: impl Into<String>,
+        lat_deg: f32,
+        lon_deg: f32,
+        label: Option<String>,
+        style: MarkerStyle,
+    ) -> Self {
+        Self {
+            marker_type: marker_type.into(),
+            lat_deg,
+            lon_deg,
+            orbit: SURFACE_ORBIT_NAME.to_string(),
+            altitude_px: None,
+            label,
+            style,
+        }
+    }
+
+    /// Build a placement on one named orbit shell.
+    pub fn orbit(
+        marker_type: impl Into<String>,
+        lat_deg: f32,
+        lon_deg: f32,
+        orbit: impl Into<String>,
+        altitude_px: Option<f32>,
+        label: Option<String>,
+        style: MarkerStyle,
+    ) -> Self {
+        Self {
+            marker_type: marker_type.into(),
+            lat_deg,
+            lon_deg,
+            orbit: orbit.into(),
+            altitude_px,
+            label,
+            style,
+        }
+    }
+}
+
 /// Marker collection keyed by stable id.
 #[derive(Debug, Clone, Default)]
 pub struct MarkerStore {
@@ -28,15 +91,37 @@ impl MarkerStore {
         label: Option<String>,
         style: MarkerStyle,
     ) -> u32 {
+        self.add_with_placement(MarkerPlacement::surface(
+            marker_type,
+            lat_deg,
+            lon_deg,
+            label,
+            style,
+        ))
+    }
+
+    /// Insert a marker on one named shell and return its assigned id.
+    pub fn add_with_placement(&mut self, placement: MarkerPlacement) -> u32 {
+        let MarkerPlacement {
+            marker_type,
+            lat_deg,
+            lon_deg,
+            orbit,
+            altitude_px,
+            label,
+            style,
+        } = placement;
         let id = self.next_id;
         self.next_id += 1;
         self.markers.insert(
             id,
             Marker {
                 id,
-                marker_type: marker_type.into(),
+                marker_type,
                 lat_deg,
                 lon_deg,
+                orbit,
+                altitude_px,
                 label,
                 visible: true,
                 style,
@@ -62,6 +147,24 @@ impl MarkerStore {
         if let Some(m) = self.markers.get_mut(&id) {
             m.lat_deg = lat_deg;
             m.lon_deg = lon_deg;
+            true
+        } else {
+            false
+        }
+    }
+    /// Reassign a marker to a different named shell and return true when the id exists.
+    pub fn set_orbit(&mut self, id: u32, orbit: String) -> bool {
+        if let Some(m) = self.markers.get_mut(&id) {
+            m.orbit = orbit;
+            true
+        } else {
+            false
+        }
+    }
+    /// Set or clear a marker-specific shell offset and return true when the id exists.
+    pub fn set_altitude(&mut self, id: u32, altitude_px: Option<f32>) -> bool {
+        if let Some(m) = self.markers.get_mut(&id) {
+            m.altitude_px = altitude_px;
             true
         } else {
             false
@@ -96,6 +199,22 @@ impl MarkerStore {
     /// Iterate over visible markers only.
     pub fn iter_visible(&self) -> impl Iterator<Item = &Marker> {
         self.markers.values().filter(|m| m.visible)
+    }
+    /// Iterate over all markers sorted by id for deterministic render and pick order.
+    pub fn iter_sorted(&self) -> Vec<&Marker> {
+        let mut out: Vec<&Marker> = self.markers.values().collect();
+        out.sort_by_key(|marker| marker.id);
+        out
+    }
+    /// Iterate over visible markers sorted by id for deterministic render and pick order.
+    pub fn iter_visible_sorted(&self) -> Vec<&Marker> {
+        let mut out: Vec<&Marker> = self
+            .markers
+            .values()
+            .filter(|marker| marker.visible)
+            .collect();
+        out.sort_by_key(|marker| marker.id);
+        out
     }
     /// Return all markers whose type matches the supplied string.
     pub fn by_type(&self, marker_type: &str) -> Vec<&Marker> {

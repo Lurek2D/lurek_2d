@@ -13559,6 +13559,16 @@ function LGlobe:addLayer(name, z_order) end
 ---@return number New marker id.
 function LGlobe:addMarker(mtype, lat, lon, label) end
 
+--- Adds a marker on one named orbit shell using a table-based configuration.
+---@param marker_tbl table Marker table with `type`, `lat`, `lon`, optional `orbit`, optional `altitude_px`, optional style fields, and optional `attrs`.
+---@return number New marker id.
+function LGlobe:addMarkerEx(marker_tbl) end
+
+--- Adds or replaces one named orbit shell above the globe surface.
+---@param orbit_tbl table Orbit table with `name`, optional `altitude_px`, optional `kind`, and optional render or pick flags.
+---@return boolean True when the orbit definition was accepted.
+function LGlobe:addOrbit(orbit_tbl) end
+
 --- Adds a province described by id, centroid, polygon vertices or multipart geometry, neighbors, and optional base color.
 ---@param p table Province table with `id`, optional `centroid`, either `vertices` or `parts`, optional `neighbors`, and optional `base_color`.
 ---@return boolean True when the province was accepted by the globe.
@@ -13590,6 +13600,11 @@ function LGlobe:applyWheelZoom(delta) end
 ---@param start_id number Start province id.
 ---@param max_cost number Maximum traversal cost.
 function LGlobe:cacheReachability(faction, start_id, max_cost) end
+
+--- Clears one orbit shell shader without affecting the globe-wide shader.
+---@param orbit string Orbit shell name.
+---@return boolean True when the orbit exists.
+function LGlobe:clearOrbitShader(orbit) end
 
 --- Removes texture metadata from a province.
 ---@param id number Province id.
@@ -13672,6 +13687,16 @@ function LGlobe:getLod() end
 ---@return string Attribute string, or nil when missing.
 function LGlobe:getMarkerAttr(id, key) end
 
+--- Returns a snapshot table describing one marker.
+---@param id number Marker id.
+---@return table Marker snapshot table, or nil when missing.
+function LGlobe:getMarkerInfo(id) end
+
+--- Returns the named orbit shell assigned to one marker.
+---@param id number Marker id.
+---@return string Orbit shell name, or nil when the marker is missing.
+function LGlobe:getMarkerOrbit(id) end
+
 --- Returns the registry name of this globe.
 ---@return string Globe registry name.
 function LGlobe:getName() end
@@ -13680,6 +13705,21 @@ function LGlobe:getName() end
 ---@param id number Province id.
 ---@return number[] Array table of neighboring province ids.
 function LGlobe:getNeighbors(id) end
+
+--- Returns a snapshot table for one orbit shell.
+---@param name string Orbit shell name.
+---@return table Orbit snapshot table, or nil when missing.
+function LGlobe:getOrbit(name) end
+
+--- Reads one string attribute from an orbit shell.
+---@param name string Orbit shell name.
+---@param key string Attribute key.
+---@return string Attribute value, or nil when missing.
+function LGlobe:getOrbitAttr(name, key) end
+
+--- Returns orbit shell names sorted by z-order and altitude.
+---@return string[] Array table of orbit names.
+function LGlobe:getOrbitNames() end
 
 --- Reads a string attribute from a province.
 ---@param id number Province id.
@@ -13746,6 +13786,13 @@ function LGlobe:pan(dlat, dlon) end
 ---@return number Province id, or nil when nothing is hit.
 function LGlobe:pick(sx, sy) end
 
+--- Resolves all shell-aware hits at one screen position using the supplied ordering policy.
+---@param sx number Screen x coordinate.
+---@param sy number Screen y coordinate.
+---@param opts? table Optional pick settings with `marker_radius`, `include_surface`, `include_regions`, `include_markers`, `include_orbits`, and `order`.
+---@return table[] Array table of hit snapshots.
+function LGlobe:pickAllObjects(sx, sy, opts) end
+
 --- Picks at screen coordinates and returns the hit surface latitude and longitude.
 ---@param sx number Screen x coordinate.
 ---@param sy number Screen y coordinate.
@@ -13759,6 +13806,13 @@ function LGlobe:pickLatLon(sx, sy) end
 ---@param radius? number Maximum marker distance in pixels, default 12.
 ---@return number Marker id, or nil when no visible marker is within range.
 function LGlobe:pickMarker(sx, sy, radius) end
+
+--- Resolves the highest-priority shell-aware hit at one screen position.
+---@param sx number Screen x coordinate.
+---@param sy number Screen y coordinate.
+---@param opts? table Optional pick settings with `marker_radius`, `include_surface`, `include_regions`, `include_markers`, `include_orbits`, and `order`.
+---@return table Hit snapshot table, or nil when nothing matched.
+function LGlobe:pickObject(sx, sy, opts) end
 
 --- Samples along the screen-space line from the globe center to the target and returns the first hit province.
 ---@param sx number Target screen x coordinate.
@@ -13832,6 +13886,11 @@ function LGlobe:removeLayer(name) end
 ---@return boolean True when a marker was removed.
 function LGlobe:removeMarker(id) end
 
+--- Removes one named orbit shell and moves any markers on it back to `surface`.
+---@param name string Orbit shell name.
+---@return boolean True when the orbit existed and was removed.
+function LGlobe:removeOrbit(name) end
+
 --- Removes a region by id. This method is available to Lua scripts.
 ---@param id number Region id to remove.
 ---@return boolean True when a region was removed.
@@ -13872,6 +13931,20 @@ function LGlobe:screenDeltaToPan(dx, dy) end
 ---@return number Unit-sphere y coordinate; or nil when the point is off the globe.
 ---@return number Unit-sphere z coordinate; or nil when the point is off the globe.
 function LGlobe:screenToLatLon(sx, sy) end
+
+--- Converts a visible screen position into latitude and longitude on one named visible pickable orbit shell.
+---@param sx number Screen x coordinate.
+---@param sy number Screen y coordinate.
+---@param orbit string Orbit shell name.
+---@return number Latitude in degrees; or nil when the point is off that shell.
+---@return number Longitude in degrees; or nil when the point is off that shell.
+function LGlobe:screenToOrbitLatLon(sx, sy, orbit) end
+
+--- Resolves shell hits for every visible pickable orbit at one screen-space position.
+---@param sx number Screen x coordinate.
+---@param sy number Screen y coordinate.
+---@return table Table keyed by orbit name with shell-hit snapshots.
+function LGlobe:screenToShells(sx, sy) end
 
 --- Sets the active fog-of-war viewer name or clears it.
 ---@param viewer? string Viewer name.
@@ -13946,6 +14019,12 @@ function LGlobe:setLayerColor(layer, id, r, g, b, a) end
 ---@return boolean True when the layer exists.
 function LGlobe:setLayerVisible(name, vis) end
 
+--- Sets or clears a marker-specific shell offset above its assigned orbit.
+---@param id number Marker id.
+---@param altitude_px? number Non-negative offset in render units, or nil to clear.
+---@return boolean True when the marker exists.
+function LGlobe:setMarkerAltitude(id, altitude_px) end
+
 --- Sets a string attribute on a marker.
 ---@param id number Marker id.
 ---@param key string Attribute key.
@@ -13967,6 +14046,12 @@ function LGlobe:setMarkerColor(id, r, g, b, a) end
 ---@param tex_raw? number Raw texture handle, or nil to clear the icon.
 ---@return boolean True when the marker exists.
 function LGlobe:setMarkerIconTexture(id, tex_raw) end
+
+--- Reassigns a marker to one named orbit shell.
+---@param id number Marker id.
+---@param orbit string Orbit shell name.
+---@return boolean True when the marker exists and the orbit accepts markers.
+function LGlobe:setMarkerOrbit(id, orbit) end
 
 --- Sets marker pulse frequency and amplitude.
 ---@param id number Marker id.
@@ -13998,6 +14083,25 @@ function LGlobe:setMarkerSize(id, size) end
 ---@param vis boolean New visibility flag.
 ---@return boolean True when the marker exists.
 function LGlobe:setMarkerVisible(id, vis) end
+
+--- Sets one string attribute on an orbit shell.
+---@param name string Orbit shell name.
+---@param key string Attribute key.
+---@param value string Attribute value.
+---@return boolean True when the orbit exists.
+function LGlobe:setOrbitAttr(name, key, value) end
+
+--- Binds a `mapviz` shader to one orbit shell and restores the globe shader outside that shell scope.
+---@param orbit string Orbit shell name.
+---@param shader LShader Shader created with `lurek.render.newShader(code, { target = "mapviz" })`.
+---@return boolean True when the orbit exists.
+function LGlobe:setOrbitShader(orbit, shader) end
+
+--- Shows or hides one orbit shell and its markers.
+---@param name string Orbit shell name.
+---@param visible boolean New visibility flag.
+---@return boolean True when the orbit exists.
+function LGlobe:setOrbitVisible(name, visible) end
 
 --- Sets a string attribute on a province.
 ---@param id number Province id.

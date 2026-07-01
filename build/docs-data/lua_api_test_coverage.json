@@ -1,15 +1,15 @@
 {
   "meta": {
-    "generated": "2026-06-30T22:02:05.485139+00:00",
+    "generated": "2026-06-30T22:45:31.438151+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
-    "total_api_functions": 6456,
-    "marker_covered": 6431,
+    "total_api_functions": 6474,
+    "marker_covered": 6449,
     "describe_covered": 150,
     "describe_coverage_pct": 2.3,
     "heuristic_covered": 0,
-    "total_covered": 6456,
+    "total_covered": 6474,
     "coverage_pct": 100.0
   },
   "modules": {
@@ -20130,14 +20130,14 @@
       ]
     },
     "globe": {
-      "total": 116,
-      "marker_covered": 116,
+      "total": 134,
+      "marker_covered": 134,
       "describe_covered": 1,
       "heuristic_covered": 0,
-      "covered": 116,
+      "covered": 134,
       "coverage_pct": 100.0,
-      "describe_coverage_pct": 0.9,
-      "describe_score": 0.009,
+      "describe_coverage_pct": 0.7,
+      "describe_score": 0.007,
       "uncovered": [],
       "test_files": [
         "tests/lua/unit/test_globe_unit.lua"
@@ -20615,6 +20615,24 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "LGlobe:screenToOrbitLatLon",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LGlobe:screenToShells",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "LGlobe:pickRaycast",
           "kind": "method",
           "marker_covered": true,
@@ -20652,6 +20670,24 @@
         },
         {
           "lua_name": "LGlobe:pickMarker",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LGlobe:pickObject",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LGlobe:pickAllObjects",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -20750,7 +20786,79 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "LGlobe:addOrbit",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LGlobe:removeOrbit",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LGlobe:setOrbitVisible",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LGlobe:setOrbitAttr",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LGlobe:getOrbitAttr",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LGlobe:getOrbitNames",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LGlobe:getOrbit",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "LGlobe:addMarker",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LGlobe:addMarkerEx",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -20814,6 +20922,42 @@
         },
         {
           "lua_name": "LGlobe:getMarkerAttr",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LGlobe:setMarkerOrbit",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LGlobe:setMarkerAltitude",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LGlobe:getMarkerOrbit",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LGlobe:getMarkerInfo",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -20994,6 +21138,24 @@
         },
         {
           "lua_name": "LGlobe:setBorders",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LGlobe:setOrbitShader",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LGlobe:clearOrbitShader",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,

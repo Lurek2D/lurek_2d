@@ -1151,8 +1151,22 @@ describe("globe surface interaction and semantic region coverage", function()
     end)
 
     -- @covers LGlobe:pickMarker
-    it("pickMarker returns the nearest visible marker at the pointer", function()
-        local g, marker_id = interaction_globe("coverage_pick_marker")
+    it("pickMarker returns orbit markers as well as surface markers", function()
+        local g = lurek.globe.new("coverage_pick_marker", {
+            axial_tilt_deg = 0.0,
+            orbits = {
+                { name = "surface", altitude_px = 0, kind = "surface" },
+                { name = "low_orbit", altitude_px = 12, kind = "orbit", draw_shell = true },
+            },
+        })
+        g:setCamera(0.0, 0.0, 1.0)
+        local marker_id = g:addMarkerEx({
+            type = "satellite",
+            lat = 0.0,
+            lon = 90.0,
+            orbit = "low_orbit",
+            label = "SAT-1",
+        })
         expect_equal(marker_id, g:pickMarker(640, 360, 16.0))
     end)
 
@@ -1366,6 +1380,221 @@ describe("globe terrain polygon layer coverage", function()
         expect_equal(31, g:regionsAtLatLon(-45.0, -90.0)[1])
         expect_true(g:setRegionVisible(31, false))
         expect_equal(0, #g:regionsAtLatLon(-45.0, -90.0))
+    end)
+end)
+
+-- @describe globe orbit shell APIs
+describe("globe orbit shell APIs", function()
+    local function orbit_globe(name)
+        local g = lurek.globe.new(name, {
+            radius = 100.0,
+            axial_tilt_deg = 0.0,
+            orbits = {
+                { name = "surface", altitude_px = 0, kind = "surface" },
+                { name = "low_orbit", altitude_px = 12, kind = "orbit", draw_shell = true, color = {0.3, 0.6, 1.0, 0.25} },
+                { name = "high_orbit", altitude_px = 24, kind = "effect", draw_shell = true, color = {0.8, 0.9, 1.0, 0.18} },
+            },
+        })
+        g:setCamera(0.0, 0.0, 1.0)
+        return g
+    end
+
+    -- @covers LGlobe:addOrbit
+    it("addOrbit accepts a named shell definition and returns its snapshot", function()
+        local g = lurek.globe.new("orbit_add_globe", { axial_tilt_deg = 0.0 })
+        expect_equal(true, g:addOrbit({
+            name = "low_orbit",
+            altitude_px = 10.0,
+            kind = "orbit",
+            draw_shell = true,
+            width_px = 2.0,
+        }))
+        local orbit = g:getOrbit("low_orbit")
+        expect_type("table", orbit)
+        expect_equal("low_orbit", orbit.name)
+        expect_near(10.0, orbit.altitude_px, 0.01)
+    end)
+
+    -- @covers LGlobe:removeOrbit
+    it("removeOrbit deletes a named shell and returns false when it is already gone", function()
+        local g = orbit_globe("orbit_remove_globe")
+        expect_equal(true, g:removeOrbit("high_orbit"))
+        expect_equal(nil, g:getOrbit("high_orbit"))
+        expect_equal(false, g:removeOrbit("high_orbit"))
+    end)
+
+    -- @covers LGlobe:setOrbitVisible
+    it("setOrbitVisible toggles shell marker picking participation", function()
+        local g = orbit_globe("orbit_visible_globe")
+        local marker_id = g:addMarkerEx({
+            type = "satellite",
+            lat = 0.0,
+            lon = 90.0,
+            orbit = "high_orbit",
+            label = "SAT-2",
+        })
+        expect_equal(marker_id, g:pickMarker(640, 360, 16.0))
+        expect_equal(true, g:setOrbitVisible("high_orbit", false))
+        expect_equal(nil, g:pickMarker(640, 360, 16.0))
+    end)
+
+    -- @covers LGlobe:setOrbitAttr
+    it("setOrbitAttr stores string metadata on orbit shells", function()
+        local g = orbit_globe("orbit_attr_set_globe")
+        expect_equal(true, g:setOrbitAttr("low_orbit", "weather", "stormy"))
+        expect_equal("stormy", g:getOrbitAttr("low_orbit", "weather"))
+    end)
+
+    -- @covers LGlobe:getOrbitAttr
+    it("getOrbitAttr returns nil when a shell attribute is missing", function()
+        local g = orbit_globe("orbit_attr_get_globe")
+        expect_equal(nil, g:getOrbitAttr("low_orbit", "missing"))
+    end)
+
+    -- @covers LGlobe:getOrbitNames
+    it("getOrbitNames returns shells sorted by z-order", function()
+        local g = orbit_globe("orbit_names_globe")
+        local names = g:getOrbitNames()
+        expect_equal("surface", names[1])
+        expect_equal("low_orbit", names[2])
+        expect_equal("high_orbit", names[3])
+    end)
+
+    -- @covers LGlobe:getOrbit
+    it("getOrbit returns shell kind, color, and draw settings", function()
+        local g = orbit_globe("orbit_snapshot_globe")
+        local orbit = g:getOrbit("high_orbit")
+        expect_equal("effect", orbit.kind)
+        expect_equal(true, orbit.draw_shell)
+        expect_type("table", orbit.color)
+        expect_equal(4, #orbit.color)
+    end)
+
+    -- @covers LGlobe:addMarkerEx
+    it("addMarkerEx creates orbit-aware markers on named shells", function()
+        local g = orbit_globe("orbit_marker_add_globe")
+        local id = g:addMarkerEx({
+            type = "satellite",
+            lat = 0.0,
+            lon = 90.0,
+            orbit = "low_orbit",
+            label = "SAT-3",
+        })
+        expect_type("number", id)
+        expect_equal("low_orbit", g:getMarkerOrbit(id))
+    end)
+
+    -- @covers LGlobe:setMarkerOrbit
+    it("setMarkerOrbit reassigns an existing marker to a different shell", function()
+        local g = orbit_globe("orbit_marker_move_globe")
+        local id = g:addMarkerEx({ type = "satellite", lat = 0.0, lon = 90.0, orbit = "low_orbit" })
+        expect_equal(true, g:setMarkerOrbit(id, "high_orbit"))
+        expect_equal("high_orbit", g:getMarkerOrbit(id))
+    end)
+
+    -- @covers LGlobe:setMarkerAltitude
+    it("setMarkerAltitude updates the reported shell altitude for picked markers", function()
+        local g = orbit_globe("orbit_marker_altitude_globe")
+        local id = g:addMarkerEx({ type = "satellite", lat = 0.0, lon = 90.0, orbit = "low_orbit" })
+        expect_equal(true, g:setMarkerAltitude(id, 4.0))
+        local hit = g:pickObject(640, 360, { include_surface = false, include_regions = false, include_orbits = false })
+        expect_equal("marker", hit.kind)
+        expect_near(16.0, hit.altitude_px, 0.01)
+    end)
+
+    -- @covers LGlobe:getMarkerOrbit
+    it("getMarkerOrbit reports the default surface shell for legacy markers", function()
+        local g = orbit_globe("orbit_marker_get_globe")
+        local id = g:addMarker("city", 0.0, 90.0, "Alpha")
+        expect_equal("surface", g:getMarkerOrbit(id))
+    end)
+
+    -- @covers LGlobe:getMarkerInfo
+    it("getMarkerInfo returns orbit, style, and attrs snapshots", function()
+        local g = orbit_globe("orbit_marker_info_globe")
+        local id = g:addMarkerEx({
+            type = "satellite",
+            lat = 0.0,
+            lon = 90.0,
+            orbit = "low_orbit",
+            size = 14.0,
+            attrs = { owner = "blue" },
+        })
+        local info = g:getMarkerInfo(id)
+        expect_equal("low_orbit", info.orbit)
+        expect_equal("blue", info.attrs.owner)
+        expect_near(14.0, info.style.size, 0.01)
+    end)
+
+    -- @covers LGlobe:setOrbitShader
+    it("setOrbitShader binds only mapviz shaders to one shell scope", function()
+        local g = orbit_globe("orbit_shader_set_globe")
+        local shader = mapviz_shader()
+        expect_equal(true, g:setOrbitShader("low_orbit", shader))
+        expect_equal(shader:getId(), g:getOrbit("low_orbit").shader:getId())
+        expect_error(function()
+            g:setOrbitShader("low_orbit", lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return color;
+}
+]], { target = "draw" }))
+        end)
+    end)
+
+    -- @covers LGlobe:clearOrbitShader
+    it("clearOrbitShader clears only the shell shader and preserves the globe shader", function()
+        local g = orbit_globe("orbit_shader_clear_globe")
+        local global_shader = mapviz_shader()
+        local orbit_shader = mapviz_shader()
+        g:setShader(global_shader)
+        expect_equal(true, g:setOrbitShader("low_orbit", orbit_shader))
+        expect_equal(true, g:clearOrbitShader("low_orbit"))
+        expect_equal(global_shader:getId(), g:getShader():getId())
+        expect_equal(nil, g:getOrbit("low_orbit").shader)
+    end)
+
+    -- @covers LGlobe:screenToOrbitLatLon
+    it("screenToOrbitLatLon converts orbit shell hits into latitude and longitude", function()
+        local g = orbit_globe("orbit_screen_latlon_globe")
+        local lat, lon = g:screenToOrbitLatLon(640, 360, "low_orbit")
+        expect_near(0.0, lat, 0.01)
+        expect_near(90.0, lon, 0.01)
+    end)
+
+    -- @covers LGlobe:screenToShells
+    it("screenToShells returns visible shell hits keyed by orbit name", function()
+        local g = orbit_globe("orbit_shell_hits_globe")
+        local hits = g:screenToShells(640, 360)
+        expect_type("table", hits.surface)
+        expect_type("table", hits.low_orbit)
+        expect_near(12.0, hits.low_orbit.altitude_px, 0.01)
+    end)
+
+    -- @covers LGlobe:pickObject
+    it("pickObject prefers orbit markers and reports shell metadata", function()
+        local g = orbit_globe("orbit_pick_object_globe")
+        g:addMarkerEx({ type = "satellite", lat = 0.0, lon = 90.0, orbit = "low_orbit", label = "SAT-4" })
+        local hit = g:pickObject(640, 360, { marker_radius = 16.0 })
+        expect_equal("marker", hit.kind)
+        expect_equal("low_orbit", hit.orbit)
+        expect_near(12.0, hit.altitude_px, 0.01)
+    end)
+
+    -- @covers LGlobe:pickAllObjects
+    it("pickAllObjects returns ordered marker, shell, and surface hits", function()
+        local g = orbit_globe("orbit_pick_all_globe")
+        g:addProvince({
+            id = 1,
+            centroid = {0.0, 90.0},
+            vertices = {{-12.0, 78.0}, {-12.0, 102.0}, {12.0, 102.0}, {12.0, 78.0}},
+            neighbors = {},
+        })
+        g:addMarkerEx({ type = "satellite", lat = 0.0, lon = 90.0, orbit = "low_orbit", label = "SAT-5" })
+        local hits = g:pickAllObjects(640, 360, { marker_radius = 16.0 })
+        expect_equal("marker", hits[1].kind)
+        expect_equal("orbit", hits[2].kind)
+        expect_true(hits[#hits].kind == "surface" or hits[#hits].kind == "province")
     end)
 end)
 end

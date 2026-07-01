@@ -25,6 +25,8 @@ pub mod lighting;
 pub mod loader;
 /// Globe marker helpers. This module is publicly re-exported.
 pub mod marker;
+/// Globe orbit shell helpers. This module is publicly re-exported.
+pub mod orbit;
 /// Globe picking helpers. This module is publicly re-exported.
 pub mod picking;
 /// Globe camera projection helpers.
@@ -43,8 +45,12 @@ pub mod topology;
 pub mod types;
 /// Fog state and mask types.
 pub use fog::{FogMask, FogStore};
+/// Orbit shell helpers and constants.
+pub use orbit::{OrbitStore, SURFACE_ORBIT_NAME};
 /// Picking result type.
 pub use picking::PickResult;
+/// Shell-aware picking types.
+pub use picking::{ObjectHit, ObjectHitKind, ObjectPickOptions, ObjectPickOrder, ShellHit};
 /// Orbit camera type used for globe projection.
 pub use projection::OrbitCamera;
 /// Globe registry types.
@@ -61,8 +67,8 @@ pub use types::ProjectedProvince;
 pub use types::ProjectedRegion;
 /// Shared globe value types (primary names).
 pub use types::{
-    FogState, GlobeError, GlobeSpec, HeatLayer, Label, LabelStyle, Layer, LodTier, Marker,
-    MarkerShape, MarkerStyle, Region, RegionId, MAX_REGIONS,
+    FogState, GlobeError, GlobeOrbit, GlobeOrbitKind, GlobeSpec, HeatLayer, Label, LabelStyle,
+    Layer, LodTier, Marker, MarkerShape, MarkerStyle, Region, RegionId, MAX_REGIONS,
 };
 /// Backward compatibility re-exports.
 pub use types::{Province, ProvinceId, MAX_PROVINCES};

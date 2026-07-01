@@ -3,14 +3,17 @@
 use super::SharedState;
 use crate::globe::export::export_regions_to_obj;
 use crate::globe::loader;
+use crate::globe::marker::MarkerPlacement;
+use crate::globe::orbit::SURFACE_ORBIT_NAME;
+use crate::globe::picking::{ObjectHit, ObjectPickOptions, ObjectPickOrder, ShellHit};
 use crate::globe::projection::screen_delta_to_pan;
 use crate::globe::registry::{Globe, GlobeRegistry};
 use crate::globe::sphere::{
     great_circle_distance, great_circle_path, lat_lon_to_unit, ray_sphere_intersect,
 };
 use crate::globe::types::{
-    FogState, GlobeSpec, HeatLayer, LabelStyle, Layer, LodTier, MarkerShape, MarkerStyle, Region,
-    RegionId, RegionPart, MAX_REGIONS,
+    FogState, GlobeOrbit, GlobeOrbitKind, GlobeSpec, HeatLayer, LabelStyle, Layer, LodTier, Marker,
+    MarkerShape, MarkerStyle, Region, RegionId, RegionPart, MAX_REGIONS,
 };
 use crate::lua_api::render_api::{ensure_shader_target, shader_key_from_userdata, LuaShader};
 use crate::pathfind::graph_path::GraphCostFn;
@@ -290,6 +293,391 @@ fn parse_marker_shape(shape: &str) -> LuaResult<MarkerShape> {
             shape
         ))),
     }
+}
+
+fn marker_shape_name(shape: MarkerShape) -> &'static str {
+    match shape {
+        MarkerShape::Circle => "circle",
+        MarkerShape::Square => "square",
+        MarkerShape::Diamond => "diamond",
+        MarkerShape::Triangle => "triangle",
+        MarkerShape::Cross => "cross",
+    }
+}
+
+fn parse_orbit_kind(kind: &str) -> LuaResult<GlobeOrbitKind> {
+    match kind {
+        "surface" => Ok(GlobeOrbitKind::Surface),
+        "atmosphere" => Ok(GlobeOrbitKind::Atmosphere),
+        "orbit" => Ok(GlobeOrbitKind::Orbit),
+        "effect" => Ok(GlobeOrbitKind::Effect),
+        other => Err(LuaError::RuntimeError(format!(
+            "lurek.globe: unsupported orbit kind '{}'",
+            other
+        ))),
+    }
+}
+
+fn orbit_kind_name(kind: GlobeOrbitKind) -> &'static str {
+    match kind {
+        GlobeOrbitKind::Surface => "surface",
+        GlobeOrbitKind::Atmosphere => "atmosphere",
+        GlobeOrbitKind::Orbit => "orbit",
+        GlobeOrbitKind::Effect => "effect",
+    }
+}
+
+fn orbit_defaults(name: &str, altitude_px: f32, kind: GlobeOrbitKind) -> GlobeOrbit {
+    if name == SURFACE_ORBIT_NAME || kind == GlobeOrbitKind::Surface {
+        return GlobeOrbit::surface();
+    }
+    let (color, width_px, draw_shell) = match kind {
+        GlobeOrbitKind::Atmosphere => ([0.30, 0.55, 0.95, 0.25], 10.0, true),
+        GlobeOrbitKind::Effect => ([0.80, 0.90, 1.00, 0.18], 3.0, true),
+        GlobeOrbitKind::Orbit => ([0.30, 0.60, 1.00, 0.25], 2.0, true),
+        GlobeOrbitKind::Surface => ([0.0, 0.0, 0.0, 0.0], 0.0, false),
+    };
+    GlobeOrbit {
+        name: name.to_string(),
+        altitude_px,
+        visible: true,
+        z_order: altitude_px.round() as i32,
+        kind,
+        accepts_markers: true,
+        pickable: true,
+        draw_shell,
+        color,
+        width_px,
+        attrs: HashMap::new(),
+        shader: None,
+    }
+}
+
+fn parse_orbit_table(tbl: LuaTable, label: &str) -> LuaResult<GlobeOrbit> {
+    let name: String = tbl.get("name").map_err(|_| {
+        LuaError::RuntimeError(format!("lurek.globe.{label}: orbit table requires 'name'"))
+    })?;
+    let kind = if name == SURFACE_ORBIT_NAME {
+        GlobeOrbitKind::Surface
+    } else if let Ok(raw_kind) = tbl.get::<_, String>("kind") {
+        parse_orbit_kind(raw_kind.as_str())?
+    } else {
+        GlobeOrbitKind::Orbit
+    };
+    let altitude_px = if name == SURFACE_ORBIT_NAME {
+        0.0
+    } else {
+        let value = tbl.get::<_, Option<f32>>("altitude_px")?.unwrap_or(0.0);
+        let value = finite_f32(value, &format!("{label} orbit altitude_px"))?;
+        if value < 0.0 {
+            return Err(LuaError::RuntimeError(format!(
+                "lurek.globe.{label}: orbit altitude_px must be >= 0"
+            )));
+        }
+        value
+    };
+    let mut orbit = orbit_defaults(&name, altitude_px, kind);
+    if let Some(visible) = tbl.get::<_, Option<bool>>("visible")? {
+        orbit.visible = visible;
+    }
+    if let Ok(z_order) = tbl.get::<_, i32>("z_order") {
+        orbit.z_order = z_order;
+    }
+    if let Some(accepts_markers) = tbl.get::<_, Option<bool>>("accepts_markers")? {
+        orbit.accepts_markers = accepts_markers;
+    }
+    if let Some(pickable) = tbl.get::<_, Option<bool>>("pickable")? {
+        orbit.pickable = pickable;
+    }
+    if let Some(draw_shell) = tbl.get::<_, Option<bool>>("draw_shell")? {
+        orbit.draw_shell = draw_shell;
+    }
+    if let Ok(width_px) = tbl.get::<_, f32>("width_px") {
+        let width_px = finite_f32(width_px, &format!("{label} orbit width_px"))?;
+        if width_px < 0.0 {
+            return Err(LuaError::RuntimeError(format!(
+                "lurek.globe.{label}: orbit width_px must be >= 0"
+            )));
+        }
+        orbit.width_px = width_px;
+    }
+    orbit.color = parse_color_table(
+        tbl.get("color").ok(),
+        orbit.color,
+        &format!("{label} orbit color"),
+    )?;
+    if let Ok(attrs_tbl) = tbl.get::<_, LuaTable>("attrs") {
+        orbit.attrs = parse_attrs_table(attrs_tbl, &format!("{label} orbit"))?;
+    }
+    Ok(orbit)
+}
+
+#[derive(Clone)]
+struct ParsedGlobeConfig {
+    spec: GlobeSpec,
+    orbits: Vec<GlobeOrbit>,
+}
+
+#[derive(Clone)]
+struct ParsedMarkerInput {
+    marker_type: String,
+    lat_deg: f32,
+    lon_deg: f32,
+    orbit: String,
+    altitude_px: Option<f32>,
+    label: Option<String>,
+    visible: bool,
+    style: MarkerStyle,
+    attrs: HashMap<String, String>,
+}
+
+fn parse_marker_ex_table(tbl: LuaTable) -> LuaResult<ParsedMarkerInput> {
+    let marker_type: String = tbl.get("type").map_err(|_| {
+        LuaError::RuntimeError("lurek.globe.addMarkerEx: marker table requires 'type'".to_string())
+    })?;
+    let lat: f32 = tbl.get("lat").map_err(|_| {
+        LuaError::RuntimeError("lurek.globe.addMarkerEx: marker table requires 'lat'".to_string())
+    })?;
+    let lon: f32 = tbl.get("lon").map_err(|_| {
+        LuaError::RuntimeError("lurek.globe.addMarkerEx: marker table requires 'lon'".to_string())
+    })?;
+    let (lat_deg, lon_deg) = validate_lat_lon(lat, lon, "addMarkerEx")?;
+    let orbit = tbl
+        .get::<_, Option<String>>("orbit")?
+        .unwrap_or_else(|| SURFACE_ORBIT_NAME.to_string());
+    let altitude_px = match tbl.get::<_, Option<f32>>("altitude_px")? {
+        Some(value) => {
+            let value = finite_f32(value, "addMarkerEx altitude_px")?;
+            if value < 0.0 {
+                return Err(LuaError::RuntimeError(
+                    "lurek.globe.addMarkerEx: altitude_px must be >= 0".to_string(),
+                ));
+            }
+            Some(value)
+        }
+        None => None,
+    };
+    let mut style = MarkerStyle::default();
+    if let Ok(size) = tbl.get::<_, f32>("size") {
+        style.size = finite_f32(size, "addMarkerEx size")?.max(1.0);
+    }
+    if let Ok(shape) = tbl.get::<_, String>("shape") {
+        style.shape = parse_marker_shape(shape.as_str())?;
+    }
+    if let Ok(color_tbl) = tbl.get::<_, LuaTable>("color") {
+        style.color = parse_color_table(Some(color_tbl), style.color, "addMarkerEx color")?;
+    }
+    if let Ok(icon) = tbl.get::<_, u64>("icon") {
+        style.icon_texture = Some(icon.to_string());
+    } else if let Ok(icon_texture) = tbl.get::<_, u64>("icon_texture") {
+        style.icon_texture = Some(icon_texture.to_string());
+    }
+    if let Ok(pulse_hz) = tbl.get::<_, f32>("pulse_hz") {
+        style.pulse_hz = finite_f32(pulse_hz, "addMarkerEx pulse_hz")?.max(0.0);
+    }
+    if let Ok(pulse_amplitude) = tbl.get::<_, f32>("pulse_amplitude") {
+        style.pulse_amplitude =
+            finite_f32(pulse_amplitude, "addMarkerEx pulse_amplitude")?.clamp(0.0, 1.0);
+    }
+    if let Ok(rotation) = tbl.get::<_, f32>("rotation_deg_per_sec") {
+        style.rotation_deg_per_sec = finite_f32(rotation, "addMarkerEx rotation_deg_per_sec")?;
+    }
+    let attrs = if let Ok(attrs_tbl) = tbl.get::<_, LuaTable>("attrs") {
+        parse_attrs_table(attrs_tbl, "addMarkerEx marker")?
+    } else {
+        HashMap::new()
+    };
+    Ok(ParsedMarkerInput {
+        marker_type,
+        lat_deg,
+        lon_deg,
+        orbit,
+        altitude_px,
+        label: tbl.get::<_, Option<String>>("label")?,
+        visible: tbl.get::<_, Option<bool>>("visible")?.unwrap_or(true),
+        style,
+        attrs,
+    })
+}
+
+fn parse_object_pick_options(tbl: Option<LuaTable>, label: &str) -> LuaResult<ObjectPickOptions> {
+    let mut opts = ObjectPickOptions::default();
+    let Some(tbl) = tbl else {
+        return Ok(opts);
+    };
+    if let Ok(radius) = tbl.get::<_, f32>("marker_radius") {
+        opts.marker_radius = finite_f32(radius, &format!("{label} marker_radius"))?.max(0.0);
+    }
+    if let Some(include_surface) = tbl.get::<_, Option<bool>>("include_surface")? {
+        opts.include_surface = include_surface;
+    }
+    if let Some(include_regions) = tbl.get::<_, Option<bool>>("include_regions")? {
+        opts.include_regions = include_regions;
+    }
+    if let Some(include_markers) = tbl.get::<_, Option<bool>>("include_markers")? {
+        opts.include_markers = include_markers;
+    }
+    if let Some(include_orbits) = tbl.get::<_, Option<bool>>("include_orbits")? {
+        opts.include_orbits = include_orbits;
+    }
+    if let Ok(order) = tbl.get::<_, String>("order") {
+        opts.order = match order.as_str() {
+            "markers_first" => ObjectPickOrder::MarkersFirst,
+            "front_to_back" => ObjectPickOrder::FrontToBack,
+            other => {
+                return Err(LuaError::RuntimeError(format!(
+                    "lurek.globe.{label}: unsupported pick order '{}'",
+                    other
+                )))
+            }
+        };
+    }
+    Ok(opts)
+}
+
+fn parse_globe_config(tbl: Option<LuaTable>, label: &str) -> LuaResult<ParsedGlobeConfig> {
+    let spec = parse_globe_spec(tbl.clone());
+    let mut orbits = Vec::new();
+    if let Some(tbl) = tbl {
+        if let Ok(orbits_tbl) = tbl.get::<_, LuaTable>("orbits") {
+            for orbit_tbl in orbits_tbl.sequence_values::<LuaTable>() {
+                orbits.push(parse_orbit_table(orbit_tbl?, label)?);
+            }
+        }
+    }
+    Ok(ParsedGlobeConfig { spec, orbits })
+}
+
+fn apply_orbits_to_globe(globe: &mut Globe, orbits: &[GlobeOrbit], label: &str) -> LuaResult<()> {
+    for orbit in orbits.iter().cloned() {
+        globe
+            .add_orbit(orbit)
+            .map_err(|err| LuaError::RuntimeError(format!("lurek.globe.{label}: {err}")))?;
+    }
+    Ok(())
+}
+
+fn color_table(lua: &Lua, color: [f32; 4]) -> LuaResult<LuaTable<'_>> {
+    let table = lua.create_table()?;
+    for (index, value) in color.into_iter().enumerate() {
+        table.set(index + 1, value)?;
+    }
+    Ok(table)
+}
+
+fn attrs_snapshot_table<'lua>(
+    lua: &'lua Lua,
+    attrs: &HashMap<String, String>,
+) -> LuaResult<LuaTable<'lua>> {
+    let table = lua.create_table()?;
+    let mut keys: Vec<&String> = attrs.keys().collect();
+    keys.sort();
+    for key in keys {
+        if let Some(value) = attrs.get(key) {
+            table.set(key.as_str(), value.as_str())?;
+        }
+    }
+    Ok(table)
+}
+
+fn marker_style_snapshot_table<'lua>(
+    lua: &'lua Lua,
+    style: &MarkerStyle,
+) -> LuaResult<LuaTable<'lua>> {
+    let table = lua.create_table()?;
+    table.set("color", color_table(lua, style.color)?)?;
+    table.set("size", style.size)?;
+    table.set("shape", marker_shape_name(style.shape))?;
+    table.set("icon_texture", style.icon_texture.clone())?;
+    table.set("pulse_hz", style.pulse_hz)?;
+    table.set("pulse_amplitude", style.pulse_amplitude)?;
+    table.set("rotation_deg_per_sec", style.rotation_deg_per_sec)?;
+    Ok(table)
+}
+
+fn marker_info_table<'lua>(lua: &'lua Lua, marker: &Marker) -> LuaResult<LuaTable<'lua>> {
+    let table = lua.create_table()?;
+    table.set("id", marker.id)?;
+    table.set("type", marker.marker_type.clone())?;
+    table.set("lat", marker.lat_deg)?;
+    table.set("lon", marker.lon_deg)?;
+    table.set("orbit", marker.orbit.clone())?;
+    table.set("altitude_px", marker.altitude_px)?;
+    table.set("label", marker.label.clone())?;
+    table.set("visible", marker.visible)?;
+    table.set("style", marker_style_snapshot_table(lua, &marker.style)?)?;
+    table.set("attrs", attrs_snapshot_table(lua, &marker.attrs)?)?;
+    Ok(table)
+}
+
+fn orbit_snapshot_table<'lua>(
+    lua: &'lua Lua,
+    orbit: &GlobeOrbit,
+    state: Rc<RefCell<SharedState>>,
+) -> LuaResult<LuaTable<'lua>> {
+    let table = lua.create_table()?;
+    table.set("name", orbit.name.clone())?;
+    table.set("altitude_px", orbit.altitude_px)?;
+    table.set("visible", orbit.visible)?;
+    table.set("z_order", orbit.z_order)?;
+    table.set("kind", orbit_kind_name(orbit.kind))?;
+    table.set("accepts_markers", orbit.accepts_markers)?;
+    table.set("pickable", orbit.pickable)?;
+    table.set("draw_shell", orbit.draw_shell)?;
+    table.set("color", color_table(lua, orbit.color)?)?;
+    table.set("width_px", orbit.width_px)?;
+    table.set("attrs", attrs_snapshot_table(lua, &orbit.attrs)?)?;
+    table.set(
+        "shader",
+        orbit.shader.map(|key| LuaShader {
+            key,
+            state: state.clone(),
+        }),
+    )?;
+    Ok(table)
+}
+
+fn object_hit_kind_name(kind: crate::globe::picking::ObjectHitKind) -> &'static str {
+    match kind {
+        crate::globe::picking::ObjectHitKind::Marker => "marker",
+        crate::globe::picking::ObjectHitKind::Orbit => "orbit",
+        crate::globe::picking::ObjectHitKind::Province => "province",
+        crate::globe::picking::ObjectHitKind::Region => "region",
+        crate::globe::picking::ObjectHitKind::Surface => "surface",
+    }
+}
+
+fn object_hit_table<'lua>(lua: &'lua Lua, hit: &ObjectHit) -> LuaResult<LuaTable<'lua>> {
+    let table = lua.create_table()?;
+    table.set("kind", object_hit_kind_name(hit.kind))?;
+    table.set("id", hit.id)?;
+    table.set("orbit", hit.orbit.clone())?;
+    table.set("lat", hit.lat_deg)?;
+    table.set("lon", hit.lon_deg)?;
+    table.set("altitude_px", hit.altitude_px)?;
+    table.set("screen_x", hit.screen_x)?;
+    table.set("screen_y", hit.screen_y)?;
+    table.set("depth", hit.depth)?;
+    table.set("distance_px", hit.distance_px)?;
+    table.set("attrs", attrs_snapshot_table(lua, &hit.attrs)?)?;
+    Ok(table)
+}
+
+fn shell_hit_table<'lua>(
+    lua: &'lua Lua,
+    orbit_name: &str,
+    hit: &ShellHit,
+) -> LuaResult<LuaTable<'lua>> {
+    let table = lua.create_table()?;
+    table.set("orbit", orbit_name)?;
+    table.set("lat", hit.lat_deg)?;
+    table.set("lon", hit.lon_deg)?;
+    table.set("altitude_px", hit.altitude_px)?;
+    table.set("depth", hit.depth)?;
+    table.set("x", hit.world_pos.x)?;
+    table.set("y", hit.world_pos.y)?;
+    table.set("z", hit.world_pos.z)?;
+    Ok(table)
 }
 
 fn normalize_time_of_day(t: f32) -> LuaResult<f32> {
@@ -900,6 +1288,35 @@ impl LuaUserData for LuaGlobe {
                 None => (None, None, None, None, None),
             })
         });
+        // -- screenToOrbitLatLon --
+        /// Converts a visible screen position into latitude and longitude on one named visible pickable orbit shell.
+        /// @param | sx | number | Screen x coordinate.
+        /// @param | sy | number | Screen y coordinate.
+        /// @param | orbit | string | Orbit shell name.
+        /// @return | number | Latitude in degrees, or nil when the point is off that shell.
+        /// @return | number | Longitude in degrees, or nil when the point is off that shell.
+        methods.add_method(
+            "screenToOrbitLatLon",
+            |_, this, (sx, sy, orbit): (f32, f32, String)| {
+                this.with(|g| match g.screen_to_orbit(sx, sy, &orbit) {
+                    Some(hit) => (Some(hit.lat_deg as f64), Some(hit.lon_deg as f64)),
+                    None => (None, None),
+                })
+            },
+        );
+        // -- screenToShells --
+        /// Resolves shell hits for every visible pickable orbit at one screen-space position.
+        /// @param | sx | number | Screen x coordinate.
+        /// @param | sy | number | Screen y coordinate.
+        /// @return | table | Table keyed by orbit name with shell-hit snapshots.
+        methods.add_method("screenToShells", |lua, this, (sx, sy): (f32, f32)| {
+            let shells = this.with(|g| g.screen_to_shells(sx, sy))?;
+            let table = lua.create_table()?;
+            for (name, hit) in shells {
+                table.set(name.clone(), shell_hit_table(lua, &name, &hit)?)?;
+            }
+            Ok(table)
+        });
         // -- pickRaycast --
         /// Samples along the screen-space line from the globe center to the target and returns the first hit province.
         /// @param | sx | number | Target screen x coordinate.
@@ -976,6 +1393,41 @@ impl LuaUserData for LuaGlobe {
             "pickMarker",
             |_, this, (sx, sy, radius): (f32, f32, Option<f32>)| {
                 this.with(|g| g.pick_marker_screen(sx, sy, radius.unwrap_or(12.0)))
+            },
+        );
+        // -- pickObject --
+        /// Resolves the highest-priority shell-aware hit at one screen position.
+        /// @param | sx | number | Screen x coordinate.
+        /// @param | sy | number | Screen y coordinate.
+        /// @param | opts | table? | Optional pick settings with `marker_radius`, `include_surface`, `include_regions`, `include_markers`, `include_orbits`, and `order`.
+        /// @return | table | Hit snapshot table, or nil when nothing matched.
+        methods.add_method(
+            "pickObject",
+            |lua, this, (sx, sy, opts_tbl): (f32, f32, Option<LuaTable>)| {
+                let opts = parse_object_pick_options(opts_tbl, "pickObject")?;
+                let hit = this.with(|g| g.pick_object(sx, sy, opts))?;
+                match hit {
+                    Some(hit) => Ok(Some(object_hit_table(lua, &hit)?)),
+                    None => Ok(None),
+                }
+            },
+        );
+        // -- pickAllObjects --
+        /// Resolves all shell-aware hits at one screen position using the supplied ordering policy.
+        /// @param | sx | number | Screen x coordinate.
+        /// @param | sy | number | Screen y coordinate.
+        /// @param | opts | table? | Optional pick settings with `marker_radius`, `include_surface`, `include_regions`, `include_markers`, `include_orbits`, and `order`.
+        /// @return | table[] | Array table of hit snapshots.
+        methods.add_method(
+            "pickAllObjects",
+            |lua, this, (sx, sy, opts_tbl): (f32, f32, Option<LuaTable>)| {
+                let opts = parse_object_pick_options(opts_tbl, "pickAllObjects")?;
+                let hits = this.with(|g| g.pick_all_objects(sx, sy, opts))?;
+                let table = lua.create_table()?;
+                for (index, hit) in hits.iter().enumerate() {
+                    table.set(index + 1, object_hit_table(lua, hit)?)?;
+                }
+                Ok(table)
             },
         );
         // -- pickSurface --
@@ -1099,6 +1551,82 @@ impl LuaUserData for LuaGlobe {
                 }
             })
         });
+        // -- addOrbit --
+        /// Adds or replaces one named orbit shell above the globe surface.
+        /// @param | orbit_tbl | table | Orbit table with `name`, optional `altitude_px`, optional `kind`, and optional render or pick flags.
+        /// @return | boolean | True when the orbit definition was accepted.
+        methods.add_method_mut("addOrbit", |_, this, orbit_tbl: LuaTable| {
+            let orbit = parse_orbit_table(orbit_tbl, "addOrbit")?;
+            this.with_mut(|g| {
+                g.add_orbit(orbit)
+                    .map(|_| true)
+                    .map_err(|err| LuaError::RuntimeError(format!("lurek.globe.addOrbit: {err}")))
+            })?
+        });
+        // -- removeOrbit --
+        /// Removes one named orbit shell and moves any markers on it back to `surface`.
+        /// @param | name | string | Orbit shell name.
+        /// @return | boolean | True when the orbit existed and was removed.
+        methods.add_method_mut("removeOrbit", |_, this, name: String| {
+            this.with_mut(|g| g.remove_orbit(&name))
+        });
+        // -- setOrbitVisible --
+        /// Shows or hides one orbit shell and its markers.
+        /// @param | name | string | Orbit shell name.
+        /// @param | visible | boolean | New visibility flag.
+        /// @return | boolean | True when the orbit exists.
+        methods.add_method_mut(
+            "setOrbitVisible",
+            |_, this, (name, visible): (String, bool)| {
+                this.with_mut(|g| g.orbits.set_visible(&name, visible))
+            },
+        );
+        // -- setOrbitAttr --
+        /// Sets one string attribute on an orbit shell.
+        /// @param | name | string | Orbit shell name.
+        /// @param | key | string | Attribute key.
+        /// @param | value | string | Attribute value.
+        /// @return | boolean | True when the orbit exists.
+        methods.add_method_mut(
+            "setOrbitAttr",
+            |_, this, (name, key, value): (String, String, String)| {
+                this.with_mut(|g| g.orbits.set_attr(&name, key, value))
+            },
+        );
+        // -- getOrbitAttr --
+        /// Reads one string attribute from an orbit shell.
+        /// @param | name | string | Orbit shell name.
+        /// @param | key | string | Attribute key.
+        /// @return | string | Attribute value, or nil when missing.
+        methods.add_method("getOrbitAttr", |_, this, (name, key): (String, String)| {
+            this.with(|g| {
+                g.orbits
+                    .get_attr(&name, &key)
+                    .map(|value| value.to_string())
+            })
+        });
+        // -- getOrbitNames --
+        /// Returns orbit shell names sorted by z-order and altitude.
+        /// @return | string[] | Array table of orbit names.
+        methods.add_method("getOrbitNames", |lua, this, ()| {
+            let names = this.with(|g| g.orbits.names_sorted())?;
+            let table = lua.create_table()?;
+            for (index, name) in names.iter().enumerate() {
+                table.set(index + 1, name.clone())?;
+            }
+            Ok(table)
+        });
+        // -- getOrbit --
+        /// Returns a snapshot table for one orbit shell.
+        /// @param | name | string | Orbit shell name.
+        /// @return | table | Orbit snapshot table, or nil when missing.
+        methods.add_method("getOrbit", |lua, this, name: String| {
+            let orbit = this.with(|g| g.orbits.get(&name).cloned())?;
+            match orbit {
+                Some(orbit) => Ok(Some(orbit_snapshot_table(lua, &orbit, this.state.clone())?)),
+                None => Ok(None),
+            }
+        });
         // -- addMarker --
         /// Adds a marker at latitude and longitude with an optional label.
         /// @param | mtype | string | Marker type name.
@@ -1116,6 +1644,44 @@ impl LuaUserData for LuaGlobe {
                 })
             },
         );
+        // -- addMarkerEx --
+        /// Adds a marker on one named orbit shell using a table-based configuration.
+        /// @param | marker_tbl | table | Marker table with `type`, `lat`, `lon`, optional `orbit`, optional `altitude_px`, optional style fields, and optional `attrs`.
+        /// @return | integer | New marker id.
+        methods.add_method_mut("addMarkerEx", |_, this, marker_tbl: LuaTable| {
+            let marker = parse_marker_ex_table(marker_tbl)?;
+            let ParsedMarkerInput {
+                marker_type,
+                lat_deg,
+                lon_deg,
+                orbit,
+                altitude_px,
+                label,
+                visible,
+                style,
+                attrs,
+            } = marker;
+            this.with_mut(|g| {
+                let id = g
+                    .add_marker_placed(MarkerPlacement::orbit(
+                        marker_type,
+                        lat_deg,
+                        lon_deg,
+                        orbit,
+                        altitude_px,
+                        label,
+                        style,
+                    ))
+                    .map_err(|err| {
+                        LuaError::RuntimeError(format!("lurek.globe.addMarkerEx: {err}"))
+                    })?;
+                if let Some(stored) = g.markers.get_mut(id) {
+                    stored.visible = visible;
+                    stored.attrs = attrs;
+                }
+                Ok(id)
+            })?
+        });
         // -- removeMarker --
         /// Removes a marker by id. This method is available to Lua scripts.
         /// @param | id | integer | Marker id.
@@ -1195,6 +1761,56 @@ impl LuaUserData for LuaGlobe {
         /// @return | string | Attribute string, or nil when missing.
         methods.add_method("getMarkerAttr", |_, this, (id, key): (u32, String)| {
             this.with(|g| g.markers.get_attr(id, &key).map(|s| s.to_owned()))
+        });
+        // -- setMarkerOrbit --
+        /// Reassigns a marker to one named orbit shell.
+        /// @param | id | integer | Marker id.
+        /// @param | orbit | string | Orbit shell name.
+        /// @return | boolean | True when the marker exists and the orbit accepts markers.
+        methods.add_method_mut("setMarkerOrbit", |_, this, (id, orbit): (u32, String)| {
+            this.with_mut(|g| g.set_marker_orbit(id, &orbit))
+        });
+        // -- setMarkerAltitude --
+        /// Sets or clears a marker-specific shell offset above its assigned orbit.
+        /// @param | id | integer | Marker id.
+        /// @param | altitude_px | number? | Non-negative offset in render units, or nil to clear.
+        /// @return | boolean | True when the marker exists.
+        methods.add_method_mut(
+            "setMarkerAltitude",
+            |_, this, (id, altitude_px): (u32, Option<f32>)| {
+                let altitude_px = match altitude_px {
+                    Some(value) => {
+                        let value = finite_f32(value, "setMarkerAltitude altitude_px")?;
+                        if value < 0.0 {
+                            return Err(LuaError::RuntimeError(
+                                "lurek.globe.setMarkerAltitude: altitude_px must be >= 0"
+                                    .to_string(),
+                            ));
+                        }
+                        Some(value)
+                    }
+                    None => None,
+                };
+                this.with_mut(|g| g.set_marker_altitude(id, altitude_px))
+            },
+        );
+        // -- getMarkerOrbit --
+        /// Returns the named orbit shell assigned to one marker.
+        /// @param | id | integer | Marker id.
+        /// @return | string | Orbit shell name, or nil when the marker is missing.
+        methods.add_method("getMarkerOrbit", |_, this, id: u32| {
+            this.with(|g| g.markers.get(id).map(|marker| marker.orbit.clone()))
+        });
+        // -- getMarkerInfo --
+        /// Returns a snapshot table describing one marker.
+        /// @param | id | integer | Marker id.
+        /// @return | table | Marker snapshot table, or nil when missing.
+        methods.add_method("getMarkerInfo", |lua, this, id: u32| {
+            let marker = this.with(|g| g.markers.get(id).cloned())?;
+            match marker {
+                Some(marker) => Ok(Some(marker_info_table(lua, &marker)?)),
+                None => Ok(None),
+            }
         });
         // -- setMarkerColor --
         /// Sets the RGBA tint color used to render a marker.
@@ -1419,6 +2035,42 @@ impl LuaUserData for LuaGlobe {
         methods.add_method_mut("setBorders", |_, this, show: bool| {
             this.with_mut(|g| g.spec.render_borders = show)
         });
+        // -- setOrbitShader --
+        /// Binds a `mapviz` shader to one orbit shell and restores the globe shader outside that shell scope.
+        /// @param | orbit | string | Orbit shell name.
+        /// @param | shader | LShader | Shader created with `lurek.render.newShader(code, { target = "mapviz" })`.
+        /// @return | boolean | True when the orbit exists.
+        methods.add_method_mut(
+            "setOrbitShader",
+            |_, this, (orbit, shader_ud): (String, LuaAnyUserData)| {
+                let key = shader_key_from_userdata(&shader_ud)?;
+                let st = this.state.borrow();
+                ensure_shader_target(&st, key, ShaderTarget::MapViz, "LGlobe:setOrbitShader")?;
+                drop(st);
+                this.with_mut(|g| {
+                    if let Some(orbit_def) = g.orbits.get_mut(&orbit) {
+                        orbit_def.shader = Some(key);
+                        true
+                    } else {
+                        false
+                    }
+                })
+            },
+        );
+        // -- clearOrbitShader --
+        /// Clears one orbit shell shader without affecting the globe-wide shader.
+        /// @param | orbit | string | Orbit shell name.
+        /// @return | boolean | True when the orbit exists.
+        methods.add_method_mut("clearOrbitShader", |_, this, orbit: String| {
+            this.with_mut(|g| {
+                if let Some(orbit_def) = g.orbits.get_mut(&orbit) {
+                    orbit_def.shader = None;
+                    true
+                } else {
+                    false
+                }
+            })
+        });
         // -- setShader --
         /// Binds a mapviz-target shader to this globe's generated render commands. Pass nil to clear.
         /// @param | shader | LShader? | Shader created with `lurek.render.newShader(code, { target = "mapviz" })`, or nil to clear.
@@ -1463,13 +2115,7 @@ impl LuaUserData for LuaGlobe {
             let cmds = this.with_mut(|g| {
                 g.camera.screen_cx = screen_cx;
                 g.camera.screen_cy = screen_cy;
-                let shader = g.shader;
-                let mut cmds = g.emit_frame(default_font);
-                if let Some(shader) = shader {
-                    cmds.insert(0, crate::render::RenderCommand::SetShader(Some(shader)));
-                    cmds.push(crate::render::RenderCommand::SetShader(None));
-                }
-                cmds
+                g.emit_frame(default_font)
             })?;
             let mut st = this.state.borrow_mut();
             let previous_shader = st.active_shader;
@@ -1683,12 +2329,13 @@ impl LuaUserData for LuaGlobeRegistry {
         methods.add_method_mut(
             "new",
             |_, this, (name, spec_tbl): (String, Option<LuaTable>)| {
-                let spec = parse_globe_spec(spec_tbl);
+                let config = parse_globe_config(spec_tbl, "new")?;
                 {
                     let mut guard = this.reg.lock().map_err(|e| {
                         mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))
                     })?;
-                    guard.create(name.clone(), spec);
+                    let globe = guard.create(name.clone(), config.spec);
+                    apply_orbits_to_globe(globe, &config.orbits, "new")?;
                 }
                 Ok(LuaGlobe {
                     reg: this.reg.clone(),
@@ -1773,7 +2420,7 @@ fn parse_globe_spec(tbl: Option<LuaTable>) -> GlobeSpec {
         if let Ok(v) = t.get::<_, f32>("time_of_day") {
             spec.time_of_day = v.rem_euclid(24.0);
         }
-        if let Ok(v) = t.get::<_, bool>("render_borders") {
+        if let Ok(Some(v)) = t.get::<_, Option<bool>>("render_borders") {
             spec.render_borders = v;
         }
         if let Ok(v) = t.get::<_, f32>("border_width") {
@@ -1822,12 +2469,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "new",
         lua.create_function(move |_, (name, spec_tbl): (String, Option<LuaTable>)| {
-            let spec = parse_globe_spec(spec_tbl);
+            let config = parse_globe_config(spec_tbl, "new")?;
             {
                 let mut guard = new_reg.lock().map_err(|e| {
                     mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))
                 })?;
-                guard.create(name.clone(), spec);
+                let globe = guard.create(name.clone(), config.spec);
+                apply_orbits_to_globe(globe, &config.orbits, "new")?;
             }
             Ok(LuaGlobe {
                 reg: new_reg.clone(),
@@ -1890,14 +2538,15 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "loadFromTOMLFile",
         lua.create_function(
             move |_, (name, path, spec_tbl): (String, String, Option<LuaTable>)| {
-                let spec = parse_globe_spec(spec_tbl);
+                let config = parse_globe_config(spec_tbl, "loadFromTOMLFile")?;
                 let provinces =
                     loader::load_from_toml_file(&path).map_err(mlua::Error::RuntimeError)?;
                 {
                     let mut guard = load_toml_file_reg.lock().map_err(|e| {
                         mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))
                     })?;
-                    let globe = guard.create(name.clone(), spec);
+                    let globe = guard.create(name.clone(), config.spec);
+                    apply_orbits_to_globe(globe, &config.orbits, "loadFromTOMLFile")?;
                     for p in provinces {
                         globe.add_province(p).map_err(|e| {
                             mlua::Error::RuntimeError(format!("lurek.globe.loadFromTOMLFile: {e}"))
@@ -1925,14 +2574,15 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "loadFromTOML",
         lua.create_function(
             move |_, (name, toml_src, spec_tbl): (String, String, Option<LuaTable>)| {
-                let spec = parse_globe_spec(spec_tbl);
+                let config = parse_globe_config(spec_tbl, "loadFromTOML")?;
                 let provinces =
                     loader::load_from_toml_str(&toml_src).map_err(mlua::Error::RuntimeError)?;
                 {
                     let mut guard = load_toml_reg.lock().map_err(|e| {
                         mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))
                     })?;
-                    let globe = guard.create(name.clone(), spec);
+                    let globe = guard.create(name.clone(), config.spec);
+                    apply_orbits_to_globe(globe, &config.orbits, "loadFromTOML")?;
                     for p in provinces {
                         globe.add_province(p).map_err(|e| {
                             mlua::Error::RuntimeError(format!("lurek.globe.loadFromTOML: {e}"))
@@ -1960,14 +2610,15 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "loadFromPNG",
         lua.create_function(
             move |_, (name, png_path, spec_tbl): (String, String, Option<LuaTable>)| {
-                let spec = parse_globe_spec(spec_tbl);
+                let config = parse_globe_config(spec_tbl, "loadFromPNG")?;
                 let provinces =
                     loader::load_from_png_file(&png_path).map_err(mlua::Error::RuntimeError)?;
                 {
                     let mut guard = load_png_reg.lock().map_err(|e| {
                         mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))
                     })?;
-                    let globe = guard.create(name.clone(), spec);
+                    let globe = guard.create(name.clone(), config.spec);
+                    apply_orbits_to_globe(globe, &config.orbits, "loadFromPNG")?;
                     for p in provinces {
                         globe.add_province(p).map_err(|e| {
                             mlua::Error::RuntimeError(format!("lurek.globe.loadFromPNG: {e}"))
@@ -1994,7 +2645,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "generateVoronoi",
         lua.create_function(
             move |_, (name, seeds_tbl, spec_tbl): (String, LuaTable, Option<LuaTable>)| {
-                let spec = parse_globe_spec(spec_tbl);
+                let config = parse_globe_config(spec_tbl, "generateVoronoi")?;
                 let mut seeds = Vec::new();
                 for item in seeds_tbl.sequence_values::<LuaTable>() {
                     let p = item?;
@@ -2007,7 +2658,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                     let mut guard = generate_voronoi_reg.lock().map_err(|e| {
                         mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))
                     })?;
-                    let globe = guard.create(name.clone(), spec);
+                    let globe = guard.create(name.clone(), config.spec);
+                    apply_orbits_to_globe(globe, &config.orbits, "generateVoronoi")?;
                     for p in provinces {
                         globe.add_province(p).map_err(|e| {
                             mlua::Error::RuntimeError(format!("lurek.globe.generateVoronoi: {e}"))

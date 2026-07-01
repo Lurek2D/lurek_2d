@@ -378,8 +378,8 @@ mod lighting_tests {
 
 mod projection_tests {
     use lurek2d::globe::projection::{
-        build_view_matrix, normalize_v3, project_point, project_point_with_z, project_province,
-        screen_delta_to_pan, OrbitCamera,
+        build_view_matrix, normalize_v3, project_point, project_point_on_shell,
+        project_point_with_z, project_province, screen_delta_to_pan, OrbitCamera,
     };
     use lurek2d::globe::types::{GlobeSpec, LodTier, Province, RegionId};
     use lurek2d::math::Vec3;
@@ -531,6 +531,41 @@ mod projection_tests {
             assert!(v.x > 0.0 && v.x < 1280.0);
             assert!(v.y > 0.0 && v.y < 720.0);
         }
+    }
+
+    #[test]
+    fn project_point_on_shell_increases_screen_radius_for_higher_orbits() {
+        let mut spec = default_spec();
+        spec.axial_tilt_deg = 0.0;
+        let mut cam = default_camera();
+        cam.lat_deg = 0.0;
+        cam.lon_deg = 0.0;
+        let view = build_view_matrix(&spec, &cam);
+        let base = project_point_on_shell(
+            0.0,
+            45.0,
+            &view,
+            spec.radius,
+            cam.zoom,
+            cam.screen_cx,
+            cam.screen_cy,
+        )
+        .expect("surface point should project")
+        .0;
+        let higher = project_point_on_shell(
+            0.0,
+            45.0,
+            &view,
+            spec.radius + 20.0,
+            cam.zoom,
+            cam.screen_cx,
+            cam.screen_cy,
+        )
+        .expect("orbit shell point should project")
+        .0;
+        let base_dist = (base.x - cam.screen_cx).abs();
+        let higher_dist = (higher.x - cam.screen_cx).abs();
+        assert!(higher_dist > base_dist);
     }
 
     // project_province
@@ -858,10 +893,15 @@ mod topology_tests {
 mod registry_and_picking_tests {
     use lurek2d::globe::export::export_regions_to_obj;
     use lurek2d::globe::loader::{load_from_province_grid, load_from_toml_str};
-    use lurek2d::globe::picking::{point_in_geo_polygon, point_in_geo_region, screen_to_surface};
+    use lurek2d::globe::marker::MarkerPlacement;
+    use lurek2d::globe::picking::{
+        point_in_geo_polygon, point_in_geo_region, screen_to_shell, screen_to_surface,
+    };
     use lurek2d::globe::projection::{project_region, OrbitCamera};
     use lurek2d::globe::registry::Globe;
-    use lurek2d::globe::types::{GlobeSpec, MarkerStyle, Region, RegionId, RegionPart};
+    use lurek2d::globe::types::{
+        GlobeOrbit, GlobeOrbitKind, GlobeSpec, MarkerStyle, Region, RegionId, RegionPart,
+    };
     use lurek2d::image::ImageData;
     use lurek2d::province::ProvinceGrid;
     use lurek2d::render::renderer::RenderCommand;
@@ -876,6 +916,18 @@ mod registry_and_picking_tests {
         )
     }
 
+    fn make_orbit(name: &str, altitude_px: f32) -> GlobeOrbit {
+        let mut orbit = GlobeOrbit::surface();
+        orbit.name = name.to_string();
+        orbit.altitude_px = altitude_px;
+        orbit.z_order = altitude_px as i32;
+        orbit.kind = GlobeOrbitKind::Orbit;
+        orbit.draw_shell = true;
+        orbit.width_px = 2.0;
+        orbit.color = [0.3, 0.6, 1.0, 0.25];
+        orbit
+    }
+
     #[test]
     fn screen_to_surface_center_maps_to_front_hemisphere() {
         let spec = GlobeSpec::default();
@@ -887,6 +939,27 @@ mod registry_and_picking_tests {
         assert!((-90.0..=90.0).contains(&hit.lat_deg));
         assert!((-180.0..=180.0).contains(&hit.lon_deg));
         assert!(hit.depth > 0.0);
+    }
+
+    #[test]
+    fn screen_to_shell_maps_centre_on_elevated_orbits() {
+        let mut spec = GlobeSpec::default();
+        spec.axial_tilt_deg = 0.0;
+        let mut camera = lurek2d::globe::projection::OrbitCamera::default();
+        camera.lat_deg = 0.0;
+        camera.lon_deg = 0.0;
+        let hit = screen_to_shell(
+            camera.screen_cx,
+            camera.screen_cy,
+            &spec,
+            &camera,
+            spec.radius + 20.0,
+            20.0,
+        )
+        .expect("screen centre should hit the orbit shell");
+        assert!(hit.altitude_px > 0.0);
+        assert!(hit.lat_deg.abs() < 0.01);
+        assert!((hit.lon_deg - 90.0).abs() < 0.01);
     }
 
     #[test]
@@ -1026,6 +1099,69 @@ owner = "player"
         let b = globe.markers.add("b", 0.0, 90.0, None, Default::default());
         let distance = globe.marker_distance(a, b).expect("markers should exist");
         assert!((distance - std::f32::consts::FRAC_PI_2).abs() < 0.01);
+    }
+
+    #[test]
+    fn surface_orbit_always_exists_and_cannot_be_removed() {
+        let mut globe = Globe::new("surface", GlobeSpec::default());
+        assert!(globe.orbits.get("surface").is_some());
+        assert!(!globe.remove_orbit("surface"));
+        assert!(globe.orbits.get("surface").is_some());
+    }
+
+    #[test]
+    fn orbit_markers_can_be_picked_across_shells() {
+        let mut globe = Globe::new("orbit_markers", GlobeSpec::default());
+        globe.spec.axial_tilt_deg = 0.0;
+        globe.camera.lat_deg = 0.0;
+        globe.camera.lon_deg = 0.0;
+        globe
+            .add_orbit(make_orbit("low_orbit", 20.0))
+            .expect("orbit should be valid");
+        let marker_id = globe
+            .add_marker_placed(MarkerPlacement::orbit(
+                "satellite",
+                0.0,
+                90.0,
+                "low_orbit",
+                None,
+                Some("SAT-1".to_string()),
+                Default::default(),
+            ))
+            .expect("marker should be accepted on orbit");
+        let hit = globe.pick_marker_screen(globe.camera.screen_cx, globe.camera.screen_cy, 24.0);
+        assert_eq!(hit, Some(marker_id));
+    }
+
+    #[test]
+    fn hidden_orbit_markers_are_not_pickable() {
+        let mut globe = Globe::new("hidden_orbit", GlobeSpec::default());
+        globe.spec.axial_tilt_deg = 0.0;
+        globe.camera.lat_deg = 0.0;
+        globe.camera.lon_deg = 0.0;
+        globe
+            .add_orbit(make_orbit("high_orbit", 30.0))
+            .expect("orbit should be valid");
+        let marker_id = globe
+            .add_marker_placed(MarkerPlacement::orbit(
+                "satellite",
+                0.0,
+                90.0,
+                "high_orbit",
+                None,
+                None,
+                Default::default(),
+            ))
+            .expect("marker should be accepted on orbit");
+        assert_eq!(
+            globe.pick_marker_screen(globe.camera.screen_cx, globe.camera.screen_cy, 24.0),
+            Some(marker_id)
+        );
+        assert!(globe.orbits.set_visible("high_orbit", false));
+        assert_eq!(
+            globe.pick_marker_screen(globe.camera.screen_cx, globe.camera.screen_cy, 24.0),
+            None
+        );
     }
 
     #[test]
@@ -1199,8 +1335,11 @@ owner = "player"
 }
 
 mod sync_tests {
+    use std::collections::HashMap;
+
+    use lurek2d::globe::marker::MarkerPlacement;
     use lurek2d::globe::sync::{apply_snapshot, build_snapshot};
-    use lurek2d::globe::types::{GlobeSpec, Region, RegionId};
+    use lurek2d::globe::types::{GlobeOrbit, GlobeOrbitKind, GlobeSpec, Region, RegionId};
     use lurek2d::globe::Globe;
 
     fn make_region(id: u32, centroid: (f32, f32), verts: Vec<(f32, f32)>) -> Region {
@@ -1236,10 +1375,33 @@ mod sync_tests {
             ))
             .unwrap();
         source.fog.reveal("player", RegionId(1));
-        let marker_id =
-            source
-                .markers
-                .add("poi", 0.0, 0.0, Some("A".to_string()), Default::default());
+        source
+            .add_orbit(GlobeOrbit {
+                name: "low_orbit".to_string(),
+                altitude_px: 12.0,
+                visible: true,
+                z_order: 12,
+                kind: GlobeOrbitKind::Orbit,
+                accepts_markers: true,
+                pickable: true,
+                draw_shell: true,
+                color: [0.3, 0.6, 1.0, 0.25],
+                width_px: 2.0,
+                attrs: HashMap::new(),
+                shader: None,
+            })
+            .expect("orbit should be valid");
+        let marker_id = source
+            .add_marker_placed(MarkerPlacement::orbit(
+                "poi",
+                0.0,
+                0.0,
+                "low_orbit",
+                Some(4.0),
+                Some("A".to_string()),
+                Default::default(),
+            ))
+            .expect("marker should be accepted on orbit");
         source
             .markers
             .set_attr(marker_id, "owner".to_string(), "blue".to_string());
@@ -1270,6 +1432,21 @@ mod sync_tests {
         assert!(restored.get_province(RegionId(1)).is_some());
         assert!(restored.get_region(RegionId(200)).is_some());
         assert!(restored.fog.is_visible("player", RegionId(1)));
+        assert_eq!(
+            restored
+                .orbits
+                .get("low_orbit")
+                .map(|orbit| orbit.altitude_px),
+            Some(12.0)
+        );
+        assert_eq!(
+            restored
+                .markers
+                .get(marker_id)
+                .map(|marker| (marker.orbit.as_str(), marker.altitude_px))
+                .as_ref(),
+            Some(&("low_orbit", Some(4.0)))
+        );
         assert_eq!(
             restored
                 .markers

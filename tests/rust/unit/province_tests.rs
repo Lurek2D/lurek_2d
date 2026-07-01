@@ -28,6 +28,8 @@ use lurek2d::province::{
     gpu_upload::{pack_u16_pixels_le, pack_u32_pixels_le},
 };
 use lurek2d::render::renderer::{DrawMode, RenderCommand};
+use lurek2d::runtime::resource_keys::FontKey;
+use slotmap::KeyData;
 
 fn sample_grid() -> ProvinceGrid {
     let mut img = ImageData::new(4, 2);
@@ -64,6 +66,10 @@ fn test_output_path(name: &str) -> PathBuf {
     p.push("lurek2d_province_tests");
     p.push(name);
     p
+}
+
+fn dummy_font_key() -> FontKey {
+    FontKey::from(KeyData::from_ffi(1))
 }
 
 #[test]
@@ -289,6 +295,59 @@ fn test_registry_capital_and_label_metadata_roundtrip() {
     assert!(reg.bbox_for(ProvinceId(1)).is_some());
     assert!(reg.spans_for(ProvinceId(1)).is_some());
     assert!(reg.style_for(ProvinceId(1)).is_some());
+}
+
+#[test]
+fn test_label_render_commands_follow_label_line_transform() {
+    let grid = sample_grid();
+    let mut reg = ProvinceRegistry::from_grid(&grid);
+    assert!(reg.set_visibility_state(ProvinceId(1), 2));
+    assert!(reg.set_visibility_state(ProvinceId(2), 0));
+    assert!(reg.set_label_text(ProvinceId(1), "Nordland".to_string()));
+    assert!(reg.set_label_line(ProvinceId(1), 0.0, 0.5, 8.0, 0.5));
+
+    let commands = generate_render_commands(
+        &reg,
+        &ProvinceRenderOptions {
+            draw_fills: false,
+            draw_borders: false,
+            draw_labels: true,
+            draw_capitals: false,
+            draw_roads: false,
+            pixel_size: 8.0,
+            ..ProvinceRenderOptions::default()
+        },
+        Some(dummy_font_key()),
+    );
+
+    let label_commands: Vec<_> = commands
+        .iter()
+        .filter_map(|cmd| match cmd {
+            RenderCommand::PrintTransformed {
+                text,
+                rotation,
+                sx,
+                sy,
+                ..
+            } if text == "Nordland" => Some((*rotation, *sx, *sy)),
+            _ => None,
+        })
+        .collect();
+
+    assert_eq!(
+        label_commands.len(),
+        2,
+        "shadow + foreground label expected"
+    );
+    assert!(!commands.iter().any(|cmd| {
+        matches!(
+            cmd,
+            RenderCommand::Print { text, .. } if text == "Nordland"
+        )
+    }));
+    assert!(label_commands.iter().all(|(rotation, sx, sy)| {
+        rotation.abs() < 0.001 && *sx > 0.0 && (*sx - *sy).abs() < 0.001
+    }));
 }
 
 #[test]

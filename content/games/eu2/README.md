@@ -9,6 +9,11 @@ state to feel like a small grand strategy sandbox: semi-historical countries,
 time, economy, manpower, armies, map modes, province selection, and simple AI
 movement.
 
+The current build also acts as a live showcase for the newer GPU-side province
+presentation work: palette-driven borders, interior edge shading, subtle
+terrain watermarking, hover/selection highlighting, and province labels drawn
+from imported label lines.
+
 ## Run
 
 ```powershell
@@ -52,6 +57,7 @@ cargo run -- content/games/eu2
 ## Structure
 
 - `main.lua` owns the runtime loop, camera, and GPU province renderer setup.
+  It now also applies the province FX showcase defaults used by the EU2 slice.
 - `scripts/scenario.lua` defines countries, ownership rules, and starting armies.
 - `scripts/state.lua` owns campaign state, time, economy, army movement, and AI;
   it consumes province adjacency/routes without owning pathfinding internals.
@@ -73,6 +79,10 @@ Manual smoke checklist:
 - game starts without a crash,
 - pan/zoom works,
 - hover and select province work,
-- `Space`, `+/-`, `1..5`, `R`, `Tab`, `F12`, and RMB movement work,
+- `Space`, `+/-`, `1..5`, `L`, `R`, `Tab`, `F12`, and RMB movement work,
 - the base map is rendered by the GPU province path, while map-mode and ownership
-  changes refresh registry colors and border styles.
+  changes refresh registry colors and border styles,
+- province labels appear on zoomed-in views and follow the imported province
+  label lines instead of a fixed horizontal placement,
+- the province showcase FX are visible: terrain watermark, edge gradient,
+  palette-driven borders, and hover/selection emphasis.

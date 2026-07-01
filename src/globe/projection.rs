@@ -78,6 +78,25 @@ pub fn build_view_matrix(spec: &GlobeSpec, camera: &OrbitCamera) -> Mat3x3 {
     let cam_lat = rot_x(camera.lat_deg);
     cam_lat.mul_mat(&cam_lon.mul_mat(&tilt.mul_mat(&planet_spin)))
 }
+/// Project a point on one concentric shell and return screen-space coordinates plus camera depth.
+pub fn project_point_on_shell(
+    lat_deg: f32,
+    lon_deg: f32,
+    view: &Mat3x3,
+    shell_radius: f32,
+    zoom: f32,
+    cx: f32,
+    cy: f32,
+) -> Option<(Vec2, f32)> {
+    let world = lat_lon_to_unit(lat_deg, lon_deg);
+    let cam = view.mul_vec(world);
+    if cam.z <= 0.0 {
+        return None;
+    }
+    let r = shell_radius * zoom;
+    let screen = Vec2::new(cx + cam.x * r, cy - cam.y * r);
+    Some((screen, cam.z))
+}
 /// Project a globe point to screen space or return None when it is behind the camera.
 pub fn project_point(
     lat_deg: f32,
@@ -88,13 +107,7 @@ pub fn project_point(
     cx: f32,
     cy: f32,
 ) -> Option<Vec2> {
-    let world = lat_lon_to_unit(lat_deg, lon_deg);
-    let cam = view.mul_vec(world);
-    if cam.z <= 0.0 {
-        return None;
-    }
-    let r = radius * zoom;
-    Some(Vec2::new(cx + cam.x * r, cy - cam.y * r))
+    project_point_on_shell(lat_deg, lon_deg, view, radius, zoom, cx, cy).map(|(screen, _)| screen)
 }
 /// Project a region polygon into screen space or return None when any vertex is hidden.
 pub fn project_region(
@@ -177,14 +190,15 @@ pub fn project_point_with_z(
     spec: &GlobeSpec,
     camera: &OrbitCamera,
 ) -> Option<(Vec2, f32)> {
-    let r = spec.radius * camera.zoom;
-    let world = lat_lon_to_unit(lat_deg, lon_deg);
-    let cam = view.mul_vec(world);
-    if cam.z <= 0.0 {
-        return None;
-    }
-    let screen = Vec2::new(camera.screen_cx + cam.x * r, camera.screen_cy - cam.y * r);
-    Some((screen, cam.z))
+    project_point_on_shell(
+        lat_deg,
+        lon_deg,
+        view,
+        spec.radius,
+        camera.zoom,
+        camera.screen_cx,
+        camera.screen_cy,
+    )
 }
 /// Convert a screen-space drag delta into latitude and longitude pan deltas.
 pub fn screen_delta_to_pan(dx: f32, dy: f32, spec: &GlobeSpec, camera: &OrbitCamera) -> (f32, f32) {

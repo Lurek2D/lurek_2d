@@ -71642,6 +71642,60 @@
           "objectType": "LGlobe"
         },
         {
+          "name": "screenToOrbitLatLon",
+          "fullPath": "LGlobe:screenToOrbitLatLon",
+          "signature": "(sx, sy, orbit)",
+          "description": "Converts a visible screen position into latitude and longitude on one named visible pickable orbit shell.",
+          "parameters": [
+            {
+              "name": "sx",
+              "type": "number",
+              "description": "Screen x coordinate.",
+              "optional": false
+            },
+            {
+              "name": "sy",
+              "type": "number",
+              "description": "Screen y coordinate.",
+              "optional": false
+            },
+            {
+              "name": "orbit",
+              "type": "string",
+              "description": "Orbit shell name.",
+              "optional": false
+            }
+          ],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "screenToShells",
+          "fullPath": "LGlobe:screenToShells",
+          "signature": "(sx, sy)",
+          "description": "Resolves shell hits for every visible pickable orbit at one screen-space position.",
+          "parameters": [
+            {
+              "name": "sx",
+              "type": "number",
+              "description": "Screen x coordinate.",
+              "optional": false
+            },
+            {
+              "name": "sy",
+              "type": "number",
+              "description": "Screen y coordinate.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
           "name": "pickRaycast",
           "fullPath": "LGlobe:pickRaycast",
           "signature": "(sx, sy, [steps])",
@@ -71770,6 +71824,66 @@
           ],
           "returns": "integer",
           "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "pickObject",
+          "fullPath": "LGlobe:pickObject",
+          "signature": "(sx, sy, [opts_tbl])",
+          "description": "Resolves the highest-priority shell-aware hit at one screen position.",
+          "parameters": [
+            {
+              "name": "sx",
+              "type": "number",
+              "description": "Screen x coordinate.",
+              "optional": false
+            },
+            {
+              "name": "sy",
+              "type": "number",
+              "description": "Screen y coordinate.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional pick settings with `marker_radius`, `include_surface`, `include_regions`, `include_markers`, `include_orbits`, and `order`.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "pickAllObjects",
+          "fullPath": "LGlobe:pickAllObjects",
+          "signature": "(sx, sy, [opts_tbl])",
+          "description": "Resolves all shell-aware hits at one screen position using the supplied ordering policy.",
+          "parameters": [
+            {
+              "name": "sx",
+              "type": "number",
+              "description": "Screen x coordinate.",
+              "optional": false
+            },
+            {
+              "name": "sy",
+              "type": "number",
+              "description": "Screen y coordinate.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional pick settings with `marker_radius`, `include_surface`, `include_regions`, `include_markers`, `include_orbits`, and `order`.",
+              "optional": true
+            }
+          ],
+          "returns": "table[]",
+          "returnType": "table[]",
           "isMethod": true,
           "objectType": "LGlobe"
         },
@@ -72008,6 +72122,149 @@
           "objectType": "LGlobe"
         },
         {
+          "name": "addOrbit",
+          "fullPath": "LGlobe:addOrbit",
+          "signature": "(orbit_tbl)",
+          "description": "Adds or replaces one named orbit shell above the globe surface.",
+          "parameters": [
+            {
+              "name": "orbit_tbl",
+              "type": "table",
+              "description": "Orbit table with `name`, optional `altitude_px`, optional `kind`, and optional render or pick flags.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "removeOrbit",
+          "fullPath": "LGlobe:removeOrbit",
+          "signature": "(name)",
+          "description": "Removes one named orbit shell and moves any markers on it back to `surface`.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Orbit shell name.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "setOrbitVisible",
+          "fullPath": "LGlobe:setOrbitVisible",
+          "signature": "(name, visible)",
+          "description": "Shows or hides one orbit shell and its markers.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Orbit shell name.",
+              "optional": false
+            },
+            {
+              "name": "visible",
+              "type": "boolean",
+              "description": "New visibility flag.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "setOrbitAttr",
+          "fullPath": "LGlobe:setOrbitAttr",
+          "signature": "(name, key, value)",
+          "description": "Sets one string attribute on an orbit shell.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Orbit shell name.",
+              "optional": false
+            },
+            {
+              "name": "key",
+              "type": "string",
+              "description": "Attribute key.",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "string",
+              "description": "Attribute value.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "getOrbitAttr",
+          "fullPath": "LGlobe:getOrbitAttr",
+          "signature": "(name, key)",
+          "description": "Reads one string attribute from an orbit shell.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Orbit shell name.",
+              "optional": false
+            },
+            {
+              "name": "key",
+              "type": "string",
+              "description": "Attribute key.",
+              "optional": false
+            }
+          ],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "getOrbitNames",
+          "fullPath": "LGlobe:getOrbitNames",
+          "signature": "()",
+          "description": "Returns orbit shell names sorted by z-order and altitude.",
+          "parameters": [],
+          "returns": "string[]",
+          "returnType": "string[]",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "getOrbit",
+          "fullPath": "LGlobe:getOrbit",
+          "signature": "(name)",
+          "description": "Returns a snapshot table for one orbit shell.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Orbit shell name.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
           "name": "addMarker",
           "fullPath": "LGlobe:addMarker",
           "signature": "(mtype, lat, lon, [label])",
@@ -72036,6 +72293,24 @@
               "type": "string",
               "description": "Marker label.",
               "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "addMarkerEx",
+          "fullPath": "LGlobe:addMarkerEx",
+          "signature": "(marker_tbl)",
+          "description": "Adds a marker on one named orbit shell using a table-based configuration.",
+          "parameters": [
+            {
+              "name": "marker_tbl",
+              "type": "table",
+              "description": "Marker table with `type`, `lat`, `lon`, optional `orbit`, optional `altitude_px`, optional style fields, and optional `attrs`.",
+              "optional": false
             }
           ],
           "returns": "integer",
@@ -72220,6 +72495,90 @@
           ],
           "returns": "string",
           "returnType": "string",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "setMarkerOrbit",
+          "fullPath": "LGlobe:setMarkerOrbit",
+          "signature": "(id, orbit)",
+          "description": "Reassigns a marker to one named orbit shell.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Marker id.",
+              "optional": false
+            },
+            {
+              "name": "orbit",
+              "type": "string",
+              "description": "Orbit shell name.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "setMarkerAltitude",
+          "fullPath": "LGlobe:setMarkerAltitude",
+          "signature": "(id, [altitude_px])",
+          "description": "Sets or clears a marker-specific shell offset above its assigned orbit.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Marker id.",
+              "optional": false
+            },
+            {
+              "name": "altitude_px",
+              "type": "number",
+              "description": "Non-negative offset in render units, or nil to clear.",
+              "optional": true
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "getMarkerOrbit",
+          "fullPath": "LGlobe:getMarkerOrbit",
+          "signature": "(id)",
+          "description": "Returns the named orbit shell assigned to one marker.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Marker id.",
+              "optional": false
+            }
+          ],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "getMarkerInfo",
+          "fullPath": "LGlobe:getMarkerInfo",
+          "signature": "(id)",
+          "description": "Returns a snapshot table describing one marker.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Marker id.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LGlobe"
         },
@@ -72699,6 +73058,48 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "setOrbitShader",
+          "fullPath": "LGlobe:setOrbitShader",
+          "signature": "(orbit, shader_ud)",
+          "description": "Binds a `mapviz` shader to one orbit shell and restores the globe shader outside that shell scope.",
+          "parameters": [
+            {
+              "name": "orbit",
+              "type": "string",
+              "description": "Orbit shell name.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"mapviz\" })`.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "clearOrbitShader",
+          "fullPath": "LGlobe:clearOrbitShader",
+          "signature": "(orbit)",
+          "description": "Clears one orbit shell shader without affecting the globe-wide shader.",
+          "parameters": [
+            {
+              "name": "orbit",
+              "type": "string",
+              "description": "Orbit shell name.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LGlobe"
         },

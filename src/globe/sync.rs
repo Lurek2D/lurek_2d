@@ -8,10 +8,12 @@ use crate::globe::fog::FogStore;
 use crate::globe::label::LabelStore;
 use crate::globe::layer::LayerStore;
 use crate::globe::marker::MarkerStore;
+use crate::globe::orbit::OrbitStore;
 use crate::globe::projection::OrbitCamera;
 use crate::globe::registry::Globe;
 use crate::globe::topology::RegionGraph;
 use crate::globe::types::{Arc as GlobeArc, GlobeSpec, HeatLayer, Region, RegionId};
+use crate::runtime::resource_keys::ShaderKey;
 use std::collections::{HashMap, HashSet};
 use std::sync::mpsc::{channel, Receiver, Sender};
 /// Serializable globe state used for snapshot transfer.
@@ -33,6 +35,8 @@ pub struct GlobeSyncSnapshot {
     pub fog: FogStore,
     /// Marker state.
     pub markers: MarkerStore,
+    /// Orbit shell state.
+    pub orbits: OrbitStore,
     /// Label state.
     pub labels: LabelStore,
     /// Render layer state.
@@ -51,6 +55,8 @@ pub struct GlobeSyncSnapshot {
     pub reachability_cache: HashMap<String, HashMap<RegionId, f64>>,
     /// Simulation time accumulated by the globe runtime.
     pub sim_time_sec: f32,
+    /// Optional render-owned globe shader applied during frame emission.
+    pub shader: Option<ShaderKey>,
 }
 /// Channel pair used to send and receive globe snapshots.
 #[derive(Debug)]
@@ -85,6 +91,7 @@ pub fn build_snapshot(globe: &Globe) -> GlobeSyncSnapshot {
         regions: globe.regions.clone(),
         fog: globe.fog.clone(),
         markers: globe.markers.clone(),
+        orbits: globe.orbits.clone(),
         labels: globe.labels.clone(),
         layers: globe.layers.clone(),
         arcs: globe.arcs.clone(),
@@ -94,6 +101,7 @@ pub fn build_snapshot(globe: &Globe) -> GlobeSyncSnapshot {
         sectors: globe.sectors.clone(),
         reachability_cache: globe.reachability_cache.clone(),
         sim_time_sec: globe.sim_time_sec,
+        shader: globe.shader,
     }
 }
 /// Apply a snapshot to a mutable globe instance.
@@ -107,6 +115,7 @@ pub fn apply_snapshot(globe: &mut Globe, snap: &GlobeSyncSnapshot) {
     globe.regions = snap.regions.clone();
     globe.fog = snap.fog.clone();
     globe.markers = snap.markers.clone();
+    globe.orbits = snap.orbits.clone();
     globe.labels = snap.labels.clone();
     globe.layers = snap.layers.clone();
     globe.arcs = snap.arcs.clone();
@@ -116,4 +125,5 @@ pub fn apply_snapshot(globe: &mut Globe, snap: &GlobeSyncSnapshot) {
     globe.sectors = snap.sectors.clone();
     globe.reachability_cache = snap.reachability_cache.clone();
     globe.sim_time_sec = snap.sim_time_sec;
+    globe.shader = snap.shader;
 }

@@ -9,6 +9,24 @@ use crate::globe::projection::{build_view_matrix, OrbitCamera};
 use crate::globe::topology::RegionGraph;
 use crate::globe::types::{GlobeSpec, Region, RegionId};
 use crate::math::{Vec2, Vec3};
+use std::collections::HashMap;
+
+/// Shell hit resolved from a screen-space position on one visible concentric globe shell.
+#[derive(Debug, Clone)]
+pub struct ShellHit {
+    /// Screen-space pointer position used for the query.
+    pub screen_pos: (f32, f32),
+    /// Named shell altitude above the base globe surface in render units.
+    pub altitude_px: f32,
+    /// Hit latitude in degrees.
+    pub lat_deg: f32,
+    /// Hit longitude in degrees.
+    pub lon_deg: f32,
+    /// Hit world position on the unit sphere.
+    pub world_pos: Vec3,
+    /// Hit camera-space depth on the visible hemisphere.
+    pub depth: f32,
+}
 /// Surface hit resolved from a screen-space position on the front hemisphere.
 #[derive(Debug, Clone, Copy)]
 pub struct SurfaceHit {
@@ -22,6 +40,82 @@ pub struct SurfaceHit {
     pub world_pos: Vec3,
     /// Hit camera-space depth on the visible hemisphere.
     pub depth: f32,
+}
+/// Kind tag for the richer shell-aware object picker.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ObjectHitKind {
+    /// One globe marker.
+    Marker,
+    /// One orbit shell.
+    Orbit,
+    /// One province hit on the base globe surface.
+    Province,
+    /// One semantic region hit on the base globe surface.
+    Region,
+    /// A raw surface latitude-longitude hit with no higher-level owner.
+    Surface,
+}
+/// Sorting mode for the richer shell-aware object picker.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ObjectPickOrder {
+    /// Prefer markers first, then shell hits, then base surface owners.
+    MarkersFirst,
+    /// Prefer higher shells first, then nearer depths inside the same shell.
+    FrontToBack,
+}
+/// Options that control which shell-aware hits are returned.
+#[derive(Debug, Clone, Copy)]
+pub struct ObjectPickOptions {
+    /// Maximum marker hit distance in pixels before style expansion is applied.
+    pub marker_radius: f32,
+    /// Include the raw surface hit payload.
+    pub include_surface: bool,
+    /// Include semantic region hits on the base globe surface.
+    pub include_regions: bool,
+    /// Include marker hits on visible pickable shells.
+    pub include_markers: bool,
+    /// Include orbit-shell hits on visible pickable shells.
+    pub include_orbits: bool,
+    /// Sorting policy for returned hits.
+    pub order: ObjectPickOrder,
+}
+impl Default for ObjectPickOptions {
+    fn default() -> Self {
+        Self {
+            marker_radius: 12.0,
+            include_surface: true,
+            include_regions: true,
+            include_markers: true,
+            include_orbits: true,
+            order: ObjectPickOrder::MarkersFirst,
+        }
+    }
+}
+/// Richer hit payload that can describe markers, shells, provinces, regions, or the base surface.
+#[derive(Debug, Clone)]
+pub struct ObjectHit {
+    /// The category of object that was hit.
+    pub kind: ObjectHitKind,
+    /// Optional id for markers, provinces, or semantic regions.
+    pub id: Option<u32>,
+    /// Optional orbit name for shell or marker hits.
+    pub orbit: Option<String>,
+    /// Hit latitude in degrees.
+    pub lat_deg: f32,
+    /// Hit longitude in degrees.
+    pub lon_deg: f32,
+    /// Total shell altitude above the base surface in render units.
+    pub altitude_px: f32,
+    /// Screen-space x coordinate used for the query.
+    pub screen_x: f32,
+    /// Screen-space y coordinate used for the query.
+    pub screen_y: f32,
+    /// Camera-space depth for the hit.
+    pub depth: f32,
+    /// Screen-space hit distance in pixels.
+    pub distance_px: f32,
+    /// Arbitrary string attributes supplied by the hit owner.
+    pub attrs: HashMap<String, String>,
 }
 /// Region selection result returned by globe picking.
 #[derive(Debug, Clone)]
@@ -90,14 +184,16 @@ pub fn point_in_geo_region(region: &Region, lat_deg: f32, lon_deg: f32) -> bool 
     }
     point_in_geo_polygon(lat_deg, lon_deg, &region.vertices)
 }
-/// Convert a screen-space point into a front-hemisphere unit-sphere hit.
-pub fn screen_to_surface(
+/// Convert a screen-space point into a front-hemisphere hit on one named shell radius.
+pub fn screen_to_shell(
     sx: f32,
     sy: f32,
     spec: &GlobeSpec,
     camera: &OrbitCamera,
-) -> Option<SurfaceHit> {
-    let radius = (spec.radius * camera.zoom).max(1.0);
+    shell_radius: f32,
+    altitude_px: f32,
+) -> Option<ShellHit> {
+    let radius = (shell_radius * camera.zoom).max(1.0);
     let nx = (sx - camera.screen_cx) / radius;
     let ny = (camera.screen_cy - sy) / radius;
     let rr = nx * nx + ny * ny;
@@ -109,12 +205,29 @@ pub fn screen_to_surface(
     let view = build_view_matrix(spec, camera);
     let world = view.transpose().mul_vec(cam_pos);
     let (lat_deg, lon_deg) = unit_to_lat_lon(world);
-    Some(SurfaceHit {
+    Some(ShellHit {
         screen_pos: (sx, sy),
+        altitude_px,
         lat_deg,
         lon_deg,
         world_pos: world,
         depth: nz,
+    })
+}
+/// Convert a screen-space point into a front-hemisphere unit-sphere hit.
+pub fn screen_to_surface(
+    sx: f32,
+    sy: f32,
+    spec: &GlobeSpec,
+    camera: &OrbitCamera,
+) -> Option<SurfaceHit> {
+    let shell = screen_to_shell(sx, sy, spec, camera, spec.radius, 0.0)?;
+    Some(SurfaceHit {
+        screen_pos: shell.screen_pos,
+        lat_deg: shell.lat_deg,
+        lon_deg: shell.lon_deg,
+        world_pos: shell.world_pos,
+        depth: shell.depth,
     })
 }
 /// Pick the topmost region under a screen-space point or return None when no region matches.

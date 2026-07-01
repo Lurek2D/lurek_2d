@@ -10,13 +10,19 @@ use crate::globe::draw::emit_globe_frame;
 use crate::globe::fog::FogStore;
 use crate::globe::label::LabelStore;
 use crate::globe::layer::LayerStore;
-use crate::globe::marker::MarkerStore;
-use crate::globe::picking::{pick, point_in_geo_region, screen_to_surface, PickResult, SurfaceHit};
-use crate::globe::projection::{screen_delta_to_pan, OrbitCamera};
+use crate::globe::marker::{MarkerPlacement, MarkerStore};
+use crate::globe::orbit::{OrbitStore, SURFACE_ORBIT_NAME};
+use crate::globe::picking::{
+    pick, point_in_geo_region, screen_to_shell, screen_to_surface, ObjectHit, ObjectHitKind,
+    ObjectPickOptions, ObjectPickOrder, PickResult, ShellHit, SurfaceHit,
+};
+use crate::globe::projection::{
+    build_view_matrix, project_point_on_shell, screen_delta_to_pan, OrbitCamera,
+};
 use crate::globe::sphere::great_circle_distance;
 use crate::globe::topology::RegionGraph;
 use crate::globe::types::{
-    Arc as GlobeArc, GlobeError, GlobeSpec, HeatLayer, Region, RegionId, MAX_REGIONS,
+    Arc as GlobeArc, GlobeError, GlobeOrbit, GlobeSpec, HeatLayer, Region, RegionId, MAX_REGIONS,
 };
 use crate::render::renderer::RenderCommand;
 use crate::runtime::resource_keys::{FontKey, ShaderKey};
@@ -25,6 +31,63 @@ use std::collections::{HashMap, HashSet};
 #[inline]
 fn wrap_lon_delta(delta: f32) -> f32 {
     ((delta + 180.0).rem_euclid(360.0)) - 180.0
+}
+
+#[derive(Debug, Clone)]
+struct MarkerHitCandidate {
+    z_order: i32,
+    altitude_px: f32,
+    hit: ObjectHit,
+}
+
+#[derive(Debug, Clone)]
+struct OrbitHitCandidate {
+    z_order: i32,
+    altitude_px: f32,
+    hit: ObjectHit,
+}
+
+#[inline]
+fn shell_edge_distance_px(sx: f32, sy: f32, cx: f32, cy: f32, radius_px: f32) -> f32 {
+    let dx = sx - cx;
+    let dy = sy - cy;
+    ((dx * dx + dy * dy).sqrt() - radius_px).abs()
+}
+
+fn sort_marker_hits(candidates: &mut [MarkerHitCandidate], order: ObjectPickOrder) {
+    candidates.sort_by(|a, b| match order {
+        ObjectPickOrder::MarkersFirst => b
+            .z_order
+            .cmp(&a.z_order)
+            .then_with(|| b.altitude_px.total_cmp(&a.altitude_px))
+            .then_with(|| a.hit.distance_px.total_cmp(&b.hit.distance_px))
+            .then_with(|| b.hit.depth.total_cmp(&a.hit.depth))
+            .then_with(|| a.hit.id.cmp(&b.hit.id)),
+        ObjectPickOrder::FrontToBack => b
+            .altitude_px
+            .total_cmp(&a.altitude_px)
+            .then_with(|| b.hit.depth.total_cmp(&a.hit.depth))
+            .then_with(|| a.hit.distance_px.total_cmp(&b.hit.distance_px))
+            .then_with(|| a.hit.id.cmp(&b.hit.id)),
+    });
+}
+
+fn sort_orbit_hits(candidates: &mut [OrbitHitCandidate], order: ObjectPickOrder) {
+    candidates.sort_by(|a, b| match order {
+        ObjectPickOrder::MarkersFirst => b
+            .z_order
+            .cmp(&a.z_order)
+            .then_with(|| b.altitude_px.total_cmp(&a.altitude_px))
+            .then_with(|| a.hit.distance_px.total_cmp(&b.hit.distance_px))
+            .then_with(|| b.hit.depth.total_cmp(&a.hit.depth))
+            .then_with(|| a.hit.orbit.cmp(&b.hit.orbit)),
+        ObjectPickOrder::FrontToBack => b
+            .altitude_px
+            .total_cmp(&a.altitude_px)
+            .then_with(|| b.hit.depth.total_cmp(&a.hit.depth))
+            .then_with(|| a.hit.distance_px.total_cmp(&b.hit.distance_px))
+            .then_with(|| a.hit.orbit.cmp(&b.hit.orbit)),
+    });
 }
 
 /// Mutable globe state used by the renderer and sync layers.
@@ -46,6 +109,8 @@ pub struct Globe {
     pub fog: FogStore,
     /// Marker collection for the globe.
     pub markers: MarkerStore,
+    /// Named orbit shell collection used by markers, shell rendering, and shell picking.
+    pub orbits: OrbitStore,
     /// Label collection for the globe.
     pub labels: LabelStore,
     /// Overlay layer collection.
@@ -89,6 +154,69 @@ impl Globe {
             spec,
             ..Default::default()
         }
+    }
+    /// Insert or replace one named orbit shell.
+    pub fn add_orbit(&mut self, orbit: GlobeOrbit) -> Result<(), String> {
+        self.orbits.upsert(orbit)
+    }
+    /// Remove one named orbit shell and migrate any markers on it back to `surface`.
+    pub fn remove_orbit(&mut self, name: &str) -> bool {
+        if self.orbits.remove(name).is_none() {
+            return false;
+        }
+        let affected: Vec<u32> = self
+            .markers
+            .iter_sorted()
+            .into_iter()
+            .filter(|marker| marker.orbit == name)
+            .map(|marker| marker.id)
+            .collect();
+        for id in affected {
+            let _ = self.markers.set_orbit(id, SURFACE_ORBIT_NAME.to_string());
+        }
+        true
+    }
+    /// Return the shell radius before zoom for one orbit plus any optional marker-specific offset.
+    pub fn orbit_shell_radius(
+        &self,
+        orbit_name: &str,
+        marker_altitude_px: Option<f32>,
+    ) -> Option<f32> {
+        let orbit = self.orbits.get(orbit_name)?;
+        let extra = marker_altitude_px.unwrap_or(0.0).max(0.0);
+        Some(self.spec.radius + orbit.altitude_px + extra)
+    }
+    /// Add a marker on one named orbit shell after orbit validation.
+    pub fn add_marker_placed(&mut self, placement: MarkerPlacement) -> Result<u32, String> {
+        let orbit = placement.orbit.as_str();
+        let orbit_def = self
+            .orbits
+            .get(orbit)
+            .ok_or_else(|| format!("orbit '{orbit}' not found"))?;
+        if !orbit_def.accepts_markers {
+            return Err(format!("orbit '{orbit}' does not accept markers"));
+        }
+        if placement
+            .altitude_px
+            .is_some_and(|value| !value.is_finite() || value < 0.0)
+        {
+            return Err("marker altitude_px must be finite and >= 0".to_string());
+        }
+        Ok(self.markers.add_with_placement(placement))
+    }
+    /// Move one marker onto another named orbit shell and return true when both ids exist and the orbit accepts markers.
+    pub fn set_marker_orbit(&mut self, id: u32, orbit: &str) -> bool {
+        let Some(orbit_def) = self.orbits.get(orbit) else {
+            return false;
+        };
+        if !orbit_def.accepts_markers {
+            return false;
+        }
+        self.markers.set_orbit(id, orbit.to_string())
+    }
+    /// Set or clear one marker-specific shell offset and return true when the marker exists.
+    pub fn set_marker_altitude(&mut self, id: u32, altitude_px: Option<f32>) -> bool {
+        self.markers.set_altitude(id, altitude_px)
     }
     /// Insert a base terrain polygon patch or return TooManyRegions when storage is full.
     pub fn add_terrain_patch(&mut self, patch: Region) -> Result<(), GlobeError> {
@@ -226,6 +354,33 @@ impl Globe {
     pub fn screen_to_surface(&self, sx: f32, sy: f32) -> Option<SurfaceHit> {
         screen_to_surface(sx, sy, &self.spec, &self.camera)
     }
+    /// Resolve a screen-space hit on one visible pickable named orbit shell.
+    pub fn screen_to_orbit(&self, sx: f32, sy: f32, orbit_name: &str) -> Option<ShellHit> {
+        let orbit = self.orbits.get(orbit_name)?;
+        if !orbit.visible || !orbit.pickable {
+            return None;
+        }
+        screen_to_shell(
+            sx,
+            sy,
+            &self.spec,
+            &self.camera,
+            self.spec.radius + orbit.altitude_px,
+            orbit.altitude_px,
+        )
+    }
+    /// Resolve screen-space hits for every visible pickable orbit shell.
+    pub fn screen_to_shells(&self, sx: f32, sy: f32) -> Vec<(String, ShellHit)> {
+        self.orbits
+            .visible_sorted()
+            .into_iter()
+            .filter(|orbit| orbit.pickable)
+            .filter_map(|orbit| {
+                self.screen_to_orbit(sx, sy, &orbit.name)
+                    .map(|hit| (orbit.name.clone(), hit))
+            })
+            .collect()
+    }
     /// Apply a screen-space drag to the camera, anchoring to the visible surface when possible.
     pub fn apply_mouse_drag(&mut self, start_x: f32, start_y: f32, end_x: f32, end_y: f32) {
         if let (Some(start), Some(end)) = (
@@ -247,7 +402,8 @@ impl Globe {
     }
     /// Return all semantic region ids that contain the supplied surface position.
     pub fn regions_at_lat_lon(&self, lat_deg: f32, lon_deg: f32) -> Vec<RegionId> {
-        self.regions
+        let mut ids: Vec<RegionId> = self
+            .regions
             .values()
             .filter(|region| {
                 region.visible
@@ -259,7 +415,9 @@ impl Globe {
                         }))
             })
             .map(|region| region.id)
-            .collect()
+            .collect();
+        ids.sort();
+        ids
     }
     /// Return all semantic region ids that contain the supplied screen-space hit.
     pub fn pick_regions_at_screen(&self, sx: f32, sy: f32) -> Vec<RegionId> {
@@ -270,36 +428,198 @@ impl Globe {
     }
     /// Pick the nearest visible marker under a screen position within a pixel radius.
     pub fn pick_marker_screen(&self, sx: f32, sy: f32, max_distance_px: f32) -> Option<u32> {
-        let view = crate::globe::projection::build_view_matrix(&self.spec, &self.camera);
-        let max_sq = max_distance_px.max(0.0).powi(2);
-        let radius = self.spec.radius;
-        let zoom = self.camera.zoom;
-        let cx = self.camera.screen_cx;
-        let cy = self.camera.screen_cy;
-        let mut best: Option<(f32, u32)> = None;
-        for marker in self.markers.iter_visible() {
-            let Some(pos) = crate::globe::projection::project_point(
+        let mut hits = self.collect_marker_hits(
+            sx,
+            sy,
+            max_distance_px.max(0.0),
+            ObjectPickOrder::MarkersFirst,
+        );
+        sort_marker_hits(&mut hits, ObjectPickOrder::MarkersFirst);
+        hits.into_iter().find_map(|candidate| candidate.hit.id)
+    }
+    /// Pick the highest-priority shell-aware object at a screen position.
+    pub fn pick_object(&self, sx: f32, sy: f32, opts: ObjectPickOptions) -> Option<ObjectHit> {
+        self.pick_all_objects(sx, sy, opts).into_iter().next()
+    }
+    /// Pick all shell-aware objects at a screen position using the supplied ordering policy.
+    pub fn pick_all_objects(&self, sx: f32, sy: f32, opts: ObjectPickOptions) -> Vec<ObjectHit> {
+        let mut out = Vec::new();
+        if opts.include_markers {
+            let mut markers = self.collect_marker_hits(sx, sy, opts.marker_radius, opts.order);
+            sort_marker_hits(&mut markers, opts.order);
+            out.extend(markers.into_iter().map(|candidate| candidate.hit));
+        }
+        if opts.include_orbits {
+            let mut orbits = self.collect_orbit_hits(sx, sy, opts.order);
+            sort_orbit_hits(&mut orbits, opts.order);
+            out.extend(orbits.into_iter().map(|candidate| candidate.hit));
+        }
+        let Some(surface) = self.screen_to_surface(sx, sy) else {
+            return out;
+        };
+        if let Some(province) = self
+            .pick_screen(sx, sy)
+            .and_then(|pick| self.graph.get(pick.region_id))
+        {
+            out.push(ObjectHit {
+                kind: ObjectHitKind::Province,
+                id: Some(province.id.0),
+                orbit: Some(SURFACE_ORBIT_NAME.to_string()),
+                lat_deg: surface.lat_deg,
+                lon_deg: surface.lon_deg,
+                altitude_px: 0.0,
+                screen_x: sx,
+                screen_y: sy,
+                depth: surface.depth,
+                distance_px: 0.0,
+                attrs: province.attrs.clone(),
+            });
+        }
+        if opts.include_regions {
+            for region_id in self.regions_at_lat_lon(surface.lat_deg, surface.lon_deg) {
+                if let Some(region) = self.regions.get(&region_id) {
+                    out.push(ObjectHit {
+                        kind: ObjectHitKind::Region,
+                        id: Some(region_id.0),
+                        orbit: Some(SURFACE_ORBIT_NAME.to_string()),
+                        lat_deg: surface.lat_deg,
+                        lon_deg: surface.lon_deg,
+                        altitude_px: 0.0,
+                        screen_x: sx,
+                        screen_y: sy,
+                        depth: surface.depth,
+                        distance_px: 0.0,
+                        attrs: region.attrs.clone(),
+                    });
+                }
+            }
+        }
+        if opts.include_surface {
+            out.push(ObjectHit {
+                kind: ObjectHitKind::Surface,
+                id: None,
+                orbit: Some(SURFACE_ORBIT_NAME.to_string()),
+                lat_deg: surface.lat_deg,
+                lon_deg: surface.lon_deg,
+                altitude_px: 0.0,
+                screen_x: sx,
+                screen_y: sy,
+                depth: surface.depth,
+                distance_px: 0.0,
+                attrs: HashMap::new(),
+            });
+        }
+        out
+    }
+    fn collect_marker_hits(
+        &self,
+        sx: f32,
+        sy: f32,
+        marker_radius: f32,
+        order: ObjectPickOrder,
+    ) -> Vec<MarkerHitCandidate> {
+        let view = build_view_matrix(&self.spec, &self.camera);
+        let mut hits = Vec::new();
+        for marker in self.markers.iter_visible_sorted() {
+            let Some(orbit) = self.orbits.get(&marker.orbit) else {
+                continue;
+            };
+            if !orbit.visible || !orbit.pickable || !orbit.accepts_markers {
+                continue;
+            }
+            let total_altitude = orbit.altitude_px + marker.altitude_px.unwrap_or(0.0).max(0.0);
+            let shell_radius = self.spec.radius + total_altitude;
+            let Some((pos, depth)) = project_point_on_shell(
                 marker.lat_deg,
                 marker.lon_deg,
                 &view,
-                radius,
-                zoom,
-                cx,
-                cy,
+                shell_radius,
+                self.camera.zoom,
+                self.camera.screen_cx,
+                self.camera.screen_cy,
             ) else {
                 continue;
             };
             let dx = pos.x - sx;
             let dy = pos.y - sy;
-            let dist_sq = dx * dx + dy * dy;
-            if dist_sq > max_sq {
+            let distance_px = (dx * dx + dy * dy).sqrt();
+            let hit_radius = marker_radius.max(marker.style.size.max(2.0));
+            if distance_px > hit_radius {
                 continue;
             }
-            if best.as_ref().is_none_or(|(prev, _)| dist_sq < *prev) {
-                best = Some((dist_sq, marker.id));
-            }
+            hits.push(MarkerHitCandidate {
+                z_order: orbit.z_order,
+                altitude_px: total_altitude,
+                hit: ObjectHit {
+                    kind: ObjectHitKind::Marker,
+                    id: Some(marker.id),
+                    orbit: Some(orbit.name.clone()),
+                    lat_deg: marker.lat_deg,
+                    lon_deg: marker.lon_deg,
+                    altitude_px: total_altitude,
+                    screen_x: pos.x,
+                    screen_y: pos.y,
+                    depth,
+                    distance_px,
+                    attrs: marker.attrs.clone(),
+                },
+            });
         }
-        best.map(|(_, id)| id)
+        if order == ObjectPickOrder::MarkersFirst {
+            sort_marker_hits(&mut hits, order);
+        }
+        hits
+    }
+    fn collect_orbit_hits(
+        &self,
+        sx: f32,
+        sy: f32,
+        order: ObjectPickOrder,
+    ) -> Vec<OrbitHitCandidate> {
+        let mut hits = Vec::new();
+        for orbit in self.orbits.visible_sorted() {
+            if orbit.name == SURFACE_ORBIT_NAME || !orbit.pickable {
+                continue;
+            }
+            let shell_radius = self.spec.radius + orbit.altitude_px;
+            let Some(hit) = screen_to_shell(
+                sx,
+                sy,
+                &self.spec,
+                &self.camera,
+                shell_radius,
+                orbit.altitude_px,
+            ) else {
+                continue;
+            };
+            hits.push(OrbitHitCandidate {
+                z_order: orbit.z_order,
+                altitude_px: orbit.altitude_px,
+                hit: ObjectHit {
+                    kind: ObjectHitKind::Orbit,
+                    id: None,
+                    orbit: Some(orbit.name.clone()),
+                    lat_deg: hit.lat_deg,
+                    lon_deg: hit.lon_deg,
+                    altitude_px: orbit.altitude_px,
+                    screen_x: sx,
+                    screen_y: sy,
+                    depth: hit.depth,
+                    distance_px: shell_edge_distance_px(
+                        sx,
+                        sy,
+                        self.camera.screen_cx,
+                        self.camera.screen_cy,
+                        shell_radius * self.camera.zoom,
+                    ),
+                    attrs: orbit.attrs.clone(),
+                },
+            });
+        }
+        if order == ObjectPickOrder::MarkersFirst {
+            sort_orbit_hits(&mut hits, order);
+        }
+        hits
     }
     /// Return great-circle distance between two markers on the unit sphere.
     pub fn marker_distance(&self, a: u32, b: u32) -> Option<f32> {
@@ -319,6 +639,7 @@ impl Globe {
             &self.regions,
             &self.fog,
             &self.markers,
+            &self.orbits,
             &self.labels,
             &self.layers,
             &self.heat_layers,
@@ -326,6 +647,7 @@ impl Globe {
             self.active_viewer.as_deref(),
             default_font,
             self.sim_time_sec,
+            self.shader,
         )
     }
     /// Add or replace a heat layer by name.

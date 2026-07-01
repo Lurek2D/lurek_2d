@@ -86,10 +86,10 @@ local function ensure_widgets()
         lurek.ui.setDefaultTheme()
     end
     widgets = {
-        top_panel = panel(0.88),
-        side_panel = panel(0.84),
-        log_panel = panel(0.84),
-        minimap_panel = panel(0.84),
+        top_panel = panel(0.97),
+        side_panel = panel(0.92),
+        log_panel = panel(0.92),
+        minimap_panel = panel(0.92),
         title = label("Europa Universalis 2 Lite", { 0.95, 0.90, 0.78, 1 }),
         status = label("", { 0.80, 0.84, 0.88, 1 }),
         controls = label("", { 0.72, 0.76, 0.78, 1 }),
@@ -223,15 +223,18 @@ local function update_layout(state, view, hovered_gid, selected_gid)
     local mini_y = hh - MM_H - 20
 
     place(widgets.top_panel, 0, 0, ww, 54)
-    place(widgets.title, 12, 8, 360, 18, "Europa Universalis 2 Lite - playable province slice")
+    place(widgets.title, 12, 8, 420, 18, "Europa Universalis 2 Lite - GPU province showcase")
     place(widgets.status, 12, 28, 480, 18, string.format("%s   %s   Treasury:%d   Manpower:%d   Stability:%d",
         state:date_string(),
         speed_label(state),
         player and player.treasury or 0,
         player and player.manpower or 0,
         player and player.stability or 0))
-    place(widgets.controls, 520, 28, math.max(260, ww - 540), 18, "1 Political  2 Terrain  3 Economy  4 Diplomacy  5 Unrest   Space pause   RMB move   F12 debug")
-    place(widgets.mode, 520, 8, 220, 18, "Map: " .. tostring(view.map_mode) .. (view.debug_mode and " | Debug" or ""))
+    place(widgets.controls, 520, 28, math.max(260, ww - 540), 18, "1 Political  2 Terrain  3 Economy  4 Diplomacy  5 Unrest   L labels   Space pause   RMB move   F12 roads")
+    place(widgets.mode, 520, 8, 320, 18,
+        "Map: " .. tostring(view.map_mode)
+        .. " | Labels " .. (view.draw_labels and "on" or "off")
+        .. (view.debug_mode and " | Roads on" or " | Province FX"))
 
     place(widgets.side_panel, side_x, 62, 318, side_h)
     place(widgets.province_title, side_x + 12, 74, 280, 18, "Province")

@@ -36,6 +36,19 @@ describe("eu2 playable slice", function()
         assert(type(input.handle_key) == "function", "input.handle_key must exist")
     end)
 
+    it("input toggles province labels and debug roads", function()
+        local input = load_demo_module("input.lua")
+        local state = { paused = false, speed_index = 2, armies = {} }
+        local view = { draw_labels = false, debug_mode = false, map_dirty = false }
+
+        assert(input.handle_key(state, view, "l") == true, "L should toggle province labels")
+        assert(view.draw_labels == true, "province labels should enable after pressing L")
+
+        assert(input.handle_key(state, view, "f12") == true, "F12 should toggle debug roads")
+        assert(view.debug_mode == true, "debug roads should enable after pressing F12")
+        assert(view.map_dirty == true, "debug toggle should force a province map refresh")
+    end)
+
     it("map modes prepare registry colors and palette-driven borders", function()
         local map_modes = load_demo_module("map_modes.lua")
         local border_styles = {}

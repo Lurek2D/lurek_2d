@@ -9,6 +9,7 @@
 
 use crate::globe::sphere::{lat_lon_to_unit, unit_to_lat_lon};
 use crate::math::{Vec2, Vec3};
+use crate::runtime::resource_keys::ShaderKey;
 use std::collections::{HashMap, HashSet};
 /// Maximum region count supported by globe data structures.
 pub const MAX_REGIONS: usize = 8192;
@@ -351,6 +352,65 @@ impl Default for GlobeSpec {
         }
     }
 }
+/// Globe shell classification used by rendering and picking policies.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum GlobeOrbitKind {
+    /// The base globe surface shell at altitude zero.
+    Surface,
+    /// A halo-like or semi-transparent shell around the surface.
+    Atmosphere,
+    /// A general-purpose orbital marker shell.
+    Orbit,
+    /// A general-purpose effect shell.
+    Effect,
+}
+/// Globe shell definition with style, shader, and marker-placement policy.
+#[derive(Debug, Clone)]
+pub struct GlobeOrbit {
+    /// Stable shell name used by Lua APIs and marker placement.
+    pub name: String,
+    /// Extra shell distance added above `GlobeSpec.radius` before zoom is applied.
+    pub altitude_px: f32,
+    /// Visibility flag that controls shell draw and marker participation.
+    pub visible: bool,
+    /// Deterministic shell ordering key used by draw and picking policies.
+    pub z_order: i32,
+    /// Semantic shell classification.
+    pub kind: GlobeOrbitKind,
+    /// Flag that controls whether markers may be assigned to this shell.
+    pub accepts_markers: bool,
+    /// Flag that controls whether picking considers this shell and its markers.
+    pub pickable: bool,
+    /// Flag that controls whether the shell itself emits ring or fill draw commands.
+    pub draw_shell: bool,
+    /// RGBA tint used when drawing the shell.
+    pub color: [f32; 4],
+    /// Shell ring width in screen units.
+    pub width_px: f32,
+    /// Arbitrary string attributes attached to the shell.
+    pub attrs: HashMap<String, String>,
+    /// Optional `mapviz` shader applied while drawing this shell and its markers.
+    pub shader: Option<ShaderKey>,
+}
+impl GlobeOrbit {
+    /// Create the canonical base surface shell definition.
+    pub fn surface() -> Self {
+        Self {
+            name: "surface".to_string(),
+            altitude_px: 0.0,
+            visible: true,
+            z_order: 0,
+            kind: GlobeOrbitKind::Surface,
+            accepts_markers: true,
+            pickable: true,
+            draw_shell: false,
+            color: [0.0, 0.0, 0.0, 0.0],
+            width_px: 0.0,
+            attrs: HashMap::new(),
+            shader: None,
+        }
+    }
+}
 /// Globe marker with position, label, style, and custom attributes.
 #[derive(Debug, Clone)]
 pub struct Marker {
@@ -362,6 +422,10 @@ pub struct Marker {
     pub lat_deg: f32,
     /// Longitude in degrees.
     pub lon_deg: f32,
+    /// Named shell that owns this marker, defaulting to `surface`.
+    pub orbit: String,
+    /// Optional marker-specific offset above its assigned shell in render units.
+    pub altitude_px: Option<f32>,
     /// Optional marker label text.
     pub label: Option<String>,
     /// Visibility flag for rendering.

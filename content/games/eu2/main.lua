@@ -4,6 +4,19 @@ local PIXEL_SIZE = 8
 local TACTICAL_ZOOM_THRESHOLD = 0.12
 local SANITIZED_MAP_PATH = "save/eu2/map2.png"
 local START_VIEW = { map_x = 470, map_y = 95, zoom = 1.0 }
+local PROVINCE_GPU_STYLE = {
+    terrain_texture_scale = 18.0,
+    terrain_texture_strength = 0.09,
+    edge_gradient_radius = 20.0,
+    edge_gradient_strength = 0.42,
+    edge_gradient_color = { 0.11, 0.09, 0.05, 1.0 },
+    border_palette = {
+        province_color = { 0.34, 0.28, 0.16, 0.56 },
+        coast_color = { 0.90, 0.78, 0.54, 1.0 },
+        country_color = { 1.0, 0.16, 0.10, 1.0 },
+        sea_darken = 0.22,
+    },
+}
 
 local modules = {}
 local reg = nil
@@ -18,7 +31,7 @@ local view = {
     map_mode = "political",
     render_mode = "political",
     province_tints = nil,
-    draw_labels = false,
+    draw_labels = true,
     show_overlay = true,
     debug_mode = false,
     map_dirty = true,
@@ -382,13 +395,12 @@ local function render_map()
         draw_capitals = false,
         draw_roads = view.debug_mode,
         border_width = 1.0,
-        edge_gradient_radius = 18.0,
-        edge_gradient_strength = 0.345,
-        edge_gradient_color = { 0.16, 0.13, 0.08, 1.0 },
-        province_border_color = { 0.28, 0.23, 0.13, 0.5 },
-        coast_border_color = { 0.88, 0.76, 0.50, 1.0 },
-        country_border_color = { 1.0, 0.12, 0.10, 1.0 },
-        sea_border_darken = 0.20,
+        terrain_texture_scale = PROVINCE_GPU_STYLE.terrain_texture_scale,
+        terrain_texture_strength = PROVINCE_GPU_STYLE.terrain_texture_strength,
+        edge_gradient_radius = PROVINCE_GPU_STYLE.edge_gradient_radius,
+        edge_gradient_strength = PROVINCE_GPU_STYLE.edge_gradient_strength,
+        edge_gradient_color = PROVINCE_GPU_STYLE.edge_gradient_color,
+        border_palette = PROVINCE_GPU_STYLE.border_palette,
         hovered_id = view.show_overlay and view.hovered_gid or nil,
         selected_id = view.show_overlay and view.selected_gid or nil,
     })

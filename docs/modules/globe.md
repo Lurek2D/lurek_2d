@@ -2,15 +2,17 @@
 
 ## Purpose
 
-Manages spherical map registries, orbit projections, picking hit tests, and split views. - Supports layers, day-night cycles, LOD annotations, fog-of-war masks, and region routing.
+Manages spherical map registries, orbit shells, shell-aware picking hit tests, and split views. - Supports layers, multi-shell markers, day-night cycles, LOD annotations, fog-of-war masks, and region routing.
 
 ## Summary
 
 - The `globe` module is the planetary-map surface for users who want a world-scale spherical view to behave as a full gameplay and tooling system instead of a decorative background.
 - It combines region topology, spherical navigation, camera movement, picking, overlays, labels, markers, fog, lighting, and style control so the globe can serve as a strategic layer, simulation view, or inspectable data surface.
 - The module owns both interaction and presentation: users can navigate the sphere, click into it, convert screen interactions into geographic meaning, and layer game-specific information on top.
+- Orbit shells extend that surface into a stack of named concentric bands so surface markers, low-orbit markers, high-orbit effects, and shell-specific shaders can stay in one deterministic globe data model instead of becoming unrelated overlays.
 - Region adjacency and route helpers matter because many globe-driven games treat the world as a graph of territories, paths, logistics, or influence rather than as a sphere to admire.
 - Layer support keeps ownership, heatmaps, tactical overlays, visibility, and markers in one annotation surface, while lighting and atmosphere improve readability as well as mood.
+- Shell-aware markers and picking matter because globe scenes often need to distinguish between surface objects and elevated objects without giving up stable lat-lon queries, front-hemisphere culling, or deterministic CPU-owned metadata.
 - Province and world-state adapters keep the globe synchronized with larger simulation systems, and import or generation helpers make it practical across authored, procedural, and tool-facing workflows.
 - Region topology is equally central. The globe often acts as a graph of territories, travel arcs, or influence zones, so adjacency, routing, and territory-aware lookup must remain queryable rather than being flattened away into generic mesh behavior.
 - Overlay and marker support keep several kinds of information visible at once: ownership, danger, weather, heat, logistics, missions, visibility, faction presence, or educational annotation can coexist without each feature reinventing map decoration rules.
@@ -638,6 +640,74 @@ end
 
 ---
 
+#### `LGlobe:addMarkerEx`
+
+Adds a marker on one named orbit shell using a table-based configuration.
+
+```lua
+LGlobe:addMarkerEx(marker_tbl)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `marker_tbl` | table | Marker table with `type`, `lat`, `lon`, optional `orbit`, optional `altitude_px`, optional style fields, and optional `attrs`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | New marker id. |
+
+**Example**
+
+```lua
+do
+    local g = lurek.globe.new("example_globe_add_marker_ex", { axial_tilt_deg = 0.0, orbits = { { name = "surface", altitude_px = 0, kind = "surface" }, { name = "low_orbit", altitude_px = 12.0, kind = "orbit", draw_shell = true } } })
+    local id = g:addMarkerEx({ type = "satellite", lat = 0.0, lon = 90.0, orbit = "low_orbit", label = "SAT-3", size = 14.0, attrs = { owner = "blue" } })
+    local info = g:getMarkerInfo(id)
+    local picked = g:pickObject(640, 360, { marker_radius = 16.0 })
+    lurek.log.info("orbit marker = " .. tostring(id) .. " orbit = " .. tostring(info and info.orbit) .. " kind = " .. tostring(picked and picked.kind))
+end
+```
+
+---
+
+#### `LGlobe:addOrbit`
+
+Adds or replaces one named orbit shell above the globe surface.
+
+```lua
+LGlobe:addOrbit(orbit_tbl)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `orbit_tbl` | table | Orbit table with `name`, optional `altitude_px`, optional `kind`, and optional render or pick flags. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the orbit definition was accepted. |
+
+**Example**
+
+```lua
+do
+    local g = lurek.globe.new("example_globe_add_orbit", { axial_tilt_deg = 0.0 })
+    local ok = g:addOrbit({ name = "low_orbit", altitude_px = 10.0, kind = "orbit", draw_shell = true, width_px = 2.0 })
+    local orbit = g:getOrbit("low_orbit")
+    local names = g:getOrbitNames()
+    lurek.log.info("orbit added = " .. tostring(ok) .. " name = " .. tostring(orbit and orbit.name) .. " total = " .. tostring(#names))
+end
+```
+
+---
+
 #### `LGlobe:addProvince`
 
 Adds a province described by id, centroid, polygon vertices or multipart geometry, neighbors, and optional base color.
@@ -856,6 +926,45 @@ do
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     g:cacheReachability("faction_a", 1, 5.0)
     lurek.log.info("reachability cached")
+end
+```
+
+---
+
+#### `LGlobe:clearOrbitShader`
+
+Clears one orbit shell shader without affecting the globe-wide shader.
+
+```lua
+LGlobe:clearOrbitShader(orbit)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `orbit` | string | Orbit shell name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the orbit exists. |
+
+**Example**
+
+```lua
+do
+    local g = lurek.globe.new("example_globe_clear_orbit_shader", { axial_tilt_deg = 0.0, orbits = { { name = "surface", altitude_px = 0, kind = "surface" }, { name = "low_orbit", altitude_px = 12.0, kind = "orbit", draw_shell = true } } })
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb * vec3<f32>(1.0, 0.95, 1.0), color.a);
+}
+]], { target = "mapviz" })
+    g:setOrbitShader("low_orbit", shader)
+    g:clearOrbitShader("low_orbit")
+    lurek.log.info("orbit shader after clear = " .. tostring(g:getOrbit("low_orbit").shader))
 end
 ```
 
@@ -1428,6 +1537,74 @@ end
 
 ---
 
+#### `LGlobe:getMarkerInfo`
+
+Returns a snapshot table describing one marker.
+
+```lua
+LGlobe:getMarkerInfo(id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Marker id. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Marker snapshot table, or nil when missing. |
+
+**Example**
+
+```lua
+do
+    local g = lurek.globe.new("example_globe_get_marker_info", { axial_tilt_deg = 0.0, orbits = { { name = "surface", altitude_px = 0, kind = "surface" }, { name = "low_orbit", altitude_px = 12.0, kind = "orbit", draw_shell = true } } })
+    local id = g:addMarkerEx({ type = "satellite", lat = 0.0, lon = 90.0, orbit = "low_orbit", label = "SAT-4", size = 14.0, attrs = { owner = "blue" } })
+    local info = g:getMarkerInfo(id)
+    local owner = info and info.attrs and info.attrs.owner or "missing"
+    lurek.log.info("marker info orbit = " .. tostring(info and info.orbit) .. " owner = " .. tostring(owner))
+end
+```
+
+---
+
+#### `LGlobe:getMarkerOrbit`
+
+Returns the named orbit shell assigned to one marker.
+
+```lua
+LGlobe:getMarkerOrbit(id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Marker id. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Orbit shell name, or nil when the marker is missing. |
+
+**Example**
+
+```lua
+do
+    local g = lurek.globe.new("example_globe_get_marker_orbit", { axial_tilt_deg = 0.0, orbits = { { name = "surface", altitude_px = 0, kind = "surface" }, { name = "low_orbit", altitude_px = 12.0, kind = "orbit", draw_shell = true } } })
+    local id = g:addMarkerEx({ type = "satellite", lat = 0.0, lon = 90.0, orbit = "low_orbit" })
+    local orbit = g:getMarkerOrbit(id)
+    local info = g:getMarkerInfo(id)
+    lurek.log.info("marker orbit = " .. tostring(orbit) .. " label = " .. tostring(info and info.label))
+end
+```
+
+---
+
 #### `LGlobe:getName`
 
 Returns the registry name of this globe.
@@ -1489,6 +1666,103 @@ do
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}, neighbors = {2}})
     local n = g:getNeighbors(1)
     lurek.log.info("neighbors of 1: " .. #n)
+end
+```
+
+---
+
+#### `LGlobe:getOrbit`
+
+Returns a snapshot table for one orbit shell.
+
+```lua
+LGlobe:getOrbit(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Orbit shell name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Orbit snapshot table, or nil when missing. |
+
+**Example**
+
+```lua
+do
+    local g = lurek.globe.new("example_globe_get_orbit", { axial_tilt_deg = 0.0, orbits = { { name = "surface", altitude_px = 0, kind = "surface" }, { name = "high_orbit", altitude_px = 24.0, kind = "effect", draw_shell = true, color = { 0.8, 0.9, 1.0, 0.18 } } } })
+    local orbit = g:getOrbit("high_orbit")
+    local color = orbit and orbit.color or {}
+    local kind = orbit and orbit.kind or "missing"
+    lurek.log.info("orbit kind = " .. tostring(kind) .. " alpha = " .. tostring(color[4]))
+end
+```
+
+---
+
+#### `LGlobe:getOrbitAttr`
+
+Reads one string attribute from an orbit shell.
+
+```lua
+LGlobe:getOrbitAttr(name, key)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Orbit shell name. |
+| `key` | string | Attribute key. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Attribute value, or nil when missing. |
+
+**Example**
+
+```lua
+do
+    local g = lurek.globe.new("example_globe_get_orbit_attr", { axial_tilt_deg = 0.0, orbits = { { name = "surface", altitude_px = 0, kind = "surface" }, { name = "low_orbit", altitude_px = 12.0, kind = "orbit", draw_shell = true, attrs = { gameplay = "scanner_band" } } } })
+    local gameplay = g:getOrbitAttr("low_orbit", "gameplay")
+    local missing = g:getOrbitAttr("low_orbit", "missing")
+    local names = g:getOrbitNames()
+    lurek.log.info("orbit attr = " .. tostring(gameplay) .. " missing = " .. tostring(missing) .. " shells = " .. tostring(#names))
+end
+```
+
+---
+
+#### `LGlobe:getOrbitNames`
+
+Returns orbit shell names sorted by z-order and altitude.
+
+```lua
+LGlobe:getOrbitNames()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string[] | Array table of orbit names. |
+
+**Example**
+
+```lua
+do
+    local g = lurek.globe.new("example_globe_get_orbit_names", { axial_tilt_deg = 0.0, orbits = { { name = "surface", altitude_px = 0, kind = "surface" }, { name = "low_orbit", altitude_px = 12.0, kind = "orbit", draw_shell = true }, { name = "high_orbit", altitude_px = 24.0, kind = "effect", draw_shell = true } } })
+    local names = g:getOrbitNames()
+    local first = names[1]
+    local last = names[#names]
+    lurek.log.info("orbit names = " .. tostring(first) .. " .. " .. tostring(last) .. " total = " .. tostring(#names))
 end
 ```
 
@@ -1934,6 +2208,43 @@ end
 
 ---
 
+#### `LGlobe:pickAllObjects`
+
+Resolves all shell-aware hits at one screen position using the supplied ordering policy.
+
+```lua
+LGlobe:pickAllObjects(sx, sy, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `sx` | number | Screen x coordinate. |
+| `sy` | number | Screen y coordinate. |
+| `opts?` | table | Optional pick settings with `marker_radius`, `include_surface`, `include_regions`, `include_markers`, `include_orbits`, and `order`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table[] | Array table of hit snapshots. |
+
+**Example**
+
+```lua
+do
+    local g = lurek.globe.new("example_globe_pick_all_objects", { axial_tilt_deg = 0.0, orbits = { { name = "surface", altitude_px = 0, kind = "surface" }, { name = "low_orbit", altitude_px = 12.0, kind = "orbit", draw_shell = true } } })
+    g:setCamera(0.0, 0.0, 1.0)
+    g:addProvince({ id = 1, centroid = {0.0, 90.0}, vertices = {{-12.0, 78.0}, {-12.0, 102.0}, {12.0, 102.0}, {12.0, 78.0}}, neighbors = {} })
+    g:addMarkerEx({ type = "satellite", lat = 0.0, lon = 90.0, orbit = "low_orbit", label = "SAT-6" })
+    local hits = g:pickAllObjects(640, 360, { marker_radius = 16.0 })
+    lurek.log.info("pick all first = " .. tostring(hits[1] and hits[1].kind) .. " total = " .. tostring(#hits))
+end
+```
+
+---
+
 #### `LGlobe:pickLatLon`
 
 Picks at screen coordinates and returns the hit surface latitude and longitude.
@@ -1999,19 +2310,55 @@ LGlobe:pickMarker(sx, sy, radius)
 ```lua
 do
 
-    local g = lurek.globe.new("pick_marker_globe")
-    g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
-    g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
-    g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
-    g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
-    g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
-    g:addMarker("city", 0, 0, "Alpha")
-    g:addMarker("city", 0, 10, "Beta")
-    g:setCamera(0, 0, 1.2)
+    local g = lurek.globe.new("pick_marker_globe", {
+        axial_tilt_deg = 0.0,
+        orbits = {
+            { name = "surface", altitude_px = 0, kind = "surface" },
+            { name = "low_orbit", altitude_px = 12, kind = "orbit", draw_shell = true },
+        },
+    })
+    g:setCamera(0, 0, 1.0)
+    g:addMarkerEx({ type = "satellite", lat = 0, lon = 90, orbit = "low_orbit", label = "SAT-1" })
     local id = g:pickMarker(320, 180, 24)
-    local lat, lon = g:screenToLatLon(320, 180)
-    local surface = g:pickSurface(320, 180, 24)
+    local lat, lon = g:screenToOrbitLatLon(320, 180, "low_orbit")
+    local shells = g:screenToShells(320, 180)
     lurek.log.info("picked marker = " .. tostring(id))
+end
+```
+
+---
+
+#### `LGlobe:pickObject`
+
+Resolves the highest-priority shell-aware hit at one screen position.
+
+```lua
+LGlobe:pickObject(sx, sy, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `sx` | number | Screen x coordinate. |
+| `sy` | number | Screen y coordinate. |
+| `opts?` | table | Optional pick settings with `marker_radius`, `include_surface`, `include_regions`, `include_markers`, `include_orbits`, and `order`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Hit snapshot table, or nil when nothing matched. |
+
+**Example**
+
+```lua
+do
+    local g = lurek.globe.new("example_globe_pick_object", { axial_tilt_deg = 0.0, orbits = { { name = "surface", altitude_px = 0, kind = "surface" }, { name = "low_orbit", altitude_px = 12.0, kind = "orbit", draw_shell = true } } })
+    g:setCamera(0.0, 0.0, 1.0)
+    g:addMarkerEx({ type = "satellite", lat = 0.0, lon = 90.0, orbit = "low_orbit", label = "SAT-5" })
+    local hit = g:pickObject(640, 360, { marker_radius = 16.0 })
+    lurek.log.info("pick object kind = " .. tostring(hit and hit.kind) .. " orbit = " .. tostring(hit and hit.orbit))
 end
 ```
 
@@ -2526,6 +2873,40 @@ end
 
 ---
 
+#### `LGlobe:removeOrbit`
+
+Removes one named orbit shell and moves any markers on it back to `surface`.
+
+```lua
+LGlobe:removeOrbit(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Orbit shell name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the orbit existed and was removed. |
+
+**Example**
+
+```lua
+do
+    local g = lurek.globe.new("example_globe_remove_orbit", { axial_tilt_deg = 0.0, orbits = { { name = "surface", altitude_px = 0, kind = "surface" }, { name = "high_orbit", altitude_px = 24.0, kind = "effect", draw_shell = true } } })
+    local before = #g:getOrbitNames()
+    local removed = g:removeOrbit("high_orbit")
+    local after = #g:getOrbitNames()
+    lurek.log.info("orbit removed = " .. tostring(removed) .. " " .. tostring(before) .. " -> " .. tostring(after))
+end
+```
+
+---
+
 #### `LGlobe:removeProvince`
 
 Removes a region by id. This method is available to Lua scripts.
@@ -2791,6 +3172,79 @@ do
     local picked = g:pickSurface(320, 180, 24)
     local lod = g:getLod()
     lurek.log.info("latlon = " .. tostring(lat) .. "," .. tostring(lon))
+end
+```
+
+---
+
+#### `LGlobe:screenToOrbitLatLon`
+
+Converts a visible screen position into latitude and longitude on one named visible pickable orbit shell.
+
+```lua
+LGlobe:screenToOrbitLatLon(sx, sy, orbit)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `sx` | number | Screen x coordinate. |
+| `sy` | number | Screen y coordinate. |
+| `orbit` | string | Orbit shell name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Latitude in degrees; or nil when the point is off that shell. |
+| number | Longitude in degrees; or nil when the point is off that shell. |
+
+**Example**
+
+```lua
+do
+    local g = lurek.globe.new("example_globe_screen_to_orbit_latlon", { axial_tilt_deg = 0.0, orbits = { { name = "surface", altitude_px = 0, kind = "surface" }, { name = "low_orbit", altitude_px = 12.0, kind = "orbit", draw_shell = true } } })
+    g:setCamera(0.0, 0.0, 1.0)
+    local lat, lon = g:screenToOrbitLatLon(640, 360, "low_orbit")
+    local shells = g:screenToShells(640, 360)
+    lurek.log.info("orbit latlon = " .. tostring(lat) .. ", " .. tostring(lon) .. " depth = " .. tostring(shells.low_orbit and shells.low_orbit.depth))
+end
+```
+
+---
+
+#### `LGlobe:screenToShells`
+
+Resolves shell hits for every visible pickable orbit at one screen-space position.
+
+```lua
+LGlobe:screenToShells(sx, sy)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `sx` | number | Screen x coordinate. |
+| `sy` | number | Screen y coordinate. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Table keyed by orbit name with shell-hit snapshots. |
+
+**Example**
+
+```lua
+do
+    local g = lurek.globe.new("example_globe_screen_to_shells", { axial_tilt_deg = 0.0, orbits = { { name = "surface", altitude_px = 0, kind = "surface" }, { name = "low_orbit", altitude_px = 12.0, kind = "orbit", draw_shell = true }, { name = "high_orbit", altitude_px = 24.0, kind = "effect", draw_shell = true } } })
+    g:setCamera(0.0, 0.0, 1.0)
+    local shells = g:screenToShells(640, 360)
+    local low = shells.low_orbit and shells.low_orbit.altitude_px or -1
+    local high = shells.high_orbit and shells.high_orbit.altitude_px or -1
+    lurek.log.info("shell hits = " .. tostring(low) .. " / " .. tostring(high))
 end
 ```
 
@@ -3225,6 +3679,41 @@ end
 
 ---
 
+#### `LGlobe:setMarkerAltitude`
+
+Sets or clears a marker-specific shell offset above its assigned orbit.
+
+```lua
+LGlobe:setMarkerAltitude(id, altitude_px)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Marker id. |
+| `altitude_px?` | number | Non-negative offset in render units, or nil to clear. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the marker exists. |
+
+**Example**
+
+```lua
+do
+    local g = lurek.globe.new("example_globe_set_marker_altitude", { axial_tilt_deg = 0.0, orbits = { { name = "surface", altitude_px = 0, kind = "surface" }, { name = "low_orbit", altitude_px = 12.0, kind = "orbit", draw_shell = true } } })
+    local id = g:addMarkerEx({ type = "satellite", lat = 0.0, lon = 90.0, orbit = "low_orbit" })
+    local ok = g:setMarkerAltitude(id, 4.0)
+    local hit = g:pickObject(640, 360, { include_surface = false, include_regions = false, include_orbits = false })
+    lurek.log.info("marker altitude set = " .. tostring(ok) .. " picked altitude = " .. tostring(hit and hit.altitude_px))
+end
+```
+
+---
+
 #### `LGlobe:setMarkerAttr`
 
 Sets a string attribute on a marker.
@@ -3350,6 +3839,41 @@ do
     local id = g:pickMarker(320, 180, 24)
     local surface = g:pickSurface(320, 180, 24)
     lurek.log.info("set marker icon texture = " .. tostring(ok))
+end
+```
+
+---
+
+#### `LGlobe:setMarkerOrbit`
+
+Reassigns a marker to one named orbit shell.
+
+```lua
+LGlobe:setMarkerOrbit(id, orbit)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Marker id. |
+| `orbit` | string | Orbit shell name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the marker exists and the orbit accepts markers. |
+
+**Example**
+
+```lua
+do
+    local g = lurek.globe.new("example_globe_set_marker_orbit", { axial_tilt_deg = 0.0, orbits = { { name = "surface", altitude_px = 0, kind = "surface" }, { name = "low_orbit", altitude_px = 12.0, kind = "orbit", draw_shell = true }, { name = "high_orbit", altitude_px = 24.0, kind = "effect", draw_shell = true } } })
+    local id = g:addMarkerEx({ type = "satellite", lat = 0.0, lon = 90.0, orbit = "low_orbit" })
+    local ok = g:setMarkerOrbit(id, "high_orbit")
+    local orbit = g:getMarkerOrbit(id)
+    lurek.log.info("marker orbit changed = " .. tostring(ok) .. " orbit = " .. tostring(orbit))
 end
 ```
 
@@ -3553,6 +4077,116 @@ do
     local id = g:addMarker("pin", 0, 0)
     g:setMarkerVisible(id, false)
     lurek.log.info("marker hidden")
+end
+```
+
+---
+
+#### `LGlobe:setOrbitAttr`
+
+Sets one string attribute on an orbit shell.
+
+```lua
+LGlobe:setOrbitAttr(name, key, value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Orbit shell name. |
+| `key` | string | Attribute key. |
+| `value` | string | Attribute value. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the orbit exists. |
+
+**Example**
+
+```lua
+do
+    local g = lurek.globe.new("example_globe_set_orbit_attr", { axial_tilt_deg = 0.0, orbits = { { name = "surface", altitude_px = 0, kind = "surface" }, { name = "low_orbit", altitude_px = 12.0, kind = "orbit", draw_shell = true } } })
+    local ok = g:setOrbitAttr("low_orbit", "weather", "stormy")
+    local value = g:getOrbitAttr("low_orbit", "weather")
+    local orbit = g:getOrbit("low_orbit")
+    lurek.log.info("orbit attr set = " .. tostring(ok) .. " value = " .. tostring(value) .. " draw = " .. tostring(orbit and orbit.draw_shell))
+end
+```
+
+---
+
+#### `LGlobe:setOrbitShader`
+
+Binds a `mapviz` shader to one orbit shell and restores the globe shader outside that shell scope.
+
+```lua
+LGlobe:setOrbitShader(orbit, shader)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `orbit` | string | Orbit shell name. |
+| `shader` | [LShader](render.md#lshader) | Shader created with `lurek.render.newShader(code, { target = "mapviz" })`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the orbit exists. |
+
+**Example**
+
+```lua
+do
+    local g = lurek.globe.new("example_globe_set_orbit_shader", { axial_tilt_deg = 0.0, orbits = { { name = "surface", altitude_px = 0, kind = "surface" }, { name = "low_orbit", altitude_px = 12.0, kind = "orbit", draw_shell = true } } })
+    local shader = lurek.render.newShader([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb * vec3<f32>(0.9 + uv.x * 0.1, 1.0, 1.0), color.a);
+}
+]], { target = "mapviz" })
+    g:setOrbitShader("low_orbit", shader)
+    g:draw({ screen_cx = 320, screen_cy = 180 })
+end
+```
+
+---
+
+#### `LGlobe:setOrbitVisible`
+
+Shows or hides one orbit shell and its markers.
+
+```lua
+LGlobe:setOrbitVisible(name, visible)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Orbit shell name. |
+| `visible` | boolean | New visibility flag. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the orbit exists. |
+
+**Example**
+
+```lua
+do
+    local g = lurek.globe.new("example_globe_set_orbit_visible", { axial_tilt_deg = 0.0, orbits = { { name = "surface", altitude_px = 0, kind = "surface" }, { name = "high_orbit", altitude_px = 24.0, kind = "effect", draw_shell = true } } })
+    g:setCamera(0.0, 0.0, 1.0)
+    local marker = g:addMarkerEx({ type = "satellite", lat = 0.0, lon = 90.0, orbit = "high_orbit", label = "SAT-2" })
+    local hidden = g:setOrbitVisible("high_orbit", false)
+    lurek.log.info("orbit visible changed = " .. tostring(hidden) .. " marker = " .. tostring(marker) .. " pick = " .. tostring(g:pickMarker(640, 360, 16.0)))
 end
 ```
 

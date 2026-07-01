@@ -4,8 +4,8 @@
 
 ## TL;DR
 
-- Manages spherical map registries, orbit projections, picking hit tests, and split views.
-- Supports layers, day-night cycles, LOD annotations, fog-of-war masks, and region routing.
+- Manages spherical map registries, orbit shells, shell-aware picking hit tests, and split views.
+- Supports layers, multi-shell markers, day-night cycles, LOD annotations, fog-of-war masks, and region routing.
 
 ## General Info
 
@@ -13,7 +13,7 @@
 - Source path: `src/globe`
 - Binding: `src/lua_api/globe_api.rs`
 - Namespace: `lurek.globe`
-- Lua API surface: `12` functions, `4` types, `104` methods
+- Lua API surface: `12` functions, `4` types, `122` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -22,8 +22,10 @@
 - The `globe` module is the planetary-map surface for users who want a world-scale spherical view to behave as a full gameplay and tooling system instead of a decorative background.
 - It combines region topology, spherical navigation, camera movement, picking, overlays, labels, markers, fog, lighting, and style control so the globe can serve as a strategic layer, simulation view, or inspectable data surface.
 - The module owns both interaction and presentation: users can navigate the sphere, click into it, convert screen interactions into geographic meaning, and layer game-specific information on top.
+- Orbit shells extend that surface into a stack of named concentric bands so surface markers, low-orbit markers, high-orbit effects, and shell-specific shaders can stay in one deterministic globe data model instead of becoming unrelated overlays.
 - Region adjacency and route helpers matter because many globe-driven games treat the world as a graph of territories, paths, logistics, or influence rather than as a sphere to admire.
 - Layer support keeps ownership, heatmaps, tactical overlays, visibility, and markers in one annotation surface, while lighting and atmosphere improve readability as well as mood.
+- Shell-aware markers and picking matter because globe scenes often need to distinguish between surface objects and elevated objects without giving up stable lat-lon queries, front-hemisphere culling, or deterministic CPU-owned metadata.
 - Province and world-state adapters keep the globe synchronized with larger simulation systems, and import or generation helpers make it practical across authored, procedural, and tool-facing workflows.
 - Region topology is equally central. The globe often acts as a graph of territories, travel arcs, or influence zones, so adjacency, routing, and territory-aware lookup must remain queryable rather than being flattened away into generic mesh behavior.
 - Overlay and marker support keep several kinds of information visible at once: ownership, danger, weather, heat, logistics, missions, visibility, faction presence, or educational annotation can coexist without each feature reinventing map decoration rules.
@@ -141,6 +143,13 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - This index owns visibility and compatibility re-exports rather than camera state, topology caches, or draw code.
 - Neighboring work usually spans Globe, RegionGraph, OrbitCamera, fog state, and frame emission helpers below.
 
+### orbit.rs
+
+- Stores named globe orbit shells with deterministic ordering for render, picking, and marker placement.
+- Owns shell insertion, updates, visibility, attrs, and the special always-present surface shell contract.
+- Provides the state boundary between Lua-facing orbit configuration and the projection or draw code that consumes it.
+- This file matters when shell ordering, pickability, or orbit metadata drift out of sync across globe features.
+
 ### picking.rs
 
 - Turns screen-space globe clicks into front-hemisphere surface hits and region selections under the active camera.
@@ -253,12 +262,15 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - `LGlobe:addLabel(ltype, lat, lon, text) -> integer`: Adds a text label at latitude and longitude.
 - `LGlobe:addLayer(name, z_order?) -> nil`: Adds a render layer with optional z-order.
 - `LGlobe:addMarker(mtype, lat, lon, label?) -> integer`: Adds a marker at latitude and longitude with an optional label.
+- `LGlobe:addMarkerEx(marker_tbl) -> integer`: Adds a marker on one named orbit shell using a table-based configuration.
+- `LGlobe:addOrbit(orbit_tbl) -> boolean`: Adds or replaces one named orbit shell above the globe surface.
 - `LGlobe:addProvince(p) -> boolean`: Adds a province described by id, centroid, polygon vertices or multipart geometry, neighbors, and optional base color.
 - `LGlobe:addRegion(p) -> boolean`: Adds a region described by id, centroid, polygon vertices or multipart geometry, neighbors, and optional base color.
 - `LGlobe:addTerrainPatch(p) -> boolean`: Adds a base terrain polygon patch described by id, centroid, polygon vertices or multipart geometry, optional attrs, and optional base color.
 - `LGlobe:applyMouseDrag(start_x, start_y, end_x, end_y) -> nil`: Applies a pointer drag to the globe camera using screen-space deltas.
 - `LGlobe:applyWheelZoom(delta) -> nil`: Applies a wheel delta using an exponential zoom scale.
 - `LGlobe:cacheReachability(faction, start_id, max_cost) -> nil`: Caches default-cost reachability for a named faction.
+- `LGlobe:clearOrbitShader(orbit) -> boolean`: Clears one orbit shell shader without affecting the globe-wide shader.
 - `LGlobe:clearProvinceTexture(id) -> boolean`: Removes texture metadata from a province.
 - `LGlobe:clearTerrainPatchTexture(id) -> boolean`: Removes texture metadata from a terrain patch.
 - `LGlobe:decodeFogBase64(viewer, payload) -> boolean`: Loads one viewer's fog state from a base64 string.
@@ -274,8 +286,13 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - `LGlobe:getFogState(viewer, id) -> string`: Returns fog-of-war state for one viewer and province.
 - `LGlobe:getLod() -> string`: Returns the camera-derived level-of-detail tier name.
 - `LGlobe:getMarkerAttr(id, key) -> string`: Reads a string attribute from a marker.
+- `LGlobe:getMarkerInfo(id) -> table`: Returns a snapshot table describing one marker.
+- `LGlobe:getMarkerOrbit(id) -> string`: Returns the named orbit shell assigned to one marker.
 - `LGlobe:getName() -> string`: Returns the registry name of this globe.
 - `LGlobe:getNeighbors(id) -> integer[]`: Returns neighboring province ids for a province.
+- `LGlobe:getOrbit(name) -> table`: Returns a snapshot table for one orbit shell.
+- `LGlobe:getOrbitAttr(name, key) -> string`: Reads one string attribute from an orbit shell.
+- `LGlobe:getOrbitNames() -> string[]`: Returns orbit shell names sorted by z-order and altitude.
 - `LGlobe:getProvinceAttr(id, key) -> string`: Reads a string attribute from a province.
 - `LGlobe:getProvinceSector(id) -> string`: Returns the sector name assigned to a province.
 - `LGlobe:getRegionAttr(id, key) -> string`: Reads a string attribute from a semantic region.
@@ -288,8 +305,10 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - `LGlobe:moveMarker(id, lat, lon) -> boolean`: Moves a marker to latitude and longitude coordinates.
 - `LGlobe:pan(dlat, dlon) -> nil`: Pans the globe camera by latitude and longitude deltas.
 - `LGlobe:pick(sx, sy) -> integer`: Picks a province at screen coordinates.
+- `LGlobe:pickAllObjects(sx, sy, opts?) -> table[]`: Resolves all shell-aware hits at one screen position using the supplied ordering policy.
 - `LGlobe:pickLatLon(sx, sy) -> number`: Picks at screen coordinates and returns the hit surface latitude and longitude.
 - `LGlobe:pickMarker(sx, sy, radius?) -> integer`: Returns the nearest visible marker at a screen position within an optional pixel radius.
+- `LGlobe:pickObject(sx, sy, opts?) -> table`: Resolves the highest-priority shell-aware hit at one screen position.
 - `LGlobe:pickRaycast(sx, sy, steps?) -> integer`: Samples along the screen-space line from the globe center to the target and returns the first hit province.
 - `LGlobe:pickRegions(sx, sy) -> integer[]`: Returns semantic region ids under a screen-space hit.
 - `LGlobe:pickSurface(sx, sy, marker_radius?) -> table`: Resolves a screen-space hit into globe surface data plus province, marker, and semantic-region hits.
@@ -303,6 +322,7 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - `LGlobe:removeLabel(id) -> boolean`: Removes a label by id. This method is available to Lua scripts.
 - `LGlobe:removeLayer(name) -> boolean`: Removes a render layer by name. This method is available to Lua scripts.
 - `LGlobe:removeMarker(id) -> boolean`: Removes a marker by id. This method is available to Lua scripts.
+- `LGlobe:removeOrbit(name) -> boolean`: Removes one named orbit shell and moves any markers on it back to `surface`.
 - `LGlobe:removeProvince(id) -> boolean`: Removes a region by id. This method is available to Lua scripts.
 - `LGlobe:removeRegion(id) -> boolean`: Removes a region by id. This method is available to Lua scripts.
 - `LGlobe:removeTerrainPatch(id) -> boolean`: Removes a terrain patch by id.
@@ -310,6 +330,8 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - `LGlobe:revealProvince(viewer, id) -> nil`: Reveals a province for one fog-of-war viewer.
 - `LGlobe:screenDeltaToPan(dx, dy) -> number`: Converts a screen-space drag delta into latitude and longitude pan deltas.
 - `LGlobe:screenToLatLon(sx, sy) -> number`: Converts a visible screen position into globe latitude, longitude, and unit-sphere coordinates.
+- `LGlobe:screenToOrbitLatLon(sx, sy, orbit) -> number`: Converts a visible screen position into latitude and longitude on one named visible pickable orbit shell.
+- `LGlobe:screenToShells(sx, sy) -> table`: Resolves shell hits for every visible pickable orbit at one screen-space position.
 - `LGlobe:setActiveViewer(viewer?) -> nil`: Sets the active fog-of-war viewer name or clears it.
 - `LGlobe:setAutoRotationSpeed(dps) -> nil`: Sets automatic globe rotation speed.
 - `LGlobe:setBorders(show) -> nil`: Enables or disables province border rendering.
@@ -322,14 +344,19 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - `LGlobe:setLayerAlpha(name, alpha) -> boolean`: Sets render layer alpha. This method is available to Lua scripts.
 - `LGlobe:setLayerColor(layer, id, r, g, b, a) -> boolean`: Sets a province color override inside a render layer.
 - `LGlobe:setLayerVisible(name, vis) -> boolean`: Shows or hides a render layer. This method is available to Lua scripts.
+- `LGlobe:setMarkerAltitude(id, altitude_px?) -> boolean`: Sets or clears a marker-specific shell offset above its assigned orbit.
 - `LGlobe:setMarkerAttr(id, key, val) -> boolean`: Sets a string attribute on a marker.
 - `LGlobe:setMarkerColor(id, r, g, b, a?) -> boolean`: Sets the RGBA tint color used to render a marker.
 - `LGlobe:setMarkerIconTexture(id, tex_raw?) -> boolean`: Assigns or clears a raw texture handle for a marker icon.
+- `LGlobe:setMarkerOrbit(id, orbit) -> boolean`: Reassigns a marker to one named orbit shell.
 - `LGlobe:setMarkerPulse(id, hz, amp) -> boolean`: Sets marker pulse frequency and amplitude.
 - `LGlobe:setMarkerRotation(id, dps) -> boolean`: Sets marker rotation speed. This method is available to Lua scripts.
 - `LGlobe:setMarkerShape(id, shape) -> boolean`: Sets the vector fallback shape used by a marker.
 - `LGlobe:setMarkerSize(id, size) -> boolean`: Sets the marker size in screen units for rendering.
 - `LGlobe:setMarkerVisible(id, vis) -> boolean`: Shows or hides a marker. This method is available to Lua scripts.
+- `LGlobe:setOrbitAttr(name, key, value) -> boolean`: Sets one string attribute on an orbit shell.
+- `LGlobe:setOrbitShader(orbit, shader) -> boolean`: Binds a `mapviz` shader to one orbit shell and restores the globe shader outside that shell scope.
+- `LGlobe:setOrbitVisible(name, visible) -> boolean`: Shows or hides one orbit shell and its markers.
 - `LGlobe:setProvinceAttr(id, key, val) -> boolean`: Sets a string attribute on a province.
 - `LGlobe:setProvinceSector(id, sector) -> boolean`: Assigns a province to a named sector.
 - `LGlobe:setProvinceTexture(id, tex_raw, u0, v0, u1, v1) -> boolean`: Assigns a raw texture handle and UV rectangle to a province.
@@ -402,5 +429,6 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 
 ## Notes
 
-- `LGlobe:setShader(shaderOrNil)` accepts only `mapviz` shaders created through `lurek.render.newShader`. A globe stores only the semantic `ShaderKey`; render still owns WGSL validation, pipeline selection, fallback, and GPU execution.
-- Globe shaders are intended for atmospheric bands, tactical heatmap styling, fog/visibility tinting, and map visualization treatments over the generated command stream. Globe topology, picking, routes, and fog state remain CPU-owned gameplay/tooling data.
+- `LGlobe:setShader(shaderOrNil)` still accepts only `mapviz` shaders created through `lurek.render.newShader`, and now orbit shells can also bind their own `mapviz` shader scope through `LGlobe:setOrbitShader(...)` without leaking into unrelated shell or surface passes.
+- Orbit shells are named, always include the canonical `surface` shell, and add `altitude_px` to `GlobeSpec.radius` before zoom so shell projection, shell picking, and orbit marker placement stay radius-based and deterministic.
+- Globe shaders are intended for atmospheric bands, tactical heatmap styling, fog/visibility tinting, orbital overlays, and map visualization treatments over the generated command stream. Globe topology, picking, routes, and fog state remain CPU-owned gameplay/tooling data.
