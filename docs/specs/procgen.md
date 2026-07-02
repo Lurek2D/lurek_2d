@@ -433,10 +433,10 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 ##### Methods
 
 - `LProcgenGrid:getCell(x, y) -> integer`: Returns one cell value using one-based Lua coordinates.
-- `LProcgenGrid:getHeight() -> integer`: Returns grid height.
+- `LProcgenGrid:getHeight() -> integer`: Returns the generated grid height in cells for this noise result.
 - `LProcgenGrid:getKind() -> string`: Returns the generator kind label attached to this grid.
 - `LProcgenGrid:getSize() -> integer`: Returns grid width and height.
-- `LProcgenGrid:getWidth() -> integer`: Returns grid width.
+- `LProcgenGrid:getWidth() -> integer`: Returns the generated grid width in cells for this noise result.
 - `LProcgenGrid:toTable() -> table`: Serializes this grid to a plain Lua table.
 - `LProcgenGrid:toTileField(opts?) -> LTileField`: Converts this generated grid into a tilefield by writing each value as a named ref.
 - `LProcgenGrid:type() -> string`: Returns the type name of this object.
@@ -542,10 +542,10 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 ##### Methods
 
 - `LProcgenScalarGrid:getCell(x, y) -> number`: Returns one scalar cell value using one-based Lua coordinates.
-- `LProcgenScalarGrid:getHeight() -> integer`: Returns scalar grid height.
+- `LProcgenScalarGrid:getHeight() -> integer`: Returns the scalar grid height in cells for this generated field.
 - `LProcgenScalarGrid:getKind() -> string`: Returns the generator kind label attached to this scalar grid.
 - `LProcgenScalarGrid:getSize() -> integer`: Returns scalar grid width and height.
-- `LProcgenScalarGrid:getWidth() -> integer`: Returns scalar grid width.
+- `LProcgenScalarGrid:getWidth() -> integer`: Returns the scalar grid width in cells for this generated field.
 - `LProcgenScalarGrid:toTable() -> table`: Serializes this scalar grid to a plain Lua table.
 - `LProcgenScalarGrid:toTileField(opts?) -> LTileField`: Converts this scalar field into a new tilefield channel layer.
 - `LProcgenScalarGrid:type() -> string`: Returns the type name of this object.

@@ -62,6 +62,7 @@ FEATURE_SYSTEMS = _modules_in_tier("feature_systems")
 EDGE_INTEGRATION = _modules_in_tier("edge_integration")
 CRATE_ROOT_EXPORTS = {'log_msg'}
 ALL_TIERS = FOUNDATIONS | CORE_RUNTIME | PLATFORM_SERVICES | FEATURE_SYSTEMS | EDGE_INTEGRATION
+_UNSAFE_CONSTRUCT_RE = re.compile(r"\bunsafe\s*(?:\{|fn\b|impl\b|trait\b|extern\b)")
 # â”€â”€ Explicit cross-tier exemptions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # Format: {(importer_module, imported_module): "reason"}
 # Only list exemptions that have an explicit architectural justification
@@ -225,6 +226,11 @@ _PUB_ITEM_RE = re.compile(r"pub\s+(?:fn|struct|enum|trait|type|const)\s+")
 _PUB_ITEM_NAME_RE = re.compile(r"pub\s+(fn|struct|enum|trait|type|const)\s+(\w+)")
 
 
+def _contains_unsafe_construct(raw: str) -> bool:
+    """Return True when one source line contains an actual Rust unsafe construct."""
+    return bool(_UNSAFE_CONSTRUCT_RE.search(raw))
+
+
 def _analyze_module_files(module: str) -> ModuleFileAnalysis:
     """Single-pass analysis: read each .rs file exactly once and collect all findings."""
     analysis = ModuleFileAnalysis()
@@ -291,7 +297,7 @@ def _analyze_module_files(module: str) -> ModuleFileAnalysis:
                 analysis.println_hits.append(f"{stem}:{i+1}")
 
             # â”€â”€ Q-03: unsafe without SAFETY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-            if "unsafe " in raw and not is_comment:
+            if _contains_unsafe_construct(raw) and not is_comment:
                 ctx = "\n".join(lines[max(0, i - 3):i + 1])
                 if "SAFETY:" not in ctx and "SAFETY :" not in ctx:
                     analysis.unsafe_violations.append(f"{stem}:{i+1}")

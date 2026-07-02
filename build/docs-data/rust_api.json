@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-07-01T19:11:59.247046+00:00",
+    "generated": "2026-07-01T20:47:41.255347+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
@@ -13,7 +13,7 @@
   "rust_api": {
     "summary": {
       "total_items": 3201,
-      "documented": 3197,
+      "documented": 3201,
       "modules": 730
     },
     "modules": {
@@ -628,7 +628,7 @@
           {
             "name": "MctsDecisionTrace",
             "kind": "struct",
-            "description": "Last MCTS search trace.",
+            "description": "Captures the last MCTS search outcome, counters, and callback failures.",
             "file": "src/ai/diagnostics.rs",
             "line": 79
           }
@@ -1816,14 +1816,14 @@
             "kind": "struct",
             "description": "Thin bootstrap wrapper that owns startup config and launches `LurekApp` event loop.",
             "file": "src/app/app.rs",
-            "line": 3855
+            "line": 3861
           },
           {
             "name": "AppRunOptions",
             "kind": "struct",
             "description": "Startup options passed to the GUI/TUI/CLI application runner.",
             "file": "src/app/app.rs",
-            "line": 3863
+            "line": 3869
           }
         ]
       },
@@ -7938,7 +7938,7 @@
             "kind": "struct",
             "description": "Named globe registry keyed by globe name.",
             "file": "src/globe/registry.rs",
-            "line": 982
+            "line": 985
           }
         ]
       },
@@ -20529,1563 +20529,1563 @@
           {
             "name": "A003_AUDIO_OUTPUT_UNAVAIL",
             "kind": "const",
-            "description": "",
+            "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 157
+            "line": 158
           },
           {
             "name": "A004_AUDIO_PLAY_QUEUED",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 159
+            "line": 160
           },
           {
             "name": "G001_FONT_GLYPH_WARN",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 161
+            "line": 162
           },
           {
             "name": "G002_SCREENSHOT_ZERO_SIZE",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 163
+            "line": 164
           },
           {
             "name": "G003_SCREENSHOT_MAP_FAIL",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 165
+            "line": 166
           },
           {
             "name": "G004_SCREENSHOT_RECV_FAIL",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 167
+            "line": 168
           },
           {
             "name": "G005_SCREENSHOT_DATA_FAIL",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 169
+            "line": 170
           },
           {
             "name": "P001_PULLEY_JOINT_FALLBACK",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 171
+            "line": 172
           },
           {
             "name": "P002_GEAR_JOINT_FALLBACK",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 173
+            "line": 174
           },
           {
             "name": "DF01_RIGHT_JOIN_UNIMPL",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 175
+            "line": 176
           },
           {
             "name": "LA01_API_STUB",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 177
+            "line": 178
           },
           {
             "name": "LA02_PIPELINE_CALLBACK_FAIL",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 179
+            "line": 180
           },
           {
             "name": "LA03_OPEN_URL_REJECTED",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 181
+            "line": 182
           },
           {
             "name": "LA04_CLIPBOARD_WRITE_FAIL",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 183
+            "line": 184
           },
           {
             "name": "LA05_CLIPBOARD_UNAVAIL",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 185
+            "line": 186
           },
           {
             "name": "LA06_CLIPBOARD_READ_FAIL",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 187
+            "line": 188
           },
           {
             "name": "LA07_SCALE_MODE_UNKNOWN",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 189
+            "line": 190
           },
           {
             "name": "LA08_PATHFINDING_THREAD_UNIMPL",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 191
+            "line": 192
           },
           {
             "name": "L060_LUA_CALLBACK_ERROR",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 193
+            "line": 194
           },
           {
             "name": "L070_SURFACE_NO_READBACK",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 195
+            "line": 196
           },
           {
             "name": "L071_CURSOR_GRAB_FAIL",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 197
+            "line": 198
           },
           {
             "name": "L072_CURSOR_GRAB_LOCK_FAIL",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 199
+            "line": 200
           },
           {
             "name": "L073_CURSOR_POS_FAIL",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 201
+            "line": 202
           },
           {
             "name": "L074_SCREENSHOT_NO_READBACK",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 203
+            "line": 204
           },
           {
             "name": "L075_SCREENSHOT_SAVE_FAIL",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 205
+            "line": 206
           },
           {
             "name": "L076_SCREENSHOT_ENCODE_FAIL",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 207
+            "line": 208
           },
           {
             "name": "L077_DRAG_HOVER",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 209
+            "line": 210
           },
           {
             "name": "L078_DRAG_HOVER_CANCEL",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 211
+            "line": 212
           },
           {
             "name": "L079_DRAG_DROP_IGNORED",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 213
+            "line": 214
           },
           {
             "name": "L080_GAME_DIR",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 215
+            "line": 216
           },
           {
             "name": "L081_LOG_FILE",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 217
+            "line": 218
           },
           {
             "name": "L082_LOG_FILE_FAIL",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 219
+            "line": 220
           },
           {
             "name": "L083_DROP_ARCHIVE",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 221
+            "line": 222
           },
           {
             "name": "L084_DROP_ARCHIVE_FAIL",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 223
+            "line": 224
           },
           {
             "name": "G006_ATLAS_MAX_SIZE",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 225
+            "line": 226
           },
           {
             "name": "FS01_GAMEFS_INIT",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 227
+            "line": 228
           },
           {
             "name": "FS02_FILE_READ",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 229
+            "line": 230
           },
           {
             "name": "FS03_FILE_WRITE",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 231
+            "line": 232
           },
           {
             "name": "FS04_PATH_TRAVERSAL",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 233
+            "line": 234
           },
           {
             "name": "FS05_VFS_MOUNT",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 235
+            "line": 236
           },
           {
             "name": "AN01_ANIM_CTRL_INIT",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 237
+            "line": 238
           },
           {
             "name": "AN02_CLIP_ADDED",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 239
+            "line": 240
           },
           {
             "name": "AN03_CLIP_NOT_FOUND",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 241
+            "line": 242
           },
           {
             "name": "EN01_UNIVERSE_INIT",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 243
+            "line": 244
           },
           {
             "name": "EN02_ENTITY_SPAWN",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 245
+            "line": 246
           },
           {
             "name": "EN03_ENTITY_LOW",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 247
+            "line": 248
           },
           {
             "name": "TM01_TILEMAP_INIT",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 249
+            "line": 250
           },
           {
             "name": "TM02_TILESET_ADD",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 251
+            "line": 252
           },
           {
             "name": "TM03_LAYER_ADD",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 253
+            "line": 254
           },
           {
             "name": "TM04_TMX_FAIL",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 255
+            "line": 256
           },
           {
             "name": "SV01_SAVE_INIT",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 257
+            "line": 258
           },
           {
             "name": "SV02_SAVE_WRITE",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 259
+            "line": 260
           },
           {
             "name": "SV03_SAVE_LOAD",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 261
+            "line": 262
           },
           {
             "name": "SV04_SAVE_ERROR",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 263
+            "line": 264
           },
           {
             "name": "SC01_STACK_INIT",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 265
+            "line": 266
           },
           {
             "name": "SC02_SCENE_PUSH",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 267
+            "line": 268
           },
           {
             "name": "SC03_SCENE_POP",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 269
+            "line": 270
           },
           {
             "name": "SC04_STACK_CLEAR",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 271
+            "line": 272
           },
           {
             "name": "TH01_WORKER_INIT",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 273
+            "line": 274
           },
           {
             "name": "TH02_WORKER_START",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 275
+            "line": 276
           },
           {
             "name": "TH03_WORKER_DONE",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 277
+            "line": 278
           },
           {
             "name": "TH04_WORKER_ERROR",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 279
+            "line": 280
           },
           {
             "name": "PF01_GRID_INIT",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 281
+            "line": 282
           },
           {
             "name": "PF02_PATH_FOUND",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 283
+            "line": 284
           },
           {
             "name": "PF03_NO_PATH",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 285
+            "line": 286
           },
           {
             "name": "MD01_MGR_INIT",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 287
+            "line": 288
           },
           {
             "name": "MD02_MOD_REG",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 289
+            "line": 290
           },
           {
             "name": "MD03_MOD_FAIL",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 291
+            "line": 292
           },
           {
             "name": "MD04_ORDER_OK",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 293
+            "line": 294
           },
           {
             "name": "NW01_HOST_BIND",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 295
+            "line": 296
           },
           {
             "name": "NW02_PEER_CONN",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 297
+            "line": 298
           },
           {
             "name": "NW03_PEER_DISC",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 299
+            "line": 300
           },
           {
             "name": "NW04_NET_ERROR",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 301
+            "line": 302
           },
           {
             "name": "PL01_PIPELINE_INIT",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 303
+            "line": 304
           },
           {
             "name": "PL02_STEP_ADD",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 305
+            "line": 306
           },
           {
             "name": "PL03_EXEC",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 307
+            "line": 308
           },
           {
             "name": "PL04_CYCLE",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 309
+            "line": 310
           },
           {
             "name": "AT01_SIM_INIT",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 311
+            "line": 312
           },
           {
             "name": "AT02_SCRIPT_LOAD",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 313
+            "line": 314
           },
           {
             "name": "AT03_STEP_WARN",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 315
+            "line": 316
           },
           {
             "name": "AD01_AUDIO_DECODED",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 317
+            "line": 318
           },
           {
             "name": "AD02_AUDIO_ERROR",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 319
+            "line": 320
           },
           {
             "name": "CP01_NDARRAY_ALLOC",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 321
+            "line": 322
           },
           {
             "name": "CP02_NDARRAY_LARGE",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 323
+            "line": 324
           },
           {
             "name": "MM01_MINIMAP_INIT",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 325
+            "line": 326
           },
           {
             "name": "MM02_TERRAIN_REBUILD",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 327
+            "line": 328
           },
           {
             "name": "PG01_CELLULAR_START",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 329
+            "line": 330
           },
           {
             "name": "PG02_CELLULAR_DONE",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 331
+            "line": 332
           },
           {
             "name": "SR01_JSON_OK",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 333
+            "line": 334
           },
           {
             "name": "SR02_JSON_ERR",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 335
+            "line": 336
           },
           {
             "name": "SR03_JSON_ENC",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 337
+            "line": 338
           },
           {
             "name": "SR04_MSGPACK_DEC",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 339
+            "line": 340
           },
           {
             "name": "SR05_MSGPACK_ENC",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 341
+            "line": 342
           },
           {
             "name": "SR06_XML_OK",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 343
+            "line": 344
           },
           {
             "name": "SR07_SCHEMA_PASS",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 345
+            "line": 346
           },
           {
             "name": "SR08_SCHEMA_FAIL",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 347
+            "line": 348
           },
           {
             "name": "GU01_CTX_INIT",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 349
+            "line": 350
           },
           {
             "name": "GU02_WIDGET_ADD",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 351
+            "line": 352
           },
           {
             "name": "GU03_CTX_RESET",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 353
+            "line": 354
           },
           {
             "name": "TX01_TEX_DECODED",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 355
+            "line": 356
           },
           {
             "name": "TX02_TEX_LARGE",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 357
+            "line": 358
           },
           {
             "name": "TX03_TEX_ERROR",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 359
+            "line": 360
           },
           {
             "name": "SH01_SHADER_OK",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 361
+            "line": 362
           },
           {
             "name": "SH02_SHADER_ERR",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 363
+            "line": 364
           },
           {
             "name": "LW01_LIGHT_WORLD_INIT",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 365
+            "line": 366
           },
           {
             "name": "LW02_LIGHT_ADD",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 367
+            "line": 368
           },
           {
             "name": "LW03_LIGHT_MAX",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 369
+            "line": 370
           },
           {
             "name": "SP01_SKEL_LOADED",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 371
+            "line": 372
           },
           {
             "name": "SP02_SKEL_ANIM_MISS",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 373
+            "line": 374
           },
           {
             "name": "IM01_IMAGE_LOADED",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 375
+            "line": 376
           },
           {
             "name": "IM02_IMAGE_MISMATCH",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 377
+            "line": 378
           },
           {
             "name": "AS01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 379
+            "line": 380
           },
           {
             "name": "BU01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 381
+            "line": 382
           },
           {
             "name": "BU02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 383
+            "line": 384
           },
           {
             "name": "BU03",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 385
+            "line": 386
           },
           {
             "name": "PE01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 387
+            "line": 388
           },
           {
             "name": "PE02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 389
+            "line": 390
           },
           {
             "name": "PE03",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 391
+            "line": 392
           },
           {
             "name": "PE04",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 393
+            "line": 394
           },
           {
             "name": "BD01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 395
+            "line": 396
           },
           {
             "name": "BD02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 397
+            "line": 398
           },
           {
             "name": "BD03",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 399
+            "line": 400
           },
           {
             "name": "TI01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 401
+            "line": 402
           },
           {
             "name": "TI02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 403
+            "line": 404
           },
           {
             "name": "TI03",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 405
+            "line": 406
           },
           {
             "name": "TI04",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 407
+            "line": 408
           },
           {
             "name": "FN01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 409
+            "line": 410
           },
           {
             "name": "FN02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 411
+            "line": 412
           },
           {
             "name": "GP01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 413
+            "line": 414
           },
           {
             "name": "GP02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 415
+            "line": 416
           },
           {
             "name": "GP03",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 417
+            "line": 418
           },
           {
             "name": "FF01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 419
+            "line": 420
           },
           {
             "name": "FF02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 421
+            "line": 422
           },
           {
             "name": "FF03",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 423
+            "line": 424
           },
           {
             "name": "HP01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 425
+            "line": 426
           },
           {
             "name": "HP02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 427
+            "line": 428
           },
           {
             "name": "HP03",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 429
+            "line": 430
           },
           {
             "name": "TR01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 431
+            "line": 432
           },
           {
             "name": "TR02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 433
+            "line": 434
           },
           {
             "name": "GR01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 435
+            "line": 436
           },
           {
             "name": "GR02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 437
+            "line": 438
           },
           {
             "name": "CV01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 439
+            "line": 440
           },
           {
             "name": "MS01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 441
+            "line": 442
           },
           {
             "name": "MS02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 443
+            "line": 444
           },
           {
             "name": "RC01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 445
+            "line": 446
           },
           {
             "name": "FX01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 447
+            "line": 448
           },
           {
             "name": "FX02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 449
+            "line": 450
           },
           {
             "name": "DF01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 451
+            "line": 452
           },
           {
             "name": "SG01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 453
+            "line": 454
           },
           {
             "name": "SG02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 455
+            "line": 456
           },
           {
             "name": "MG01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 457
+            "line": 458
           },
           {
             "name": "MG02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 459
+            "line": 460
           },
           {
             "name": "MG03",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 461
+            "line": 462
           },
           {
             "name": "AT01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 463
+            "line": 464
           },
           {
             "name": "AT02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 465
+            "line": 466
           },
           {
             "name": "AT03",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 467
+            "line": 468
           },
           {
             "name": "TL01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 469
+            "line": 470
           },
           {
             "name": "TL02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 471
+            "line": 472
           },
           {
             "name": "VR01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 473
+            "line": 474
           },
           {
             "name": "VR02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 475
+            "line": 476
           },
           {
             "name": "SV01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 477
+            "line": 478
           },
           {
             "name": "SV02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 479
+            "line": 480
           },
           {
             "name": "SV03",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 481
+            "line": 482
           },
           {
             "name": "SV04",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 483
+            "line": 484
           },
           {
             "name": "CH01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 485
+            "line": 486
           },
           {
             "name": "CH02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 487
+            "line": 488
           },
           {
             "name": "CH03",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 489
+            "line": 490
           },
           {
             "name": "CH04",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 491
+            "line": 492
           },
           {
             "name": "LT01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 493
+            "line": 494
           },
           {
             "name": "LT02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 495
+            "line": 496
           },
           {
             "name": "LT03",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 497
+            "line": 498
           },
           {
             "name": "RL01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 499
+            "line": 500
           },
           {
             "name": "RL02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 501
+            "line": 502
           },
           {
             "name": "RL03",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 503
+            "line": 504
           },
           {
             "name": "GC01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 505
+            "line": 506
           },
           {
             "name": "GC02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 507
+            "line": 508
           },
           {
             "name": "GC03",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 509
+            "line": 510
           },
           {
             "name": "GC04",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 511
+            "line": 512
           },
           {
             "name": "CQ01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 513
+            "line": 514
           },
           {
             "name": "CQ02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 515
+            "line": 516
           },
           {
             "name": "CQ03",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 517
+            "line": 518
           },
           {
             "name": "UP01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 519
+            "line": 520
           },
           {
             "name": "UP02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 521
+            "line": 522
           },
           {
             "name": "UP03",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 523
+            "line": 524
           },
           {
             "name": "OV01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 525
+            "line": 526
           },
           {
             "name": "OV02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 527
+            "line": 528
           },
           {
             "name": "OV03",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 529
+            "line": 530
           },
           {
             "name": "FE01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 531
+            "line": 532
           },
           {
             "name": "FE02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 533
+            "line": 534
           },
           {
             "name": "FE03",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 535
+            "line": 536
           },
           {
             "name": "CB01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 537
+            "line": 538
           },
           {
             "name": "CB02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 539
+            "line": 540
           },
           {
             "name": "TS01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 541
+            "line": 542
           },
           {
             "name": "TS02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 543
+            "line": 544
           },
           {
             "name": "TS03",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 545
+            "line": 546
           },
           {
             "name": "GD01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 547
+            "line": 548
           },
           {
             "name": "GD02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 549
+            "line": 550
           },
           {
             "name": "GD03",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 551
+            "line": 552
           },
           {
             "name": "DP01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 553
+            "line": 554
           },
           {
             "name": "DP02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 555
+            "line": 556
           },
           {
             "name": "DP03",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 557
+            "line": 558
           },
           {
             "name": "BB01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 559
+            "line": 560
           },
           {
             "name": "BB02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 561
+            "line": 562
           },
           {
             "name": "BB03",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 563
+            "line": 564
           },
           {
             "name": "CK01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 565
+            "line": 566
           },
           {
             "name": "CK02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 567
+            "line": 568
           },
           {
             "name": "CK03",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 569
+            "line": 570
           },
           {
             "name": "IE01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 571
+            "line": 572
           },
           {
             "name": "IE02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 573
+            "line": 574
           },
           {
             "name": "IE03",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 575
+            "line": 576
           },
           {
             "name": "NG01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 577
+            "line": 578
           },
           {
             "name": "NG02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 579
+            "line": 580
           },
           {
             "name": "NG03",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 581
+            "line": 582
           },
           {
             "name": "SS01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 583
+            "line": 584
           },
           {
             "name": "SS02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 585
+            "line": 586
           },
           {
             "name": "IF01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 587
+            "line": 588
           },
           {
             "name": "IF02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 589
+            "line": 590
           },
           {
             "name": "IF03",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 591
+            "line": 592
           },
           {
             "name": "HX01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 593
+            "line": 594
           },
           {
             "name": "HX02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 595
+            "line": 596
           },
           {
             "name": "BI01",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 597
+            "line": 598
           },
           {
             "name": "BI02",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 599
+            "line": 600
           },
           {
             "name": "BI03",
             "kind": "const",
             "description": "Stable log message identifier.",
             "file": "src/runtime/log_messages.rs",
-            "line": 601
+            "line": 602
           }
         ]
       },
@@ -24376,30 +24376,30 @@
           {
             "name": "color",
             "kind": "mod",
-            "description": "",
-            "file": "src/tilelight/mod.rs",
-            "line": 8
-          },
-          {
-            "name": "map",
-            "kind": "mod",
-            "description": "",
+            "description": "Color value and conversion helpers for tile-light calculations.",
             "file": "src/tilelight/mod.rs",
             "line": 9
           },
           {
+            "name": "map",
+            "kind": "mod",
+            "description": "Grid storage and traversal types for tile-light maps.",
+            "file": "src/tilelight/mod.rs",
+            "line": 11
+          },
+          {
             "name": "source",
             "kind": "mod",
-            "description": "",
+            "description": "Light source models, modulation, and propagation policies.",
             "file": "src/tilelight/mod.rs",
-            "line": 10
+            "line": 13
           },
           {
             "name": "GlobalLight",
             "kind": "type",
             "description": "Compatibility alias for the global top-light source.",
             "file": "src/tilelight/mod.rs",
-            "line": 20
+            "line": 23
           }
         ]
       },
@@ -24459,7 +24459,7 @@
           {
             "name": "SunLightMode",
             "kind": "enum",
-            "description": "Sun propagation mode.",
+            "description": "Controls how one global sun light source propagates through the tile-light map.",
             "file": "src/tilelight/source.rs",
             "line": 204
           },

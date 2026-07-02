@@ -216,7 +216,7 @@ This module is mostly self-contained inside the Feature Systems group. Cross-mod
 - `LTileField:regionContains(name, x, y, z?) -> boolean`: Returns whether a named region contains a one-based tile cell.
 - `LTileField:removeModifier(name) -> boolean`: Removes a named modifier and clears it from all cells.
 - `LTileField:removeProfile(name) -> boolean`: Removes a legacy profile and clears it from all cells.
-- `LTileField:removeRegion(name) -> boolean`: Removes a named region.
+- `LTileField:removeRegion(name) -> boolean`: Removes a named region definition and its stored cell membership from this field.
 - `LTileField:removeSlot(slot) -> boolean`: Removes a named object slot and clears its references from the field.
 - `LTileField:setBlock(x, y, z?, channel, blocked) -> nil`: Sets whether a cell blocks a channel.
 - `LTileField:setCategoryBlock(x, y, z?, category, blocked) -> nil`: Sets one category blocker on one cell.

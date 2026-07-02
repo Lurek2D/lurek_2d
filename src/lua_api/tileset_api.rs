@@ -523,16 +523,19 @@ impl TilesetLuaParser {
     }
 }
 
+/// Builds a native tileset from a Lua provider table for boundary-owned APIs.
 pub(crate) fn tileset_from_provider(provider: LuaTable, api: &str) -> LuaResult<TileSet> {
     TilesetLuaParser::tileset_from_provider(provider, api)
 }
 
 #[derive(Clone)]
+/// Lua-facing handle that shares ownership of one native tileset.
 pub struct LuaTileSet {
     pub(crate) inner: Rc<RefCell<TileSet>>,
 }
 
 #[derive(Clone)]
+/// Lua-facing handle that shares ownership of one native tile catalog.
 pub struct LuaTileCatalog {
     pub(crate) inner: Rc<RefCell<TileCatalog>>,
 }
@@ -1376,6 +1379,7 @@ impl LuaUserData for LuaTileSet {
     }
 }
 
+/// Registers the `lurek.tileset` API table and userdata handles.
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
     /// Creates a native tileset from atlas dimensions.

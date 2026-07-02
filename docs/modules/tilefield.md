@@ -2048,7 +2048,7 @@ end
 
 #### `LTileField:removeRegion`
 
-Removes a named region.
+Removes a named region definition and its stored cell membership from this field.
 
 ```lua
 LTileField:removeRegion(name)

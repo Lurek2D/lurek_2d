@@ -199,7 +199,7 @@ pub struct AreaLightUpdate {
     pub modulation: Option<LightModulation>,
 }
 
-/// Sun propagation mode.
+/// Controls how one global sun light source propagates through the tile-light map.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum SunLightMode {
     /// Vertical top light attenuated by per-cell sun occlusion from higher levels down.

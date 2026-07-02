@@ -117,7 +117,7 @@ This module primarily collaborates with `math`, `runtime`, `tilefield`. Its resp
 
 #### LTileCatalog Type
 
-- Creates a catalog that resolves typed references across named tilesets.
+- Lua-facing handle that shares ownership of one native tile catalog.
 
 ##### Fields
 
@@ -134,7 +134,7 @@ This module primarily collaborates with `math`, `runtime`, `tilefield`. Its resp
 
 #### LTileSet Type
 
-- Creates a native tileset from atlas dimensions.
+- Lua-facing handle that shares ownership of one native tileset.
 
 ##### Fields
 

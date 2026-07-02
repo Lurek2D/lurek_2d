@@ -3289,7 +3289,7 @@ end
 
 #### `LProcgenGrid:getHeight`
 
-Returns grid height.
+Returns the generated grid height in cells for this noise result.
 
 ```lua
 LProcgenGrid:getHeight()
@@ -3378,7 +3378,7 @@ end
 
 #### `LProcgenGrid:getWidth`
 
-Returns grid width.
+Returns the generated grid width in cells for this noise result.
 
 ```lua
 LProcgenGrid:getWidth()
@@ -3612,7 +3612,7 @@ end
 
 #### `LProcgenScalarGrid:getHeight`
 
-Returns scalar grid height.
+Returns the scalar grid height in cells for this generated field.
 
 ```lua
 LProcgenScalarGrid:getHeight()
@@ -3701,7 +3701,7 @@ end
 
 #### `LProcgenScalarGrid:getWidth`
 
-Returns scalar grid width.
+Returns the scalar grid width in cells for this generated field.
 
 ```lua
 LProcgenScalarGrid:getWidth()

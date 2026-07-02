@@ -880,6 +880,7 @@ impl Globe {
         self.reachability_cache.get(faction)
     }
 
+    /// Rebuilds the reverse lookup from region id to owning sector name.
     pub(crate) fn rebuild_region_sector_index(&mut self) {
         self.region_to_sector.clear();
         for (sector, ids) in &self.sectors {
@@ -899,6 +900,7 @@ impl Globe {
         ids
     }
 
+    /// Recomputes cached geographic bounds for every registered terrain patch.
     pub(crate) fn rebuild_terrain_bounds(&mut self) {
         self.terrain_bounds.clear();
         for (id, patch) in &self.terrain {
@@ -908,6 +910,7 @@ impl Globe {
         }
     }
 
+    /// Recomputes cached geographic bounds for every semantic region polygon.
     pub(crate) fn rebuild_region_bounds(&mut self) {
         self.region_bounds.clear();
         for (id, region) in &self.regions {

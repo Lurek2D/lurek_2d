@@ -996,11 +996,12 @@ LGlobe:clearProvinceTexture(id)
 do
 
     local g = lurek.globe.new("ctex_globe")
+    local tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     local globe_name = g:getName()
     local province_count = g:provinceCount()
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-    g:setProvinceTexture(1, 42, 0, 0, 1, 1)
+    g:setProvinceTexture(1, tex, 0, 0, 1, 1)
     g:clearProvinceTexture(1)
     lurek.log.info("texture cleared")
 end
@@ -4300,11 +4301,12 @@ LGlobe:setProvinceTexture(id, tex_raw, u0, v0, u1, v1)
 do
 
     local g = lurek.globe.new("tex_globe")
+    local tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     local globe_name = g:getName()
     local province_count = g:provinceCount()
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-    g:setProvinceTexture(1, 42, 0.0, 0.0, 1.0, 1.0)
+    g:setProvinceTexture(1, tex, 0.0, 0.0, 1.0, 1.0)
     lurek.log.info("province texture set")
 end
 ```

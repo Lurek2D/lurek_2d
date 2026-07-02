@@ -1575,13 +1575,13 @@
         "module": "app",
         "name": "App::new",
         "file": "src/app/app.rs",
-        "line": 3886
+        "line": 3892
       },
       {
         "module": "app",
         "name": "App::run",
         "file": "src/app/app.rs",
-        "line": 3890
+        "line": 3896
       },
       {
         "module": "app",
@@ -7557,49 +7557,49 @@
         "module": "globe",
         "name": "GlobeRegistry::new",
         "file": "src/globe/registry.rs",
-        "line": 988
+        "line": 991
       },
       {
         "module": "globe",
         "name": "GlobeRegistry::create",
         "file": "src/globe/registry.rs",
-        "line": 992
+        "line": 995
       },
       {
         "module": "globe",
         "name": "GlobeRegistry::get",
         "file": "src/globe/registry.rs",
-        "line": 999
+        "line": 1002
       },
       {
         "module": "globe",
         "name": "GlobeRegistry::get_mut",
         "file": "src/globe/registry.rs",
-        "line": 1003
+        "line": 1006
       },
       {
         "module": "globe",
         "name": "GlobeRegistry::remove",
         "file": "src/globe/registry.rs",
-        "line": 1007
+        "line": 1010
       },
       {
         "module": "globe",
         "name": "GlobeRegistry::names",
         "file": "src/globe/registry.rs",
-        "line": 1011
+        "line": 1014
       },
       {
         "module": "globe",
         "name": "GlobeRegistry::len",
         "file": "src/globe/registry.rs",
-        "line": 1015
+        "line": 1018
       },
       {
         "module": "globe",
         "name": "GlobeRegistry::is_empty",
         "file": "src/globe/registry.rs",
-        "line": 1019
+        "line": 1022
       },
       {
         "module": "globe",
@@ -10941,7 +10941,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1259
+        "line": 1273
       },
       {
         "module": "lua_api",
@@ -11289,7 +11289,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2719
+        "line": 2720
       },
       {
         "module": "lua_api",
@@ -11307,7 +11307,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1379
+        "line": 1383
       },
       {
         "module": "lua_api",
@@ -30821,19 +30821,19 @@
         "module": "globe",
         "name": "Globe::rebuild_region_sector_index",
         "file": "src/globe/registry.rs",
-        "line": 883
+        "line": 884
       },
       {
         "module": "globe",
         "name": "Globe::rebuild_terrain_bounds",
         "file": "src/globe/registry.rs",
-        "line": 902
+        "line": 904
       },
       {
         "module": "globe",
         "name": "Globe::rebuild_region_bounds",
         "file": "src/globe/registry.rs",
-        "line": 911
+        "line": 914
       },
       {
         "module": "globe",
@@ -32477,13 +32477,13 @@
         "module": "lua_api",
         "name": "field_from_provider",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 555
+        "line": 556
       },
       {
         "module": "lua_api",
         "name": "tileset_from_provider",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 526
+        "line": 527
       },
       {
         "module": "lua_api",
@@ -54400,742 +54400,742 @@
         "lua_name": "lurek.ecs.isA",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 169
+        "line": 172
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.type",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 176
+        "line": 181
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.typeOf",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 181
+        "line": 189
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.getProperty",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 194
+        "line": 205
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.setProperty",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 220
+        "line": 234
       },
       {
         "module": "ecs",
         "lua_name": "LRelationshipManager:type",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 261
+        "line": 275
       },
       {
         "module": "ecs",
         "lua_name": "LRelationshipManager:typeOf",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 266
+        "line": 280
       },
       {
         "module": "ecs",
         "lua_name": "LRelationshipManager:defineType",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 274
+        "line": 288
       },
       {
         "module": "ecs",
         "lua_name": "LRelationshipManager:removeType",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 291
+        "line": 305
       },
       {
         "module": "ecs",
         "lua_name": "LRelationshipManager:typeNames",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 298
+        "line": 312
       },
       {
         "module": "ecs",
         "lua_name": "LRelationshipManager:setValue",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 306
+        "line": 320
       },
       {
         "module": "ecs",
         "lua_name": "LRelationshipManager:getValue",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 315
+        "line": 329
       },
       {
         "module": "ecs",
         "lua_name": "LRelationshipManager:adjustValue",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 323
+        "line": 337
       },
       {
         "module": "ecs",
         "lua_name": "LRelationshipManager:setLevel",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 334
+        "line": 348
       },
       {
         "module": "ecs",
         "lua_name": "LRelationshipManager:getLevel",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 346
+        "line": 360
       },
       {
         "module": "ecs",
         "lua_name": "LRelationshipManager:removePair",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 356
+        "line": 370
       },
       {
         "module": "ecs",
         "lua_name": "LRelationshipManager:pairCount",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 363
+        "line": 377
       },
       {
         "module": "ecs",
         "lua_name": "LQueryView:type",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 374
+        "line": 388
       },
       {
         "module": "ecs",
         "lua_name": "LQueryView:typeOf",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 379
+        "line": 393
       },
       {
         "module": "ecs",
         "lua_name": "LQueryView:ids",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 385
+        "line": 399
       },
       {
         "module": "ecs",
         "lua_name": "LQueryView:lastTick",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 393
+        "line": 407
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:spawn",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 408
+        "line": 422
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:spawnObject",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 416
+        "line": 430
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:attachObject",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 447
+        "line": 461
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:kill",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 478
+        "line": 492
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:isAlive",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 485
+        "line": 499
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:set",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 493
+        "line": 507
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:get",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 504
+        "line": 518
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:has",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 512
+        "line": 526
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:remove",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 519
+        "line": 533
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:getComponents",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 526
+        "line": 540
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:query",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 533
+        "line": 547
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:getQueryChangeTick",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 546
+        "line": 560
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:newQueryView",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 554
+        "line": 568
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:each",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 577
+        "line": 591
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:getEntities",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 586
+        "line": 600
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:getEntityCount",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 592
+        "line": 606
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:addSystem",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 599
+        "line": 613
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:removeSystem",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 631
+        "line": 645
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:update",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 637
+        "line": 651
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:render",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 658
+        "line": 672
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:emit",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 684
+        "line": 698
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:getSystemCount",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 717
+        "line": 731
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:updatePhase",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 724
+        "line": 738
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:getDirtyEntities",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 746
+        "line": 760
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:queryMulti",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 758
+        "line": 772
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:snapshot",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 775
+        "line": 789
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:applySnapshot",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 781
+        "line": 795
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:takeSnapshotDiff",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 793
+        "line": 807
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:clear",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 834
+        "line": 848
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:release",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 837
+        "line": 851
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:addTag",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 844
+        "line": 858
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:removeTag",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 852
+        "line": 866
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:hasTag",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 861
+        "line": 875
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:getTags",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 868
+        "line": 882
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:getEntitiesByTag",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 875
+        "line": 889
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:setLayer",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 882
+        "line": 896
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:getLayer",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 890
+        "line": 904
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:getEntitiesByLayer",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 897
+        "line": 911
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:getEntitiesSorted",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 903
+        "line": 917
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:defineTag",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 910
+        "line": 924
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:bitmapTag",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 918
+        "line": 932
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:bitmapUntag",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 925
+        "line": 939
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:hasBitmapTag",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 934
+        "line": 948
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:queryBitmapTag",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 941
+        "line": 955
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:queryBitmapAny",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 948
+        "line": 962
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:queryBitmapAll",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 958
+        "line": 972
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:getBitmapTagBit",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 968
+        "line": 982
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:defineBlueprint",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 975
+        "line": 989
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:extendBlueprint",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 988
+        "line": 1002
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:spawnBlueprint",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1001
+        "line": 1015
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:hasBlueprint",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1013
+        "line": 1027
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:removeBlueprint",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1020
+        "line": 1034
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:listBlueprints",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1026
+        "line": 1040
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:getBlueprintComponents",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1033
+        "line": 1047
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:setParent",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1040
+        "line": 1054
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:getParent",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1050
+        "line": 1064
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:getChildren",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1057
+        "line": 1071
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:killRecursive",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1063
+        "line": 1077
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:queryNot",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1071
+        "line": 1085
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:serialize",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1090
+        "line": 1104
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:deserialize",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1096
+        "line": 1110
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:onComponentAdded",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1105
+        "line": 1119
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:onComponentRemoved",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1121
+        "line": 1135
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:flushObservers",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1135
+        "line": 1149
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:spawnBulk",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1183
+        "line": 1197
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:addRelation",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1196
+        "line": 1210
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:getRelated",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1207
+        "line": 1221
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:removeRelation",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1220
+        "line": 1234
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:clearRelations",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1230
+        "line": 1244
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:hasRelation",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1239
+        "line": 1253
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:type",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1248
+        "line": 1262
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:typeOf",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1253
+        "line": 1267
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.newUniverse",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1266
+        "line": 1280
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.newRelationshipManager",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1280
+        "line": 1294
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.defineClass",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1293
+        "line": 1307
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.hasClass",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1315
+        "line": 1329
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.getClass",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1326
+        "line": 1340
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.classNames",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1340
+        "line": 1354
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.clearClasses",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1347
+        "line": 1361
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.newObject",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1369
+        "line": 1383
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.getObject",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1382
+        "line": 1396
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.hasObject",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1399
+        "line": 1413
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.objectIds",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1407
+        "line": 1421
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.destroyObject",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1416
+        "line": 1430
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.clearObjects",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1429
+        "line": 1443
       },
       {
         "module": "effect",
@@ -80706,567 +80706,567 @@
         "lua_name": "LTileField:getSize",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1276
+        "line": 1277
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getTopology",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1281
+        "line": 1282
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:inBounds",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1291
+        "line": 1292
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getNeighbors",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1303
+        "line": 1304
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setRegionRect",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1331
+        "line": 1332
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setRegionCells",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1353
+        "line": 1354
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:removeRegion",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1374
+        "line": 1375
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:regionContains",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1385
+        "line": 1386
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRegionCells",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1397
+        "line": 1398
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRegionNames",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1408
+        "line": 1409
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:clear",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1418
+        "line": 1419
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:clearCell",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1428
+        "line": 1429
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getCell",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1445
+        "line": 1446
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setCell",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1463
+        "line": 1464
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setBlock",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1581
+        "line": 1582
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:blocks",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1600
+        "line": 1601
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setCost",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1616
+        "line": 1617
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getCost",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1635
+        "line": 1636
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:defineCategory",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1648
+        "line": 1649
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getCategory",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1673
+        "line": 1674
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getCategories",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1688
+        "line": 1689
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setCategoryBlock",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1699
+        "line": 1700
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:blocksCategory",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1712
+        "line": 1713
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setCategoryCost",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1722
+        "line": 1723
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getCategoryCost",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1735
+        "line": 1736
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setCategoryTransmission",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1745
+        "line": 1746
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getCategoryTransmission",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1758
+        "line": 1759
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setCategoryFilter",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1768
+        "line": 1769
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getCategoryFilter",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1786
+        "line": 1787
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:footprintPassable",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1801
+        "line": 1802
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getVersion",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1815
+        "line": 1816
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setSunOcclusion",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1825
+        "line": 1826
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getSunOcclusion",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1842
+        "line": 1843
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setModifier",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1854
+        "line": 1855
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getModifier",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1869
+        "line": 1870
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setProfile",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1881
+        "line": 1882
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getProfile",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1896
+        "line": 1897
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:removeProfile",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1908
+        "line": 1909
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:removeModifier",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1916
+        "line": 1917
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:defineSlot",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1923
+        "line": 1924
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:removeSlot",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1934
+        "line": 1935
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:hasSlot",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1942
+        "line": 1943
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setRef",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1953
+        "line": 1954
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRef",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1993
+        "line": 1994
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:applyModifier",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2014
+        "line": 2015
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:applyProfile",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2031
+        "line": 2032
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:clearModifier",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2049
+        "line": 2050
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getModifiers",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2066
+        "line": 2067
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:applyTilesetObject",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2088
+        "line": 2089
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:applyTilesetObjectLayer",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2136
+        "line": 2137
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRefProperty",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2197
+        "line": 2198
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRefPropertyNumber",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2248
+        "line": 2249
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRefPropertyBool",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2298
+        "line": 2299
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRefProperties",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2347
+        "line": 2348
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:clearRef",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2400
+        "line": 2401
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRefSlots",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2417
+        "line": 2418
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:line",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2429
+        "line": 2430
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:clearLine",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2450
+        "line": 2451
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:firstBlocker",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2470
+        "line": 2471
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:exportBlockLayer",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2499
+        "line": 2500
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:exportCostLayer",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2514
+        "line": 2515
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:writeBlockLayer",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2529
+        "line": 2530
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:writeCostLayer",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2551
+        "line": 2552
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:exportRefLayer",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2572
+        "line": 2573
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:writeRefLayer",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2586
+        "line": 2587
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:type",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2605
+        "line": 2606
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:typeOf",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2611
+        "line": 2612
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:getMapSize",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2624
+        "line": 2625
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:getFieldSize",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2633
+        "line": 2634
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:getTopology",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2640
+        "line": 2641
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:inBounds",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2650
+        "line": 2651
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:getField",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2669
+        "line": 2670
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:setField",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2689
+        "line": 2690
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:type",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2706
+        "line": 2707
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:typeOf",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2712
+        "line": 2713
       },
       {
         "module": "tilefield",
         "lua_name": "lurek.tilefield.new",
         "kind": "function",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2726
+        "line": 2727
       },
       {
         "module": "tilefield",
         "lua_name": "lurek.tilefield.fromProvider",
         "kind": "function",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2752
+        "line": 2753
       },
       {
         "module": "tilefield",
         "lua_name": "lurek.tilefield.newFieldMap",
         "kind": "function",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2766
+        "line": 2767
       },
       {
         "module": "tilefield",
         "lua_name": "lurek.tilefield.fromTileMap",
         "kind": "function",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2812
+        "line": 2813
       },
       {
         "module": "tilefield",
         "lua_name": "lurek.tilefield.createPhysicsFromTileset",
         "kind": "function",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2939
+        "line": 2940
       },
       {
         "module": "tilefield",
         "lua_name": "lurek.tilefield.createLightsFromTileset",
         "kind": "function",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3004
+        "line": 3005
       },
       {
         "module": "tilelight",
@@ -82372,322 +82372,322 @@
         "lua_name": "LTileCatalog:getIds",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 586
+        "line": 589
       },
       {
         "module": "tileset",
         "lua_name": "LTileCatalog:getTileset",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 597
+        "line": 600
       },
       {
         "module": "tileset",
         "lua_name": "LTileCatalog:getObject",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 611
+        "line": 614
       },
       {
         "module": "tileset",
         "lua_name": "LTileCatalog:getVisual",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 625
+        "line": 628
       },
       {
         "module": "tileset",
         "lua_name": "LTileCatalog:type",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 634
+        "line": 637
       },
       {
         "module": "tileset",
         "lua_name": "LTileCatalog:typeOf",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 638
+        "line": 641
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getFirstGid",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 648
+        "line": 651
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getTileCount",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 653
+        "line": 656
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getColumns",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 658
+        "line": 661
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getTileWidth",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 663
+        "line": 666
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getTileHeight",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 668
+        "line": 671
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getTileDimensions",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 674
+        "line": 677
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getTextureDimensions",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 680
+        "line": 683
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getSpacing",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 686
+        "line": 689
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getMargin",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 691
+        "line": 694
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getQuad",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 697
+        "line": 700
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:setProfile",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 715
+        "line": 718
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getProfile",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 733
+        "line": 736
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:setPhysicsShape",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 748
+        "line": 751
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getPhysicsShape",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 766
+        "line": 769
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:setAnimation",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 782
+        "line": 785
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getAnimation",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 814
+        "line": 817
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:setObject",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 839
+        "line": 842
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getObject",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 951
+        "line": 954
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:removeObject",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1087
+        "line": 1090
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getObjectNames",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1092
+        "line": 1095
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:setTileObject",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1103
+        "line": 1106
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getTileObject",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1121
+        "line": 1124
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:setProperty",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1138
+        "line": 1141
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getProperty",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1158
+        "line": 1161
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getPropertyNumber",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1174
+        "line": 1177
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getPropertyBool",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1193
+        "line": 1196
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getProperties",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1211
+        "line": 1214
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:setAutoTileRule",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1230
+        "line": 1233
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getAutoTileId",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1248
+        "line": 1251
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:setAutoTileRule8",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1262
+        "line": 1265
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getAutoTileId8",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1280
+        "line": 1283
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:setAutoTileMode",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1293
+        "line": 1296
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getAutoTileMode",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1304
+        "line": 1307
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:setTerrainProfile",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1310
+        "line": 1313
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getTerrainProfile",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1352
+        "line": 1355
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:type",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1369
+        "line": 1372
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:typeOf",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1373
+        "line": 1376
       },
       {
         "module": "tileset",
         "lua_name": "lurek.tileset.newTileSet",
         "kind": "function",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1390
+        "line": 1394
       },
       {
         "module": "tileset",
         "lua_name": "lurek.tileset.newCatalog",
         "kind": "function",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1420
+        "line": 1424
       },
       {
         "module": "tileset",
         "lua_name": "lurek.tileset.fromProvider",
         "kind": "function",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1442
+        "line": 1446
       },
       {
         "module": "timer",

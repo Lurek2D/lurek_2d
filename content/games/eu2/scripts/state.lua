@@ -67,9 +67,32 @@ local function province_blob(province)
     }, " "))
 end
 
+local function sorted_numeric_keys(tbl)
+    local keys = {}
+    for key in pairs(tbl or {}) do
+        if type(key) == "number" then
+            keys[#keys + 1] = key
+        end
+    end
+    table.sort(keys)
+    return keys
+end
+
+local function sorted_string_keys(tbl)
+    local keys = {}
+    for key in pairs(tbl or {}) do
+        if type(key) == "string" then
+            keys[#keys + 1] = key
+        end
+    end
+    table.sort(keys)
+    return keys
+end
+
 local function find_start_province(state, army_spec)
     local best = nil
-    for id, province in pairs(state.provinces) do
+    for _, id in ipairs(sorted_numeric_keys(state.provinces)) do
+        local province = state.provinces[id]
         if province.owner == army_spec.tag then
             best = best or id
             local blob = province_blob(province)
@@ -196,7 +219,8 @@ function M.new(reg, scenario)
         return string.format("%s %04d", MONTH_NAMES[self.date.month], self.date.year)
     end
 
-    for tag, country in pairs(scenario.countries) do
+    for _, tag in ipairs(sorted_string_keys(scenario.countries)) do
+        local country = scenario.countries[tag]
         state.countries[tag] = country_copy(country)
     end
 
@@ -299,13 +323,15 @@ function M.monthly_tick(state)
         state.date.month = 1
         state.date.year = state.date.year + 1
     end
-    for tag, country in pairs(state.countries) do
+    for _, tag in ipairs(sorted_string_keys(state.countries)) do
+        local country = state.countries[tag]
         if tag ~= "SEA" and tag ~= "NEU" then
             country.treasury = country.treasury + math.floor((country.monthly_income or 0) * 0.12)
             country.manpower = country.manpower + math.floor(country.monthly_manpower or 0)
         end
     end
-    for _, province in pairs(state.provinces) do
+    for _, id in ipairs(sorted_numeric_keys(state.provinces)) do
+        local province = state.provinces[id]
         if province.owner ~= "SEA" then
             province.unrest = math.max(0, province.unrest - 0.08)
         end

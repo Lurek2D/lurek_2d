@@ -5,8 +5,11 @@
 //! New submodules belong here only when they add durable behavior rather than temporary test scaffolding.
 //! Keep this index synchronized with specs, examples, and Lua bindings whenever public ownership changes.
 
+/// Color value and conversion helpers for tile-light calculations.
 pub mod color;
+/// Grid storage and traversal types for tile-light maps.
 pub mod map;
+/// Light source models, modulation, and propagation policies.
 pub mod source;
 
 pub use color::LightColor;

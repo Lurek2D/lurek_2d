@@ -793,11 +793,12 @@ end
 do
 
     local g = lurek.globe.new("tex_globe")
+    local tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     local globe_name = g:getName()
     local province_count = g:provinceCount()
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-    g:setProvinceTexture(1, 42, 0.0, 0.0, 1.0, 1.0)
+    g:setProvinceTexture(1, tex, 0.0, 0.0, 1.0, 1.0)
     lurek.log.info("province texture set")
 end
 
@@ -805,11 +806,12 @@ end
 do
 
     local g = lurek.globe.new("ctex_globe")
+    local tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     g:addProvince({id = 99, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
     local globe_name = g:getName()
     local province_count = g:provinceCount()
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
-    g:setProvinceTexture(1, 42, 0, 0, 1, 1)
+    g:setProvinceTexture(1, tex, 0, 0, 1, 1)
     g:clearProvinceTexture(1)
     lurek.log.info("texture cleared")
 end
@@ -931,7 +933,7 @@ do
     local reg = lurek.globe.newRegistry()
     local registry_type = reg:type()
     local registry_names = reg:names()
-    local created = reg:new("venus", { radius = 0.9 })
+    local created = reg:new("venus", { radius = 1.0 })
     lurek.log.info("registry new = " .. tostring(reg:new("mars", { radius = 1.0 })))
 end
 
@@ -1304,6 +1306,7 @@ end
 do
 
     local g = lurek.globe.new("marker_icon_globe")
+    local tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
     g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
     g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
@@ -1312,7 +1315,7 @@ do
     local a = g:addMarker("city", 0, 0, "Alpha")
     g:addMarker("city", 0, 10, "Beta")
     g:setCamera(0, 0, 1.2)
-    local ok = g:setMarkerIconTexture(a, 7)
+    local ok = g:setMarkerIconTexture(a, tex)
     local id = g:pickMarker(320, 180, 24)
     local surface = g:pickSurface(320, 180, 24)
     lurek.log.info("set marker icon texture = " .. tostring(ok))
@@ -1449,8 +1452,9 @@ end
 do
 
     local g = lurek.globe.new("example_set_terrain_patch_texture")
+    local tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     g:addTerrainPatch({ id = 6, vertices = {{-10,-10},{-10,10},{10,10},{10,-10}} })
-    local ok = g:setTerrainPatchTexture(6, 0, 0.0, 0.0, 1.0, 1.0)
+    local ok = g:setTerrainPatchTexture(6, tex, 0.0, 0.0, 1.0, 1.0)
     local raw = g:getTerrainPatchAttr(6, "__texture_raw")
     local count = g:terrainPatchCount()
     lurek.log.info("terrain texture set=" .. tostring(ok) .. " raw=" .. tostring(raw) .. " count=" .. tostring(count))
@@ -1460,8 +1464,9 @@ end
 do
 
     local g = lurek.globe.new("example_clear_terrain_patch_texture")
+    local tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     g:addTerrainPatch({ id = 7, vertices = {{-10,-10},{-10,10},{10,10},{10,-10}} })
-    g:setTerrainPatchTexture(7, 0, 0.0, 0.0, 1.0, 1.0)
+    g:setTerrainPatchTexture(7, tex, 0.0, 0.0, 1.0, 1.0)
     local ok = g:clearTerrainPatchTexture(7)
     local raw = g:getTerrainPatchAttr(7, "__texture_raw")
     lurek.log.info("terrain texture cleared=" .. tostring(ok) .. " raw=" .. tostring(raw))

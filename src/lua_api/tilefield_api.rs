@@ -552,6 +552,7 @@ fn profile_modifier_from_table(
     TileFieldLuaParser::profile_modifier_from_table(name, table, api)
 }
 
+/// Builds a native tile field from a Lua provider table for boundary-owned APIs.
 pub(crate) fn field_from_provider(provider: LuaTable, api: &str) -> LuaResult<TileField> {
     TileFieldLuaParser::field_from_provider(provider, api)
 }
@@ -1368,7 +1369,7 @@ impl LuaUserData for LuaTileField {
         );
 
         // -- removeRegion --
-        /// Removes a named region.
+        /// Removes a named region definition and its stored cell membership from this field.
         /// @param | name | string | Region name.
         /// @return | boolean | True when the region existed.
         methods.add_method("removeRegion", |_, this, name: String| {

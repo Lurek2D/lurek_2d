@@ -2661,6 +2661,8 @@ impl LurekApp {
         let mut callbacks: Vec<(&'static str, u32, Option<String>, Option<f32>)> = Vec::new();
         for id in 0..4usize {
             let mut xstate = XINPUT_STATE::default();
+            // SAFETY: XInput controller indices are bounded to 0..=3 here and `xstate` is a valid
+            // writable out-parameter for the duration of the native call.
             let connected = unsafe { XInputGetState(id as u32, &mut xstate) == 0 };
             let was_connected = state_rc
                 .borrow()
@@ -2820,6 +2822,8 @@ fn process_gamepad_vibration_requests(requests: Vec<crate::input::GamepadVibrati
             wLeftMotorSpeed: (request.low_freq.clamp(0.0, 1.0) * u16::MAX as f32) as u16,
             wRightMotorSpeed: (request.high_freq.clamp(0.0, 1.0) * u16::MAX as f32) as u16,
         };
+        // SAFETY: request ids outside the supported 0..=3 range are filtered above, and the
+        // vibration struct is initialized stack storage valid for this immediate FFI call.
         unsafe {
             let _ = XInputSetState(request.id as u32, &vibration);
         }
@@ -2828,6 +2832,8 @@ fn process_gamepad_vibration_requests(requests: Vec<crate::input::GamepadVibrati
         thread::spawn(move || {
             thread::sleep(Duration::from_millis(duration_ms as u64));
             let stop = XINPUT_VIBRATION::default();
+            // SAFETY: `id` was range-checked before the thread was spawned, and `stop` is valid
+            // stack storage for the duration of this shutdown XInput call.
             unsafe {
                 let _ = XInputSetState(id, &stop);
             }

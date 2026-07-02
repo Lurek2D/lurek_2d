@@ -298,12 +298,12 @@ impl LuaUserData for LuaProcgenGrid {
         methods.add_method("getSize", |_, this, ()| Ok((this.width, this.height)));
 
         // -- getWidth --
-        /// Returns grid width.
+        /// Returns the generated grid width in cells for this noise result.
         /// @return | integer | Width.
         methods.add_method("getWidth", |_, this, ()| Ok(this.width));
 
         // -- getHeight --
-        /// Returns grid height.
+        /// Returns the generated grid height in cells for this noise result.
         /// @return | integer | Height.
         methods.add_method("getHeight", |_, this, ()| Ok(this.height));
 
@@ -435,12 +435,12 @@ impl LuaUserData for LuaProcgenScalarGrid {
         methods.add_method("getSize", |_, this, ()| Ok((this.width, this.height)));
 
         // -- getWidth --
-        /// Returns scalar grid width.
+        /// Returns the scalar grid width in cells for this generated field.
         /// @return | integer | Width.
         methods.add_method("getWidth", |_, this, ()| Ok(this.width));
 
         // -- getHeight --
-        /// Returns scalar grid height.
+        /// Returns the scalar grid height in cells for this generated field.
         /// @return | integer | Height.
         methods.add_method("getHeight", |_, this, ()| Ok(this.height));
 

@@ -246,16 +246,23 @@ end
 
 ### `lurek.ecs.getProperty`
 
+Returns the current value of one object property, honoring any registered getter override first.
+
 ```lua
-lurek.ecs.getProperty(this, name)
+lurek.ecs.getProperty(name)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `this` | any |  |
-| `name` | any |  |
+| `name` | string | Property name to read from the object or its property metadata table. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| any | Current property value, getter result, or `nil` when the property is unset. |
 
 **Example**
 
@@ -345,16 +352,23 @@ end
 
 ### `lurek.ecs.isA`
 
+Returns whether this object inherits from or matches the supplied ECS class name.
+
 ```lua
-lurek.ecs.isA(this, candidate)
+lurek.ecs.isA(candidate)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `this` | any |  |
-| `candidate` | any |  |
+| `candidate` | string | ECS class name to compare against the object's registered class hierarchy. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the object class matches or extends the supplied class. |
 
 **Example**
 
@@ -502,17 +516,18 @@ end
 
 ### `lurek.ecs.setProperty`
 
+Writes one object property, delegating to a registered setter override when the property defines one.
+
 ```lua
-lurek.ecs.setProperty(this, name, value)
+lurek.ecs.setProperty(name, value)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `this` | any |  |
-| `name` | any |  |
-| `value` | any |  |
+| `name` | string | Property name to update on the object table. |
+| `value` | any | New Lua value written directly or passed through the property's setter. |
 
 **Example**
 
@@ -532,6 +547,8 @@ end
 
 ### `lurek.ecs.type`
 
+Returns the registered ECS class name for this object table.
+
 ```lua
 lurek.ecs.type(this)
 ```
@@ -541,6 +558,12 @@ lurek.ecs.type(this)
 | Name | Type | Description |
 |------|------|-------------|
 | `this` | any |  |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Class name assigned when the object was created. |
 
 **Example**
 
@@ -559,16 +582,23 @@ end
 
 ### `lurek.ecs.typeOf`
 
+Returns whether this object matches a supported Lua-visible type or ECS class name.
+
 ```lua
-lurek.ecs.typeOf(this, candidate)
+lurek.ecs.typeOf(candidate)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `this` | any |  |
-| `candidate` | any |  |
+| `candidate` | string | Type or class name to compare against `LObject` and the object's ECS class hierarchy. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied name matches `LObject` or the object's class ancestry. |
 
 **Example**
 

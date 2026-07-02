@@ -302,6 +302,8 @@ fn show_message_box_platform(
     };
     let title_w = widestring(title);
     let message_w = widestring(message);
+    // SAFETY: `title_w` and `message_w` are live NUL-terminated UTF-16 buffers for the duration
+    // of the call, and a null owner window is permitted for this simple process-wide message box.
     let result = unsafe {
         MessageBoxW(
             std::ptr::null_mut(),

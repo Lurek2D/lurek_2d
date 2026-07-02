@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-07-01T19:12:00.796945+00:00",
+    "generated": "2026-07-01T20:47:44.043971+00:00",
     "generator": "tools/gen_lua_api_data.py",
     "version": "1.1.0",
     "stats": {
@@ -12,8 +12,8 @@
   "lua_api": {
     "summary": {
       "total_functions": 6475,
-      "documented": 6470,
-      "coverage_pct": 99.9,
+      "documented": 6475,
+      "coverage_pct": 100.0,
       "modules": 71
     },
     "enums": {},
@@ -40691,17 +40691,17 @@
             "lua_name": "lurek.ecs.isA",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
-            "params_doc": "",
-            "returns_doc": "",
+            "description": "Returns whether this object inherits from or matches the supplied ECS class name.",
+            "full_doc": "Returns whether this object inherits from or matches the supplied ECS class name.\n@param | candidate | string | ECS class name to compare against the object's registered class hierarchy.\n@return | boolean | True when the object class matches or extends the supplied class.",
+            "params_doc": "- `candidate` â€” `string`: ECS class name to compare against the object's registered class hierarchy.",
+            "returns_doc": "boolean",
             "inferred_sig": "(this, candidate)",
             "typed_params": [
               [
-                "this",
-                "any",
+                "candidate",
+                "string",
                 false,
-                ""
+                "ECS class name to compare against the object's registered class hierarchy."
               ],
               [
                 "candidate",
@@ -40710,9 +40710,9 @@
                 ""
               ]
             ],
-            "inferred_return": "",
-            "return_description": "",
-            "line": 169,
+            "inferred_return": "boolean",
+            "return_description": "True when the object class matches or extends the supplied class.",
+            "line": 172,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -40720,10 +40720,10 @@
             "lua_name": "lurek.ecs.type",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Returns the registered ECS class name for this object table.",
+            "full_doc": "Returns the registered ECS class name for this object table.\n@return | string | Class name assigned when the object was created.",
             "params_doc": "",
-            "returns_doc": "",
+            "returns_doc": "string",
             "inferred_sig": "(this)",
             "typed_params": [
               [
@@ -40733,9 +40733,9 @@
                 ""
               ]
             ],
-            "inferred_return": "",
-            "return_description": "",
-            "line": 176,
+            "inferred_return": "string",
+            "return_description": "Class name assigned when the object was created.",
+            "line": 181,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -40743,17 +40743,17 @@
             "lua_name": "lurek.ecs.typeOf",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
-            "params_doc": "",
-            "returns_doc": "",
+            "description": "Returns whether this object matches a supported Lua-visible type or ECS class name.",
+            "full_doc": "Returns whether this object matches a supported Lua-visible type or ECS class name.\n@param | candidate | string | Type or class name to compare against `LObject` and the object's ECS class hierarchy.\n@return | boolean | True when the supplied name matches `LObject` or the object's class ancestry.",
+            "params_doc": "- `candidate` â€” `string`: Type or class name to compare against `LObject` and the object's ECS class hierarchy.",
+            "returns_doc": "boolean",
             "inferred_sig": "(this, candidate)",
             "typed_params": [
               [
-                "this",
-                "any",
+                "candidate",
+                "string",
                 false,
-                ""
+                "Type or class name to compare against `LObject` and the object's ECS class hierarchy."
               ],
               [
                 "candidate",
@@ -40762,9 +40762,9 @@
                 ""
               ]
             ],
-            "inferred_return": "",
-            "return_description": "",
-            "line": 181,
+            "inferred_return": "boolean",
+            "return_description": "True when the supplied name matches `LObject` or the object's class ancestry.",
+            "line": 189,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -40772,17 +40772,17 @@
             "lua_name": "lurek.ecs.getProperty",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
-            "params_doc": "",
-            "returns_doc": "",
+            "description": "Returns the current value of one object property, honoring any registered getter override first.",
+            "full_doc": "Returns the current value of one object property, honoring any registered getter override first.\n@param | name | string | Property name to read from the object or its property metadata table.\n@return | any | Current property value, getter result, or `nil` when the property is unset.",
+            "params_doc": "- `name` â€” `string`: Property name to read from the object or its property metadata table.",
+            "returns_doc": "any",
             "inferred_sig": "(this, name)",
             "typed_params": [
               [
-                "this",
-                "any",
+                "name",
+                "string",
                 false,
-                ""
+                "Property name to read from the object or its property metadata table."
               ],
               [
                 "name",
@@ -40791,9 +40791,9 @@
                 ""
               ]
             ],
-            "inferred_return": "",
-            "return_description": "",
-            "line": 194,
+            "inferred_return": "any",
+            "return_description": "Current property value, getter result, or `nil` when the property is unset.",
+            "line": 205,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -40801,23 +40801,23 @@
             "lua_name": "lurek.ecs.setProperty",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
-            "params_doc": "",
+            "description": "Writes one object property, delegating to a registered setter override when the property defines one.",
+            "full_doc": "Writes one object property, delegating to a registered setter override when the property defines one.\n@param | name | string | Property name to update on the object table.\n@param | value | any | New Lua value written directly or passed through the property's setter.",
+            "params_doc": "- `name` â€” `string`: Property name to update on the object table.\n- `value` â€” `any`: New Lua value written directly or passed through the property's setter.",
             "returns_doc": "",
             "inferred_sig": "(this, name, value)",
             "typed_params": [
               [
-                "this",
-                "any",
+                "name",
+                "string",
                 false,
-                ""
+                "Property name to update on the object table."
               ],
               [
-                "name",
+                "value",
                 "any",
                 false,
-                ""
+                "New Lua value written directly or passed through the property's setter."
               ],
               [
                 "value",
@@ -40828,7 +40828,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 220,
+            "line": 234,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -40844,7 +40844,7 @@
             "typed_params": [],
             "inferred_return": "LUniverse",
             "return_description": "New universe handle.",
-            "line": 1266,
+            "line": 1280,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -40860,7 +40860,7 @@
             "typed_params": [],
             "inferred_return": "LRelationshipManager",
             "return_description": "New relationship manager handle owned by `lurek.ecs`.",
-            "line": 1280,
+            "line": 1294,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -40889,7 +40889,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1293,
+            "line": 1307,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -40912,7 +40912,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when the class exists.",
-            "line": 1315,
+            "line": 1329,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -40935,7 +40935,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Metadata table with name, extends, and tags; nil when unknown.",
-            "line": 1326,
+            "line": 1340,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -40951,7 +40951,7 @@
             "typed_params": [],
             "inferred_return": "string[]",
             "return_description": "Registered class names.",
-            "line": 1340,
+            "line": 1354,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -40967,7 +40967,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 1347,
+            "line": 1361,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -40996,7 +40996,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Object table with type, typeOf, isA, getProperty, and setProperty methods.",
-            "line": 1369,
+            "line": 1383,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -41019,7 +41019,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Object table, or nil when not found.",
-            "line": 1382,
+            "line": 1396,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -41042,7 +41042,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when the object id is live.",
-            "line": 1399,
+            "line": 1413,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -41058,7 +41058,7 @@
             "typed_params": [],
             "inferred_return": "integer[]",
             "return_description": "Object ids.",
-            "line": 1407,
+            "line": 1421,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -41081,7 +41081,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when an object was removed.",
-            "line": 1416,
+            "line": 1430,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -41097,7 +41097,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 1429,
+            "line": 1443,
             "file": "src/lua_api/ecs_api.rs"
           }
         ],
@@ -41119,7 +41119,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LRelationshipManager`.",
-                "line": 261,
+                "line": 275,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41142,7 +41142,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 266,
+                "line": 280,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41177,7 +41177,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 274,
+                "line": 288,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41200,7 +41200,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 291,
+                "line": 305,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41216,7 +41216,7 @@
                 "typed_params": [],
                 "inferred_return": "string[]",
                 "return_description": "Array table of registered relationship type names.",
-                "line": 298,
+                "line": 312,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41251,7 +41251,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 306,
+                "line": 320,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41280,7 +41280,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Numeric value stored for the pair, or zero when unset.",
-                "line": 315,
+                "line": 329,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41315,7 +41315,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 323,
+                "line": 337,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41356,7 +41356,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the type exists and the supplied level is valid for that type.",
-                "line": 334,
+                "line": 348,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41391,7 +41391,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Stored level label or the type default when available, otherwise `nil` if the type is unknown.",
-                "line": 346,
+                "line": 360,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41420,7 +41420,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 356,
+                "line": 370,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41436,7 +41436,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Count of stored relationship pairs.",
-                "line": 363,
+                "line": 377,
                 "file": "src/lua_api/ecs_api.rs"
               }
             ]
@@ -41458,7 +41458,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LQueryView`.",
-                "line": 374,
+                "line": 388,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41481,7 +41481,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 379,
+                "line": 393,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41497,7 +41497,7 @@
                 "typed_params": [],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of matching entity ids.",
-                "line": 385,
+                "line": 399,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41513,7 +41513,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Query-change tick for the cached result set.",
-                "line": 393,
+                "line": 407,
                 "file": "src/lua_api/ecs_api.rs"
               }
             ]
@@ -41535,7 +41535,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Numeric entity id for the spawned entity.",
-                "line": 408,
+                "line": 422,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41564,7 +41564,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Entity id that received the object component.",
-                "line": 416,
+                "line": 430,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41593,7 +41593,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 447,
+                "line": 461,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41616,7 +41616,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 478,
+                "line": 492,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41639,7 +41639,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the entity is alive.",
-                "line": 485,
+                "line": 499,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41674,7 +41674,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 493,
+                "line": 507,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41703,7 +41703,7 @@
                 ],
                 "inferred_return": "table|number|string|boolean|nil",
                 "return_description": "Stored component value, or nil when the entity does not have that component.",
-                "line": 504,
+                "line": 518,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41732,7 +41732,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the component exists on the entity.",
-                "line": 512,
+                "line": 526,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41761,7 +41761,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 519,
+                "line": 533,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41784,7 +41784,7 @@
                 ],
                 "inferred_return": "string[]",
                 "return_description": "Component name strings.",
-                "line": 526,
+                "line": 540,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41807,7 +41807,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of matching entity ids.",
-                "line": 533,
+                "line": 547,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41823,7 +41823,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Monotonic world query-change tick.",
-                "line": 546,
+                "line": 560,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41852,7 +41852,7 @@
                 ],
                 "inferred_return": "LQueryView",
                 "return_description": "Cached query-view handle bound to this universe.",
-                "line": 554,
+                "line": 568,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41881,7 +41881,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 577,
+                "line": 591,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41897,7 +41897,7 @@
                 "typed_params": [],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of live entity ids.",
-                "line": 586,
+                "line": 600,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41913,7 +41913,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Live entity count.",
-                "line": 592,
+                "line": 606,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41942,7 +41942,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 599,
+                "line": 613,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41965,7 +41965,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 631,
+                "line": 645,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41988,7 +41988,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 637,
+                "line": 651,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42004,7 +42004,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 658,
+                "line": 672,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42033,7 +42033,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 684,
+                "line": 698,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42049,7 +42049,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Registered system count.",
-                "line": 717,
+                "line": 731,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42078,7 +42078,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 724,
+                "line": 738,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42094,7 +42094,7 @@
                 "typed_params": [],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of dirty entity ids.",
-                "line": 746,
+                "line": 760,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42123,7 +42123,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 758,
+                "line": 772,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42139,7 +42139,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Snapshot table containing entities and component state.",
-                "line": 775,
+                "line": 789,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42162,7 +42162,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 781,
+                "line": 795,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42178,7 +42178,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Diff table with added_components, removed_components, deleted_entities, and dirty_entities arrays.",
-                "line": 793,
+                "line": 807,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42194,7 +42194,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 834,
+                "line": 848,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42210,7 +42210,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 837,
+                "line": 851,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42239,7 +42239,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 844,
+                "line": 858,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42268,7 +42268,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 852,
+                "line": 866,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42297,7 +42297,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the entity has the tag.",
-                "line": 861,
+                "line": 875,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42320,7 +42320,7 @@
                 ],
                 "inferred_return": "string[]",
                 "return_description": "Tag names.",
-                "line": 868,
+                "line": 882,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42343,7 +42343,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of matching entity ids.",
-                "line": 875,
+                "line": 889,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42372,7 +42372,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 882,
+                "line": 896,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42395,7 +42395,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Layer value, using the ECS default when no explicit layer exists.",
-                "line": 890,
+                "line": 904,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42418,7 +42418,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of matching entity ids.",
-                "line": 897,
+                "line": 911,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42434,7 +42434,7 @@
                 "typed_params": [],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of sorted entity ids.",
-                "line": 903,
+                "line": 917,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42457,7 +42457,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Bit index assigned to the tag.",
-                "line": 910,
+                "line": 924,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42486,7 +42486,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Bit index used by the bitmap tag.",
-                "line": 918,
+                "line": 932,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42515,7 +42515,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 925,
+                "line": 939,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42544,7 +42544,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the entity has the bitmap tag.",
-                "line": 934,
+                "line": 948,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42567,7 +42567,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of matching entity ids.",
-                "line": 941,
+                "line": 955,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42590,7 +42590,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of matching entity ids.",
-                "line": 948,
+                "line": 962,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42613,7 +42613,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of matching entity ids.",
-                "line": 958,
+                "line": 972,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42636,7 +42636,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Bit index when the tag exists, or nil when the tag is undefined.",
-                "line": 968,
+                "line": 982,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42665,7 +42665,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 975,
+                "line": 989,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42700,7 +42700,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 988,
+                "line": 1002,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42729,7 +42729,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Entity id created from the blueprint.",
-                "line": 1001,
+                "line": 1015,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42752,7 +42752,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the blueprint is registered.",
-                "line": 1013,
+                "line": 1027,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42775,7 +42775,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when a blueprint was removed.",
-                "line": 1020,
+                "line": 1034,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42791,7 +42791,7 @@
                 "typed_params": [],
                 "inferred_return": "string[]",
                 "return_description": "Blueprint names.",
-                "line": 1026,
+                "line": 1040,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42814,7 +42814,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Blueprint component table.",
-                "line": 1033,
+                "line": 1047,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42843,7 +42843,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1040,
+                "line": 1054,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42866,7 +42866,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Parent entity id, or nil when the entity has no parent.",
-                "line": 1050,
+                "line": 1064,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42889,7 +42889,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of child entity ids.",
-                "line": 1057,
+                "line": 1071,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42912,7 +42912,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1063,
+                "line": 1077,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42941,7 +42941,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of matching entity ids.",
-                "line": 1071,
+                "line": 1085,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42957,7 +42957,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Snapshot table containing entities and component state.",
-                "line": 1090,
+                "line": 1104,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42980,7 +42980,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1096,
+                "line": 1110,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43009,7 +43009,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1105,
+                "line": 1119,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43038,7 +43038,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1121,
+                "line": 1135,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43054,7 +43054,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1135,
+                "line": 1149,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43089,7 +43089,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of spawned entity ids.",
-                "line": 1183,
+                "line": 1197,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43124,7 +43124,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1196,
+                "line": 1210,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43153,7 +43153,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of related target entity ids.",
-                "line": 1207,
+                "line": 1221,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43188,7 +43188,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1220,
+                "line": 1234,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43217,7 +43217,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1230,
+                "line": 1244,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43252,7 +43252,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the relation exists.",
-                "line": 1239,
+                "line": 1253,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43268,7 +43268,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LUniverse`.",
-                "line": 1248,
+                "line": 1262,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43291,7 +43291,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 1253,
+                "line": 1267,
                 "file": "src/lua_api/ecs_api.rs"
               }
             ]
@@ -109249,8 +109249,8 @@
                 "lua_name": "LProcgenGrid:getWidth",
                 "kind": "method",
                 "owner_type": "LProcgenGrid",
-                "description": "Returns grid width.",
-                "full_doc": "Returns grid width.\n@return | integer | Width.",
+                "description": "Returns the generated grid width in cells for this noise result.",
+                "full_doc": "Returns the generated grid width in cells for this noise result.\n@return | integer | Width.",
                 "params_doc": "",
                 "returns_doc": "integer",
                 "inferred_sig": "()",
@@ -109265,8 +109265,8 @@
                 "lua_name": "LProcgenGrid:getHeight",
                 "kind": "method",
                 "owner_type": "LProcgenGrid",
-                "description": "Returns grid height.",
-                "full_doc": "Returns grid height.\n@return | integer | Height.",
+                "description": "Returns the generated grid height in cells for this noise result.",
+                "full_doc": "Returns the generated grid height in cells for this noise result.\n@return | integer | Height.",
                 "params_doc": "",
                 "returns_doc": "integer",
                 "inferred_sig": "()",
@@ -109455,8 +109455,8 @@
                 "lua_name": "LProcgenScalarGrid:getWidth",
                 "kind": "method",
                 "owner_type": "LProcgenScalarGrid",
-                "description": "Returns scalar grid width.",
-                "full_doc": "Returns scalar grid width.\n@return | integer | Width.",
+                "description": "Returns the scalar grid width in cells for this generated field.",
+                "full_doc": "Returns the scalar grid width in cells for this generated field.\n@return | integer | Width.",
                 "params_doc": "",
                 "returns_doc": "integer",
                 "inferred_sig": "()",
@@ -109471,8 +109471,8 @@
                 "lua_name": "LProcgenScalarGrid:getHeight",
                 "kind": "method",
                 "owner_type": "LProcgenScalarGrid",
-                "description": "Returns scalar grid height.",
-                "full_doc": "Returns scalar grid height.\n@return | integer | Height.",
+                "description": "Returns the scalar grid height in cells for this generated field.",
+                "full_doc": "Returns the scalar grid height in cells for this generated field.\n@return | integer | Height.",
                 "params_doc": "",
                 "returns_doc": "integer",
                 "inferred_sig": "()",
@@ -133801,7 +133801,7 @@
             ],
             "inferred_return": "LTileField",
             "return_description": "New tilefield handle.",
-            "line": 2726,
+            "line": 2727,
             "file": "src/lua_api/tilefield_api.rs"
           },
           {
@@ -133824,7 +133824,7 @@
             ],
             "inferred_return": "LTileField",
             "return_description": "New tilefield copied from the provider.",
-            "line": 2752,
+            "line": 2753,
             "file": "src/lua_api/tilefield_api.rs"
           },
           {
@@ -133847,7 +133847,7 @@
             ],
             "inferred_return": "LTileFieldMap",
             "return_description": "New tilefield map handle.",
-            "line": 2766,
+            "line": 2767,
             "file": "src/lua_api/tilefield_api.rs"
           },
           {
@@ -133876,7 +133876,7 @@
             ],
             "inferred_return": "LTileField",
             "return_description": "New tilefield copied from the tilemap layer.",
-            "line": 2812,
+            "line": 2813,
             "file": "src/lua_api/tilefield_api.rs"
           },
           {
@@ -133923,7 +133923,7 @@
             ],
             "inferred_return": "LBody[]",
             "return_description": "Created physics body handles in row-major order.",
-            "line": 2939,
+            "line": 2940,
             "file": "src/lua_api/tilefield_api.rs"
           },
           {
@@ -133964,7 +133964,7 @@
             ],
             "inferred_return": "table",
             "return_description": "`{lights=Llight[], occluders=LOccluder[]}`.",
-            "line": 3004,
+            "line": 3005,
             "file": "src/lua_api/tilefield_api.rs"
           }
         ],
@@ -133986,7 +133986,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Field width in cells.",
-                "line": 1276,
+                "line": 1277,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -134002,7 +134002,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "`square`, `square4`, `square8`, `iso_square`, or `hex`.",
-                "line": 1281,
+                "line": 1282,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -134037,7 +134037,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when coordinates are in bounds.",
-                "line": 1291,
+                "line": 1292,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -134072,7 +134072,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of one-based coordinate tables.",
-                "line": 1303,
+                "line": 1304,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -134125,7 +134125,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1331,
+                "line": 1332,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -134154,7 +134154,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1353,
+                "line": 1354,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -134162,8 +134162,8 @@
                 "lua_name": "LTileField:removeRegion",
                 "kind": "method",
                 "owner_type": "LTileField",
-                "description": "Removes a named region.",
-                "full_doc": "Removes a named region.\n@param | name | string | Region name.\n@return | boolean | True when the region existed.",
+                "description": "Removes a named region definition and its stored cell membership from this field.",
+                "full_doc": "Removes a named region definition and its stored cell membership from this field.\n@param | name | string | Region name.\n@return | boolean | True when the region existed.",
                 "params_doc": "- `name` â€” `string`: Region name.",
                 "returns_doc": "boolean",
                 "inferred_sig": "(name)",
@@ -134177,7 +134177,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the region existed.",
-                "line": 1374,
+                "line": 1375,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -134218,7 +134218,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the region contains the cell.",
-                "line": 1385,
+                "line": 1386,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -134241,7 +134241,7 @@
                 ],
                 "inferred_return": "table?",
                 "return_description": "Array of `{ x, y, z }` cells.",
-                "line": 1397,
+                "line": 1398,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -134257,7 +134257,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of region names.",
-                "line": 1408,
+                "line": 1409,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -134273,7 +134273,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1418,
+                "line": 1419,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -134308,7 +134308,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1428,
+                "line": 1429,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -134343,7 +134343,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Cell state table.",
-                "line": 1445,
+                "line": 1446,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -134384,7 +134384,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1463,
+                "line": 1464,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -134431,7 +134431,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1581,
+                "line": 1582,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -134472,7 +134472,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the addressed cell blocks the channel.",
-                "line": 1600,
+                "line": 1601,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -134519,7 +134519,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1616,
+                "line": 1617,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -134560,7 +134560,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Movement or traversal cost value.",
-                "line": 1635,
+                "line": 1636,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -134589,7 +134589,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1648,
+                "line": 1649,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -134612,7 +134612,7 @@
                 ],
                 "inferred_return": "table|nil",
                 "return_description": "Category table with name, kind, and active.",
-                "line": 1673,
+                "line": 1674,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -134628,7 +134628,7 @@
                 "typed_params": [],
                 "inferred_return": "string[]",
                 "return_description": "Sorted category names.",
-                "line": 1688,
+                "line": 1689,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -134675,7 +134675,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1699,
+                "line": 1700,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -134716,7 +134716,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1712,
+                "line": 1713,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -134763,7 +134763,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1722,
+                "line": 1723,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -134804,7 +134804,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1735,
+                "line": 1736,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -134851,7 +134851,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1745,
+                "line": 1746,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -134892,7 +134892,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1758,
+                "line": 1759,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -134939,7 +134939,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1768,
+                "line": 1769,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -134980,7 +134980,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1786,
+                "line": 1787,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -135033,7 +135033,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1801,
+                "line": 1802,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -135049,7 +135049,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Monotonic field version incremented by data mutations.",
-                "line": 1815,
+                "line": 1816,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -135090,7 +135090,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1825,
+                "line": 1826,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -135125,7 +135125,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Top-light occlusion value in the inclusive range 0..1.",
-                "line": 1842,
+                "line": 1843,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -135154,7 +135154,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1854,
+                "line": 1855,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -135177,7 +135177,7 @@
                 ],
                 "inferred_return": "table|nil",
                 "return_description": "Modifier table.",
-                "line": 1869,
+                "line": 1870,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -135206,7 +135206,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1881,
+                "line": 1882,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -135229,7 +135229,7 @@
                 ],
                 "inferred_return": "table|nil",
                 "return_description": "Profile table.",
-                "line": 1896,
+                "line": 1897,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -135252,7 +135252,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when removed.",
-                "line": 1908,
+                "line": 1909,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -135275,7 +135275,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when removed.",
-                "line": 1916,
+                "line": 1917,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -135298,7 +135298,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1923,
+                "line": 1924,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -135321,7 +135321,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the slot existed.",
-                "line": 1934,
+                "line": 1935,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -135344,7 +135344,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when declared.",
-                "line": 1942,
+                "line": 1943,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -135391,7 +135391,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1953,
+                "line": 1954,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -135432,7 +135432,7 @@
                 ],
                 "inferred_return": "integer|table|nil",
                 "return_description": "Stored legacy id, typed ref table, or nil when unset.",
-                "line": 1993,
+                "line": 1994,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -135473,7 +135473,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2014,
+                "line": 2015,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -135514,7 +135514,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2031,
+                "line": 2032,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -135555,7 +135555,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the cell had the modifier.",
-                "line": 2049,
+                "line": 2050,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -135590,7 +135590,7 @@
                 ],
                 "inferred_return": "string[]",
                 "return_description": "Active modifier names.",
-                "line": 2066,
+                "line": 2067,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -135643,7 +135643,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the tileset object was found and applied.",
-                "line": 2088,
+                "line": 2089,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -135678,7 +135678,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Number of cells that received object defaults.",
-                "line": 2136,
+                "line": 2137,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -135737,7 +135737,7 @@
                 ],
                 "inferred_return": "string|nil",
                 "return_description": "Property value, or nil when missing.",
-                "line": 2197,
+                "line": 2198,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -135796,7 +135796,7 @@
                 ],
                 "inferred_return": "number|nil",
                 "return_description": "Numeric property value, or nil when missing/not numeric.",
-                "line": 2248,
+                "line": 2249,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -135855,7 +135855,7 @@
                 ],
                 "inferred_return": "boolean|nil",
                 "return_description": "Boolean property value, or nil when missing/not boolean.",
-                "line": 2298,
+                "line": 2299,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -135908,7 +135908,7 @@
                 ],
                 "inferred_return": "table|nil",
                 "return_description": "Property name/value table, or nil when the ref is missing/outside the tileset.",
-                "line": 2347,
+                "line": 2348,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -135949,7 +135949,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2400,
+                "line": 2401,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -135965,7 +135965,7 @@
                 "typed_params": [],
                 "inferred_return": "string[]",
                 "return_description": "Ref slot names.",
-                "line": 2417,
+                "line": 2418,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -135988,7 +135988,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2429,
+                "line": 2430,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -136029,7 +136029,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when no blocker exists between the two cells.",
-                "line": 2450,
+                "line": 2451,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -136070,7 +136070,7 @@
                 ],
                 "inferred_return": "table|nil",
                 "return_description": "First blocking cell table, or nil when the line is clear.",
-                "line": 2470,
+                "line": 2471,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -136099,7 +136099,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Row-major boolean array for the requested channel and level.",
-                "line": 2499,
+                "line": 2500,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -136128,7 +136128,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Row-major number array for the requested channel and level.",
-                "line": 2514,
+                "line": 2515,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -136163,7 +136163,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2529,
+                "line": 2530,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -136198,7 +136198,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2551,
+                "line": 2552,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -136227,7 +136227,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2572,
+                "line": 2573,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -136262,7 +136262,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2586,
+                "line": 2587,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -136278,7 +136278,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LTileField`.",
-                "line": 2605,
+                "line": 2606,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -136301,7 +136301,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True for `LTileField` or `LObject`.",
-                "line": 2611,
+                "line": 2612,
                 "file": "src/lua_api/tilefield_api.rs"
               }
             ]
@@ -136323,7 +136323,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Field-map width in field slots.",
-                "line": 2624,
+                "line": 2625,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -136339,7 +136339,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Contained field width in cells.",
-                "line": 2633,
+                "line": 2634,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -136355,7 +136355,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "`square`, `square4`, `square8`, `iso_square`, or `hex`.",
-                "line": 2640,
+                "line": 2641,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -136390,7 +136390,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when coordinates are in bounds.",
-                "line": 2650,
+                "line": 2651,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -136425,7 +136425,7 @@
                 ],
                 "inferred_return": "LTileField",
                 "return_description": "Shared tilefield handle.",
-                "line": 2669,
+                "line": 2670,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -136466,7 +136466,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2689,
+                "line": 2690,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -136482,7 +136482,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LTileFieldMap`.",
-                "line": 2706,
+                "line": 2707,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -136505,7 +136505,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True for `LTileFieldMap` or `LObject`.",
-                "line": 2712,
+                "line": 2713,
                 "file": "src/lua_api/tilefield_api.rs"
               }
             ]
@@ -140728,7 +140728,7 @@
             ],
             "inferred_return": "LTileSet",
             "return_description": "New tileset handle.",
-            "line": 1390,
+            "line": 1394,
             "file": "src/lua_api/tileset_api.rs"
           },
           {
@@ -140751,7 +140751,7 @@
             ],
             "inferred_return": "LTileCatalog",
             "return_description": "New tile catalog handle.",
-            "line": 1420,
+            "line": 1424,
             "file": "src/lua_api/tileset_api.rs"
           },
           {
@@ -140774,13 +140774,13 @@
             ],
             "inferred_return": "LTileSet",
             "return_description": "New tileset copied from provider data.",
-            "line": 1442,
+            "line": 1446,
             "file": "src/lua_api/tileset_api.rs"
           }
         ],
         "classes": {
           "LTileCatalog": {
-            "description": "Creates a catalog that resolves typed references across named tilesets.",
+            "description": "Lua-facing handle that shares ownership of one native tile catalog.",
             "fields": [],
             "methods": [
               {
@@ -140796,7 +140796,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of catalog id strings.",
-                "line": 586,
+                "line": 589,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -140819,7 +140819,7 @@
                 ],
                 "inferred_return": "LTileSet|nil",
                 "return_description": "Tileset for the id, or nil when missing.",
-                "line": 597,
+                "line": 600,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -140842,7 +140842,7 @@
                 ],
                 "inferred_return": "table|nil",
                 "return_description": "Object archetype table, or nil when the reference cannot resolve.",
-                "line": 611,
+                "line": 614,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -140865,7 +140865,7 @@
                 ],
                 "inferred_return": "table|nil",
                 "return_description": "Visual metadata table, or nil when the reference has no visual.",
-                "line": 625,
+                "line": 628,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -140881,7 +140881,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always `LTileCatalog`.",
-                "line": 634,
+                "line": 637,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -140904,13 +140904,13 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True for `LTileCatalog` or `LObject`.",
-                "line": 638,
+                "line": 641,
                 "file": "src/lua_api/tileset_api.rs"
               }
             ]
           },
           "LTileSet": {
-            "description": "Creates a native tileset from atlas dimensions.",
+            "description": "Lua-facing handle that shares ownership of one native tileset.",
             "fields": [],
             "methods": [
               {
@@ -140926,7 +140926,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "First global tile id.",
-                "line": 648,
+                "line": 651,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -140942,7 +140942,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Tile count.",
-                "line": 653,
+                "line": 656,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -140958,7 +140958,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Column count.",
-                "line": 658,
+                "line": 661,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -140974,7 +140974,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Tile width.",
-                "line": 663,
+                "line": 666,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -140990,7 +140990,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Tile height.",
-                "line": 668,
+                "line": 671,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -141006,7 +141006,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Tile width.",
-                "line": 674,
+                "line": 677,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -141022,7 +141022,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Texture width.",
-                "line": 680,
+                "line": 683,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -141038,7 +141038,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Tile spacing.",
-                "line": 686,
+                "line": 689,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -141054,7 +141054,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Atlas margin.",
-                "line": 691,
+                "line": 694,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -141077,7 +141077,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Rectangle table with x, y, width, and height.",
-                "line": 697,
+                "line": 700,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -141106,7 +141106,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 715,
+                "line": 718,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -141129,7 +141129,7 @@
                 ],
                 "inferred_return": "string|nil",
                 "return_description": "Profile name, or nil when unset.",
-                "line": 733,
+                "line": 736,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -141158,7 +141158,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 748,
+                "line": 751,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -141181,7 +141181,7 @@
                 ],
                 "inferred_return": "string|nil",
                 "return_description": "Physics shape label, or nil when unset.",
-                "line": 766,
+                "line": 769,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -141210,7 +141210,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 782,
+                "line": 785,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -141233,7 +141233,7 @@
                 ],
                 "inferred_return": "table|nil",
                 "return_description": "Array of frame tables, or nil when no animation exists.",
-                "line": 814,
+                "line": 817,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -141262,7 +141262,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 839,
+                "line": 842,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -141285,7 +141285,7 @@
                 ],
                 "inferred_return": "table|nil",
                 "return_description": "Object metadata table, or nil when missing.",
-                "line": 951,
+                "line": 954,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -141308,7 +141308,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when an archetype was removed.",
-                "line": 1087,
+                "line": 1090,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -141324,7 +141324,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of object archetype names.",
-                "line": 1092,
+                "line": 1095,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -141353,7 +141353,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1103,
+                "line": 1106,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -141376,7 +141376,7 @@
                 ],
                 "inferred_return": "string|nil",
                 "return_description": "Object archetype name, or nil when unmapped.",
-                "line": 1121,
+                "line": 1124,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -141411,7 +141411,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1138,
+                "line": 1141,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -141440,7 +141440,7 @@
                 ],
                 "inferred_return": "string|nil",
                 "return_description": "Property value, or nil when unset.",
-                "line": 1158,
+                "line": 1161,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -141469,7 +141469,7 @@
                 ],
                 "inferred_return": "number|nil",
                 "return_description": "Numeric property value, or nil when unset or not numeric.",
-                "line": 1174,
+                "line": 1177,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -141498,7 +141498,7 @@
                 ],
                 "inferred_return": "boolean|nil",
                 "return_description": "Boolean property value, or nil when unset or not boolean.",
-                "line": 1193,
+                "line": 1196,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -141521,7 +141521,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Property name/value table.",
-                "line": 1211,
+                "line": 1214,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -141556,7 +141556,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1230,
+                "line": 1233,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -141585,7 +141585,7 @@
                 ],
                 "inferred_return": "integer|nil",
                 "return_description": "Tile id (1-based), or nil when no rule exists.",
-                "line": 1248,
+                "line": 1251,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -141620,7 +141620,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1262,
+                "line": 1265,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -141649,7 +141649,7 @@
                 ],
                 "inferred_return": "integer|nil",
                 "return_description": "Tile id (1-based), or nil when no rule exists.",
-                "line": 1280,
+                "line": 1283,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -141678,7 +141678,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1293,
+                "line": 1296,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -141701,7 +141701,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Autotile matching mode.",
-                "line": 1304,
+                "line": 1307,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -141730,7 +141730,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1310,
+                "line": 1313,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -141753,7 +141753,7 @@
                 ],
                 "inferred_return": "table|nil",
                 "return_description": "Profile table or nil.",
-                "line": 1352,
+                "line": 1355,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -141769,7 +141769,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always `LTileSet`.",
-                "line": 1369,
+                "line": 1372,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -141792,7 +141792,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True for `LTileSet` or `LObject`.",
-                "line": 1373,
+                "line": 1376,
                 "file": "src/lua_api/tileset_api.rs"
               }
             ]

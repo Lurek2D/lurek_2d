@@ -8604,12 +8604,12 @@
           "name": "isA",
           "fullPath": "lurek.ecs.isA",
           "signature": "(this, candidate)",
-          "description": "",
+          "description": "Returns whether this object inherits from or matches the supplied ECS class name.",
           "parameters": [
             {
-              "name": "this",
-              "type": "any",
-              "description": "",
+              "name": "candidate",
+              "type": "string",
+              "description": "ECS class name to compare against the object's registered class hierarchy.",
               "optional": false
             },
             {
@@ -8619,8 +8619,8 @@
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": false,
           "objectType": null
         },
@@ -8628,7 +8628,7 @@
           "name": "type",
           "fullPath": "lurek.ecs.type",
           "signature": "(this)",
-          "description": "",
+          "description": "Returns the registered ECS class name for this object table.",
           "parameters": [
             {
               "name": "this",
@@ -8637,8 +8637,8 @@
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "string",
+          "returnType": "string",
           "isMethod": false,
           "objectType": null
         },
@@ -8646,12 +8646,12 @@
           "name": "typeOf",
           "fullPath": "lurek.ecs.typeOf",
           "signature": "(this, candidate)",
-          "description": "",
+          "description": "Returns whether this object matches a supported Lua-visible type or ECS class name.",
           "parameters": [
             {
-              "name": "this",
-              "type": "any",
-              "description": "",
+              "name": "candidate",
+              "type": "string",
+              "description": "Type or class name to compare against `LObject` and the object's ECS class hierarchy.",
               "optional": false
             },
             {
@@ -8661,8 +8661,8 @@
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": false,
           "objectType": null
         },
@@ -8670,12 +8670,12 @@
           "name": "getProperty",
           "fullPath": "lurek.ecs.getProperty",
           "signature": "(this, name)",
-          "description": "",
+          "description": "Returns the current value of one object property, honoring any registered getter override first.",
           "parameters": [
             {
-              "name": "this",
-              "type": "any",
-              "description": "",
+              "name": "name",
+              "type": "string",
+              "description": "Property name to read from the object or its property metadata table.",
               "optional": false
             },
             {
@@ -8685,8 +8685,8 @@
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "any",
+          "returnType": "any",
           "isMethod": false,
           "objectType": null
         },
@@ -8694,18 +8694,18 @@
           "name": "setProperty",
           "fullPath": "lurek.ecs.setProperty",
           "signature": "(this, name, value)",
-          "description": "",
+          "description": "Writes one object property, delegating to a registered setter override when the property defines one.",
           "parameters": [
             {
-              "name": "this",
-              "type": "any",
-              "description": "",
+              "name": "name",
+              "type": "string",
+              "description": "Property name to update on the object table.",
               "optional": false
             },
             {
-              "name": "name",
+              "name": "value",
               "type": "any",
-              "description": "",
+              "description": "New Lua value written directly or passed through the property's setter.",
               "optional": false
             },
             {
@@ -118618,7 +118618,7 @@
           "name": "getWidth",
           "fullPath": "LProcgenGrid:getWidth",
           "signature": "()",
-          "description": "Returns grid width.",
+          "description": "Returns the generated grid width in cells for this noise result.",
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
@@ -118629,7 +118629,7 @@
           "name": "getHeight",
           "fullPath": "LProcgenGrid:getHeight",
           "signature": "()",
-          "description": "Returns grid height.",
+          "description": "Returns the generated grid height in cells for this noise result.",
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
@@ -118774,7 +118774,7 @@
           "name": "getWidth",
           "fullPath": "LProcgenScalarGrid:getWidth",
           "signature": "()",
-          "description": "Returns scalar grid width.",
+          "description": "Returns the scalar grid width in cells for this generated field.",
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
@@ -118785,7 +118785,7 @@
           "name": "getHeight",
           "fullPath": "LProcgenScalarGrid:getHeight",
           "signature": "()",
-          "description": "Returns scalar grid height.",
+          "description": "Returns the scalar grid height in cells for this generated field.",
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
@@ -160900,7 +160900,7 @@
     },
     {
       "name": "LTileCatalog",
-      "description": "Creates a catalog that resolves typed references across named tilesets.",
+      "description": "Lua-facing handle that shares ownership of one native tile catalog.",
       "methods": [
         {
           "name": "getIds",
@@ -161160,7 +161160,7 @@
           "name": "removeRegion",
           "fullPath": "LTileField:removeRegion",
           "signature": "(name)",
-          "description": "Removes a named region.",
+          "description": "Removes a named region definition and its stored cell membership from this field.",
           "parameters": [
             {
               "name": "name",
@@ -164888,7 +164888,7 @@
     },
     {
       "name": "LTileSet",
-      "description": "Creates a native tileset from atlas dimensions.",
+      "description": "Lua-facing handle that shares ownership of one native tileset.",
       "methods": [
         {
           "name": "getFirstGid",

@@ -74,7 +74,7 @@ pub struct GoapPlanTrace {
     pub failure_reason: Option<String>,
 }
 
-/// Last MCTS search trace.
+/// Captures the last MCTS search outcome, counters, and callback failures.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct MctsDecisionTrace {
     /// Chosen action id when search succeeded.

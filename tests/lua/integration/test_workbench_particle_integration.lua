@@ -54,6 +54,8 @@ describe("workbench particle integration", function()
     -- @integration lurek.filesystem.load
     -- @integration lurek.filesystem.read
     -- @integration lurek.filesystem.write
+    -- @integration lurek.filesystem.exists
+    -- @integration lurek.filesystem.listRecursive
     -- @integration lurek.serialize.fromToml
     -- @integration lurek.serialize.toToml
     -- @integration lurek.particle.newSystem

@@ -2976,11 +2976,11 @@ LLargeMapRenderer = {}
 ---@class LTileMap
 LTileMap = {}
 
---- Creates a catalog that resolves typed references across named tilesets.
+--- Lua-facing handle that shares ownership of one native tile catalog.
 ---@class LTileCatalog
 LTileCatalog = {}
 
---- Creates a native tileset from atlas dimensions.
+--- Lua-facing handle that shares ownership of one native tileset.
 ---@class LTileSet
 LTileSet = {}
 
@@ -11987,9 +11987,10 @@ lurek.ecs.getClass = function(name) end
 ---@return table Object table, or nil when not found.
 lurek.ecs.getObject = function(id) end
 
----@param this any
----@param name any
-lurek.ecs.getProperty = function(this, name) end
+--- Returns the current value of one object property, honoring any registered getter override first.
+---@param name string Property name to read from the object or its property metadata table.
+---@return any Current property value, getter result, or `nil` when the property is unset.
+lurek.ecs.getProperty = function(name) end
 
 --- Returns whether a global ECS class name is defined.
 ---@param name string Class name to check.
@@ -12001,9 +12002,10 @@ lurek.ecs.hasClass = function(name) end
 ---@return boolean True when the object id is live.
 lurek.ecs.hasObject = function(id) end
 
----@param this any
----@param candidate any
-lurek.ecs.isA = function(this, candidate) end
+--- Returns whether this object inherits from or matches the supplied ECS class name.
+---@param candidate string ECS class name to compare against the object's registered class hierarchy.
+---@return boolean True when the object class matches or extends the supplied class.
+lurek.ecs.isA = function(candidate) end
 
 --- Creates a Lua table object from a registered ECS class.
 ---@param className string Registered class name.
@@ -12023,17 +12025,20 @@ lurek.ecs.newUniverse = function() end
 ---@return number[] Object ids.
 lurek.ecs.objectIds = function() end
 
----@param this any
----@param name any
----@param value any
-lurek.ecs.setProperty = function(this, name, value) end
+--- Writes one object property, delegating to a registered setter override when the property defines one.
+---@param name string Property name to update on the object table.
+---@param value any New Lua value written directly or passed through the property's setter.
+lurek.ecs.setProperty = function(name, value) end
 
+--- Returns the registered ECS class name for this object table.
 ---@param this any
+---@return string Class name assigned when the object was created.
 lurek.ecs.type = function(this) end
 
----@param this any
----@param candidate any
-lurek.ecs.typeOf = function(this, candidate) end
+--- Returns whether this object matches a supported Lua-visible type or ECS class name.
+---@param candidate string Type or class name to compare against `LObject` and the object's ECS class hierarchy.
+---@return boolean True when the supplied name matches `LObject` or the object's class ancestry.
+lurek.ecs.typeOf = function(candidate) end
 
 --- Appends a built-in post-effect by type name to this image effect chain.
 ---@param name string Built-in effect type name.
@@ -25525,7 +25530,7 @@ function LNoiseGenerator:worley3d(x, y, z, dist_name, f2) end
 ---@return number Cell value.
 function LProcgenGrid:getCell(x, y) end
 
---- Returns grid height.
+--- Returns the generated grid height in cells for this noise result.
 ---@return number Height.
 function LProcgenGrid:getHeight() end
 
@@ -25538,7 +25543,7 @@ function LProcgenGrid:getKind() end
 ---@return number Height.
 function LProcgenGrid:getSize() end
 
---- Returns grid width.
+--- Returns the generated grid width in cells for this noise result.
 ---@return number Width.
 function LProcgenGrid:getWidth() end
 
@@ -25571,7 +25576,7 @@ function LProcgenGrid:writeTileField(field, opts) end
 ---@return number Scalar cell value.
 function LProcgenScalarGrid:getCell(x, y) end
 
---- Returns scalar grid height.
+--- Returns the scalar grid height in cells for this generated field.
 ---@return number Height.
 function LProcgenScalarGrid:getHeight() end
 
@@ -25584,7 +25589,7 @@ function LProcgenScalarGrid:getKind() end
 ---@return number Height.
 function LProcgenScalarGrid:getSize() end
 
---- Returns scalar grid width.
+--- Returns the scalar grid width in cells for this generated field.
 ---@return number Width.
 function LProcgenScalarGrid:getWidth() end
 
@@ -30846,7 +30851,7 @@ function LTileField:removeModifier(name) end
 ---@return boolean True when removed.
 function LTileField:removeProfile(name) end
 
---- Removes a named region.
+--- Removes a named region definition and its stored cell membership from this field.
 ---@param name string Region name.
 ---@return boolean True when the region existed.
 function LTileField:removeRegion(name) end

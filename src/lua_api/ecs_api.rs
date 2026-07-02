@@ -166,6 +166,9 @@ fn create_ecs_object<'lua>(
     object.set("__properties", properties.clone())?;
 
     let state_for_isa = state.clone();
+    /// Returns whether this object inherits from or matches the supplied ECS class name.
+    /// @param | candidate | string | ECS class name to compare against the object's registered class hierarchy.
+    /// @return | boolean | True when the object class matches or extends the supplied class.
     object.set(
         "isA",
         lua.create_function(move |_, (this, candidate): (LuaTable, String)| {
@@ -173,11 +176,16 @@ fn create_ecs_object<'lua>(
             Ok(state_for_isa.model.borrow().class_is_a(&class, &candidate))
         })?,
     )?;
+    /// Returns the registered ECS class name for this object table.
+    /// @return | string | Class name assigned when the object was created.
     object.set(
         "type",
         lua.create_function(|_, this: LuaTable| this.get::<_, String>("__class"))?,
     )?;
     let state_for_typeof = state.clone();
+    /// Returns whether this object matches a supported Lua-visible type or ECS class name.
+    /// @param | candidate | string | Type or class name to compare against `LObject` and the object's ECS class hierarchy.
+    /// @return | boolean | True when the supplied name matches `LObject` or the object's class ancestry.
     object.set(
         "typeOf",
         lua.create_function(move |_, (this, candidate): (LuaTable, String)| {
@@ -191,6 +199,9 @@ fn create_ecs_object<'lua>(
                 .class_is_a(&class, &candidate))
         })?,
     )?;
+    /// Returns the current value of one object property, honoring any registered getter override first.
+    /// @param | name | string | Property name to read from the object or its property metadata table.
+    /// @return | any | Current property value, getter result, or `nil` when the property is unset.
     object.set(
         "getProperty",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -217,6 +228,9 @@ fn create_ecs_object<'lua>(
             this.get::<_, LuaValue>(name)
         })?,
     )?;
+    /// Writes one object property, delegating to a registered setter override when the property defines one.
+    /// @param | name | string | Property name to update on the object table.
+    /// @param | value | any | New Lua value written directly or passed through the property's setter.
     object.set(
         "setProperty",
         lua.create_function(|_, (this, name, value): (LuaTable, String, LuaValue)| {
