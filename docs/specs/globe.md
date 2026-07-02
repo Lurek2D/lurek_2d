@@ -304,7 +304,7 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - `LGlobe:getProvinceSector(id) -> string`: Returns the sector name assigned to a province.
 - `LGlobe:getRegionAttr(id, key) -> string`: Reads a string attribute from a semantic region.
 - `LGlobe:getSectorProvinces(sector) -> integer[]`: Returns province ids assigned to a sector.
-- `LGlobe:getShader() -> LShader?`: Returns the mapviz-target shader bound to this globe, if any.
+- `LGlobe:getShader() -> LShader`: Returns the mapviz-target shader bound to this globe, if any.
 - `LGlobe:getTerrainPatchAttr(id, key) -> string`: Reads a string attribute from a terrain patch.
 - `LGlobe:getTimeOfDay() -> number`: Returns globe time of day. This method is available to Lua scripts.
 - `LGlobe:hideProvince(viewer, id) -> nil`: Hides a province for one fog-of-war viewer.
@@ -332,7 +332,7 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - `LGlobe:removeOrbit(name) -> boolean`: Removes one named orbit shell and moves any markers on it back to `surface`.
 - `LGlobe:removeProvince(id) -> boolean`: Removes a region by id. This method is available to Lua scripts.
 - `LGlobe:removeRegion(id) -> boolean`: Removes a region by id. This method is available to Lua scripts.
-- `LGlobe:removeTerrainPatch(id) -> boolean`: Removes a terrain patch by id.
+- `LGlobe:removeTerrainPatch(id) -> boolean`: Removes a stored terrain patch by its numeric id.
 - `LGlobe:revealAll(viewer) -> nil`: Reveals every province for one fog-of-war viewer.
 - `LGlobe:revealProvince(viewer, id) -> nil`: Reveals a province for one fog-of-war viewer.
 - `LGlobe:screenDeltaToPan(dx, dy) -> number`: Converts a screen-space drag delta into latitude and longitude pan deltas.
@@ -447,3 +447,4 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - Runtime texture bindings for provinces, terrain patches, and marker icons are stored as typed engine handles instead of passing raw ids through region attrs or marker string fields.
 - Province picking now uses cached geographic candidate bounds before point-in-polygon tests so large globes do not full-scan every province on each click.
 - Rust-side debug surfaces now expose `Globe::regions_at_lat_lon_with_stats(...)` and `Globe::emit_frame_with_stats(...)`, which report candidate-filter counts and frame scratch high-water marks so globe query and render regressions are measurable in tests and tooling.
+- Globe pick attrs are now the preferred semantic cursor hook. Marker, region, province, and orbit hits can expose `attrs.cursor_state`, `attrs.cursor_effect`, `attrs.cursor_priority`, or `attrs.cursor_zoom`, and the shared cursor runtime can consume those hints directly without globe-specific cursor API branching.

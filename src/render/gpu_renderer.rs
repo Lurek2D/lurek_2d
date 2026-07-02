@@ -4713,6 +4713,25 @@ impl GpuRenderer {
                 self.postfx_pipeline.as_mut(),
                 self.postfx_capture.get(stack_id),
             ) {
+                encoder.copy_texture_to_texture(
+                    wgpu::ImageCopyTexture {
+                        texture: &output.texture,
+                        mip_level: 0,
+                        origin: wgpu::Origin3d::ZERO,
+                        aspect: wgpu::TextureAspect::All,
+                    },
+                    wgpu::ImageCopyTexture {
+                        texture: &capture.texture,
+                        mip_level: 0,
+                        origin: wgpu::Origin3d::ZERO,
+                        aspect: wgpu::TextureAspect::All,
+                    },
+                    wgpu::Extent3d {
+                        width: self.width.min(*w),
+                        height: self.height.min(*h),
+                        depth_or_array_layers: 1,
+                    },
+                );
                 pipeline.apply(
                     &self.device,
                     &self.queue,

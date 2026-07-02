@@ -130,7 +130,7 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LParallaxLayer:getOffset() -> number`: Returns layer offset for this object.
 - `LParallaxLayer:getOpacity() -> number`: Returns layer opacity from this object.
 - `LParallaxLayer:getScrollFactor() -> number`: Returns layer scroll factor from this object.
-- `LParallaxLayer:getShader() -> LShader?`: Returns the draw-target shader bound to this parallax layer, if any.
+- `LParallaxLayer:getShader() -> LShader`: Returns the draw-target shader bound to this parallax layer, if any.
 - `LParallaxLayer:getStats() -> table`: Returns telemetry for the current runtime camera and viewport.
 - `LParallaxLayer:getTiling() -> boolean`: Returns whether layer tiling is enabled.
 - `LParallaxLayer:getTint() -> number`: Returns layer tint color from this object.

@@ -620,7 +620,7 @@ impl LuaUserData for LuaTileLightMap {
         });
 
         // -- addRectLight --
-        /// Alias for `addAreaLight`.
+        /// Creates a rectangular area light via `addAreaLight`.
         /// @param | opts | table | `{x,y,z?,width|w,height|h,radius,intensity?,color?,flicker?,colorCycle?}`.
         /// @return | integer | Stable rectangular light id.
         methods.add_method("addRectLight", |_, this, opts: LuaTable| {
@@ -636,7 +636,7 @@ impl LuaUserData for LuaTileLightMap {
         });
 
         // -- updateRectLight --
-        /// Alias for `updateAreaLight`.
+        /// Updates a rectangular area light via `updateAreaLight`.
         /// @param | id | integer | Stable rectangular light id returned by `addRectLight`.
         /// @param | opts | table | Rectangular-light fields to update.
         methods.add_method("updateRectLight", |_, this, (id, opts): (u32, LuaTable)| {
@@ -652,7 +652,7 @@ impl LuaUserData for LuaTileLightMap {
         });
 
         // -- removeRectLight --
-        /// Alias for `removeAreaLight`.
+        /// Removes a rectangular area light via `removeAreaLight`.
         /// @param | id | integer | Stable rectangular light id returned by `addRectLight`.
         /// @return | boolean | True when a rectangular light was removed.
         methods.add_method("removeRectLight", |_, this, id: u32| {
@@ -667,7 +667,7 @@ impl LuaUserData for LuaTileLightMap {
         });
 
         // -- clearRectLights --
-        /// Alias for `clearAreaLights`.
+        /// Clears all rectangular area lights via `clearAreaLights`.
         methods.add_method("clearRectLights", |_, this, ()| {
             this.inner.borrow_mut().clear_area_lights();
             Ok(())

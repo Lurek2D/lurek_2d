@@ -4,14 +4,17 @@
 //! The runtime builder compiles a transient `Raycaster2D` view from level-owned cells for rendering and picking.
 //! `MultiLevelGrid` tracks the active slice, caches compiled runtimes, and resolves visible lower or upper levels.
 //! Floor and ceiling holes decide which adjacent slices are visible to render and picking queries.
+//! Pick attrs stay level-owned here so cursor rules can vary by wall, floor, and ceiling across stacked slices.
 //! Open this file when stacked-level data or cross-level visibility changes; scene assembly lives in siblings.
 
 use super::build_scene::LoweredFloorCell;
 use super::contract::{RaycasterError, RaycasterLimits};
 use super::dda::Raycaster2D;
+use super::tile_picker::PickAttrSurface;
 use super::wall_feature::WallFeature;
 use crate::runtime::resource_keys::TextureKey;
 use std::cell::RefCell;
+use std::collections::HashMap;
 
 /// A single level in a multi-level raycaster world.
 #[derive(Debug, Clone)]
@@ -34,6 +37,8 @@ pub struct RaycasterLevel {
     pub ceiling_cell_textures: Vec<Option<TextureKey>>,
     /// Optional per-cell lowered-floor descriptors used for pits and step-down tiles.
     pub lowered_floor_cells: Vec<Option<LoweredFloorCell>>,
+    /// Per-cell pick metadata keyed by `(x, y, surface)`.
+    pub pick_attrs: HashMap<(usize, usize, PickAttrSurface), HashMap<String, String>>,
     /// Floor holes: positions where you can see/fall to the level below.
     pub floor_holes: Vec<bool>,
     /// Ceiling holes: positions where you can see/climb to the level above.
@@ -60,6 +65,7 @@ impl RaycasterLevel {
             ceiling_texture: None,
             ceiling_cell_textures: vec![None; size],
             lowered_floor_cells: vec![None; size],
+            pick_attrs: HashMap::new(),
             floor_holes: vec![false; size],
             ceiling_holes: vec![false; size],
             floor_offset: 0.0,
@@ -87,6 +93,7 @@ impl RaycasterLevel {
             ceiling_texture: None,
             ceiling_cell_textures: vec![None; size],
             lowered_floor_cells: vec![None; size],
+            pick_attrs: HashMap::new(),
             floor_holes: vec![false; size],
             ceiling_holes: vec![false; size],
             floor_offset: 0.0,
@@ -202,6 +209,58 @@ impl RaycasterLevel {
         }
     }
 
+    /// Attach one pick attribute to cell `(x, y)` and one surface channel.
+    pub fn set_pick_attr(
+        &mut self,
+        x: usize,
+        y: usize,
+        surface: PickAttrSurface,
+        key: impl Into<String>,
+        value: impl Into<String>,
+    ) {
+        if x < self.width && y < self.height {
+            self.pick_attrs
+                .entry((x, y, surface))
+                .or_default()
+                .insert(key.into(), value.into());
+        }
+    }
+
+    /// Read one pick attribute from cell `(x, y)` and one surface channel.
+    pub fn get_pick_attr(
+        &self,
+        x: usize,
+        y: usize,
+        surface: PickAttrSurface,
+        key: &str,
+    ) -> Option<&str> {
+        self.pick_attrs
+            .get(&(x, y, surface))
+            .and_then(|attrs| attrs.get(key))
+            .map(String::as_str)
+    }
+
+    /// Clear one pick attribute or the whole surface-channel map for cell `(x, y)`.
+    pub fn clear_pick_attr(
+        &mut self,
+        x: usize,
+        y: usize,
+        surface: PickAttrSurface,
+        key: Option<&str>,
+    ) {
+        let Some(attrs) = self.pick_attrs.get_mut(&(x, y, surface)) else {
+            return;
+        };
+        if let Some(key) = key {
+            attrs.remove(key);
+            if attrs.is_empty() {
+                self.pick_attrs.remove(&(x, y, surface));
+            }
+        } else {
+            self.pick_attrs.remove(&(x, y, surface));
+        }
+    }
+
     /// Return `true` if the cell at `(x, y)` is a floor hole (visibility through to the level below).
     pub fn is_floor_hole(&self, x: usize, y: usize) -> bool {
         if x < self.width && y < self.height {
@@ -246,6 +305,11 @@ impl RaycasterLevel {
                 let x = (cell_index % self.width) as u32;
                 let y = (cell_index / self.width) as u32;
                 raycaster.set_wall_feature(x, y, *feature);
+            }
+        }
+        for ((x, y, surface), attrs) in &self.pick_attrs {
+            for (key, value) in attrs {
+                raycaster.set_pick_attr(*x as u32, *y as u32, *surface, key.clone(), value.clone());
             }
         }
         raycaster

@@ -17,7 +17,7 @@ use super::wall_feature::{WallFeature, WallFeatureKind};
 use std::collections::HashMap;
 
 /// Surface class resolved by a screen pick.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum PickSurface {
     /// Vertical wall face.
     Wall,
@@ -25,6 +25,36 @@ pub enum PickSurface {
     Floor,
     /// Horizontal ceiling plane.
     Ceiling,
+}
+
+/// Surface channel used by per-cell pick metadata storage.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum PickAttrSurface {
+    Any,
+    Wall,
+    Floor,
+    Ceiling,
+}
+
+impl PickAttrSurface {
+    /// Return the stable string name for this pick metadata surface.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Any => "any",
+            Self::Wall => "wall",
+            Self::Floor => "floor",
+            Self::Ceiling => "ceiling",
+        }
+    }
+
+    /// Convert one pick surface into the matching metadata surface.
+    pub fn from_pick_surface(surface: PickSurface) -> Self {
+        match surface {
+            PickSurface::Wall => Self::Wall,
+            PickSurface::Floor => Self::Floor,
+            PickSurface::Ceiling => Self::Ceiling,
+        }
+    }
 }
 
 impl PickSurface {
@@ -137,7 +167,7 @@ pub struct TilePicker {
 }
 
 /// Result of a tile pick operation.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 pub struct PickResult {
     /// Multi-level slice index owning the picked surface.
     pub level_index: usize,
@@ -151,6 +181,8 @@ pub struct PickResult {
     pub wall_side: Option<u8>,
     /// Resolved surface category at the picked pixel.
     pub surface: PickSurface,
+    /// Stable kind string mirrored for Lua/API consumers.
+    pub kind: String,
     /// World-space hit X coordinate.
     pub hit_x: f32,
     /// World-space hit Y coordinate.
@@ -169,6 +201,8 @@ pub struct PickResult {
     pub wall_feature: Option<WallFeature>,
     /// Optional solid section inside the picked wall feature.
     pub wall_section: Option<PickWallSection>,
+    /// Arbitrary string metadata attached to the picked surface.
+    pub attrs: HashMap<String, String>,
 }
 
 impl TilePicker {
@@ -379,6 +413,7 @@ impl Raycaster2D {
             distance: corrected_pick_distance(ray_angle, params.player_angle, raw_distance),
             wall_side: Some(wall_side),
             surface: PickSurface::Wall,
+            kind: PickSurface::Wall.as_str().to_string(),
             hit_x,
             hit_y,
             tex_u,
@@ -388,6 +423,7 @@ impl Raycaster2D {
             ray_angle,
             wall_feature,
             wall_section,
+            attrs: self.pick_attrs_at(grid_x as u32, grid_y as u32, PickAttrSurface::Wall),
         }
     }
 
@@ -795,6 +831,7 @@ impl Raycaster2D {
                     distance: plane_depth,
                     wall_side: None,
                     surface,
+                    kind: surface.as_str().to_string(),
                     hit_x: world_x,
                     hit_y: world_y,
                     tex_u: frac01(world_x),
@@ -804,6 +841,11 @@ impl Raycaster2D {
                     ray_angle,
                     wall_feature: None,
                     wall_section: None,
+                    attrs: self.pick_attrs_at(
+                        grid_x as u32,
+                        grid_y as u32,
+                        PickAttrSurface::from_pick_surface(surface),
+                    ),
                 };
                 if best_pick
                     .as_ref()

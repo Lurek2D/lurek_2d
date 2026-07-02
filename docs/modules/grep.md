@@ -45,23 +45,25 @@ lurek.grep.jsonSearch(file, key)
 
 ```lua
 do
-
-    local root = "work/grep_unit"
-    local paths = {
-        root = root,
-        search = root .. "/search",
-        alpha = root .. "/search/alpha.lua",
-        beta = root .. "/search/beta.lua",
-        notes = root .. "/search/notes.txt",
-        json = root .. "/sample.json",
-        log = root .. "/sample.log",
-    }
-    local result = lurek.grep.jsonSearch(paths.json, "kind")
+    local root = "save/_grep_example_json"
+    local json = root .. "/sample.json"
+    lurek.filesystem.createDirectory(root)
+    lurek.filesystem.write(json, [[
+{
+  "kind": "enemy",
+  "nested": {
+    "kind": "boss",
+    "hp": 10
+  },
+  "items": [
+    { "kind": "loot" }
+  ]
+}
+]])
+    local result = lurek.grep.jsonSearch(json, "kind")
     local first = result[1]
     local third = result[3]
-    local first_value = first and first.value or "nil"
-    local third_value = third and third.value or "nil"
-    lurek.log.info("jsonSearch hits=" .. #result .. " first=" .. first_value .. " third=" .. third_value)
+    lurek.log.info("jsonSearch hits=" .. #result .. " first=" .. tostring(first and first.value or "nil") .. " third=" .. tostring(third and third.value or "nil"))
 end
 ```
 
@@ -93,22 +95,13 @@ lurek.grep.logSearch(file, level, pattern)
 
 ```lua
 do
-
-    local root = "work/grep_unit"
-    local paths = {
-        root = root,
-        search = root .. "/search",
-        alpha = root .. "/search/alpha.lua",
-        beta = root .. "/search/beta.lua",
-        notes = root .. "/search/notes.txt",
-        json = root .. "/sample.json",
-        log = root .. "/sample.log",
-    }
-    local result = lurek.grep.logSearch(paths.log, "ERROR", "panic")
+    local root = "save/_grep_example_log"
+    local log_path = root .. "/sample.log"
+    lurek.filesystem.createDirectory(root)
+    lurek.filesystem.write(log_path, "[INFO] boot\n[ERROR] panic: sample failure\n[WARN] recoverable issue\n")
+    local result = lurek.grep.logSearch(log_path, "ERROR", "panic")
     local first = result[1]
-    local level = first and first.level or "nil"
-    local line = first and first.line or -1
-    lurek.log.info("logSearch hits=" .. #result .. " level=" .. tostring(level) .. " line=" .. tostring(line))
+    lurek.log.info("logSearch hits=" .. #result .. " level=" .. tostring(first and first.level or "nil") .. " line=" .. tostring(first and first.line or -1))
 end
 ```
 
@@ -132,22 +125,15 @@ lurek.grep.luaFilter()
 
 ```lua
 do
-
+    local root = "save/_grep_example_lua_filter"
+    local search = root .. "/search"
+    lurek.filesystem.createDirectory(root)
+    lurek.filesystem.createDirectory(search)
+    lurek.filesystem.write(search .. "/alpha.lua", "local needle = 'alpha'\nprint('needle alpha')\n")
+    lurek.filesystem.write(search .. "/notes.txt", "needle in text file\n")
     local filter = lurek.grep.luaFilter()
     filter:excludePattern("notes")
-    filter:setIncludeHidden(false)
-    local engine = lurek.grep.newEngine()
-    local root = "work/grep_unit"
-    local paths = {
-        root = root,
-        search = root .. "/search",
-        alpha = root .. "/search/alpha.lua",
-        beta = root .. "/search/beta.lua",
-        notes = root .. "/search/notes.txt",
-        json = root .. "/sample.json",
-        log = root .. "/sample.log",
-    }
-    local result = engine:searchExt(paths.search, "needle", { "lua" })
+    local result = lurek.grep.newEngine():searchExt(search, "needle", { "lua" })
     lurek.log.info("luaFilter companion search matched=" .. result.total_matches .. " across " .. result.files_searched .. " files")
 end
 ```
@@ -172,22 +158,15 @@ lurek.grep.newEngine()
 
 ```lua
 do
-
-    local root = "work/grep_unit"
-    local paths = {
-        root = root,
-        search = root .. "/search",
-        alpha = root .. "/search/alpha.lua",
-        beta = root .. "/search/beta.lua",
-        notes = root .. "/search/notes.txt",
-        json = root .. "/sample.json",
-        log = root .. "/sample.log",
-    }
+    local root = "save/_grep_example_new_engine"
+    local search = root .. "/search"
+    lurek.filesystem.createDirectory(root)
+    lurek.filesystem.createDirectory(search)
+    lurek.filesystem.write(search .. "/alpha.lua", "local needle = 'alpha'\nprint('needle alpha')\n")
+    lurek.filesystem.write(search .. "/beta.lua", "local needle = 'beta'\n")
     local engine = lurek.grep.newEngine()
-    local result = engine:search(paths.search, "needle")
-    local total = result.total_matches
-    local files = result.files_searched
-    lurek.log.info("newEngine files=" .. files .. " total_matches=" .. total)
+    local result = engine:search(search, "needle")
+    lurek.log.info("newEngine files=" .. result.files_searched .. " total_matches=" .. result.total_matches)
 end
 ```
 
@@ -217,23 +196,15 @@ lurek.grep.newEngineOpts(opts)
 
 ```lua
 do
-
-    local root = "work/grep_unit"
-    local paths = {
-        root = root,
-        search = root .. "/search",
-        alpha = root .. "/search/alpha.lua",
-        beta = root .. "/search/beta.lua",
-        notes = root .. "/search/notes.txt",
-        json = root .. "/sample.json",
-        log = root .. "/sample.log",
-    }
-    local opts = { threads = 2, case_sensitive = true, whole_word = false, max_file_size = 4096 }
-    local engine = lurek.grep.newEngineOpts(opts)
-    local result = engine:search(paths.search, "needle")
-    local matched = result.files_matched
-    local total = result.total_matches
-    lurek.log.info("newEngineOpts matched_files=" .. matched .. " total_matches=" .. total)
+    local root = "save/_grep_example_new_engine_opts"
+    local search = root .. "/search"
+    lurek.filesystem.createDirectory(root)
+    lurek.filesystem.createDirectory(search)
+    lurek.filesystem.write(search .. "/alpha.lua", "local needle = 'alpha'\nprint('needle alpha')\n")
+    lurek.filesystem.write(search .. "/beta.lua", "local needle = 'beta'\n")
+    local engine = lurek.grep.newEngineOpts({ threads = 2, case_sensitive = true, whole_word = false, max_file_size = 4096 })
+    local result = engine:search(search, "needle")
+    lurek.log.info("newEngineOpts matched_files=" .. result.files_matched .. " total_matches=" .. result.total_matches)
 end
 ```
 
@@ -257,7 +228,6 @@ lurek.grep.newFilter()
 
 ```lua
 do
-
     local filter = lurek.grep.newFilter()
     filter:addExtension("lua")
     filter:excludeExtension("txt")
@@ -294,24 +264,16 @@ lurek.grep.search(path, pattern)
 
 ```lua
 do
-
-    local root = "save/_grep_example"
-    local paths = {
-        root = root,
-        search = root .. "/search",
-        alpha = root .. "/search/alpha.lua",
-        beta = root .. "/search/beta.lua",
-    }
-    if not lurek.filesystem.exists(root) then
-        lurek.filesystem.createDirectory(root)
-    end
-    if not lurek.filesystem.exists(paths.search) then
-        lurek.filesystem.createDirectory(paths.search)
-    end
-    lurek.filesystem.write(paths.alpha, "local needle = 'alpha'\nprint('needle alpha')\n")
-    lurek.filesystem.write(paths.beta, "local needle = 'beta'\n")
-
-    local root_abs = lurek.filesystem.getSaveDirectory() .. "/_grep_example"
+    local root = "save/_grep_example_search"
+    local search = root .. "/search"
+    local forbidden = "save/_grep_example_search_forbidden"
+    lurek.filesystem.createDirectory(root)
+    lurek.filesystem.createDirectory(search)
+    lurek.filesystem.createDirectory(forbidden)
+    lurek.filesystem.write(search .. "/alpha.lua", "local needle = 'alpha'\nprint('needle alpha')\n")
+    lurek.filesystem.write(search .. "/beta.lua", "local needle = 'beta'\n")
+    lurek.filesystem.write(forbidden .. "/forbidden.lua", "needle outside sandbox\n")
+    local root_abs = lurek.filesystem.getSaveDirectory() .. "/_grep_example_search"
     local mod = lurek.mods.newMod({
         id = "grep_runtime_example",
         sandbox = {
@@ -324,18 +286,16 @@ do
         },
     })
     mod:setHook("on_load", function()
-        local allowed = lurek.grep.search(paths.search, "needle")
+        local allowed = lurek.grep.search(search, "needle")
         local blocked_ok = pcall(function()
-            lurek.grep.search("content/examples", "needle")
+            lurek.grep.search(forbidden, "needle")
         end)
         return allowed, blocked_ok
     end)
-
     local result, blocked_ok = mod:runHook("on_load")
     local first = result.matches[1]
-    local path = first and first.path or "nil"
-    lurek.log.info("search files=" .. result.files_searched .. " matched=" .. result.files_matched .. " first_path=" .. tostring(path))
-    lurek.log.info("sandbox blocked content/examples=" .. tostring(not blocked_ok))
+    lurek.log.info("search files=" .. result.files_searched .. " matched=" .. result.files_matched .. " first_path=" .. tostring(first and first.path or "nil"))
+    lurek.log.info("sandbox blocked forbidden dir=" .. tostring(not blocked_ok))
 end
 ```
 
@@ -380,7 +340,6 @@ LFileFilter:addExtension(ext)
 
 ```lua
 do
-
     local filter = lurek.grep.newFilter()
     filter:addExtension("lua")
     filter:addExtension("toml")
@@ -410,7 +369,6 @@ LFileFilter:excludeExtension(ext)
 
 ```lua
 do
-
     local filter = lurek.grep.newFilter()
     filter:addExtension("lua")
     filter:excludeExtension("txt")
@@ -440,7 +398,6 @@ LFileFilter:excludePattern(pattern)
 
 ```lua
 do
-
     local filter = lurek.grep.newFilter()
     filter:addExtension("lua")
     filter:excludePattern("notes")
@@ -470,7 +427,6 @@ LFileFilter:setIncludeHidden(include)
 
 ```lua
 do
-
     local filter = lurek.grep.newFilter()
     filter:addExtension("lua")
     filter:setIncludeHidden(true)
@@ -515,21 +471,15 @@ LGrepEngine:count(path, pattern)
 
 ```lua
 do
-
-    local root = "work/grep_unit"
-    local paths = {
-        root = root,
-        search = root .. "/search",
-        alpha = root .. "/search/alpha.lua",
-        beta = root .. "/search/beta.lua",
-        notes = root .. "/search/notes.txt",
-        json = root .. "/sample.json",
-        log = root .. "/sample.log",
-    }
+    local root = "save/_grep_engine_count"
+    local search = root .. "/search"
+    lurek.filesystem.createDirectory(root)
+    lurek.filesystem.createDirectory(search)
+    lurek.filesystem.write(search .. "/alpha.lua", "local needle = 'alpha'\nprint('needle alpha')\n")
+    lurek.filesystem.write(search .. "/beta.lua", "local needle = 'beta'\n")
     local engine = lurek.grep.newEngine()
-    local count = engine:count(paths.search, "needle")
-    local search = engine:search(paths.search, "needle")
-    local files = search.files_searched
+    local count = engine:count(search, "needle")
+    local files = engine:search(search, "needle").files_searched
     lurek.log.info("LGrepEngine:count total=" .. count .. " files=" .. files)
 end
 ```
@@ -561,22 +511,15 @@ LGrepEngine:multiSearch(path, patterns)
 
 ```lua
 do
-
-    local root = "work/grep_unit"
-    local paths = {
-        root = root,
-        search = root .. "/search",
-        alpha = root .. "/search/alpha.lua",
-        beta = root .. "/search/beta.lua",
-        notes = root .. "/search/notes.txt",
-        json = root .. "/sample.json",
-        log = root .. "/sample.log",
-    }
-    local engine = lurek.grep.newEngine()
-    local result = engine:multiSearch(paths.search, { "needle", "other" })
+    local root = "save/_grep_engine_multi_search"
+    local search = root .. "/search"
+    lurek.filesystem.createDirectory(root)
+    lurek.filesystem.createDirectory(search)
+    lurek.filesystem.write(search .. "/alpha.lua", "local needle = 'alpha'\nlocal other = 'ally'\n")
+    lurek.filesystem.write(search .. "/beta.lua", "local needle = 'beta'\n")
+    local result = lurek.grep.newEngine():multiSearch(search, { "needle", "other" })
     local first = result.matches[1]
-    local path = first and first.path or "nil"
-    lurek.log.info("LGrepEngine:multiSearch files=" .. result.files_searched .. " total=" .. result.total_matches .. " first_path=" .. tostring(path))
+    lurek.log.info("LGrepEngine:multiSearch files=" .. result.files_searched .. " total=" .. result.total_matches .. " first_path=" .. tostring(first and first.path or "nil"))
 end
 ```
 
@@ -607,23 +550,15 @@ LGrepEngine:search(path, pattern)
 
 ```lua
 do
-
     local root = "save/_grep_engine_example"
-    local paths = {
-        root = root,
-        search = root .. "/search",
-        alpha = root .. "/search/alpha.lua",
-        beta = root .. "/search/beta.lua",
-    }
-    if not lurek.filesystem.exists(root) then
-        lurek.filesystem.createDirectory(root)
-    end
-    if not lurek.filesystem.exists(paths.search) then
-        lurek.filesystem.createDirectory(paths.search)
-    end
-    lurek.filesystem.write(paths.alpha, "local needle = 'alpha'\n")
-    lurek.filesystem.write(paths.beta, "local needle = 'beta'\n")
-
+    local search = root .. "/search"
+    local forbidden = "save/_grep_engine_example_forbidden"
+    lurek.filesystem.createDirectory(root)
+    lurek.filesystem.createDirectory(search)
+    lurek.filesystem.createDirectory(forbidden)
+    lurek.filesystem.write(search .. "/alpha.lua", "local needle = 'alpha'\n")
+    lurek.filesystem.write(search .. "/beta.lua", "local needle = 'beta'\n")
+    lurek.filesystem.write(forbidden .. "/forbidden.lua", "needle outside sandbox\n")
     local root_abs = lurek.filesystem.getSaveDirectory() .. "/_grep_engine_example"
     local mod = lurek.mods.newMod({
         id = "grep_engine_runtime_example",
@@ -638,18 +573,16 @@ do
     })
     mod:setHook("on_load", function()
         local engine = lurek.grep.newEngine()
-        local allowed = engine:search(paths.search, "needle")
+        local allowed = engine:search(search, "needle")
         local blocked_ok = pcall(function()
-            engine:search("content/examples", "needle")
+            engine:search(forbidden, "needle")
         end)
         return allowed, blocked_ok
     end)
-
     local result, blocked_ok = mod:runHook("on_load")
     local first = result.matches[1]
-    local path = first and first.path or "nil"
-    lurek.log.info("LGrepEngine:search files=" .. result.files_searched .. " total=" .. result.total_matches .. " first_path=" .. tostring(path))
-    lurek.log.info("LGrepEngine:search sandbox blocked content/examples=" .. tostring(not blocked_ok))
+    lurek.log.info("LGrepEngine:search files=" .. result.files_searched .. " total=" .. result.total_matches .. " first_path=" .. tostring(first and first.path or "nil"))
+    lurek.log.info("LGrepEngine:search sandbox blocked forbidden dir=" .. tostring(not blocked_ok))
 end
 ```
 
@@ -681,23 +614,14 @@ LGrepEngine:searchExt(path, pattern, extensions)
 
 ```lua
 do
-
-    local root = "work/grep_unit"
-    local paths = {
-        root = root,
-        search = root .. "/search",
-        alpha = root .. "/search/alpha.lua",
-        beta = root .. "/search/beta.lua",
-        notes = root .. "/search/notes.txt",
-        json = root .. "/sample.json",
-        log = root .. "/sample.log",
-    }
-    local engine = lurek.grep.newEngine()
-    local result = engine:searchExt(paths.search, "needle", { "lua" })
-    local total = result.total_matches
-    local files = result.files_searched
-    local matched = result.files_matched
-    lurek.log.info("LGrepEngine:searchExt files=" .. files .. " matched=" .. matched .. " total=" .. total)
+    local root = "save/_grep_engine_search_ext"
+    local search = root .. "/search"
+    lurek.filesystem.createDirectory(root)
+    lurek.filesystem.createDirectory(search)
+    lurek.filesystem.write(search .. "/alpha.lua", "local needle = 'alpha'\nprint('needle alpha')\n")
+    lurek.filesystem.write(search .. "/notes.txt", "needle in text file\n")
+    local result = lurek.grep.newEngine():searchExt(search, "needle", { "lua" })
+    lurek.log.info("LGrepEngine:searchExt files=" .. result.files_searched .. " matched=" .. result.files_matched .. " total=" .. result.total_matches)
 end
 ```
 
@@ -728,22 +652,17 @@ LGrepEngine:searchFiles(files, pattern)
 
 ```lua
 do
-
-    local root = "work/grep_unit"
-    local paths = {
-        root = root,
-        search = root .. "/search",
-        alpha = root .. "/search/alpha.lua",
-        beta = root .. "/search/beta.lua",
-        notes = root .. "/search/notes.txt",
-        json = root .. "/sample.json",
-        log = root .. "/sample.log",
-    }
-    local engine = lurek.grep.newEngine()
-    local result = engine:searchFiles({ paths.alpha, paths.beta }, "needle")
+    local root = "save/_grep_engine_search_files"
+    local search = root .. "/search"
+    local alpha = search .. "/alpha.lua"
+    local beta = search .. "/beta.lua"
+    lurek.filesystem.createDirectory(root)
+    lurek.filesystem.createDirectory(search)
+    lurek.filesystem.write(alpha, "local needle = 'alpha'\nprint('needle alpha')\n")
+    lurek.filesystem.write(beta, "local needle = 'beta'\n")
+    local result = lurek.grep.newEngine():searchFiles({ alpha, beta }, "needle")
     local first = result.matches[1]
-    local path = first and first.path or "nil"
-    lurek.log.info("LGrepEngine:searchFiles files=" .. result.files_searched .. " total=" .. result.total_matches .. " first=" .. tostring(path))
+    lurek.log.info("LGrepEngine:searchFiles files=" .. result.files_searched .. " total=" .. result.total_matches .. " first=" .. tostring(first and first.path or "nil"))
 end
 ```
 

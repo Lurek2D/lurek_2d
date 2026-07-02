@@ -1335,7 +1335,7 @@ LProvinceRegistry:getShader()
 
 | Type | Description |
 |------|-------------|
-| [LShader](render.md#lshader)? | Bound shader handle. |
+| [LShader](render.md#lshader) | Bound shader handle. |
 
 **Example**
 

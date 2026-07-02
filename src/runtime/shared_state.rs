@@ -12,6 +12,7 @@
 
 use crate::audio::Mixer;
 use crate::camera::Camera;
+use crate::cursor::CursorManager;
 use crate::event::EventQueue;
 use crate::filesystem::GameFS;
 use crate::input::{
@@ -25,7 +26,7 @@ use crate::particle::ParticleSystem;
 use crate::province::registry::ProvinceRegistry;
 use crate::province::types::ProvinceId;
 use crate::province::ProvinceProperties;
-use crate::raycaster::RaycasterScene;
+use crate::raycaster::{RaycasterLastBuildContext, RaycasterScene};
 use crate::render::gpu_state::RenderStats;
 use crate::render::renderer::{BlendMode, DepthMode, RenderCommand, StencilMode, TextureData};
 use crate::render::{Canvas, CompoundShape, Mesh, Shader};
@@ -539,10 +540,18 @@ pub struct SharedState {
     pub auto_ui_input: bool,
     /// Whether `lurek.ui.update(dt)` is called during the normal frame update.
     pub auto_ui_update: bool,
+    /// Shared runtime cursor controller used by `lurek.cursor`.
+    pub cursor_runtime: CursorManager,
     /// Stores raycaster_output state.
     pub raycaster_output: Option<RaycasterScene>,
+    /// Last build context used by cursor `raycaster_last` hover sources.
+    pub raycaster_last_build: Option<RaycasterLastBuildContext>,
     /// Optional draw-target shader applied while presenting the last built raycaster scene.
     pub raycaster_shader: Option<ShaderKey>,
+    /// Reusable overlay texture for custom or animated cursor rendering.
+    pub cursor_overlay_texture: Option<TextureKey>,
+    /// Monotonic signature of the data uploaded into `cursor_overlay_texture`.
+    pub cursor_overlay_signature: u64,
     /// Stores resource_budget_bytes state.
     pub resource_budget_bytes: u64,
     /// Stores frame_profile state.
@@ -659,8 +668,12 @@ impl SharedState {
             auto_ui_ctx: None,
             auto_ui_input: true,
             auto_ui_update: true,
+            cursor_runtime: CursorManager::new(),
             raycaster_output: None,
+            raycaster_last_build: None,
             raycaster_shader: None,
+            cursor_overlay_texture: None,
+            cursor_overlay_signature: 0,
             resource_budget_bytes: 0,
             frame_profile: FrameProfile::default(),
             frame_counter: 0,

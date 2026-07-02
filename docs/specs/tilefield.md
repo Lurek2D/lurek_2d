@@ -174,8 +174,8 @@ This module is mostly self-contained inside the Feature Systems group. Cross-mod
 - `LTileField:applyTilesetObject(x, y, z?, slot, tileset, opts?) -> boolean`: Applies the object archetype defaults for a tileset tile referenced from one cell.
 - `LTileField:applyTilesetObjectLayer(slot, tileset, opts?) -> integer`: Applies tileset object defaults for every referenced cell on one tilefield level.
 - `LTileField:blocks(x, y, z?, channel) -> boolean`: Returns whether a cell blocks a channel.
-- `LTileField:blocksCategory(x, y, z?, category) -> nil`: Returns whether one cell blocks a category.
-- `LTileField:clear() -> nil`: Clears all cell gameplay state.
+- `LTileField:blocksCategory(x, y, z?, category) -> boolean`: Returns whether one cell blocks a category.
+- `LTileField:clear() -> nil`: Clears all gameplay state, modifiers, and references in the field.
 - `LTileField:clearCell(x, y, z?) -> nil`: Clears gameplay state for one addressed cell.
 - `LTileField:clearLine(from_tbl, to_tbl, channel, opts?) -> boolean`: Returns true when the line between two cell tables has no blocker for a channel.
 - `LTileField:clearModifier(x, y, z?, modifier) -> boolean`: Removes one modifier from one cell.
@@ -186,12 +186,12 @@ This module is mostly self-contained inside the Feature Systems group. Cross-mod
 - `LTileField:exportCostLayer(channel, z?) -> table`: Exports one cost channel and level as a row-major number array.
 - `LTileField:exportRefLayer(slot, z?) -> nil`: Exports one named object/tile reference slot and level as a row-major array.
 - `LTileField:firstBlocker(from_tbl, to_tbl, channel, opts?) -> table|nil`: Returns the first one-based blocking cell table between two cells, or nil.
-- `LTileField:footprintPassable(x, y, z?, w, h, category) -> nil`: Returns whether a rectangular footprint can occupy a cell anchor for a category.
-- `LTileField:getCategories() -> string[]`: Returns known category names.
+- `LTileField:footprintPassable(x, y, z?, w, h, category) -> boolean`: Returns whether a rectangular footprint can occupy a cell anchor for a category.
+- `LTileField:getCategories() -> string[]`: Returns the sorted names of all known cell categories.
 - `LTileField:getCategory(name) -> table|nil`: Returns category metadata, or nil when the category is unknown.
-- `LTileField:getCategoryCost(x, y, z?, category) -> nil`: Returns one effective category cost.
-- `LTileField:getCategoryFilter(x, y, z?, category) -> nil`: Returns one effective RGB category filter.
-- `LTileField:getCategoryTransmission(x, y, z?, category) -> nil`: Returns one effective category transmission multiplier.
+- `LTileField:getCategoryCost(x, y, z?, category) -> number`: Returns one effective category cost.
+- `LTileField:getCategoryFilter(x, y, z?, category) -> table`: Returns one effective RGB category filter.
+- `LTileField:getCategoryTransmission(x, y, z?, category) -> number`: Returns one effective category transmission multiplier.
 - `LTileField:getCell(x, y, z?) -> table`: Returns a table with blockers, costs, sun occlusion, refs, and modifiers.
 - `LTileField:getCost(x, y, z?, channel) -> number`: Returns the cost for one cell/channel.
 - `LTileField:getModifier(name) -> table|nil`: Returns a named tile modifier table, or nil.
@@ -203,8 +203,8 @@ This module is mostly self-contained inside the Feature Systems group. Cross-mod
 - `LTileField:getRefProperty(x, y, z?, slot, tileset, property, opts?) -> string|nil`: Reads a tileset property for a tile referenced from one cell.
 - `LTileField:getRefPropertyBool(x, y, z?, slot, tileset, property, opts?) -> boolean|nil`: Reads a tileset property for a tile referenced from one cell and parses it as a boolean.
 - `LTileField:getRefPropertyNumber(x, y, z?, slot, tileset, property, opts?) -> number|nil`: Reads a tileset property for a tile referenced from one cell and parses it as a number.
-- `LTileField:getRefSlots() -> string[]`: Returns every declared ref slot.
-- `LTileField:getRegionCells(name) -> table?`: Returns one-based cells for a named region, or nil when it does not exist.
+- `LTileField:getRefSlots() -> string[]`: Returns the sorted names of every declared reference slot.
+- `LTileField:getRegionCells(name) -> table`: Returns one-based cells for a named region, or nil when it does not exist.
 - `LTileField:getRegionNames() -> table`: Returns all region names in stable order.
 - `LTileField:getSize() -> integer`: Returns field width, height, and level count.
 - `LTileField:getSunOcclusion(x, y, z?) -> number`: Returns top-light occlusion in the inclusive range 0..1.
@@ -220,7 +220,7 @@ This module is mostly self-contained inside the Feature Systems group. Cross-mod
 - `LTileField:removeSlot(slot) -> boolean`: Removes a named object slot and clears its references from the field.
 - `LTileField:setBlock(x, y, z?, channel, blocked) -> nil`: Sets whether a cell blocks a channel.
 - `LTileField:setCategoryBlock(x, y, z?, category, blocked) -> nil`: Sets one category blocker on one cell.
-- `LTileField:setCategoryCost(x, y, z?, category, cost) -> nil`: Sets one category cost on one cell.
+- `LTileField:setCategoryCost(x, y, z?, category, cost) -> nil`: Sets one movement-cost override for a category on one cell.
 - `LTileField:setCategoryFilter(x, y, z?, category, filter) -> nil`: Sets one RGB category filter on one cell.
 - `LTileField:setCategoryTransmission(x, y, z?, category, value) -> nil`: Sets one category transmission multiplier on one cell.
 - `LTileField:setCell(x, y, z?, cell) -> nil`: Sets cell state from a table with optional `blocks`, `costs`, `sunOcclusion`, `refs`, and `modifiers`.

@@ -130,6 +130,8 @@ impl LuaUserData for LuaTileAwareness {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- defineCategory --
         /// Defines or replaces one awareness category.
+        /// @param | name | string | Category name to create or replace.
+        /// @param | opts | table? | Optional category settings such as range, arc, facing, active, and blocker rules.
         methods.add_method(
             "defineCategory",
             |_, this, (name, opts): (String, Option<LuaTable>)| {
@@ -174,7 +176,7 @@ impl LuaUserData for LuaTileAwareness {
         // -- getCategory --
         /// Returns awareness category metadata.
         /// @param | name | string | Category name to inspect.
-        /// @return | table? | Category metadata table, or nil when the category is unknown.
+        /// @return | table | Category metadata table, or nil when the category is unknown.
         methods.add_method("getCategory", |lua, this, name: String| {
             let inner = this.inner.borrow();
             let Some(config) = inner.category(&name) else {
@@ -295,6 +297,12 @@ impl LuaUserData for LuaTileAwareness {
 
         // -- isAware --
         /// Returns whether a one-based cell is visible for a specific awareness category.
+        /// @param | player | string | Player identifier to query.
+        /// @param | category | string | Awareness category name.
+        /// @param | x | integer | One-based cell column.
+        /// @param | y | integer | One-based cell row.
+        /// @param | z | integer? | Optional one-based level index, defaulting to 1.
+        /// @return | boolean | True when the addressed cell is visible for the selected category.
         methods.add_method(
             "isAware",
             |_, this, (player, category, x, y, z): (String, String, u32, u32, Option<u32>)| {
@@ -348,7 +356,8 @@ impl LuaUserData for LuaTileAwareness {
         // -- visibleCells --
         /// Returns all currently visible cells for a player, optionally filtered to a level.
         /// @param | player | string | Player identifier to query.
-        /// @param | z | integer? | Optional one-based level filter.
+        /// @param | categoryOrZ | string|integer? | Optional category name or one-based level filter when no separate `z` argument is supplied.
+        /// @param | z | integer? | Optional one-based level filter used when `categoryOrZ` is a category string.
         /// @return | table | Array of one-based visible cell tables.
         methods.add_method(
             "visibleCells",
@@ -420,6 +429,10 @@ impl LuaUserData for LuaTileAwareness {
 
         // -- share --
         /// Adds a directed awareness share edge for one category.
+        /// @param | from | string | Source player identifier.
+        /// @param | to | string | Target player identifier.
+        /// @param | category | string | Awareness category to share.
+        /// @param | opts | table? | Reserved optional settings table for future share options.
         methods.add_method(
             "share",
             |_, this, (from, to, category, _opts): (String, String, String, Option<LuaTable>)| {
@@ -439,6 +452,8 @@ impl LuaUserData for LuaTileAwareness {
 
         // -- setTeam --
         /// Creates directed share edges between all listed players for selected categories.
+        /// @param | players | table | Array of player identifiers that should share visibility.
+        /// @param | categories | table? | Optional array of category names to share; omitted shares every category.
         methods.add_method(
             "setTeam",
             |_, this, (players, categories): (LuaTable, Option<LuaTable>)| {

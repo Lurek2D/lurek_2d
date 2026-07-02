@@ -3337,7 +3337,7 @@ LTileMap:getLayerShader(layer)
 
 | Type | Description |
 |------|-------------|
-| [LShader](render.md#lshader)? | Bound layer shader handle. |
+| [LShader](render.md#lshader) | Bound layer shader handle. |
 
 **Example**
 
@@ -3442,7 +3442,7 @@ LTileMap:getShader()
 
 | Type | Description |
 |------|-------------|
-| [LShader](render.md#lshader)? | Bound shader handle. |
+| [LShader](render.md#lshader) | Bound shader handle. |
 
 **Example**
 

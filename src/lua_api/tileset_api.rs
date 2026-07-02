@@ -632,7 +632,7 @@ impl LuaUserData for LuaTileCatalog {
                 None => Ok(None),
             }
         });
-        /// Returns the userdata type name.
+        /// Returns the Lua-visible userdata type name for this tile catalog.
         /// @return | string | Always `LTileCatalog`.
         methods.add_method("type", |_, _, ()| Ok("LTileCatalog"));
         /// Checks whether this catalog matches a type name.
@@ -661,12 +661,12 @@ impl LuaUserData for LuaTileSet {
         methods.add_method("getColumns", |_, this, ()| {
             Ok(this.inner.borrow().get_columns())
         });
-        /// Returns the tile width in pixels.
+        /// Returns the width of each tile in pixels.
         /// @return | integer | Tile width.
         methods.add_method("getTileWidth", |_, this, ()| {
             Ok(this.inner.borrow().get_tile_width())
         });
-        /// Returns the tile height in pixels.
+        /// Returns the height of each tile in pixels.
         /// @return | integer | Tile height.
         methods.add_method("getTileHeight", |_, this, ()| {
             Ok(this.inner.borrow().get_tile_height())
@@ -1367,7 +1367,7 @@ impl LuaUserData for LuaTileSet {
                 None => Ok(LuaValue::Nil),
             }
         });
-        /// Returns the userdata type name.
+        /// Returns the Lua-visible userdata type name for this tileset.
         /// @return | string | Always `LTileSet`.
         methods.add_method("type", |_, _, ()| Ok("LTileSet"));
         /// Checks whether this tileset matches a type name.

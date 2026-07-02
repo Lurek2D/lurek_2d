@@ -1454,7 +1454,6 @@ impl LurekApp {
             st.total_time = st.clock.total();
             st.fps = st.clock.fps();
             st.keyboard.begin_frame();
-            st.mouse.begin_frame();
             st.touch.begin_frame();
             for gp in &mut st.gamepads {
                 gp.begin_frame();
@@ -2002,7 +2001,21 @@ impl LurekApp {
                         x: 12.0,
                         y: 28.0,
                         scale: 0.9,
-                    });
+                });
+            }
+        }
+        if let Some(lua) = &self.lua {
+            let error = crate::lua_api::cursor_api::refresh_cursor_runtime(
+                lua,
+                state.clone(),
+                callback_timeout_ms,
+            )
+            .err();
+            if let Some(error) = error {
+                if self.handle_callback_error("cursor", "frame.cursor", error) {
+                    return;
+                }
+                return;
             }
         }
         frame_profile.callback_total_ms = frame_profile.process_physics_ms
@@ -3635,6 +3648,7 @@ impl ApplicationHandler for LurekApp {
                             let update_start = Instant::now();
                             self.game_update();
                             update_ms = update_start.elapsed().as_secs_f64() * 1000.0;
+                            self.apply_pending_window_actions();
                             let render_start = Instant::now();
                             self.render();
                             render_ms = render_start.elapsed().as_secs_f64() * 1000.0;
@@ -3652,6 +3666,7 @@ impl ApplicationHandler for LurekApp {
                     st.frame_profile.app_update_ms = update_ms as f32;
                     st.frame_profile.app_render_ms = render_ms as f32;
                     st.frame_profile.app_frame_total_ms = (tick_ms + update_ms + render_ms) as f32;
+                    st.mouse.begin_frame();
                 }
                 self.perf_record_frame(tick_ms, update_ms, render_ms);
             }

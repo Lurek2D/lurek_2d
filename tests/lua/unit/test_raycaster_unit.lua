@@ -2406,6 +2406,50 @@ fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
         expect_nil(map:getWallFeatureCell(1, 1))
     end)
 
+    -- @covers LRaycaster:setPickAttr
+    it("setPickAttr stores cursor metadata on single-level raycaster cells", function()
+        local map = lurek.raycaster.new(6, 4)
+        map:setCell(4, 1, 7)
+        map:setPickAttr(4, 1, "any", "cursor_state", "inspect")
+        map:setPickAttr(4, 1, "wall", "cursor_effect", "spark")
+        map:setPickAttr(4, 1, "floor", "cursor_zoom", "2.5")
+        expect_equal("inspect", map:getPickAttr(4, 1, "any", "cursor_state"))
+        expect_equal("spark", map:getPickAttr(4, 1, "wall", "cursor_effect"))
+        expect_equal("2.5", map:getPickAttr(4, 1, "floor", "cursor_zoom"))
+    end)
+
+    -- @covers LRaycaster:getPickAttr
+    it("getPickAttr exposes stored wall metadata and pick-screen attrs", function()
+        local map = lurek.raycaster.new(6, 4)
+        map:setCell(4, 1, 7)
+        map:setPickAttr(4, 1, "any", "cursor_state", "inspect")
+        map:setPickAttr(4, 1, "wall", "cursor_effect", "spark")
+
+        local hit = map:pickScreen(80, 50, {
+            px = 1.5,
+            py = 1.5,
+            angle = 0.0,
+            fov = math.pi / 3,
+            rays = 32,
+            max_dist = 16.0,
+            screen_w = 160,
+            screen_h = 100,
+        })
+        expect_equal("wall", hit.kind)
+        expect_equal("inspect", hit.attrs.cursor_state)
+        expect_equal("spark", hit.attrs.cursor_effect)
+        expect_equal("spark", map:getPickAttr(4, 1, "wall", "cursor_effect"))
+    end)
+
+    -- @covers LRaycaster:clearPickAttr
+    it("clearPickAttr removes one stored cursor metadata entry", function()
+        local map = lurek.raycaster.new(6, 4)
+        map:setCell(4, 1, 7)
+        map:setPickAttr(4, 1, "wall", "cursor_effect", "spark")
+        map:clearPickAttr(4, 1, "wall", "cursor_effect")
+        expect_equal(nil, map:getPickAttr(4, 1, "wall", "cursor_effect"))
+    end)
+
     -- @covers LRaycaster:setWallFeatureCell
     it("setWallFeatureCell stores render feature metadata", function()
         local map = lurek.raycaster.new(4, 4)
@@ -2793,6 +2837,67 @@ describe("LSpriteManager methods", function()
     it("typeOf accepts the sprite manager type name", function()
         local sprites = lurek.raycaster.newSpriteManager()
         expect_true(sprites:typeOf("LSpriteManager"))
+    end)
+
+    -- @covers LSpriteManager:setAttr
+    it("setAttr stores sprite metadata used by pick results", function()
+        local sprites = lurek.raycaster.newSpriteManager()
+        local id = sprites:add(2, 0, "npc.png")
+        sprites:setAttr(id, "cursor_state", "talk")
+        sprites:setAttr(id, "cursor_effect", "ping")
+        expect_equal("talk", sprites:getAttr(id, "cursor_state"))
+        expect_equal("ping", sprites:getAttr(id, "cursor_effect"))
+    end)
+
+    -- @covers LSpriteManager:getAttr
+    it("getAttr returns stored sprite metadata and nil for missing keys", function()
+        local sprites = lurek.raycaster.newSpriteManager()
+        local id = sprites:add(2, 0, "npc.png")
+        sprites:setAttr(id, "cursor_state", "talk")
+        expect_equal("talk", sprites:getAttr(id, "cursor_state"))
+        expect_equal(nil, sprites:getAttr(id, "missing_key"))
+    end)
+
+    -- @covers LSpriteManager:clearAttr
+    it("clearAttr removes one key or the whole sprite attr map", function()
+        local sprites = lurek.raycaster.newSpriteManager()
+        local id = sprites:add(2, 0, "npc.png")
+        sprites:setAttr(id, "cursor_state", "talk")
+        sprites:setAttr(id, "cursor_effect", "ping")
+        sprites:clearAttr(id, "cursor_state")
+        expect_equal(nil, sprites:getAttr(id, "cursor_state"))
+        sprites:clearAttr(id)
+        expect_equal(nil, sprites:getAttr(id, "cursor_effect"))
+    end)
+end)
+
+-- @describe raycaster cursor metadata
+describe("raycaster cursor metadata", function()
+    -- @covers LMultiLevelGrid:setPickAttr
+    it("setPickAttr stores metadata on the active multilevel slice", function()
+        local grid = make_persistent_multilevel_grid()
+        grid:setPickAttr(1, 1, "floor", "cursor_zoom", "2.5")
+        grid:setPickAttr(1, 1, "any", "cursor_priority", "90")
+        expect_equal("2.5", grid:getPickAttr(1, 1, "floor", "cursor_zoom"))
+        expect_equal("90", grid:getPickAttr(1, 1, "any", "cursor_priority"))
+    end)
+
+    -- @covers LMultiLevelGrid:getPickAttr
+    it("getPickAttr reads metadata back from the active multilevel slice", function()
+        local grid = make_persistent_multilevel_grid()
+        grid:setPickAttr(1, 1, "floor", "cursor_zoom", "2.5")
+        grid:setPickAttr(1, 1, "any", "cursor_priority", "90")
+        expect_equal("2.5", grid:getPickAttr(1, 1, "floor", "cursor_zoom"))
+        expect_equal("90", grid:getPickAttr(1, 1, "any", "cursor_priority"))
+        expect_equal(nil, grid:getPickAttr(1, 1, "wall", "missing_key"))
+    end)
+
+    -- @covers LMultiLevelGrid:clearPickAttr
+    it("clearPickAttr removes metadata from the active multilevel slice", function()
+        local grid = make_persistent_multilevel_grid()
+        grid:setPickAttr(1, 1, "floor", "cursor_zoom", "2.5")
+        grid:clearPickAttr(1, 1, "floor", "cursor_zoom")
+        expect_equal(nil, grid:getPickAttr(1, 1, "floor", "cursor_zoom"))
     end)
 end)
 

@@ -321,6 +321,14 @@
       "tests/lua/golden/test_compute_golden.lua"
     ]
   },
+  "cursor": {
+    "baseline_artifacts": [],
+    "current_artifacts": [],
+    "evidence_tests": [
+      "tests/lua/evidence/test_cursor_evidence.lua"
+    ],
+    "golden_tests": []
+  },
   "dataframe": {
     "baseline_artifacts": [
       "tests/artifacts/baselines/dataframe/dataframe_correlation_matrix_heatmap.png",

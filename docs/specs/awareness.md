@@ -217,15 +217,15 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - `LTileAwareness:computeVisible(player, opts) -> nil`: Computes one player's current visible mask from a tilefield origin.
 - `LTileAwareness:defineCategory(name, opts?) -> nil`: Defines or replaces one awareness category.
 - `LTileAwareness:getCategories() -> table`: Returns known awareness category names.
-- `LTileAwareness:getCategory(name) -> table?`: Returns awareness category metadata.
-- `LTileAwareness:isAware(player, category, x, y, z?) -> nil`: Returns whether a one-based cell is visible for a specific awareness category.
+- `LTileAwareness:getCategory(name) -> table`: Returns awareness category metadata.
+- `LTileAwareness:isAware(player, category, x, y, z?) -> boolean`: Returns whether a one-based cell is visible for a specific awareness category.
 - `LTileAwareness:isExplored(player, x, y, z?) -> boolean`: Returns whether a one-based cell has been explored for a player.
 - `LTileAwareness:isVisible(player, x, y, z?) -> boolean`: Returns whether a one-based cell is currently visible for a player.
 - `LTileAwareness:setTeam(players, categories?) -> nil`: Creates directed share edges between all listed players for selected categories.
 - `LTileAwareness:share(from, to, category, opts?) -> nil`: Adds a directed awareness share edge for one category.
 - `LTileAwareness:type() -> string`: Returns the Lua-visible type name for this tile visibility handle.
 - `LTileAwareness:typeOf(name) -> boolean`: Returns whether this handle matches a supported type name.
-- `LTileAwareness:visibleCells(player, z?, z?) -> table`: Returns all currently visible cells for a player, optionally filtered to a level.
+- `LTileAwareness:visibleCells(player, categoryOrZ?, z?) -> table`: Returns all currently visible cells for a player, optionally filtered to a level.
 
 ## Examples
 

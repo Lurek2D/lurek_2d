@@ -382,10 +382,10 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `LTileMap:getLayerName(idx) -> string`: Returns the name of a layer by index.
 - `LTileMap:getLayerOffset(idx) -> number`: Returns the pixel offset of a layer.
 - `LTileMap:getLayerParallax(idx) -> number`: Returns the parallax scroll factor of a layer.
-- `LTileMap:getLayerShader(layer) -> LShader?`: Returns the shader override bound to one layer, or nil when the layer has no override.
+- `LTileMap:getLayerShader(layer) -> LShader`: Returns the shader override bound to one layer, or nil when the layer has no override.
 - `LTileMap:getLayerVisible(idx) -> boolean`: Returns whether a layer is currently visible.
 - `LTileMap:getOrientation() -> string`: Returns the current map orientation as a string.
-- `LTileMap:getShader() -> LShader?`: Returns the tilemap shader bound to this map, or nil when none is bound.
+- `LTileMap:getShader() -> LShader`: Returns the tilemap shader bound to this map, or nil when none is bound.
 - `LTileMap:getTile(layer, x, y) -> integer`: Returns the tile GID at a specific grid position on a layer.
 - `LTileMap:getTileDimensions() -> integer`: Returns both tile width and height in pixels.
 - `LTileMap:getTileHeight() -> integer`: Returns the height of a single tile in pixels for this map.

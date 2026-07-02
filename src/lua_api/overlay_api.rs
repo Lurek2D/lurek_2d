@@ -317,7 +317,7 @@ impl LuaUserData for LuaOverlay {
         });
         // -- getShader --
         /// Returns the shader bound to this overlay, if any.
-        /// @return | LShader? | Bound shader or nil.
+        /// @return | LShader | Bound shader or nil.
         methods.add_method("getShader", |_, this, ()| {
             Ok(this.shader.map(|key| LuaShader {
                 state: this.state.clone(),
@@ -358,7 +358,7 @@ impl LuaUserData for LuaOverlay {
         // -- getShaderLayer --
         /// Returns a shader bound to one overlay layer, if present.
         /// @param | layer | string | Layer name.
-        /// @return | LShader? | Bound shader or nil.
+        /// @return | LShader | Bound shader or nil.
         methods.add_method("getShaderLayer", |_, this, layer: String| {
             Ok(this.shader_layers.get(layer.trim()).map(|key| LuaShader {
                 state: this.state.clone(),
@@ -657,7 +657,7 @@ impl LuaUserData for LuaOverlay {
         // -- getStatusEffect --
         /// Returns one status layer table or nil.
         /// @param | kind | string | Status kind or layer id.
-        /// @return | table? | Layer table when present.
+        /// @return | table | Layer table when present.
         methods.add_method("getStatusEffect", |lua, this, kind: String| {
             match this.inner.status_stack.layer(&kind) {
                 Some(layer) => Ok(Some(status_layer_to_table(lua, layer)?)),

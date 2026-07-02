@@ -359,7 +359,7 @@ lurek.light.getShader()
 
 | Type | Description |
 |------|-------------|
-| [LShader](render.md#lshader)? | Bound shader or nil. |
+| [LShader](render.md#lshader) | Bound shader or nil. |
 
 **Example**
 
@@ -1406,7 +1406,7 @@ LLight:getShader()
 
 | Type | Description |
 |------|-------------|
-| [LShader](render.md#lshader)? | Bound shader or nil. |
+| [LShader](render.md#lshader) | Bound shader or nil. |
 
 **Example**
 

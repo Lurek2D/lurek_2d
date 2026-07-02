@@ -38,7 +38,7 @@ The glossary collects terms that appear across module and API pages.
 - `LAILod` ([lurek.ai](https://lurek2d.github.io/lurek_2d/modules/ai.html)) - Lua handle for distance-based AI level-of-detail tier selection.
 - `LAISystem` ([lurek.agent](https://lurek2d.github.io/lurek_2d/modules/agent.html)) - Lua-side handle for an AISystem multi-agent orchestrator.
 - `LAIWorld` ([lurek.ai](https://lurek2d.github.io/lurek_2d/modules/ai.html)) - Lua handle for an AI world that owns named agents, global blackboard data, and custom callback registrations.
-- `LAnimatedCursor` ([lurek.cursor](https://lurek2d.github.io/lurek_2d/modules/cursor.html)) - Lua userdata representing an animated cursor that cycles through image frames.
+- `LAnimatedCursor` ([lurek.cursor](https://lurek2d.github.io/lurek_2d/modules/cursor.html)) - Creates an animated cursor that can cycle through custom cursor frames.
 - `LAnimatedImage` ([lurek.image](https://lurek2d.github.io/lurek_2d/modules/image.html)) - Lua-side decoded animated image containing frame images and durations.
 - `LAnimation` ([lurek.animation](https://lurek2d.github.io/lurek_2d/modules/animation.html)) - Lua-side animation object containing frame rectangles, named clips, playback state, and blend state.
 - `LAnimCurve` ([lurek.animation](https://lurek2d.github.io/lurek_2d/modules/animation.html)) - Lua-side animation curve with keyframes and optional custom easing callback.
@@ -92,8 +92,8 @@ The glossary collects terms that appear across module and API pages.
 - `LContextSteering` ([lurek.pathfind](https://lurek2d.github.io/lurek_2d/modules/pathfind.html)) - Lua handle for slot-based context steering direction selection.
 - `LConv2D` ([lurek.learning](https://lurek2d.github.io/lurek_2d/modules/learning.html)) - Lua wrapper over `Conv2D` for deterministic spatial inference and weight roundtrips.
 - `LCursor` ([lurek.input](https://lurek2d.github.io/lurek_2d/modules/input.html)) - Lua-side cursor handle for system and custom cursor requests.
-- `LCursorManager` ([lurek.cursor](https://lurek2d.github.io/lurek_2d/modules/cursor.html)) - Lua userdata that controls cursor appearance and system cursor selection.
-- `LCustomCursor` ([lurek.cursor](https://lurek2d.github.io/lurek_2d/modules/cursor.html)) - Lua userdata representing a custom-drawn cursor image with a configurable hot-spot.
+- `LCursorManager` ([lurek.cursor](https://lurek2d.github.io/lurek_2d/modules/cursor.html)) - Lua userdata that controls the shared runtime cursor.
+- `LCustomCursor` ([lurek.cursor](https://lurek2d.github.io/lurek_2d/modules/cursor.html)) - Creates a custom RGBA cursor image with an explicit hotspot.
 - `LDatabase` ([lurek.dataframe](https://lurek2d.github.io/lurek_2d/modules/dataframe.html)) - Lua-side in-memory database containing named dataframes.
 - `LDataFrame` ([lurek.dataframe](https://lurek2d.github.io/lurek_2d/modules/dataframe.html)) - Lua-side dataframe handle for tabular data with named columns and typed cells.
 - `LDataFrameTask` ([lurek.dataframe](https://lurek2d.github.io/lurek_2d/modules/dataframe.html)) - Lua-side handle for a threaded dataframe job.

@@ -109,11 +109,11 @@ This module primarily collaborates with `tilefield`. Its responsibility should s
 - `LTileLightMap:addAreaLight(opts) -> nil`: Adds a rectangular area light and returns its stable id.
 - `LTileLightMap:addLineLight(opts) -> nil`: Adds a tile line light and returns its stable id.
 - `LTileLightMap:addPointLight(opts) -> nil`: Adds a point light and returns its stable id.
-- `LTileLightMap:addRectLight(opts) -> integer`: Alias for `addAreaLight`.
+- `LTileLightMap:addRectLight(opts) -> integer`: Creates a rectangular area light via `addAreaLight`.
 - `LTileLightMap:clearAreaLights() -> nil`: Removes all rectangular area lights currently stored on this tile light map.
 - `LTileLightMap:clearLineLights() -> nil`: Removes all line lights currently stored on this tile light map.
 - `LTileLightMap:clearPointLights() -> nil`: Removes all point lights currently stored on this tile light map.
-- `LTileLightMap:clearRectLights() -> nil`: Alias for `clearAreaLights`.
+- `LTileLightMap:clearRectLights() -> nil`: Clears all rectangular area lights via `clearAreaLights`.
 - `LTileLightMap:compute(opts?) -> nil`: Computes tile light from ambient, point lights, line lights, and sun light.
 - `LTileLightMap:exportLayer(z?) -> table`: Exports one level of computed light as row-major `{r,g,b,luma}` tables.
 - `LTileLightMap:exportVolume() -> table`: Exports all computed light levels as nested row-major tables.
@@ -122,7 +122,7 @@ This module primarily collaborates with `tilefield`. Its responsibility should s
 - `LTileLightMap:removeAreaLight(id) -> boolean`: Removes a rectangular area light by id and returns whether it existed.
 - `LTileLightMap:removeLineLight(id) -> boolean`: Removes a line light by id and returns whether it existed.
 - `LTileLightMap:removePointLight(id) -> boolean`: Removes a point light by id and returns whether it existed.
-- `LTileLightMap:removeRectLight(id) -> boolean`: Alias for `removeAreaLight`.
+- `LTileLightMap:removeRectLight(id) -> boolean`: Removes a rectangular area light via `removeAreaLight`.
 - `LTileLightMap:setAmbient(color) -> nil`: Sets ambient tile light stored on this light map.
 - `LTileLightMap:setGlobalLight(opts) -> nil`: Compatibility alias for top sun light parameters used during light computation.
 - `LTileLightMap:setSunLight(opts) -> nil`: Sets tile sun light parameters used during light computation.
@@ -131,7 +131,7 @@ This module primarily collaborates with `tilefield`. Its responsibility should s
 - `LTileLightMap:updateAreaLight(id, opts) -> nil`: Updates an existing rectangular area light by id.
 - `LTileLightMap:updateLineLight(id, opts) -> nil`: Updates an existing tile line light by id.
 - `LTileLightMap:updatePointLight(id, opts) -> nil`: Updates an existing point light by id.
-- `LTileLightMap:updateRectLight(id, opts) -> nil`: Alias for `updateAreaLight`.
+- `LTileLightMap:updateRectLight(id, opts) -> nil`: Updates a rectangular area light via `updateAreaLight`.
 
 ## Examples
 

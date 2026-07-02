@@ -37,6 +37,7 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - Runtime texture bindings for provinces, terrain patches, and marker icons are stored as typed engine handles instead of passing raw ids through region attrs or marker string fields.
 - Province picking now uses cached geographic candidate bounds before point-in-polygon tests so large globes do not full-scan every province on each click.
 - Rust-side debug surfaces now expose `Globe::regions_at_lat_lon_with_stats(...)` and `Globe::emit_frame_with_stats(...)`, which report candidate-filter counts and frame scratch high-water marks so globe query and render regressions are measurable in tests and tooling.
+- Globe pick attrs are now the preferred semantic cursor hook. Marker, region, province, and orbit hits can expose `attrs.cursor_state`, `attrs.cursor_effect`, `attrs.cursor_priority`, or `attrs.cursor_zoom`, and the shared cursor runtime can consume those hints directly without globe-specific cursor API branching.
 
 ## Architecture Links
 

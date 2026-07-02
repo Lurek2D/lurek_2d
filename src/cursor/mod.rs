@@ -22,7 +22,11 @@ pub mod zoom;
 
 pub use animated_cursor::{AnimatedCursor, PulseConfig};
 pub use config::CursorConfig;
-pub use context::{CursorContext, CursorManager};
+pub use context::{
+    ContextRule, CursorActiveStateInfo, CursorBurstInstance, CursorContext, CursorEffectSpec,
+    CursorHit, CursorInputFrame, CursorManager, CursorRule, CursorRuleEvent, CursorRuleTarget,
+    CursorSource, CursorState, CursorStateSpec,
+};
 pub use custom_cursor::CustomCursor;
 pub use system_cursor::SystemCursor;
 pub use trail::{CursorTrail, TrailMode};

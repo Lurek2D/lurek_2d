@@ -15,7 +15,7 @@
 - Source path: `src/raycaster`
 - Binding: `src/lua_api/raycaster_api.rs`
 - Namespace: `lurek.raycaster`
-- Lua API surface: `19` functions, `18` types, `117` methods
+- Lua API surface: `19` functions, `18` types, `126` methods
 - User-facing: `true`
 - Plugin tier: `tier_1_plugin`
 
@@ -76,6 +76,7 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - Texture lookup callbacks keep resource routing outside the builder while geometry and lighting policy stay centralized.
 - This file is the staging boundary between grid-owned ray data and the renderer-facing `RaycasterScene` surface.
 - It is the right owner for changing surface emission, pit geometry, or light application without renderer rewrites.
+- Cursor-facing attrs on tiles, sprites, and models are carried through scene assembly so later picks keep semantics.
 - Open this file when scene assembly semantics change; casting, picking, and draw translation live in siblings.
 
 ### column_batch.rs
@@ -101,6 +102,8 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - Door synchronization translates `DoorManager` openness into wall features without replacing underlying tile identity.
 - Sprite and floor helpers project billboards and sample floor rows with the same camera conventions as wall casting.
 - Safe setters ignore invalid writes, and out-of-range reads fall back predictably for tools and runtime probes.
+- Pick attributes also live with the grid here so wall, floor, and ceiling metadata follow the owning cell surface.
+- Screen picking and scene builders read this owner when they need tile semantics beyond the raw numeric cell value.
 - Open this file when marching semantics or map-owned ray data change; debug views and scene building live in siblings.
 
 ### depth_buffer.rs
@@ -157,6 +160,8 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - `doors.rs`, `wall_feature.rs`, and `heightmap.rs` hold cell state that changes how blocking tiles render.
 - `build_scene.rs`, `draw.rs`, and `render.rs` translate ray hits into either CPU pixels or engine render commands.
 - Visibility-polygon, segment, and picking helpers stay render-facing and do not own tile gameplay semantics.
+- Reexports also expose pick-world context so cursor integrations can inspect the last prepared raycaster scene.
+- Open sibling owners instead of this index when changing multilevel data, scene records, or screen-pick payloads.
 - Change this file when the public raycaster symbol map moves; change siblings when behavior or data rules change.
 
 ### multilevel.rs
@@ -167,6 +172,7 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - The runtime builder compiles a transient `Raycaster2D` view from level-owned cells for rendering and picking.
 - `MultiLevelGrid` tracks the active slice, caches compiled runtimes, and resolves visible lower or upper levels.
 - Floor and ceiling holes decide which adjacent slices are visible to render and picking queries.
+- Pick attrs stay level-owned here so cursor rules can vary by wall, floor, and ceiling across stacked slices.
 - Open this file when stacked-level data or cross-level visibility changes; scene assembly lives in siblings.
 
 ### projection.rs
@@ -197,6 +203,7 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - Picking helpers resolve screen pixels against projected sprites and model triangles, with optional sprite alpha tests.
 - `EntityPickResult` and related enums define the stable payload returned when higher layers query scene selections.
 - This file is the staging boundary between raycaster world reasoning and renderer or CPU draw translation.
+- Cursor integrations read attrs, ids, and hit kinds from these scene records without needing access to source grids.
 - Open this file when prepared-scene data or picking semantics change; build and render flow live in siblings.
 
 ### scene_adapter.rs
@@ -280,7 +287,7 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - `lurek.raycaster.distanceShade(distance, maxDistance) -> number`: Returns a brightness multiplier (0.0..1.0) based on distance for fog/darkness falloff.
 - `lurek.raycaster.drawLastScene(width, height) -> LImageData`: Rasterizes the most recently built raycaster scene to raw image data.
 - `lurek.raycaster.getLastBuildStats() -> table`: Returns stats for the last stored raycaster scene build.
-- `lurek.raycaster.getShader() -> LShader?`: Returns the draw-target shader applied to the stored raycaster scene, or nil when default rendering is used.
+- `lurek.raycaster.getShader() -> LShader`: Returns the draw-target shader applied to the stored raycaster scene, or nil when default rendering is used.
 - `lurek.raycaster.new(w, h) -> LRaycaster`: Creates a new raycaster map with the given grid dimensions.
 - `lurek.raycaster.newDoorManager() -> LDoorManager`: Creates a new door manager for tracking and animating sliding doors.
 - `lurek.raycaster.newHeightMap(w, h) -> LHeightMap`: Creates a new height map for variable floor/ceiling heights across the grid.
@@ -368,6 +375,7 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - `LMultiLevelGrid:addLevel(level) -> integer`: Appends one level described with the same table format accepted by buildMultiLevelScene.
 - `LMultiLevelGrid:buildScene(params, lights?, sprites?, wallTextures?) -> integer`: Builds a textured multilevel raycaster scene from this persistent world and stores it for rendering.
 - `LMultiLevelGrid:buildSceneFromAdapter(params, adapter, wallTextures?) -> integer`: Builds a textured multilevel raycaster scene from a runtime scene adapter that may follow physics bodies.
+- `LMultiLevelGrid:clearPickAttr(x, y, surface, key?) -> nil`: Clears one arbitrary pick attribute or the whole surface channel from one active-level cell.
 - `LMultiLevelGrid:clearWallFeatureCell(x, y) -> nil`: Removes any per-cell wall feature override from the active level.
 - `LMultiLevelGrid:getCeilingHeight() -> number`: Returns the ceiling height of the active level in world units.
 - `LMultiLevelGrid:getCeilingTexture() -> integer`: Returns the default ceiling texture id used by the active level, or nil when none is set.
@@ -377,6 +385,7 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - `LMultiLevelGrid:getFloorTexture() -> integer`: Returns the default floor texture id used by the active level, or nil when none is set.
 - `LMultiLevelGrid:getFloorTextureCell(x, y) -> integer`: Returns the per-cell floor texture id assigned on the active level, or nil if none is set.
 - `LMultiLevelGrid:getLoweredFloorCell(x, y) -> table`: Returns the lowered-floor configuration at an active-level cell, or nil if the cell is normal.
+- `LMultiLevelGrid:getPickAttr(x, y, surface, key) -> nil`: Reads one arbitrary pick attribute from one active-level surface cell.
 - `LMultiLevelGrid:getWallFeatureCell(x, y) -> table`: Returns the wall feature attached to an active-level cell, or nil when none is set.
 - `LMultiLevelGrid:isCeilingHole(x, y) -> boolean`: Returns true when an active-level cell is open to the level above.
 - `LMultiLevelGrid:isFloorHole(x, y) -> boolean`: Returns true when an active-level cell is open to the level below.
@@ -394,6 +403,7 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - `LMultiLevelGrid:setFloorTexture(texture?) -> nil`: Sets the default floor texture used by the active level. Pass nil to clear it.
 - `LMultiLevelGrid:setFloorTextureCell(x, y, texture?) -> nil`: Assigns a per-cell floor texture override on the active level. Pass nil to remove the override.
 - `LMultiLevelGrid:setLoweredFloorCell(x, y, opts?) -> nil`: Marks an active-level cell as a lowered floor (pit) with its own texture, depth, tint, and blocking flag.
+- `LMultiLevelGrid:setPickAttr(x, y, surface, key, value) -> nil`: Sets one arbitrary pick attribute on one active-level surface cell.
 - `LMultiLevelGrid:setWallFeatureCell(x, y, feature) -> nil`: Attaches a render-only wall feature descriptor to a blocking cell on the active level.
 - `LMultiLevelGrid:type() -> string`: Returns the type name of this object ("LMultiLevelGrid").
 - `LMultiLevelGrid:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
@@ -450,20 +460,22 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - `LRaycaster:castRays(ox, oy, angle, fov, count, maxDist) -> table`: Casts multiple rays across a field of view and returns an array of hit tables.
 - `LRaycaster:castRaysFlat(ox, oy, angle, fov, count, maxDist) -> number[]`: Casts multiple rays and returns only the corrected distances as a flat array.
 - `LRaycaster:clearParticleEmitters() -> nil`: Removes all projected particle emitters from this map.
+- `LRaycaster:clearPickAttr(x, y, surface, key?) -> nil`: Clears one arbitrary pick attribute or the whole channel from a raycaster surface cell.
 - `LRaycaster:clearWallFeatureCell(x, y) -> nil`: Removes any per-cell wall feature override from a blocking cell.
 - `LRaycaster:drawCameraSweep(x, y, fov, maxDist, numFrames, fw, fh) -> LImageData`: Renders multiple frames of a rotating camera sweep as a single combined image.
 - `LRaycaster:drawDepthMap(px, py, angle, fov, numRays, w, h, maxDist) -> LImageData`: Renders a grayscale depth map showing distance-to-wall for each column.
 - `LRaycaster:drawTopDown(px, py, angle, scale) -> LImageData`: Renders a top-down debug view of the map with the player's position and direction.
 - `LRaycaster:drawView(px, py, angle, fov, w, h, maxDist) -> LImageData`: Renders a first-person raycaster view to a raw image buffer (no textures, flat-shaded).
-- `LRaycaster:getCeilingMaterialCell(x, y) -> table?`: Returns the ceiling material override for one cell, or nil when none is set.
+- `LRaycaster:getCeilingMaterialCell(x, y) -> table`: Returns the ceiling material override for one cell, or nil when none is set.
 - `LRaycaster:getCeilingTextureCell(x, y) -> integer`: Returns the raw texture id assigned to this ceiling cell, or nil if none.
 - `LRaycaster:getCell(x, y) -> integer`: Returns the wall type value at a grid cell.
-- `LRaycaster:getFloorMaterialCell(x, y) -> table?`: Returns the floor material override for one cell, or nil when none is set.
+- `LRaycaster:getFloorMaterialCell(x, y) -> table`: Returns the floor material override for one cell, or nil when none is set.
 - `LRaycaster:getFloorTextureCell(x, y) -> integer`: Returns the raw texture id assigned to this floor cell, or nil if none.
 - `LRaycaster:getLoweredFloorCell(x, y) -> table`: Returns the lowered floor configuration at a cell, or nil if the cell is normal.
+- `LRaycaster:getPickAttr(x, y, surface, key) -> nil`: Reads one arbitrary pick attribute from a raycaster surface cell.
 - `LRaycaster:getWallAlpha(tileType) -> number`: Returns the current transparency value for a wall tile type.
 - `LRaycaster:getWallFeatureCell(x, y) -> table`: Returns the wall feature attached to a cell, or nil when none is set.
-- `LRaycaster:getWallMaterial(cellValue) -> table?`: Returns the material override for a wall tile type, or nil when none is set.
+- `LRaycaster:getWallMaterial(cellValue) -> table`: Returns the material override for a wall tile type, or nil when none is set.
 - `LRaycaster:height() -> integer`: Returns the map height in grid cells.
 - `LRaycaster:isBlocked(x, y) -> boolean`: Returns true if the grid cell is a solid wall (non-zero value).
 - `LRaycaster:pickScreen(sx, sy, params, sprites?, models?) -> table`: Resolves a screen-space click back into the raycaster world using the same camera semantics as scene building.
@@ -476,6 +488,7 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - `LRaycaster:setFloorMaterialCell(x, y, material?) -> nil`: Assigns a render material override to one floor cell. Pass nil to clear.
 - `LRaycaster:setFloorTextureCell(x, y, texture?) -> nil`: Assigns a per-cell floor texture override. Pass nil to remove the override.
 - `LRaycaster:setLoweredFloorCell(x, y, opts?) -> nil`: Marks a cell as a lowered floor (pit) with its own texture, depth, tint, and blocking flag.
+- `LRaycaster:setPickAttr(x, y, surface, key, value) -> nil`: Sets one arbitrary pick attribute on a raycaster surface cell.
 - `LRaycaster:setWallAlpha(tileType, alpha) -> nil`: Sets the transparency for a specific wall tile type, enabling see-through walls.
 - `LRaycaster:setWallFeatureCell(x, y, feature) -> nil`: Attaches a render-only wall feature descriptor to a blocking cell.
 - `LRaycaster:setWallMaterial(cellValue, material?) -> nil`: Assigns a render material override to a wall tile type. Pass nil to clear.
@@ -694,7 +707,10 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - `LSpriteManager:add(x, y, texture, scale?, level?) -> integer`: Adds a new sprite to the manager at a world position with a texture label, raw id, or image handle.
 - `LSpriteManager:addDirectional(x, y, front, right, back, left?, angle?, scale?, level?) -> integer`: Adds a new sprite with front/right/back/left textures and a world-facing angle.
 - `LSpriteManager:clear() -> nil`: Removes all sprites from the manager.
+- `LSpriteManager:clearAttr(id, key?) -> nil`: Clears one arbitrary string attribute or all attrs from the sprite.
+- `LSpriteManager:getAttr(id, key) -> string?`: Reads one arbitrary string attribute from the sprite.
 - `LSpriteManager:remove(id) -> nil`: Removes a sprite by its id. This method is available to Lua scripts.
+- `LSpriteManager:setAttr(id, key, value) -> nil`: Sets one arbitrary string attribute on the sprite.
 - `LSpriteManager:setDirectionalTextures(id, front, right, back, left?, angle?) -> nil`: Replaces the directional bitmap set for an existing sprite and optionally updates its facing angle.
 - `LSpriteManager:setFacing(id, angle) -> nil`: Updates the facing angle of an existing directional sprite.
 - `LSpriteManager:setLevel(id, level) -> nil`: Updates the multilevel slice index for an existing sprite.
@@ -731,3 +747,6 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - Depth-aware fog is a first-class overlay mode. Use `{ type = "depth_fog", ... }` or `{ type = "fog", mode = "depth", ... }` when the effect should read per-column scene depth instead of only layering a flat fullscreen tint.
 - `LRaycaster:addParticleEmitter(emitter)` spawns deterministic projected 2.5D particles during scene builds. Emitters can bind textures, `particle` shaders, blend modes, seeded jitter, and volumetric placement hints (`z`, `radius`, `height`) while still remaining raycaster scene data instead of direct render command ownership.
 - `lurek.raycaster.drawLastScene(width, height)` is an evidence-oriented CPU fallback. It preserves base textures, tint, UV scrolling, frame-atlas animation, depth fog, and projected particle placement, but it does not execute WGSL for raycaster materials, shader backgrounds, or shader overlays.
+- Raycaster picking now carries semantic metadata for cursor/runtime consumers. `pickScreen*` and multilevel pick helpers return stable `kind` strings plus optional `attrs` on wall, floor, ceiling, sprite, and model hits.
+- `LRaycaster:setPickAttr/getPickAttr/clearPickAttr` and the matching `LMultiLevelGrid` methods store per-surface metadata on `wall`, `floor`, `ceiling`, or shared `any` channels so first-person surfaces can declare cursor states or effects without hardcoded Lua branching.
+- `LSpriteManager:setAttr/getAttr/clearAttr` and scene sprite/model `attrs` tables let entity picks surface the same semantic cursor metadata as world geometry. This keeps `raycaster` aligned with the attrs-first hover model already used by `globe`.

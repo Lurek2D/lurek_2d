@@ -442,7 +442,7 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - `lurek.render.getCanvasSize(canvas) -> number, number`: Returns the pixel dimensions of a canvas.
 - `lurek.render.getColor() -> number, number, number, number`: Returns the current drawing color.
 - `lurek.render.getColorMask() -> boolean, boolean, boolean, boolean`: Returns the current color write mask.
-- `lurek.render.getDebugShader() -> LShader?`: Returns the active debug visualization shader, or nil if debug draws use the normal/default render shader path.
+- `lurek.render.getDebugShader() -> LShader`: Returns the active debug visualization shader, or nil if debug draws use the normal/default render shader path.
 - `lurek.render.getDefaultFilter() -> string, string, number`: Returns the current default texture filtering settings.
 - `lurek.render.getDefaultFont(pointSize?, bold?) -> LFont`: Returns a built-in default font at the nearest available bundled point size.
 - `lurek.render.getDepthMode() -> string, boolean`: Returns the current depth comparison mode and write-enable flag.
@@ -464,7 +464,7 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - `lurek.render.getShader() -> LShader`: Returns the currently active shader, or nil if using the default.
 - `lurek.render.getStats() -> table`: Returns a table of rendering statistics for the current frame.
 - `lurek.render.getStencilMode() -> string, string, number`: Returns the current stencil action, compare mode, and reference value.
-- `lurek.render.getTextShader() -> LShader?`: Returns the active text shader, or nil if font-atlas text uses the default/fallback shader path.
+- `lurek.render.getTextShader() -> LShader`: Returns the active text shader, or nil if font-atlas text uses the default/fallback shader path.
 - `lurek.render.getWidth() -> number`: Returns the current window width in pixels.
 - `lurek.render.intersectScissor(x, y, w, h) -> nil`: Intersects the given rectangle with the current scissor, narrowing the drawable region.
 - `lurek.render.isBold() -> boolean`: Returns true if the current default font selection uses the bold variant.

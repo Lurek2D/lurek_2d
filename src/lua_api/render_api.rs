@@ -669,27 +669,6 @@ fn collect_numeric_args(args: &LuaMultiValue) -> Vec<f32> {
     args.iter().filter_map(lua_value_as_f32).collect()
 }
 
-type LuaDrawTextArgs = (
-    String,
-    f32,
-    f32,
-    Option<f32>,
-    Option<f32>,
-    Option<f32>,
-    Option<f32>,
-    Option<f32>,
-);
-type LuaDrawTextWithFontArgs<'lua> = (
-    LuaAnyUserData<'lua>,
-    String,
-    f32,
-    f32,
-    Option<f32>,
-    Option<f32>,
-    Option<f32>,
-    Option<f32>,
-    Option<f32>,
-);
 type LuaRichTextArgs<'lua> = (
     LuaTable<'lua>,
     f32,
@@ -2299,30 +2278,42 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param | sy | number? | Y scale factor (defaults to sx).
     /// @param | ox | number? | Origin offset X in text-local pixels (default 0).
     /// @param | oy | number? | Origin offset Y in text-local pixels (default 0).
+    #[allow(clippy::type_complexity)]
     graphics.set(
         "drawText",
-        lua.create_function(move |_, args: LuaDrawTextArgs| {
-            let (text, x, y, rotation, sx, sy, ox, oy) = args;
-            let font_key = {
-                let st = s.borrow();
-                active_font_key(&st)
-            };
-            let Some(font_key) = font_key else {
-                return Ok(());
-            };
-            let sx = sx.unwrap_or(1.0);
-            let transform = RenderDrawTransform {
-                x,
-                y,
-                rotation: rotation.unwrap_or(0.0),
-                sx,
-                sy: sy.unwrap_or(sx),
-                ox: ox.unwrap_or(0.0),
-                oy: oy.unwrap_or(0.0),
-            };
-            queue_draw_text(&mut s.borrow_mut(), font_key, text, transform);
-            Ok(())
-        })?,
+        lua.create_function(
+            move |_,
+                  (text, x, y, rotation, sx, sy, ox, oy): (
+                String,
+                f32,
+                f32,
+                Option<f32>,
+                Option<f32>,
+                Option<f32>,
+                Option<f32>,
+                Option<f32>,
+            )| {
+                let font_key = {
+                    let st = s.borrow();
+                    active_font_key(&st)
+                };
+                let Some(font_key) = font_key else {
+                    return Ok(());
+                };
+                let sx = sx.unwrap_or(1.0);
+                let transform = RenderDrawTransform {
+                    x,
+                    y,
+                    rotation: rotation.unwrap_or(0.0),
+                    sx,
+                    sy: sy.unwrap_or(sx),
+                    ox: ox.unwrap_or(0.0),
+                    oy: oy.unwrap_or(0.0),
+                };
+                queue_draw_text(&mut s.borrow_mut(), font_key, text, transform);
+                Ok(())
+            },
+        )?,
     )?;
     let s = state.clone();
     // -- drawTextWithFont --
@@ -2336,24 +2327,37 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param | sy | number? | Y scale factor (defaults to sx).
     /// @param | ox | number? | Origin offset X in text-local pixels (default 0).
     /// @param | oy | number? | Origin offset Y in text-local pixels (default 0).
+    #[allow(clippy::type_complexity)]
     graphics.set(
         "drawTextWithFont",
-        lua.create_function(move |_, args: LuaDrawTextWithFontArgs<'_>| {
-            let (font_ud, text, x, y, rotation, sx, sy, ox, oy) = args;
-            let key = resolve_font_key(&font_ud)?;
-            let sx = sx.unwrap_or(1.0);
-            let transform = RenderDrawTransform {
-                x,
-                y,
-                rotation: rotation.unwrap_or(0.0),
-                sx,
-                sy: sy.unwrap_or(sx),
-                ox: ox.unwrap_or(0.0),
-                oy: oy.unwrap_or(0.0),
-            };
-            queue_draw_text(&mut s.borrow_mut(), key, text, transform);
-            Ok(())
-        })?,
+        lua.create_function(
+            move |_,
+                  (font_ud, text, x, y, rotation, sx, sy, ox, oy): (
+                LuaAnyUserData<'_>,
+                String,
+                f32,
+                f32,
+                Option<f32>,
+                Option<f32>,
+                Option<f32>,
+                Option<f32>,
+                Option<f32>,
+            )| {
+                let key = resolve_font_key(&font_ud)?;
+                let sx = sx.unwrap_or(1.0);
+                let transform = RenderDrawTransform {
+                    x,
+                    y,
+                    rotation: rotation.unwrap_or(0.0),
+                    sx,
+                    sy: sy.unwrap_or(sx),
+                    ox: ox.unwrap_or(0.0),
+                    oy: oy.unwrap_or(0.0),
+                };
+                queue_draw_text(&mut s.borrow_mut(), key, text, transform);
+                Ok(())
+            },
+        )?,
     )?;
     let s = state.clone();
     // -- printRotated --
@@ -3515,7 +3519,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     // -- getTextShader --
     /// Returns the active text shader, or nil if font-atlas text uses the default/fallback shader path.
-    /// @return | LShader? | The active text shader handle.
+    /// @return | LShader | The active text shader handle.
     graphics.set(
         "getTextShader",
         lua.create_function(move |_, ()| {
@@ -3569,7 +3573,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     // -- getDebugShader --
     /// Returns the active debug visualization shader, or nil if debug draws use the normal/default render shader path.
-    /// @return | LShader? | The active debug visualization shader handle.
+    /// @return | LShader | The active debug visualization shader handle.
     graphics.set(
         "getDebugShader",
         lua.create_function(move |_, ()| {

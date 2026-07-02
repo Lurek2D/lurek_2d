@@ -156,6 +156,9 @@ LNetworkRpc = {}
 ---@class LNetworkState
 LNetworkState = {}
 
+---@class LObject
+LObject = {}
+
 ---@class LSpacer
 LSpacer = {}
 
@@ -275,6 +278,50 @@ LComboGetStepResult = {}
 ---@field im number Imaginary part.
 ---@field re number Real part.
 LComputeFftResult = {}
+
+---@class LCursorManagerDefineEffectResult
+---@field blend string Blend mode such as `"alpha"` or `"add"`.
+---@field button number Optional mouse button filter for click/release triggers.
+---@field color table RGBA color as `{r, g, b, a}` or indexed array values.
+---@field count number Number of particles spawned per burst. Defaults to `12`.
+---@field lifetime number Particle lifetime in seconds. Defaults to `0.28`.
+---@field shader LShader Optional shader used while drawing the effect.
+---@field shape string Particle shape name such as `"spark"`, `"ring"`, or `"circle"`.
+---@field size number Particle size in pixels. Defaults to `5`.
+---@field speed number Initial particle speed in pixels per second. Defaults to `96`.
+---@field spread number Emission arc in radians. Defaults to a full circle.
+---@field texture LImage integer | Optional texture source for stamped particles.
+LCursorManagerDefineEffectResult = {}
+
+---@class LCursorManagerDefineStateResult
+---@field animated LAnimatedCursor Animated cursor handle when this state uses frame-based cursor playback.
+---@field custom LCustomCursor Custom cursor handle when this state uses a pixel cursor.
+---@field native_preferred boolean True to keep the OS cursor when possible. Defaults to `true`.
+---@field offset_x number Horizontal draw offset in pixels. Defaults to `0`.
+---@field offset_y number Vertical draw offset in pixels. Defaults to `0`.
+---@field scale number Overlay scale multiplier. Defaults to `1.0`.
+---@field system string System cursor name when this state uses a native cursor.
+---@field trail table Optional trail configuration with `mode`, `color`, `lifetime`, `spacing`, `width`, `max_points`, `texture`, `shader`, and `blend`.
+---@field zoom table Optional zoom-lens configuration with `magnification`, `radius`, `border_color`, `border_width`, `softness`, and `shader`.
+LCursorManagerDefineStateResult = {}
+
+---@class LCursorManagerGetActiveStateResult
+---@field kind string Active state kind such as `"system"`, `"custom"`, or `"animated"`.
+---@field name string Optional named state key when the resolved state came from `defineState`.
+---@field native_preferred boolean Whether the runtime prefers leaving the OS cursor visible for this state.
+---@field offset_x number Horizontal draw offset in pixels.
+---@field offset_y number Vertical draw offset in pixels.
+---@field scale number Overlay scale multiplier for the resolved state.
+LCursorManagerGetActiveStateResult = {}
+
+---@class LCursorManagerGetLastHitResult
+---@field attrs table String map of semantic attributes used by rules and integrations.
+---@field context string Optional source-provided context name.
+---@field id string Optional object identifier.
+---@field kind string Hit kind such as `"marker"`, `"wall"`, `"sprite"`, or a source-specific label.
+---@field module string Source module name such as `"globe"` or `"raycaster"`.
+---@field surface string Surface label such as `"surface"`, `"wall"`, `"floor"`, or `"ceiling"`.
+LCursorManagerGetLastHitResult = {}
 
 ---@class LDebugbridgeGetPrintHistoryResult
 ---@field line number Line number.
@@ -2135,15 +2182,15 @@ LCinematicTimeline = {}
 ---@class LArray
 LArray = {}
 
---- Lua userdata representing an animated cursor that cycles through image frames.
+--- Creates an animated cursor that can cycle through custom cursor frames.
 ---@class LAnimatedCursor
 LAnimatedCursor = {}
 
---- Lua userdata that controls cursor appearance and system cursor selection.
+--- Lua userdata that controls the shared runtime cursor.
 ---@class LCursorManager
 LCursorManager = {}
 
---- Lua userdata representing a custom-drawn cursor image with a configurable hot-spot.
+--- Creates a custom RGBA cursor image with an explicit hotspot.
 ---@class LCustomCursor
 LCustomCursor = {}
 
@@ -6522,8 +6569,8 @@ function LTileAwareness:computeAction(player, opts) end
 function LTileAwareness:computeVisible(player, opts) end
 
 --- Defines or replaces one awareness category.
----@param name any
----@param opts? any
+---@param name string Category name to create or replace.
+---@param opts? table Optional category settings such as range, arc, facing, active, and blocker rules.
 function LTileAwareness:defineCategory(name, opts) end
 
 --- Returns known awareness category names.
@@ -6532,15 +6579,16 @@ function LTileAwareness:getCategories() end
 
 --- Returns awareness category metadata.
 ---@param name string Category name to inspect.
----@return table? Category metadata table, or nil when the category is unknown.
+---@return table Category metadata table, or nil when the category is unknown.
 function LTileAwareness:getCategory(name) end
 
 --- Returns whether a one-based cell is visible for a specific awareness category.
----@param player any
----@param category any
----@param x any
----@param y any
----@param z? any
+---@param player string Player identifier to query.
+---@param category string Awareness category name.
+---@param x number One-based cell column.
+---@param y number One-based cell row.
+---@param z? number Optional one-based level index, defaulting to 1.
+---@return boolean True when the addressed cell is visible for the selected category.
 function LTileAwareness:isAware(player, category, x, y, z) end
 
 --- Returns whether a one-based cell has been explored for a player.
@@ -6560,15 +6608,15 @@ function LTileAwareness:isExplored(player, x, y, z) end
 function LTileAwareness:isVisible(player, x, y, z) end
 
 --- Creates directed share edges between all listed players for selected categories.
----@param players any
----@param categories? any
+---@param players table Array of player identifiers that should share visibility.
+---@param categories? table Optional array of category names to share; omitted shares every category.
 function LTileAwareness:setTeam(players, categories) end
 
 --- Adds a directed awareness share edge for one category.
----@param from any
----@param to any
----@param category any
----@param opts? any
+---@param from string Source player identifier.
+---@param to string Target player identifier.
+---@param category string Awareness category to share.
+---@param opts? table Reserved optional settings table for future share options.
 function LTileAwareness:share(from, to, category, opts) end
 
 --- Returns the Lua-visible type name for this tile visibility handle.
@@ -6582,9 +6630,10 @@ function LTileAwareness:typeOf(name) end
 
 --- Returns all currently visible cells for a player, optionally filtered to a level.
 ---@param player string Player identifier to query.
----@param z? number Optional one-based level filter.
+---@param categoryOrZ? string|number Optional category name or one-based level filter when no separate `z` argument is supplied.
+---@param z? number Optional one-based level filter used when `categoryOrZ` is a category string.
 ---@return table Array of one-based visible cell tables.
-function LTileAwareness:visibleCells(player, z) end
+function LTileAwareness:visibleCells(player, categoryOrZ, z) end
 
 --- Returns whether two tilefield cells have a clear action line.
 ---@param field LTileField Tilefield to query.
@@ -9221,126 +9270,159 @@ lurek.compute.setParThreshold = function(threshold) end
 ---@return LArray New zero-filled array handle.
 lurek.compute.zeros = function(shape, dtype) end
 
---- Add a frame from a custom cursor image.
----@param cursor LCustomCursor Frame image.
+--- Appends one frame to the animated cursor sequence.
+---@param cursor LCustomCursor Frame image to append.
 ---@param duration_ms number Frame duration in milliseconds.
 function LAnimatedCursor:addFrame(cursor, duration_ms) end
 
---- Disable pulse animation for this object.
+--- Disables pulse scaling for the animated cursor.
 function LAnimatedCursor:clearPulse() end
 
---- Get current frame index for this object.
+--- Returns the currently active frame index.
 ---@return number Zero-based frame index.
 function LAnimatedCursor:currentIndex() end
 
---- Get current scale from pulse animation.
----@return number Current scale factor.
+--- Returns the current pulse scale multiplier.
+---@return number Active scale multiplier.
 function LAnimatedCursor:currentScale() end
 
---- Get total frame count for this object.
----@return number Number of frames.
+--- Returns the number of frames stored in this animated cursor.
+---@return number Total frame count.
 function LAnimatedCursor:frameCount() end
 
---- Reset the cursor animation playback to the first frame.
+--- Resets playback to the first frame and clears accumulated animation time.
 function LAnimatedCursor:reset() end
 
---- Set the pulse animation speed and scale factor parameters.
----@param min_scale number Minimum scale.
----@param max_scale number Maximum scale.
----@param speed number Pulse speed.
+--- Enables pulse scaling for the animated cursor.
+---@param min_scale number Minimum scale multiplier.
+---@param max_scale number Maximum scale multiplier.
+---@param speed number Pulse speed in oscillations per second.
 function LAnimatedCursor:setPulse(min_scale, max_scale, speed) end
 
---- Update animation (call each frame).
+--- Advances animated cursor playback and pulse state.
 ---@param dt number Delta time in seconds.
 function LAnimatedCursor:update(dt) end
 
---- Add a context rule that maps a context to a system cursor.
----@param ctx string Context name.
----@param cursor_name string System cursor name.
-function LCursorManager:addRule(ctx, cursor_name) end
+--- Registers a legacy context rule or a v2 runtime rule table for hover, click, release, leave, wheel, or context state resolution.
+---@param context_or_rule string|table Legacy context name, or a v2 rule table with `priority`, `event`, `context`, `target`, `state`, `effect`, and `duration_ms`.
+---@param cursor_name? string System cursor name used by the legacy `(context, cursor_name)` shorthand.
+---@return number? Rule id for v2 table calls, or `nil` for the legacy shorthand.
+function LCursorManager:addRule(context_or_rule, cursor_name) end
 
---- Disable cursor trail for this object.
+--- Registers a hover source that feeds semantic cursor hits into the shared runtime resolver.
+---@param source_tbl table Source table with `kind = "globe"`, `"raycaster_last"`, or `"callback"`, plus source-specific fields such as `globe`, `marker_radius`, or `callback`.
+---@return number Source id used with `removeSource`.
+function LCursorManager:addSource(source_tbl) end
+
+--- Defines a reusable cursor-local burst effect preset for hover or click rules.
+---@param name string Unique effect name used by rules or hit attrs such as `cursor_effect`.
+---@param spec table Effect table with `shape`, `color`, `texture`, `shader`, `count`, `spread`, `lifetime`, `speed`, `size`, `blend`, and optional `button`.
+function LCursorManager:defineEffect(name, spec) end
+
+--- Defines a reusable named cursor state for rule-driven runtime selection.
+---@param name string Unique state name used by rules or hit attrs such as `cursor_state`.
+---@param spec table State table with one of `system`, `custom`, or `animated`, plus optional `scale`, `offset_x`, `offset_y`, `native_preferred`, `trail`, and `zoom`.
+function LCursorManager:defineState(name, spec) end
+
+--- Disables the current cursor trail.
 function LCursorManager:disableTrail() end
 
---- Disable cursor zoom for this object.
+--- Disables the live cursor zoom lens.
 function LCursorManager:disableZoom() end
 
---- Enable cursor trail with line mode.
----@param r number Red (0-1).
----@param g number Green (0-1).
----@param b number Blue (0-1).
----@param width number Line width in pixels.
+--- Enables a simple connected line trail behind the cursor.
+---@param r number Red channel in the 0.0 through 1.0 range.
+---@param g number Green channel in the 0.0 through 1.0 range.
+---@param b number Blue channel in the 0.0 through 1.0 range.
+---@param width number Trail line width in pixels.
 function LCursorManager:enableLineTrail(r, g, b, width) end
 
---- Enable cursor trail with fade points mode.
----@param r number Red (0-1).
----@param g number Green (0-1).
----@param b number Blue (0-1).
----@param lifetime number Seconds before trail fades.
+--- Enables a simple fading point trail behind the cursor.
+---@param r number Red channel in the 0.0 through 1.0 range.
+---@param g number Green channel in the 0.0 through 1.0 range.
+---@param b number Blue channel in the 0.0 through 1.0 range.
+---@param lifetime number Trail point lifetime in seconds.
 function LCursorManager:enableTrail(r, g, b, lifetime) end
 
---- Enable zoom/magnifier at cursor position.
----@param magnification number Zoom factor (1-10).
----@param radius number Lens radius in pixels.
-function LCursorManager:enableZoom(magnification, radius) end
+--- Enables the live zoom lens centered on the runtime cursor.
+---@param mag number Lens magnification multiplier.
+---@param radius number Lens radius in screen pixels.
+function LCursorManager:enableZoom(mag, radius) end
 
---- Get current context name for this object.
----@return string Active context name.
+--- Returns the currently resolved cursor state after context, hover, and override rules have been applied.
+---@return LCursorManagerGetActiveStateResult Active state info table.
+function LCursorManager:getActiveState() end
+
+--- Returns the current named cursor context.
+---@return string Active cursor context name.
 function LCursorManager:getContext() end
 
---- Get cursor position for this object.
----@return number X position.
----@return number Y position.
+--- Returns the most recent semantic hover hit seen by the runtime cursor.
+---@return table? Last hover hit table, or `nil` when nothing is currently resolved.
+function LCursorManager:getLastHit() end
+
+--- Returns the current runtime cursor position.
+---@return number X coordinate.
+---@return number Y coordinate.
 function LCursorManager:getPosition() end
 
---- Get cursor lock state for this object.
----@return boolean Whether the cursor is locked.
+--- Returns whether the runtime cursor is currently marked as locked.
+---@return boolean True when the cursor is locked.
 function LCursorManager:isLocked() end
 
---- Get cursor visibility for this object.
----@return boolean Whether the cursor is visible.
+--- Returns whether the runtime cursor is currently visible.
+---@return boolean True when the cursor is visible.
 function LCursorManager:isVisible() end
 
---- Remove a context rule for this object.
+--- Removes a legacy context rule that was registered with the `(context, cursor_name)` shorthand.
 ---@param ctx string Context name to remove.
 function LCursorManager:removeRule(ctx) end
 
---- Set the active cursor to an animated cursor.
----@param cursor LAnimatedCursor Animated cursor object.
+--- Removes a previously registered hover source.
+---@param id number Source id returned by `addSource`.
+---@return boolean True when a source with that id was removed.
+function LCursorManager:removeSource(id) end
+
+--- Switches the active runtime cursor to an animated cursor immediately.
+---@param cursor LAnimatedCursor Animated cursor handle to display.
 function LCursorManager:setAnimated(cursor) end
 
---- Set the current context for context-sensitive switching.
----@param ctx string Context name (default, raycaster, globe, tilemap, ui_button, etc.).
+--- Sets the named cursor context used by legacy rules and context-sensitive state resolution.
+---@param ctx string Context name such as `"default"`, `"menu"`, or `"gameplay"`.
 function LCursorManager:setContext(ctx) end
 
---- Set the active cursor to a custom image cursor.
----@param cursor LCustomCursor Custom cursor object.
+--- Switches the active runtime cursor to a custom RGBA cursor immediately.
+---@param cursor LCustomCursor Custom cursor handle to display.
 function LCursorManager:setCustom(cursor) end
 
---- Lock the cursor position using the system grab mode.
----@param locked boolean Whether the cursor is locked.
+--- Locks or unlocks the runtime cursor according to the active platform policy.
+---@param locked boolean True to request cursor lock, or false to release it.
 function LCursorManager:setLocked(locked) end
 
---- Set the active cursor to a system cursor by name.
----@param name string System cursor name (arrow, hand, crosshair, ibeam, wait, no, etc.).
+--- Switches the active runtime cursor to a named system cursor immediately.
+---@param name string System cursor name such as `"arrow"`, `"hand"`, or `"crosshair"`.
 function LCursorManager:setSystem(name) end
 
---- Set cursor visibility for this object.
----@param visible boolean Whether the cursor is visible.
+--- Shows or hides the runtime cursor.
+---@param visible boolean True to show the cursor, or false to hide it.
 function LCursorManager:setVisible(visible) end
 
---- Update cursor state (call each frame).
----@param x number Cursor X position.
----@param y number Cursor Y position.
----@param dt number Delta time in seconds.
+--- Returns the Lua handle type name for this cursor manager userdata.
+---@return string Lua userdata type tag.
+function LCursorManager:type() end
+
+--- Overrides the runtime cursor position and advances cursor-local effects for one frame.
+---@param x number Cursor X position in screen pixels.
+---@param y number Cursor Y position in screen pixels.
+---@param dt number Delta time in seconds for this manual update step.
 function LCursorManager:update(x, y, dt) end
 
---- Get hotspot position for this object.
----@return number Hotspot X.
----@return number Hotspot Y.
+--- Returns the hotspot used when positioning this custom cursor.
+---@return number Hotspot X coordinate.
+---@return number Hotspot Y coordinate.
 function LCustomCursor:getHotspot() end
 
---- Get the pixel color at the specified cursor image position.
+--- Reads one RGBA pixel from the custom cursor image.
 ---@param x number X coordinate.
 ---@param y number Y coordinate.
 ---@return number Red.
@@ -9349,38 +9431,38 @@ function LCustomCursor:getHotspot() end
 ---@return number Alpha.
 function LCustomCursor:getPixel(x, y) end
 
---- Get the pixel width and height of the cursor image.
----@return number Width.
----@return number Height.
+--- Returns the custom cursor image size.
+---@return number Width in pixels.
+---@return number Height in pixels.
 function LCustomCursor:getSize() end
 
---- Set a pixel color â€” Lua userdata object exposed by the engine.
+--- Writes one RGBA pixel into the custom cursor image.
 ---@param x number X coordinate.
 ---@param y number Y coordinate.
----@param r number Red (0-255).
----@param g number Green (0-255).
----@param b number Blue (0-255).
----@param a number Alpha (0-255).
+---@param r number Red channel in the 0 through 255 range.
+---@param g number Green channel in the 0 through 255 range.
+---@param b number Blue channel in the 0 through 255 range.
+---@param a number Alpha channel in the 0 through 255 range.
 function LCustomCursor:setPixel(x, y, r, g, b, a) end
 
---- Creates a new animated cursor that can cycle through frames.
----@param looping boolean Whether the animation loops continuously.
----@return LAnimatedCursor A new animated cursor instance.
+--- Creates an animated cursor that can cycle through custom cursor frames.
+---@param looping boolean True to loop after the last frame, or false to stop on the final frame.
+---@return LAnimatedCursor Animated cursor handle.
 lurek.cursor.newAnimated = function(looping) end
 
---- Creates a new custom cursor with specified dimensions and hotspot position.
----@param w number Width of the cursor image in pixels.
----@param h number Height of the cursor image in pixels.
----@param hx number Hotspot X offset from cursor origin.
----@param hy number Hotspot Y offset from cursor origin.
----@return LCustomCursor A new custom cursor instance.
+--- Creates a custom RGBA cursor image with an explicit hotspot.
+---@param w number Cursor width in pixels.
+---@param h number Cursor height in pixels.
+---@param hx number Hotspot X coordinate in pixels.
+---@param hy number Hotspot Y coordinate in pixels.
+---@return LCustomCursor Custom cursor handle.
 lurek.cursor.newCustom = function(w, h, hx, hy) end
 
---- Creates a new cursor manager for handling cursor state and visibility.
----@return LCursorManager A new cursor manager instance.
+--- Returns a handle to the shared runtime cursor controller.
+---@return LCursorManager Cursor manager handle bound to the active shared runtime cursor.
 lurek.cursor.newManager = function() end
 
---- Returns a list of all available system cursor names as a string array.
+--- Returns the list of system cursor names supported by the cursor module.
 ---@return table Array of system cursor name strings.
 lurek.cursor.systemCursors = function() end
 
@@ -11988,9 +12070,10 @@ lurek.ecs.getClass = function(name) end
 lurek.ecs.getObject = function(id) end
 
 --- Returns the current value of one object property, honoring any registered getter override first.
+---@param self LObject Object table that owns the property.
 ---@param name string Property name to read from the object or its property metadata table.
----@return any Current property value, getter result, or `nil` when the property is unset.
-lurek.ecs.getProperty = function(name) end
+---@return LuaValue Current property value, getter result, or `nil` when the property is unset.
+lurek.ecs.getProperty = function(self, name) end
 
 --- Returns whether a global ECS class name is defined.
 ---@param name string Class name to check.
@@ -12003,9 +12086,10 @@ lurek.ecs.hasClass = function(name) end
 lurek.ecs.hasObject = function(id) end
 
 --- Returns whether this object inherits from or matches the supplied ECS class name.
+---@param self LObject Object table to inspect.
 ---@param candidate string ECS class name to compare against the object's registered class hierarchy.
 ---@return boolean True when the object class matches or extends the supplied class.
-lurek.ecs.isA = function(candidate) end
+lurek.ecs.isA = function(self, candidate) end
 
 --- Creates a Lua table object from a registered ECS class.
 ---@param className string Registered class name.
@@ -12026,19 +12110,21 @@ lurek.ecs.newUniverse = function() end
 lurek.ecs.objectIds = function() end
 
 --- Writes one object property, delegating to a registered setter override when the property defines one.
+---@param self LObject Object table that owns the property.
 ---@param name string Property name to update on the object table.
 ---@param value any New Lua value written directly or passed through the property's setter.
-lurek.ecs.setProperty = function(name, value) end
+lurek.ecs.setProperty = function(self, name, value) end
 
 --- Returns the registered ECS class name for this object table.
----@param this any
+---@param self LObject Object table to inspect.
 ---@return string Class name assigned when the object was created.
-lurek.ecs.type = function(this) end
+lurek.ecs.type = function(self) end
 
 --- Returns whether this object matches a supported Lua-visible type or ECS class name.
+---@param self LObject Object table to inspect.
 ---@param candidate string Type or class name to compare against `LObject` and the object's ECS class hierarchy.
 ---@return boolean True when the supplied name matches `LObject` or the object's class ancestry.
-lurek.ecs.typeOf = function(candidate) end
+lurek.ecs.typeOf = function(self, candidate) end
 
 --- Appends a built-in post-effect by type name to this image effect chain.
 ---@param name string Built-in effect type name.
@@ -13757,7 +13843,7 @@ function LGlobe:getRegionAttr(id, key) end
 function LGlobe:getSectorProvinces(sector) end
 
 --- Returns the mapviz-target shader bound to this globe, if any.
----@return LShader? Bound shader handle, or nil.
+---@return LShader Bound shader handle, or nil.
 function LGlobe:getShader() end
 
 --- Reads a string attribute from a terrain patch.
@@ -13914,7 +14000,7 @@ function LGlobe:removeProvince(id) end
 ---@return boolean True when a region was removed.
 function LGlobe:removeRegion(id) end
 
---- Removes a terrain patch by id.
+--- Removes a stored terrain patch by its numeric id.
 ---@param id number Terrain patch id to remove.
 ---@return boolean True when a terrain patch was removed.
 function LGlobe:removeTerrainPatch(id) end
@@ -14911,16 +14997,16 @@ function LImageData:type() end
 ---@return boolean True when the supplied type name matches.
 function LImageData:typeOf(name) end
 
---- Cancels this image shader job.
+--- Cancels this pending offline image shader job.
 function LImageShaderJob:cancel() end
 
 --- Returns the shader output image when the job has completed, or nil if pending/cancelled.
----@return LImageData? Completed image result.
+---@return LImageData Completed image result.
 function LImageShaderJob:poll() end
 
 --- Waits for the offline image shader job and returns its output image.
 ---@param timeoutMs? number Optional timeout in milliseconds.
----@return LImageData? Completed image result.
+---@return LImageData Completed image result.
 function LImageShaderJob:wait(timeoutMs) end
 
 --- Adds a blank layer with an optional name.
@@ -16572,7 +16658,7 @@ function LLight:getPosition() end
 function LLight:getRadius() end
 
 --- Returns the custom light shader bound to this light, if any.
----@return LShader? Bound shader or nil.
+---@return LShader Bound shader or nil.
 function LLight:getShader() end
 
 --- Returns this light shadow RGBA color.
@@ -16873,7 +16959,7 @@ lurek.light.getNormalMapHints = function() end
 lurek.light.getOccluderCount = function() end
 
 --- Returns the default custom light shader for the light world.
----@return LShader? Bound shader or nil.
+---@return LShader Bound shader or nil.
 lurek.light.getShader = function() end
 
 --- Returns whether the shared light world is enabled.
@@ -19059,7 +19145,7 @@ function LMinimap:getPathCount() end
 function LMinimap:getPingCount() end
 
 --- Returns the currently bound command-render minimap shader, or nil.
----@return LShader? Bound shader handle.
+---@return LShader Bound shader handle.
 function LMinimap:getShader() end
 
 --- Returns terrain type for a one-based grid cell.
@@ -20038,12 +20124,12 @@ function LOverlay:getLightningColor() end
 function LOverlay:getRenderPlan() end
 
 --- Returns the shader bound to this overlay, if any.
----@return LShader? Bound shader or nil.
+---@return LShader Bound shader or nil.
 function LOverlay:getShader() end
 
 --- Returns a shader bound to one overlay layer, if present.
 ---@param layer string Layer name.
----@return LShader? Bound shader or nil.
+---@return LShader Bound shader or nil.
 function LOverlay:getShaderLayer(layer) end
 
 --- Returns the current screen shake offset.
@@ -20057,7 +20143,7 @@ function LOverlay:getStats() end
 
 --- Returns one status layer table or nil.
 ---@param kind string Status kind or layer id.
----@return table? Layer table when present.
+---@return table Layer table when present.
 function LOverlay:getStatusEffect(kind) end
 
 --- Returns all current status layers sorted by priority.
@@ -20463,7 +20549,7 @@ function LParallaxLayer:getOpacity() end
 function LParallaxLayer:getScrollFactor() end
 
 --- Returns the draw-target shader bound to this parallax layer, if any.
----@return LShader? Bound shader handle, or nil.
+---@return LShader Bound shader handle, or nil.
 function LParallaxLayer:getShader() end
 
 --- Returns telemetry for the current runtime camera and viewport.
@@ -20813,7 +20899,7 @@ function LParticleSystem:getRadialAcceleration() end
 function LParticleSystem:getRotation() end
 
 --- Returns the render-time shader bound to this particle system, if any.
----@return LShader? Bound shader or nil.
+---@return LShader Bound shader or nil.
 function LParticleSystem:getShader() end
 
 --- Returns particle shape. This method is available to Lua scripts.
@@ -22505,7 +22591,7 @@ function LDeck:discardCount() end
 
 --- Draw one or more cards from the top of the draw pile.
 ---@param count? number Number of cards to draw; default `1`.
----@return any Single card when count is omitted or `1`.
+---@return LuaValue Single card when count is omitted or `1`.
 ---@return table Array of cards when count is greater than `1`.
 function LDeck:draw(count) end
 
@@ -22515,7 +22601,7 @@ function LDeck:isEmpty() end
 
 --- Inspect one or more cards from the top without removing them.
 ---@param count? number Number of cards to inspect; default `1`.
----@return any Single card when count is omitted or `1`.
+---@return LuaValue Single card when count is omitted or `1`.
 ---@return table Array of cards when count is greater than `1`.
 function LDeck:peek(count) end
 
@@ -23530,7 +23616,7 @@ function LBody:getAngularVelocity() end
 function LBody:getBeamReflectivity() end
 
 --- Returns the single 0..15 collision group for this body, or nil for multi-group masks.
----@return number? Collision group index, or nil.
+---@return number Collision group index, or nil.
 function LBody:getCollisionGroup() end
 
 --- Returns the body's friction coefficient.
@@ -23744,10 +23830,10 @@ function LBody:typeOf(name) end
 --- Wakes the body from sleep, making it active in the simulation again.
 function LBody:wakeUp() end
 
---- Disables this flow field.
+--- Disables and removes this flow field from the world.
 function LFlowStream:destroy() end
 
---- Returns this flow field id.
+--- Returns the stable numeric ID for this flow field.
 ---@return number Stable flow field id.
 function LFlowStream:getId() end
 
@@ -23755,7 +23841,7 @@ function LFlowStream:getId() end
 ---@return number Layer bitmask.
 function LFlowStream:getLayerMask() end
 
---- Returns this flow field strength.
+--- Returns the current movement strength for this flow field.
 ---@return number Strength value.
 function LFlowStream:getStrength() end
 
@@ -23783,7 +23869,7 @@ function LFlowStream:setLayerMask(mask) end
 ---@param points table Array of `{ x, y }` point tables.
 function LFlowStream:setPoints(points) end
 
---- Sets this flow field strength.
+--- Sets the current movement strength for this flow field.
 ---@param strength number Strength in world units per second.
 function LFlowStream:setStrength(strength) end
 
@@ -23832,7 +23918,7 @@ function LLiquidMap:getAmountAt(worldX, worldY) end
 ---@param cx number Cell column (0-based).
 ---@param cy number Cell row (0-based).
 ---@return number Fill amount in `0.0..1.0`.
----@return any Liquid kind as a built-in string or custom integer id; or nil when the cell is empty.
+---@return LuaValue Liquid kind as a built-in string or custom integer id; or nil when the cell is empty.
 function LLiquidMap:getCell(cx, cy) end
 
 --- Returns the top liquid surface level for the sampled column.
@@ -23894,7 +23980,7 @@ function LPhysicsShape:getType() end
 function LPhysicsShape:getVertexCount() end
 
 --- Returns local-space vertices as an array of `{x, y}` tables, or nil for circles.
----@return table? Vertex table, or nil for circles.
+---@return table Vertex table, or nil for circles.
 function LPhysicsShape:getVertices() end
 
 --- Sets the density used when this shape is attached to a body (affects mass calculation).
@@ -24349,7 +24435,7 @@ function LWorld:getFixtureMaterial(bodyId, fixtureIndex) end
 
 --- Returns one authored flow field table by id, or nil when missing.
 ---@param id number Flow field id.
----@return table? Flow field descriptor table with geometry, enabled, strength, application, combine, and layer-mask fields.
+---@return table Flow field descriptor table with geometry, enabled, strength, application, combine, and layer-mask fields.
 function LWorld:getFlowField(id) end
 
 --- Returns the current world gravity vector.
@@ -24359,7 +24445,7 @@ function LWorld:getGravity() end
 
 --- Returns an additive gravity vector by ID, or nil when no active vector exists.
 ---@param id number Gravity vector ID returned by addGravityVector.
----@return table? Table with id, gx, gy, layerMask, and enabled fields.
+---@return table Table with id, gx, gy, layerMask, and enabled fields.
 function LWorld:getGravityVector(id) end
 
 --- Returns the two body IDs connected by a joint.
@@ -24527,7 +24613,7 @@ function LWorld:raycastClosest(x, y, dx, dy, maxDist, filter) end
 ---@return boolean True when the body velocity was updated, false for inactive bodies, zero-speed bodies, or degenerate normals.
 function LWorld:reflectBodyVelocity(bodyId, normalX, normalY, coefficient) end
 
---- Disables one flow field by id.
+--- Disables and removes one authored flow field by id.
 ---@param id number Flow field id.
 ---@return boolean True when the field existed and was active.
 function LWorld:removeFlowField(id) end
@@ -25538,7 +25624,7 @@ function LProcgenGrid:getHeight() end
 ---@return string Generator kind.
 function LProcgenGrid:getKind() end
 
---- Returns grid width and height.
+--- Returns the generated grid width and height in cells.
 ---@return number Width.
 ---@return number Height.
 function LProcgenGrid:getSize() end
@@ -26026,7 +26112,7 @@ function LProvinceRegistry:getProvince(id) end
 function LProvinceRegistry:getRevision() end
 
 --- Returns the currently bound command-render province shader, or nil.
----@return LShader? Bound shader handle.
+---@return LShader Bound shader handle.
 function LProvinceRegistry:getShader() end
 
 --- Returns the width of the province grid in cells (pixels of the source PNG).
@@ -26391,6 +26477,13 @@ function LMultiLevelGrid:buildScene(params, lights, sprites, wallTextures) end
 ---@return number Total number of quads in the built scene.
 function LMultiLevelGrid:buildSceneFromAdapter(params, adapter, wallTextures) end
 
+--- Clears one arbitrary pick attribute or the whole surface channel from one active-level cell.
+---@param x any
+---@param y any
+---@param surface any
+---@param key? any
+function LMultiLevelGrid:clearPickAttr(x, y, surface, key) end
+
 --- Removes any per-cell wall feature override from the active level.
 ---@param x number Grid column.
 ---@param y number Grid row.
@@ -26435,6 +26528,13 @@ function LMultiLevelGrid:getFloorTextureCell(x, y) end
 ---@param y number Grid row.
 ---@return table Table {texture, depth, r, g, b, blocked} or nil.
 function LMultiLevelGrid:getLoweredFloorCell(x, y) end
+
+--- Reads one arbitrary pick attribute from one active-level surface cell.
+---@param x any
+---@param y any
+---@param surface any
+---@param key any
+function LMultiLevelGrid:getPickAttr(x, y, surface, key) end
 
 --- Returns the wall feature attached to an active-level cell, or nil when none is set.
 ---@param x number Grid column.
@@ -26532,6 +26632,14 @@ function LMultiLevelGrid:setFloorTextureCell(x, y, texture) end
 ---@param y number Grid row.
 ---@param opts? table Options table {texture, depth?, r?, g?, b?, blocked?} or nil to clear.
 function LMultiLevelGrid:setLoweredFloorCell(x, y, opts) end
+
+--- Sets one arbitrary pick attribute on one active-level surface cell.
+---@param x any
+---@param y any
+---@param surface any
+---@param key any
+---@param value any
+function LMultiLevelGrid:setPickAttr(x, y, surface, key, value) end
 
 --- Attaches a render-only wall feature descriptor to a blocking cell on the active level.
 ---@param x number Grid column.
@@ -26634,6 +26742,13 @@ function LRaycaster:castRaysFlat(ox, oy, angle, fov, count, maxDist) end
 --- Removes all projected particle emitters from this map.
 function LRaycaster:clearParticleEmitters() end
 
+--- Clears one arbitrary pick attribute or the whole channel from a raycaster surface cell.
+---@param x any
+---@param y any
+---@param surface any
+---@param key? any
+function LRaycaster:clearPickAttr(x, y, surface, key) end
+
 --- Removes any per-cell wall feature override from a blocking cell.
 ---@param x number Grid column.
 ---@param y number Grid row.
@@ -26684,7 +26799,7 @@ function LRaycaster:drawView(px, py, angle, fov, w, h, maxDist) end
 --- Returns the ceiling material override for one cell, or nil when none is set.
 ---@param x number Grid column.
 ---@param y number Grid row.
----@return table? Material table or nil.
+---@return table Material table or nil.
 function LRaycaster:getCeilingMaterialCell(x, y) end
 
 --- Returns the raw texture id assigned to this ceiling cell, or nil if none.
@@ -26702,7 +26817,7 @@ function LRaycaster:getCell(x, y) end
 --- Returns the floor material override for one cell, or nil when none is set.
 ---@param x number Grid column.
 ---@param y number Grid row.
----@return table? Material table or nil.
+---@return table Material table or nil.
 function LRaycaster:getFloorMaterialCell(x, y) end
 
 --- Returns the raw texture id assigned to this floor cell, or nil if none.
@@ -26717,6 +26832,13 @@ function LRaycaster:getFloorTextureCell(x, y) end
 ---@return LRaycasterGetLoweredFloorCellResult Table {texture, depth, r, g, b, blocked} or nil.
 function LRaycaster:getLoweredFloorCell(x, y) end
 
+--- Reads one arbitrary pick attribute from a raycaster surface cell.
+---@param x any
+---@param y any
+---@param surface any
+---@param key any
+function LRaycaster:getPickAttr(x, y, surface, key) end
+
 --- Returns the current transparency value for a wall tile type.
 ---@param tileType number The cell value to query.
 ---@return number Alpha value (0.0..1.0).
@@ -26730,7 +26852,7 @@ function LRaycaster:getWallFeatureCell(x, y) end
 
 --- Returns the material override for a wall tile type, or nil when none is set.
 ---@param cellValue number Wall tile value to query.
----@return table? Material table or nil.
+---@return table Material table or nil.
 function LRaycaster:getWallMaterial(cellValue) end
 
 --- Returns the map height in grid cells.
@@ -26810,6 +26932,14 @@ function LRaycaster:setFloorTextureCell(x, y, texture) end
 ---@param y number Grid row.
 ---@param opts? table Options table {texture, depth?, r?, g?, b?, blocked?} or nil to clear.
 function LRaycaster:setLoweredFloorCell(x, y, opts) end
+
+--- Sets one arbitrary pick attribute on a raycaster surface cell.
+---@param x any
+---@param y any
+---@param surface any
+---@param key any
+---@param value any
+function LRaycaster:setPickAttr(x, y, surface, key, value) end
 
 --- Sets the transparency for a specific wall tile type, enabling see-through walls.
 ---@param tileType number The cell value (1..255) whose alpha to change.
@@ -26948,9 +27078,26 @@ function LSpriteManager:addDirectional(x, y, front, right, back, left, angle, sc
 --- Removes all sprites from the manager.
 function LSpriteManager:clear() end
 
+--- Clears one arbitrary string attribute or all attrs from the sprite.
+---@param id any
+---@param key? any
+function LSpriteManager:clearAttr(id, key) end
+
+--- Reads one arbitrary string attribute from the sprite.
+---@param id number Sprite id.
+---@param key string Attribute key to read.
+---@return string? Attribute value, or `nil` when the key is missing.
+function LSpriteManager:getAttr(id, key) end
+
 --- Removes a sprite by its id. This method is available to Lua scripts.
 ---@param id number Sprite id returned by add().
 function LSpriteManager:remove(id) end
+
+--- Sets one arbitrary string attribute on the sprite.
+---@param id any
+---@param key any
+---@param value any
+function LSpriteManager:setAttr(id, key, value) end
 
 --- Replaces the directional bitmap set for an existing sprite and optionally updates its facing angle.
 ---@param id number Sprite id.
@@ -27053,7 +27200,7 @@ lurek.raycaster.drawLastScene = function(width, height) end
 lurek.raycaster.getLastBuildStats = function() end
 
 --- Returns the draw-target shader applied to the stored raycaster scene, or nil when default rendering is used.
----@return LShader? Bound shader handle, or nil.
+---@return LShader Bound shader handle, or nil.
 lurek.raycaster.getShader = function() end
 
 --- Creates a new raycaster map with the given grid dimensions.
@@ -27828,7 +27975,7 @@ lurek.render.getColor = function() end
 lurek.render.getColorMask = function() end
 
 --- Returns the active debug visualization shader, or nil if debug draws use the normal/default render shader path.
----@return LShader? The active debug visualization shader handle.
+---@return LShader The active debug visualization shader handle.
 lurek.render.getDebugShader = function() end
 
 --- Returns the current default texture filtering settings.
@@ -27938,7 +28085,7 @@ lurek.render.getStats = function() end
 lurek.render.getStencilMode = function() end
 
 --- Returns the active text shader, or nil if font-atlas text uses the default/fallback shader path.
----@return LShader? The active text shader handle.
+---@return LShader The active text shader handle.
 lurek.render.getTextShader = function() end
 
 --- Returns the current window width in pixels.
@@ -29274,7 +29421,7 @@ function LSprite:getNormalMap() end
 function LSprite:getPosition() end
 
 --- Returns the sprite material shader bound to this sprite, if any.
----@return LShader? Bound shader or nil.
+---@return LShader Bound shader or nil.
 function LSprite:getShader() end
 
 --- Returns whether the sprite currently has a normal map.
@@ -29420,7 +29567,7 @@ function LSpriteAutoTileSheet:getBitmaskForTile(tile_id) end
 ---@return string Mode name.
 function LSpriteAutoTileSheet:getDefaultMode() end
 
---- Returns the autotile layout name.
+--- Returns the autotile layout name used by this sheet.
 ---@return string Layout name.
 function LSpriteAutoTileSheet:getLayout() end
 
@@ -29908,7 +30055,7 @@ function LTerminal:getFocused() end
 function LTerminal:getRenderStats() end
 
 --- Returns the UI shader bound to this terminal, or nil when default terminal rendering is used.
----@return LShader? Bound shader handle, if any.
+---@return LShader Bound shader handle, if any.
 function LTerminal:getShader() end
 
 --- Returns the number of widgets currently attached to this terminal.
@@ -30582,13 +30729,14 @@ function LTileField:applyTilesetObjectLayer(slot, tileset, opts) end
 function LTileField:blocks(x, y, z, channel) end
 
 --- Returns whether one cell blocks a category.
----@param x any
----@param y any
----@param z? any
----@param category any
+---@param x number One-based cell column.
+---@param y number One-based cell row.
+---@param z? number Optional one-based level index, defaulting to 1.
+---@param category string Category name to test.
+---@return boolean True when the addressed cell blocks the selected category.
 function LTileField:blocksCategory(x, y, z, category) end
 
---- Clears all cell gameplay state.
+--- Clears all gameplay state, modifiers, and references in the field.
 function LTileField:clear() end
 
 --- Clears gameplay state for one addressed cell.
@@ -30655,15 +30803,16 @@ function LTileField:exportRefLayer(slot, z) end
 function LTileField:firstBlocker(from_tbl, to_tbl, channel, opts) end
 
 --- Returns whether a rectangular footprint can occupy a cell anchor for a category.
----@param x any
----@param y any
----@param z? any
----@param w any
----@param h any
----@param category any
+---@param x number One-based anchor column.
+---@param y number One-based anchor row.
+---@param z? number Optional one-based level index, defaulting to 1.
+---@param w number Footprint width in cells.
+---@param h number Footprint height in cells.
+---@param category string Category name to test against blockers and costs.
+---@return boolean True when the footprint can be placed at the addressed anchor cell.
 function LTileField:footprintPassable(x, y, z, w, h, category) end
 
---- Returns known category names.
+--- Returns the sorted names of all known cell categories.
 ---@return string[] Sorted category names.
 function LTileField:getCategories() end
 
@@ -30673,24 +30822,27 @@ function LTileField:getCategories() end
 function LTileField:getCategory(name) end
 
 --- Returns one effective category cost.
----@param x any
----@param y any
----@param z? any
----@param category any
+---@param x number One-based cell column.
+---@param y number One-based cell row.
+---@param z? number Optional one-based level index, defaulting to 1.
+---@param category string Category name to inspect.
+---@return number Effective movement cost for that category on the addressed cell.
 function LTileField:getCategoryCost(x, y, z, category) end
 
 --- Returns one effective RGB category filter.
----@param x any
----@param y any
----@param z? any
----@param category any
+---@param x number One-based cell column.
+---@param y number One-based cell row.
+---@param z? number Optional one-based level index, defaulting to 1.
+---@param category string Category name to inspect.
+---@return table RGB multiplier table for that category on the addressed cell.
 function LTileField:getCategoryFilter(x, y, z, category) end
 
 --- Returns one effective category transmission multiplier.
----@param x any
----@param y any
----@param z? any
----@param category any
+---@param x number One-based cell column.
+---@param y number One-based cell row.
+---@param z? number Optional one-based level index, defaulting to 1.
+---@param category string Category name to inspect.
+---@return number Effective transmission multiplier for that category on the addressed cell.
 function LTileField:getCategoryTransmission(x, y, z, category) end
 
 --- Returns a table with blockers, costs, sun occlusion, refs, and modifiers.
@@ -30783,13 +30935,13 @@ function LTileField:getRefPropertyBool(x, y, z, slot, tileset, property, opts) e
 ---@return number nil | Numeric property value, or nil when missing/not numeric.
 function LTileField:getRefPropertyNumber(x, y, z, slot, tileset, property, opts) end
 
---- Returns every declared ref slot.
+--- Returns the sorted names of every declared reference slot.
 ---@return string[] Ref slot names.
 function LTileField:getRefSlots() end
 
 --- Returns one-based cells for a named region, or nil when it does not exist.
 ---@param name string Region name.
----@return table? Array of `{ x, y, z }` cells.
+---@return table Array of `{ x, y, z }` cells.
 function LTileField:getRegionCells(name) end
 
 --- Returns all region names in stable order.
@@ -30870,35 +31022,35 @@ function LTileField:removeSlot(slot) end
 function LTileField:setBlock(x, y, z, channel, blocked) end
 
 --- Sets one category blocker on one cell.
----@param x any
----@param y any
----@param z? any
----@param category any
----@param blocked any
+---@param x number One-based cell column.
+---@param y number One-based cell row.
+---@param z? number Optional one-based level index, defaulting to 1.
+---@param category string Category name to update.
+---@param blocked boolean Whether the category is blocked on that cell.
 function LTileField:setCategoryBlock(x, y, z, category, blocked) end
 
---- Sets one category cost on one cell.
----@param x any
----@param y any
----@param z? any
----@param category any
----@param cost any
+--- Sets one movement-cost override for a category on one cell.
+---@param x number One-based cell column.
+---@param y number One-based cell row.
+---@param z? number Optional one-based level index, defaulting to 1.
+---@param category string Category name to update.
+---@param cost number Effective movement cost to assign.
 function LTileField:setCategoryCost(x, y, z, category, cost) end
 
 --- Sets one RGB category filter on one cell.
----@param x any
----@param y any
----@param z? any
----@param category any
----@param filter any
+---@param x number One-based cell column.
+---@param y number One-based cell row.
+---@param z? number Optional one-based level index, defaulting to 1.
+---@param category string Category name to update.
+---@param filter table RGB multiplier table with three numeric entries.
 function LTileField:setCategoryFilter(x, y, z, category, filter) end
 
 --- Sets one category transmission multiplier on one cell.
----@param x any
----@param y any
----@param z? any
----@param category any
----@param value any
+---@param x number One-based cell column.
+---@param y number One-based cell row.
+---@param z? number Optional one-based level index, defaulting to 1.
+---@param category string Category name to update.
+---@param value number Transmission multiplier to assign.
 function LTileField:setCategoryTransmission(x, y, z, category, value) end
 
 --- Sets cell state from a table with optional `blocks`, `costs`, `sunOcclusion`, `refs`, and `modifiers`.
@@ -31078,7 +31230,7 @@ function LTileLightMap:addLineLight(opts) end
 ---@param opts table `{x, y, z?, radius, intensity?, color?, flicker?, colorCycle?}` light definition.
 function LTileLightMap:addPointLight(opts) end
 
---- Alias for `addAreaLight`.
+--- Creates a rectangular area light via `addAreaLight`.
 ---@param opts table h,radius,intensity?,color?,flicker?,colorCycle?}`.
 ---@return number Stable rectangular light id.
 function LTileLightMap:addRectLight(opts) end
@@ -31092,7 +31244,7 @@ function LTileLightMap:clearLineLights() end
 --- Removes all point lights currently stored on this tile light map.
 function LTileLightMap:clearPointLights() end
 
---- Alias for `clearAreaLights`.
+--- Clears all rectangular area lights via `clearAreaLights`.
 function LTileLightMap:clearRectLights() end
 
 --- Computes tile light from ambient, point lights, line lights, and sun light.
@@ -31139,7 +31291,7 @@ function LTileLightMap:removeLineLight(id) end
 ---@return boolean True when a point light was removed.
 function LTileLightMap:removePointLight(id) end
 
---- Alias for `removeAreaLight`.
+--- Removes a rectangular area light via `removeAreaLight`.
 ---@param id number Stable rectangular light id returned by `addRectLight`.
 ---@return boolean True when a rectangular light was removed.
 function LTileLightMap:removeRectLight(id) end
@@ -31180,7 +31332,7 @@ function LTileLightMap:updateLineLight(id, opts) end
 ---@param opts table Partial light update table with x, y, z, radius, intensity, or color.
 function LTileLightMap:updatePointLight(id, opts) end
 
---- Alias for `updateAreaLight`.
+--- Updates a rectangular area light via `updateAreaLight`.
 ---@param id number Stable rectangular light id returned by `addRectLight`.
 ---@param opts table Rectangular-light fields to update.
 function LTileLightMap:updateRectLight(id, opts) end
@@ -31610,7 +31762,7 @@ function LTileMap:getLayerParallax(idx) end
 
 --- Returns the shader override bound to one layer, or nil when the layer has no override.
 ---@param layer number Layer index (1-based).
----@return LShader? Bound layer shader handle.
+---@return LShader Bound layer shader handle.
 function LTileMap:getLayerShader(layer) end
 
 --- Returns whether a layer is currently visible.
@@ -31623,7 +31775,7 @@ function LTileMap:getLayerVisible(idx) end
 function LTileMap:getOrientation() end
 
 --- Returns the tilemap shader bound to this map, or nil when none is bound.
----@return LShader? Bound shader handle.
+---@return LShader Bound shader handle.
 function LTileMap:getShader() end
 
 --- Returns the tile GID at a specific grid position on a layer.
@@ -31935,7 +32087,7 @@ function LTileCatalog:getTileset(id) end
 ---@return table nil | Visual metadata table, or nil when the reference has no visual.
 function LTileCatalog:getVisual(reference) end
 
---- Returns the userdata type name.
+--- Returns the Lua-visible userdata type name for this tile catalog.
 ---@return string Always `LTileCatalog`.
 function LTileCatalog:type() end
 
@@ -32048,7 +32200,7 @@ function LTileSet:getTileCount() end
 ---@return number Tile height.
 function LTileSet:getTileDimensions() end
 
---- Returns the tile height in pixels.
+--- Returns the height of each tile in pixels.
 ---@return number Tile height.
 function LTileSet:getTileHeight() end
 
@@ -32057,7 +32209,7 @@ function LTileSet:getTileHeight() end
 ---@return string nil | Object archetype name, or nil when unmapped.
 function LTileSet:getTileObject(tile_id) end
 
---- Returns the tile width in pixels.
+--- Returns the width of each tile in pixels.
 ---@return number Tile width.
 function LTileSet:getTileWidth() end
 
@@ -32119,7 +32271,7 @@ function LTileSet:setTerrainProfile(name, profile) end
 ---@param object_name? string Object archetype name, or nil to clear it.
 function LTileSet:setTileObject(tile_id, object_name) end
 
---- Returns the userdata type name.
+--- Returns the Lua-visible userdata type name for this tileset.
 ---@return string Always `LTileSet`.
 function LTileSet:type() end
 
@@ -33463,7 +33615,7 @@ function LProgressBar:setValue(v) end
 ---@return number The 1-based group index.
 function LPropertyWidget:addGroup(title, collapsed) end
 
---- Adds a property row to a group.
+--- Adds a labeled property row to the selected group.
 ---@param group number The 1-based group index.
 ---@param name string The property label.
 ---@param value any Scalar value to display.

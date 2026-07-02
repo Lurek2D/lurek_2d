@@ -396,9 +396,9 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 
 ##### Methods
 
-- `LImageShaderJob:cancel() -> nil`: Cancels this image shader job.
-- `LImageShaderJob:poll() -> LImageData?`: Returns the shader output image when the job has completed, or nil if pending/cancelled.
-- `LImageShaderJob:wait(timeoutMs?) -> LImageData?`: Waits for the offline image shader job and returns its output image.
+- `LImageShaderJob:cancel() -> nil`: Cancels this pending offline image shader job.
+- `LImageShaderJob:poll() -> LImageData`: Returns the shader output image when the job has completed, or nil if pending/cancelled.
+- `LImageShaderJob:wait(timeoutMs?) -> LImageData`: Waits for the offline image shader job and returns its output image.
 
 #### LLayeredImage Type
 

@@ -444,6 +444,37 @@ fn fs_main(@location(0) uv: vec2<f32>) -> @location(0) vec4<f32> {
     return col / f32(samples);
 }
 "#;
+/// WGSL fragment shader for a circular live cursor zoom lens.
+const SHADER_CURSOR_LENS: &str = r#"
+struct PostFxParams { p: array<vec4<f32>, 4>, }
+@group(0) @binding(0) var t_src: texture_2d<f32>;
+@group(0) @binding(1) var s_src: sampler;
+@group(0) @binding(2) var<uniform> params: PostFxParams;
+@fragment
+fn fs_main(@location(0) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    let border_alpha = params.p[0].x;
+    let magnification = max(params.p[0].y, 1.0);
+    let radius_px = max(params.p[0].z, 1.0);
+    let border_px = max(params.p[0].w, 0.0);
+    let center = params.p[1].xy;
+    let softness_px = max(params.p[1].z, 0.5);
+    let border_color = params.p[2].rgb;
+    let viewport = max(params.p[3].zw, vec2<f32>(1.0, 1.0));
+    let min_dim = max(min(viewport.x, viewport.y), 1.0);
+    let radius = radius_px / min_dim;
+    let border = border_px / min_dim;
+    let softness = softness_px / min_dim;
+    let delta = uv - center;
+    let dist = length(delta);
+    var col = textureSample(t_src, s_src, uv);
+    if dist <= radius {
+        let zoom_uv = center + delta / magnification;
+        col = textureSample(t_src, s_src, zoom_uv);
+    }
+    let ring = 1.0 - smoothstep(border, border + softness, abs(dist - radius));
+    return mix(col, vec4<f32>(border_color, 1.0), clamp(ring * border_alpha, 0.0, 1.0));
+}
+"#;
 /// WGSL passthrough copy shader used as identity pass when no effects are active.
 const SHADER_COPY: &str = r#"
 struct PostFxParams { p: array<vec4<f32>, 4>, }
@@ -715,6 +746,10 @@ impl PostFxPipeline {
         pipelines.insert(
             "motionblur".into(),
             build("postfx_motionblur", SHADER_MOTIONBLUR),
+        );
+        pipelines.insert(
+            "cursor_lens".into(),
+            build("postfx_cursor_lens", SHADER_CURSOR_LENS),
         );
         pipelines.insert("__copy".into(), build("postfx_copy", SHADER_COPY));
         Self {

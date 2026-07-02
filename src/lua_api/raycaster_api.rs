@@ -15,11 +15,12 @@ use crate::raycaster::sprite_manager::SpriteManager;
 #[cfg(feature = "obj-loader")]
 use crate::raycaster::SceneAdapterModel;
 use crate::raycaster::{
-    compute_lighting, distance_shade, DirectionalSpriteTextures, DoorDirection,
-    DoorManager, DoorState, EntityPickResult, HeightMap, LevelSprite, ModelMesh, MultiLevelGrid,
-    PickResult, PickSurface, PointLight, RayHit, Raycaster2D, RaycasterBackground,
-    RaycasterBuildStats, RaycasterLevel, RaycasterLimits, RaycasterMaterial, RaycasterMaterialFrameLayout,
-    RaycasterOverlayEffect, RaycasterParticleEmitter, RaycasterScene, SceneAdapter,
+    compute_lighting, distance_shade, DirectionalSpriteTextures, DoorDirection, DoorManager,
+    DoorState, EntityPickResult, HeightMap, LevelSprite, ModelMesh, MultiLevelGrid, PickResult,
+    PickAttrSurface, PickSurface, PointLight, RayHit, Raycaster2D, RaycasterBackground, RaycasterBuildStats,
+    RaycasterLastBuildContext, RaycasterLevel, RaycasterLimits, RaycasterMaterial,
+    RaycasterMaterialFrameLayout, RaycasterOverlayEffect, RaycasterParticleEmitter,
+    RaycasterPickWorld, RaycasterScene, SceneAdapter,
     SceneAdapterLight, SceneAdapterSprite, SceneBuildParams, SceneTransform, ScreenPickParams,
     WallFeature, WallFeatureKind, WorldSprite,
 };
@@ -39,6 +40,74 @@ use std::rc::Rc;
 /// Rebuilds a texture key and raw handle pair from the persisted numeric texture id.
 fn texture_key_from_raw_id(raw_id: u64) -> (TextureKey, u64) {
     (TextureKey::from(slotmap::KeyData::from_ffi(raw_id)), raw_id)
+}
+
+fn string_map_from_table(tbl: LuaTable) -> LuaResult<HashMap<String, String>> {
+    let mut attrs = HashMap::new();
+    for pair in tbl.pairs::<String, LuaValue>() {
+        let (key, value) = pair?;
+        let value = match value {
+            LuaValue::String(value) => value.to_str()?.to_string(),
+            LuaValue::Integer(value) => value.to_string(),
+            LuaValue::Number(value) => value.to_string(),
+            LuaValue::Boolean(value) => {
+                if value {
+                    "true".to_string()
+                } else {
+                    "false".to_string()
+                }
+            }
+            _ => continue,
+        };
+        attrs.insert(key, value);
+    }
+    Ok(attrs)
+}
+
+fn table_string_attrs(tbl: &LuaTable, field: &str) -> LuaResult<HashMap<String, String>> {
+    match tbl.get::<_, Option<LuaTable>>(field)? {
+        Some(attrs) => string_map_from_table(attrs),
+        None => Ok(HashMap::new()),
+    }
+}
+
+fn parse_pick_attr_surface(value: &str, api_name: &str) -> LuaResult<PickAttrSurface> {
+    match value.to_ascii_lowercase().as_str() {
+        "any" => Ok(PickAttrSurface::Any),
+        "wall" => Ok(PickAttrSurface::Wall),
+        "floor" => Ok(PickAttrSurface::Floor),
+        "ceiling" => Ok(PickAttrSurface::Ceiling),
+        _ => Err(LuaError::RuntimeError(format!(
+            "{api_name}: surface must be one of any|wall|floor|ceiling"
+        ))),
+    }
+}
+
+fn scene_params_to_screen_pick(params: &SceneBuildParams) -> ScreenPickParams {
+    ScreenPickParams {
+        player_x: params.player_x,
+        player_y: params.player_y,
+        player_angle: params.player_angle,
+        fov: params.fov,
+        screen_width: params.screen_width,
+        screen_height: params.screen_height,
+        camera_height: params.camera_height,
+        horizon_offset: params.horizon_offset,
+        max_distance: params.max_distance,
+    }
+}
+
+fn store_last_raycaster_build(
+    state: &mut SharedState,
+    params: &SceneBuildParams,
+    scene: &RaycasterScene,
+    world: RaycasterPickWorld,
+) {
+    state.raycaster_last_build = Some(RaycasterLastBuildContext {
+        params: scene_params_to_screen_pick(params),
+        world,
+        scene: scene.clone(),
+    });
 }
 /// Parses nil, numeric ids, or `LImage` userdata into a raycaster texture reference.
 fn parse_texture_key_value(
@@ -507,7 +576,7 @@ impl RaycasterLuaParser {
                                 api_name
                             ))
                         })?;
-                        let material = parse_material_spec(
+                        let material = RaycasterLuaHelpers::parse_material_spec(
                             tbl,
                             state,
                             api_name,
@@ -551,100 +620,104 @@ impl RaycasterLuaParser {
     }
 }
 
-fn parse_overlay_effect_value(
-    value: LuaValue,
-    api_name: &str,
-    state: Option<&SharedState>,
-) -> LuaResult<RaycasterOverlayEffect> {
-    let LuaValue::Table(tbl) = value else {
-        return Err(LuaError::RuntimeError(format!(
-            "{}: overlay effect must be a table",
-            api_name
-        )));
-    };
-    let kind = tbl
-        .get::<_, Option<String>>("type")?
-        .or(tbl.get::<_, Option<String>>("effect")?)
-        .unwrap_or_else(|| "fog".to_string())
-        .to_ascii_lowercase();
-    match kind.as_str() {
-        "fog"
-            if matches!(
-                tbl.get::<_, Option<String>>("mode")?
-                    .unwrap_or_default()
-                    .to_ascii_lowercase()
-                    .as_str(),
-                "depth" | "distance"
-            ) =>
-        {
-            Ok(RaycasterOverlayEffect::DepthFog {
+struct RaycasterLuaHelpers;
+
+impl RaycasterLuaHelpers {
+    fn parse_overlay_effect_value(
+        value: LuaValue,
+        api_name: &str,
+        state: Option<&SharedState>,
+    ) -> LuaResult<RaycasterOverlayEffect> {
+        let LuaValue::Table(tbl) = value else {
+            return Err(LuaError::RuntimeError(format!(
+                "{}: overlay effect must be a table",
+                api_name
+            )));
+        };
+        let kind = tbl
+            .get::<_, Option<String>>("type")?
+            .or(tbl.get::<_, Option<String>>("effect")?)
+            .unwrap_or_else(|| "fog".to_string())
+            .to_ascii_lowercase();
+        match kind.as_str() {
+            "fog"
+                if matches!(
+                    tbl.get::<_, Option<String>>("mode")?
+                        .unwrap_or_default()
+                        .to_ascii_lowercase()
+                        .as_str(),
+                    "depth" | "distance"
+                ) =>
+            {
+                Ok(RaycasterOverlayEffect::DepthFog {
+                    color: table_color(&tbl, "color", api_name, [0.55, 0.62, 0.70, 0.35])?,
+                    density: tbl
+                        .get::<_, Option<f32>>("density")?
+                        .unwrap_or(0.35)
+                        .clamp(0.0, 2.0),
+                    near: tbl.get::<_, Option<f32>>("near")?.unwrap_or(1.0).max(0.0),
+                    far: tbl
+                        .get::<_, Option<f32>>("far")?
+                        .unwrap_or(12.0)
+                        .max(tbl.get::<_, Option<f32>>("near")?.unwrap_or(1.0) + 0.01),
+                })
+            }
+            "fog" => Ok(RaycasterOverlayEffect::Fog {
+                color: table_color(&tbl, "color", api_name, [0.55, 0.62, 0.70, 0.35])?,
+                density: tbl
+                    .get::<_, Option<f32>>("density")?
+                    .unwrap_or(0.35)
+                    .clamp(0.0, 1.0),
+            }),
+            "depth_fog" | "depthfog" => Ok(RaycasterOverlayEffect::DepthFog {
                 color: table_color(&tbl, "color", api_name, [0.55, 0.62, 0.70, 0.35])?,
                 density: tbl
                     .get::<_, Option<f32>>("density")?
                     .unwrap_or(0.35)
                     .clamp(0.0, 2.0),
                 near: tbl.get::<_, Option<f32>>("near")?.unwrap_or(1.0).max(0.0),
-                far: tbl
-                    .get::<_, Option<f32>>("far")?
-                    .unwrap_or(12.0)
-                    .max(tbl.get::<_, Option<f32>>("near")?.unwrap_or(1.0) + 0.01),
-            })
-        }
-        "fog" => Ok(RaycasterOverlayEffect::Fog {
-            color: table_color(&tbl, "color", api_name, [0.55, 0.62, 0.70, 0.35])?,
-            density: tbl
-                .get::<_, Option<f32>>("density")?
-                .unwrap_or(0.35)
-                .clamp(0.0, 1.0),
-        }),
-        "depth_fog" | "depthfog" => Ok(RaycasterOverlayEffect::DepthFog {
-            color: table_color(&tbl, "color", api_name, [0.55, 0.62, 0.70, 0.35])?,
-            density: tbl
-                .get::<_, Option<f32>>("density")?
-                .unwrap_or(0.35)
-                .clamp(0.0, 2.0),
-            near: tbl.get::<_, Option<f32>>("near")?.unwrap_or(1.0).max(0.0),
-            far: tbl.get::<_, Option<f32>>("far")?.unwrap_or(12.0).max(1.01),
-        }),
-        "snow" => Ok(RaycasterOverlayEffect::Snow {
-            color: table_color(&tbl, "color", api_name, [1.0, 1.0, 1.0, 0.70])?,
-            density: tbl
-                .get::<_, Option<f32>>("density")?
-                .unwrap_or(0.30)
-                .clamp(0.0, 2.0),
-            wind: tbl.get::<_, Option<f32>>("wind")?.unwrap_or(0.0),
-        }),
-        "shader" => {
-            let state = state.ok_or_else(|| {
-                LuaError::RuntimeError(format!(
-                    "{}: shader overlays require runtime shader access",
-                    api_name
-                ))
-            })?;
-            let material = parse_material_spec(
-                &tbl,
-                state,
-                api_name,
-                0,
-                &[
-                    ShaderTarget::Overlay,
-                    ShaderTarget::PostFx,
-                    ShaderTarget::Draw,
-                ],
-            )?
-            .material;
-            if material.shader_key.is_none() {
-                return Err(LuaError::RuntimeError(format!(
-                    "{}: shader overlays require a shader field",
-                    api_name
-                )));
+                far: tbl.get::<_, Option<f32>>("far")?.unwrap_or(12.0).max(1.01),
+            }),
+            "snow" => Ok(RaycasterOverlayEffect::Snow {
+                color: table_color(&tbl, "color", api_name, [1.0, 1.0, 1.0, 0.70])?,
+                density: tbl
+                    .get::<_, Option<f32>>("density")?
+                    .unwrap_or(0.30)
+                    .clamp(0.0, 2.0),
+                wind: tbl.get::<_, Option<f32>>("wind")?.unwrap_or(0.0),
+            }),
+            "shader" => {
+                let state = state.ok_or_else(|| {
+                    LuaError::RuntimeError(format!(
+                        "{}: shader overlays require runtime shader access",
+                        api_name
+                    ))
+                })?;
+                let material = Self::parse_material_spec(
+                    &tbl,
+                    state,
+                    api_name,
+                    0,
+                    &[
+                        ShaderTarget::Overlay,
+                        ShaderTarget::PostFx,
+                        ShaderTarget::Draw,
+                    ],
+                )?
+                .material;
+                if material.shader_key.is_none() {
+                    return Err(LuaError::RuntimeError(format!(
+                        "{}: shader overlays require a shader field",
+                        api_name
+                    )));
+                }
+                Ok(RaycasterOverlayEffect::Shader { material })
             }
-            Ok(RaycasterOverlayEffect::Shader { material })
+            other => Err(LuaError::RuntimeError(format!(
+                "{}: unsupported overlay effect {:?}",
+                api_name, other
+            ))),
         }
-        other => Err(LuaError::RuntimeError(format!(
-            "{}: unsupported overlay effect {:?}",
-            api_name, other
-        ))),
     }
 }
 
@@ -660,14 +733,16 @@ fn parse_overlay_effects(
             let has_kind = tbl.get::<_, Option<String>>("type")?.is_some()
                 || tbl.get::<_, Option<String>>("effect")?.is_some();
             if has_kind {
-                overlays.push(parse_overlay_effect_value(
+                overlays.push(RaycasterLuaHelpers::parse_overlay_effect_value(
                     LuaValue::Table(tbl),
                     api_name,
                     state,
                 )?);
             } else {
                 for value in tbl.sequence_values::<LuaValue>() {
-                    overlays.push(parse_overlay_effect_value(value?, api_name, state)?);
+                    overlays.push(RaycasterLuaHelpers::parse_overlay_effect_value(
+                        value?, api_name, state,
+                    )?);
                 }
             }
             Ok(overlays)
@@ -835,26 +910,27 @@ fn ray_hit_to_table<'lua>(lua: &'lua Lua, hit: &RayHit) -> LuaResult<LuaTable<'l
 }
 
 fn pick_result_to_table<'lua>(lua: &'lua Lua, pick: &PickResult) -> LuaResult<LuaTable<'lua>> {
-    let tbl = lua.create_table()?;
-    tbl.set("x", pick.grid_x)?;
-    tbl.set("y", pick.grid_y)?;
-    tbl.set("level", pick.level_index)?;
-    tbl.set("surface", pick.surface.as_str())?;
-    tbl.set("distance", pick.distance)?;
-    tbl.set("hit_x", pick.hit_x)?;
-    tbl.set("hit_y", pick.hit_y)?;
-    tbl.set("u", pick.tex_u)?;
-    tbl.set("v", pick.tex_v)?;
+    let result = lua.create_table()?;
+    result.set("x", pick.grid_x)?;
+    result.set("y", pick.grid_y)?;
+    result.set("level", pick.level_index)?;
+    result.set("surface", pick.surface.as_str())?;
+    result.set("kind", pick.kind.clone())?;
+    result.set("distance", pick.distance)?;
+    result.set("hit_x", pick.hit_x)?;
+    result.set("hit_y", pick.hit_y)?;
+    result.set("u", pick.tex_u)?;
+    result.set("v", pick.tex_v)?;
     if let Some(wall_height) = pick.wall_height {
-        tbl.set("wall_height", wall_height)?;
+        result.set("wall_height", wall_height)?;
     }
     /// Picked wall cell value for this screen-space hit result.
-    tbl.set("cell_value", pick.cell_value)?;
+    result.set("cell_value", pick.cell_value)?;
     /// Ray angle in radians for this screen-space hit result.
-    tbl.set("ray_angle", pick.ray_angle)?;
+    result.set("ray_angle", pick.ray_angle)?;
     if let Some(side) = pick.wall_side {
         /// Wall side name when the screen-space hit intersects a wall face.
-        tbl.set("side", side)?;
+        result.set("side", side)?;
     }
     if let Some(feature) = pick.wall_feature {
         let feature_tbl = wall_feature_to_table(lua, feature)?;
@@ -862,52 +938,67 @@ fn pick_result_to_table<'lua>(lua: &'lua Lua, pick: &PickResult) -> LuaResult<Lu
             feature_tbl.set("section", section.as_str())?;
         }
         /// Wall feature descriptor for this screen-space hit result.
-        tbl.set("feature", feature_tbl)?;
+        result.set("feature", feature_tbl)?;
     }
-    Ok(tbl)
+    if !pick.attrs.is_empty() {
+        let attrs = lua.create_table()?;
+        for (key, value) in &pick.attrs {
+            attrs.set(key.as_str(), value.as_str())?;
+        }
+        result.set("attrs", attrs)?;
+    }
+    Ok(result)
 }
 
 fn entity_pick_to_table<'lua>(
     lua: &'lua Lua,
     pick: &EntityPickResult,
 ) -> LuaResult<LuaTable<'lua>> {
-    let tbl = lua.create_table()?;
-    tbl.set("x", pick.world_x.floor().max(0.0) as usize)?;
-    tbl.set("y", pick.world_y.floor().max(0.0) as usize)?;
-    tbl.set("level", pick.level_index)?;
-    tbl.set("surface", pick.kind.as_str())?;
-    tbl.set("distance", pick.distance)?;
-    tbl.set("hit_x", pick.world_x)?;
-    tbl.set("hit_y", pick.world_y)?;
-    tbl.set("u", pick.tex_u)?;
-    tbl.set("v", pick.tex_v)?;
+    let entity = lua.create_table()?;
+    entity.set("x", pick.world_x.floor().max(0.0) as usize)?;
+    entity.set("y", pick.world_y.floor().max(0.0) as usize)?;
+    entity.set("level", pick.level_index)?;
+    entity.set("surface", pick.kind.as_str())?;
+    entity.set("kind", pick.kind.as_str())?;
+    entity.set("distance", pick.distance)?;
+    entity.set("hit_x", pick.world_x)?;
+    entity.set("hit_y", pick.world_y)?;
+    entity.set("u", pick.tex_u)?;
+    entity.set("v", pick.tex_v)?;
     if let Some(entity_id) = pick.entity_id {
-        tbl.set("id", entity_id)?;
+        entity.set("id", entity_id)?;
     }
     if let Some(texture_key) = pick.texture_key {
         /// Texture id for the picked entity surface when one is available.
-        tbl.set("texture", texture_key.data().as_ffi())?;
+        entity.set("texture", texture_key.data().as_ffi())?;
     }
-    Ok(tbl)
+    if !pick.attrs.is_empty() {
+        let attrs = lua.create_table()?;
+        for (key, value) in &pick.attrs {
+            attrs.set(key.as_str(), value.as_str())?;
+        }
+        entity.set("attrs", attrs)?;
+    }
+    Ok(entity)
 }
 
 fn raycaster_build_stats_to_table<'lua>(
     lua: &'lua Lua,
     stats: &RaycasterBuildStats,
 ) -> LuaResult<LuaTable<'lua>> {
-    let tbl = lua.create_table()?;
-    tbl.set("lightingSamples", stats.lighting_samples)?;
-    tbl.set("lightingCacheHits", stats.lighting_cache_hits)?;
-    tbl.set("lightingCacheMisses", stats.lighting_cache_misses)?;
-    tbl.set("wallQuads", stats.wall_quads)?;
-    tbl.set("floorQuads", stats.floor_quads)?;
-    tbl.set("ceilingQuads", stats.ceiling_quads)?;
-    tbl.set("sprites", stats.sprites)?;
-    tbl.set("models", stats.models)?;
-    tbl.set("particles", stats.particles)?;
-    tbl.set("visibleLevels", stats.visible_levels)?;
-    tbl.set("depthColumns", stats.depth_columns)?;
-    Ok(tbl)
+    let stats_table = lua.create_table()?;
+    stats_table.set("lightingSamples", stats.lighting_samples)?;
+    stats_table.set("lightingCacheHits", stats.lighting_cache_hits)?;
+    stats_table.set("lightingCacheMisses", stats.lighting_cache_misses)?;
+    stats_table.set("wallQuads", stats.wall_quads)?;
+    stats_table.set("floorQuads", stats.floor_quads)?;
+    stats_table.set("ceilingQuads", stats.ceiling_quads)?;
+    stats_table.set("sprites", stats.sprites)?;
+    stats_table.set("models", stats.models)?;
+    stats_table.set("particles", stats.particles)?;
+    stats_table.set("visibleLevels", stats.visible_levels)?;
+    stats_table.set("depthColumns", stats.depth_columns)?;
+    Ok(stats_table)
 }
 
 fn entity_pick_precedes_tile(entity_pick: &EntityPickResult, tile_pick: &PickResult) -> bool {
@@ -1508,8 +1599,7 @@ fn parse_world_sprites(
             let mut v = Vec::new();
             for pair in tbl.sequence_values::<LuaTable>() {
                 let st = pair?;
-                let directional_textures =
-                    parse_directional_sprite_textures(&st, api_name, state)?;
+                let directional_textures = parse_directional_sprite_textures(&st, api_name, state)?;
                 let key = if let Some(textures) = directional_textures {
                     textures.front
                 } else {
@@ -1535,6 +1625,7 @@ fn parse_world_sprites(
                     texture_key: key,
                     directional_textures,
                     size: st.get::<_, Option<f32>>("size")?.unwrap_or(1.0),
+                    attrs: table_string_attrs(&st, "attrs")?,
                 });
             }
             Ok(v)
@@ -1606,8 +1697,7 @@ fn parse_level_sprites(
             let mut v = Vec::new();
             for pair in tbl.sequence_values::<LuaTable>() {
                 let st = pair?;
-                let directional_textures =
-                    parse_directional_sprite_textures(&st, api_name, state)?;
+                let directional_textures = parse_directional_sprite_textures(&st, api_name, state)?;
                 let key = if let Some(textures) = directional_textures {
                     textures.front
                 } else {
@@ -1638,6 +1728,7 @@ fn parse_level_sprites(
                         texture_key: key,
                         directional_textures,
                         size: st.get::<_, Option<f32>>("size")?.unwrap_or(1.0),
+                        attrs: table_string_attrs(&st, "attrs")?,
                     },
                 });
             }
@@ -1717,6 +1808,7 @@ fn project_model_instance(
     let yaw = parse_model_instance_yaw(mt)?;
     let scale = mt.get::<_, Option<f32>>("scale")?.unwrap_or(1.0);
     let z_offset = mt.get::<_, Option<f32>>("z")?.unwrap_or(0.0);
+    let attrs = table_string_attrs(mt, "attrs")?;
     let (mut mesh, depth, triangle_depths) = model_ref.model.project_instance_to_mesh(
         cam_pos,
         cam_target,
@@ -1760,6 +1852,7 @@ fn project_model_instance(
         level_index,
         world_x,
         world_y,
+        attrs,
     }))
 }
 
@@ -2148,6 +2241,7 @@ impl TileFieldRaycasterLuaAdapter {
                                 texture_key,
                                 directional_textures: None,
                                 size: options.object_size,
+                                attrs: HashMap::new(),
                             },
                         });
                     }
@@ -2416,7 +2510,11 @@ impl LuaUserData for LuaDoorManager {
                 this.inner
                     .borrow_mut()
                     .try_add_door(x, y, dir, speed)
-                    .map_err(|err| LuaError::RuntimeError(format!("lurek.raycaster.LDoorManager:addDoor: {err}")))
+                    .map_err(|err| {
+                        LuaError::RuntimeError(format!(
+                            "lurek.raycaster.LDoorManager:addDoor: {err}"
+                        ))
+                    })
             },
         );
         // -- openDoor --
@@ -2437,10 +2535,9 @@ impl LuaUserData for LuaDoorManager {
         /// Advances all door animations by the given delta time. Call once per frame.
         /// @param | dt | number | Delta time in seconds since last frame.
         methods.add_method_mut("update", |_, this, dt: f32| {
-            this.inner
-                .borrow_mut()
-                .try_update(dt)
-                .map_err(|err| LuaError::RuntimeError(format!("lurek.raycaster.LDoorManager:update: {err}")))?;
+            this.inner.borrow_mut().try_update(dt).map_err(|err| {
+                LuaError::RuntimeError(format!("lurek.raycaster.LDoorManager:update: {err}"))
+            })?;
             Ok(())
         });
         // -- getDoor --
@@ -2576,68 +2673,72 @@ struct LuaRaycasterMaterialSpec {
     texture_raw_id: Option<u64>,
 }
 
-fn parse_material_spec(
-    table: &LuaTable,
-    state: &SharedState,
-    api_name: &str,
-    material_id: u32,
-    shader_targets: &[ShaderTarget],
-) -> LuaResult<LuaRaycasterMaterialSpec> {
-    let texture_value = table
-        .get::<_, Option<LuaValue>>("texture")?
-        .or(table.get::<_, Option<LuaValue>>("image")?)
-        .or(table.get::<_, Option<LuaValue>>("textureId")?)
-        .unwrap_or(LuaValue::Nil);
-    let texture = parse_texture_key_value_checked(&texture_value, api_name, state)?;
-    let shader_value = table
-        .get::<_, Option<LuaValue>>("shader")?
-        .unwrap_or(LuaValue::Nil);
-    let shader_key = parse_optional_shader_key(&shader_value, state, shader_targets, api_name)?;
-    let blend_mode = blend_mode_from_name(
-        &table
-            .get::<_, Option<String>>("blend")?
-            .or(table.get::<_, Option<String>>("blend_mode")?)
-            .unwrap_or_else(|| "alpha".to_string()),
-        api_name,
-    )?;
-    let uv_scroll = optional_table_vec2(table, "uv_scroll", api_name, [0.0, 0.0])?;
-    let uv_scroll = if uv_scroll == [0.0, 0.0] {
-        [
-            table.get::<_, Option<f32>>("scroll_x")?.unwrap_or(0.0),
-            table.get::<_, Option<f32>>("scroll_y")?.unwrap_or(0.0),
-        ]
-    } else {
-        uv_scroll
-    };
-    let uv_scale = optional_table_vec2(table, "uv_scale", api_name, [1.0, 1.0])?;
-    let uv_offset = optional_table_vec2(table, "uv_offset", api_name, [0.0, 0.0])?;
-    let frame_count = table
-        .get::<_, Option<u32>>("frame_count")?
-        .unwrap_or(1)
-        .max(1);
-    let frame_rate = table
-        .get::<_, Option<f32>>("frame_rate")?
-        .unwrap_or(0.0)
-        .max(0.0);
-    let frame_layout =
-        material_frame_layout_from_name(table.get::<_, Option<String>>("frame_layout")?, api_name)?;
-    let tint = table_color(table, "tint", api_name, [1.0, 1.0, 1.0, 1.0])?;
-    Ok(LuaRaycasterMaterialSpec {
-        material: RaycasterMaterial {
-            material_id,
-            texture_key: texture.map(|entry| entry.0),
-            shader_key,
-            blend_mode,
-            uv_scroll,
-            uv_scale,
-            uv_offset,
-            frame_count,
-            frame_rate,
-            frame_layout,
-            tint,
-        },
-        texture_raw_id: texture.map(|entry| entry.1),
-    })
+impl RaycasterLuaHelpers {
+    fn parse_material_spec(
+        table: &LuaTable,
+        state: &SharedState,
+        api_name: &str,
+        material_id: u32,
+        shader_targets: &[ShaderTarget],
+    ) -> LuaResult<LuaRaycasterMaterialSpec> {
+        let texture_value = table
+            .get::<_, Option<LuaValue>>("texture")?
+            .or(table.get::<_, Option<LuaValue>>("image")?)
+            .or(table.get::<_, Option<LuaValue>>("textureId")?)
+            .unwrap_or(LuaValue::Nil);
+        let texture = parse_texture_key_value_checked(&texture_value, api_name, state)?;
+        let shader_value = table
+            .get::<_, Option<LuaValue>>("shader")?
+            .unwrap_or(LuaValue::Nil);
+        let shader_key = parse_optional_shader_key(&shader_value, state, shader_targets, api_name)?;
+        let blend_mode = blend_mode_from_name(
+            &table
+                .get::<_, Option<String>>("blend")?
+                .or(table.get::<_, Option<String>>("blend_mode")?)
+                .unwrap_or_else(|| "alpha".to_string()),
+            api_name,
+        )?;
+        let uv_scroll = optional_table_vec2(table, "uv_scroll", api_name, [0.0, 0.0])?;
+        let uv_scroll = if uv_scroll == [0.0, 0.0] {
+            [
+                table.get::<_, Option<f32>>("scroll_x")?.unwrap_or(0.0),
+                table.get::<_, Option<f32>>("scroll_y")?.unwrap_or(0.0),
+            ]
+        } else {
+            uv_scroll
+        };
+        let uv_scale = optional_table_vec2(table, "uv_scale", api_name, [1.0, 1.0])?;
+        let uv_offset = optional_table_vec2(table, "uv_offset", api_name, [0.0, 0.0])?;
+        let frame_count = table
+            .get::<_, Option<u32>>("frame_count")?
+            .unwrap_or(1)
+            .max(1);
+        let frame_rate = table
+            .get::<_, Option<f32>>("frame_rate")?
+            .unwrap_or(0.0)
+            .max(0.0);
+        let frame_layout = material_frame_layout_from_name(
+            table.get::<_, Option<String>>("frame_layout")?,
+            api_name,
+        )?;
+        let tint = table_color(table, "tint", api_name, [1.0, 1.0, 1.0, 1.0])?;
+        Ok(LuaRaycasterMaterialSpec {
+            material: RaycasterMaterial {
+                material_id,
+                texture_key: texture.map(|entry| entry.0),
+                shader_key,
+                blend_mode,
+                uv_scroll,
+                uv_scale,
+                uv_offset,
+                frame_count,
+                frame_rate,
+                frame_layout,
+                tint,
+            },
+            texture_raw_id: texture.map(|entry| entry.1),
+        })
+    }
 }
 
 fn material_spec_to_lua_value<'lua>(
@@ -2694,96 +2795,98 @@ fn material_spec_to_lua_value<'lua>(
     Ok(LuaValue::Table(table))
 }
 
-fn parse_particle_emitter_spec(
-    table: &LuaTable,
-    state: &SharedState,
-    api_name: &str,
-    emitter_id: u32,
-) -> LuaResult<RaycasterParticleEmitter> {
-    let texture_value = table
-        .get::<_, Option<LuaValue>>("texture")?
-        .or(table.get::<_, Option<LuaValue>>("image")?)
-        .unwrap_or(LuaValue::Nil);
-    let texture = parse_texture_key_value_checked(&texture_value, api_name, state)?;
-    let shader_value = table
-        .get::<_, Option<LuaValue>>("shader")?
-        .unwrap_or(LuaValue::Nil);
-    let shader_key =
-        parse_optional_shader_key(&shader_value, state, &[ShaderTarget::Particle], api_name)?;
-    let rate = table.get::<_, Option<f32>>("rate")?.unwrap_or(8.0).max(0.0);
-    let lifetime = table
-        .get::<_, Option<f32>>("lifetime")?
-        .unwrap_or(1.0)
-        .max(0.01);
-    let lifetime_range =
-        optional_table_vec2(table, "lifetime_range", api_name, [lifetime, lifetime])?;
-    let size = table
-        .get::<_, Option<f32>>("size")?
-        .unwrap_or(12.0)
-        .max(0.1);
-    let size_range = optional_table_vec2(table, "size_range", api_name, [size, size])?;
-    let velocity_xy = optional_table_vec2(table, "velocity", api_name, [0.0, 0.0])?;
-    let jitter_xy = optional_table_vec2(table, "velocity_jitter", api_name, [0.0, 0.0])?;
-    Ok(RaycasterParticleEmitter {
-        emitter_id,
-        level_index: 0,
-        world_x: table.get::<_, f32>("x")?,
-        world_y: table.get::<_, f32>("y")?,
-        world_z: table
-            .get::<_, Option<f32>>("z")?
-            .or(table.get::<_, Option<f32>>("height_offset")?)
-            .unwrap_or(0.0),
-        radius: table
-            .get::<_, Option<f32>>("radius")?
-            .unwrap_or(0.1)
-            .max(0.0),
-        height: table
-            .get::<_, Option<f32>>("height")?
-            .unwrap_or(0.2)
-            .max(0.0),
-        rate,
-        lifetime_range: [
-            lifetime_range[0].min(lifetime_range[1]).max(0.01),
-            lifetime_range[0].max(lifetime_range[1]).max(0.01),
-        ],
-        velocity: [
-            table
-                .get::<_, Option<f32>>("velocity_x")?
-                .unwrap_or(velocity_xy[0]),
-            table
-                .get::<_, Option<f32>>("velocity_y")?
-                .unwrap_or(velocity_xy[1]),
-            table.get::<_, Option<f32>>("velocity_z")?.unwrap_or(0.0),
-        ],
-        velocity_jitter: [
-            table
-                .get::<_, Option<f32>>("jitter_x")?
-                .unwrap_or(jitter_xy[0]),
-            table
-                .get::<_, Option<f32>>("jitter_y")?
-                .unwrap_or(jitter_xy[1]),
-            table.get::<_, Option<f32>>("jitter_z")?.unwrap_or(0.0),
-        ],
-        size_range: [
-            size_range[0].min(size_range[1]).max(0.1),
-            size_range[0].max(size_range[1]).max(0.1),
-        ],
-        color: table_color(table, "color", api_name, [1.0, 1.0, 1.0, 0.9])?,
-        shape: parse_particle_shape(table, api_name)?,
-        texture_key: texture.map(|entry| entry.0),
-        shader_key,
-        blend_mode: blend_mode_from_name(
-            &table
-                .get::<_, Option<String>>("blend")?
-                .or(table.get::<_, Option<String>>("blend_mode")?)
-                .unwrap_or_else(|| "alpha".to_string()),
-            api_name,
-        )?,
-        occlude_walls: table
-            .get::<_, Option<bool>>("occlude_walls")?
-            .unwrap_or(true),
-        seed: table.get::<_, Option<u32>>("seed")?.unwrap_or(emitter_id),
-    })
+impl RaycasterLuaHelpers {
+    fn parse_particle_emitter_spec(
+        table: &LuaTable,
+        state: &SharedState,
+        api_name: &str,
+        emitter_id: u32,
+    ) -> LuaResult<RaycasterParticleEmitter> {
+        let texture_value = table
+            .get::<_, Option<LuaValue>>("texture")?
+            .or(table.get::<_, Option<LuaValue>>("image")?)
+            .unwrap_or(LuaValue::Nil);
+        let texture = parse_texture_key_value_checked(&texture_value, api_name, state)?;
+        let shader_value = table
+            .get::<_, Option<LuaValue>>("shader")?
+            .unwrap_or(LuaValue::Nil);
+        let shader_key =
+            parse_optional_shader_key(&shader_value, state, &[ShaderTarget::Particle], api_name)?;
+        let rate = table.get::<_, Option<f32>>("rate")?.unwrap_or(8.0).max(0.0);
+        let lifetime = table
+            .get::<_, Option<f32>>("lifetime")?
+            .unwrap_or(1.0)
+            .max(0.01);
+        let lifetime_range =
+            optional_table_vec2(table, "lifetime_range", api_name, [lifetime, lifetime])?;
+        let size = table
+            .get::<_, Option<f32>>("size")?
+            .unwrap_or(12.0)
+            .max(0.1);
+        let size_range = optional_table_vec2(table, "size_range", api_name, [size, size])?;
+        let velocity_xy = optional_table_vec2(table, "velocity", api_name, [0.0, 0.0])?;
+        let jitter_xy = optional_table_vec2(table, "velocity_jitter", api_name, [0.0, 0.0])?;
+        Ok(RaycasterParticleEmitter {
+            emitter_id,
+            level_index: 0,
+            world_x: table.get::<_, f32>("x")?,
+            world_y: table.get::<_, f32>("y")?,
+            world_z: table
+                .get::<_, Option<f32>>("z")?
+                .or(table.get::<_, Option<f32>>("height_offset")?)
+                .unwrap_or(0.0),
+            radius: table
+                .get::<_, Option<f32>>("radius")?
+                .unwrap_or(0.1)
+                .max(0.0),
+            height: table
+                .get::<_, Option<f32>>("height")?
+                .unwrap_or(0.2)
+                .max(0.0),
+            rate,
+            lifetime_range: [
+                lifetime_range[0].min(lifetime_range[1]).max(0.01),
+                lifetime_range[0].max(lifetime_range[1]).max(0.01),
+            ],
+            velocity: [
+                table
+                    .get::<_, Option<f32>>("velocity_x")?
+                    .unwrap_or(velocity_xy[0]),
+                table
+                    .get::<_, Option<f32>>("velocity_y")?
+                    .unwrap_or(velocity_xy[1]),
+                table.get::<_, Option<f32>>("velocity_z")?.unwrap_or(0.0),
+            ],
+            velocity_jitter: [
+                table
+                    .get::<_, Option<f32>>("jitter_x")?
+                    .unwrap_or(jitter_xy[0]),
+                table
+                    .get::<_, Option<f32>>("jitter_y")?
+                    .unwrap_or(jitter_xy[1]),
+                table.get::<_, Option<f32>>("jitter_z")?.unwrap_or(0.0),
+            ],
+            size_range: [
+                size_range[0].min(size_range[1]).max(0.1),
+                size_range[0].max(size_range[1]).max(0.1),
+            ],
+            color: table_color(table, "color", api_name, [1.0, 1.0, 1.0, 0.9])?,
+            shape: parse_particle_shape(table, api_name)?,
+            texture_key: texture.map(|entry| entry.0),
+            shader_key,
+            blend_mode: blend_mode_from_name(
+                &table
+                    .get::<_, Option<String>>("blend")?
+                    .or(table.get::<_, Option<String>>("blend_mode")?)
+                    .unwrap_or_else(|| "alpha".to_string()),
+                api_name,
+            )?,
+            occlude_walls: table
+                .get::<_, Option<bool>>("occlude_walls")?
+                .unwrap_or(true),
+            seed: table.get::<_, Option<u32>>("seed")?.unwrap_or(emitter_id),
+        })
+    }
 }
 
 fn lowered_floor_cell_to_runtime(
@@ -2797,59 +2900,61 @@ fn lowered_floor_cell_to_runtime(
     }
 }
 
-fn collect_scene_shader_keys(
-    scene: &RaycasterScene,
-    scene_shader: Option<ShaderKey>,
-) -> HashSet<ShaderKey> {
-    let mut keys = HashSet::new();
-    if let Some(key) = scene_shader {
-        keys.insert(key);
-    }
-    if let Some(RaycasterBackground::Shader { material }) = &scene.background {
-        if let Some(key) = material.shader_key {
+impl RaycasterLuaHelpers {
+    fn collect_scene_shader_keys(
+        scene: &RaycasterScene,
+        scene_shader: Option<ShaderKey>,
+    ) -> HashSet<ShaderKey> {
+        let mut keys = HashSet::new();
+        if let Some(key) = scene_shader {
             keys.insert(key);
         }
-    }
-    for overlay in &scene.overlays {
-        if let RaycasterOverlayEffect::Shader { material } = overlay {
+        if let Some(RaycasterBackground::Shader { material }) = &scene.background {
             if let Some(key) = material.shader_key {
                 keys.insert(key);
             }
         }
-    }
-    for wall in &scene.walls {
-        if let Some(key) = wall
-            .material
-            .as_ref()
-            .and_then(|material| material.shader_key)
-        {
-            keys.insert(key);
+        for overlay in &scene.overlays {
+            if let RaycasterOverlayEffect::Shader { material } = overlay {
+                if let Some(key) = material.shader_key {
+                    keys.insert(key);
+                }
+            }
         }
-    }
-    for floor in &scene.floors {
-        if let Some(key) = floor
-            .material
-            .as_ref()
-            .and_then(|material| material.shader_key)
-        {
-            keys.insert(key);
+        for wall in &scene.walls {
+            if let Some(key) = wall
+                .material
+                .as_ref()
+                .and_then(|material| material.shader_key)
+            {
+                keys.insert(key);
+            }
         }
-    }
-    for ceiling in &scene.ceilings {
-        if let Some(key) = ceiling
-            .material
-            .as_ref()
-            .and_then(|material| material.shader_key)
-        {
-            keys.insert(key);
+        for floor in &scene.floors {
+            if let Some(key) = floor
+                .material
+                .as_ref()
+                .and_then(|material| material.shader_key)
+            {
+                keys.insert(key);
+            }
         }
-    }
-    for particle in &scene.particles {
-        if let Some(key) = particle.shader_key {
-            keys.insert(key);
+        for ceiling in &scene.ceilings {
+            if let Some(key) = ceiling
+                .material
+                .as_ref()
+                .and_then(|material| material.shader_key)
+            {
+                keys.insert(key);
+            }
         }
+        for particle in &scene.particles {
+            if let Some(key) = particle.shader_key {
+                keys.insert(key);
+            }
+        }
+        keys
     }
-    keys
 }
 
 fn send_raycaster_shader_uniforms(
@@ -2857,7 +2962,7 @@ fn send_raycaster_shader_uniforms(
     params: &SceneBuildParams,
     scene: &RaycasterScene,
 ) {
-    let shader_keys = collect_scene_shader_keys(scene, state.raycaster_shader);
+    let shader_keys = RaycasterLuaHelpers::collect_scene_shader_keys(scene, state.raycaster_shader);
     let horizon = params.screen_height * 0.5 - params.horizon_offset;
     for key in shader_keys {
         let Some(shader) = state.shaders.get_mut(key) else {
@@ -2937,7 +3042,11 @@ impl LuaUserData for LuaRaycaster {
                 })?;
                 this.inner
                     .try_sync_doors(&doors.inner.borrow(), alpha.unwrap_or(1.0))
-                    .map_err(|err| LuaError::RuntimeError(format!("lurek.raycaster.LRaycaster:applyDoorManager: {err}")))?;
+                    .map_err(|err| {
+                        LuaError::RuntimeError(format!(
+                            "lurek.raycaster.LRaycaster:applyDoorManager: {err}"
+                        ))
+                    })?;
                 Ok(())
             },
         );
@@ -2949,6 +3058,47 @@ impl LuaUserData for LuaRaycaster {
             this.inner.clear_wall_feature(x, y);
             Ok(())
         });
+        // -- setPickAttr --
+        /// Sets one arbitrary pick attribute on a raycaster surface cell.
+        methods.add_method_mut(
+            "setPickAttr",
+            |_, this, (x, y, surface, key, value): (u32, u32, String, String, String)| {
+                let surface = parse_pick_attr_surface(
+                    &surface,
+                    "lurek.raycaster.LRaycaster:setPickAttr",
+                )?;
+                this.inner.set_pick_attr(x, y, surface, key, value);
+                Ok(())
+            },
+        );
+        // -- getPickAttr --
+        /// Reads one arbitrary pick attribute from a raycaster surface cell.
+        methods.add_method(
+            "getPickAttr",
+            |_, this, (x, y, surface, key): (u32, u32, String, String)| {
+                let surface = parse_pick_attr_surface(
+                    &surface,
+                    "lurek.raycaster.LRaycaster:getPickAttr",
+                )?;
+                Ok(this
+                    .inner
+                    .get_pick_attr(x, y, surface, &key)
+                    .map(str::to_string))
+            },
+        );
+        // -- clearPickAttr --
+        /// Clears one arbitrary pick attribute or the whole channel from a raycaster surface cell.
+        methods.add_method_mut(
+            "clearPickAttr",
+            |_, this, (x, y, surface, key): (u32, u32, String, Option<String>)| {
+                let surface = parse_pick_attr_surface(
+                    &surface,
+                    "lurek.raycaster.LRaycaster:clearPickAttr",
+                )?;
+                this.inner.clear_pick_attr(x, y, surface, key.as_deref());
+                Ok(())
+            },
+        );
         // -- getWallFeatureCell --
         /// Returns the wall feature attached to a cell, or nil when none is set.
         /// @param | x | integer | Grid column.
@@ -3010,9 +3160,9 @@ impl LuaUserData for LuaRaycaster {
             let cells: Vec<u32> = cells_tbl
                 .sequence_values::<u32>()
                 .collect::<LuaResult<_>>()?;
-            this.inner
-                .try_set_cells(cells)
-                .map_err(|err| LuaError::RuntimeError(format!("lurek.raycaster.LRaycaster:setCells: {err}")))?;
+            this.inner.try_set_cells(cells).map_err(|err| {
+                LuaError::RuntimeError(format!("lurek.raycaster.LRaycaster:setCells: {err}"))
+            })?;
             Ok(())
         });
         // -- isBlocked --
@@ -3099,7 +3249,7 @@ impl LuaUserData for LuaRaycaster {
                     LuaValue::Table(tbl) => {
                         let spec = {
                             let state = this.state.borrow();
-                            parse_material_spec(
+                            RaycasterLuaHelpers::parse_material_spec(
                                 &tbl,
                                 &state,
                                 "lurek.raycaster.LRaycaster:setWallMaterial",
@@ -3123,7 +3273,7 @@ impl LuaUserData for LuaRaycaster {
         // -- getWallMaterial --
         /// Returns the material override for a wall tile type, or nil when none is set.
         /// @param | cellValue | integer | Wall tile value to query.
-        /// @return | table? | Material table or nil.
+        /// @return | table | Material table or nil.
         methods.add_method("getWallMaterial", |lua, this, cell_value: u32| {
             match this.wall_materials.get(&cell_value) {
                 Some(spec) => material_spec_to_lua_value(lua, this.state.clone(), spec),
@@ -3145,7 +3295,7 @@ impl LuaUserData for LuaRaycaster {
                     LuaValue::Table(tbl) => {
                         let spec = {
                             let state = this.state.borrow();
-                            parse_material_spec(
+                            RaycasterLuaHelpers::parse_material_spec(
                                 &tbl,
                                 &state,
                                 "lurek.raycaster.LRaycaster:setFloorMaterialCell",
@@ -3170,7 +3320,7 @@ impl LuaUserData for LuaRaycaster {
         /// Returns the floor material override for one cell, or nil when none is set.
         /// @param | x | integer | Grid column.
         /// @param | y | integer | Grid row.
-        /// @return | table? | Material table or nil.
+        /// @return | table | Material table or nil.
         methods.add_method(
             "getFloorMaterialCell",
             |lua, this, (x, y): (u32, u32)| match this.floor_cell_materials.get(&(x, y)) {
@@ -3193,7 +3343,7 @@ impl LuaUserData for LuaRaycaster {
                     LuaValue::Table(tbl) => {
                         let spec = {
                             let state = this.state.borrow();
-                            parse_material_spec(
+                            RaycasterLuaHelpers::parse_material_spec(
                                 &tbl,
                                 &state,
                                 "lurek.raycaster.LRaycaster:setCeilingMaterialCell",
@@ -3218,7 +3368,7 @@ impl LuaUserData for LuaRaycaster {
         /// Returns the ceiling material override for one cell, or nil when none is set.
         /// @param | x | integer | Grid column.
         /// @param | y | integer | Grid row.
-        /// @return | table? | Material table or nil.
+        /// @return | table | Material table or nil.
         methods.add_method(
             "getCeilingMaterialCell",
             |lua, this, (x, y): (u32, u32)| match this.ceiling_cell_materials.get(&(x, y)) {
@@ -3232,7 +3382,7 @@ impl LuaUserData for LuaRaycaster {
         methods.add_method_mut("addParticleEmitter", |_, this, emitter: LuaTable| {
             let parsed = {
                 let state = this.state.borrow();
-                parse_particle_emitter_spec(
+                RaycasterLuaHelpers::parse_particle_emitter_spec(
                     &emitter,
                     &state,
                     "lurek.raycaster.LRaycaster:addParticleEmitter",
@@ -3360,17 +3510,14 @@ impl LuaUserData for LuaRaycaster {
         /// @field | hit | boolean | Hit.
         methods.add_method(
             "castRay",
-            |lua, this, (ox, oy, angle, max_dist): (f32, f32, f32, f32)| {
-                match this
-                    .inner
-                    .try_cast_ray(ox, oy, angle, max_dist)
-                    .map_err(|err| {
-                        LuaError::RuntimeError(format!("lurek.raycaster.LRaycaster:castRay: {err}"))
-                    })?
-                {
-                    Some(hit) => Ok(LuaValue::Table(ray_hit_to_table(lua, &hit)?)),
-                    None => Ok(LuaValue::Nil),
-                }
+            |lua, this, (ox, oy, angle, max_dist): (f32, f32, f32, f32)| match this
+                .inner
+                .try_cast_ray(ox, oy, angle, max_dist)
+                .map_err(|err| {
+                    LuaError::RuntimeError(format!("lurek.raycaster.LRaycaster:castRay: {err}"))
+                })? {
+                Some(hit) => Ok(LuaValue::Table(ray_hit_to_table(lua, &hit)?)),
+                None => Ok(LuaValue::Nil),
             },
         );
         // -- castRays --
@@ -3398,7 +3545,9 @@ impl LuaUserData for LuaRaycaster {
                     .inner
                     .try_cast_rays(ox, oy, angle, fov, count, max_dist)
                     .map_err(|err| {
-                        LuaError::RuntimeError(format!("lurek.raycaster.LRaycaster:castRays: {err}"))
+                        LuaError::RuntimeError(format!(
+                            "lurek.raycaster.LRaycaster:castRays: {err}"
+                        ))
                     })?;
                 let tbl = lua.create_table()?;
                 for (i, hit) in hits.iter().enumerate() {
@@ -3497,58 +3646,54 @@ impl LuaUserData for LuaRaycaster {
         /// @return | table | Array of {u, v} tables for each pixel in the row.
         /// @field | u | number | U.
         /// @field | v | number | V.
-        methods.add_method(
-            "castFloorRow",
-            |lua, this, args: LuaMultiValue| {
-                if args.len() != 7 && args.len() != 9 {
-                    return Err(LuaError::RuntimeError(
-                        "lurek.raycaster.LRaycaster:castFloorRow expects 7 or 9 arguments"
-                            .to_string(),
-                    ));
-                }
-                let cam_x = f32::from_lua(args[0].clone(), lua)?;
-                let cam_y = f32::from_lua(args[1].clone(), lua)?;
-                let dir_x = f32::from_lua(args[2].clone(), lua)?;
-                let dir_y = f32::from_lua(args[3].clone(), lua)?;
-                let plane_x = f32::from_lua(args[4].clone(), lua)?;
-                let plane_y = f32::from_lua(args[5].clone(), lua)?;
-                let row = i32::from_lua(args[6].clone(), lua)?;
-                let uvs = if args.len() == 9 {
-                    let screen_width = u32::from_lua(args[7].clone(), lua)?;
-                    let screen_height = u32::from_lua(args[8].clone(), lua)?;
-                    this.inner
-                        .try_cast_floor_row_with_viewport(
-                            cam_x,
-                            cam_y,
-                            dir_x,
-                            dir_y,
-                            plane_x,
-                            plane_y,
-                            row,
-                            screen_width,
-                            screen_height,
-                        )
-                        .map_err(|err| {
-                            LuaError::RuntimeError(format!(
-                                "lurek.raycaster.LRaycaster:castFloorRow: {err}"
-                            ))
-                        })?
-                } else {
-                    this.inner
-                        .cast_floor_row(cam_x, cam_y, dir_x, dir_y, plane_x, plane_y, row)
-                };
-                let tbl = lua.create_table()?;
-                for (i, (u, v)) in uvs.iter().enumerate() {
-                    let t = lua.create_table()?;
-                    /// The 'u' field value exposed to Lua scripts.
-                    t.set("u", *u)?;
-                    /// The 'v' field value exposed to Lua scripts.
-                    t.set("v", *v)?;
-                    tbl.set(i + 1, t)?;
-                }
-                Ok(tbl)
-            },
-        );
+        methods.add_method("castFloorRow", |lua, this, args: LuaMultiValue| {
+            if args.len() != 7 && args.len() != 9 {
+                return Err(LuaError::RuntimeError(
+                    "lurek.raycaster.LRaycaster:castFloorRow expects 7 or 9 arguments".to_string(),
+                ));
+            }
+            let cam_x = f32::from_lua(args[0].clone(), lua)?;
+            let cam_y = f32::from_lua(args[1].clone(), lua)?;
+            let dir_x = f32::from_lua(args[2].clone(), lua)?;
+            let dir_y = f32::from_lua(args[3].clone(), lua)?;
+            let plane_x = f32::from_lua(args[4].clone(), lua)?;
+            let plane_y = f32::from_lua(args[5].clone(), lua)?;
+            let row = i32::from_lua(args[6].clone(), lua)?;
+            let uvs = if args.len() == 9 {
+                let screen_width = u32::from_lua(args[7].clone(), lua)?;
+                let screen_height = u32::from_lua(args[8].clone(), lua)?;
+                this.inner
+                    .try_cast_floor_row_with_viewport(
+                        cam_x,
+                        cam_y,
+                        dir_x,
+                        dir_y,
+                        plane_x,
+                        plane_y,
+                        row,
+                        screen_width,
+                        screen_height,
+                    )
+                    .map_err(|err| {
+                        LuaError::RuntimeError(format!(
+                            "lurek.raycaster.LRaycaster:castFloorRow: {err}"
+                        ))
+                    })?
+            } else {
+                this.inner
+                    .cast_floor_row(cam_x, cam_y, dir_x, dir_y, plane_x, plane_y, row)
+            };
+            let tbl = lua.create_table()?;
+            for (i, (u, v)) in uvs.iter().enumerate() {
+                let t = lua.create_table()?;
+                /// The 'u' field value exposed to Lua scripts.
+                t.set("u", *u)?;
+                /// The 'v' field value exposed to Lua scripts.
+                t.set("v", *v)?;
+                tbl.set(i + 1, t)?;
+            }
+            Ok(tbl)
+        });
         // -- projectSprite --
         /// Projects a world-space sprite to screen coordinates for billboard rendering.
         /// @param | sx | number | Sprite world X.
@@ -4064,6 +4209,12 @@ impl LuaUserData for LuaRaycaster {
                 let quad_count = scene.quad_count();
                 let mut state = this.state.borrow_mut();
                 send_raycaster_shader_uniforms(&mut state, &params, &scene);
+                store_last_raycaster_build(
+                    &mut state,
+                    &params,
+                    &scene,
+                    RaycasterPickWorld::Single(this.inner.clone()),
+                );
                 state.raycaster_output = Some(scene);
                 Ok(quad_count)
             },
@@ -4179,6 +4330,12 @@ impl LuaUserData for LuaRaycaster {
                 let quad_count = scene.quad_count();
                 let mut state = this.state.borrow_mut();
                 send_raycaster_shader_uniforms(&mut state, &params, &scene);
+                store_last_raycaster_build(
+                    &mut state,
+                    &params,
+                    &scene,
+                    RaycasterPickWorld::Single(this.inner.clone()),
+                );
                 state.raycaster_output = Some(scene);
                 Ok(quad_count)
             },
@@ -4305,6 +4462,12 @@ impl LuaUserData for LuaRaycaster {
                 let quad_count = scene.quad_count();
                 let mut state = this.state.borrow_mut();
                 send_raycaster_shader_uniforms(&mut state, &params, &scene);
+                store_last_raycaster_build(
+                    &mut state,
+                    &params,
+                    &scene,
+                    RaycasterPickWorld::Single(this.inner.clone()),
+                );
                 state.raycaster_output = Some(scene);
                 Ok(quad_count)
             },
@@ -4387,6 +4550,61 @@ impl LuaUserData for LuaMultiLevelGrid {
             level.clear_wall_feature(x as usize, y as usize);
             Ok(())
         });
+        // -- setPickAttr --
+        /// Sets one arbitrary pick attribute on one active-level surface cell.
+        methods.add_method_mut(
+            "setPickAttr",
+            |_, this, (x, y, surface, key, value): (u32, u32, String, String, String)| {
+                let surface = parse_pick_attr_surface(
+                    &surface,
+                    "lurek.raycaster.LMultiLevelGrid:setPickAttr",
+                )?;
+                let mut grid = this.inner.borrow_mut();
+                let level = active_multilevel_level_mut(
+                    &mut grid,
+                    "lurek.raycaster.LMultiLevelGrid:setPickAttr",
+                )?;
+                level.set_pick_attr(x as usize, y as usize, surface, key, value);
+                Ok(())
+            },
+        );
+        // -- getPickAttr --
+        /// Reads one arbitrary pick attribute from one active-level surface cell.
+        methods.add_method(
+            "getPickAttr",
+            |_, this, (x, y, surface, key): (u32, u32, String, String)| {
+                let surface = parse_pick_attr_surface(
+                    &surface,
+                    "lurek.raycaster.LMultiLevelGrid:getPickAttr",
+                )?;
+                let grid = this.inner.borrow();
+                let level = active_multilevel_level(
+                    &grid,
+                    "lurek.raycaster.LMultiLevelGrid:getPickAttr",
+                )?;
+                Ok(level
+                    .get_pick_attr(x as usize, y as usize, surface, &key)
+                    .map(str::to_string))
+            },
+        );
+        // -- clearPickAttr --
+        /// Clears one arbitrary pick attribute or the whole surface channel from one active-level cell.
+        methods.add_method_mut(
+            "clearPickAttr",
+            |_, this, (x, y, surface, key): (u32, u32, String, Option<String>)| {
+                let surface = parse_pick_attr_surface(
+                    &surface,
+                    "lurek.raycaster.LMultiLevelGrid:clearPickAttr",
+                )?;
+                let mut grid = this.inner.borrow_mut();
+                let level = active_multilevel_level_mut(
+                    &mut grid,
+                    "lurek.raycaster.LMultiLevelGrid:clearPickAttr",
+                )?;
+                level.clear_pick_attr(x as usize, y as usize, surface, key.as_deref());
+                Ok(())
+            },
+        );
         // -- getWallFeatureCell --
         /// Returns the wall feature attached to an active-level cell, or nil when none is set.
         /// @param | x | integer | Grid column.
@@ -4826,6 +5044,12 @@ impl LuaUserData for LuaMultiLevelGrid {
                 let quad_count = scene.quad_count();
                 let mut state = this.state.borrow_mut();
                 send_raycaster_shader_uniforms(&mut state, &params, &scene);
+                store_last_raycaster_build(
+                    &mut state,
+                    &params,
+                    &scene,
+                    RaycasterPickWorld::Multi(this.inner.borrow().clone()),
+                );
                 state.raycaster_output = Some(scene);
                 Ok(quad_count)
             },
@@ -4954,6 +5178,12 @@ impl LuaUserData for LuaMultiLevelGrid {
                 let quad_count = scene.quad_count();
                 let mut state = this.state.borrow_mut();
                 send_raycaster_shader_uniforms(&mut state, &params, &scene);
+                store_last_raycaster_build(
+                    &mut state,
+                    &params,
+                    &scene,
+                    RaycasterPickWorld::Multi(this.inner.borrow().clone()),
+                );
                 state.raycaster_output = Some(scene);
                 Ok(quad_count)
             },
@@ -5422,10 +5652,15 @@ impl LuaSpriteManager {
             texture_key,
             directional_textures,
             size: sprite.scale,
+            attrs: sprite.attrs.clone(),
         })
     }
 
-    fn scene_world_sprites(&self, api_name: &str, state: &SharedState) -> LuaResult<Vec<WorldSprite>> {
+    fn scene_world_sprites(
+        &self,
+        api_name: &str,
+        state: &SharedState,
+    ) -> LuaResult<Vec<WorldSprite>> {
         let mut sprites = Vec::new();
         for sprite in self.inner.sprites().iter().filter(|sprite| sprite.visible) {
             let Some(texture_info) = self.sprite_textures.get(&sprite.id) else {
@@ -5657,6 +5892,10 @@ impl LuaUserData for LuaRaycasterSceneAdapter {
                     Some(opts) => table_opt_f32(opts, "angle")?.unwrap_or(0.0),
                     None => 0.0,
                 };
+                let attrs = match opts.as_ref() {
+                    Some(opts) => table_string_attrs(opts, "attrs")?,
+                    None => HashMap::new(),
+                };
                 this.inner.add_sprite(SceneAdapterSprite {
                     entity_id,
                     level_index,
@@ -5664,6 +5903,7 @@ impl LuaUserData for LuaRaycasterSceneAdapter {
                     texture_key,
                     directional_textures: None,
                     size,
+                    attrs,
                 });
                 Ok(())
             },
@@ -5737,6 +5977,10 @@ impl LuaUserData for LuaRaycasterSceneAdapter {
                     Some(opts) => table_opt_f32(opts, "angle")?.unwrap_or(0.0),
                     None => 0.0,
                 };
+                let attrs = match opts.as_ref() {
+                    Some(opts) => table_string_attrs(opts, "attrs")?,
+                    None => HashMap::new(),
+                };
                 this.inner.add_sprite(SceneAdapterSprite {
                     entity_id,
                     level_index,
@@ -5750,6 +5994,7 @@ impl LuaUserData for LuaRaycasterSceneAdapter {
                         facing_angle: angle,
                     }),
                     size,
+                    attrs,
                 });
                 Ok(())
             },
@@ -5783,6 +6028,10 @@ impl LuaUserData for LuaRaycasterSceneAdapter {
                     Some(opts) => table_opt_usize(opts, "level")?.unwrap_or(0),
                     None => 0,
                 };
+                let attrs = match opts.as_ref() {
+                    Some(opts) => table_string_attrs(opts, "attrs")?,
+                    None => HashMap::new(),
+                };
                 this.inner.add_sprite(SceneAdapterSprite {
                     entity_id,
                     level_index,
@@ -5794,6 +6043,7 @@ impl LuaUserData for LuaRaycasterSceneAdapter {
                     texture_key,
                     directional_textures: None,
                     size,
+                    attrs,
                 });
                 Ok(())
             },
@@ -5867,6 +6117,10 @@ impl LuaUserData for LuaRaycasterSceneAdapter {
                     "lurek.raycaster.LSceneAdapter:bindBodyDirectionalSprite",
                 )?;
                 let facing_angle = transform.resolve().map(|value| value.angle).unwrap_or(0.0);
+                let attrs = match opts.as_ref() {
+                    Some(opts) => table_string_attrs(opts, "attrs")?,
+                    None => HashMap::new(),
+                };
                 this.inner.add_sprite(SceneAdapterSprite {
                     entity_id,
                     level_index,
@@ -5880,6 +6134,7 @@ impl LuaUserData for LuaRaycasterSceneAdapter {
                         facing_angle,
                     }),
                     size,
+                    attrs,
                 });
                 Ok(())
             },
@@ -5988,6 +6243,10 @@ impl LuaUserData for LuaRaycasterSceneAdapter {
                         Some(opts) => table_opt_f32(opts, "scale")?.unwrap_or(1.0),
                         None => 1.0,
                     };
+                    let attrs = match opts.as_ref() {
+                        Some(opts) => table_string_attrs(opts, "attrs")?,
+                        None => HashMap::new(),
+                    };
                     this.inner.add_model(SceneAdapterModel {
                         model: model_ref.model.clone(),
                         entity_id,
@@ -5995,6 +6254,7 @@ impl LuaUserData for LuaRaycasterSceneAdapter {
                         transform: SceneTransform::static_xy(x, y, yaw),
                         z_offset,
                         scale,
+                        attrs,
                     });
                     Ok(())
                 },
@@ -6029,6 +6289,10 @@ impl LuaUserData for LuaRaycasterSceneAdapter {
                         Some(opts) => table_opt_f32(opts, "scale")?.unwrap_or(1.0),
                         None => 1.0,
                     };
+                    let attrs = match opts.as_ref() {
+                        Some(opts) => table_string_attrs(opts, "attrs")?,
+                        None => HashMap::new(),
+                    };
                     this.inner.add_model(SceneAdapterModel {
                         model: model_ref.model.clone(),
                         entity_id,
@@ -6040,6 +6304,7 @@ impl LuaUserData for LuaRaycasterSceneAdapter {
                         )?,
                         z_offset,
                         scale,
+                        attrs,
                     });
                     Ok(())
                 },
@@ -6303,6 +6568,32 @@ impl LuaUserData for LuaSpriteManager {
             this.inner.set_visible(id, visible);
             Ok(())
         });
+        // -- setAttr --
+        /// Sets one arbitrary string attribute on the sprite.
+        methods.add_method_mut(
+            "setAttr",
+            |_, this, (id, key, value): (u32, String, String)| {
+                this.inner.set_attr(id, key, value);
+                Ok(())
+            },
+        );
+        // -- getAttr --
+        /// Reads one arbitrary string attribute from the sprite.
+        /// @param | id | integer | Sprite id.
+        /// @param | key | string | Attribute key to read.
+        /// @return | string? | Attribute value, or `nil` when the key is missing.
+        methods.add_method("getAttr", |_, this, (id, key): (u32, String)| {
+            Ok(this.inner.get_attr(id, &key).map(str::to_string))
+        });
+        // -- clearAttr --
+        /// Clears one arbitrary string attribute or all attrs from the sprite.
+        methods.add_method_mut(
+            "clearAttr",
+            |_, this, (id, key): (u32, Option<String>)| {
+                this.inner.clear_attr(id, key.as_deref());
+                Ok(())
+            },
+        );
         // -- clear --
         /// Removes all sprites from the manager.
         methods.add_method_mut("clear", |_, this, ()| {
@@ -6423,6 +6714,7 @@ impl LuaUserData for LuaSpriteManager {
 pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
+    // --- Raycaster factories and module entry points ---
     // -- new --
     /// Creates a new raycaster map with the given grid dimensions.
     /// Dimensions must be greater than zero and stay within the shared raycaster safety limits.
@@ -6434,9 +6726,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "new",
         lua.create_function(move |_, (w, h): (u32, u32)| {
             Ok(LuaRaycaster {
-                inner: Raycaster2D::try_new(w, h).map_err(|err| {
-                    LuaError::RuntimeError(format!("lurek.raycaster.new: {err}"))
-                })?,
+                inner: Raycaster2D::try_new(w, h)
+                    .map_err(|err| LuaError::RuntimeError(format!("lurek.raycaster.new: {err}")))?,
                 state: s.clone(),
                 floor_cell_textures: HashMap::new(),
                 ceiling_cell_textures: HashMap::new(),
@@ -7068,6 +7359,12 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 let quad_count = scene.quad_count();
                 let mut state = s.borrow_mut();
                 send_raycaster_shader_uniforms(&mut state, &params, &scene);
+                store_last_raycaster_build(
+                    &mut state,
+                    &params,
+                    &scene,
+                    RaycasterPickWorld::Multi(grid.clone()),
+                );
                 state.raycaster_output = Some(scene);
                 Ok(quad_count)
             },
@@ -7246,6 +7543,12 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 let quad_count = scene.quad_count();
                 let mut state = build_field_state.borrow_mut();
                 send_raycaster_shader_uniforms(&mut state, &params, &scene);
+                store_last_raycaster_build(
+                    &mut state,
+                    &params,
+                    &scene,
+                    RaycasterPickWorld::Multi(grid.clone()),
+                );
                 state.raycaster_output = Some(scene);
                 Ok(quad_count)
             },
@@ -7393,6 +7696,12 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 let quad_count = scene.quad_count();
                 let mut state = build_multilevel_adapter_state.borrow_mut();
                 send_raycaster_shader_uniforms(&mut state, &params, &scene);
+                store_last_raycaster_build(
+                    &mut state,
+                    &params,
+                    &scene,
+                    RaycasterPickWorld::Multi(grid.clone()),
+                );
                 state.raycaster_output = Some(scene);
                 Ok(quad_count)
             },
@@ -7460,7 +7769,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     // -- getShader --
     /// Returns the draw-target shader applied to the stored raycaster scene, or nil when default rendering is used.
-    /// @return | LShader? | Bound shader handle, or nil.
+    /// @return | LShader | Bound shader handle, or nil.
     let get_shader_state = state.clone();
     tbl.set(
         "getShader",
@@ -7508,15 +7817,14 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param | fov | number | Field of view in radians.
     /// @param | screenHeight | number | Screen height in pixels.
     /// @return | number | Projected column height in pixels.
-        tbl.set(
-            "projectColumn",
-            lua.create_function(|_, (distance, fov, screen_height): (f32, f32, f32)| {
-                crate::raycaster::projection::try_project_column(distance, fov, screen_height)
-                    .map_err(|err| {
-                        LuaError::RuntimeError(format!("lurek.raycaster.projectColumn: {err}"))
-                    })
-            })?,
-        )?;
+    tbl.set(
+        "projectColumn",
+        lua.create_function(|_, (distance, fov, screen_height): (f32, f32, f32)| {
+            crate::raycaster::projection::try_project_column(distance, fov, screen_height).map_err(
+                |err| LuaError::RuntimeError(format!("lurek.raycaster.projectColumn: {err}")),
+            )
+        })?,
+    )?;
     // -- distanceShade --
     /// Returns a brightness multiplier (0.0..1.0) based on distance for fog/darkness falloff.
     /// @param | distance | number | Distance to shade.

@@ -8621,7 +8621,7 @@ end
 
 #### `LPropertyWidget:addProperty`
 
-Adds a property row to a group.
+Adds a labeled property row to the selected group.
 
 ```lua
 LPropertyWidget:addProperty(group, name, value, valueType, options, readOnly)

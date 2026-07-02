@@ -26,7 +26,7 @@ impl LuaUserData for LuaImageShaderJob {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- poll --
         /// Returns the shader output image when the job has completed, or nil if pending/cancelled.
-        /// @return | LImageData? | Completed image result.
+        /// @return | LImageData | Completed image result.
         methods.add_method("poll", |lua, this, ()| {
             if this.done && !this.cancelled {
                 match &this.result {
@@ -40,7 +40,7 @@ impl LuaUserData for LuaImageShaderJob {
         // -- wait --
         /// Waits for the offline image shader job and returns its output image.
         /// @param | timeoutMs | integer? | Optional timeout in milliseconds.
-        /// @return | LImageData? | Completed image result.
+        /// @return | LImageData | Completed image result.
         methods.add_method("wait", |lua, this, _timeout_ms: Option<u32>| {
             if this.cancelled {
                 return Ok(None);
@@ -51,7 +51,7 @@ impl LuaUserData for LuaImageShaderJob {
             }
         });
         // -- cancel --
-        /// Cancels this image shader job.
+        /// Cancels this pending offline image shader job.
         methods.add_method_mut("cancel", |_, this, ()| {
             this.cancelled = true;
             this.done = false;

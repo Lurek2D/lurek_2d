@@ -389,9 +389,9 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `LDeck:count() -> integer`: Return the number of cards left in the draw pile.
 - `LDeck:discard(card) -> boolean`: Move a card into the discard pile by card table or stable id.
 - `LDeck:discardCount() -> integer`: Return the number of cards in the discard pile.
-- `LDeck:draw(count?) -> any`: Draw one or more cards from the top of the draw pile.
+- `LDeck:draw(count?) -> LuaValue`: Draw one or more cards from the top of the draw pile.
 - `LDeck:isEmpty() -> boolean`: Return true when no cards remain in the draw pile.
-- `LDeck:peek(count?) -> any`: Inspect one or more cards from the top without removing them.
+- `LDeck:peek(count?) -> LuaValue`: Inspect one or more cards from the top without removing them.
 - `LDeck:reset() -> nil`: Restore the draw pile to original insertion order and clear discard.
 - `LDeck:shuffle(seed?) -> nil`: Shuffle the current draw pile with a deterministic optional seed.
 - `LDeck:toArray() -> table`: Return the current draw pile as an array without modifying it.

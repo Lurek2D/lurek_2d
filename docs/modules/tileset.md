@@ -310,7 +310,7 @@ end
 
 #### `LTileCatalog:type`
 
-Returns the userdata type name.
+Returns the Lua-visible userdata type name for this tile catalog.
 
 ```lua
 LTileCatalog:type()
@@ -1068,7 +1068,7 @@ end
 
 #### `LTileSet:getTileHeight`
 
-Returns the tile height in pixels.
+Returns the height of each tile in pixels.
 
 ```lua
 LTileSet:getTileHeight()
@@ -1132,7 +1132,7 @@ end
 
 #### `LTileSet:getTileWidth`
 
-Returns the tile width in pixels.
+Returns the width of each tile in pixels.
 
 ```lua
 LTileSet:getTileWidth()
@@ -1498,7 +1498,7 @@ end
 
 #### `LTileSet:type`
 
-Returns the userdata type name.
+Returns the Lua-visible userdata type name for this tileset.
 
 ```lua
 LTileSet:type()

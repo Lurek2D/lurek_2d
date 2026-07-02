@@ -129,7 +129,7 @@ This module primarily collaborates with `math`, `runtime`, `tilefield`. Its resp
 - `LTileCatalog:getObject(reference) -> table|nil`: Resolves object archetype metadata from a typed tile or object reference.
 - `LTileCatalog:getTileset(id) -> LTileSet|nil`: Returns the tileset stored under a catalog id.
 - `LTileCatalog:getVisual(reference) -> table|nil`: Resolves render visual metadata from a typed tile or object reference.
-- `LTileCatalog:type() -> string`: Returns the userdata type name.
+- `LTileCatalog:type() -> string`: Returns the Lua-visible userdata type name for this tile catalog.
 - `LTileCatalog:typeOf(name) -> boolean`: Checks whether this catalog matches a type name.
 
 #### LTileSet Type
@@ -163,9 +163,9 @@ This module primarily collaborates with `math`, `runtime`, `tilefield`. Its resp
 - `LTileSet:getTextureDimensions() -> integer`: Returns the computed texture width and height in pixels.
 - `LTileSet:getTileCount() -> integer`: Returns the number of tile entries in this tileset.
 - `LTileSet:getTileDimensions() -> integer`: Returns the tile width and height in pixels.
-- `LTileSet:getTileHeight() -> integer`: Returns the tile height in pixels.
+- `LTileSet:getTileHeight() -> integer`: Returns the height of each tile in pixels.
 - `LTileSet:getTileObject(tile_id) -> string|nil`: Returns the object archetype name mapped to one tile.
-- `LTileSet:getTileWidth() -> integer`: Returns the tile width in pixels.
+- `LTileSet:getTileWidth() -> integer`: Returns the width of each tile in pixels.
 - `LTileSet:removeObject(name) -> boolean`: Removes an object archetype by name.
 - `LTileSet:setAnimation(tile_id, frames) -> nil`: Replaces the animation frames for one tile.
 - `LTileSet:setAutoTileMode(type_name, mode) -> nil`: Sets the autotile matching mode for a tile type.
@@ -177,7 +177,7 @@ This module primarily collaborates with `math`, `runtime`, `tilefield`. Its resp
 - `LTileSet:setProperty(tile_id, name, value) -> nil`: Sets or clears a custom string-convertible tile property.
 - `LTileSet:setTerrainProfile(name, profile) -> nil`: Sets a Godot-style terrain-set profile for autotile authoring.
 - `LTileSet:setTileObject(tile_id, object_name?) -> nil`: Assigns or clears the object archetype mapped to one tile.
-- `LTileSet:type() -> string`: Returns the userdata type name.
+- `LTileSet:type() -> string`: Returns the Lua-visible userdata type name for this tileset.
 - `LTileSet:typeOf(name) -> boolean`: Checks whether this tileset matches a type name.
 
 ## Examples

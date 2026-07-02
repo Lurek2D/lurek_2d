@@ -5,6 +5,8 @@
 //! `doors.rs`, `wall_feature.rs`, and `heightmap.rs` hold cell state that changes how blocking tiles render.
 //! `build_scene.rs`, `draw.rs`, and `render.rs` translate ray hits into either CPU pixels or engine render commands.
 //! Visibility-polygon, segment, and picking helpers stay render-facing and do not own tile gameplay semantics.
+//! Reexports also expose pick-world context so cursor integrations can inspect the last prepared raycaster scene.
+//! Open sibling owners instead of this index when changing multilevel data, scene records, or screen-pick payloads.
 //! Change this file when the public raycaster symbol map moves; change siblings when behavior or data rules change.
 
 /// Raycaster scene construction from camera and world grid.
@@ -54,6 +56,21 @@ pub mod visualization;
 /// Per-cell wall feature descriptors for doors, windows, and half-height walls.
 pub mod wall_feature;
 
+/// World snapshot used by cursor auto-hover against the most recently built raycaster scene.
+#[derive(Debug, Clone)]
+pub enum RaycasterPickWorld {
+    Single(dda::Raycaster2D),
+    Multi(multilevel::MultiLevelGrid),
+}
+
+/// Last build context stored for cursor `raycaster_last` sources.
+#[derive(Debug, Clone)]
+pub struct RaycasterLastBuildContext {
+    pub params: tile_picker::ScreenPickParams,
+    pub world: RaycasterPickWorld,
+    pub scene: scene::RaycasterScene,
+}
+
 pub use build_scene::{
     DirectionalSpriteTextures, LevelParticleEmitter, LevelSprite, RaycasterParticleEmitter,
     SceneBuildParams, WorldSprite,
@@ -86,6 +103,8 @@ pub use sprite_manager::{
     SpriteManager, WorldSprite as ManagedSprite,
 };
 pub use sprite_projection::SpriteProjection;
-pub use tile_picker::{PickResult, PickSurface, PickWallSection, ScreenPickParams, TilePicker};
+pub use tile_picker::{
+    PickAttrSurface, PickResult, PickSurface, PickWallSection, ScreenPickParams, TilePicker,
+};
 pub use visibility::field_of_view;
 pub use wall_feature::{WallFeature, WallFeatureKind};

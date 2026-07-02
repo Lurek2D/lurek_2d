@@ -906,7 +906,7 @@ LSprite:getShader()
 
 | Type | Description |
 |------|-------------|
-| [LShader](render.md#lshader)? | Bound shader or nil. |
+| [LShader](render.md#lshader) | Bound shader or nil. |
 
 **Example**
 
@@ -2084,7 +2084,7 @@ end
 
 #### `LSpriteAutoTileSheet:getLayout`
 
-Returns the autotile layout name.
+Returns the autotile layout name used by this sheet.
 
 ```lua
 LSpriteAutoTileSheet:getLayout()

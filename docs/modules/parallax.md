@@ -508,7 +508,7 @@ LParallaxLayer:getShader()
 
 | Type | Description |
 |------|-------------|
-| [LShader](render.md#lshader)? | Bound shader handle, or nil. |
+| [LShader](render.md#lshader) | Bound shader handle, or nil. |
 
 **Example**
 

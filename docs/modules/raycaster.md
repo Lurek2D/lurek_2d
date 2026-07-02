@@ -632,7 +632,7 @@ lurek.raycaster.getShader()
 
 | Type | Description |
 |------|-------------|
-| [LShader](render.md#lshader)? | Bound shader handle, or nil. |
+| [LShader](render.md#lshader) | Bound shader handle, or nil. |
 
 **Example**
 
@@ -1967,6 +1967,39 @@ end
 
 ---
 
+#### `LMultiLevelGrid:clearPickAttr`
+
+Clears one arbitrary pick attribute or the whole surface channel from one active-level cell.
+
+```lua
+LMultiLevelGrid:clearPickAttr(x, y, surface, key)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `surface` | any |  |
+| `key?` | any |  |
+
+**Example**
+
+```lua
+do
+
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 3, height = 3, cells = { 0, 0, 0, 0, 0, 0, 0, 0, 0 } },
+    })
+    grid:setPickAttr(1, 1, "floor", "cursor_zoom", "2.5")
+    grid:clearPickAttr(1, 1, "floor", "cursor_zoom")
+    lurek.log.info("grid cursor_zoom after clear = " .. tostring(grid:getPickAttr(1, 1, "floor", "cursor_zoom")))
+end
+```
+
+---
+
 #### `LMultiLevelGrid:clearWallFeatureCell`
 
 Removes any per-cell wall feature override from the active level.
@@ -2268,6 +2301,38 @@ do
     })
     local pit = grid:getLoweredFloorCell(1, 1)
     lurek.log.info("pit blocked = " .. tostring(pit.blocked))
+end
+```
+
+---
+
+#### `LMultiLevelGrid:getPickAttr`
+
+Reads one arbitrary pick attribute from one active-level surface cell.
+
+```lua
+LMultiLevelGrid:getPickAttr(x, y, surface, key)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `surface` | any |  |
+| `key` | any |  |
+
+**Example**
+
+```lua
+do
+
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 3, height = 3, cells = { 0, 0, 0, 0, 0, 0, 0, 0, 0 } },
+    })
+    grid:setPickAttr(1, 1, "any", "cursor_priority", "90")
+    lurek.log.info("grid cursor_priority = " .. tostring(grid:getPickAttr(1, 1, "any", "cursor_priority")))
 end
 ```
 
@@ -2956,6 +3021,39 @@ do
     lurek.log.info("pit depth = " .. pit.depth)
     grid:setLoweredFloorCell(2, 2, nil)
     lurek.log.info("pit cleared = " .. tostring(grid:getLoweredFloorCell(2, 2) == nil))
+end
+```
+
+---
+
+#### `LMultiLevelGrid:setPickAttr`
+
+Sets one arbitrary pick attribute on one active-level surface cell.
+
+```lua
+LMultiLevelGrid:setPickAttr(x, y, surface, key, value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `surface` | any |  |
+| `key` | any |  |
+| `value` | any |  |
+
+**Example**
+
+```lua
+do
+
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 3, height = 3, cells = { 0, 0, 0, 0, 0, 0, 0, 0, 0 } },
+    })
+    grid:setPickAttr(1, 1, "floor", "cursor_zoom", "2.5")
+    lurek.log.info("grid cursor_zoom = " .. tostring(grid:getPickAttr(1, 1, "floor", "cursor_zoom")))
 end
 ```
 
@@ -3688,6 +3786,38 @@ end
 
 ---
 
+#### `LRaycaster:clearPickAttr`
+
+Clears one arbitrary pick attribute or the whole channel from a raycaster surface cell.
+
+```lua
+LRaycaster:clearPickAttr(x, y, surface, key)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `surface` | any |  |
+| `key?` | any |  |
+
+**Example**
+
+```lua
+do
+
+    local map = lurek.raycaster.new(6, 4)
+    map:setCell(4, 1, 7)
+    map:setPickAttr(4, 1, "wall", "cursor_effect", "spark")
+    map:clearPickAttr(4, 1, "wall", "cursor_effect")
+    lurek.log.info("wall cursor_effect after clear = " .. tostring(map:getPickAttr(4, 1, "wall", "cursor_effect")))
+end
+```
+
+---
+
 #### `LRaycaster:clearWallFeatureCell`
 
 Removes any per-cell wall feature override from a blocking cell.
@@ -3929,7 +4059,7 @@ LRaycaster:getCeilingMaterialCell(x, y)
 
 | Type | Description |
 |------|-------------|
-| table? | Material table or nil. |
+| table | Material table or nil. |
 
 **Example**
 
@@ -4048,7 +4178,7 @@ LRaycaster:getFloorMaterialCell(x, y)
 
 | Type | Description |
 |------|-------------|
-| table? | Material table or nil. |
+| table | Material table or nil. |
 
 **Example**
 
@@ -4154,6 +4284,41 @@ do
         lurek.log.info("depth = " .. cell.depth)
         lurek.log.info("blocked = " .. tostring(cell.blocked))
     end
+end
+```
+
+---
+
+#### `LRaycaster:getPickAttr`
+
+Reads one arbitrary pick attribute from a raycaster surface cell.
+
+```lua
+LRaycaster:getPickAttr(x, y, surface, key)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `surface` | any |  |
+| `key` | any |  |
+
+**Example**
+
+```lua
+do
+
+    local map = lurek.raycaster.new(6, 4)
+    map:setCell(4, 1, 7)
+    map:setPickAttr(4, 1, "wall", "cursor_effect", "spark")
+    map:setPickAttr(4, 1, "floor", "cursor_zoom", "2.5")
+    local effect = map:getPickAttr(4, 1, "wall", "cursor_effect")
+    local zoom = map:getPickAttr(4, 1, "floor", "cursor_zoom")
+    lurek.log.info("wall cursor_effect = " .. tostring(effect))
+    lurek.log.info("floor cursor_zoom = " .. tostring(zoom))
 end
 ```
 
@@ -4281,7 +4446,7 @@ LRaycaster:getWallMaterial(cellValue)
 
 | Type | Description |
 |------|-------------|
-| table? | Material table or nil. |
+| table | Material table or nil. |
 
 **Example**
 
@@ -4424,10 +4589,26 @@ do
     local sprite_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local model = lurek.render.loadModel("content/examples/assets/models/sample_tank.obj")
     local sprite_hit = map:pickScreen(160, 100, params, {
-        { id = 7, x = 10.5, y = 8.0, texture = sprite_tex, size = 1.0 },
+        {
+            id = 7,
+            x = 10.5,
+            y = 8.0,
+            texture = sprite_tex,
+            size = 1.0,
+            attrs = { cursor_state = "talk", cursor_effect = "spark" },
+        },
     })
     local model_hit = map:pickScreen(160, 120, params, nil, {
-        { id = 8, model = model, x = 10.5, y = 8.0, yaw = math.pi / 4, z = 0.15, scale = 0.22 },
+        {
+            id = 8,
+            model = model,
+            x = 10.5,
+            y = 8.0,
+            yaw = math.pi / 4,
+            z = 0.15,
+            scale = 0.22,
+            attrs = { cursor_state = "inspect" },
+        },
     })
     local half_map = lurek.raycaster.new(12, 10)
     for i = 0, 11 do
@@ -4464,12 +4645,14 @@ do
         lurek.log.info("sprite id = " .. tostring(sprite_hit.id))
         lurek.log.info("sprite distance = " .. string.format("%.2f", sprite_hit.distance))
         lurek.log.info("sprite uv = " .. string.format("%.2f", sprite_hit.u) .. "," .. string.format("%.2f", sprite_hit.v))
+        lurek.log.info("sprite cursor_state = " .. tostring(sprite_hit.attrs and sprite_hit.attrs.cursor_state))
     end
     if model_hit then
         lurek.log.info("model surface = " .. model_hit.surface)
         lurek.log.info("model id = " .. tostring(model_hit.id))
         lurek.log.info("model distance = " .. string.format("%.2f", model_hit.distance))
         lurek.log.info("model uv = " .. string.format("%.2f", model_hit.u) .. "," .. string.format("%.2f", model_hit.v))
+        lurek.log.info("model cursor_state = " .. tostring(model_hit.attrs and model_hit.attrs.cursor_state))
     end
     if feature_hit and feature_hit.feature then
         lurek.log.info("feature kind = " .. feature_hit.feature.kind)
@@ -4838,6 +5021,42 @@ do
 
     lurek.log.info("depth = " .. cell.depth)
     lurek.log.info("blocked = " .. tostring(cell.blocked))
+end
+```
+
+---
+
+#### `LRaycaster:setPickAttr`
+
+Sets one arbitrary pick attribute on a raycaster surface cell.
+
+```lua
+LRaycaster:setPickAttr(x, y, surface, key, value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `surface` | any |  |
+| `key` | any |  |
+| `value` | any |  |
+
+**Example**
+
+```lua
+do
+
+    local map = lurek.raycaster.new(6, 4)
+    map:setCell(4, 1, 7)
+    map:setPickAttr(4, 1, "any", "cursor_state", "inspect")
+    map:setPickAttr(4, 1, "wall", "cursor_effect", "spark")
+    local cursor_state = map:getPickAttr(4, 1, "any", "cursor_state")
+    local cursor_effect = map:getPickAttr(4, 1, "wall", "cursor_effect")
+    lurek.log.info("wall cursor_state = " .. tostring(cursor_state))
+    lurek.log.info("wall cursor_effect = " .. tostring(cursor_effect))
 end
 ```
 
@@ -5699,6 +5918,75 @@ end
 
 ---
 
+#### `LSpriteManager:clearAttr`
+
+Clears one arbitrary string attribute or all attrs from the sprite.
+
+```lua
+LSpriteManager:clearAttr(id, key)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | any |  |
+| `key?` | any |  |
+
+**Example**
+
+```lua
+do
+
+    local sm = lurek.raycaster.newSpriteManager()
+    local id = sm:add(2, 0, "npc.png")
+    sm:setAttr(id, "cursor_effect", "ping")
+    sm:clearAttr(id, "cursor_effect")
+    lurek.log.info("sprite cursor_effect after clear = " .. tostring(sm:getAttr(id, "cursor_effect")))
+end
+```
+
+---
+
+#### `LSpriteManager:getAttr`
+
+Reads one arbitrary string attribute from the sprite.
+
+```lua
+LSpriteManager:getAttr(id, key)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Sprite id. |
+| `key` | string | Attribute key to read. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string? | Attribute value, or `nil` when the key is missing. |
+
+**Example**
+
+```lua
+do
+
+    local sm = lurek.raycaster.newSpriteManager()
+    local id = sm:add(2, 0, "npc.png")
+    sm:setAttr(id, "cursor_effect", "ping")
+    sm:setAttr(id, "cursor_state", "talk")
+    local effect = sm:getAttr(id, "cursor_effect")
+    local state = sm:getAttr(id, "cursor_state")
+    lurek.log.info("sprite cursor_effect = " .. tostring(effect))
+    lurek.log.info("sprite cursor_state = " .. tostring(state))
+end
+```
+
+---
+
 #### `LSpriteManager:remove`
 
 Removes a sprite by its id. This method is available to Lua scripts.
@@ -5725,6 +6013,40 @@ do
     local projected = sm:sortAndProject(0, 0, 0)
 
     lurek.log.info("remaining projected = " .. #projected)
+end
+```
+
+---
+
+#### `LSpriteManager:setAttr`
+
+Sets one arbitrary string attribute on the sprite.
+
+```lua
+LSpriteManager:setAttr(id, key, value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | any |  |
+| `key` | any |  |
+| `value` | any |  |
+
+**Example**
+
+```lua
+do
+
+    local sm = lurek.raycaster.newSpriteManager()
+    local id = sm:add(2, 0, "npc.png")
+    sm:setAttr(id, "cursor_state", "talk")
+    sm:setAttr(id, "cursor_effect", "ping")
+    local state = sm:getAttr(id, "cursor_state")
+    local effect = sm:getAttr(id, "cursor_effect")
+    lurek.log.info("sprite cursor_state = " .. tostring(state))
+    lurek.log.info("sprite cursor_effect = " .. tostring(effect))
 end
 ```
 

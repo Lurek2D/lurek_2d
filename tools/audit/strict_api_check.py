@@ -56,6 +56,7 @@ MODULE_TO_EXAMPLE.update({alias: example_file_for_module(alias) for alias in API
 
 OWNER_EXAMPLE_MODULES = {
     'LBehaviorTree': ['patterns', 'ai'],
+    'LImageData': ['image'],
     'LLayout': ['ui', 'layout'],
     'LTween': ['tween', 'math'],
 }

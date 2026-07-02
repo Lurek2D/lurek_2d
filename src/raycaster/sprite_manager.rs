@@ -5,6 +5,8 @@
 //! The registry keeps dynamic object presentation separate from wall cells while matching the raycaster depth pipeline.
 //! Open this file when billboard registry or facing-selection semantics change; scene projection stays elsewhere.
 
+use std::collections::HashMap;
+
 fn normalize_signed_angle(mut angle: f32) -> f32 {
     while angle > std::f32::consts::PI {
         angle -= 2.0 * std::f32::consts::PI;
@@ -82,6 +84,8 @@ pub struct WorldSprite {
     pub scale: f32,
     /// When false, the sprite is skipped during sorting and rendering.
     pub visible: bool,
+    /// Arbitrary string metadata returned by pick queries.
+    pub attrs: HashMap<String, String>,
 }
 /// Tracks all world-space billboard sprites; owned by `RaycasterState`.
 pub struct SpriteManager {
@@ -110,6 +114,7 @@ impl SpriteManager {
             directional_textures: None,
             scale,
             visible: true,
+            attrs: HashMap::new(),
         });
         id
     }
@@ -142,6 +147,7 @@ impl SpriteManager {
             }),
             scale,
             visible: true,
+            attrs: HashMap::new(),
         });
         id
     }
@@ -195,6 +201,34 @@ impl SpriteManager {
     pub fn set_visible(&mut self, id: u32, visible: bool) {
         if let Some(s) = self.sprites.iter_mut().find(|s| s.id == id) {
             s.visible = visible;
+        }
+    }
+
+    /// Set one arbitrary string attribute on sprite `id`.
+    pub fn set_attr(&mut self, id: u32, key: impl Into<String>, value: impl Into<String>) {
+        if let Some(sprite) = self.sprites.iter_mut().find(|sprite| sprite.id == id) {
+            sprite.attrs.insert(key.into(), value.into());
+        }
+    }
+
+    /// Read one arbitrary string attribute from sprite `id`.
+    pub fn get_attr(&self, id: u32, key: &str) -> Option<&str> {
+        self.sprites
+            .iter()
+            .find(|sprite| sprite.id == id)
+            .and_then(|sprite| sprite.attrs.get(key))
+            .map(String::as_str)
+    }
+
+    /// Clear one arbitrary string attribute or all attrs from sprite `id`.
+    pub fn clear_attr(&mut self, id: u32, key: Option<&str>) {
+        let Some(sprite) = self.sprites.iter_mut().find(|sprite| sprite.id == id) else {
+            return;
+        };
+        if let Some(key) = key {
+            sprite.attrs.remove(key);
+        } else {
+            sprite.attrs.clear();
         }
     }
     /// Remove all sprites from the registry.

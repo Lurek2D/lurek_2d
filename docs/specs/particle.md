@@ -236,7 +236,7 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - `LParticleSystem:getPosition() -> number`: Returns emitter position. This method is available to Lua scripts.
 - `LParticleSystem:getRadialAcceleration() -> number`: Returns radial acceleration range.
 - `LParticleSystem:getRotation() -> number`: Returns particle rotation range. This method is available to Lua scripts.
-- `LParticleSystem:getShader() -> LShader?`: Returns the render-time shader bound to this particle system, if any.
+- `LParticleSystem:getShader() -> LShader`: Returns the render-time shader bound to this particle system, if any.
 - `LParticleSystem:getShape() -> string`: Returns particle shape. This method is available to Lua scripts.
 - `LParticleSystem:getSizeVariation() -> number`: Returns size variation. This method is available to Lua scripts.
 - `LParticleSystem:getSizes() -> number[]`: Returns particle size keyframes. This method is available to Lua scripts.

@@ -184,14 +184,146 @@ do
     lurek.log.info("manager context switched to " .. context)
 end
 
+--@api: LCursorManager:defineState
+do
+
+    local manager = lurek.cursor.newManager()
+    manager:defineState("inspect", {
+        system = "crosshair",
+        scale = 1.2,
+        offset_x = 1,
+        offset_y = -1,
+        trail = {
+            mode = "ribbon",
+            width = 6,
+            lifetime = 0.35,
+        },
+        zoom = {
+            magnification = 2.25,
+            radius = 44,
+        },
+    })
+    manager:defineState("paint", {
+        custom = lurek.cursor.newCustom(16, 16, 2, 2),
+        native_preferred = false,
+    })
+    local preview = manager:getActiveState()
+    lurek.log.info("defined cursor states inspect and paint")
+    lurek.log.info("preview cursor kind = " .. preview.kind)
+end
+
+--@api: LCursorManager:defineEffect
+do
+
+    local manager = lurek.cursor.newManager()
+    manager:defineEffect("click_spark", {
+        shape = "ring",
+        count = 10,
+        spread = math.pi,
+        lifetime = 0.18,
+        speed = 96,
+        size = 5,
+        button = 0,
+    })
+    lurek.log.info("defined click_spark cursor effect")
+end
+
 --@api: LCursorManager:addRule
 do
 
     local manager = lurek.cursor.newManager()
-    manager:addRule("gameplay", "crosshair")
-    manager:addRule("dialogue", "text")
-    manager:setContext("dialogue")
-    lurek.log.info("context rule applied for " .. manager:getContext())
+    manager:defineState("inspect", { system = "crosshair" })
+    local id = manager:addRule({
+        priority = 25,
+        event = "context",
+        context = "ui_button",
+        state = "inspect",
+    })
+    manager:setContext("ui_button")
+    local state = manager:getActiveState()
+    lurek.log.info("v2 cursor rule id = " .. id)
+    lurek.log.info("v2 cursor rule state kind = " .. state.kind)
+end
+
+--@api: LCursorManager:addSource
+do
+
+    local manager = lurek.cursor.newManager()
+    local id = manager:addSource({
+        kind = "callback",
+        callback = function(x, y)
+            return {
+                module = "example",
+                kind = "hover",
+                surface = "surface",
+                id = string.format("%.0f:%.0f", x, y),
+                attrs = {
+                    cursor_state = "inspect",
+                },
+            }
+        end,
+    })
+    lurek.log.info("cursor source id = " .. id)
+end
+
+--@api: LCursorManager:removeSource
+do
+
+    local manager = lurek.cursor.newManager()
+    local id = manager:addSource({
+        kind = "callback",
+        callback = function()
+            return nil
+        end,
+    })
+    local removed = manager:removeSource(id)
+    lurek.log.info("cursor source removed = " .. tostring(removed))
+end
+
+--@api: LCursorManager:getLastHit
+do
+
+    local manager = lurek.cursor.newManager()
+    manager:addSource({
+        kind = "callback",
+        callback = function()
+            return {
+                module = "example",
+                kind = "marker",
+                surface = "surface",
+                id = "hover-01",
+            }
+        end,
+    })
+    manager:update(48, 64, 0.016)
+    local hit = manager:getLastHit()
+    lurek.log.info("cursor last hit exists = " .. tostring(hit ~= nil))
+    lurek.log.info("cursor last hit kind = " .. tostring(hit and hit.kind))
+    lurek.log.info("cursor last hit id = " .. tostring(hit and hit.id))
+end
+
+--@api: LCursorManager:getActiveState
+do
+
+    local manager = lurek.cursor.newManager()
+    manager:setSystem("hand")
+    manager:setContext("example_active_state")
+    local state = manager:getActiveState()
+    lurek.log.info("active cursor kind = " .. state.kind)
+    lurek.log.info("active cursor prefers native = " .. tostring(state.native_preferred))
+    lurek.log.info("active cursor scale = " .. tostring(state.scale))
+end
+
+--@api: LCursorManager:type
+do
+
+    local manager = lurek.cursor.newManager()
+    local manager_type = manager:type()
+    local x, y = manager:getPosition()
+    local visible = manager:isVisible()
+    lurek.log.info("cursor manager type = " .. manager_type)
+    lurek.log.info("cursor manager position = " .. x .. "," .. y)
+    lurek.log.info("cursor manager visible = " .. tostring(visible))
 end
 
 --@api: LCursorManager:removeRule

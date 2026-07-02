@@ -1333,8 +1333,8 @@ LTileAwareness:defineCategory(name, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
-| `opts?` | any |  |
+| `name` | string | Category name to create or replace. |
+| `opts?` | table | Optional category settings such as range, arc, facing, active, and blocker rules. |
 
 **Example**
 
@@ -1404,7 +1404,7 @@ LTileAwareness:getCategory(name)
 
 | Type | Description |
 |------|-------------|
-| table? | Category metadata table, or nil when the category is unknown. |
+| table | Category metadata table, or nil when the category is unknown. |
 
 **Example**
 
@@ -1436,11 +1436,17 @@ LTileAwareness:isAware(player, category, x, y, z)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `player` | any |  |
-| `category` | any |  |
-| `x` | any |  |
-| `y` | any |  |
-| `z?` | any |  |
+| `player` | string | Player identifier to query. |
+| `category` | string | Awareness category name. |
+| `x` | number | One-based cell column. |
+| `y` | number | One-based cell row. |
+| `z?` | number | Optional one-based level index, defaulting to 1. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the addressed cell is visible for the selected category. |
 
 **Example**
 
@@ -1547,8 +1553,8 @@ LTileAwareness:setTeam(players, categories)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `players` | any |  |
-| `categories?` | any |  |
+| `players` | table | Array of player identifiers that should share visibility. |
+| `categories?` | table | Optional array of category names to share; omitted shares every category. |
 
 **Example**
 
@@ -1582,10 +1588,10 @@ LTileAwareness:share(from, to, category, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `from` | any |  |
-| `to` | any |  |
-| `category` | any |  |
-| `opts?` | any |  |
+| `from` | string | Source player identifier. |
+| `to` | string | Target player identifier. |
+| `category` | string | Awareness category to share. |
+| `opts?` | table | Reserved optional settings table for future share options. |
 
 **Example**
 
@@ -1674,7 +1680,7 @@ end
 Returns all currently visible cells for a player, optionally filtered to a level.
 
 ```lua
-LTileAwareness:visibleCells(player, z)
+LTileAwareness:visibleCells(player, categoryOrZ, z)
 ```
 
 **Parameters**
@@ -1682,7 +1688,8 @@ LTileAwareness:visibleCells(player, z)
 | Name | Type | Description |
 |------|------|-------------|
 | `player` | string | Player identifier to query. |
-| `z?` | number | Optional one-based level filter. |
+| `categoryOrZ?` | string|number | Optional category name or one-based level filter when no separate `z` argument is supplied. |
+| `z?` | number | Optional one-based level filter used when `categoryOrZ` is a category string. |
 
 **Returns**
 

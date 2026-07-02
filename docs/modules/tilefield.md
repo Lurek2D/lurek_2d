@@ -493,10 +493,16 @@ LTileField:blocksCategory(x, y, z, category)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | any |  |
-| `y` | any |  |
-| `z?` | any |  |
-| `category` | any |  |
+| `x` | number | One-based cell column. |
+| `y` | number | One-based cell row. |
+| `z?` | number | Optional one-based level index, defaulting to 1. |
+| `category` | string | Category name to test. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the addressed cell blocks the selected category. |
 
 **Example**
 
@@ -520,7 +526,7 @@ end
 
 #### `LTileField:clear`
 
-Clears all cell gameplay state.
+Clears all gameplay state, modifiers, and references in the field.
 
 ```lua
 LTileField:clear()
@@ -914,12 +920,18 @@ LTileField:footprintPassable(x, y, z, w, h, category)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | any |  |
-| `y` | any |  |
-| `z?` | any |  |
-| `w` | any |  |
-| `h` | any |  |
-| `category` | any |  |
+| `x` | number | One-based anchor column. |
+| `y` | number | One-based anchor row. |
+| `z?` | number | Optional one-based level index, defaulting to 1. |
+| `w` | number | Footprint width in cells. |
+| `h` | number | Footprint height in cells. |
+| `category` | string | Category name to test against blockers and costs. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the footprint can be placed at the addressed anchor cell. |
 
 **Example**
 
@@ -943,7 +955,7 @@ end
 
 #### `LTileField:getCategories`
 
-Returns known category names.
+Returns the sorted names of all known cell categories.
 
 ```lua
 LTileField:getCategories()
@@ -1027,10 +1039,16 @@ LTileField:getCategoryCost(x, y, z, category)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | any |  |
-| `y` | any |  |
-| `z?` | any |  |
-| `category` | any |  |
+| `x` | number | One-based cell column. |
+| `y` | number | One-based cell row. |
+| `z?` | number | Optional one-based level index, defaulting to 1. |
+| `category` | string | Category name to inspect. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Effective movement cost for that category on the addressed cell. |
 
 **Example**
 
@@ -1064,10 +1082,16 @@ LTileField:getCategoryFilter(x, y, z, category)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | any |  |
-| `y` | any |  |
-| `z?` | any |  |
-| `category` | any |  |
+| `x` | number | One-based cell column. |
+| `y` | number | One-based cell row. |
+| `z?` | number | Optional one-based level index, defaulting to 1. |
+| `category` | string | Category name to inspect. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | RGB multiplier table for that category on the addressed cell. |
 
 **Example**
 
@@ -1101,10 +1125,16 @@ LTileField:getCategoryTransmission(x, y, z, category)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | any |  |
-| `y` | any |  |
-| `z?` | any |  |
-| `category` | any |  |
+| `x` | number | One-based cell column. |
+| `y` | number | One-based cell row. |
+| `z?` | number | Optional one-based level index, defaulting to 1. |
+| `category` | string | Category name to inspect. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Effective transmission multiplier for that category on the addressed cell. |
 
 **Example**
 
@@ -1584,7 +1614,7 @@ end
 
 #### `LTileField:getRefSlots`
 
-Returns every declared ref slot.
+Returns the sorted names of every declared reference slot.
 
 ```lua
 LTileField:getRefSlots()
@@ -1634,7 +1664,7 @@ LTileField:getRegionCells(name)
 
 | Type | Description |
 |------|-------------|
-| table? | Array of `{ x, y, z }` cells. |
+| table | Array of `{ x, y, z }` cells. |
 
 **Example**
 
@@ -2171,11 +2201,11 @@ LTileField:setCategoryBlock(x, y, z, category, blocked)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | any |  |
-| `y` | any |  |
-| `z?` | any |  |
-| `category` | any |  |
-| `blocked` | any |  |
+| `x` | number | One-based cell column. |
+| `y` | number | One-based cell row. |
+| `z?` | number | Optional one-based level index, defaulting to 1. |
+| `category` | string | Category name to update. |
+| `blocked` | boolean | Whether the category is blocked on that cell. |
 
 **Example**
 
@@ -2199,7 +2229,7 @@ end
 
 #### `LTileField:setCategoryCost`
 
-Sets one category cost on one cell.
+Sets one movement-cost override for a category on one cell.
 
 ```lua
 LTileField:setCategoryCost(x, y, z, category, cost)
@@ -2209,11 +2239,11 @@ LTileField:setCategoryCost(x, y, z, category, cost)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | any |  |
-| `y` | any |  |
-| `z?` | any |  |
-| `category` | any |  |
-| `cost` | any |  |
+| `x` | number | One-based cell column. |
+| `y` | number | One-based cell row. |
+| `z?` | number | Optional one-based level index, defaulting to 1. |
+| `category` | string | Category name to update. |
+| `cost` | number | Effective movement cost to assign. |
 
 **Example**
 
@@ -2247,11 +2277,11 @@ LTileField:setCategoryFilter(x, y, z, category, filter)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | any |  |
-| `y` | any |  |
-| `z?` | any |  |
-| `category` | any |  |
-| `filter` | any |  |
+| `x` | number | One-based cell column. |
+| `y` | number | One-based cell row. |
+| `z?` | number | Optional one-based level index, defaulting to 1. |
+| `category` | string | Category name to update. |
+| `filter` | table | RGB multiplier table with three numeric entries. |
 
 **Example**
 
@@ -2285,11 +2315,11 @@ LTileField:setCategoryTransmission(x, y, z, category, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | any |  |
-| `y` | any |  |
-| `z?` | any |  |
-| `category` | any |  |
-| `value` | any |  |
+| `x` | number | One-based cell column. |
+| `y` | number | One-based cell row. |
+| `z?` | number | Optional one-based level index, defaulting to 1. |
+| `category` | string | Category name to update. |
+| `value` | number | Transmission multiplier to assign. |
 
 **Example**
 

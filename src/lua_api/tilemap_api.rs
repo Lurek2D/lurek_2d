@@ -856,7 +856,7 @@ impl LuaUserData for LuaTileMap {
         });
         // -- getShader --
         /// Returns the tilemap shader bound to this map, or nil when none is bound.
-        /// @return | LShader? | Bound shader handle.
+        /// @return | LShader | Bound shader handle.
         methods.add_method("getShader", |_, this, ()| {
             Ok(this.inner.borrow().get_shader().map(|key| LuaShader {
                 state: this.state.clone(),
@@ -897,7 +897,7 @@ impl LuaUserData for LuaTileMap {
         // -- getLayerShader --
         /// Returns the shader override bound to one layer, or nil when the layer has no override.
         /// @param | layer | integer | Layer index (1-based).
-        /// @return | LShader? | Bound layer shader handle.
+        /// @return | LShader | Bound layer shader handle.
         methods.add_method("getLayerShader", |_, this, layer: usize| {
             let layer_index = one_based_usize("layer", layer)?;
             Ok(this

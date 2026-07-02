@@ -3347,7 +3347,7 @@ end
 
 #### `LProcgenGrid:getSize`
 
-Returns grid width and height.
+Returns the generated grid width and height in cells.
 
 ```lua
 LProcgenGrid:getSize()

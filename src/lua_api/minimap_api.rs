@@ -202,7 +202,7 @@ impl LuaUserData for LuaMinimap {
         });
         // -- getShader --
         /// Returns the currently bound command-render minimap shader, or nil.
-        /// @return | LShader? | Bound shader handle.
+        /// @return | LShader | Bound shader handle.
         methods.add_method("getShader", |_, this, ()| {
             Ok(this.inner.get_shader().map(|key| LuaShader {
                 key,

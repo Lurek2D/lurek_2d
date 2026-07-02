@@ -1,15 +1,15 @@
 {
   "meta": {
-    "generated": "2026-07-01T20:48:30.084904+00:00",
+    "generated": "2026-07-02T19:40:26.460330+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
-    "total_api_functions": 6475,
-    "marker_covered": 6450,
+    "total_api_functions": 6491,
+    "marker_covered": 6466,
     "describe_covered": 150,
     "describe_coverage_pct": 2.3,
     "heuristic_covered": 0,
-    "total_covered": 6475,
+    "total_covered": 6491,
     "coverage_pct": 100.0
   },
   "modules": {
@@ -11639,11 +11639,11 @@
       ]
     },
     "cursor": {
-      "total": 34,
-      "marker_covered": 34,
+      "total": 41,
+      "marker_covered": 41,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 34,
+      "covered": 41,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -11726,7 +11726,61 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "LCursorManager:defineState",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LCursorManager:defineEffect",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "LCursorManager:addRule",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LCursorManager:addSource",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LCursorManager:removeSource",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LCursorManager:getLastHit",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LCursorManager:getActiveState",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -11844,6 +11898,15 @@
         },
         {
           "lua_name": "LCursorManager:disableZoom",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LCursorManager:type",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -43115,11 +43178,11 @@
       ]
     },
     "raycaster": {
-      "total": 136,
-      "marker_covered": 136,
+      "total": 145,
+      "marker_covered": 145,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 136,
+      "covered": 145,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -43464,6 +43527,33 @@
         },
         {
           "lua_name": "LRaycaster:clearWallFeatureCell",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LRaycaster:setPickAttr",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LRaycaster:getPickAttr",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LRaycaster:clearPickAttr",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -43842,6 +43932,33 @@
         },
         {
           "lua_name": "LMultiLevelGrid:clearWallFeatureCell",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LMultiLevelGrid:setPickAttr",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LMultiLevelGrid:getPickAttr",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LMultiLevelGrid:clearPickAttr",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -44310,6 +44427,33 @@
         },
         {
           "lua_name": "LSpriteManager:setVisible",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LSpriteManager:setAttr",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LSpriteManager:getAttr",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LSpriteManager:clearAttr",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,

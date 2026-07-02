@@ -2548,7 +2548,7 @@ LDeck:draw(count)
 
 | Type | Description |
 |------|-------------|
-| any | Single card when count is omitted or `1`. |
+| LuaValue | Single card when count is omitted or `1`. |
 | table | Array of cards when count is greater than `1`. |
 
 **Example**
@@ -2615,7 +2615,7 @@ LDeck:peek(count)
 
 | Type | Description |
 |------|-------------|
-| any | Single card when count is omitted or `1`. |
+| LuaValue | Single card when count is omitted or `1`. |
 | table | Array of cards when count is greater than `1`. |
 
 **Example**

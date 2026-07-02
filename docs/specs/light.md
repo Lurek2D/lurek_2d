@@ -151,7 +151,7 @@ This module primarily collaborates with `color`, `image`, `math`, `runtime`. Its
 - `lurek.light.getMaxLights() -> integer`: Returns the maximum configured light count.
 - `lurek.light.getNormalMapHints() -> table`: Returns light hints that reference normal maps.
 - `lurek.light.getOccluderCount() -> integer`: Returns the number of live occluders.
-- `lurek.light.getShader() -> LShader?`: Returns the default custom light shader for the light world.
+- `lurek.light.getShader() -> LShader`: Returns the default custom light shader for the light world.
 - `lurek.light.isEnabled() -> boolean`: Returns whether the shared light world is enabled.
 - `lurek.light.newLight(x, y, radius, opts?) -> LLight`: Creates a light and applies optional light settings.
 - `lurek.light.newOccluder(vtbl, opts?) -> LOccluder`: Creates an occluder from a flat vertex coordinate table and optional settings.
@@ -205,7 +205,7 @@ This module primarily collaborates with `color`, `image`, `math`, `runtime`. Its
 - `LLight:getOuterAngle() -> number`: Returns this spot light outer cone angle.
 - `LLight:getPosition() -> number`: Returns this light position. This method is available to Lua scripts.
 - `LLight:getRadius() -> number`: Returns this light radius. This method is available to Lua scripts.
-- `LLight:getShader() -> LShader?`: Returns the custom light shader bound to this light, if any.
+- `LLight:getShader() -> LShader`: Returns the custom light shader bound to this light, if any.
 - `LLight:getShadowColor() -> number`: Returns this light shadow RGBA color.
 - `LLight:getShadowFilter() -> string`: Returns this light shadow filter string.
 - `LLight:getShadowMask() -> integer`: Returns this light's shadow receiver mask.

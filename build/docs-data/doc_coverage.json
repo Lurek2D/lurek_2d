@@ -1,26 +1,44 @@
 {
-  "generated_at": "2026-07-01T20:48:15.014053+00:00",
+  "generated_at": "2026-07-02T19:40:04.075649+00:00",
   "summary": {
     "rust": {
-      "total": 9086,
-      "covered": 9086,
-      "missing": 0,
+      "total": 9148,
+      "covered": 9146,
+      "missing": 2,
       "pct": 100.0
     },
     "lua_api": {
-      "total": 220,
-      "covered": 180,
+      "total": 215,
+      "covered": 175,
       "missing": 40,
-      "pct": 81.8
+      "pct": 81.4
     },
     "total": {
-      "total": 9306,
-      "covered": 9266,
-      "missing": 40,
+      "total": 9363,
+      "covered": 9321,
+      "missing": 42,
       "pct": 99.6
     }
   },
   "missing": [
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/cursor_api.rs",
+      "line": 752,
+      "kind": "fn",
+      "name": "refresh_cursor_runtime",
+      "has_doc": false
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/cursor_api.rs",
+      "line": 1192,
+      "kind": "fn",
+      "name": "register",
+      "has_doc": false
+    },
     {
       "source": "lua_api",
       "module": "physics_api",
@@ -5607,7 +5625,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 1501,
+      "line": 1500,
       "kind": "fn",
       "name": "inspect_window_runtime_request_for_testing",
       "has_doc": true
@@ -5616,7 +5634,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 2477,
+      "line": 2490,
       "kind": "fn",
       "name": "extract_lurek_archive_with_policy",
       "has_doc": true
@@ -5625,7 +5643,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 3861,
+      "line": 3876,
       "kind": "struct",
       "name": "App",
       "has_doc": true
@@ -5634,7 +5652,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 3869,
+      "line": 3884,
       "kind": "struct",
       "name": "AppRunOptions",
       "has_doc": true
@@ -5643,7 +5661,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 3892,
+      "line": 3907,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -5652,7 +5670,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 3896,
+      "line": 3911,
       "kind": "fn",
       "name": "run",
       "has_doc": true
@@ -14832,7 +14850,7 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/context.rs",
-      "line": 16,
+      "line": 26,
       "kind": "enum",
       "name": "CursorState",
       "has_doc": true
@@ -14841,7 +14859,16 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/context.rs",
-      "line": 24,
+      "line": 34,
+      "kind": "fn",
+      "name": "kind_name",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/context.rs",
+      "line": 45,
       "kind": "enum",
       "name": "CursorContext",
       "has_doc": true
@@ -14850,7 +14877,7 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/context.rs",
-      "line": 37,
+      "line": 58,
       "kind": "fn",
       "name": "from_name",
       "has_doc": true
@@ -14859,7 +14886,7 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/context.rs",
-      "line": 51,
+      "line": 72,
       "kind": "fn",
       "name": "as_str",
       "has_doc": true
@@ -14868,7 +14895,7 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/context.rs",
-      "line": 67,
+      "line": 88,
       "kind": "struct",
       "name": "ContextRule",
       "has_doc": true
@@ -14877,7 +14904,124 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/context.rs",
-      "line": 76,
+      "line": 95,
+      "kind": "struct",
+      "name": "CursorStateSpec",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/context.rs",
+      "line": 107,
+      "kind": "fn",
+      "name": "from_state",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/context.rs",
+      "line": 122,
+      "kind": "struct",
+      "name": "CursorHit",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/context.rs",
+      "line": 133,
+      "kind": "struct",
+      "name": "CursorRuleTarget",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/context.rs",
+      "line": 143,
+      "kind": "fn",
+      "name": "matches",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/context.rs",
+      "line": 175,
+      "kind": "enum",
+      "name": "CursorRuleEvent",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/context.rs",
+      "line": 186,
+      "kind": "struct",
+      "name": "CursorRule",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/context.rs",
+      "line": 200,
+      "kind": "struct",
+      "name": "CursorEffectSpec",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/context.rs",
+      "line": 234,
+      "kind": "struct",
+      "name": "CursorBurstInstance",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/context.rs",
+      "line": 249,
+      "kind": "enum",
+      "name": "CursorSource",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/context.rs",
+      "line": 267,
+      "kind": "fn",
+      "name": "id",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/context.rs",
+      "line": 288,
+      "kind": "struct",
+      "name": "CursorInputFrame",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/context.rs",
+      "line": 310,
+      "kind": "struct",
+      "name": "CursorActiveStateInfo",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/context.rs",
+      "line": 320,
       "kind": "struct",
       "name": "CursorManager",
       "has_doc": true
@@ -14886,7 +15030,7 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/context.rs",
-      "line": 90,
+      "line": 351,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -14895,7 +15039,7 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/context.rs",
-      "line": 106,
+      "line": 384,
       "kind": "fn",
       "name": "set_system",
       "has_doc": true
@@ -14904,7 +15048,7 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/context.rs",
-      "line": 113,
+      "line": 390,
       "kind": "fn",
       "name": "set_custom",
       "has_doc": true
@@ -14913,7 +15057,7 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/context.rs",
-      "line": 120,
+      "line": 396,
       "kind": "fn",
       "name": "set_animated",
       "has_doc": true
@@ -14922,7 +15066,25 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/context.rs",
-      "line": 136,
+      "line": 410,
+      "kind": "fn",
+      "name": "define_state",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/context.rs",
+      "line": 416,
+      "kind": "fn",
+      "name": "define_effect",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/context.rs",
+      "line": 421,
       "kind": "fn",
       "name": "set_context",
       "has_doc": true
@@ -14931,7 +15093,7 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/context.rs",
-      "line": 142,
+      "line": 427,
       "kind": "fn",
       "name": "add_rule",
       "has_doc": true
@@ -14940,7 +15102,16 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/context.rs",
-      "line": 156,
+      "line": 446,
+      "kind": "fn",
+      "name": "add_rule_v2",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/context.rs",
+      "line": 457,
       "kind": "fn",
       "name": "remove_rule",
       "has_doc": true
@@ -14949,7 +15120,88 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/context.rs",
-      "line": 164,
+      "line": 467,
+      "kind": "fn",
+      "name": "add_source",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/context.rs",
+      "line": 474,
+      "kind": "fn",
+      "name": "next_source_id",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/context.rs",
+      "line": 487,
+      "kind": "fn",
+      "name": "remove_source",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/context.rs",
+      "line": 494,
+      "kind": "fn",
+      "name": "sources",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/context.rs",
+      "line": 499,
+      "kind": "fn",
+      "name": "take_sources",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/context.rs",
+      "line": 504,
+      "kind": "fn",
+      "name": "replace_sources",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/context.rs",
+      "line": 509,
+      "kind": "fn",
+      "name": "get_last_hit",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/context.rs",
+      "line": 514,
+      "kind": "fn",
+      "name": "get_active_state",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/context.rs",
+      "line": 526,
+      "kind": "fn",
+      "name": "tick",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/context.rs",
+      "line": 830,
       "kind": "fn",
       "name": "update",
       "has_doc": true
@@ -14958,7 +15210,7 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/context.rs",
-      "line": 177,
+      "line": 835,
       "kind": "fn",
       "name": "set_trail",
       "has_doc": true
@@ -14967,7 +15219,7 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/context.rs",
-      "line": 182,
+      "line": 841,
       "kind": "fn",
       "name": "trail",
       "has_doc": true
@@ -14976,7 +15228,7 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/context.rs",
-      "line": 187,
+      "line": 846,
       "kind": "fn",
       "name": "trail_mut",
       "has_doc": true
@@ -14985,7 +15237,7 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/context.rs",
-      "line": 192,
+      "line": 851,
       "kind": "fn",
       "name": "set_zoom",
       "has_doc": true
@@ -14994,7 +15246,7 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/context.rs",
-      "line": 197,
+      "line": 857,
       "kind": "fn",
       "name": "zoom",
       "has_doc": true
@@ -15003,7 +15255,16 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/context.rs",
-      "line": 202,
+      "line": 862,
+      "kind": "fn",
+      "name": "bursts",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/context.rs",
+      "line": 867,
       "kind": "fn",
       "name": "set_visible",
       "has_doc": true
@@ -15012,7 +15273,7 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/context.rs",
-      "line": 207,
+      "line": 872,
       "kind": "fn",
       "name": "is_visible",
       "has_doc": true
@@ -15021,7 +15282,7 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/context.rs",
-      "line": 212,
+      "line": 877,
       "kind": "fn",
       "name": "set_locked",
       "has_doc": true
@@ -15030,7 +15291,7 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/context.rs",
-      "line": 217,
+      "line": 882,
       "kind": "fn",
       "name": "is_locked",
       "has_doc": true
@@ -15039,7 +15300,7 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/context.rs",
-      "line": 222,
+      "line": 887,
       "kind": "fn",
       "name": "active",
       "has_doc": true
@@ -15048,7 +15309,16 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/context.rs",
-      "line": 227,
+      "line": 892,
+      "kind": "fn",
+      "name": "active_visual",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/context.rs",
+      "line": 897,
       "kind": "fn",
       "name": "position",
       "has_doc": true
@@ -15057,9 +15327,18 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/context.rs",
-      "line": 232,
+      "line": 902,
       "kind": "fn",
       "name": "context",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/context.rs",
+      "line": 907,
+      "kind": "fn",
+      "name": "wants_overlay",
       "has_doc": true
     },
     {
@@ -15156,7 +15435,7 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/trail.rs",
-      "line": 11,
+      "line": 14,
       "kind": "struct",
       "name": "TrailPoint",
       "has_doc": true
@@ -15174,7 +15453,7 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/trail.rs",
-      "line": 35,
+      "line": 37,
       "kind": "struct",
       "name": "CursorTrail",
       "has_doc": true
@@ -15183,7 +15462,7 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/trail.rs",
-      "line": 45,
+      "line": 53,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -15192,7 +15471,7 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/trail.rs",
-      "line": 56,
+      "line": 76,
       "kind": "fn",
       "name": "update",
       "has_doc": true
@@ -15201,7 +15480,7 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/trail.rs",
-      "line": 96,
+      "line": 110,
       "kind": "fn",
       "name": "get_points",
       "has_doc": true
@@ -15210,7 +15489,7 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/trail.rs",
-      "line": 101,
+      "line": 115,
       "kind": "fn",
       "name": "clear",
       "has_doc": true
@@ -15219,7 +15498,7 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/trail.rs",
-      "line": 106,
+      "line": 120,
       "kind": "fn",
       "name": "set_active",
       "has_doc": true
@@ -15228,7 +15507,7 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/trail.rs",
-      "line": 114,
+      "line": 128,
       "kind": "fn",
       "name": "is_active",
       "has_doc": true
@@ -15237,7 +15516,7 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/trail.rs",
-      "line": 119,
+      "line": 133,
       "kind": "fn",
       "name": "mode",
       "has_doc": true
@@ -15246,7 +15525,7 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/trail.rs",
-      "line": 124,
+      "line": 138,
       "kind": "fn",
       "name": "set_mode",
       "has_doc": true
@@ -15255,7 +15534,70 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/trail.rs",
-      "line": 130,
+      "line": 144,
+      "kind": "fn",
+      "name": "lifetime",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/trail.rs",
+      "line": 149,
+      "kind": "fn",
+      "name": "set_lifetime",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/trail.rs",
+      "line": 154,
+      "kind": "fn",
+      "name": "spacing",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/trail.rs",
+      "line": 159,
+      "kind": "fn",
+      "name": "set_spacing",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/trail.rs",
+      "line": 164,
+      "kind": "fn",
+      "name": "width",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/trail.rs",
+      "line": 169,
+      "kind": "fn",
+      "name": "set_width",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/trail.rs",
+      "line": 174,
+      "kind": "fn",
+      "name": "max_points",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/trail.rs",
+      "line": 179,
       "kind": "fn",
       "name": "set_max_points",
       "has_doc": true
@@ -15263,8 +15605,80 @@
     {
       "source": "rust",
       "module": "cursor",
+      "file": "src/cursor/trail.rs",
+      "line": 187,
+      "kind": "fn",
+      "name": "color",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/trail.rs",
+      "line": 192,
+      "kind": "fn",
+      "name": "set_color",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/trail.rs",
+      "line": 197,
+      "kind": "fn",
+      "name": "texture_key",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/trail.rs",
+      "line": 202,
+      "kind": "fn",
+      "name": "set_texture_key",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/trail.rs",
+      "line": 207,
+      "kind": "fn",
+      "name": "shader_key",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/trail.rs",
+      "line": 212,
+      "kind": "fn",
+      "name": "set_shader_key",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/trail.rs",
+      "line": 217,
+      "kind": "fn",
+      "name": "blend",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/trail.rs",
+      "line": 222,
+      "kind": "fn",
+      "name": "set_blend",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
       "file": "src/cursor/zoom.rs",
-      "line": 8,
+      "line": 10,
       "kind": "struct",
       "name": "CursorZoom",
       "has_doc": true
@@ -15273,7 +15687,7 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/zoom.rs",
-      "line": 23,
+      "line": 22,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -15282,7 +15696,7 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/zoom.rs",
-      "line": 34,
+      "line": 35,
       "kind": "fn",
       "name": "set_magnification",
       "has_doc": true
@@ -15291,7 +15705,7 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/zoom.rs",
-      "line": 39,
+      "line": 40,
       "kind": "fn",
       "name": "set_radius",
       "has_doc": true
@@ -15300,7 +15714,16 @@
       "source": "rust",
       "module": "cursor",
       "file": "src/cursor/zoom.rs",
-      "line": 44,
+      "line": 45,
+      "kind": "fn",
+      "name": "set_border_width",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "cursor",
+      "file": "src/cursor/zoom.rs",
+      "line": 50,
       "kind": "fn",
       "name": "toggle",
       "has_doc": true
@@ -35118,7 +35541,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/awareness_api.rs",
-      "line": 690,
+      "line": 705,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -35127,7 +35550,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/awareness_api.rs",
-      "line": 852,
+      "line": 867,
       "kind": "struct",
       "name": "LuaTileFov",
       "has_doc": true
@@ -35361,10 +35784,19 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/cursor_api.rs",
-      "line": 393,
+      "line": 752,
+      "kind": "fn",
+      "name": "refresh_cursor_runtime",
+      "has_doc": false
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/cursor_api.rs",
+      "line": 1192,
       "kind": "fn",
       "name": "register",
-      "has_doc": true
+      "has_doc": false
     },
     {
       "source": "rust",
@@ -35568,7 +36000,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/ecs_api.rs",
-      "line": 1273,
+      "line": 1278,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -35721,7 +36153,16 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 2586,
+      "line": 67,
+      "kind": "fn",
+      "name": "cursor_binding",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/globe_api.rs",
+      "line": 2590,
       "kind": "struct",
       "name": "LuaGlobeRegistry",
       "has_doc": true
@@ -35730,7 +36171,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 2762,
+      "line": 2765,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -36900,7 +37341,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 2399,
+      "line": 2493,
       "kind": "struct",
       "name": "LuaDoorManager",
       "has_doc": true
@@ -36909,7 +37350,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 2496,
+      "line": 2593,
       "kind": "struct",
       "name": "LuaHeightMap",
       "has_doc": true
@@ -36918,7 +37359,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 2550,
+      "line": 2647,
       "kind": "struct",
       "name": "LuaRaycaster",
       "has_doc": true
@@ -36927,7 +37368,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 4327,
+      "line": 4490,
       "kind": "struct",
       "name": "LuaMultiLevelGrid",
       "has_doc": true
@@ -36936,7 +37377,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 5371,
+      "line": 5601,
       "kind": "struct",
       "name": "LuaSpriteManager",
       "has_doc": true
@@ -36945,7 +37386,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 5550,
+      "line": 5785,
       "kind": "struct",
       "name": "LuaRaycasterSceneAdapter",
       "has_doc": true
@@ -36954,7 +37395,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 6423,
+      "line": 6714,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -37044,7 +37485,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/render_api.rs",
-      "line": 1179,
+      "line": 1158,
       "kind": "struct",
       "name": "LuaMesh",
       "has_doc": true
@@ -37053,7 +37494,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/render_api.rs",
-      "line": 1282,
+      "line": 1261,
       "kind": "struct",
       "name": "LuaShader",
       "has_doc": true
@@ -37062,7 +37503,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/render_api.rs",
-      "line": 1376,
+      "line": 1355,
       "kind": "fn",
       "name": "shader_key_from_userdata",
       "has_doc": true
@@ -37071,7 +37512,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/render_api.rs",
-      "line": 1382,
+      "line": 1361,
       "kind": "fn",
       "name": "ensure_shader_target",
       "has_doc": true
@@ -37080,7 +37521,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/render_api.rs",
-      "line": 1413,
+      "line": 1392,
       "kind": "struct",
       "name": "LuaQuad",
       "has_doc": true
@@ -37089,7 +37530,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/render_api.rs",
-      "line": 1530,
+      "line": 1509,
       "kind": "struct",
       "name": "LuaShape",
       "has_doc": true
@@ -37098,7 +37539,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/render_api.rs",
-      "line": 1925,
+      "line": 1904,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -37107,7 +37548,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/render_api.rs",
-      "line": 4922,
+      "line": 4926,
       "kind": "struct",
       "name": "LuaObjModel",
       "has_doc": true
@@ -37377,7 +37818,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilefield_api.rs",
-      "line": 2720,
+      "line": 2767,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -58986,7 +59427,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/build_scene.rs",
-      "line": 35,
+      "line": 36,
       "kind": "struct",
       "name": "LoweredFloorCell",
       "has_doc": true
@@ -58995,7 +59436,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/build_scene.rs",
-      "line": 48,
+      "line": 49,
       "kind": "struct",
       "name": "LevelSprite",
       "has_doc": true
@@ -59004,7 +59445,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/build_scene.rs",
-      "line": 57,
+      "line": 58,
       "kind": "struct",
       "name": "LevelParticleEmitter",
       "has_doc": true
@@ -59013,7 +59454,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/build_scene.rs",
-      "line": 1585,
+      "line": 1586,
       "kind": "struct",
       "name": "SceneBuildParams",
       "has_doc": true
@@ -59022,7 +59463,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/build_scene.rs",
-      "line": 1632,
+      "line": 1633,
       "kind": "fn",
       "name": "validate",
       "has_doc": true
@@ -59031,7 +59472,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/build_scene.rs",
-      "line": 1724,
+      "line": 1725,
       "kind": "struct",
       "name": "DirectionalSpriteTextures",
       "has_doc": true
@@ -59040,7 +59481,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/build_scene.rs",
-      "line": 1763,
+      "line": 1764,
       "kind": "struct",
       "name": "WorldSprite",
       "has_doc": true
@@ -59049,7 +59490,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/build_scene.rs",
-      "line": 1782,
+      "line": 1785,
       "kind": "struct",
       "name": "RaycasterParticleEmitter",
       "has_doc": true
@@ -59058,7 +59499,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/build_scene.rs",
-      "line": 1823,
+      "line": 1826,
       "kind": "type",
       "name": "TextureLookup",
       "has_doc": true
@@ -59067,7 +59508,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/build_scene.rs",
-      "line": 1825,
+      "line": 1828,
       "kind": "type",
       "name": "CellTextureLookup",
       "has_doc": true
@@ -59076,7 +59517,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/build_scene.rs",
-      "line": 2184,
+      "line": 2188,
       "kind": "fn",
       "name": "build_with_scene_features",
       "has_doc": true
@@ -59085,7 +59526,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/build_scene.rs",
-      "line": 2259,
+      "line": 2263,
       "kind": "fn",
       "name": "build",
       "has_doc": true
@@ -59094,7 +59535,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/build_scene.rs",
-      "line": 2287,
+      "line": 2291,
       "kind": "fn",
       "name": "build_multilevel_with_scene_features",
       "has_doc": true
@@ -59103,7 +59544,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/build_scene.rs",
-      "line": 2416,
+      "line": 2420,
       "kind": "fn",
       "name": "build_multilevel",
       "has_doc": true
@@ -59373,7 +59814,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 20,
+      "line": 23,
       "kind": "struct",
       "name": "Raycaster2D",
       "has_doc": true
@@ -59382,7 +59823,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 39,
+      "line": 44,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -59391,7 +59832,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 54,
+      "line": 60,
       "kind": "fn",
       "name": "try_new",
       "has_doc": true
@@ -59400,7 +59841,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 58,
+      "line": 64,
       "kind": "fn",
       "name": "try_new_with_limits",
       "has_doc": true
@@ -59409,7 +59850,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 75,
+      "line": 82,
       "kind": "fn",
       "name": "set_cell",
       "has_doc": true
@@ -59418,7 +59859,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 81,
+      "line": 88,
       "kind": "fn",
       "name": "get_cell",
       "has_doc": true
@@ -59427,7 +59868,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 89,
+      "line": 96,
       "kind": "fn",
       "name": "out_of_bounds_policy",
       "has_doc": true
@@ -59436,7 +59877,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 93,
+      "line": 100,
       "kind": "fn",
       "name": "set_out_of_bounds_policy",
       "has_doc": true
@@ -59445,7 +59886,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 97,
+      "line": 104,
       "kind": "fn",
       "name": "get_cell_checked",
       "has_doc": true
@@ -59454,7 +59895,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 108,
+      "line": 115,
       "kind": "fn",
       "name": "set_cells",
       "has_doc": true
@@ -59463,7 +59904,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 112,
+      "line": 119,
       "kind": "fn",
       "name": "try_set_cells",
       "has_doc": true
@@ -59472,7 +59913,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 125,
+      "line": 132,
       "kind": "fn",
       "name": "is_blocked",
       "has_doc": true
@@ -59481,7 +59922,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 136,
+      "line": 143,
       "kind": "fn",
       "name": "is_blocked_checked",
       "has_doc": true
@@ -59490,7 +59931,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 153,
+      "line": 160,
       "kind": "fn",
       "name": "blocks_render_visibility_at",
       "has_doc": true
@@ -59499,7 +59940,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 165,
+      "line": 172,
       "kind": "fn",
       "name": "blocks_render_light_at",
       "has_doc": true
@@ -59508,7 +59949,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 177,
+      "line": 184,
       "kind": "fn",
       "name": "width",
       "has_doc": true
@@ -59517,7 +59958,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 181,
+      "line": 188,
       "kind": "fn",
       "name": "height",
       "has_doc": true
@@ -59526,7 +59967,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 185,
+      "line": 192,
       "kind": "fn",
       "name": "cells",
       "has_doc": true
@@ -59535,7 +59976,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 189,
+      "line": 196,
       "kind": "fn",
       "name": "set_wall_feature",
       "has_doc": true
@@ -59544,7 +59985,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 195,
+      "line": 202,
       "kind": "fn",
       "name": "clear_wall_feature",
       "has_doc": true
@@ -59553,7 +59994,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 199,
+      "line": 206,
       "kind": "fn",
       "name": "wall_feature",
       "has_doc": true
@@ -59562,7 +60003,43 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 207,
+      "line": 211,
+      "kind": "fn",
+      "name": "set_pick_attr",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/dda.rs",
+      "line": 229,
+      "kind": "fn",
+      "name": "get_pick_attr",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/dda.rs",
+      "line": 237,
+      "kind": "fn",
+      "name": "clear_pick_attr",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/dda.rs",
+      "line": 258,
+      "kind": "fn",
+      "name": "pick_attrs_at",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/dda.rs",
+      "line": 276,
       "kind": "fn",
       "name": "sync_doors",
       "has_doc": true
@@ -59571,7 +60048,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 211,
+      "line": 280,
       "kind": "fn",
       "name": "try_sync_doors",
       "has_doc": true
@@ -59580,7 +60057,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 256,
+      "line": 325,
       "kind": "fn",
       "name": "clear_synced_doors",
       "has_doc": true
@@ -59589,7 +60066,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 264,
+      "line": 333,
       "kind": "fn",
       "name": "set_wall_alpha",
       "has_doc": true
@@ -59598,7 +60075,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 268,
+      "line": 337,
       "kind": "fn",
       "name": "get_wall_alpha",
       "has_doc": true
@@ -59607,7 +60084,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 356,
+      "line": 425,
       "kind": "fn",
       "name": "cast_ray",
       "has_doc": true
@@ -59616,7 +60093,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 372,
+      "line": 441,
       "kind": "fn",
       "name": "try_cast_ray",
       "has_doc": true
@@ -59625,7 +60102,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 513,
+      "line": 582,
       "kind": "fn",
       "name": "cast_ray_multi",
       "has_doc": true
@@ -59634,7 +60111,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 538,
+      "line": 607,
       "kind": "fn",
       "name": "try_cast_ray_multi",
       "has_doc": true
@@ -59643,7 +60120,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 559,
+      "line": 628,
       "kind": "fn",
       "name": "cast_rays",
       "has_doc": true
@@ -59652,7 +60129,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 615,
+      "line": 684,
       "kind": "fn",
       "name": "try_cast_rays",
       "has_doc": true
@@ -59661,7 +60138,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 637,
+      "line": 706,
       "kind": "fn",
       "name": "cast_rays_flat",
       "has_doc": true
@@ -59670,7 +60147,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 658,
+      "line": 727,
       "kind": "fn",
       "name": "try_cast_rays_flat",
       "has_doc": true
@@ -59679,7 +60156,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 672,
+      "line": 741,
       "kind": "fn",
       "name": "project_sprite",
       "has_doc": true
@@ -59688,7 +60165,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 744,
+      "line": 813,
       "kind": "fn",
       "name": "cast_floor_row",
       "has_doc": true
@@ -59697,7 +60174,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 782,
+      "line": 851,
       "kind": "fn",
       "name": "cast_floor_row_with_viewport",
       "has_doc": true
@@ -59706,7 +60183,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/dda.rs",
-      "line": 814,
+      "line": 883,
       "kind": "fn",
       "name": "try_cast_floor_row_with_viewport",
       "has_doc": true
@@ -60083,8 +60560,26 @@
     {
       "source": "rust",
       "module": "raycaster",
+      "file": "src/raycaster/mod.rs",
+      "line": 61,
+      "kind": "enum",
+      "name": "RaycasterPickWorld",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/mod.rs",
+      "line": 68,
+      "kind": "struct",
+      "name": "RaycasterLastBuildContext",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 18,
+      "line": 21,
       "kind": "struct",
       "name": "RaycasterLevel",
       "has_doc": true
@@ -60093,7 +60588,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 49,
+      "line": 54,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -60102,7 +60597,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 70,
+      "line": 76,
       "kind": "fn",
       "name": "try_new",
       "has_doc": true
@@ -60111,7 +60606,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 74,
+      "line": 80,
       "kind": "fn",
       "name": "try_new_with_limits",
       "has_doc": true
@@ -60120,7 +60615,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 98,
+      "line": 105,
       "kind": "fn",
       "name": "get_wall",
       "has_doc": true
@@ -60129,7 +60624,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 107,
+      "line": 114,
       "kind": "fn",
       "name": "set_wall",
       "has_doc": true
@@ -60138,7 +60633,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 114,
+      "line": 121,
       "kind": "fn",
       "name": "wall_feature",
       "has_doc": true
@@ -60147,7 +60642,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 123,
+      "line": 130,
       "kind": "fn",
       "name": "set_wall_feature",
       "has_doc": true
@@ -60156,7 +60651,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 130,
+      "line": 137,
       "kind": "fn",
       "name": "clear_wall_feature",
       "has_doc": true
@@ -60165,7 +60660,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 137,
+      "line": 144,
       "kind": "fn",
       "name": "floor_texture_at",
       "has_doc": true
@@ -60174,7 +60669,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 146,
+      "line": 153,
       "kind": "fn",
       "name": "set_floor_texture",
       "has_doc": true
@@ -60183,7 +60678,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 153,
+      "line": 160,
       "kind": "fn",
       "name": "clear_floor_texture",
       "has_doc": true
@@ -60192,7 +60687,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 160,
+      "line": 167,
       "kind": "fn",
       "name": "ceiling_texture_at",
       "has_doc": true
@@ -60201,7 +60696,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 169,
+      "line": 176,
       "kind": "fn",
       "name": "set_ceiling_texture",
       "has_doc": true
@@ -60210,7 +60705,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 176,
+      "line": 183,
       "kind": "fn",
       "name": "clear_ceiling_texture",
       "has_doc": true
@@ -60219,7 +60714,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 183,
+      "line": 190,
       "kind": "fn",
       "name": "lowered_floor",
       "has_doc": true
@@ -60228,7 +60723,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 192,
+      "line": 199,
       "kind": "fn",
       "name": "set_lowered_floor",
       "has_doc": true
@@ -60237,7 +60732,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 199,
+      "line": 206,
       "kind": "fn",
       "name": "clear_lowered_floor",
       "has_doc": true
@@ -60246,7 +60741,34 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 206,
+      "line": 213,
+      "kind": "fn",
+      "name": "set_pick_attr",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/multilevel.rs",
+      "line": 230,
+      "kind": "fn",
+      "name": "get_pick_attr",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/multilevel.rs",
+      "line": 244,
+      "kind": "fn",
+      "name": "clear_pick_attr",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/multilevel.rs",
+      "line": 265,
       "kind": "fn",
       "name": "is_floor_hole",
       "has_doc": true
@@ -60255,7 +60777,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 215,
+      "line": 274,
       "kind": "fn",
       "name": "set_floor_hole",
       "has_doc": true
@@ -60264,7 +60786,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 222,
+      "line": 281,
       "kind": "fn",
       "name": "is_ceiling_hole",
       "has_doc": true
@@ -60273,7 +60795,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 231,
+      "line": 290,
       "kind": "fn",
       "name": "set_ceiling_hole",
       "has_doc": true
@@ -60282,7 +60804,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 240,
+      "line": 299,
       "kind": "fn",
       "name": "build_runtime_raycaster",
       "has_doc": true
@@ -60291,7 +60813,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 296,
+      "line": 360,
       "kind": "struct",
       "name": "MultiLevelGrid",
       "has_doc": true
@@ -60300,7 +60822,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 304,
+      "line": 368,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -60309,7 +60831,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 313,
+      "line": 377,
       "kind": "fn",
       "name": "add_level",
       "has_doc": true
@@ -60318,7 +60840,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 319,
+      "line": 383,
       "kind": "fn",
       "name": "level_count",
       "has_doc": true
@@ -60327,7 +60849,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 324,
+      "line": 388,
       "kind": "fn",
       "name": "active_level",
       "has_doc": true
@@ -60336,7 +60858,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 329,
+      "line": 393,
       "kind": "fn",
       "name": "set_active_level",
       "has_doc": true
@@ -60345,7 +60867,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 336,
+      "line": 400,
       "kind": "fn",
       "name": "get_level",
       "has_doc": true
@@ -60354,7 +60876,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 341,
+      "line": 405,
       "kind": "fn",
       "name": "get_level_mut",
       "has_doc": true
@@ -60363,7 +60885,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 349,
+      "line": 413,
       "kind": "fn",
       "name": "get_active",
       "has_doc": true
@@ -60372,7 +60894,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 354,
+      "line": 418,
       "kind": "fn",
       "name": "get_active_mut",
       "has_doc": true
@@ -60381,7 +60903,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 359,
+      "line": 423,
       "kind": "fn",
       "name": "with_runtime_level",
       "has_doc": true
@@ -60390,7 +60912,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 380,
+      "line": 444,
       "kind": "fn",
       "name": "visible_level_indices",
       "has_doc": true
@@ -60399,7 +60921,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 422,
+      "line": 486,
       "kind": "fn",
       "name": "can_descend",
       "has_doc": true
@@ -60408,7 +60930,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/multilevel.rs",
-      "line": 433,
+      "line": 497,
       "kind": "fn",
       "name": "can_ascend",
       "has_doc": true
@@ -60480,7 +61002,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 17,
+      "line": 19,
       "kind": "struct",
       "name": "RaycasterBuildStats",
       "has_doc": true
@@ -60489,7 +61011,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 44,
+      "line": 46,
       "kind": "enum",
       "name": "EntityPickKind",
       "has_doc": true
@@ -60498,7 +61020,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 53,
+      "line": 55,
       "kind": "fn",
       "name": "as_str",
       "has_doc": true
@@ -60507,7 +61029,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 63,
+      "line": 65,
       "kind": "struct",
       "name": "EntityPickResult",
       "has_doc": true
@@ -60516,7 +61038,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 86,
+      "line": 90,
       "kind": "struct",
       "name": "WallQuad",
       "has_doc": true
@@ -60525,7 +61047,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 108,
+      "line": 112,
       "kind": "struct",
       "name": "FloorQuad",
       "has_doc": true
@@ -60534,7 +61056,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 128,
+      "line": 132,
       "kind": "struct",
       "name": "CeilingQuad",
       "has_doc": true
@@ -60543,7 +61065,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 148,
+      "line": 152,
       "kind": "struct",
       "name": "BillboardSprite",
       "has_doc": true
@@ -60552,7 +61074,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 171,
+      "line": 177,
       "kind": "enum",
       "name": "RaycasterMaterialFrameLayout",
       "has_doc": true
@@ -60561,7 +61083,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 180,
+      "line": 186,
       "kind": "struct",
       "name": "RaycasterMaterial",
       "has_doc": true
@@ -60570,7 +61092,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 225,
+      "line": 231,
       "kind": "enum",
       "name": "RaycasterBackground",
       "has_doc": true
@@ -60579,7 +61101,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 242,
+      "line": 248,
       "kind": "enum",
       "name": "RaycasterOverlayEffect",
       "has_doc": true
@@ -60588,7 +61110,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 264,
+      "line": 270,
       "kind": "struct",
       "name": "RaycasterParticle",
       "has_doc": true
@@ -60597,7 +61119,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 310,
+      "line": 316,
       "kind": "struct",
       "name": "ModelMesh",
       "has_doc": true
@@ -60606,7 +61128,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 328,
+      "line": 336,
       "kind": "struct",
       "name": "RaycasterScene",
       "has_doc": true
@@ -60615,7 +61137,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 358,
+      "line": 366,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -60624,7 +61146,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 376,
+      "line": 384,
       "kind": "fn",
       "name": "quad_count",
       "has_doc": true
@@ -60633,7 +61155,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 385,
+      "line": 393,
       "kind": "fn",
       "name": "is_empty",
       "has_doc": true
@@ -60642,7 +61164,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 390,
+      "line": 398,
       "kind": "fn",
       "name": "pick_entity",
       "has_doc": true
@@ -60651,7 +61173,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene.rs",
-      "line": 399,
+      "line": 407,
       "kind": "fn",
       "name": "pick_entity_with_sprite_alpha_test",
       "has_doc": true
@@ -60660,7 +61182,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene_adapter.rs",
-      "line": 22,
+      "line": 23,
       "kind": "struct",
       "name": "ResolvedSceneTransform",
       "has_doc": true
@@ -60669,7 +61191,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene_adapter.rs",
-      "line": 33,
+      "line": 34,
       "kind": "enum",
       "name": "SceneTransform",
       "has_doc": true
@@ -60678,7 +61200,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene_adapter.rs",
-      "line": 48,
+      "line": 49,
       "kind": "fn",
       "name": "static_xy",
       "has_doc": true
@@ -60687,7 +61209,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene_adapter.rs",
-      "line": 53,
+      "line": 54,
       "kind": "fn",
       "name": "body",
       "has_doc": true
@@ -60696,7 +61218,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene_adapter.rs",
-      "line": 70,
+      "line": 71,
       "kind": "fn",
       "name": "resolve",
       "has_doc": true
@@ -60705,7 +61227,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene_adapter.rs",
-      "line": 102,
+      "line": 103,
       "kind": "struct",
       "name": "SceneAdapterSprite",
       "has_doc": true
@@ -60714,7 +61236,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene_adapter.rs",
-      "line": 119,
+      "line": 122,
       "kind": "fn",
       "name": "resolve",
       "has_doc": true
@@ -60723,7 +61245,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene_adapter.rs",
-      "line": 143,
+      "line": 147,
       "kind": "struct",
       "name": "SceneAdapterLight",
       "has_doc": true
@@ -60732,7 +61254,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene_adapter.rs",
-      "line": 158,
+      "line": 162,
       "kind": "fn",
       "name": "resolve",
       "has_doc": true
@@ -60741,7 +61263,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene_adapter.rs",
-      "line": 174,
+      "line": 178,
       "kind": "struct",
       "name": "ResolvedSceneModel",
       "has_doc": true
@@ -60750,7 +61272,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene_adapter.rs",
-      "line": 196,
+      "line": 202,
       "kind": "struct",
       "name": "SceneAdapterModel",
       "has_doc": true
@@ -60759,7 +61281,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene_adapter.rs",
-      "line": 214,
+      "line": 222,
       "kind": "fn",
       "name": "resolve",
       "has_doc": true
@@ -60768,7 +61290,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene_adapter.rs",
-      "line": 231,
+      "line": 240,
       "kind": "struct",
       "name": "SceneAdapter",
       "has_doc": true
@@ -60777,7 +61299,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene_adapter.rs",
-      "line": 240,
+      "line": 249,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -60786,7 +61308,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene_adapter.rs",
-      "line": 245,
+      "line": 254,
       "kind": "fn",
       "name": "clear",
       "has_doc": true
@@ -60795,7 +61317,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene_adapter.rs",
-      "line": 253,
+      "line": 262,
       "kind": "fn",
       "name": "clear_sprites",
       "has_doc": true
@@ -60804,7 +61326,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene_adapter.rs",
-      "line": 258,
+      "line": 267,
       "kind": "fn",
       "name": "clear_lights",
       "has_doc": true
@@ -60813,7 +61335,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene_adapter.rs",
-      "line": 264,
+      "line": 273,
       "kind": "fn",
       "name": "clear_models",
       "has_doc": true
@@ -60822,7 +61344,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene_adapter.rs",
-      "line": 269,
+      "line": 278,
       "kind": "fn",
       "name": "add_sprite",
       "has_doc": true
@@ -60831,7 +61353,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene_adapter.rs",
-      "line": 274,
+      "line": 283,
       "kind": "fn",
       "name": "add_light",
       "has_doc": true
@@ -60840,7 +61362,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene_adapter.rs",
-      "line": 280,
+      "line": 289,
       "kind": "fn",
       "name": "add_model",
       "has_doc": true
@@ -60849,7 +61371,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene_adapter.rs",
-      "line": 285,
+      "line": 294,
       "kind": "fn",
       "name": "resolve_sprites",
       "has_doc": true
@@ -60858,7 +61380,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene_adapter.rs",
-      "line": 293,
+      "line": 302,
       "kind": "fn",
       "name": "resolve_lights",
       "has_doc": true
@@ -60867,7 +61389,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/scene_adapter.rs",
-      "line": 302,
+      "line": 311,
       "kind": "fn",
       "name": "resolve_models",
       "has_doc": true
@@ -60894,7 +61416,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/sprite_manager.rs",
-      "line": 20,
+      "line": 22,
       "kind": "struct",
       "name": "DirectionalSpriteTextures",
       "has_doc": true
@@ -60903,7 +61425,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/sprite_manager.rs",
-      "line": 35,
+      "line": 37,
       "kind": "enum",
       "name": "DirectionalSpriteVariant",
       "has_doc": true
@@ -60912,7 +61434,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/sprite_manager.rs",
-      "line": 44,
+      "line": 46,
       "kind": "fn",
       "name": "select_for_viewer",
       "has_doc": true
@@ -60921,7 +61443,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/sprite_manager.rs",
-      "line": 70,
+      "line": 72,
       "kind": "struct",
       "name": "WorldSprite",
       "has_doc": true
@@ -60930,7 +61452,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/sprite_manager.rs",
-      "line": 87,
+      "line": 91,
       "kind": "struct",
       "name": "SpriteManager",
       "has_doc": true
@@ -60939,7 +61461,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/sprite_manager.rs",
-      "line": 95,
+      "line": 99,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -60948,7 +61470,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/sprite_manager.rs",
-      "line": 102,
+      "line": 106,
       "kind": "fn",
       "name": "add",
       "has_doc": true
@@ -60957,7 +61479,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/sprite_manager.rs",
-      "line": 118,
+      "line": 123,
       "kind": "fn",
       "name": "add_directional",
       "has_doc": true
@@ -60966,7 +61488,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/sprite_manager.rs",
-      "line": 149,
+      "line": 155,
       "kind": "fn",
       "name": "remove",
       "has_doc": true
@@ -60975,7 +61497,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/sprite_manager.rs",
-      "line": 153,
+      "line": 159,
       "kind": "fn",
       "name": "set_position",
       "has_doc": true
@@ -60984,7 +61506,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/sprite_manager.rs",
-      "line": 160,
+      "line": 166,
       "kind": "fn",
       "name": "set_facing",
       "has_doc": true
@@ -60993,7 +61515,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/sprite_manager.rs",
-      "line": 168,
+      "line": 174,
       "kind": "fn",
       "name": "set_directional_textures",
       "has_doc": true
@@ -61002,7 +61524,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/sprite_manager.rs",
-      "line": 195,
+      "line": 201,
       "kind": "fn",
       "name": "set_visible",
       "has_doc": true
@@ -61011,7 +61533,34 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/sprite_manager.rs",
-      "line": 201,
+      "line": 208,
+      "kind": "fn",
+      "name": "set_attr",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/sprite_manager.rs",
+      "line": 215,
+      "kind": "fn",
+      "name": "get_attr",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/sprite_manager.rs",
+      "line": 224,
+      "kind": "fn",
+      "name": "clear_attr",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/sprite_manager.rs",
+      "line": 235,
       "kind": "fn",
       "name": "clear",
       "has_doc": true
@@ -61020,7 +61569,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/sprite_manager.rs",
-      "line": 206,
+      "line": 240,
       "kind": "fn",
       "name": "sprites",
       "has_doc": true
@@ -61029,7 +61578,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/sprite_manager.rs",
-      "line": 210,
+      "line": 244,
       "kind": "fn",
       "name": "sort_by_distance",
       "has_doc": true
@@ -61057,6 +61606,15 @@
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
       "line": 32,
+      "kind": "enum",
+      "name": "PickAttrSurface",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/tile_picker.rs",
+      "line": 41,
       "kind": "fn",
       "name": "as_str",
       "has_doc": true
@@ -61065,7 +61623,25 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 43,
+      "line": 51,
+      "kind": "fn",
+      "name": "from_pick_surface",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/tile_picker.rs",
+      "line": 62,
+      "kind": "fn",
+      "name": "as_str",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "raycaster",
+      "file": "src/raycaster/tile_picker.rs",
+      "line": 73,
       "kind": "enum",
       "name": "PickWallSection",
       "has_doc": true
@@ -61074,7 +61650,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 56,
+      "line": 86,
       "kind": "fn",
       "name": "as_str",
       "has_doc": true
@@ -61083,7 +61659,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 68,
+      "line": 98,
       "kind": "struct",
       "name": "ScreenPickParams",
       "has_doc": true
@@ -61092,7 +61668,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 91,
+      "line": 121,
       "kind": "fn",
       "name": "horizon",
       "has_doc": true
@@ -61101,7 +61677,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 96,
+      "line": 126,
       "kind": "fn",
       "name": "projection_distance",
       "has_doc": true
@@ -61110,7 +61686,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 101,
+      "line": 131,
       "kind": "fn",
       "name": "validate",
       "has_doc": true
@@ -61119,7 +61695,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 116,
+      "line": 146,
       "kind": "struct",
       "name": "TilePicker",
       "has_doc": true
@@ -61128,7 +61704,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 141,
+      "line": 171,
       "kind": "struct",
       "name": "PickResult",
       "has_doc": true
@@ -61137,7 +61713,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 176,
+      "line": 210,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -61146,7 +61722,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 199,
+      "line": 233,
       "kind": "fn",
       "name": "set_camera",
       "has_doc": true
@@ -61155,7 +61731,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 206,
+      "line": 240,
       "kind": "fn",
       "name": "set_screen_size",
       "has_doc": true
@@ -61164,7 +61740,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 212,
+      "line": 246,
       "kind": "fn",
       "name": "set_cell",
       "has_doc": true
@@ -61173,7 +61749,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 219,
+      "line": 253,
       "kind": "fn",
       "name": "set_cells",
       "has_doc": true
@@ -61182,7 +61758,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 224,
+      "line": 258,
       "kind": "fn",
       "name": "try_set_cells",
       "has_doc": true
@@ -61191,7 +61767,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 238,
+      "line": 272,
       "kind": "fn",
       "name": "set_wall_feature",
       "has_doc": true
@@ -61200,7 +61776,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 245,
+      "line": 279,
       "kind": "fn",
       "name": "clear_wall_feature",
       "has_doc": true
@@ -61209,7 +61785,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 250,
+      "line": 284,
       "kind": "fn",
       "name": "pick_tile",
       "has_doc": true
@@ -61218,7 +61794,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 282,
+      "line": 316,
       "kind": "fn",
       "name": "world_to_tile",
       "has_doc": true
@@ -61227,7 +61803,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 824,
+      "line": 866,
       "kind": "fn",
       "name": "pick_screen",
       "has_doc": true
@@ -61236,7 +61812,7 @@
       "source": "rust",
       "module": "raycaster",
       "file": "src/raycaster/tile_picker.rs",
-      "line": 847,
+      "line": 889,
       "kind": "fn",
       "name": "pick_screen",
       "has_doc": true
@@ -63261,7 +63837,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/postfx_pipeline.rs",
-      "line": 460,
+      "line": 491,
       "kind": "fn",
       "name": "params_to_uniform",
       "has_doc": true
@@ -63270,7 +63846,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/postfx_pipeline.rs",
-      "line": 482,
+      "line": 513,
       "kind": "struct",
       "name": "PostFxTexture",
       "has_doc": true
@@ -63279,7 +63855,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/postfx_pipeline.rs",
-      "line": 490,
+      "line": 521,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -63288,7 +63864,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/postfx_pipeline.rs",
-      "line": 546,
+      "line": 577,
       "kind": "struct",
       "name": "PostFxPipeline",
       "has_doc": true
@@ -63297,7 +63873,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/postfx_pipeline.rs",
-      "line": 615,
+      "line": 646,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -63306,7 +63882,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/postfx_pipeline.rs",
-      "line": 732,
+      "line": 767,
       "kind": "fn",
       "name": "register_custom",
       "has_doc": true
@@ -63315,7 +63891,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/postfx_pipeline.rs",
-      "line": 860,
+      "line": 895,
       "kind": "fn",
       "name": "apply",
       "has_doc": true
@@ -63324,7 +63900,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/postfx_pipeline.rs",
-      "line": 987,
+      "line": 1022,
       "kind": "fn",
       "name": "apply_in_place",
       "has_doc": true
@@ -67338,7 +67914,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 50,
+      "line": 51,
       "kind": "struct",
       "name": "ProvinceSegmentTextureCache",
       "has_doc": true
@@ -67347,7 +67923,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 71,
+      "line": 72,
       "kind": "enum",
       "name": "FullscreenType",
       "has_doc": true
@@ -67356,7 +67932,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 80,
+      "line": 81,
       "kind": "struct",
       "name": "WindowState",
       "has_doc": true
@@ -67365,7 +67941,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 192,
+      "line": 193,
       "kind": "struct",
       "name": "ErrorInfo",
       "has_doc": true
@@ -67374,7 +67950,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 205,
+      "line": 206,
       "kind": "struct",
       "name": "ScreenshotRequest",
       "has_doc": true
@@ -67383,7 +67959,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 212,
+      "line": 213,
       "kind": "struct",
       "name": "FrameProfile",
       "has_doc": true
@@ -67392,7 +67968,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 239,
+      "line": 240,
       "kind": "fn",
       "name": "sanitize_in_place",
       "has_doc": true
@@ -67401,7 +67977,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 278,
+      "line": 279,
       "kind": "struct",
       "name": "ResourceMemoryStats",
       "has_doc": true
@@ -67410,7 +67986,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 307,
+      "line": 308,
       "kind": "struct",
       "name": "ResourceBudgetReport",
       "has_doc": true
@@ -67419,7 +67995,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 328,
+      "line": 329,
       "kind": "struct",
       "name": "ReleasedTextureHandle",
       "has_doc": true
@@ -67428,7 +68004,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 339,
+      "line": 340,
       "kind": "struct",
       "name": "SharedStateValidationReport",
       "has_doc": true
@@ -67437,7 +68013,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 348,
+      "line": 349,
       "kind": "fn",
       "name": "is_clean",
       "has_doc": true
@@ -67446,7 +68022,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 355,
+      "line": 356,
       "kind": "struct",
       "name": "PhysicsRunConfig",
       "has_doc": true
@@ -67455,7 +68031,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 379,
+      "line": 380,
       "kind": "struct",
       "name": "SharedState",
       "has_doc": true
@@ -67464,7 +68040,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 578,
+      "line": 587,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -67473,7 +68049,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 681,
+      "line": 694,
       "kind": "fn",
       "name": "step_timer",
       "has_doc": true
@@ -67482,7 +68058,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 693,
+      "line": 706,
       "kind": "fn",
       "name": "touch_texture",
       "has_doc": true
@@ -67491,7 +68067,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 697,
+      "line": 710,
       "kind": "fn",
       "name": "touch_canvas",
       "has_doc": true
@@ -67500,7 +68076,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 702,
+      "line": 715,
       "kind": "fn",
       "name": "queue_released_texture_handle",
       "has_doc": true
@@ -67509,7 +68085,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 714,
+      "line": 727,
       "kind": "fn",
       "name": "clear_released_texture_handle",
       "has_doc": true
@@ -67518,7 +68094,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 721,
+      "line": 734,
       "kind": "fn",
       "name": "ack_released_texture_handle",
       "has_doc": true
@@ -67527,7 +68103,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 733,
+      "line": 746,
       "kind": "fn",
       "name": "pending_texture_release_count",
       "has_doc": true
@@ -67536,7 +68112,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 738,
+      "line": 751,
       "kind": "fn",
       "name": "release_texture",
       "has_doc": true
@@ -67545,7 +68121,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 748,
+      "line": 761,
       "kind": "fn",
       "name": "evict_lru_resources",
       "has_doc": true
@@ -67554,7 +68130,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 814,
+      "line": 827,
       "kind": "fn",
       "name": "resource_memory_stats",
       "has_doc": true
@@ -67563,7 +68139,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 860,
+      "line": 873,
       "kind": "fn",
       "name": "validate_frame_state",
       "has_doc": true
@@ -67572,7 +68148,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 953,
+      "line": 966,
       "kind": "fn",
       "name": "resource_budget_report",
       "has_doc": true
@@ -67581,7 +68157,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 977,
+      "line": 990,
       "kind": "fn",
       "name": "request_async_load",
       "has_doc": true
@@ -67590,7 +68166,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 992,
+      "line": 1005,
       "kind": "fn",
       "name": "request_async_write",
       "has_doc": true
@@ -67599,7 +68175,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1031,
+      "line": 1044,
       "kind": "fn",
       "name": "set_configured_default_font",
       "has_doc": true
@@ -67608,7 +68184,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1040,
+      "line": 1053,
       "kind": "fn",
       "name": "set_active_builtin_font",
       "has_doc": true
@@ -67617,7 +68193,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1050,
+      "line": 1063,
       "kind": "fn",
       "name": "load_default_fonts",
       "has_doc": true
@@ -67626,7 +68202,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1070,
+      "line": 1083,
       "kind": "fn",
       "name": "poll_async_load",
       "has_doc": true
@@ -67635,7 +68211,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1086,
+      "line": 1099,
       "kind": "fn",
       "name": "poll_async_write",
       "has_doc": true
@@ -67644,7 +68220,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1102,
+      "line": 1115,
       "kind": "fn",
       "name": "set_active_mod_sandbox",
       "has_doc": true
@@ -67653,7 +68229,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1108,
+      "line": 1121,
       "kind": "fn",
       "name": "clear_active_mod_sandbox",
       "has_doc": true
@@ -67662,7 +68238,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1114,
+      "line": 1127,
       "kind": "fn",
       "name": "active_mod_context",
       "has_doc": true
@@ -67671,7 +68247,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1119,
+      "line": 1132,
       "kind": "fn",
       "name": "restore_active_mod_context",
       "has_doc": true
@@ -67680,7 +68256,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1129,
+      "line": 1142,
       "kind": "fn",
       "name": "ensure_mod_api_allowed",
       "has_doc": true
@@ -67689,7 +68265,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1155,
+      "line": 1168,
       "kind": "fn",
       "name": "ensure_mod_file_read",
       "has_doc": true
@@ -67698,7 +68274,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1170,
+      "line": 1183,
       "kind": "fn",
       "name": "ensure_mod_file_write",
       "has_doc": true
@@ -67707,7 +68283,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1255,
+      "line": 1268,
       "kind": "struct",
       "name": "RendererStats",
       "has_doc": true
@@ -67716,7 +68292,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1270,
+      "line": 1283,
       "kind": "fn",
       "name": "compute_stats",
       "has_doc": true
@@ -82179,62 +82755,8 @@
       "source": "lua_api",
       "module": "awareness_api",
       "file": "src/lua_api/awareness_api.rs",
-      "line": 628,
-      "kind": "fn",
-      "name": "type",
-      "has_doc": true
-    },
-    {
-      "source": "lua_api",
-      "module": "awareness_api",
-      "file": "src/lua_api/awareness_api.rs",
-      "line": 630,
-      "kind": "fn",
-      "name": "player_id",
-      "has_doc": true
-    },
-    {
-      "source": "lua_api",
-      "module": "awareness_api",
-      "file": "src/lua_api/awareness_api.rs",
-      "line": 632,
-      "kind": "fn",
-      "name": "region_id",
-      "has_doc": true
-    },
-    {
-      "source": "lua_api",
-      "module": "awareness_api",
-      "file": "src/lua_api/awareness_api.rs",
-      "line": 639,
-      "kind": "fn",
-      "name": "type",
-      "has_doc": true
-    },
-    {
-      "source": "lua_api",
-      "module": "awareness_api",
-      "file": "src/lua_api/awareness_api.rs",
-      "line": 641,
-      "kind": "fn",
-      "name": "player_id",
-      "has_doc": true
-    },
-    {
-      "source": "lua_api",
-      "module": "awareness_api",
-      "file": "src/lua_api/awareness_api.rs",
       "line": 643,
       "kind": "fn",
-      "name": "region_id",
-      "has_doc": true
-    },
-    {
-      "source": "lua_api",
-      "module": "awareness_api",
-      "file": "src/lua_api/awareness_api.rs",
-      "line": 650,
-      "kind": "fn",
       "name": "type",
       "has_doc": true
     },
@@ -82242,9 +82764,18 @@
       "source": "lua_api",
       "module": "awareness_api",
       "file": "src/lua_api/awareness_api.rs",
-      "line": 652,
+      "line": 645,
       "kind": "fn",
       "name": "player_id",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "awareness_api",
+      "file": "src/lua_api/awareness_api.rs",
+      "line": 647,
+      "kind": "fn",
+      "name": "region_id",
       "has_doc": true
     },
     {
@@ -82253,15 +82784,6 @@
       "file": "src/lua_api/awareness_api.rs",
       "line": 654,
       "kind": "fn",
-      "name": "region_id",
-      "has_doc": true
-    },
-    {
-      "source": "lua_api",
-      "module": "awareness_api",
-      "file": "src/lua_api/awareness_api.rs",
-      "line": 661,
-      "kind": "fn",
       "name": "type",
       "has_doc": true
     },
@@ -82269,7 +82791,7 @@
       "source": "lua_api",
       "module": "awareness_api",
       "file": "src/lua_api/awareness_api.rs",
-      "line": 663,
+      "line": 656,
       "kind": "fn",
       "name": "player_id",
       "has_doc": true
@@ -82278,7 +82800,61 @@
       "source": "lua_api",
       "module": "awareness_api",
       "file": "src/lua_api/awareness_api.rs",
+      "line": 658,
+      "kind": "fn",
+      "name": "region_id",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "awareness_api",
+      "file": "src/lua_api/awareness_api.rs",
       "line": 665,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "awareness_api",
+      "file": "src/lua_api/awareness_api.rs",
+      "line": 667,
+      "kind": "fn",
+      "name": "player_id",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "awareness_api",
+      "file": "src/lua_api/awareness_api.rs",
+      "line": 669,
+      "kind": "fn",
+      "name": "region_id",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "awareness_api",
+      "file": "src/lua_api/awareness_api.rs",
+      "line": 676,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "awareness_api",
+      "file": "src/lua_api/awareness_api.rs",
+      "line": 678,
+      "kind": "fn",
+      "name": "player_id",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "awareness_api",
+      "file": "src/lua_api/awareness_api.rs",
+      "line": 680,
       "kind": "fn",
       "name": "group_id",
       "has_doc": true
@@ -82629,7 +83205,7 @@
       "source": "lua_api",
       "module": "globe_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 3073,
+      "line": 3076,
       "kind": "fn",
       "name": "MAX_PROVINCES",
       "has_doc": true
@@ -82638,7 +83214,7 @@
       "source": "lua_api",
       "module": "globe_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 3075,
+      "line": 3078,
       "kind": "fn",
       "name": "MAX_REGIONS",
       "has_doc": true
@@ -82647,7 +83223,7 @@
       "source": "lua_api",
       "module": "globe_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 3077,
+      "line": 3080,
       "kind": "fn",
       "name": "LOD_FAR",
       "has_doc": true
@@ -82656,7 +83232,7 @@
       "source": "lua_api",
       "module": "globe_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 3079,
+      "line": 3082,
       "kind": "fn",
       "name": "LOD_MID",
       "has_doc": true
@@ -82665,7 +83241,7 @@
       "source": "lua_api",
       "module": "globe_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 3081,
+      "line": 3084,
       "kind": "fn",
       "name": "LOD_NEAR",
       "has_doc": true
@@ -83502,52 +84078,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 852,
-      "kind": "fn",
-      "name": "cell_value",
-      "has_doc": true
-    },
-    {
-      "source": "lua_api",
-      "module": "raycaster_api",
-      "file": "src/lua_api/raycaster_api.rs",
-      "line": 854,
-      "kind": "fn",
-      "name": "ray_angle",
-      "has_doc": true
-    },
-    {
-      "source": "lua_api",
-      "module": "raycaster_api",
-      "file": "src/lua_api/raycaster_api.rs",
-      "line": 857,
-      "kind": "fn",
-      "name": "side",
-      "has_doc": true
-    },
-    {
-      "source": "lua_api",
-      "module": "raycaster_api",
-      "file": "src/lua_api/raycaster_api.rs",
-      "line": 865,
-      "kind": "fn",
-      "name": "feature",
-      "has_doc": true
-    },
-    {
-      "source": "lua_api",
-      "module": "raycaster_api",
-      "file": "src/lua_api/raycaster_api.rs",
-      "line": 889,
-      "kind": "fn",
-      "name": "texture",
-      "has_doc": true
-    },
-    {
-      "source": "lua_api",
-      "module": "raycaster_api",
-      "file": "src/lua_api/raycaster_api.rs",
-      "line": 931,
+      "line": 1022,
       "kind": "fn",
       "name": "kind",
       "has_doc": true
@@ -83556,7 +84087,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 933,
+      "line": 1024,
       "kind": "fn",
       "name": "sill_height",
       "has_doc": true
@@ -83565,7 +84096,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 935,
+      "line": 1026,
       "kind": "fn",
       "name": "lintel_height",
       "has_doc": true
@@ -83574,7 +84105,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 942,
+      "line": 1033,
       "kind": "fn",
       "name": "kind",
       "has_doc": true
@@ -83583,7 +84114,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 948,
+      "line": 1039,
       "kind": "fn",
       "name": "direction",
       "has_doc": true
@@ -83592,7 +84123,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 950,
+      "line": 1041,
       "kind": "fn",
       "name": "open_amount",
       "has_doc": true
@@ -83601,7 +84132,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 2460,
+      "line": 2557,
       "kind": "fn",
       "name": "x",
       "has_doc": true
@@ -83610,7 +84141,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 2462,
+      "line": 2559,
       "kind": "fn",
       "name": "y",
       "has_doc": true
@@ -83619,7 +84150,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 2464,
+      "line": 2561,
       "kind": "fn",
       "name": "openAmount",
       "has_doc": true
@@ -83628,7 +84159,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 2472,
+      "line": 2569,
       "kind": "fn",
       "name": "state",
       "has_doc": true
@@ -83637,7 +84168,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 2980,
+      "line": 3130,
       "kind": "fn",
       "name": "kind",
       "has_doc": true
@@ -83646,7 +84177,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 2982,
+      "line": 3132,
       "kind": "fn",
       "name": "sill_height",
       "has_doc": true
@@ -83655,7 +84186,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 2984,
+      "line": 3134,
       "kind": "fn",
       "name": "lintel_height",
       "has_doc": true
@@ -83664,7 +84195,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 2991,
+      "line": 3141,
       "kind": "fn",
       "name": "kind",
       "has_doc": true
@@ -83673,7 +84204,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 3000,
+      "line": 3150,
       "kind": "fn",
       "name": "open_amount",
       "has_doc": true
@@ -83682,7 +84213,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 3329,
+      "line": 3479,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83691,7 +84222,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 3331,
+      "line": 3481,
       "kind": "fn",
       "name": "depth",
       "has_doc": true
@@ -83700,7 +84231,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 3333,
+      "line": 3483,
       "kind": "fn",
       "name": "r",
       "has_doc": true
@@ -83709,7 +84240,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 3335,
+      "line": 3485,
       "kind": "fn",
       "name": "g",
       "has_doc": true
@@ -83718,7 +84249,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 3337,
+      "line": 3487,
       "kind": "fn",
       "name": "b",
       "has_doc": true
@@ -83727,7 +84258,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 3339,
+      "line": 3489,
       "kind": "fn",
       "name": "blocked",
       "has_doc": true
@@ -83736,25 +84267,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 3823,
-      "kind": "fn",
-      "name": "texture",
-      "has_doc": true
-    },
-    {
-      "source": "lua_api",
-      "module": "raycaster_api",
-      "file": "src/lua_api/raycaster_api.rs",
-      "line": 3830,
-      "kind": "fn",
-      "name": "texture",
-      "has_doc": true
-    },
-    {
-      "source": "lua_api",
-      "module": "raycaster_api",
-      "file": "src/lua_api/raycaster_api.rs",
-      "line": 3840,
+      "line": 3968,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83772,7 +84285,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 3981,
+      "line": 3985,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83781,7 +84294,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 3990,
+      "line": 4120,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83790,7 +84303,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 5139,
+      "line": 4126,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83799,7 +84312,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 5144,
+      "line": 4135,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83808,7 +84321,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 5152,
+      "line": 5369,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83817,7 +84330,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 5158,
+      "line": 5374,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83826,7 +84339,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 5329,
+      "line": 5382,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83835,7 +84348,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 5334,
+      "line": 5388,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83844,7 +84357,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 5342,
+      "line": 5559,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83853,7 +84366,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 5348,
+      "line": 5564,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83862,7 +84375,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 6681,
+      "line": 5572,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83871,7 +84384,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 6686,
+      "line": 5578,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83880,7 +84393,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 6694,
+      "line": 6972,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83889,7 +84402,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 6700,
+      "line": 6977,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83898,7 +84411,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 6883,
+      "line": 6985,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83907,7 +84420,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 6888,
+      "line": 6991,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83916,7 +84429,7 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 6896,
+      "line": 7174,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83925,7 +84438,25 @@
       "source": "lua_api",
       "module": "raycaster_api",
       "file": "src/lua_api/raycaster_api.rs",
-      "line": 6902,
+      "line": 7179,
+      "kind": "fn",
+      "name": "texture",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "raycaster_api",
+      "file": "src/lua_api/raycaster_api.rs",
+      "line": 7187,
+      "kind": "fn",
+      "name": "texture",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "raycaster_api",
+      "file": "src/lua_api/raycaster_api.rs",
+      "line": 7193,
       "kind": "fn",
       "name": "texture",
       "has_doc": true
@@ -83934,7 +84465,7 @@
       "source": "lua_api",
       "module": "render_api",
       "file": "src/lua_api/render_api.rs",
-      "line": 4449,
+      "line": 4453,
       "kind": "fn",
       "name": "drawColoredPolygon",
       "has_doc": true

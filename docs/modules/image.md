@@ -2619,7 +2619,7 @@ end
 
 #### `LImageShaderJob:cancel`
 
-Cancels this image shader job.
+Cancels this pending offline image shader job.
 
 ```lua
 LImageShaderJob:cancel()
@@ -2653,7 +2653,7 @@ LImageShaderJob:poll()
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata)? | Completed image result. |
+| [LImageData](#limagedata) | Completed image result. |
 
 **Example**
 
@@ -2689,7 +2689,7 @@ LImageShaderJob:wait(timeoutMs)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata)? | Completed image result. |
+| [LImageData](#limagedata) | Completed image result. |
 
 **Example**
 

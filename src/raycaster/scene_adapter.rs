@@ -13,6 +13,7 @@ use crate::physics::World;
 #[cfg(feature = "obj-loader")]
 use crate::render::obj_loader::ObjModel;
 use crate::runtime::resource_keys::TextureKey;
+use std::collections::HashMap;
 
 use super::build_scene::{DirectionalSpriteTextures, WorldSprite};
 use super::lighting::PointLight;
@@ -112,6 +113,8 @@ pub struct SceneAdapterSprite {
     pub directional_textures: Option<DirectionalSpriteTextures>,
     /// Sprite size in world units.
     pub size: f32,
+    /// Arbitrary string metadata returned by scene/entity picking.
+    pub attrs: HashMap<String, String>,
 }
 
 impl SceneAdapterSprite {
@@ -134,6 +137,7 @@ impl SceneAdapterSprite {
                 .unwrap_or(self.texture_key),
             directional_textures,
             size: self.size,
+            attrs: self.attrs.clone(),
         })
     }
 }
@@ -188,6 +192,8 @@ pub struct ResolvedSceneModel {
     pub z_offset: f32,
     /// Uniform scale multiplier.
     pub scale: f32,
+    /// Arbitrary string metadata returned by scene/entity picking.
+    pub attrs: HashMap<String, String>,
 }
 
 /// Model binding owned by a `SceneAdapter`.
@@ -206,6 +212,8 @@ pub struct SceneAdapterModel {
     pub z_offset: f32,
     /// Uniform scale multiplier.
     pub scale: f32,
+    /// Arbitrary string metadata returned by scene/entity picking.
+    pub attrs: HashMap<String, String>,
 }
 
 #[cfg(feature = "obj-loader")]
@@ -222,6 +230,7 @@ impl SceneAdapterModel {
             yaw: transform.angle,
             z_offset: self.z_offset,
             scale: self.scale,
+            attrs: self.attrs.clone(),
         })
     }
 }

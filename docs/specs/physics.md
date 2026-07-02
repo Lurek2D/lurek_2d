@@ -266,7 +266,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LBody:getAngularDamping() -> number`: Returns the angular damping factor (rotational decay rate).
 - `LBody:getAngularVelocity() -> number`: Returns the body's angular (rotational) velocity.
 - `LBody:getBeamReflectivity() -> number`: Returns the energy multiplier used when a reflective beam bounces from this body.
-- `LBody:getCollisionGroup() -> integer?`: Returns the single 0..15 collision group for this body, or nil for multi-group masks.
+- `LBody:getCollisionGroup() -> integer`: Returns the single 0..15 collision group for this body, or nil for multi-group masks.
 - `LBody:getFriction() -> number`: Returns the body's friction coefficient.
 - `LBody:getGravityScale() -> number`: Returns the gravity scale multiplier for this body (1.0 = normal gravity).
 - `LBody:getHeight() -> number`: Returns the body's bounding height (from its primary shape).
@@ -330,17 +330,17 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 ##### Methods
 
-- `LFlowStream:destroy() -> nil`: Disables this flow field.
-- `LFlowStream:getId() -> integer`: Returns this flow field id.
+- `LFlowStream:destroy() -> nil`: Disables and removes this flow field from the world.
+- `LFlowStream:getId() -> integer`: Returns the stable numeric ID for this flow field.
 - `LFlowStream:getLayerMask() -> integer`: Returns this flow field layer mask.
-- `LFlowStream:getStrength() -> number`: Returns this flow field strength.
+- `LFlowStream:getStrength() -> number`: Returns the current movement strength for this flow field.
 - `LFlowStream:isEnabled() -> boolean`: Returns whether this flow field is enabled.
 - `LFlowStream:setApplication(mode) -> nil`: Sets the body-application mode used during stepping.
 - `LFlowStream:setCombine(mode) -> nil`: Sets how this field combines with overlapping fields.
 - `LFlowStream:setEnabled(enabled) -> nil`: Enables or disables this flow field.
 - `LFlowStream:setLayerMask(mask) -> nil`: Sets the body-layer mask that this field affects.
 - `LFlowStream:setPoints(points) -> nil`: Replaces the polyline points of a path-shaped flow field.
-- `LFlowStream:setStrength(strength) -> nil`: Sets this flow field strength.
+- `LFlowStream:setStrength(strength) -> nil`: Sets the current movement strength for this flow field.
 - `LFlowStream:setWidth(width) -> nil`: Sets the width of a path-shaped flow field.
 - `LFlowStream:type() -> string`: Returns the type name of this object.
 - `LFlowStream:typeOf(name) -> boolean`: Returns whether this object matches the requested type name.
@@ -396,7 +396,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LPhysicsShape:getRadius() -> number`: Returns the radius of a circle shape. Errors if called on a non-circle shape.
 - `LPhysicsShape:getType() -> string`: Returns the shape kind as a string: "circle", "rectangle", "polygon", "edge", or "chain".
 - `LPhysicsShape:getVertexCount() -> integer`: Returns the number of local-space vertices for polygon, rectangle, edge, or chain shapes; circles return 0.
-- `LPhysicsShape:getVertices() -> table?`: Returns local-space vertices as an array of `{x, y}` tables, or nil for circles.
+- `LPhysicsShape:getVertices() -> table`: Returns local-space vertices as an array of `{x, y}` tables, or nil for circles.
 - `LPhysicsShape:setDensity(density) -> nil`: Sets the density used when this shape is attached to a body (affects mass calculation).
 - `LPhysicsShape:setFriction(friction) -> nil`: Sets the friction coefficient for this shape.
 - `LPhysicsShape:setRestitution(restitution) -> nil`: Sets the restitution (bounciness) for this shape.
@@ -553,9 +553,9 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:getContacts() -> table`: Returns all currently active contact manifolds with normals and touching state.
 - `LWorld:getEndContactEvents() -> table`: Returns contact-end events from the last step (pairs of bodies that stopped touching).
 - `LWorld:getFixtureMaterial(bodyId, fixtureIndex) -> table`: Returns the current material table for one fixture.
-- `LWorld:getFlowField(id) -> table?`: Returns one authored flow field table by id, or nil when missing.
+- `LWorld:getFlowField(id) -> table`: Returns one authored flow field table by id, or nil when missing.
 - `LWorld:getGravity() -> number`: Returns the current world gravity vector.
-- `LWorld:getGravityVector(id) -> table?`: Returns an additive gravity vector by ID, or nil when no active vector exists.
+- `LWorld:getGravityVector(id) -> table`: Returns an additive gravity vector by ID, or nil when no active vector exists.
 - `LWorld:getJointBodies(jointId) -> integer`: Returns the two body IDs connected by a joint.
 - `LWorld:getJointBreakForce(jointId) -> number`: Returns the break force threshold for a joint.
 - `LWorld:getJointIds() -> integer[]`: Returns a sequential table of all joint IDs currently in the world.
@@ -581,7 +581,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:raycastAll(x, y, dx, dy, maxDist, filter?) -> table`: Casts a directional ray and returns all bodies hit within max distance as a table of results.
 - `LWorld:raycastClosest(x, y, dx, dy, maxDist, filter?) -> table`: Casts a directional ray from a point and returns the closest hit within max distance.
 - `LWorld:reflectBodyVelocity(bodyId, normalX, normalY, coefficient) -> boolean`: Reflects a body's current velocity around a supplied world-space surface normal.
-- `LWorld:removeFlowField(id) -> boolean`: Disables one flow field by id.
+- `LWorld:removeFlowField(id) -> boolean`: Disables and removes one authored flow field by id.
 - `LWorld:removeGravityVector(id) -> boolean`: Removes one additive gravity vector so it no longer affects future steps.
 - `LWorld:resetCollisionGroups() -> nil`: Restores all 16 collision groups so every group can collide with every other group.
 - `LWorld:resetWorld() -> nil`: Fully resets the world to its post-construction state.

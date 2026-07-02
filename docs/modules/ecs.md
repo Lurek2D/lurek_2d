@@ -249,20 +249,21 @@ end
 Returns the current value of one object property, honoring any registered getter override first.
 
 ```lua
-lurek.ecs.getProperty(name)
+lurek.ecs.getProperty(self, name)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
+| `self` | LObject | Object table that owns the property. |
 | `name` | string | Property name to read from the object or its property metadata table. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| any | Current property value, getter result, or `nil` when the property is unset. |
+| LuaValue | Current property value, getter result, or `nil` when the property is unset. |
 
 **Example**
 
@@ -355,13 +356,14 @@ end
 Returns whether this object inherits from or matches the supplied ECS class name.
 
 ```lua
-lurek.ecs.isA(candidate)
+lurek.ecs.isA(self, candidate)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
+| `self` | LObject | Object table to inspect. |
 | `candidate` | string | ECS class name to compare against the object's registered class hierarchy. |
 
 **Returns**
@@ -519,13 +521,14 @@ end
 Writes one object property, delegating to a registered setter override when the property defines one.
 
 ```lua
-lurek.ecs.setProperty(name, value)
+lurek.ecs.setProperty(self, name, value)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
+| `self` | LObject | Object table that owns the property. |
 | `name` | string | Property name to update on the object table. |
 | `value` | any | New Lua value written directly or passed through the property's setter. |
 
@@ -550,14 +553,14 @@ end
 Returns the registered ECS class name for this object table.
 
 ```lua
-lurek.ecs.type(this)
+lurek.ecs.type(self)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `this` | any |  |
+| `self` | LObject | Object table to inspect. |
 
 **Returns**
 
@@ -585,13 +588,14 @@ end
 Returns whether this object matches a supported Lua-visible type or ECS class name.
 
 ```lua
-lurek.ecs.typeOf(candidate)
+lurek.ecs.typeOf(self, candidate)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
+| `self` | LObject | Object table to inspect. |
 | `candidate` | string | Type or class name to compare against `LObject` and the object's ECS class hierarchy. |
 
 **Returns**

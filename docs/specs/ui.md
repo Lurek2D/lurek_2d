@@ -729,7 +729,7 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 ##### Methods
 
 - `LPropertyWidget:addGroup(title, collapsed?) -> integer`: Adds a collapsible property group and returns its 1-based index.
-- `LPropertyWidget:addProperty(group, name, value, valueType?, options?, readOnly?) -> integer`: Adds a property row to a group.
+- `LPropertyWidget:addProperty(group, name, value, valueType?, options?, readOnly?) -> integer`: Adds a labeled property row to the selected group.
 - `LPropertyWidget:getGroupCount() -> integer`: Returns the number of property groups.
 - `LPropertyWidget:getLabelWidth() -> number`: Returns the left label column width in pixels.
 - `LPropertyWidget:getPropertyCount(group) -> integer`: Returns the row count for a property group.

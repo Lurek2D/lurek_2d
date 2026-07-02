@@ -407,7 +407,7 @@ impl LuaUserData for LuaParallaxLayer {
         });
         // -- getShader --
         /// Returns the draw-target shader bound to this parallax layer, if any.
-        /// @return | LShader? | Bound shader handle, or nil.
+        /// @return | LShader | Bound shader handle, or nil.
         methods.add_method("getShader", |_, this, ()| {
             Ok(this.layer.borrow().shader.map(|key| LuaShader {
                 key,

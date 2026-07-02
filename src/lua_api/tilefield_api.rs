@@ -1394,7 +1394,7 @@ impl LuaUserData for LuaTileField {
         // -- getRegionCells --
         /// Returns one-based cells for a named region, or nil when it does not exist.
         /// @param | name | string | Region name.
-        /// @return | table? | Array of `{ x, y, z }` cells.
+        /// @return | table | Array of `{ x, y, z }` cells.
         methods.add_method("getRegionCells", |lua, this, name: String| {
             let cells = this.inner.borrow().region_cells(&name);
             match cells {
@@ -1415,7 +1415,7 @@ impl LuaUserData for LuaTileField {
         });
 
         // -- clear --
-        /// Clears all cell gameplay state.
+        /// Clears all gameplay state, modifiers, and references in the field.
         methods.add_method("clear", |_, this, ()| {
             this.inner.borrow_mut().clear();
             Ok(())
@@ -1684,7 +1684,7 @@ impl LuaUserData for LuaTileField {
         });
 
         // -- getCategories --
-        /// Returns known category names.
+        /// Returns the sorted names of all known cell categories.
         /// @return | string[] | Sorted category names.
         methods.add_method("getCategories", |lua, this, ()| {
             let names = this.inner.borrow().category_names();
@@ -1697,6 +1697,11 @@ impl LuaUserData for LuaTileField {
 
         // -- setCategoryBlock --
         /// Sets one category blocker on one cell.
+        /// @param | x | integer | One-based cell column.
+        /// @param | y | integer | One-based cell row.
+        /// @param | z | integer? | Optional one-based level index, defaulting to 1.
+        /// @param | category | string | Category name to update.
+        /// @param | blocked | boolean | Whether the category is blocked on that cell.
         methods.add_method(
             "setCategoryBlock",
             |_, this, (x, y, z, category, blocked): (u32, u32, Option<u32>, String, bool)| {
@@ -1710,6 +1715,11 @@ impl LuaUserData for LuaTileField {
 
         // -- blocksCategory --
         /// Returns whether one cell blocks a category.
+        /// @param | x | integer | One-based cell column.
+        /// @param | y | integer | One-based cell row.
+        /// @param | z | integer? | Optional one-based level index, defaulting to 1.
+        /// @param | category | string | Category name to test.
+        /// @return | boolean | True when the addressed cell blocks the selected category.
         methods.add_method(
             "blocksCategory",
             |_, this, (x, y, z, category): (u32, u32, Option<u32>, String)| {
@@ -1719,7 +1729,12 @@ impl LuaUserData for LuaTileField {
         );
 
         // -- setCategoryCost --
-        /// Sets one category cost on one cell.
+        /// Sets one movement-cost override for a category on one cell.
+        /// @param | x | integer | One-based cell column.
+        /// @param | y | integer | One-based cell row.
+        /// @param | z | integer? | Optional one-based level index, defaulting to 1.
+        /// @param | category | string | Category name to update.
+        /// @param | cost | number | Effective movement cost to assign.
         methods.add_method(
             "setCategoryCost",
             |_, this, (x, y, z, category, cost): (u32, u32, Option<u32>, String, f32)| {
@@ -1733,6 +1748,11 @@ impl LuaUserData for LuaTileField {
 
         // -- getCategoryCost --
         /// Returns one effective category cost.
+        /// @param | x | integer | One-based cell column.
+        /// @param | y | integer | One-based cell row.
+        /// @param | z | integer? | Optional one-based level index, defaulting to 1.
+        /// @param | category | string | Category name to inspect.
+        /// @return | number | Effective movement cost for that category on the addressed cell.
         methods.add_method(
             "getCategoryCost",
             |_, this, (x, y, z, category): (u32, u32, Option<u32>, String)| {
@@ -1743,6 +1763,11 @@ impl LuaUserData for LuaTileField {
 
         // -- setCategoryTransmission --
         /// Sets one category transmission multiplier on one cell.
+        /// @param | x | integer | One-based cell column.
+        /// @param | y | integer | One-based cell row.
+        /// @param | z | integer? | Optional one-based level index, defaulting to 1.
+        /// @param | category | string | Category name to update.
+        /// @param | value | number | Transmission multiplier to assign.
         methods.add_method(
             "setCategoryTransmission",
             |_, this, (x, y, z, category, value): (u32, u32, Option<u32>, String, f32)| {
@@ -1756,6 +1781,11 @@ impl LuaUserData for LuaTileField {
 
         // -- getCategoryTransmission --
         /// Returns one effective category transmission multiplier.
+        /// @param | x | integer | One-based cell column.
+        /// @param | y | integer | One-based cell row.
+        /// @param | z | integer? | Optional one-based level index, defaulting to 1.
+        /// @param | category | string | Category name to inspect.
+        /// @return | number | Effective transmission multiplier for that category on the addressed cell.
         methods.add_method(
             "getCategoryTransmission",
             |_, this, (x, y, z, category): (u32, u32, Option<u32>, String)| {
@@ -1766,6 +1796,11 @@ impl LuaUserData for LuaTileField {
 
         // -- setCategoryFilter --
         /// Sets one RGB category filter on one cell.
+        /// @param | x | integer | One-based cell column.
+        /// @param | y | integer | One-based cell row.
+        /// @param | z | integer? | Optional one-based level index, defaulting to 1.
+        /// @param | category | string | Category name to update.
+        /// @param | filter | table | RGB multiplier table with three numeric entries.
         methods.add_method(
             "setCategoryFilter",
             |_, this, (x, y, z, category, filter): (u32, u32, Option<u32>, String, LuaTable)| {
@@ -1784,6 +1819,11 @@ impl LuaUserData for LuaTileField {
 
         // -- getCategoryFilter --
         /// Returns one effective RGB category filter.
+        /// @param | x | integer | One-based cell column.
+        /// @param | y | integer | One-based cell row.
+        /// @param | z | integer? | Optional one-based level index, defaulting to 1.
+        /// @param | category | string | Category name to inspect.
+        /// @return | table | RGB multiplier table for that category on the addressed cell.
         methods.add_method(
             "getCategoryFilter",
             |lua, this, (x, y, z, category): (u32, u32, Option<u32>, String)| {
@@ -1799,6 +1839,13 @@ impl LuaUserData for LuaTileField {
 
         // -- footprintPassable --
         /// Returns whether a rectangular footprint can occupy a cell anchor for a category.
+        /// @param | x | integer | One-based anchor column.
+        /// @param | y | integer | One-based anchor row.
+        /// @param | z | integer? | Optional one-based level index, defaulting to 1.
+        /// @param | w | integer | Footprint width in cells.
+        /// @param | h | integer | Footprint height in cells.
+        /// @param | category | string | Category name to test against blockers and costs.
+        /// @return | boolean | True when the footprint can be placed at the addressed anchor cell.
         methods.add_method(
             "footprintPassable",
             |_, this, (x, y, z, w, h, category): (u32, u32, Option<u32>, u32, u32, String)| {
@@ -2413,7 +2460,7 @@ impl LuaUserData for LuaTileField {
         );
 
         // -- getRefSlots --
-        /// Returns every declared ref slot.
+        /// Returns the sorted names of every declared reference slot.
         /// @return | string[] | Ref slot names.
         methods.add_method("getRefSlots", |lua, this, ()| {
             let slots = this.inner.borrow().ref_slots();

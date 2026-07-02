@@ -180,11 +180,11 @@ This module primarily collaborates with `color`, `image`, `render`, `runtime`. I
 - `LOverlay:getLightningAlpha() -> number`: Returns the current lightning alpha.
 - `LOverlay:getLightningColor() -> number`: Returns overlay lightning RGBA color.
 - `LOverlay:getRenderPlan() -> table`: Returns the current render responsibility plan for active overlay layers.
-- `LOverlay:getShader() -> LShader?`: Returns the shader bound to this overlay, if any.
-- `LOverlay:getShaderLayer(layer) -> LShader?`: Returns a shader bound to one overlay layer, if present.
+- `LOverlay:getShader() -> LShader`: Returns the shader bound to this overlay, if any.
+- `LOverlay:getShaderLayer(layer) -> LShader`: Returns a shader bound to one overlay layer, if present.
 - `LOverlay:getShakeOffset() -> number`: Returns the current screen shake offset.
 - `LOverlay:getStats() -> table`: Returns a telemetry snapshot for dashboard and debug workflows.
-- `LOverlay:getStatusEffect(kind) -> table?`: Returns one status layer table or nil.
+- `LOverlay:getStatusEffect(kind) -> table`: Returns one status layer table or nil.
 - `LOverlay:getStatusEffects() -> table`: Returns all current status layers sorted by priority.
 - `LOverlay:getTimeOfDay() -> number`: Returns the overlay time-of-day value.
 - `LOverlay:getVignetteStrength() -> number`: Returns overlay vignette strength.

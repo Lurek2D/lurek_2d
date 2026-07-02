@@ -62,6 +62,11 @@ impl LuaGlobe {
             .map(f)
             .ok_or_else(|| mlua::Error::RuntimeError(format!("globe '{}' not found", self.name)))
     }
+
+    /// Return the registry handle and globe name used by cursor hover sources.
+    pub(crate) fn cursor_binding(&self) -> (Arc<Mutex<GlobeRegistry>>, String) {
+        (self.reg.clone(), self.name.clone())
+    }
 }
 fn finite_f32(value: f32, label: &str) -> LuaResult<f32> {
     if value.is_finite() {
@@ -101,10 +106,7 @@ fn texture_key_from_raw_id(raw_id: u64) -> (TextureKey, u64) {
     (TextureKey::from(slotmap::KeyData::from_ffi(raw_id)), raw_id)
 }
 
-fn parse_texture_integer(
-    value: i64,
-    api_name: &str,
-) -> LuaResult<Option<(TextureKey, u64)>> {
+fn parse_texture_integer(value: i64, api_name: &str) -> LuaResult<Option<(TextureKey, u64)>> {
     if value < 0 {
         return Err(LuaError::RuntimeError(format!(
             "{api_name}: texture id must be >= 0"
@@ -742,7 +744,10 @@ fn marker_style_snapshot_table<'lua>(
     table.set("color", color_table(lua, style.color)?)?;
     table.set("size", style.size)?;
     table.set("shape", marker_shape_name(style.shape))?;
-    table.set("icon_texture", style.icon_texture_key.map(|key| key.data().as_ffi()))?;
+    table.set(
+        "icon_texture",
+        style.icon_texture_key.map(|key| key.data().as_ffi()),
+    )?;
     table.set("pulse_hz", style.pulse_hz)?;
     table.set("pulse_amplitude", style.pulse_amplitude)?;
     table.set("rotation_deg_per_sec", style.rotation_deg_per_sec)?;
@@ -956,7 +961,7 @@ impl LuaUserData for LuaGlobe {
             })?
         });
         // -- removeTerrainPatch --
-        /// Removes a terrain patch by id.
+        /// Removes a stored terrain patch by its numeric id.
         /// @param | id | integer | Terrain patch id to remove.
         /// @return | boolean | True when a terrain patch was removed.
         methods.add_method_mut("removeTerrainPatch", |_, this, id: u32| {
@@ -2201,13 +2206,13 @@ impl LuaUserData for LuaGlobe {
                 this.with_mut(|g| {
                     g.layers
                         .add(Layer {
-                        name,
-                        visible: true,
-                        alpha: 1.0,
-                        z_order: z_order.unwrap_or(0),
-                        kind: String::new(),
-                        region_colors: HashMap::new(),
-                    })
+                            name,
+                            visible: true,
+                            alpha: 1.0,
+                            z_order: z_order.unwrap_or(0),
+                            kind: String::new(),
+                            region_colors: HashMap::new(),
+                        })
                         .map_err(|err| {
                             LuaError::RuntimeError(format!("lurek.globe.addLayer: {err}"))
                         })
@@ -2353,7 +2358,7 @@ impl LuaUserData for LuaGlobe {
         });
         // -- getShader --
         /// Returns the mapviz-target shader bound to this globe, if any.
-        /// @return | LShader? | Bound shader handle, or nil.
+        /// @return | LShader | Bound shader handle, or nil.
         methods.add_method("getShader", |_, this, ()| {
             let key = this.with(|g| g.shader)?;
             Ok(key.map(|key| LuaShader {
@@ -2548,9 +2553,8 @@ impl LuaUserData for LuaGlobe {
                         steps,
                         visible: true,
                     };
-                    g.add_arc(arc).map_err(|err| {
-                        LuaError::RuntimeError(format!("lurek.globe.addArc: {err}"))
-                    })
+                    g.add_arc(arc)
+                        .map_err(|err| LuaError::RuntimeError(format!("lurek.globe.addArc: {err}")))
                 })?
             },
         );
@@ -2682,9 +2686,9 @@ fn parse_globe_spec(tbl: Option<LuaTable>, label: &str) -> LuaResult<GlobeSpec> 
         if let Ok(v) = t.get::<_, f32>("radius") {
             let v = finite_f32(v, &format!("{label} radius"))?;
             if v < 1.0 {
-                return Err(LuaError::RuntimeError(
-                    format!("lurek.globe.{label}: radius must be >= 1"),
-                ));
+                return Err(LuaError::RuntimeError(format!(
+                    "lurek.globe.{label}: radius must be >= 1"
+                )));
             }
             spec.radius = v;
         }
@@ -2703,9 +2707,9 @@ fn parse_globe_spec(tbl: Option<LuaTable>, label: &str) -> LuaResult<GlobeSpec> 
         if let Ok(v) = t.get::<_, f32>("border_width") {
             let v = finite_f32(v, &format!("{label} border_width"))?;
             if v < 0.0 {
-                return Err(LuaError::RuntimeError(
-                    format!("lurek.globe.{label}: border_width must be >= 0"),
-                ));
+                return Err(LuaError::RuntimeError(format!(
+                    "lurek.globe.{label}: border_width must be >= 0"
+                )));
             }
             spec.border_width = v;
         }
@@ -2719,9 +2723,9 @@ fn parse_globe_spec(tbl: Option<LuaTable>, label: &str) -> LuaResult<GlobeSpec> 
         if let Ok(v) = t.get::<_, f32>("atmosphere_width") {
             let v = finite_f32(v, &format!("{label} atmosphere_width"))?;
             if v < 0.0 {
-                return Err(LuaError::RuntimeError(
-                    format!("lurek.globe.{label}: atmosphere_width must be >= 0"),
-                ));
+                return Err(LuaError::RuntimeError(format!(
+                    "lurek.globe.{label}: atmosphere_width must be >= 0"
+                )));
             }
             spec.atmosphere_width = v;
         }
@@ -2753,9 +2757,8 @@ fn parse_globe_spec(tbl: Option<LuaTable>, label: &str) -> LuaResult<GlobeSpec> 
             )?;
         }
     }
-    validate_globe_spec(&spec).map_err(|error| {
-        LuaError::RuntimeError(format!("lurek.globe.{label}: {error}"))
-    })?;
+    validate_globe_spec(&spec)
+        .map_err(|error| LuaError::RuntimeError(format!("lurek.globe.{label}: {error}")))?;
     Ok(spec)
 }
 /// Registers `lurek.globe` constructors, geometry helpers, and constants.

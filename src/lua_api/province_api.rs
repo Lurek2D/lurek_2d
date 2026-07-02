@@ -849,7 +849,7 @@ impl LuaUserData for LuaProvinceRegistry {
         });
         // -- getShader --
         /// Returns the currently bound command-render province shader, or nil.
-        /// @return | LShader? | Bound shader handle.
+        /// @return | LShader | Bound shader handle.
         methods.add_method("getShader", |_, this, ()| {
             let key = this.with_registry(|r| r.get_shader())?;
             Ok(key.map(|key| LuaShader {

@@ -1,7 +1,14 @@
 -- Canonical unit coverage for lurek.cursor.
 
 local function new_manager()
-    return lurek.cursor.newManager()
+    local manager = lurek.cursor.newManager()
+    manager:setSystem("arrow")
+    manager:setContext("default")
+    manager:setVisible(true)
+    manager:setLocked(false)
+    manager:disableTrail()
+    manager:disableZoom()
+    return manager
 end
 
 local function new_custom()
@@ -19,8 +26,12 @@ end
 -- @describe lurek.cursor module
 describe("lurek.cursor module", function()
     -- @covers lurek.cursor.newManager
-    it("newManager creates a cursor manager", function()
-        expect_equal("userdata", type(new_manager()))
+    it("newManager returns userdata handles for one shared runtime cursor", function()
+        local a = new_manager()
+        local b = new_manager()
+        expect_equal("userdata", type(a))
+        a:setContext("shared_handle_ctx")
+        expect_equal("shared_handle_ctx", b:getContext())
     end)
 
     -- @covers lurek.cursor.newCustom
@@ -76,34 +87,25 @@ describe("cursor manager methods", function()
     -- @covers LCursorManager:setContext
     it("setContext changes the active context string", function()
         local manager = new_manager()
-        manager:setContext("ui_button")
-        expect_equal("ui_button", manager:getContext())
+        manager:setContext("ctx_set_context")
+        expect_equal("ctx_set_context", manager:getContext())
     end)
 
     -- @covers LCursorManager:addRule
-    it("addRule registers a context cursor rule", function()
+    it("addRule registers both legacy and table-driven cursor rules", function()
         local manager = new_manager()
         expect_no_error(function()
-            manager:addRule("ui_button", "hand")
+            manager:addRule("ctx_add_rule", "hand")
         end)
-    end)
-
-    -- @covers LCursorManager:removeRule
-    it("removeRule clears a registered context rule and falls back cleanly", function()
-        local manager = new_manager()
-        manager:addRule("ui_button", "hand")
-        expect_no_error(function()
-            manager:removeRule("ui_button")
-        end)
-        manager:setSystem("hand")
-        manager:addRule("ui_button", "crosshair")
-        manager:setContext("ui_button")
-        manager:removeRule("ui_button")
-        manager:setContext("default")
-        expect_equal("default", manager:getContext())
-        expect_no_error(function()
-            manager:setSystem("hand")
-        end)
+        manager:defineState("inspect", { system = "crosshair" })
+        local id = manager:addRule({
+            priority = 25,
+            event = "context",
+            context = "ctx_v2_rule",
+            state = "inspect",
+        })
+        expect_type("number", id)
+        expect_true(id >= 1)
     end)
 
     -- @covers LCursorManager:update
@@ -191,6 +193,112 @@ describe("cursor manager methods", function()
         expect_no_error(function()
             manager:disableZoom()
         end)
+    end)
+
+    -- @covers LCursorManager:defineState
+    it("defineState accepts named system and custom cursor states", function()
+        local manager = new_manager()
+        expect_no_error(function()
+            manager:defineState("inspect", {
+                system = "crosshair",
+                scale = 1.25,
+                offset_x = 2,
+                offset_y = -1,
+                trail = {
+                    mode = "ribbon",
+                    width = 6,
+                    lifetime = 0.4,
+                },
+                zoom = {
+                    magnification = 2.5,
+                    radius = 48,
+                },
+            })
+            manager:defineState("paint", {
+                custom = new_custom(),
+                native_preferred = false,
+            })
+        end)
+    end)
+
+    -- @covers LCursorManager:defineEffect
+    it("defineEffect accepts particle burst presets", function()
+        local manager = new_manager()
+        expect_no_error(function()
+            manager:defineEffect("click_burst", {
+                shape = "ring",
+                count = 10,
+                spread = math.pi,
+                lifetime = 0.2,
+                speed = 90,
+                size = 6,
+                button = 0,
+            })
+        end)
+    end)
+
+    -- @covers LCursorManager:addSource
+    it("addSource accepts callback sources and removeSource detaches them", function()
+        local manager = new_manager()
+        local id = manager:addSource({
+            kind = "callback",
+            callback = function(x, y)
+                return {
+                    module = "test",
+                    kind = "hover",
+                    surface = "surface",
+                    id = string.format("%.0f:%.0f", x, y),
+                }
+            end,
+        })
+        expect_type("number", id)
+        expect_true(manager:removeSource(id))
+        expect_false(manager:removeSource(id))
+    end)
+
+    -- @covers LCursorManager:getLastHit
+    it("getLastHit returns nil when no hover source has produced a hit yet", function()
+        expect_equal(nil, new_manager():getLastHit())
+    end)
+
+    -- @covers LCursorManager:getActiveState
+    it("getActiveState reports the resolved runtime cursor kind", function()
+        local manager = new_manager()
+        manager:setSystem("hand")
+        local state = manager:getActiveState()
+        expect_equal("system", state.kind)
+        expect_type("boolean", state.native_preferred)
+        expect_type("number", state.scale)
+    end)
+
+    -- @covers LCursorManager:removeSource
+    it("removeSource returns false when the source id is unknown", function()
+        expect_false(new_manager():removeSource(999999))
+    end)
+
+    -- @covers LCursorManager:removeRule
+    it("removeRule clears a registered context rule and falls back cleanly", function()
+        local manager = new_manager()
+        manager:addRule("ctx_remove_rule", "hand")
+        expect_no_error(function()
+            manager:removeRule("ctx_remove_rule")
+        end)
+        manager:setSystem("hand")
+        manager:addRule("ctx_remove_rule", "crosshair")
+        manager:setContext("ctx_remove_rule")
+        manager:removeRule("ctx_remove_rule")
+        manager:setContext("default")
+        expect_equal("default", manager:getContext())
+        expect_no_error(function()
+            manager:setSystem("hand")
+        end)
+    end)
+
+    -- @covers LCursorManager:type
+    it("type returns the cursor manager userdata name", function()
+        local manager = new_manager()
+        expect_equal("LCursorManager", manager:type())
+        expect_true(manager:isVisible())
     end)
 end)
 

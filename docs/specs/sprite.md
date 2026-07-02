@@ -193,7 +193,7 @@ This module primarily collaborates with `animation`, `color`, `image`, `math`, `
 - `LSprite:getNormalIntensity() -> number`: Returns the normal-map intensity multiplier.
 - `LSprite:getNormalMap() -> integer`: Returns the assigned normal-map texture handle, or nil when absent.
 - `LSprite:getPosition() -> number`: Returns the sprite anchor position in pixels.
-- `LSprite:getShader() -> LShader?`: Returns the sprite material shader bound to this sprite, if any.
+- `LSprite:getShader() -> LShader`: Returns the sprite material shader bound to this sprite, if any.
 - `LSprite:hasNormalMap() -> boolean`: Returns whether the sprite currently has a normal map.
 - `LSprite:setNormalIntensity(intensity) -> nil`: Sets the normal-map intensity used by lit sprite workflows.
 - `LSprite:setNormalMap(texture_id) -> nil`: Assigns the texture used as this sprite's normal map for lit sprite workflows.
@@ -315,7 +315,7 @@ This module primarily collaborates with `animation`, `color`, `image`, `math`, `
 
 - `LSpriteAutoTileSheet:getBitmaskForTile(tile_id) -> integer`: Returns the bitmask for a one-based tile id.
 - `LSpriteAutoTileSheet:getDefaultMode() -> string`: Returns the default autotile matching mode for this layout.
-- `LSpriteAutoTileSheet:getLayout() -> string`: Returns the autotile layout name.
+- `LSpriteAutoTileSheet:getLayout() -> string`: Returns the autotile layout name used by this sheet.
 - `LSpriteAutoTileSheet:getQuad(tile_id) -> table`: Returns a one-based tile source rectangle.
 - `LSpriteAutoTileSheet:getTileCount() -> integer`: Returns the number of logical tiles in the sheet.
 - `LSpriteAutoTileSheet:getTileForBitmask(bitmask) -> integer|nil`: Returns a one-based tile id for a bitmask, or nil when missing.

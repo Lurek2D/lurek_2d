@@ -1,19 +1,19 @@
 {
   "meta": {
-    "generated": "2026-07-01T20:47:41.255347+00:00",
+    "generated": "2026-07-02T19:39:16.888895+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "rust_items": 3201,
+      "rust_items": 3214,
       "rust_modules": 730,
       "rust_tests": 502,
-      "lua_tests": 285
+      "lua_tests": 286
     }
   },
   "rust_api": {
     "summary": {
-      "total_items": 3201,
-      "documented": 3201,
+      "total_items": 3214,
+      "documented": 3214,
       "modules": 730
     },
     "modules": {
@@ -1816,14 +1816,14 @@
             "kind": "struct",
             "description": "Thin bootstrap wrapper that owns startup config and launches `LurekApp` event loop.",
             "file": "src/app/app.rs",
-            "line": 3861
+            "line": 3876
           },
           {
             "name": "AppRunOptions",
             "kind": "struct",
             "description": "Startup options passed to the GUI/TUI/CLI application runner.",
             "file": "src/app/app.rs",
-            "line": 3869
+            "line": 3884
           }
         ]
       },
@@ -4541,36 +4541,106 @@
         ]
       },
       "cursor::context": {
-        "module_doc": "`src/cursor/context.rs` owns context-sensitive cursor selection plus the manager that combines cursor, trail, and zoom. It defines `CursorState`, `CursorContext`, `ContextRule`, and `CursorManager`, keeping cursor policy state together. Rule registration, context switching, visibility, locking, active-position tracking, and animated updates live here. Trail and zoom attachment also live here, making this file the owner of composed runtime cursor presentation state. This is the policy boundary for script-driven cursor changes; image buffers and effect internals stay in sibling files. Read it when context mapping, active-state transitions, or cursor-manager behavior needs to change.",
+        "module_doc": "`src/cursor/context.rs` owns the active runtime cursor controller used by Lua, input, and render glue. It defines cursor states, normalized hover hits, rules, sources, effects, and the manager that resolves them. Legacy context switching stays supported, but the same owner now also handles hover-driven state changes. Rule evaluation here chooses between system, custom, and animated cursors before overlay rendering happens. Hover hits from globe, raycaster, or callbacks are normalized here so one resolver can handle every source. Burst effects, trail presets, timed overrides, and zoom-lens state all live in this shared cursor owner. The manager keeps last-hit metadata and active-state snapshots available to Lua without duplicating policy. Input-facing structs in this file translate button, release, and wheel state into cursor-local reactions. Open this file when cursor policy, source matching, or per-frame state resolution semantics need to change. Open this file when cursor rule resolution, source polling contracts, or overlay-state behavior changes.",
         "source_file": "src/cursor/context.rs",
         "items": [
           {
             "name": "CursorState",
             "kind": "enum",
-            "description": "Active cursor state: the currently displayed cursor kind (system, custom, or animated).",
+            "description": "Active cursor state: the currently displayed cursor kind.",
             "file": "src/cursor/context.rs",
-            "line": 16
+            "line": 26
           },
           {
             "name": "CursorContext",
             "kind": "enum",
             "description": "Context that determines which cursor to show.",
             "file": "src/cursor/context.rs",
-            "line": 24
+            "line": 45
           },
           {
             "name": "ContextRule",
             "kind": "struct",
-            "description": "Rule mapping a context to a cursor state.",
+            "description": "Rule mapping a legacy context to one cursor state.",
             "file": "src/cursor/context.rs",
-            "line": 67
+            "line": 88
+          },
+          {
+            "name": "CursorStateSpec",
+            "kind": "struct",
+            "description": "One named cursor state definition used by the runtime rule engine.",
+            "file": "src/cursor/context.rs",
+            "line": 95
+          },
+          {
+            "name": "CursorHit",
+            "kind": "struct",
+            "description": "Normalized hover hit shared by globe, raycaster, and future cursor sources.",
+            "file": "src/cursor/context.rs",
+            "line": 122
+          },
+          {
+            "name": "CursorRuleTarget",
+            "kind": "struct",
+            "description": "Rule target matcher for one hover hit.",
+            "file": "src/cursor/context.rs",
+            "line": 133
+          },
+          {
+            "name": "CursorRuleEvent",
+            "kind": "enum",
+            "description": "Cursor rule event class.",
+            "file": "src/cursor/context.rs",
+            "line": 175
+          },
+          {
+            "name": "CursorRule",
+            "kind": "struct",
+            "description": "Flexible state/effect rule used by the runtime resolver.",
+            "file": "src/cursor/context.rs",
+            "line": 186
+          },
+          {
+            "name": "CursorEffectSpec",
+            "kind": "struct",
+            "description": "One cursor-managed effect preset.",
+            "file": "src/cursor/context.rs",
+            "line": 200
+          },
+          {
+            "name": "CursorBurstInstance",
+            "kind": "struct",
+            "description": "Runtime cursor effect instance spawned by a matching rule.",
+            "file": "src/cursor/context.rs",
+            "line": 234
+          },
+          {
+            "name": "CursorSource",
+            "kind": "enum",
+            "description": "One registered cursor source.",
+            "file": "src/cursor/context.rs",
+            "line": 249
+          },
+          {
+            "name": "CursorInputFrame",
+            "kind": "struct",
+            "description": "Snapshot of mouse state consumed by the cursor runtime on one frame.",
+            "file": "src/cursor/context.rs",
+            "line": 288
+          },
+          {
+            "name": "CursorActiveStateInfo",
+            "kind": "struct",
+            "description": "Lightweight description of the resolved active cursor state.",
+            "file": "src/cursor/context.rs",
+            "line": 310
           },
           {
             "name": "CursorManager",
             "kind": "struct",
-            "description": "Manages cursor state, context rules, trail, and zoom.",
+            "description": "One active runtime cursor controller shared by the whole frame.",
             "file": "src/cursor/context.rs",
-            "line": 76
+            "line": 320
           }
         ]
       },
@@ -4656,34 +4726,34 @@
         ]
       },
       "cursor::trail": {
-        "module_doc": "`src/cursor/trail.rs` owns the trailing cursor effect that stores fading points and optional line-style behavior. It defines `TrailPoint`, `TrailMode`, and `CursorTrail`, keeping sample storage and trail configuration together. Point aging, minimum-distance sampling, lifetime expiry, mode switching, and bounded history management live here. This file is the owner of trail-effect state, while manager-level attachment and cursor rules stay elsewhere. Read it when trail sampling, point retention, fade lifetime, or trail mode behavior needs to change.",
+        "module_doc": "`src/cursor/trail.rs` owns cursor trail sampling, retention, and render-facing configuration. It keeps the runtime point buffer together with mode, spacing, lifetime, blend, and optional texture/shader data. `CursorTrail` stores author-facing knobs for points, lines, ribbons, and stamped cursor decals in one place. `TrailPoint` records sampled screen positions plus age so fading and pruning stay deterministic frame to frame. The file is the narrow owner for trail spacing rules, width settings, max-point limits, and blend defaults. Open this file when cursor trails change shape or lifetime semantics, not when cursor-state policy changes.",
         "source_file": "src/cursor/trail.rs",
         "items": [
           {
             "name": "TrailPoint",
             "kind": "struct",
-            "description": "A single point in the cursor trail.",
+            "description": "One sampled point inside the cursor trail buffer.",
             "file": "src/cursor/trail.rs",
-            "line": 11
+            "line": 14
           },
           {
             "name": "TrailMode",
             "kind": "enum",
-            "description": "Trail rendering mode: controls how trail points are drawn behind the cursor.",
+            "description": "Trail drawing mode.",
             "file": "src/cursor/trail.rs",
             "line": 22
           },
           {
             "name": "CursorTrail",
             "kind": "struct",
-            "description": "Manages a trail of points behind the cursor.",
+            "description": "Runtime trail state and presentation config.",
             "file": "src/cursor/trail.rs",
-            "line": 35
+            "line": 37
           }
         ]
       },
       "cursor::zoom": {
-        "module_doc": "`src/cursor/zoom.rs` owns the magnifier-lens state used to zoom content around the active cursor position. It defines `CursorZoom`, keeping enable state, magnification, radius, and border styling in one owner. Magnification updates, radius clamping, and simple enable toggling all live here under one small feature contract. Read this file when cursor zoom limits, default lens styling, or toggle behavior for the magnifier feature changes.",
+        "module_doc": "`src/cursor/zoom.rs` owns the magnifier lens config used by the shared cursor overlay runtime. `CursorZoom` stores magnification, radius, border styling, softness, and an optional shader override. The runtime reads this owner when it decides whether to draw a live circular lens over the captured frame. Open this file when zoom-lens tuning or persisted cursor magnifier defaults change across integrations.",
         "source_file": "src/cursor/zoom.rs",
         "items": [
           {
@@ -4691,7 +4761,7 @@
             "kind": "struct",
             "description": "Cursor zoom/magnifier configuration.",
             "file": "src/cursor/zoom.rs",
-            "line": 8
+            "line": 10
           }
         ]
       },
@@ -17761,7 +17831,7 @@
         ]
       },
       "raycaster::build_scene": {
-        "module_doc": "This file owns `RaycasterScene::build` and `build_multilevel`, which turn camera state into prepared scene geometry. It defines scene-build inputs such as `SceneBuildParams`, `LoweredFloorCell`, `WorldSprite`, and `LevelSprite`. Wall hits are converted here into perspective-correct quads with texture routing, cell values, depths, and light tint. Floor and ceiling tiles expand into screen-space spans with stable UVs, texture overrides, and roof-aware lighting. Lowered-floor cells generate pits, bottoms, and side faces so vertical relief survives scene translation cleanly. Lighting sampling blends ambient, point, and global light here, with a cache that keeps repeated queries affordable. Roofed cells, ceiling holes, and multilevel visibility rules influence which surfaces are emitted and how they render. Billboard sprites use the same camera model as walls, including directional texture selection from viewer angle. Multilevel builds group sprites and lights per slice, compile level runtimes on demand, and merge visible slices. Texture lookup callbacks keep resource routing outside the builder while geometry and lighting policy stay centralized. This file is the staging boundary between grid-owned ray data and the renderer-facing `RaycasterScene` surface. It is the right owner for changing surface emission, pit geometry, or light application without renderer rewrites. Open this file when scene assembly semantics change; casting, picking, and draw translation live in siblings.",
+        "module_doc": "This file owns `RaycasterScene::build` and `build_multilevel`, which turn camera state into prepared scene geometry. It defines scene-build inputs such as `SceneBuildParams`, `LoweredFloorCell`, `WorldSprite`, and `LevelSprite`. Wall hits are converted here into perspective-correct quads with texture routing, cell values, depths, and light tint. Floor and ceiling tiles expand into screen-space spans with stable UVs, texture overrides, and roof-aware lighting. Lowered-floor cells generate pits, bottoms, and side faces so vertical relief survives scene translation cleanly. Lighting sampling blends ambient, point, and global light here, with a cache that keeps repeated queries affordable. Roofed cells, ceiling holes, and multilevel visibility rules influence which surfaces are emitted and how they render. Billboard sprites use the same camera model as walls, including directional texture selection from viewer angle. Multilevel builds group sprites and lights per slice, compile level runtimes on demand, and merge visible slices. Texture lookup callbacks keep resource routing outside the builder while geometry and lighting policy stay centralized. This file is the staging boundary between grid-owned ray data and the renderer-facing `RaycasterScene` surface. It is the right owner for changing surface emission, pit geometry, or light application without renderer rewrites. Cursor-facing attrs on tiles, sprites, and models are carried through scene assembly so later picks keep semantics. Open this file when scene assembly semantics change; casting, picking, and draw translation live in siblings.",
         "source_file": "src/raycaster/build_scene.rs",
         "items": [
           {
@@ -17769,63 +17839,63 @@
             "kind": "struct",
             "description": "A floor cell that sits below the standard floor plane, used for pits and step-down areas.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 35
+            "line": 36
           },
           {
             "name": "LevelSprite",
             "kind": "struct",
             "description": "A billboard sprite attached to a specific multi-level slice.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 48
+            "line": 49
           },
           {
             "name": "LevelParticleEmitter",
             "kind": "struct",
             "description": "A world-space projected particle emitter attached to a specific multi-level slice.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 57
+            "line": 58
           },
           {
             "name": "SceneBuildParams",
             "kind": "struct",
             "description": "All camera and world parameters consumed by `RaycasterScene::build` each frame.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 1585
+            "line": 1586
           },
           {
             "name": "DirectionalSpriteTextures",
             "kind": "struct",
             "description": "Optional 4-direction texture set for bitmap actors that should read as front/side/back sprites.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 1724
+            "line": 1725
           },
           {
             "name": "WorldSprite",
             "kind": "struct",
             "description": "A billboard sprite placed in world space and projected to screen by `RaycasterScene::build`.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 1763
+            "line": 1764
           },
           {
             "name": "RaycasterParticleEmitter",
             "kind": "struct",
             "description": "A deterministic world-space particle emitter projected into the raycaster view.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 1782
+            "line": 1785
           },
           {
             "name": "TextureLookup",
             "kind": "type",
             "description": "Callback type mapping a wall cell value to an optional `TextureKey`.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 1823
+            "line": 1826
           },
           {
             "name": "CellTextureLookup",
             "kind": "type",
             "description": "Callback type mapping a grid `(x, y)` cell to an optional `TextureKey`.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 1825
+            "line": 1828
           }
         ]
       },
@@ -17891,7 +17961,7 @@
         ]
       },
       "raycaster::dda": {
-        "module_doc": "This file owns `Raycaster2D`, the grid-backed DDA engine that stores wall cells and answers render ray queries. It stores map dimensions, row-major cells, wall alpha overrides, wall features, and synchronized door feature state. Core casting methods produce single hits, layered transparent hits, fan casts, and packed ray buffers from one model. Render visibility helpers reuse the same blocking rules so lighting and screen picking stay aligned with rendering. Door synchronization translates `DoorManager` openness into wall features without replacing underlying tile identity. Sprite and floor helpers project billboards and sample floor rows with the same camera conventions as wall casting. Safe setters ignore invalid writes, and out-of-range reads fall back predictably for tools and runtime probes. Open this file when marching semantics or map-owned ray data change; debug views and scene building live in siblings.",
+        "module_doc": "This file owns `Raycaster2D`, the grid-backed DDA engine that stores wall cells and answers render ray queries. It stores map dimensions, row-major cells, wall alpha overrides, wall features, and synchronized door feature state. Core casting methods produce single hits, layered transparent hits, fan casts, and packed ray buffers from one model. Render visibility helpers reuse the same blocking rules so lighting and screen picking stay aligned with rendering. Door synchronization translates `DoorManager` openness into wall features without replacing underlying tile identity. Sprite and floor helpers project billboards and sample floor rows with the same camera conventions as wall casting. Safe setters ignore invalid writes, and out-of-range reads fall back predictably for tools and runtime probes. Pick attributes also live with the grid here so wall, floor, and ceiling metadata follow the owning cell surface. Screen picking and scene builders read this owner when they need tile semantics beyond the raw numeric cell value. Open this file when marching semantics or map-owned ray data change; debug views and scene building live in siblings.",
         "source_file": "src/raycaster/dda.rs",
         "items": [
           {
@@ -17899,7 +17969,7 @@
             "kind": "struct",
             "description": "2D grid map and DDA ray-stepping engine used by the raycaster subsystem.",
             "file": "src/raycaster/dda.rs",
-            "line": 20
+            "line": 23
           }
         ]
       },
@@ -18030,7 +18100,7 @@
         ]
       },
       "raycaster": {
-        "module_doc": "This module re-exports the raycaster subsystem surface for casting, scene building, lighting, doors, and rendering. It keeps navigation explicit by mapping which sibling files own DDA marching, column batches, height data, and adapters. Public exports here route callers toward `Raycaster2D` for casting and scene types for prepared first-person output. `projection.rs`, `depth_buffer.rs`, and `sprite_projection.rs` own screen-space math and occlusion data. `doors.rs`, `wall_feature.rs`, and `heightmap.rs` hold cell state that changes how blocking tiles render. `build_scene.rs`, `draw.rs`, and `render.rs` translate ray hits into either CPU pixels or engine render commands. Visibility-polygon, segment, and picking helpers stay render-facing and do not own tile gameplay semantics. Change this file when the public raycaster symbol map moves; change siblings when behavior or data rules change.",
+        "module_doc": "This module re-exports the raycaster subsystem surface for casting, scene building, lighting, doors, and rendering. It keeps navigation explicit by mapping which sibling files own DDA marching, column batches, height data, and adapters. Public exports here route callers toward `Raycaster2D` for casting and scene types for prepared first-person output. `projection.rs`, `depth_buffer.rs`, and `sprite_projection.rs` own screen-space math and occlusion data. `doors.rs`, `wall_feature.rs`, and `heightmap.rs` hold cell state that changes how blocking tiles render. `build_scene.rs`, `draw.rs`, and `render.rs` translate ray hits into either CPU pixels or engine render commands. Visibility-polygon, segment, and picking helpers stay render-facing and do not own tile gameplay semantics. Reexports also expose pick-world context so cursor integrations can inspect the last prepared raycaster scene. Open sibling owners instead of this index when changing multilevel data, scene records, or screen-pick payloads. Change this file when the public raycaster symbol map moves; change siblings when behavior or data rules change.",
         "source_file": "src/raycaster/mod.rs",
         "items": [
           {
@@ -18038,166 +18108,180 @@
             "kind": "mod",
             "description": "Raycaster scene construction from camera and world grid.",
             "file": "src/raycaster/mod.rs",
-            "line": 11
+            "line": 13
           },
           {
             "name": "column_batch",
             "kind": "mod",
             "description": "Per-column batch data passed to the renderer.",
             "file": "src/raycaster/mod.rs",
-            "line": 13
+            "line": 15
           },
           {
             "name": "contract",
             "kind": "mod",
             "description": "Shared raycaster validation contracts and strict error types.",
             "file": "src/raycaster/mod.rs",
-            "line": 15
+            "line": 17
           },
           {
             "name": "dda",
             "kind": "mod",
             "description": "DDA (digital differential analysis) ray-stepping core.",
             "file": "src/raycaster/mod.rs",
-            "line": 17
+            "line": 19
           },
           {
             "name": "depth_buffer",
             "kind": "mod",
             "description": "Per-pixel depth buffer used for sprite occlusion.",
             "file": "src/raycaster/mod.rs",
-            "line": 19
+            "line": 21
           },
           {
             "name": "doors",
             "kind": "mod",
             "description": "Door state machine and door manager.",
             "file": "src/raycaster/mod.rs",
-            "line": 21
+            "line": 23
           },
           {
             "name": "draw",
             "kind": "mod",
             "description": "High-level draw call assembly for a full raycasted frame.",
             "file": "src/raycaster/mod.rs",
-            "line": 23
+            "line": 25
           },
           {
             "name": "heightmap",
             "kind": "mod",
             "description": "Variable floor/ceiling height map.",
             "file": "src/raycaster/mod.rs",
-            "line": 25
+            "line": 27
           },
           {
             "name": "level_render",
             "kind": "mod",
             "description": "Level rendering helpers for multi-level raycaster.",
             "file": "src/raycaster/mod.rs",
-            "line": 27
+            "line": 29
           },
           {
             "name": "lighting",
             "kind": "mod",
             "description": "Distance-based wall and sprite lighting.",
             "file": "src/raycaster/mod.rs",
-            "line": 29
+            "line": 31
           },
           {
             "name": "multilevel",
             "kind": "mod",
             "description": "Multi-level grid with floor/ceiling holes.",
             "file": "src/raycaster/mod.rs",
-            "line": 31
+            "line": 33
           },
           {
             "name": "projection",
             "kind": "mod",
             "description": "Column projection math: wall slice height and screen coordinates.",
             "file": "src/raycaster/mod.rs",
-            "line": 33
+            "line": 35
           },
           {
             "name": "ray_hit",
             "kind": "mod",
             "description": "Ray-hit record produced by a single DDA ray.",
             "file": "src/raycaster/mod.rs",
-            "line": 35
+            "line": 37
           },
           {
             "name": "render",
             "kind": "mod",
             "description": "Top-level render dispatch for a raycaster frame.",
             "file": "src/raycaster/mod.rs",
-            "line": 37
+            "line": 39
           },
           {
             "name": "scene",
             "kind": "mod",
             "description": "`RaycasterScene` and its constituent quad/sprite/mesh types.",
             "file": "src/raycaster/mod.rs",
-            "line": 39
+            "line": 41
           },
           {
             "name": "scene_adapter",
             "kind": "mod",
             "description": "Runtime adapter for mapping static or physics-backed 2D entities into raycaster scene inputs.",
             "file": "src/raycaster/mod.rs",
-            "line": 41
+            "line": 43
           },
           {
             "name": "segment",
             "kind": "mod",
             "description": "2D line segment and `cast_ray_2d` entry point.",
             "file": "src/raycaster/mod.rs",
-            "line": 43
+            "line": 45
           },
           {
             "name": "sprite_manager",
             "kind": "mod",
             "description": "Sprite registry and frustum-sorted sprite list.",
             "file": "src/raycaster/mod.rs",
-            "line": 45
+            "line": 47
           },
           {
             "name": "sprite_projection",
             "kind": "mod",
             "description": "Screen-space sprite projection math.",
             "file": "src/raycaster/mod.rs",
-            "line": 47
+            "line": 49
           },
           {
             "name": "tile_picker",
             "kind": "mod",
             "description": "Tile picker: screen-to-tile coordinate mapping.",
             "file": "src/raycaster/mod.rs",
-            "line": 49
+            "line": 51
           },
           {
             "name": "visibility",
             "kind": "mod",
             "description": "Field-of-view visibility grid computation.",
             "file": "src/raycaster/mod.rs",
-            "line": 51
+            "line": 53
           },
           {
             "name": "visualization",
             "kind": "mod",
             "description": "Debug visualization helpers (ray paths, normals, tiles).",
             "file": "src/raycaster/mod.rs",
-            "line": 53
+            "line": 55
           },
           {
             "name": "wall_feature",
             "kind": "mod",
             "description": "Per-cell wall feature descriptors for doors, windows, and half-height walls.",
             "file": "src/raycaster/mod.rs",
-            "line": 55
+            "line": 57
+          },
+          {
+            "name": "RaycasterPickWorld",
+            "kind": "enum",
+            "description": "World snapshot used by cursor auto-hover against the most recently built raycaster scene.",
+            "file": "src/raycaster/mod.rs",
+            "line": 61
+          },
+          {
+            "name": "RaycasterLastBuildContext",
+            "kind": "struct",
+            "description": "Last build context stored for cursor `raycaster_last` sources.",
+            "file": "src/raycaster/mod.rs",
+            "line": 68
           }
         ]
       },
       "raycaster::multilevel": {
-        "module_doc": "This file owns `RaycasterLevel` and `MultiLevelGrid`, the stacked-slice model for multi-storey raycaster worlds. It stores per-level walls, wall features, texture overrides, lowered floors, holes, vertical bounds, and caches. Level helpers read or mutate wall, floor, ceiling, and hole data while rejecting out-of-bounds writes safely. The runtime builder compiles a transient `Raycaster2D` view from level-owned cells for rendering and picking. `MultiLevelGrid` tracks the active slice, caches compiled runtimes, and resolves visible lower or upper levels. Floor and ceiling holes decide which adjacent slices are visible to render and picking queries. Open this file when stacked-level data or cross-level visibility changes; scene assembly lives in siblings.",
+        "module_doc": "This file owns `RaycasterLevel` and `MultiLevelGrid`, the stacked-slice model for multi-storey raycaster worlds. It stores per-level walls, wall features, texture overrides, lowered floors, holes, vertical bounds, and caches. Level helpers read or mutate wall, floor, ceiling, and hole data while rejecting out-of-bounds writes safely. The runtime builder compiles a transient `Raycaster2D` view from level-owned cells for rendering and picking. `MultiLevelGrid` tracks the active slice, caches compiled runtimes, and resolves visible lower or upper levels. Floor and ceiling holes decide which adjacent slices are visible to render and picking queries. Pick attrs stay level-owned here so cursor rules can vary by wall, floor, and ceiling across stacked slices. Open this file when stacked-level data or cross-level visibility changes; scene assembly lives in siblings.",
         "source_file": "src/raycaster/multilevel.rs",
         "items": [
           {
@@ -18205,14 +18289,14 @@
             "kind": "struct",
             "description": "A single level in a multi-level raycaster world.",
             "file": "src/raycaster/multilevel.rs",
-            "line": 18
+            "line": 21
           },
           {
             "name": "MultiLevelGrid",
             "kind": "struct",
             "description": "Multi-level grid containing stacked raycaster levels.",
             "file": "src/raycaster/multilevel.rs",
-            "line": 296
+            "line": 360
           }
         ]
       },
@@ -18270,7 +18354,7 @@
         ]
       },
       "raycaster::scene": {
-        "module_doc": "This file owns `RaycasterScene` and its quad, sprite, mesh, pick, and build-stat record types for one frame. It stores walls, floors, ceilings, billboard sprites, transient models, viewport size, and build counters. Quad records carry corners, UVs, texture routing, light tint, depth, and perspective data for later draw paths. Picking helpers resolve screen pixels against projected sprites and model triangles, with optional sprite alpha tests. `EntityPickResult` and related enums define the stable payload returned when higher layers query scene selections. This file is the staging boundary between raycaster world reasoning and renderer or CPU draw translation. Open this file when prepared-scene data or picking semantics change; build and render flow live in siblings.",
+        "module_doc": "This file owns `RaycasterScene` and its quad, sprite, mesh, pick, and build-stat record types for one frame. It stores walls, floors, ceilings, billboard sprites, transient models, viewport size, and build counters. Quad records carry corners, UVs, texture routing, light tint, depth, and perspective data for later draw paths. Picking helpers resolve screen pixels against projected sprites and model triangles, with optional sprite alpha tests. `EntityPickResult` and related enums define the stable payload returned when higher layers query scene selections. This file is the staging boundary between raycaster world reasoning and renderer or CPU draw translation. Cursor integrations read attrs, ids, and hit kinds from these scene records without needing access to source grids. Open this file when prepared-scene data or picking semantics change; build and render flow live in siblings.",
         "source_file": "src/raycaster/scene.rs",
         "items": [
           {
@@ -18278,98 +18362,98 @@
             "kind": "struct",
             "description": "Build-time counters captured while assembling a `RaycasterScene`.",
             "file": "src/raycaster/scene.rs",
-            "line": 17
+            "line": 19
           },
           {
             "name": "EntityPickKind",
             "kind": "enum",
             "description": "Entity class resolved by scene-space picking.",
             "file": "src/raycaster/scene.rs",
-            "line": 44
+            "line": 46
           },
           {
             "name": "EntityPickResult",
             "kind": "struct",
             "description": "Result of picking a projected sprite or model from a prepared raycaster scene.",
             "file": "src/raycaster/scene.rs",
-            "line": 63
+            "line": 65
           },
           {
             "name": "WallQuad",
             "kind": "struct",
             "description": "A textured or flat-shaded wall slice quad emitted for one raycaster column or face.",
             "file": "src/raycaster/scene.rs",
-            "line": 86
+            "line": 90
           },
           {
             "name": "FloorQuad",
             "kind": "struct",
             "description": "A perspective-correct floor quad covering one screen column strip.",
             "file": "src/raycaster/scene.rs",
-            "line": 108
+            "line": 112
           },
           {
             "name": "CeilingQuad",
             "kind": "struct",
             "description": "A perspective-correct ceiling quad covering one screen column strip.",
             "file": "src/raycaster/scene.rs",
-            "line": 128
+            "line": 132
           },
           {
             "name": "BillboardSprite",
             "kind": "struct",
             "description": "An axis-aligned billboard sprite quad, sorted by depth relative to walls.",
             "file": "src/raycaster/scene.rs",
-            "line": 148
+            "line": 152
           },
           {
             "name": "RaycasterMaterialFrameLayout",
             "kind": "enum",
             "description": "Atlas-frame layout used by a raycaster material animation strip.",
             "file": "src/raycaster/scene.rs",
-            "line": 171
+            "line": 177
           },
           {
             "name": "RaycasterMaterial",
             "kind": "struct",
             "description": "Render-facing material metadata attached to raycaster surfaces and fullscreen effects.",
             "file": "src/raycaster/scene.rs",
-            "line": 180
+            "line": 186
           },
           {
             "name": "RaycasterBackground",
             "kind": "enum",
             "description": "Full-frame background drawn before raycaster geometry.",
             "file": "src/raycaster/scene.rs",
-            "line": 225
+            "line": 231
           },
           {
             "name": "RaycasterOverlayEffect",
             "kind": "enum",
             "description": "Screen-space presentation effect drawn over the raycaster frame.",
             "file": "src/raycaster/scene.rs",
-            "line": 242
+            "line": 248
           },
           {
             "name": "RaycasterParticle",
             "kind": "struct",
             "description": "A projected world-space particle prepared for transparent composition within a raycaster scene.",
             "file": "src/raycaster/scene.rs",
-            "line": 264
+            "line": 270
           },
           {
             "name": "ModelMesh",
             "kind": "struct",
             "description": "A static mesh injected into the raycaster scene with an associated depth.",
             "file": "src/raycaster/scene.rs",
-            "line": 310
+            "line": 316
           },
           {
             "name": "RaycasterScene",
             "kind": "struct",
             "description": "Full frame scene produced by `RaycasterScene::build`; consumed by `render::generate_render_commands`.",
             "file": "src/raycaster/scene.rs",
-            "line": 328
+            "line": 336
           }
         ]
       },
@@ -18382,49 +18466,49 @@
             "kind": "struct",
             "description": "A resolved 2D transform sampled from a static point or a live physics body.",
             "file": "src/raycaster/scene_adapter.rs",
-            "line": 22
+            "line": 23
           },
           {
             "name": "SceneTransform",
             "kind": "enum",
             "description": "Source of a raycaster-facing transform.",
             "file": "src/raycaster/scene_adapter.rs",
-            "line": 33
+            "line": 34
           },
           {
             "name": "SceneAdapterSprite",
             "kind": "struct",
             "description": "Sprite binding owned by a `SceneAdapter`.",
             "file": "src/raycaster/scene_adapter.rs",
-            "line": 102
+            "line": 103
           },
           {
             "name": "SceneAdapterLight",
             "kind": "struct",
             "description": "Point light binding owned by a `SceneAdapter`.",
             "file": "src/raycaster/scene_adapter.rs",
-            "line": 143
+            "line": 147
           },
           {
             "name": "ResolvedSceneModel",
             "kind": "struct",
             "description": "Resolved model instance for later Lua-side projection.",
             "file": "src/raycaster/scene_adapter.rs",
-            "line": 174
+            "line": 178
           },
           {
             "name": "SceneAdapterModel",
             "kind": "struct",
             "description": "Model binding owned by a `SceneAdapter`.",
             "file": "src/raycaster/scene_adapter.rs",
-            "line": 196
+            "line": 202
           },
           {
             "name": "SceneAdapter",
             "kind": "struct",
             "description": "Aggregates raycaster-facing scene inputs from static entries and live physics bodies.",
             "file": "src/raycaster/scene_adapter.rs",
-            "line": 231
+            "line": 240
           }
         ]
       },
@@ -18457,28 +18541,28 @@
             "kind": "struct",
             "description": "Directional texture set for a sprite that should show different bitmaps by facing.",
             "file": "src/raycaster/sprite_manager.rs",
-            "line": 20
+            "line": 22
           },
           {
             "name": "DirectionalSpriteVariant",
             "kind": "enum",
             "description": "Which directional sprite bitmap was selected for the current viewer position.",
             "file": "src/raycaster/sprite_manager.rs",
-            "line": 35
+            "line": 37
           },
           {
             "name": "WorldSprite",
             "kind": "struct",
             "description": "A billboard sprite placed in world space with an associated texture and uniform scale.",
             "file": "src/raycaster/sprite_manager.rs",
-            "line": 70
+            "line": 72
           },
           {
             "name": "SpriteManager",
             "kind": "struct",
             "description": "Tracks all world-space billboard sprites; owned by `RaycasterState`.",
             "file": "src/raycaster/sprite_manager.rs",
-            "line": 87
+            "line": 91
           }
         ]
       },
@@ -18507,32 +18591,39 @@
             "line": 21
           },
           {
+            "name": "PickAttrSurface",
+            "kind": "enum",
+            "description": "Surface channel used by per-cell pick metadata storage.",
+            "file": "src/raycaster/tile_picker.rs",
+            "line": 32
+          },
+          {
             "name": "PickWallSection",
             "kind": "enum",
             "description": "Solid wall section resolved inside a wall-feature cell.",
             "file": "src/raycaster/tile_picker.rs",
-            "line": 43
+            "line": 73
           },
           {
             "name": "ScreenPickParams",
             "kind": "struct",
             "description": "Camera and viewport parameters used for screen-to-world raycaster picking.",
             "file": "src/raycaster/tile_picker.rs",
-            "line": 68
+            "line": 98
           },
           {
             "name": "TilePicker",
             "kind": "struct",
             "description": "Tile picker that maps screen coordinates to raycaster grid tiles.",
             "file": "src/raycaster/tile_picker.rs",
-            "line": 116
+            "line": 146
           },
           {
             "name": "PickResult",
             "kind": "struct",
             "description": "Result of a tile pick operation.",
             "file": "src/raycaster/tile_picker.rs",
-            "line": 141
+            "line": 171
           }
         ]
       },
@@ -19636,21 +19727,21 @@
             "kind": "fn",
             "description": "Convert a named `params` map into a 16-float uniform array ordered by well-known param keys.",
             "file": "src/render/postfx_pipeline.rs",
-            "line": 460
+            "line": 491
           },
           {
             "name": "PostFxTexture",
             "kind": "struct",
             "description": "Intermediate render texture holding a single post-processing frame.",
             "file": "src/render/postfx_pipeline.rs",
-            "line": 482
+            "line": 513
           },
           {
             "name": "PostFxPipeline",
             "kind": "struct",
             "description": "GPU post-processing pipeline owning compiled WGSL render pipelines and shared GPU resources.",
             "file": "src/render/postfx_pipeline.rs",
-            "line": 546
+            "line": 577
           }
         ]
       },
@@ -22364,91 +22455,91 @@
             "kind": "struct",
             "description": "Cached texture handle for engine-generated province segment rasters.",
             "file": "src/runtime/shared_state.rs",
-            "line": 50
+            "line": 51
           },
           {
             "name": "FullscreenType",
             "kind": "enum",
             "description": "Runtime enum for FullscreenType.",
             "file": "src/runtime/shared_state.rs",
-            "line": 71
+            "line": 72
           },
           {
             "name": "WindowState",
             "kind": "struct",
             "description": "Runtime data model for deferred and observed window state shared across Lua bindings and the app loop. # Fields",
             "file": "src/runtime/shared_state.rs",
-            "line": 80
+            "line": 81
           },
           {
             "name": "ErrorInfo",
             "kind": "struct",
             "description": "Runtime data model for the latest engine error snapshot exposed to Lua and diagnostics. # Fields",
             "file": "src/runtime/shared_state.rs",
-            "line": 192
+            "line": 193
           },
           {
             "name": "ScreenshotRequest",
             "kind": "struct",
             "description": "Runtime data model for a deferred screenshot capture request. # Fields",
             "file": "src/runtime/shared_state.rs",
-            "line": 205
+            "line": 206
           },
           {
             "name": "FrameProfile",
             "kind": "struct",
             "description": "Runtime data model for per-frame timing buckets captured by the runtime. # Fields",
             "file": "src/runtime/shared_state.rs",
-            "line": 212
+            "line": 213
           },
           {
             "name": "ResourceMemoryStats",
             "kind": "struct",
             "description": "Runtime data model for aggregate resource memory and object-count statistics. # Fields",
             "file": "src/runtime/shared_state.rs",
-            "line": 278
+            "line": 279
           },
           {
             "name": "ResourceBudgetReport",
             "kind": "struct",
             "description": "Summary of one resource-budget enforcement pass.",
             "file": "src/runtime/shared_state.rs",
-            "line": 307
+            "line": 308
           },
           {
             "name": "ReleasedTextureHandle",
             "kind": "struct",
             "description": "Deferred texture release tracked until a later acknowledgement.",
             "file": "src/runtime/shared_state.rs",
-            "line": 328
+            "line": 329
           },
           {
             "name": "SharedStateValidationReport",
             "kind": "struct",
             "description": "Diagnostics produced by `SharedState::validate_frame_state`.",
             "file": "src/runtime/shared_state.rs",
-            "line": 339
+            "line": 340
           },
           {
             "name": "PhysicsRunConfig",
             "kind": "struct",
             "description": "Runtime data model for fixed-step physics and fixed-update scheduling. # Fields",
             "file": "src/runtime/shared_state.rs",
-            "line": 355
+            "line": 356
           },
           {
             "name": "SharedState",
             "kind": "struct",
             "description": "Runtime data model for the engine's shared mutable runtime container. # Fields",
             "file": "src/runtime/shared_state.rs",
-            "line": 379
+            "line": 380
           },
           {
             "name": "RendererStats",
             "kind": "struct",
             "description": "Runtime data model for aggregate renderer counters derived from the current frame state. # Fields",
             "file": "src/runtime/shared_state.rs",
-            "line": 1255
+            "line": 1268
           }
         ]
       },
@@ -30372,6 +30463,13 @@
         "module": "test_compute_evidence",
         "name": "test_compute_evidence",
         "description": "Canonical evidence file for lurek.compute data outputs.",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/evidence/test_cursor_evidence.lua",
+        "module": "test_cursor_evidence",
+        "name": "test_cursor_evidence",
+        "description": "Canonical evidence file for lurek.cursor runtime-facing artifacts.",
         "kind": "lua"
       },
       {

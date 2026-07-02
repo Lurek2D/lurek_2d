@@ -1,6 +1,6 @@
 {
   "version": "auto-generated",
-  "generated": "2026-07-01",
+  "generated": "2026-07-02",
   "modules": [
     {
       "name": "agent",
@@ -5599,13 +5599,13 @@
     },
     {
       "name": "cursor",
-      "description": "Registers the `lurek.cursor` Lua API for cursor userdata, window cursor control, and pointer-related helpers.",
+      "description": "Registers the `lurek.cursor` Lua API and owns runtime cursor refresh glue for hover, overlay, trail, bursts, and zoom.",
       "functions": [
         {
           "name": "newManager",
           "fullPath": "lurek.cursor.newManager",
           "signature": "()",
-          "description": "Creates a new cursor manager for handling cursor state and visibility.",
+          "description": "Returns a handle to the shared runtime cursor controller.",
           "parameters": [],
           "returns": "LCursorManager",
           "returnType": "LCursorManager",
@@ -5616,30 +5616,30 @@
           "name": "newCustom",
           "fullPath": "lurek.cursor.newCustom",
           "signature": "(w, h, hx, hy)",
-          "description": "Creates a new custom cursor with specified dimensions and hotspot position.",
+          "description": "Creates a custom RGBA cursor image with an explicit hotspot.",
           "parameters": [
             {
               "name": "w",
               "type": "integer",
-              "description": "Width of the cursor image in pixels.",
+              "description": "Cursor width in pixels.",
               "optional": false
             },
             {
               "name": "h",
               "type": "integer",
-              "description": "Height of the cursor image in pixels.",
+              "description": "Cursor height in pixels.",
               "optional": false
             },
             {
               "name": "hx",
               "type": "integer",
-              "description": "Hotspot X offset from cursor origin.",
+              "description": "Hotspot X coordinate in pixels.",
               "optional": false
             },
             {
               "name": "hy",
               "type": "integer",
-              "description": "Hotspot Y offset from cursor origin.",
+              "description": "Hotspot Y coordinate in pixels.",
               "optional": false
             }
           ],
@@ -5652,12 +5652,12 @@
           "name": "newAnimated",
           "fullPath": "lurek.cursor.newAnimated",
           "signature": "(looping)",
-          "description": "Creates a new animated cursor that can cycle through frames.",
+          "description": "Creates an animated cursor that can cycle through custom cursor frames.",
           "parameters": [
             {
               "name": "looping",
               "type": "boolean",
-              "description": "Whether the animation loops continuously.",
+              "description": "True to loop after the last frame, or false to stop on the final frame.",
               "optional": false
             }
           ],
@@ -5670,7 +5670,7 @@
           "name": "systemCursors",
           "fullPath": "lurek.cursor.systemCursors",
           "signature": "()",
-          "description": "Returns a list of all available system cursor names as a string array.",
+          "description": "Returns the list of system cursor names supported by the cursor module.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -8607,15 +8607,15 @@
           "description": "Returns whether this object inherits from or matches the supplied ECS class name.",
           "parameters": [
             {
-              "name": "candidate",
-              "type": "string",
-              "description": "ECS class name to compare against the object's registered class hierarchy.",
+              "name": "self",
+              "type": "LObject",
+              "description": "Object table to inspect.",
               "optional": false
             },
             {
               "name": "candidate",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "ECS class name to compare against the object's registered class hierarchy.",
               "optional": false
             }
           ],
@@ -8631,9 +8631,9 @@
           "description": "Returns the registered ECS class name for this object table.",
           "parameters": [
             {
-              "name": "this",
-              "type": "any",
-              "description": "",
+              "name": "self",
+              "type": "LObject",
+              "description": "Object table to inspect.",
               "optional": false
             }
           ],
@@ -8649,15 +8649,15 @@
           "description": "Returns whether this object matches a supported Lua-visible type or ECS class name.",
           "parameters": [
             {
-              "name": "candidate",
-              "type": "string",
-              "description": "Type or class name to compare against `LObject` and the object's ECS class hierarchy.",
+              "name": "self",
+              "type": "LObject",
+              "description": "Object table to inspect.",
               "optional": false
             },
             {
               "name": "candidate",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Type or class name to compare against `LObject` and the object's ECS class hierarchy.",
               "optional": false
             }
           ],
@@ -8673,20 +8673,20 @@
           "description": "Returns the current value of one object property, honoring any registered getter override first.",
           "parameters": [
             {
-              "name": "name",
-              "type": "string",
-              "description": "Property name to read from the object or its property metadata table.",
+              "name": "self",
+              "type": "LObject",
+              "description": "Object table that owns the property.",
               "optional": false
             },
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Property name to read from the object or its property metadata table.",
               "optional": false
             }
           ],
-          "returns": "any",
-          "returnType": "any",
+          "returns": "LuaValue",
+          "returnType": "LuaValue",
           "isMethod": false,
           "objectType": null
         },
@@ -8697,6 +8697,12 @@
           "description": "Writes one object property, delegating to a registered setter override when the property defines one.",
           "parameters": [
             {
+              "name": "self",
+              "type": "LObject",
+              "description": "Object table that owns the property.",
+              "optional": false
+            },
+            {
               "name": "name",
               "type": "string",
               "description": "Property name to update on the object table.",
@@ -8706,12 +8712,6 @@
               "name": "value",
               "type": "any",
               "description": "New Lua value written directly or passed through the property's setter.",
-              "optional": false
-            },
-            {
-              "name": "value",
-              "type": "any",
-              "description": "",
               "optional": false
             }
           ],
@@ -14558,8 +14558,8 @@
           "signature": "()",
           "description": "Returns the default custom light shader for the light world.",
           "parameters": [],
-          "returns": "LShader?",
-          "returnType": "LShader?",
+          "returns": "LShader",
+          "returnType": "LShader",
           "isMethod": false,
           "objectType": null
         },
@@ -22980,8 +22980,8 @@
           "signature": "()",
           "description": "Returns the draw-target shader applied to the stored raycaster scene, or nil when default rendering is used.",
           "parameters": [],
-          "returns": "LShader?",
-          "returnType": "LShader?",
+          "returns": "LShader",
+          "returnType": "LShader",
           "isMethod": false,
           "objectType": null
         },
@@ -23716,7 +23716,7 @@
         {
           "name": "drawText",
           "fullPath": "lurek.render.drawText",
-          "signature": "(args)",
+          "signature": "lurek.render.drawText(text, x, y, [rotation], [sx], [sy], [ox], [oy])",
           "description": "Draws text using the active font with image-like transform parameters on the GPU.",
           "parameters": [
             {
@@ -24922,8 +24922,8 @@
           "signature": "()",
           "description": "Returns the active text shader, or nil if font-atlas text uses the default/fallback shader path.",
           "parameters": [],
-          "returns": "LShader?",
-          "returnType": "LShader?",
+          "returns": "LShader",
+          "returnType": "LShader",
           "isMethod": false,
           "objectType": null
         },
@@ -24951,8 +24951,8 @@
           "signature": "()",
           "description": "Returns the active debug visualization shader, or nil if debug draws use the normal/default render shader path.",
           "parameters": [],
-          "returns": "LShader?",
-          "returnType": "LShader?",
+          "returns": "LShader",
+          "returnType": "LShader",
           "isMethod": false,
           "objectType": null
         },
@@ -37824,18 +37824,18 @@
     },
     {
       "name": "LAnimatedCursor",
-      "description": "Lua userdata representing an animated cursor that cycles through image frames.",
+      "description": "Creates an animated cursor that can cycle through custom cursor frames.",
       "methods": [
         {
           "name": "addFrame",
           "fullPath": "LAnimatedCursor:addFrame",
-          "signature": "(cursor, dur)",
-          "description": "Add a frame from a custom cursor image.",
+          "signature": "(cursor, duration_ms)",
+          "description": "Appends one frame to the animated cursor sequence.",
           "parameters": [
             {
               "name": "cursor",
               "type": "LCustomCursor",
-              "description": "Frame image.",
+              "description": "Frame image to append.",
               "optional": false
             },
             {
@@ -37854,7 +37854,7 @@
           "name": "update",
           "fullPath": "LAnimatedCursor:update",
           "signature": "(dt)",
-          "description": "Update animation (call each frame).",
+          "description": "Advances animated cursor playback and pulse state.",
           "parameters": [
             {
               "name": "dt",
@@ -37872,7 +37872,7 @@
           "name": "currentIndex",
           "fullPath": "LAnimatedCursor:currentIndex",
           "signature": "()",
-          "description": "Get current frame index for this object.",
+          "description": "Returns the currently active frame index.",
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
@@ -37883,7 +37883,7 @@
           "name": "frameCount",
           "fullPath": "LAnimatedCursor:frameCount",
           "signature": "()",
-          "description": "Get total frame count for this object.",
+          "description": "Returns the number of frames stored in this animated cursor.",
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
@@ -37894,7 +37894,7 @@
           "name": "currentScale",
           "fullPath": "LAnimatedCursor:currentScale",
           "signature": "()",
-          "description": "Get current scale from pulse animation.",
+          "description": "Returns the current pulse scale multiplier.",
           "parameters": [],
           "returns": "number",
           "returnType": "number",
@@ -37904,25 +37904,25 @@
         {
           "name": "setPulse",
           "fullPath": "LAnimatedCursor:setPulse",
-          "signature": "(min_s, max_s, speed)",
-          "description": "Set the pulse animation speed and scale factor parameters.",
+          "signature": "(min_scale, max_scale, speed)",
+          "description": "Enables pulse scaling for the animated cursor.",
           "parameters": [
             {
               "name": "min_scale",
               "type": "number",
-              "description": "Minimum scale.",
+              "description": "Minimum scale multiplier.",
               "optional": false
             },
             {
               "name": "max_scale",
               "type": "number",
-              "description": "Maximum scale.",
+              "description": "Maximum scale multiplier.",
               "optional": false
             },
             {
               "name": "speed",
               "type": "number",
-              "description": "Pulse speed.",
+              "description": "Pulse speed in oscillations per second.",
               "optional": false
             }
           ],
@@ -37935,7 +37935,7 @@
           "name": "clearPulse",
           "fullPath": "LAnimatedCursor:clearPulse",
           "signature": "()",
-          "description": "Disable pulse animation for this object.",
+          "description": "Disables pulse scaling for the animated cursor.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -37946,7 +37946,7 @@
           "name": "reset",
           "fullPath": "LAnimatedCursor:reset",
           "signature": "()",
-          "description": "Reset the cursor animation playback to the first frame.",
+          "description": "Resets playback to the first frame and clears accumulated animation time.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -45672,8 +45672,8 @@
           "signature": "()",
           "description": "Returns the single 0..15 collision group for this body, or nil for multi-group masks.",
           "parameters": [],
-          "returns": "integer?",
-          "returnType": "integer?",
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LBody"
         },
@@ -58231,18 +58231,18 @@
     },
     {
       "name": "LCursorManager",
-      "description": "Lua userdata that controls cursor appearance and system cursor selection.",
+      "description": "Lua userdata that controls the shared runtime cursor.",
       "methods": [
         {
           "name": "setSystem",
           "fullPath": "LCursorManager:setSystem",
           "signature": "(name)",
-          "description": "Set the active cursor to a system cursor by name.",
+          "description": "Switches the active runtime cursor to a named system cursor immediately.",
           "parameters": [
             {
               "name": "name",
               "type": "string",
-              "description": "System cursor name (arrow, hand, crosshair, ibeam, wait, no, etc.).",
+              "description": "System cursor name such as `\"arrow\"`, `\"hand\"`, or `\"crosshair\"`.",
               "optional": false
             }
           ],
@@ -58255,12 +58255,12 @@
           "name": "setCustom",
           "fullPath": "LCursorManager:setCustom",
           "signature": "(cursor)",
-          "description": "Set the active cursor to a custom image cursor.",
+          "description": "Switches the active runtime cursor to a custom RGBA cursor immediately.",
           "parameters": [
             {
               "name": "cursor",
               "type": "LCustomCursor",
-              "description": "Custom cursor object.",
+              "description": "Custom cursor handle to display.",
               "optional": false
             }
           ],
@@ -58273,12 +58273,12 @@
           "name": "setAnimated",
           "fullPath": "LCursorManager:setAnimated",
           "signature": "(cursor)",
-          "description": "Set the active cursor to an animated cursor.",
+          "description": "Switches the active runtime cursor to an animated cursor immediately.",
           "parameters": [
             {
               "name": "cursor",
               "type": "LAnimatedCursor",
-              "description": "Animated cursor object.",
+              "description": "Animated cursor handle to display.",
               "optional": false
             }
           ],
@@ -58291,12 +58291,60 @@
           "name": "setContext",
           "fullPath": "LCursorManager:setContext",
           "signature": "(ctx)",
-          "description": "Set the current context for context-sensitive switching.",
+          "description": "Sets the named cursor context used by legacy rules and context-sensitive state resolution.",
           "parameters": [
             {
               "name": "ctx",
               "type": "string",
-              "description": "Context name (default, raycaster, globe, tilemap, ui_button, etc.).",
+              "description": "Context name such as `\"default\"`, `\"menu\"`, or `\"gameplay\"`.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LCursorManager"
+        },
+        {
+          "name": "defineState",
+          "fullPath": "LCursorManager:defineState",
+          "signature": "(name, spec)",
+          "description": "Defines a reusable named cursor state for rule-driven runtime selection.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Unique state name used by rules or hit attrs such as `cursor_state`.",
+              "optional": false
+            },
+            {
+              "name": "spec",
+              "type": "table",
+              "description": "State table with one of `system`, `custom`, or `animated`, plus optional `scale`, `offset_x`, `offset_y`, `native_preferred`, `trail`, and `zoom`.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LCursorManager"
+        },
+        {
+          "name": "defineEffect",
+          "fullPath": "LCursorManager:defineEffect",
+          "signature": "(name, spec)",
+          "description": "Defines a reusable cursor-local burst effect preset for hover or click rules.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Unique effect name used by rules or hit attrs such as `cursor_effect`.",
+              "optional": false
+            },
+            {
+              "name": "spec",
+              "type": "table",
+              "description": "Effect table with `shape`, `color`, `texture`, `shader`, `count`, `spread`, `lifetime`, `speed`, `size`, `blend`, and optional `button`.",
               "optional": false
             }
           ],
@@ -58308,24 +58356,82 @@
         {
           "name": "addRule",
           "fullPath": "LCursorManager:addRule",
-          "signature": "(ctx, cursor_name)",
-          "description": "Add a context rule that maps a context to a system cursor.",
+          "signature": "(...)",
+          "description": "Registers a legacy context rule or a v2 runtime rule table for hover, click, release, leave, wheel, or context state resolution.",
           "parameters": [
             {
-              "name": "ctx",
-              "type": "string",
-              "description": "Context name.",
+              "name": "context_or_rule",
+              "type": "string|table",
+              "description": "Legacy context name, or a v2 rule table with `priority`, `event`, `context`, `target`, `state`, `effect`, and `duration_ms`.",
               "optional": false
             },
             {
               "name": "cursor_name",
               "type": "string",
-              "description": "System cursor name.",
+              "description": "System cursor name used by the legacy `(context, cursor_name)` shorthand.",
+              "optional": true
+            }
+          ],
+          "returns": "integer?",
+          "returnType": "integer?",
+          "isMethod": true,
+          "objectType": "LCursorManager"
+        },
+        {
+          "name": "addSource",
+          "fullPath": "LCursorManager:addSource",
+          "signature": "(source_tbl)",
+          "description": "Registers a hover source that feeds semantic cursor hits into the shared runtime resolver.",
+          "parameters": [
+            {
+              "name": "source_tbl",
+              "type": "table",
+              "description": "Source table with `kind = \"globe\"`, `\"raycaster_last\"`, or `\"callback\"`, plus source-specific fields such as `globe`, `marker_radius`, or `callback`.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LCursorManager"
+        },
+        {
+          "name": "removeSource",
+          "fullPath": "LCursorManager:removeSource",
+          "signature": "(id)",
+          "description": "Removes a previously registered hover source.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Source id returned by `addSource`.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LCursorManager"
+        },
+        {
+          "name": "getLastHit",
+          "fullPath": "LCursorManager:getLastHit",
+          "signature": "()",
+          "description": "Returns the most recent semantic hover hit seen by the runtime cursor.",
+          "parameters": [],
+          "returns": "table?",
+          "returnType": "table?",
+          "isMethod": true,
+          "objectType": "LCursorManager"
+        },
+        {
+          "name": "getActiveState",
+          "fullPath": "LCursorManager:getActiveState",
+          "signature": "()",
+          "description": "Returns the currently resolved cursor state after context, hover, and override rules have been applied.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LCursorManager"
         },
@@ -58333,7 +58439,7 @@
           "name": "removeRule",
           "fullPath": "LCursorManager:removeRule",
           "signature": "(ctx)",
-          "description": "Remove a context rule for this object.",
+          "description": "Removes a legacy context rule that was registered with the `(context, cursor_name)` shorthand.",
           "parameters": [
             {
               "name": "ctx",
@@ -58351,24 +58457,24 @@
           "name": "update",
           "fullPath": "LCursorManager:update",
           "signature": "(x, y, dt)",
-          "description": "Update cursor state (call each frame).",
+          "description": "Overrides the runtime cursor position and advances cursor-local effects for one frame.",
           "parameters": [
             {
               "name": "x",
               "type": "number",
-              "description": "Cursor X position.",
+              "description": "Cursor X position in screen pixels.",
               "optional": false
             },
             {
               "name": "y",
               "type": "number",
-              "description": "Cursor Y position.",
+              "description": "Cursor Y position in screen pixels.",
               "optional": false
             },
             {
               "name": "dt",
               "type": "number",
-              "description": "Delta time in seconds.",
+              "description": "Delta time in seconds for this manual update step.",
               "optional": false
             }
           ],
@@ -58381,12 +58487,12 @@
           "name": "setVisible",
           "fullPath": "LCursorManager:setVisible",
           "signature": "(visible)",
-          "description": "Set cursor visibility for this object.",
+          "description": "Shows or hides the runtime cursor.",
           "parameters": [
             {
               "name": "visible",
               "type": "boolean",
-              "description": "Whether the cursor is visible.",
+              "description": "True to show the cursor, or false to hide it.",
               "optional": false
             }
           ],
@@ -58399,7 +58505,7 @@
           "name": "isVisible",
           "fullPath": "LCursorManager:isVisible",
           "signature": "()",
-          "description": "Get cursor visibility for this object.",
+          "description": "Returns whether the runtime cursor is currently visible.",
           "parameters": [],
           "returns": "boolean",
           "returnType": "boolean",
@@ -58410,12 +58516,12 @@
           "name": "setLocked",
           "fullPath": "LCursorManager:setLocked",
           "signature": "(locked)",
-          "description": "Lock the cursor position using the system grab mode.",
+          "description": "Locks or unlocks the runtime cursor according to the active platform policy.",
           "parameters": [
             {
               "name": "locked",
               "type": "boolean",
-              "description": "Whether the cursor is locked.",
+              "description": "True to request cursor lock, or false to release it.",
               "optional": false
             }
           ],
@@ -58428,7 +58534,7 @@
           "name": "isLocked",
           "fullPath": "LCursorManager:isLocked",
           "signature": "()",
-          "description": "Get cursor lock state for this object.",
+          "description": "Returns whether the runtime cursor is currently marked as locked.",
           "parameters": [],
           "returns": "boolean",
           "returnType": "boolean",
@@ -58439,7 +58545,7 @@
           "name": "getPosition",
           "fullPath": "LCursorManager:getPosition",
           "signature": "()",
-          "description": "Get cursor position for this object.",
+          "description": "Returns the current runtime cursor position.",
           "parameters": [],
           "returns": "number",
           "returnType": "number",
@@ -58450,7 +58556,7 @@
           "name": "getContext",
           "fullPath": "LCursorManager:getContext",
           "signature": "()",
-          "description": "Get current context name for this object.",
+          "description": "Returns the current named cursor context.",
           "parameters": [],
           "returns": "string",
           "returnType": "string",
@@ -58461,30 +58567,30 @@
           "name": "enableTrail",
           "fullPath": "LCursorManager:enableTrail",
           "signature": "(r, g, b, lifetime)",
-          "description": "Enable cursor trail with fade points mode.",
+          "description": "Enables a simple fading point trail behind the cursor.",
           "parameters": [
             {
               "name": "r",
               "type": "number",
-              "description": "Red (0-1).",
+              "description": "Red channel in the 0.0 through 1.0 range.",
               "optional": false
             },
             {
               "name": "g",
               "type": "number",
-              "description": "Green (0-1).",
+              "description": "Green channel in the 0.0 through 1.0 range.",
               "optional": false
             },
             {
               "name": "b",
               "type": "number",
-              "description": "Blue (0-1).",
+              "description": "Blue channel in the 0.0 through 1.0 range.",
               "optional": false
             },
             {
               "name": "lifetime",
               "type": "number",
-              "description": "Seconds before trail fades.",
+              "description": "Trail point lifetime in seconds.",
               "optional": false
             }
           ],
@@ -58497,30 +58603,30 @@
           "name": "enableLineTrail",
           "fullPath": "LCursorManager:enableLineTrail",
           "signature": "(r, g, b, width)",
-          "description": "Enable cursor trail with line mode.",
+          "description": "Enables a simple connected line trail behind the cursor.",
           "parameters": [
             {
               "name": "r",
               "type": "number",
-              "description": "Red (0-1).",
+              "description": "Red channel in the 0.0 through 1.0 range.",
               "optional": false
             },
             {
               "name": "g",
               "type": "number",
-              "description": "Green (0-1).",
+              "description": "Green channel in the 0.0 through 1.0 range.",
               "optional": false
             },
             {
               "name": "b",
               "type": "number",
-              "description": "Blue (0-1).",
+              "description": "Blue channel in the 0.0 through 1.0 range.",
               "optional": false
             },
             {
               "name": "width",
               "type": "number",
-              "description": "Line width in pixels.",
+              "description": "Trail line width in pixels.",
               "optional": false
             }
           ],
@@ -58533,7 +58639,7 @@
           "name": "disableTrail",
           "fullPath": "LCursorManager:disableTrail",
           "signature": "()",
-          "description": "Disable cursor trail for this object.",
+          "description": "Disables the current cursor trail.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -58544,18 +58650,18 @@
           "name": "enableZoom",
           "fullPath": "LCursorManager:enableZoom",
           "signature": "(mag, radius)",
-          "description": "Enable zoom/magnifier at cursor position.",
+          "description": "Enables the live zoom lens centered on the runtime cursor.",
           "parameters": [
             {
-              "name": "magnification",
+              "name": "mag",
               "type": "number",
-              "description": "Zoom factor (1-10).",
+              "description": "Lens magnification multiplier.",
               "optional": false
             },
             {
               "name": "radius",
               "type": "number",
-              "description": "Lens radius in pixels.",
+              "description": "Lens radius in screen pixels.",
               "optional": false
             }
           ],
@@ -58568,10 +58674,21 @@
           "name": "disableZoom",
           "fullPath": "LCursorManager:disableZoom",
           "signature": "()",
-          "description": "Disable cursor zoom for this object.",
+          "description": "Disables the live cursor zoom lens.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LCursorManager"
+        },
+        {
+          "name": "type",
+          "fullPath": "LCursorManager:type",
+          "signature": "()",
+          "description": "Returns the Lua handle type name for this cursor manager userdata.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LCursorManager"
         }
@@ -58579,13 +58696,13 @@
     },
     {
       "name": "LCustomCursor",
-      "description": "Lua userdata representing a custom-drawn cursor image with a configurable hot-spot.",
+      "description": "Creates a custom RGBA cursor image with an explicit hotspot.",
       "methods": [
         {
           "name": "setPixel",
           "fullPath": "LCustomCursor:setPixel",
           "signature": "(x, y, r, g, b, a)",
-          "description": "Set a pixel color â€” Lua userdata object exposed by the engine.",
+          "description": "Writes one RGBA pixel into the custom cursor image.",
           "parameters": [
             {
               "name": "x",
@@ -58602,25 +58719,25 @@
             {
               "name": "r",
               "type": "integer",
-              "description": "Red (0-255).",
+              "description": "Red channel in the 0 through 255 range.",
               "optional": false
             },
             {
               "name": "g",
               "type": "integer",
-              "description": "Green (0-255).",
+              "description": "Green channel in the 0 through 255 range.",
               "optional": false
             },
             {
               "name": "b",
               "type": "integer",
-              "description": "Blue (0-255).",
+              "description": "Blue channel in the 0 through 255 range.",
               "optional": false
             },
             {
               "name": "a",
               "type": "integer",
-              "description": "Alpha (0-255).",
+              "description": "Alpha channel in the 0 through 255 range.",
               "optional": false
             }
           ],
@@ -58633,7 +58750,7 @@
           "name": "getPixel",
           "fullPath": "LCustomCursor:getPixel",
           "signature": "(x, y)",
-          "description": "Get the pixel color at the specified cursor image position.",
+          "description": "Reads one RGBA pixel from the custom cursor image.",
           "parameters": [
             {
               "name": "x",
@@ -58657,7 +58774,7 @@
           "name": "getSize",
           "fullPath": "LCustomCursor:getSize",
           "signature": "()",
-          "description": "Get the pixel width and height of the cursor image.",
+          "description": "Returns the custom cursor image size.",
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
@@ -58668,7 +58785,7 @@
           "name": "getHotspot",
           "fullPath": "LCustomCursor:getHotspot",
           "signature": "()",
-          "description": "Get hotspot position for this object.",
+          "description": "Returns the hotspot used when positioning this custom cursor.",
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
@@ -61523,8 +61640,8 @@
               "optional": true
             }
           ],
-          "returns": "any",
-          "returnType": "any",
+          "returns": "LuaValue",
+          "returnType": "LuaValue",
           "isMethod": true,
           "objectType": "LDeck"
         },
@@ -61541,8 +61658,8 @@
               "optional": true
             }
           ],
-          "returns": "any",
-          "returnType": "any",
+          "returns": "LuaValue",
+          "returnType": "LuaValue",
           "isMethod": true,
           "objectType": "LDeck"
         },
@@ -67895,7 +68012,7 @@
           "name": "getId",
           "fullPath": "LFlowStream:getId",
           "signature": "()",
-          "description": "Returns this flow field id.",
+          "description": "Returns the stable numeric ID for this flow field.",
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
@@ -67935,7 +68052,7 @@
           "name": "setStrength",
           "fullPath": "LFlowStream:setStrength",
           "signature": "(strength)",
-          "description": "Sets this flow field strength.",
+          "description": "Sets the current movement strength for this flow field.",
           "parameters": [
             {
               "name": "strength",
@@ -67953,7 +68070,7 @@
           "name": "getStrength",
           "fullPath": "LFlowStream:getStrength",
           "signature": "()",
-          "description": "Returns this flow field strength.",
+          "description": "Returns the current movement strength for this flow field.",
           "parameters": [],
           "returns": "number",
           "returnType": "number",
@@ -68065,7 +68182,7 @@
           "name": "destroy",
           "fullPath": "LFlowStream:destroy",
           "signature": "()",
-          "description": "Disables this flow field.",
+          "description": "Disables and removes this flow field from the world.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -70804,7 +70921,7 @@
           "name": "removeTerrainPatch",
           "fullPath": "LGlobe:removeTerrainPatch",
           "signature": "(id)",
-          "description": "Removes a terrain patch by id.",
+          "description": "Removes a stored terrain patch by its numeric id.",
           "parameters": [
             {
               "name": "id",
@@ -73127,8 +73244,8 @@
           "signature": "()",
           "description": "Returns the mapviz-target shader bound to this globe, if any.",
           "parameters": [],
-          "returns": "LShader?",
-          "returnType": "LShader?",
+          "returns": "LShader",
+          "returnType": "LShader",
           "isMethod": true,
           "objectType": "LGlobe"
         },
@@ -84009,8 +84126,8 @@
           "signature": "()",
           "description": "Returns the shader output image when the job has completed, or nil if pending/cancelled.",
           "parameters": [],
-          "returns": "LImageData?",
-          "returnType": "LImageData?",
+          "returns": "LImageData",
+          "returnType": "LImageData",
           "isMethod": true,
           "objectType": "LImageShaderJob"
         },
@@ -84027,8 +84144,8 @@
               "optional": true
             }
           ],
-          "returns": "LImageData?",
-          "returnType": "LImageData?",
+          "returns": "LImageData",
+          "returnType": "LImageData",
           "isMethod": true,
           "objectType": "LImageShaderJob"
         },
@@ -84036,7 +84153,7 @@
           "name": "cancel",
           "fullPath": "LImageShaderJob:cancel",
           "signature": "()",
-          "description": "Cancels this image shader job.",
+          "description": "Cancels this pending offline image shader job.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -93447,8 +93564,8 @@
           "signature": "()",
           "description": "Returns the custom light shader bound to this light, if any.",
           "parameters": [],
-          "returns": "LShader?",
-          "returnType": "LShader?",
+          "returns": "LShader",
+          "returnType": "LShader",
           "isMethod": true,
           "objectType": "LLight"
         },
@@ -101188,8 +101305,8 @@
           "signature": "()",
           "description": "Returns the currently bound command-render minimap shader, or nil.",
           "parameters": [],
-          "returns": "LShader?",
-          "returnType": "LShader?",
+          "returns": "LShader",
+          "returnType": "LShader",
           "isMethod": true,
           "objectType": "LMinimap"
         },
@@ -104035,6 +104152,120 @@
               "type": "integer",
               "description": "Grid row.",
               "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "setPickAttr",
+          "fullPath": "LMultiLevelGrid:setPickAttr",
+          "signature": "(x, y, surface, key, value)",
+          "description": "Sets one arbitrary pick attribute on one active-level surface cell.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "surface",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "key",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "getPickAttr",
+          "fullPath": "LMultiLevelGrid:getPickAttr",
+          "signature": "(x, y, surface, key)",
+          "description": "Reads one arbitrary pick attribute from one active-level surface cell.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "surface",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "key",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "clearPickAttr",
+          "fullPath": "LMultiLevelGrid:clearPickAttr",
+          "signature": "(x, y, surface, [key])",
+          "description": "Clears one arbitrary pick attribute or the whole surface channel from one active-level cell.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "surface",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "key",
+              "type": "any",
+              "description": "",
+              "optional": true
             }
           ],
           "returns": "nil",
@@ -109772,8 +110003,8 @@
           "signature": "()",
           "description": "Returns the shader bound to this overlay, if any.",
           "parameters": [],
-          "returns": "LShader?",
-          "returnType": "LShader?",
+          "returns": "LShader",
+          "returnType": "LShader",
           "isMethod": true,
           "objectType": "LOverlay"
         },
@@ -109814,8 +110045,8 @@
               "optional": false
             }
           ],
-          "returns": "LShader?",
-          "returnType": "LShader?",
+          "returns": "LShader",
+          "returnType": "LShader",
           "isMethod": true,
           "objectType": "LOverlay"
         },
@@ -110067,8 +110298,8 @@
               "optional": false
             }
           ],
-          "returns": "table?",
-          "returnType": "table?",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LOverlay"
         },
@@ -113512,8 +113743,8 @@
           "signature": "()",
           "description": "Returns the draw-target shader bound to this parallax layer, if any.",
           "parameters": [],
-          "returns": "LShader?",
-          "returnType": "LShader?",
+          "returns": "LShader",
+          "returnType": "LShader",
           "isMethod": true,
           "objectType": "LParallaxLayer"
         },
@@ -113878,8 +114109,8 @@
           "signature": "()",
           "description": "Returns the render-time shader bound to this particle system, if any.",
           "parameters": [],
-          "returns": "LShader?",
-          "returnType": "LShader?",
+          "returns": "LShader",
+          "returnType": "LShader",
           "isMethod": true,
           "objectType": "LParticleSystem"
         },
@@ -115985,8 +116216,8 @@
           "signature": "()",
           "description": "Returns local-space vertices as an array of `{x, y}` tables, or nil for circles.",
           "parameters": [],
-          "returns": "table?",
-          "returnType": "table?",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LPhysicsShape"
         },
@@ -118607,7 +118838,7 @@
           "name": "getSize",
           "fullPath": "LProcgenGrid:getSize",
           "signature": "()",
-          "description": "Returns grid width and height.",
+          "description": "Returns the generated grid width and height in cells.",
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
@@ -120631,7 +120862,7 @@
           "name": "addProperty",
           "fullPath": "LPropertyWidget:addProperty",
           "signature": "LPropertyWidget:addProperty(group, name, value, [valueType], [options], [readOnly])",
-          "description": "Adds a property row to a group.",
+          "description": "Adds a labeled property row to the selected group.",
           "parameters": [
             {
               "name": "group",
@@ -122532,8 +122763,8 @@
           "signature": "()",
           "description": "Returns the currently bound command-render province shader, or nil.",
           "parameters": [],
-          "returns": "LShader?",
-          "returnType": "LShader?",
+          "returns": "LShader",
+          "returnType": "LShader",
           "isMethod": true,
           "objectType": "LProvinceRegistry"
         },
@@ -126824,6 +127055,120 @@
           "objectType": "LRaycaster"
         },
         {
+          "name": "setPickAttr",
+          "fullPath": "LRaycaster:setPickAttr",
+          "signature": "(x, y, surface, key, value)",
+          "description": "Sets one arbitrary pick attribute on a raycaster surface cell.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "surface",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "key",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRaycaster"
+        },
+        {
+          "name": "getPickAttr",
+          "fullPath": "LRaycaster:getPickAttr",
+          "signature": "(x, y, surface, key)",
+          "description": "Reads one arbitrary pick attribute from a raycaster surface cell.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "surface",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "key",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRaycaster"
+        },
+        {
+          "name": "clearPickAttr",
+          "fullPath": "LRaycaster:clearPickAttr",
+          "signature": "(x, y, surface, [key])",
+          "description": "Clears one arbitrary pick attribute or the whole channel from a raycaster surface cell.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "surface",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "key",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRaycaster"
+        },
+        {
           "name": "getWallFeatureCell",
           "fullPath": "LRaycaster:getWallFeatureCell",
           "signature": "(x, y)",
@@ -127056,8 +127401,8 @@
               "optional": false
             }
           ],
-          "returns": "table?",
-          "returnType": "table?",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LRaycaster"
         },
@@ -127110,8 +127455,8 @@
               "optional": false
             }
           ],
-          "returns": "table?",
-          "returnType": "table?",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LRaycaster"
         },
@@ -127164,8 +127509,8 @@
               "optional": false
             }
           ],
-          "returns": "table?",
-          "returnType": "table?",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LRaycaster"
         },
@@ -145949,8 +146294,8 @@
           "signature": "()",
           "description": "Returns the sprite material shader bound to this sprite, if any.",
           "parameters": [],
-          "returns": "LShader?",
-          "returnType": "LShader?",
+          "returns": "LShader",
+          "returnType": "LShader",
           "isMethod": true,
           "objectType": "LSprite"
         },
@@ -146383,7 +146728,7 @@
           "name": "getLayout",
           "fullPath": "LSpriteAutoTileSheet:getLayout",
           "signature": "()",
-          "description": "Returns the autotile layout name.",
+          "description": "Returns the autotile layout name used by this sheet.",
           "parameters": [],
           "returns": "string",
           "returnType": "string",
@@ -146914,6 +147259,84 @@
               "type": "boolean",
               "description": "Whether the sprite should be rendered.",
               "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSpriteManager"
+        },
+        {
+          "name": "setAttr",
+          "fullPath": "LSpriteManager:setAttr",
+          "signature": "(id, key, value)",
+          "description": "Sets one arbitrary string attribute on the sprite.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "key",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSpriteManager"
+        },
+        {
+          "name": "getAttr",
+          "fullPath": "LSpriteManager:getAttr",
+          "signature": "(id, key)",
+          "description": "Reads one arbitrary string attribute from the sprite.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Sprite id.",
+              "optional": false
+            },
+            {
+              "name": "key",
+              "type": "string",
+              "description": "Attribute key to read.",
+              "optional": false
+            }
+          ],
+          "returns": "string?",
+          "returnType": "string?",
+          "isMethod": true,
+          "objectType": "LSpriteManager"
+        },
+        {
+          "name": "clearAttr",
+          "fullPath": "LSpriteManager:clearAttr",
+          "signature": "(id, [key])",
+          "description": "Clears one arbitrary string attribute or all attrs from the sprite.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "key",
+              "type": "any",
+              "description": "",
+              "optional": true
             }
           ],
           "returns": "nil",
@@ -157778,8 +158201,8 @@
           "signature": "()",
           "description": "Returns the UI shader bound to this terminal, or nil when default terminal rendering is used.",
           "parameters": [],
-          "returns": "LShader?",
-          "returnType": "LShader?",
+          "returns": "LShader",
+          "returnType": "LShader",
           "isMethod": true,
           "objectType": "LTerminal"
         },
@@ -160470,14 +160893,14 @@
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Category name to create or replace.",
               "optional": false
             },
             {
               "name": "opts",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Optional category settings such as range, arc, facing, active, and blocker rules.",
               "optional": true
             }
           ],
@@ -160499,8 +160922,8 @@
               "optional": false
             }
           ],
-          "returns": "table?",
-          "returnType": "table?",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LTileAwareness"
         },
@@ -160607,37 +161030,37 @@
           "parameters": [
             {
               "name": "player",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Player identifier to query.",
               "optional": false
             },
             {
               "name": "category",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Awareness category name.",
               "optional": false
             },
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based cell column.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based cell row.",
               "optional": false
             },
             {
               "name": "z",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Optional one-based level index, defaulting to 1.",
               "optional": true
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LTileAwareness"
         },
@@ -160726,15 +161149,15 @@
               "optional": false
             },
             {
-              "name": "z",
-              "type": "integer",
-              "description": "Optional one-based level filter.",
+              "name": "categoryOrZ",
+              "type": "string|integer",
+              "description": "Optional category name or one-based level filter when no separate `z` argument is supplied.",
               "optional": true
             },
             {
               "name": "z",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Optional one-based level filter used when `categoryOrZ` is a category string.",
               "optional": true
             }
           ],
@@ -160804,26 +161227,26 @@
           "parameters": [
             {
               "name": "from",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Source player identifier.",
               "optional": false
             },
             {
               "name": "to",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Target player identifier.",
               "optional": false
             },
             {
               "name": "category",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Awareness category to share.",
               "optional": false
             },
             {
               "name": "opts",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Reserved optional settings table for future share options.",
               "optional": true
             }
           ],
@@ -160851,14 +161274,14 @@
           "parameters": [
             {
               "name": "players",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Array of player identifiers that should share visibility.",
               "optional": false
             },
             {
               "name": "categories",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Optional array of category names to share; omitted shares every category.",
               "optional": true
             }
           ],
@@ -160971,7 +161394,7 @@
           "name": "type",
           "fullPath": "LTileCatalog:type",
           "signature": "()",
-          "description": "Returns the userdata type name.",
+          "description": "Returns the Lua-visible userdata type name for this tile catalog.",
           "parameters": [],
           "returns": "string",
           "returnType": "string",
@@ -161223,8 +161646,8 @@
               "optional": false
             }
           ],
-          "returns": "table?",
-          "returnType": "table?",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LTileField"
         },
@@ -161243,7 +161666,7 @@
           "name": "clear",
           "fullPath": "LTileField:clear",
           "signature": "()",
-          "description": "Clears all cell gameplay state.",
+          "description": "Clears all gameplay state, modifiers, and references in the field.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -161548,7 +161971,7 @@
           "name": "getCategories",
           "fullPath": "LTileField:getCategories",
           "signature": "()",
-          "description": "Returns known category names.",
+          "description": "Returns the sorted names of all known cell categories.",
           "parameters": [],
           "returns": "string[]",
           "returnType": "string[]",
@@ -161563,32 +161986,32 @@
           "parameters": [
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based cell column.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based cell row.",
               "optional": false
             },
             {
               "name": "z",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Optional one-based level index, defaulting to 1.",
               "optional": true
             },
             {
               "name": "category",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Category name to update.",
               "optional": false
             },
             {
               "name": "blocked",
-              "type": "any",
-              "description": "",
+              "type": "boolean",
+              "description": "Whether the category is blocked on that cell.",
               "optional": false
             }
           ],
@@ -161605,31 +162028,31 @@
           "parameters": [
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based cell column.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based cell row.",
               "optional": false
             },
             {
               "name": "z",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Optional one-based level index, defaulting to 1.",
               "optional": true
             },
             {
               "name": "category",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Category name to test.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LTileField"
         },
@@ -161637,36 +162060,36 @@
           "name": "setCategoryCost",
           "fullPath": "LTileField:setCategoryCost",
           "signature": "(x, y, [z], category, cost)",
-          "description": "Sets one category cost on one cell.",
+          "description": "Sets one movement-cost override for a category on one cell.",
           "parameters": [
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based cell column.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based cell row.",
               "optional": false
             },
             {
               "name": "z",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Optional one-based level index, defaulting to 1.",
               "optional": true
             },
             {
               "name": "category",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Category name to update.",
               "optional": false
             },
             {
               "name": "cost",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Effective movement cost to assign.",
               "optional": false
             }
           ],
@@ -161683,31 +162106,31 @@
           "parameters": [
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based cell column.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based cell row.",
               "optional": false
             },
             {
               "name": "z",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Optional one-based level index, defaulting to 1.",
               "optional": true
             },
             {
               "name": "category",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Category name to inspect.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "number",
+          "returnType": "number",
           "isMethod": true,
           "objectType": "LTileField"
         },
@@ -161719,32 +162142,32 @@
           "parameters": [
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based cell column.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based cell row.",
               "optional": false
             },
             {
               "name": "z",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Optional one-based level index, defaulting to 1.",
               "optional": true
             },
             {
               "name": "category",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Category name to update.",
               "optional": false
             },
             {
               "name": "value",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Transmission multiplier to assign.",
               "optional": false
             }
           ],
@@ -161761,31 +162184,31 @@
           "parameters": [
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based cell column.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based cell row.",
               "optional": false
             },
             {
               "name": "z",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Optional one-based level index, defaulting to 1.",
               "optional": true
             },
             {
               "name": "category",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Category name to inspect.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "number",
+          "returnType": "number",
           "isMethod": true,
           "objectType": "LTileField"
         },
@@ -161797,32 +162220,32 @@
           "parameters": [
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based cell column.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based cell row.",
               "optional": false
             },
             {
               "name": "z",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Optional one-based level index, defaulting to 1.",
               "optional": true
             },
             {
               "name": "category",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Category name to update.",
               "optional": false
             },
             {
               "name": "filter",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "RGB multiplier table with three numeric entries.",
               "optional": false
             }
           ],
@@ -161839,31 +162262,31 @@
           "parameters": [
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based cell column.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based cell row.",
               "optional": false
             },
             {
               "name": "z",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Optional one-based level index, defaulting to 1.",
               "optional": true
             },
             {
               "name": "category",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Category name to inspect.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LTileField"
         },
@@ -161875,43 +162298,43 @@
           "parameters": [
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based anchor column.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based anchor row.",
               "optional": false
             },
             {
               "name": "z",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Optional one-based level index, defaulting to 1.",
               "optional": true
             },
             {
               "name": "w",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Footprint width in cells.",
               "optional": false
             },
             {
               "name": "h",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Footprint height in cells.",
               "optional": false
             },
             {
               "name": "category",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Category name to test against blockers and costs.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LTileField"
         },
@@ -162710,7 +163133,7 @@
           "name": "getRefSlots",
           "fullPath": "LTileField:getRefSlots",
           "signature": "()",
-          "description": "Returns every declared ref slot.",
+          "description": "Returns the sorted names of every declared reference slot.",
           "parameters": [],
           "returns": "string[]",
           "returnType": "string[]",
@@ -163332,7 +163755,7 @@
           "name": "addRectLight",
           "fullPath": "LTileLightMap:addRectLight",
           "signature": "(opts)",
-          "description": "Alias for `addAreaLight`.",
+          "description": "Creates a rectangular area light via `addAreaLight`.",
           "parameters": [
             {
               "name": "opts",
@@ -163374,7 +163797,7 @@
           "name": "updateRectLight",
           "fullPath": "LTileLightMap:updateRectLight",
           "signature": "(id, opts)",
-          "description": "Alias for `updateAreaLight`.",
+          "description": "Updates a rectangular area light via `updateAreaLight`.",
           "parameters": [
             {
               "name": "id",
@@ -163416,7 +163839,7 @@
           "name": "removeRectLight",
           "fullPath": "LTileLightMap:removeRectLight",
           "signature": "(id)",
-          "description": "Alias for `removeAreaLight`.",
+          "description": "Removes a rectangular area light via `removeAreaLight`.",
           "parameters": [
             {
               "name": "id",
@@ -163445,7 +163868,7 @@
           "name": "clearRectLights",
           "fullPath": "LTileLightMap:clearRectLights",
           "signature": "()",
-          "description": "Alias for `clearAreaLights`.",
+          "description": "Clears all rectangular area lights via `clearAreaLights`.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -164713,8 +165136,8 @@
           "signature": "()",
           "description": "Returns the tilemap shader bound to this map, or nil when none is bound.",
           "parameters": [],
-          "returns": "LShader?",
-          "returnType": "LShader?",
+          "returns": "LShader",
+          "returnType": "LShader",
           "isMethod": true,
           "objectType": "LTileMap"
         },
@@ -164755,8 +165178,8 @@
               "optional": false
             }
           ],
-          "returns": "LShader?",
-          "returnType": "LShader?",
+          "returns": "LShader",
+          "returnType": "LShader",
           "isMethod": true,
           "objectType": "LTileMap"
         },
@@ -164927,7 +165350,7 @@
           "name": "getTileWidth",
           "fullPath": "LTileSet:getTileWidth",
           "signature": "()",
-          "description": "Returns the tile width in pixels.",
+          "description": "Returns the width of each tile in pixels.",
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
@@ -164938,7 +165361,7 @@
           "name": "getTileHeight",
           "fullPath": "LTileSet:getTileHeight",
           "signature": "()",
-          "description": "Returns the tile height in pixels.",
+          "description": "Returns the height of each tile in pixels.",
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
@@ -165562,7 +165985,7 @@
           "name": "type",
           "fullPath": "LTileSet:type",
           "signature": "()",
-          "description": "Returns the userdata type name.",
+          "description": "Returns the Lua-visible userdata type name for this tileset.",
           "parameters": [],
           "returns": "string",
           "returnType": "string",
@@ -180928,8 +181351,8 @@
               "optional": false
             }
           ],
-          "returns": "table?",
-          "returnType": "table?",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LWorld"
         },
@@ -181137,7 +181560,7 @@
           "name": "removeFlowField",
           "fullPath": "LWorld:removeFlowField",
           "signature": "(id)",
-          "description": "Disables one flow field by id.",
+          "description": "Disables and removes one authored flow field by id.",
           "parameters": [
             {
               "name": "id",
@@ -181164,8 +181587,8 @@
               "optional": false
             }
           ],
-          "returns": "table?",
-          "returnType": "table?",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LWorld"
         },

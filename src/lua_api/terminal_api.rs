@@ -707,7 +707,7 @@ impl LuaUserData for LuaTerminal {
         });
         // -- getShader --
         /// Returns the UI shader bound to this terminal, or nil when default terminal rendering is used.
-        /// @return | LShader? | Bound shader handle, if any.
+        /// @return | LShader | Bound shader handle, if any.
         methods.add_method("getShader", |_, this, ()| {
             let shader_key = *this.binding.shader.borrow();
             let Some(key) = shader_key else {

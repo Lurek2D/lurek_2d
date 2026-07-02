@@ -1525,7 +1525,7 @@ LTerminal:getShader()
 
 | Type | Description |
 |------|-------------|
-| [LShader](render.md#lshader)? | Bound shader handle, if any. |
+| [LShader](render.md#lshader) | Bound shader handle, if any. |
 
 **Example**
 

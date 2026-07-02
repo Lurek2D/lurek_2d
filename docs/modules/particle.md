@@ -1308,7 +1308,7 @@ LParticleSystem:getShader()
 
 | Type | Description |
 |------|-------------|
-| [LShader](render.md#lshader)? | Bound shader or nil. |
+| [LShader](render.md#lshader) | Bound shader or nil. |
 
 **Example**
 

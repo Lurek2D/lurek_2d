@@ -794,7 +794,7 @@ LOverlay:getShader()
 
 | Type | Description |
 |------|-------------|
-| [LShader](render.md#lshader)? | Bound shader or nil. |
+| [LShader](render.md#lshader) | Bound shader or nil. |
 
 **Example**
 
@@ -830,7 +830,7 @@ LOverlay:getShaderLayer(layer)
 
 | Type | Description |
 |------|-------------|
-| [LShader](render.md#lshader)? | Bound shader or nil. |
+| [LShader](render.md#lshader) | Bound shader or nil. |
 
 **Example**
 
@@ -930,7 +930,7 @@ LOverlay:getStatusEffect(kind)
 
 | Type | Description |
 |------|-------------|
-| table? | Layer table when present. |
+| table | Layer table when present. |
 
 **Example**
 

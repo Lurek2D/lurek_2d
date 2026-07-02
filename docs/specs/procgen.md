@@ -435,7 +435,7 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 - `LProcgenGrid:getCell(x, y) -> integer`: Returns one cell value using one-based Lua coordinates.
 - `LProcgenGrid:getHeight() -> integer`: Returns the generated grid height in cells for this noise result.
 - `LProcgenGrid:getKind() -> string`: Returns the generator kind label attached to this grid.
-- `LProcgenGrid:getSize() -> integer`: Returns grid width and height.
+- `LProcgenGrid:getSize() -> integer`: Returns the generated grid width and height in cells.
 - `LProcgenGrid:getWidth() -> integer`: Returns the generated grid width in cells for this noise result.
 - `LProcgenGrid:toTable() -> table`: Serializes this grid to a plain Lua table.
 - `LProcgenGrid:toTileField(opts?) -> LTileField`: Converts this generated grid into a tilefield by writing each value as a named ref.

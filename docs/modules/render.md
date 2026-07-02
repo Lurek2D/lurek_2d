@@ -1194,7 +1194,7 @@ lurek.render.getDebugShader()
 
 | Type | Description |
 |------|-------------|
-| [LShader](#lshader)? | The active debug visualization shader handle. |
+| [LShader](#lshader) | The active debug visualization shader handle. |
 
 **Example**
 
@@ -1909,7 +1909,7 @@ lurek.render.getTextShader()
 
 | Type | Description |
 |------|-------------|
-| [LShader](#lshader)? | The active text shader handle. |
+| [LShader](#lshader) | The active text shader handle. |
 
 **Example**
 

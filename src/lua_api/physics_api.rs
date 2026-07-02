@@ -1418,7 +1418,7 @@ impl LuaUserData for LuaWorld {
         // -- getGravityVector --
         /// Returns an additive gravity vector by ID, or nil when no active vector exists.
         /// @param | id | integer | Gravity vector ID returned by addGravityVector.
-        /// @return | table? | Table with id, gx, gy, layerMask, and enabled fields.
+        /// @return | table | Table with id, gx, gy, layerMask, and enabled fields.
         methods.add_method("getGravityVector", |lua, this, id: usize| {
             match this.world.borrow().get_gravity_vector(id) {
                 Some(vector) => Ok(Some(gravity_vector_to_table(lua, vector)?)),
@@ -1547,7 +1547,7 @@ impl LuaUserData for LuaWorld {
             })
         });
         // -- removeFlowField --
-        /// Disables one flow field by id.
+        /// Disables and removes one authored flow field by id.
         /// @param | id | integer | Flow field id.
         /// @return | boolean | True when the field existed and was active.
         methods.add_method("removeFlowField", |_, this, id: usize| {
@@ -1556,7 +1556,7 @@ impl LuaUserData for LuaWorld {
         // -- getFlowField --
         /// Returns one authored flow field table by id, or nil when missing.
         /// @param | id | integer | Flow field id.
-        /// @return | table? | Flow field descriptor table with geometry, enabled, strength, application, combine, and layer-mask fields.
+        /// @return | table | Flow field descriptor table with geometry, enabled, strength, application, combine, and layer-mask fields.
         methods.add_method("getFlowField", |lua, this, id: usize| {
             match this.world.borrow().flow_field_slot(id) {
                 Some(field) => Ok(Some(flow_field_to_table(lua, field)?)),
@@ -2875,7 +2875,7 @@ pub struct LuaFlowField {
 impl LuaUserData for LuaFlowField {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- getId --
-        /// Returns this flow field id.
+        /// Returns the stable numeric ID for this flow field.
         /// @return | integer | Stable flow field id.
         methods.add_method("getId", |_, this, ()| Ok(this.id));
         // -- setEnabled --
@@ -2901,7 +2901,7 @@ impl LuaUserData for LuaFlowField {
                 .unwrap_or(false))
         });
         // -- setStrength --
-        /// Sets this flow field strength.
+        /// Sets the current movement strength for this flow field.
         /// @param | strength | number | Strength in world units per second.
         methods.add_method("setStrength", |_, this, strength: f32| {
             let mut world = this.world.borrow_mut();
@@ -2915,7 +2915,7 @@ impl LuaUserData for LuaFlowField {
             Ok(())
         });
         // -- getStrength --
-        /// Returns this flow field strength.
+        /// Returns the current movement strength for this flow field.
         /// @return | number | Strength value.
         methods.add_method("getStrength", |_, this, ()| {
             Ok(this
@@ -3016,7 +3016,7 @@ impl LuaUserData for LuaFlowField {
             Ok(())
         });
         // -- destroy --
-        /// Disables this flow field.
+        /// Disables and removes this flow field from the world.
         methods.add_method("destroy", |_, this, ()| {
             this.world.borrow_mut().remove_flow_field(this.id);
             Ok(())
@@ -3608,7 +3608,7 @@ impl LuaUserData for LuaLiquidMap {
         /// @param | cx | integer | Cell column (0-based).
         /// @param | cy | integer | Cell row (0-based).
         /// @return | number | Fill amount in `0.0..1.0`.
-        /// @return | any | Liquid kind as a built-in string or custom integer id, or nil when the cell is empty.
+        /// @return | LuaValue | Liquid kind as a built-in string or custom integer id, or nil when the cell is empty.
         methods.add_method("getCell", |lua, this, (cx, cy): (u32, u32)| {
             let cell = this.liquid.borrow().get_cell(cx, cy);
             let kind = if cell.amount > 0.0 {
@@ -4037,7 +4037,7 @@ impl LuaUserData for LuaBody {
         });
         // -- getCollisionGroup --
         /// Returns the single 0..15 collision group for this body, or nil for multi-group masks.
-        /// @return | integer? | Collision group index, or nil.
+        /// @return | integer | Collision group index, or nil.
         methods.add_method("getCollisionGroup", |_, this, ()| {
             Ok(this.world.borrow().get_body_collision_group(this.id.0))
         });
@@ -4398,7 +4398,7 @@ impl LuaUserData for LuaPhysicsShape {
         });
         // -- getVertices --
         /// Returns local-space vertices as an array of `{x, y}` tables, or nil for circles.
-        /// @return | table? | Vertex table, or nil for circles.
+        /// @return | table | Vertex table, or nil for circles.
         methods.add_method("getVertices", |lua, this, ()| {
             let Some(vertices) = this.inner.borrow().shape.vertices() else {
                 return Ok(LuaValue::Nil);

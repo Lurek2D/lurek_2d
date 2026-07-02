@@ -199,7 +199,7 @@ impl LuaUserData for LuaParticleSystem {
         });
         // -- getShader --
         /// Returns the render-time shader bound to this particle system, if any.
-        /// @return | LShader? | Bound shader or nil.
+        /// @return | LShader | Bound shader or nil.
         methods.add_method("getShader", |_, this, ()| {
             let st = this.state.borrow();
             let ps = st

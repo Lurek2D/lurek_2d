@@ -6696,7 +6696,7 @@ fn add_property_widget_methods(
     )?;
     let c = ctx.clone();
     // -- addProperty --
-    /// Adds a property row to a group.
+    /// Adds a labeled property row to the selected group.
     /// @param | self | LPropertyWidget | The widget instance.
     /// @param | group | integer | The 1-based group index.
     /// @param | name | string | The property label.

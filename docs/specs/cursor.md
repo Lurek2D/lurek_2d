@@ -12,7 +12,7 @@
 - Source path: `src/cursor`
 - Binding: `src/lua_api/cursor_api.rs`
 - Namespace: `lurek.cursor`
-- Lua API surface: `4` functions, `3` types, `30` methods
+- Lua API surface: `4` functions, `7` types, `37` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -20,7 +20,9 @@
 
 - The `cursor` module is the pointer-behavior surface for users who want the cursor to feel like part of the game UX rather than a fixed OS artifact.
 - System cursors, custom RGBA cursors, animated states, and context-driven switching work together so interaction modes can communicate themselves visually without extra UI explanation.
-- Trail effects, zoom-lens support, locking, visibility control, and mode-aware switching extend the same module into readability, precision work, and tool-oriented pointer behavior.
+- The runtime now treats cursor behavior as one shared active controller rather than isolated per-manager state, which lets hover, click, wheel, trails, bursts, and zoom resolve against one authoritative pointer state each frame.
+- State switching is no longer just a manual `if` chain in Lua. `defineState`, `defineEffect`, `addRule`, and `addSource` let projects describe cursor policy declaratively and feed semantic hover hits into the same resolver.
+- Trail effects, zoom-lens support, locking, visibility control, click bursts, and mode-aware switching extend the same module into readability, precision work, and tool-oriented pointer behavior.
 - That makes the module especially useful for menus, editors, strategy controls, drag-and-drop flows, and inspection-heavy screens where the cursor is a major part of the interaction language.
 - Read `cursor` as the owner of cursor presentation and cursor-state policy. Other systems decide which interaction mode is active, but `cursor` decides how that mode is expressed to the user.
 
@@ -32,11 +34,13 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - Owning tier: `Feature Systems`
 - Plugin tier: `not_evaluated`
 - Lua binding owner: `src/lua_api/cursor_api.rs`
-- Referenced engine modules: None detected from Rust imports.
+- Referenced engine modules: `globe`, `render`, `runtime`
 
 ## Imports
 
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+- `globe`: Imports or references `src/globe/`. Cross-group dependency from `Feature Systems` into `Foundations`.
+- `render`: Imports or references `src/render/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
 
 ## Source Files
 
@@ -56,12 +60,16 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 ### context.rs
 
-- `src/cursor/context.rs` owns context-sensitive cursor selection plus the manager that combines cursor, trail, and zoom.
-- It defines `CursorState`, `CursorContext`, `ContextRule`, and `CursorManager`, keeping cursor policy state together.
-- Rule registration, context switching, visibility, locking, active-position tracking, and animated updates live here.
-- Trail and zoom attachment also live here, making this file the owner of composed runtime cursor presentation state.
-- This is the policy boundary for script-driven cursor changes; image buffers and effect internals stay in sibling files.
-- Read it when context mapping, active-state transitions, or cursor-manager behavior needs to change.
+- `src/cursor/context.rs` owns the active runtime cursor controller used by Lua, input, and render glue.
+- It defines cursor states, normalized hover hits, rules, sources, effects, and the manager that resolves them.
+- Legacy context switching stays supported, but the same owner now also handles hover-driven state changes.
+- Rule evaluation here chooses between system, custom, and animated cursors before overlay rendering happens.
+- Hover hits from globe, raycaster, or callbacks are normalized here so one resolver can handle every source.
+- Burst effects, trail presets, timed overrides, and zoom-lens state all live in this shared cursor owner.
+- The manager keeps last-hit metadata and active-state snapshots available to Lua without duplicating policy.
+- Input-facing structs in this file translate button, release, and wheel state into cursor-local reactions.
+- Open this file when cursor policy, source matching, or per-frame state resolution semantics need to change.
+- Open this file when cursor rule resolution, source polling contracts, or overlay-state behavior changes.
 
 ### custom_cursor.rs
 
@@ -88,18 +96,19 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 ### trail.rs
 
-- `src/cursor/trail.rs` owns the trailing cursor effect that stores fading points and optional line-style behavior.
-- It defines `TrailPoint`, `TrailMode`, and `CursorTrail`, keeping sample storage and trail configuration together.
-- Point aging, minimum-distance sampling, lifetime expiry, mode switching, and bounded history management live here.
-- This file is the owner of trail-effect state, while manager-level attachment and cursor rules stay elsewhere.
-- Read it when trail sampling, point retention, fade lifetime, or trail mode behavior needs to change.
+- `src/cursor/trail.rs` owns cursor trail sampling, retention, and render-facing configuration.
+- It keeps the runtime point buffer together with mode, spacing, lifetime, blend, and optional texture/shader data.
+- `CursorTrail` stores author-facing knobs for points, lines, ribbons, and stamped cursor decals in one place.
+- `TrailPoint` records sampled screen positions plus age so fading and pruning stay deterministic frame to frame.
+- The file is the narrow owner for trail spacing rules, width settings, max-point limits, and blend defaults.
+- Open this file when cursor trails change shape or lifetime semantics, not when cursor-state policy changes.
 
 ### zoom.rs
 
-- `src/cursor/zoom.rs` owns the magnifier-lens state used to zoom content around the active cursor position.
-- It defines `CursorZoom`, keeping enable state, magnification, radius, and border styling in one owner.
-- Magnification updates, radius clamping, and simple enable toggling all live here under one small feature contract.
-- Read this file when cursor zoom limits, default lens styling, or toggle behavior for the magnifier feature changes.
+- `src/cursor/zoom.rs` owns the magnifier lens config used by the shared cursor overlay runtime.
+- `CursorZoom` stores magnification, radius, border styling, softness, and an optional shader override.
+- The runtime reads this owner when it decides whether to draw a live circular lens over the captured frame.
+- Open this file when zoom-lens tuning or persisted cursor magnifier defaults change across integrations.
 
 
 
@@ -107,10 +116,10 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 ### Functions
 
-- `lurek.cursor.newAnimated(looping) -> LAnimatedCursor`: Creates a new animated cursor that can cycle through frames.
-- `lurek.cursor.newCustom(w, h, hx, hy) -> LCustomCursor`: Creates a new custom cursor with specified dimensions and hotspot position.
-- `lurek.cursor.newManager() -> LCursorManager`: Creates a new cursor manager for handling cursor state and visibility.
-- `lurek.cursor.systemCursors() -> table`: Returns a list of all available system cursor names as a string array.
+- `lurek.cursor.newAnimated(looping) -> LAnimatedCursor`: Creates an animated cursor that can cycle through custom cursor frames.
+- `lurek.cursor.newCustom(w, h, hx, hy) -> LCustomCursor`: Creates a custom RGBA cursor image with an explicit hotspot.
+- `lurek.cursor.newManager() -> LCursorManager`: Returns a handle to the shared runtime cursor controller.
+- `lurek.cursor.systemCursors() -> table`: Returns the list of system cursor names supported by the cursor module.
 
 ### Callbacks
 
@@ -124,7 +133,7 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 #### LAnimatedCursor Type
 
-- Lua userdata representing an animated cursor that cycles through image frames.
+- Creates an animated cursor that can cycle through custom cursor frames.
 
 ##### Fields
 
@@ -132,18 +141,18 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 ##### Methods
 
-- `LAnimatedCursor:addFrame(cursor, duration_ms) -> nil`: Add a frame from a custom cursor image.
-- `LAnimatedCursor:clearPulse() -> nil`: Disable pulse animation for this object.
-- `LAnimatedCursor:currentIndex() -> integer`: Get current frame index for this object.
-- `LAnimatedCursor:currentScale() -> number`: Get current scale from pulse animation.
-- `LAnimatedCursor:frameCount() -> integer`: Get total frame count for this object.
-- `LAnimatedCursor:reset() -> nil`: Reset the cursor animation playback to the first frame.
-- `LAnimatedCursor:setPulse(min_scale, max_scale, speed) -> nil`: Set the pulse animation speed and scale factor parameters.
-- `LAnimatedCursor:update(dt) -> nil`: Update animation (call each frame).
+- `LAnimatedCursor:addFrame(cursor, duration_ms) -> nil`: Appends one frame to the animated cursor sequence.
+- `LAnimatedCursor:clearPulse() -> nil`: Disables pulse scaling for the animated cursor.
+- `LAnimatedCursor:currentIndex() -> integer`: Returns the currently active frame index.
+- `LAnimatedCursor:currentScale() -> number`: Returns the current pulse scale multiplier.
+- `LAnimatedCursor:frameCount() -> integer`: Returns the number of frames stored in this animated cursor.
+- `LAnimatedCursor:reset() -> nil`: Resets playback to the first frame and clears accumulated animation time.
+- `LAnimatedCursor:setPulse(min_scale, max_scale, speed) -> nil`: Enables pulse scaling for the animated cursor.
+- `LAnimatedCursor:update(dt) -> nil`: Advances animated cursor playback and pulse state.
 
 #### LCursorManager Type
 
-- Lua userdata that controls cursor appearance and system cursor selection.
+- Lua userdata that controls the shared runtime cursor.
 
 ##### Fields
 
@@ -151,28 +160,111 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 ##### Methods
 
-- `LCursorManager:addRule(ctx, cursor_name) -> nil`: Add a context rule that maps a context to a system cursor.
-- `LCursorManager:disableTrail() -> nil`: Disable cursor trail for this object.
-- `LCursorManager:disableZoom() -> nil`: Disable cursor zoom for this object.
-- `LCursorManager:enableLineTrail(r, g, b, width) -> nil`: Enable cursor trail with line mode.
-- `LCursorManager:enableTrail(r, g, b, lifetime) -> nil`: Enable cursor trail with fade points mode.
-- `LCursorManager:enableZoom(magnification, radius) -> nil`: Enable zoom/magnifier at cursor position.
-- `LCursorManager:getContext() -> string`: Get current context name for this object.
-- `LCursorManager:getPosition() -> number`: Get cursor position for this object.
-- `LCursorManager:isLocked() -> boolean`: Get cursor lock state for this object.
-- `LCursorManager:isVisible() -> boolean`: Get cursor visibility for this object.
-- `LCursorManager:removeRule(ctx) -> nil`: Remove a context rule for this object.
-- `LCursorManager:setAnimated(cursor) -> nil`: Set the active cursor to an animated cursor.
-- `LCursorManager:setContext(ctx) -> nil`: Set the current context for context-sensitive switching.
-- `LCursorManager:setCustom(cursor) -> nil`: Set the active cursor to a custom image cursor.
-- `LCursorManager:setLocked(locked) -> nil`: Lock the cursor position using the system grab mode.
-- `LCursorManager:setSystem(name) -> nil`: Set the active cursor to a system cursor by name.
-- `LCursorManager:setVisible(visible) -> nil`: Set cursor visibility for this object.
-- `LCursorManager:update(x, y, dt) -> nil`: Update cursor state (call each frame).
+- `LCursorManager:addRule(context_or_rule, cursor_name?) -> integer?`: Registers a legacy context rule or a v2 runtime rule table for hover, click, release, leave, wheel, or context state resolution.
+- `LCursorManager:addSource(source_tbl) -> integer`: Registers a hover source that feeds semantic cursor hits into the shared runtime resolver.
+- `LCursorManager:defineEffect(name, spec) -> nil`: Defines a reusable cursor-local burst effect preset for hover or click rules.
+- `LCursorManager:defineState(name, spec) -> nil`: Defines a reusable named cursor state for rule-driven runtime selection.
+- `LCursorManager:disableTrail() -> nil`: Disables the current cursor trail.
+- `LCursorManager:disableZoom() -> nil`: Disables the live cursor zoom lens.
+- `LCursorManager:enableLineTrail(r, g, b, width) -> nil`: Enables a simple connected line trail behind the cursor.
+- `LCursorManager:enableTrail(r, g, b, lifetime) -> nil`: Enables a simple fading point trail behind the cursor.
+- `LCursorManager:enableZoom(mag, radius) -> nil`: Enables the live zoom lens centered on the runtime cursor.
+- `LCursorManager:getActiveState() -> table`: Returns the currently resolved cursor state after context, hover, and override rules have been applied.
+- `LCursorManager:getContext() -> string`: Returns the current named cursor context.
+- `LCursorManager:getLastHit() -> table?`: Returns the most recent semantic hover hit seen by the runtime cursor.
+- `LCursorManager:getPosition() -> number`: Returns the current runtime cursor position.
+- `LCursorManager:isLocked() -> boolean`: Returns whether the runtime cursor is currently marked as locked.
+- `LCursorManager:isVisible() -> boolean`: Returns whether the runtime cursor is currently visible.
+- `LCursorManager:removeRule(ctx) -> nil`: Removes a legacy context rule that was registered with the `(context, cursor_name)` shorthand.
+- `LCursorManager:removeSource(id) -> boolean`: Removes a previously registered hover source.
+- `LCursorManager:setAnimated(cursor) -> nil`: Switches the active runtime cursor to an animated cursor immediately.
+- `LCursorManager:setContext(ctx) -> nil`: Sets the named cursor context used by legacy rules and context-sensitive state resolution.
+- `LCursorManager:setCustom(cursor) -> nil`: Switches the active runtime cursor to a custom RGBA cursor immediately.
+- `LCursorManager:setLocked(locked) -> nil`: Locks or unlocks the runtime cursor according to the active platform policy.
+- `LCursorManager:setSystem(name) -> nil`: Switches the active runtime cursor to a named system cursor immediately.
+- `LCursorManager:setVisible(visible) -> nil`: Shows or hides the runtime cursor.
+- `LCursorManager:type() -> string`: Returns the Lua handle type name for this cursor manager userdata.
+- `LCursorManager:update(x, y, dt) -> nil`: Overrides the runtime cursor position and advances cursor-local effects for one frame.
+
+#### LCursorManagerDefineEffectResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `blend` (`string`): Blend mode such as `"alpha"` or `"add"`.
+- `button` (`integer`): Optional mouse button filter for click/release triggers.
+- `color` (`table`): RGBA color as `{r, g, b, a}` or indexed array values.
+- `count` (`integer`): Number of particles spawned per burst. Defaults to `12`.
+- `lifetime` (`number`): Particle lifetime in seconds. Defaults to `0.28`.
+- `shader` (`LShader`): Optional shader used while drawing the effect.
+- `shape` (`string`): Particle shape name such as `"spark"`, `"ring"`, or `"circle"`.
+- `size` (`number`): Particle size in pixels. Defaults to `5`.
+- `speed` (`number`): Initial particle speed in pixels per second. Defaults to `96`.
+- `spread` (`number`): Emission arc in radians. Defaults to a full circle.
+- `texture` (`LImage`): integer | Optional texture source for stamped particles.
+
+##### Methods
+
+- No documented methods.
+
+#### LCursorManagerDefineStateResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `animated` (`LAnimatedCursor`): Animated cursor handle when this state uses frame-based cursor playback.
+- `custom` (`LCustomCursor`): Custom cursor handle when this state uses a pixel cursor.
+- `native_preferred` (`boolean`): True to keep the OS cursor when possible. Defaults to `true`.
+- `offset_x` (`number`): Horizontal draw offset in pixels. Defaults to `0`.
+- `offset_y` (`number`): Vertical draw offset in pixels. Defaults to `0`.
+- `scale` (`number`): Overlay scale multiplier. Defaults to `1.0`.
+- `system` (`string`): System cursor name when this state uses a native cursor.
+- `trail` (`table`): Optional trail configuration with `mode`, `color`, `lifetime`, `spacing`, `width`, `max_points`, `texture`, `shader`, and `blend`.
+- `zoom` (`table`): Optional zoom-lens configuration with `magnification`, `radius`, `border_color`, `border_width`, `softness`, and `shader`.
+
+##### Methods
+
+- No documented methods.
+
+#### LCursorManagerGetActiveStateResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `kind` (`string`): Active state kind such as `"system"`, `"custom"`, or `"animated"`.
+- `name` (`string`): Optional named state key when the resolved state came from `defineState`.
+- `native_preferred` (`boolean`): Whether the runtime prefers leaving the OS cursor visible for this state.
+- `offset_x` (`number`): Horizontal draw offset in pixels.
+- `offset_y` (`number`): Vertical draw offset in pixels.
+- `scale` (`number`): Overlay scale multiplier for the resolved state.
+
+##### Methods
+
+- No documented methods.
+
+#### LCursorManagerGetLastHitResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `attrs` (`table`): String map of semantic attributes used by rules and integrations.
+- `context` (`string`): Optional source-provided context name.
+- `id` (`string`): Optional object identifier.
+- `kind` (`string`): Hit kind such as `"marker"`, `"wall"`, `"sprite"`, or a source-specific label.
+- `module` (`string`): Source module name such as `"globe"` or `"raycaster"`.
+- `surface` (`string`): Surface label such as `"surface"`, `"wall"`, `"floor"`, or `"ceiling"`.
+
+##### Methods
+
+- No documented methods.
 
 #### LCustomCursor Type
 
-- Lua userdata representing a custom-drawn cursor image with a configurable hot-spot.
+- Creates a custom RGBA cursor image with an explicit hotspot.
 
 ##### Fields
 
@@ -180,10 +272,10 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 ##### Methods
 
-- `LCustomCursor:getHotspot() -> integer`: Get hotspot position for this object.
-- `LCustomCursor:getPixel(x, y) -> integer`: Get the pixel color at the specified cursor image position.
-- `LCustomCursor:getSize() -> integer`: Get the pixel width and height of the cursor image.
-- `LCustomCursor:setPixel(x, y, r, g, b, a) -> nil`: Set a pixel color â€” Lua userdata object exposed by the engine.
+- `LCustomCursor:getHotspot() -> integer`: Returns the hotspot used when positioning this custom cursor.
+- `LCustomCursor:getPixel(x, y) -> integer`: Reads one RGBA pixel from the custom cursor image.
+- `LCustomCursor:getSize() -> integer`: Returns the custom cursor image size.
+- `LCustomCursor:setPixel(x, y, r, g, b, a) -> nil`: Writes one RGBA pixel into the custom cursor image.
 
 ## Examples
 
@@ -195,4 +287,9 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 ## Notes
 
-- No additional module-specific notes.
+- `lurek.cursor.newManager()` now returns a handle to the shared runtime cursor. Multiple Lua handles intentionally operate on the same active pointer state.
+- `LCursorManager:defineState(name, spec)` is the high-level state registry. A state can select a system cursor or a custom/animated overlay cursor and optionally bundle trail or zoom behavior with that state.
+- `LCursorManager:defineEffect(name, spec)` stores reusable hover or click burst presets, while `LCursorManager:addRule({...})` resolves context, hover target, click, release, or wheel events into states and effects with priorities.
+- `LCursorManager:addSource(source)` is the semantic hover input side of the system. `globe`, `raycaster_last`, and callback sources all normalize into the same hit payload: `module`, `kind`, `surface`, `id`, `attrs`, `context`.
+- Overlay rendering is now a runtime decision. Pure system-cursor states prefer the native OS cursor, while custom cursors, animated cursors, trails, bursts, and zoom lens behavior render through the engine overlay pass.
+- Trail modes now cover point, line, ribbon, and stamp-style behavior. Zoom is a live lens effect intended for precision work and game-like inspection instead of a CPU screenshot readback path.

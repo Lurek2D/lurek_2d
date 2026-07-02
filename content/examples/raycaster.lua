@@ -267,6 +267,42 @@ do
     lurek.log.info("feature cleared = " .. tostring(map:getWallFeatureCell(3, 3) == nil))
 end
 
+--@api: LRaycaster:setPickAttr
+do
+
+    local map = lurek.raycaster.new(6, 4)
+    map:setCell(4, 1, 7)
+    map:setPickAttr(4, 1, "any", "cursor_state", "inspect")
+    map:setPickAttr(4, 1, "wall", "cursor_effect", "spark")
+    local cursor_state = map:getPickAttr(4, 1, "any", "cursor_state")
+    local cursor_effect = map:getPickAttr(4, 1, "wall", "cursor_effect")
+    lurek.log.info("wall cursor_state = " .. tostring(cursor_state))
+    lurek.log.info("wall cursor_effect = " .. tostring(cursor_effect))
+end
+
+--@api: LRaycaster:getPickAttr
+do
+
+    local map = lurek.raycaster.new(6, 4)
+    map:setCell(4, 1, 7)
+    map:setPickAttr(4, 1, "wall", "cursor_effect", "spark")
+    map:setPickAttr(4, 1, "floor", "cursor_zoom", "2.5")
+    local effect = map:getPickAttr(4, 1, "wall", "cursor_effect")
+    local zoom = map:getPickAttr(4, 1, "floor", "cursor_zoom")
+    lurek.log.info("wall cursor_effect = " .. tostring(effect))
+    lurek.log.info("floor cursor_zoom = " .. tostring(zoom))
+end
+
+--@api: LRaycaster:clearPickAttr
+do
+
+    local map = lurek.raycaster.new(6, 4)
+    map:setCell(4, 1, 7)
+    map:setPickAttr(4, 1, "wall", "cursor_effect", "spark")
+    map:clearPickAttr(4, 1, "wall", "cursor_effect")
+    lurek.log.info("wall cursor_effect after clear = " .. tostring(map:getPickAttr(4, 1, "wall", "cursor_effect")))
+end
+
 --@api: LRaycaster:getWallFeatureCell
 do
 
@@ -1810,6 +1846,37 @@ do
     lurek.log.info("feature cleared = " .. tostring(grid:getWallFeatureCell(0, 0) == nil))
 end
 
+--@api: LMultiLevelGrid:setPickAttr
+do
+
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 3, height = 3, cells = { 0, 0, 0, 0, 0, 0, 0, 0, 0 } },
+    })
+    grid:setPickAttr(1, 1, "floor", "cursor_zoom", "2.5")
+    lurek.log.info("grid cursor_zoom = " .. tostring(grid:getPickAttr(1, 1, "floor", "cursor_zoom")))
+end
+
+--@api: LMultiLevelGrid:getPickAttr
+do
+
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 3, height = 3, cells = { 0, 0, 0, 0, 0, 0, 0, 0, 0 } },
+    })
+    grid:setPickAttr(1, 1, "any", "cursor_priority", "90")
+    lurek.log.info("grid cursor_priority = " .. tostring(grid:getPickAttr(1, 1, "any", "cursor_priority")))
+end
+
+--@api: LMultiLevelGrid:clearPickAttr
+do
+
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 3, height = 3, cells = { 0, 0, 0, 0, 0, 0, 0, 0, 0 } },
+    })
+    grid:setPickAttr(1, 1, "floor", "cursor_zoom", "2.5")
+    grid:clearPickAttr(1, 1, "floor", "cursor_zoom")
+    lurek.log.info("grid cursor_zoom after clear = " .. tostring(grid:getPickAttr(1, 1, "floor", "cursor_zoom")))
+end
+
 --@api: LMultiLevelGrid:getWallFeatureCell
 do
 
@@ -2406,10 +2473,26 @@ do
     local sprite_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local model = lurek.render.loadModel("content/examples/assets/models/sample_tank.obj")
     local sprite_hit = map:pickScreen(160, 100, params, {
-        { id = 7, x = 10.5, y = 8.0, texture = sprite_tex, size = 1.0 },
+        {
+            id = 7,
+            x = 10.5,
+            y = 8.0,
+            texture = sprite_tex,
+            size = 1.0,
+            attrs = { cursor_state = "talk", cursor_effect = "spark" },
+        },
     })
     local model_hit = map:pickScreen(160, 120, params, nil, {
-        { id = 8, model = model, x = 10.5, y = 8.0, yaw = math.pi / 4, z = 0.15, scale = 0.22 },
+        {
+            id = 8,
+            model = model,
+            x = 10.5,
+            y = 8.0,
+            yaw = math.pi / 4,
+            z = 0.15,
+            scale = 0.22,
+            attrs = { cursor_state = "inspect" },
+        },
     })
     local half_map = lurek.raycaster.new(12, 10)
     for i = 0, 11 do
@@ -2446,12 +2529,14 @@ do
         lurek.log.info("sprite id = " .. tostring(sprite_hit.id))
         lurek.log.info("sprite distance = " .. string.format("%.2f", sprite_hit.distance))
         lurek.log.info("sprite uv = " .. string.format("%.2f", sprite_hit.u) .. "," .. string.format("%.2f", sprite_hit.v))
+        lurek.log.info("sprite cursor_state = " .. tostring(sprite_hit.attrs and sprite_hit.attrs.cursor_state))
     end
     if model_hit then
         lurek.log.info("model surface = " .. model_hit.surface)
         lurek.log.info("model id = " .. tostring(model_hit.id))
         lurek.log.info("model distance = " .. string.format("%.2f", model_hit.distance))
         lurek.log.info("model uv = " .. string.format("%.2f", model_hit.u) .. "," .. string.format("%.2f", model_hit.v))
+        lurek.log.info("model cursor_state = " .. tostring(model_hit.attrs and model_hit.attrs.cursor_state))
     end
     if feature_hit and feature_hit.feature then
         lurek.log.info("feature kind = " .. feature_hit.feature.kind)
@@ -2735,6 +2820,42 @@ do
     local projected = sm:sortAndProject(0, 0, 0)
 
     lurek.log.info("projected count = " .. #projected)
+end
+
+--@api: LSpriteManager:setAttr
+do
+
+    local sm = lurek.raycaster.newSpriteManager()
+    local id = sm:add(2, 0, "npc.png")
+    sm:setAttr(id, "cursor_state", "talk")
+    sm:setAttr(id, "cursor_effect", "ping")
+    local state = sm:getAttr(id, "cursor_state")
+    local effect = sm:getAttr(id, "cursor_effect")
+    lurek.log.info("sprite cursor_state = " .. tostring(state))
+    lurek.log.info("sprite cursor_effect = " .. tostring(effect))
+end
+
+--@api: LSpriteManager:getAttr
+do
+
+    local sm = lurek.raycaster.newSpriteManager()
+    local id = sm:add(2, 0, "npc.png")
+    sm:setAttr(id, "cursor_effect", "ping")
+    sm:setAttr(id, "cursor_state", "talk")
+    local effect = sm:getAttr(id, "cursor_effect")
+    local state = sm:getAttr(id, "cursor_state")
+    lurek.log.info("sprite cursor_effect = " .. tostring(effect))
+    lurek.log.info("sprite cursor_state = " .. tostring(state))
+end
+
+--@api: LSpriteManager:clearAttr
+do
+
+    local sm = lurek.raycaster.newSpriteManager()
+    local id = sm:add(2, 0, "npc.png")
+    sm:setAttr(id, "cursor_effect", "ping")
+    sm:clearAttr(id, "cursor_effect")
+    lurek.log.info("sprite cursor_effect after clear = " .. tostring(sm:getAttr(id, "cursor_effect")))
 end
 
 --@api: lurek.raycaster.setShader

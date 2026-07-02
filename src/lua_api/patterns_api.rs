@@ -269,7 +269,7 @@ impl LuaUserData for LuaDeck {
         // -- draw --
         /// Draw one or more cards from the top of the draw pile.
         /// @param | count | integer? | Number of cards to draw; default `1`.
-        /// @return | any | Single card when count is omitted or `1`.
+        /// @return | LuaValue | Single card when count is omitted or `1`.
         /// @return | table | Array of cards when count is greater than `1`.
         methods.add_method("draw", |lua, this, count: Option<usize>| {
             let count = count.unwrap_or(1).max(1);
@@ -287,7 +287,7 @@ impl LuaUserData for LuaDeck {
         // -- peek --
         /// Inspect one or more cards from the top without removing them.
         /// @param | count | integer? | Number of cards to inspect; default `1`.
-        /// @return | any | Single card when count is omitted or `1`.
+        /// @return | LuaValue | Single card when count is omitted or `1`.
         /// @return | table | Array of cards when count is greater than `1`.
         methods.add_method("peek", |lua, this, count: Option<usize>| {
             let count = count.unwrap_or(1).max(1);

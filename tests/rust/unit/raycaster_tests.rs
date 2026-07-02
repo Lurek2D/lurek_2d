@@ -16,7 +16,7 @@ mod visibility_tests {
     use super::*;
 
     #[test]
-    fn test_field_of_view_produces_polygon() {
+    fn field_of_view_produces_polygon() {
         let segs = vec![
             Segment {
                 x1: -5.0,
@@ -65,7 +65,7 @@ mod segment_tests {
     }
 
     #[test]
-    fn test_cast_ray_hit() {
+    fn cast_ray_hits_segment() {
         let segs = make_segments();
         let result = cast_ray_2d(0.0, 0.0, 1.0, 0.0, 100.0, &segs);
         assert!(result.is_some());
@@ -76,7 +76,7 @@ mod segment_tests {
     }
 
     #[test]
-    fn test_cast_ray_miss() {
+    fn cast_ray_misses_segment() {
         let segs = make_segments();
         // Ray going away from wall
         let result = cast_ray_2d(0.0, 0.0, -1.0, 0.0, 100.0, &segs);
@@ -206,6 +206,7 @@ mod scene_tests {
             level_index: 0,
             world_x: 2.0,
             world_y: 2.0,
+            attrs: std::collections::HashMap::new(),
         });
         scene.models.push(ModelMesh {
             mesh: overlapping,
@@ -215,6 +216,7 @@ mod scene_tests {
             level_index: 0,
             world_x: 3.0,
             world_y: 2.0,
+            attrs: std::collections::HashMap::new(),
         });
 
         let pick = scene
@@ -242,6 +244,7 @@ mod scene_tests {
             level_index: 0,
             world_x: 2.0,
             world_y: 2.0,
+            attrs: std::collections::HashMap::new(),
         });
         scene.sprites.push(BillboardSprite {
             corners,
@@ -253,6 +256,7 @@ mod scene_tests {
             level_index: 0,
             world_x: 3.0,
             world_y: 2.0,
+            attrs: std::collections::HashMap::new(),
         });
 
         let opaque_pick = scene.pick_entity(24.0, 18.0).expect("expected opaque pick");
@@ -508,6 +512,7 @@ mod render_tests {
             level_index: 0,
             world_x: 2.0,
             world_y: 2.0,
+            attrs: std::collections::HashMap::new(),
         });
         scene.sprites.push(BillboardSprite {
             corners: make_corners(96.0, 20.0, 16.0, 32.0),
@@ -519,6 +524,7 @@ mod render_tests {
             level_index: 0,
             world_x: 6.0,
             world_y: 2.0,
+            attrs: std::collections::HashMap::new(),
         });
         scene.models.push(ModelMesh {
             mesh: sample_model_mesh(),
@@ -528,6 +534,7 @@ mod render_tests {
             level_index: 0,
             world_x: 4.0,
             world_y: 2.0,
+            attrs: std::collections::HashMap::new(),
         });
 
         let cmds = scene.generate_render_commands();
@@ -660,7 +667,7 @@ mod lighting_tests {
     use super::*;
 
     #[test]
-    fn test_ambient_only() {
+    fn compute_lighting_ambient_only() {
         let result = compute_lighting(0.0, 0.0, 0.3, &[], &|_, _| false);
         assert!((result[0] - 0.3).abs() < 1e-5);
         assert!((result[1] - 0.3).abs() < 1e-5);
@@ -668,7 +675,7 @@ mod lighting_tests {
     }
 
     #[test]
-    fn test_point_light_at_center() {
+    fn compute_lighting_point_light_at_center() {
         let lights = vec![PointLight {
             x: 5.0,
             y: 5.0,
@@ -683,7 +690,7 @@ mod lighting_tests {
     }
 
     #[test]
-    fn test_point_light_out_of_range() {
+    fn compute_lighting_point_light_out_of_range() {
         let lights = vec![PointLight {
             x: 0.0,
             y: 0.0,
@@ -697,7 +704,7 @@ mod lighting_tests {
     }
 
     #[test]
-    fn test_apply_lit_shade() {
+    fn apply_lit_shade_scales_channels() {
         let result = apply_lit_shade(0.5, [1.0, 0.8, 0.6]);
         assert!((result[0] - 0.5).abs() < 1e-5);
         assert!((result[1] - 0.4).abs() < 1e-5);
@@ -711,14 +718,14 @@ mod heightmap_tests {
     use super::*;
 
     #[test]
-    fn test_out_of_bounds() {
+    fn heightmap_out_of_bounds_uses_default_planes() {
         let hm = HeightMap::new(4, 4);
         assert!((hm.floor_at(10, 10)).abs() < 1e-5);
         assert!((hm.ceiling_at(10, 10) - 1.0).abs() < 1e-5);
     }
 
     #[test]
-    fn test_set_rect() {
+    fn heightmap_set_rect_updates_floor_band() {
         let mut hm = HeightMap::new(8, 8);
         hm.set_floor_rect(2, 2, 3, 3, 0.25);
         assert!((hm.floor_at(3, 3) - 0.25).abs() < 1e-5);
@@ -874,6 +881,7 @@ mod draw_tests {
             level_index: 0,
             world_x: 4.0,
             world_y: 4.0,
+            attrs: std::collections::HashMap::new(),
         });
 
         let img =
@@ -934,6 +942,7 @@ mod draw_tests {
             level_index: 0,
             world_x: 3.0,
             world_y: 2.0,
+            attrs: std::collections::HashMap::new(),
         });
 
         let img = scene.draw_to_image(64, 48);
@@ -948,7 +957,7 @@ mod doors_tests {
     use super::*;
 
     #[test]
-    fn test_door_not_found() {
+    fn get_door_at_returns_none_when_missing() {
         let mgr = DoorManager::new();
         assert!(mgr.get_door_at(0, 0).is_none());
     }
@@ -1074,21 +1083,21 @@ mod depth_buffer_tests {
     use super::*;
 
     #[test]
-    fn test_new_buffer() {
+    fn new_buffer_starts_with_max_depth() {
         let buf = DepthBuffer::new(320);
         assert_eq!(buf.width(), 320);
         assert_eq!(buf.get(0), f32::MAX);
     }
 
     #[test]
-    fn test_set_and_get() {
+    fn set_and_get_round_trips_depth() {
         let mut buf = DepthBuffer::new(10);
         buf.set(5, 3.5);
         assert!((buf.get(5) - 3.5).abs() < 1e-5);
     }
 
     #[test]
-    fn test_is_visible() {
+    fn is_visible_rejects_equal_or_farther_depth() {
         let mut buf = DepthBuffer::new(10);
         buf.set(3, 5.0);
         assert!(buf.is_visible(3, 4.0));
@@ -1097,7 +1106,7 @@ mod depth_buffer_tests {
     }
 
     #[test]
-    fn test_clear() {
+    fn clear_resets_cells_to_max_depth() {
         let mut buf = DepthBuffer::new(10);
         buf.set(0, 1.0);
         buf.clear();
@@ -1105,7 +1114,7 @@ mod depth_buffer_tests {
     }
 
     #[test]
-    fn test_out_of_bounds() {
+    fn out_of_bounds_reads_return_max_depth() {
         let buf = DepthBuffer::new(5);
         assert_eq!(buf.get(100), f32::MAX);
     }
@@ -1116,21 +1125,28 @@ mod depth_buffer_tests {
 mod column_batch_tests {
     use super::*;
 
+    fn assert_f32_eq(actual: f32, expected: f32) {
+        assert!(
+            (actual - expected).abs() < 1e-6,
+            "expected {expected}, got {actual}"
+        );
+    }
+
     #[test]
     fn new_creates_correct_count() {
         let batch = ColumnBatch::new(10, 320.0, 200.0);
         assert_eq!(batch.get_column_count(), 10);
-        assert_eq!(batch.get_screen_width(), 320.0);
-        assert_eq!(batch.get_screen_height(), 200.0);
+        assert_f32_eq(batch.get_screen_width(), 320.0);
+        assert_f32_eq(batch.get_screen_height(), 200.0);
     }
 
     #[test]
     fn column_data_defaults() {
         let cd = ColumnData::default();
-        assert_eq!(cd.tex_u, 0.0);
-        assert_eq!(cd.shade, 1.0);
+        assert_f32_eq(cd.tex_u, 0.0);
+        assert_f32_eq(cd.shade, 1.0);
         assert_eq!(cd.cell_val, 0);
-        assert_eq!(cd.depth, 0.0);
+        assert_f32_eq(cd.depth, 0.0);
     }
 
     #[test]
@@ -1138,10 +1154,10 @@ mod column_batch_tests {
         let mut batch = ColumnBatch::new(4, 320.0, 200.0);
         batch.set_column(1, 0.5, 10.0, 190.0, 0.8, 3);
         let col = batch.get_column(1).unwrap();
-        assert_eq!(col.tex_u, 0.5);
-        assert_eq!(col.start, 10.0);
-        assert_eq!(col.end, 190.0);
-        assert_eq!(col.shade, 0.8);
+        assert_f32_eq(col.tex_u, 0.5);
+        assert_f32_eq(col.start, 10.0);
+        assert_f32_eq(col.end, 190.0);
+        assert_f32_eq(col.shade, 0.8);
         assert_eq!(col.cell_val, 3);
     }
 
@@ -1168,7 +1184,7 @@ mod column_batch_tests {
         batch.update_from_ray_data(&rays, 1.0, Some(10.0));
         let c0 = batch.get_column(0).unwrap();
         assert_eq!(c0.cell_val, 1);
-        assert_eq!(c0.tex_u, 0.25);
+        assert_f32_eq(c0.tex_u, 0.25);
         assert!(c0.depth > 0.0);
     }
 }
@@ -1302,6 +1318,7 @@ mod build_scene_tests {
                 texture_key: tk,
                 directional_textures: None,
                 size: 1.0,
+                attrs: std::collections::HashMap::new(),
             },
             WorldSprite {
                 entity_id: None,
@@ -1311,6 +1328,7 @@ mod build_scene_tests {
                 texture_key: tk,
                 directional_textures: None,
                 size: 1.0,
+                attrs: std::collections::HashMap::new(),
             },
         ];
 
@@ -1378,6 +1396,7 @@ mod build_scene_tests {
                 facing_angle: std::f32::consts::PI,
             }),
             size: 1.0,
+            attrs: std::collections::HashMap::new(),
         }];
         let right_view = vec![WorldSprite {
             entity_id: None,
@@ -1393,6 +1412,7 @@ mod build_scene_tests {
                 facing_angle: std::f32::consts::FRAC_PI_2,
             }),
             size: 1.0,
+            attrs: std::collections::HashMap::new(),
         }];
         let back_view = vec![WorldSprite {
             entity_id: None,
@@ -1408,6 +1428,7 @@ mod build_scene_tests {
                 facing_angle: 0.0,
             }),
             size: 1.0,
+            attrs: std::collections::HashMap::new(),
         }];
 
         let front_scene = RaycasterScene::build(
@@ -2414,5 +2435,134 @@ mod contract_validation_tests {
         assert_eq!(wall.surface, PickSurface::Wall);
         assert_eq!((wall.grid_x, wall.grid_y), (4, 1));
         assert_eq!(wall.cell_value, 1);
+    }
+}
+
+mod cursor_pick_metadata_tests {
+    use super::*;
+    use lurek2d::runtime::resource_keys::TextureKey;
+    use slotmap::KeyData;
+    use std::collections::HashMap;
+
+    fn unit_corners(x: f32, y: f32, w: f32, h: f32) -> [Vec2; 4] {
+        [
+            Vec2::new(x, y),
+            Vec2::new(x + w, y),
+            Vec2::new(x + w, y + h),
+            Vec2::new(x, y + h),
+        ]
+    }
+
+    fn unit_uvs() -> [Vec2; 4] {
+        [
+            Vec2::new(0.0, 0.0),
+            Vec2::new(1.0, 0.0),
+            Vec2::new(1.0, 1.0),
+            Vec2::new(0.0, 1.0),
+        ]
+    }
+
+    fn pick_params() -> ScreenPickParams {
+        ScreenPickParams {
+            player_x: 1.5,
+            player_y: 1.5,
+            player_angle: 0.0,
+            fov: std::f32::consts::FRAC_PI_3,
+            screen_width: 160.0,
+            screen_height: 100.0,
+            camera_height: 0.5,
+            horizon_offset: 0.0,
+            max_distance: 16.0,
+        }
+    }
+
+    #[test]
+    fn raycaster_pick_attrs_merge_any_and_surface_channels() {
+        let mut rc = Raycaster2D::new(6, 4);
+        rc.set_cell(4, 1, 7);
+        rc.set_pick_attr(4, 1, PickAttrSurface::Any, "cursor_state", "inspect");
+        rc.set_pick_attr(4, 1, PickAttrSurface::Wall, "cursor_effect", "spark");
+
+        let hit = rc
+            .pick_screen(&pick_params(), 80.0, 50.0)
+            .expect("expected wall pick");
+        assert_eq!(hit.kind, "wall");
+        assert_eq!(hit.attrs.get("cursor_state").map(String::as_str), Some("inspect"));
+        assert_eq!(hit.attrs.get("cursor_effect").map(String::as_str), Some("spark"));
+
+        rc.clear_pick_attr(4, 1, PickAttrSurface::Wall, Some("cursor_effect"));
+        assert_eq!(rc.get_pick_attr(4, 1, PickAttrSurface::Wall, "cursor_effect"), None);
+        assert_eq!(
+            rc.pick_attrs_at(4, 1, PickAttrSurface::Wall)
+                .get("cursor_state")
+                .map(String::as_str),
+            Some("inspect")
+        );
+    }
+
+    #[test]
+    fn raycaster_level_pick_attrs_round_trip() {
+        let mut level = RaycasterLevel::new(3, 3);
+        level.set_pick_attr(1, 1, PickAttrSurface::Floor, "cursor_zoom", "2.5");
+        level.set_pick_attr(1, 1, PickAttrSurface::Any, "cursor_priority", "90");
+
+        assert_eq!(
+            level.get_pick_attr(1, 1, PickAttrSurface::Floor, "cursor_zoom"),
+            Some("2.5")
+        );
+        assert_eq!(
+            level.get_pick_attr(1, 1, PickAttrSurface::Any, "cursor_priority"),
+            Some("90")
+        );
+
+        level.clear_pick_attr(1, 1, PickAttrSurface::Floor, Some("cursor_zoom"));
+        assert_eq!(
+            level.get_pick_attr(1, 1, PickAttrSurface::Floor, "cursor_zoom"),
+            None
+        );
+    }
+
+    #[test]
+    fn sprite_manager_attr_store_round_trips() {
+        let mut sprites = SpriteManager::new();
+        let id = sprites.add(2.0, 3.0, "npc.png", 1.0);
+
+        sprites.set_attr(id, "cursor_state", "talk");
+        sprites.set_attr(id, "cursor_effect", "ping");
+        assert_eq!(sprites.get_attr(id, "cursor_state"), Some("talk"));
+        assert_eq!(sprites.get_attr(id, "cursor_effect"), Some("ping"));
+
+        sprites.clear_attr(id, Some("cursor_state"));
+        assert_eq!(sprites.get_attr(id, "cursor_state"), None);
+
+        sprites.clear_attr(id, None);
+        assert_eq!(sprites.get_attr(id, "cursor_effect"), None);
+    }
+
+    #[test]
+    fn entity_pick_returns_sprite_attrs() {
+        let texture_key = TextureKey::from(KeyData::from_ffi(33));
+        let mut attrs = HashMap::new();
+        attrs.insert("cursor_state".to_string(), "loot".to_string());
+        attrs.insert("cursor_effect".to_string(), "spark".to_string());
+
+        let mut scene = RaycasterScene::new(64.0, 48.0);
+        scene.sprites.push(BillboardSprite {
+            corners: unit_corners(16.0, 8.0, 20.0, 20.0),
+            uvs: unit_uvs(),
+            texture_key,
+            light: [1.0, 1.0, 1.0, 1.0],
+            depth: 2.0,
+            entity_id: Some(77),
+            level_index: 0,
+            world_x: 2.0,
+            world_y: 2.0,
+            attrs,
+        });
+
+        let pick = scene.pick_entity(24.0, 18.0).expect("expected sprite pick");
+        assert_eq!(pick.kind, EntityPickKind::Sprite);
+        assert_eq!(pick.attrs.get("cursor_state").map(String::as_str), Some("loot"));
+        assert_eq!(pick.attrs.get("cursor_effect").map(String::as_str), Some("spark"));
     }
 }

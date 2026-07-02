@@ -145,7 +145,7 @@ impl LuaUserData for LuaSprite {
         });
         // -- getShader --
         /// Returns the sprite material shader bound to this sprite, if any.
-        /// @return | LShader? | Bound shader or nil.
+        /// @return | LShader | Bound shader or nil.
         methods.add_method("getShader", |_, this, ()| {
             Ok(this.inner.get_shader().map(|key| LuaShader {
                 state: this.state.clone(),
@@ -537,7 +537,7 @@ pub struct LuaSpriteAutoTileSheet {
 impl LuaUserData for LuaSpriteAutoTileSheet {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- getLayout --
-        /// Returns the autotile layout name.
+        /// Returns the autotile layout name used by this sheet.
         /// @return | string | Layout name.
         methods.add_method("getLayout", |_, this, ()| {
             Ok(this.inner.get_layout_name().to_string())

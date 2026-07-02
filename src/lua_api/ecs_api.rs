@@ -167,6 +167,7 @@ fn create_ecs_object<'lua>(
 
     let state_for_isa = state.clone();
     /// Returns whether this object inherits from or matches the supplied ECS class name.
+    /// @param | self | LObject | Object table to inspect.
     /// @param | candidate | string | ECS class name to compare against the object's registered class hierarchy.
     /// @return | boolean | True when the object class matches or extends the supplied class.
     object.set(
@@ -177,6 +178,7 @@ fn create_ecs_object<'lua>(
         })?,
     )?;
     /// Returns the registered ECS class name for this object table.
+    /// @param | self | LObject | Object table to inspect.
     /// @return | string | Class name assigned when the object was created.
     object.set(
         "type",
@@ -184,6 +186,7 @@ fn create_ecs_object<'lua>(
     )?;
     let state_for_typeof = state.clone();
     /// Returns whether this object matches a supported Lua-visible type or ECS class name.
+    /// @param | self | LObject | Object table to inspect.
     /// @param | candidate | string | Type or class name to compare against `LObject` and the object's ECS class hierarchy.
     /// @return | boolean | True when the supplied name matches `LObject` or the object's class ancestry.
     object.set(
@@ -200,8 +203,9 @@ fn create_ecs_object<'lua>(
         })?,
     )?;
     /// Returns the current value of one object property, honoring any registered getter override first.
+    /// @param | self | LObject | Object table that owns the property.
     /// @param | name | string | Property name to read from the object or its property metadata table.
-    /// @return | any | Current property value, getter result, or `nil` when the property is unset.
+    /// @return | LuaValue | Current property value, getter result, or `nil` when the property is unset.
     object.set(
         "getProperty",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -229,6 +233,7 @@ fn create_ecs_object<'lua>(
         })?,
     )?;
     /// Writes one object property, delegating to a registered setter override when the property defines one.
+    /// @param | self | LObject | Object table that owns the property.
     /// @param | name | string | Property name to update on the object table.
     /// @param | value | any | New Lua value written directly or passed through the property's setter.
     object.set(

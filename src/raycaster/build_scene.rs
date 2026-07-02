@@ -10,6 +10,7 @@
 //! Texture lookup callbacks keep resource routing outside the builder while geometry and lighting policy stay centralized.
 //! This file is the staging boundary between grid-owned ray data and the renderer-facing `RaycasterScene` surface.
 //! It is the right owner for changing surface emission, pit geometry, or light application without renderer rewrites.
+//! Cursor-facing attrs on tiles, sprites, and models are carried through scene assembly so later picks keep semantics.
 //! Open this file when scene assembly semantics change; casting, picking, and draw translation live in siblings.
 
 use crate::color::Color;
@@ -1775,6 +1776,8 @@ pub struct WorldSprite {
     pub directional_textures: Option<DirectionalSpriteTextures>,
     /// World-space size of the sprite (height and width are equal).
     pub size: f32,
+    /// Arbitrary string metadata attached to the sprite.
+    pub attrs: std::collections::HashMap<String, String>,
 }
 
 /// A deterministic world-space particle emitter projected into the raycaster view.
@@ -1936,6 +1939,7 @@ impl RaycasterScene {
                 level_index: ws.level_index,
                 world_x: ws.world_x,
                 world_y: ws.world_y,
+                attrs: ws.attrs.clone(),
             });
         }
     }

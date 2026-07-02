@@ -175,7 +175,7 @@ The broader integration map is split by role:
 - `LMinimap:getOwnerColor(owner) -> number`: Returns the current RGBA color for an owner id.
 - `LMinimap:getPathCount() -> integer`: Returns the number of active path overlays.
 - `LMinimap:getPingCount() -> integer`: Returns the number of active pings.
-- `LMinimap:getShader() -> LShader?`: Returns the currently bound command-render minimap shader, or nil.
+- `LMinimap:getShader() -> LShader`: Returns the currently bound command-render minimap shader, or nil.
 - `LMinimap:getTerrain(x, y) -> integer`: Returns terrain type for a one-based grid cell.
 - `LMinimap:getTerrainColor(terrain_type) -> number`: Returns RGBA color for a terrain type.
 - `LMinimap:getTileDescription(type_id) -> string`: Returns text description for a tile type.

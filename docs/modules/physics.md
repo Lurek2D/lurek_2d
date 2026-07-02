@@ -1300,7 +1300,7 @@ LBody:getCollisionGroup()
 
 | Type | Description |
 |------|-------------|
-| number? | Collision group index, or nil. |
+| number | Collision group index, or nil. |
 
 **Example**
 
@@ -2937,7 +2937,7 @@ end
 
 #### `LFlowStream:destroy`
 
-Disables this flow field.
+Disables and removes this flow field from the world.
 
 ```lua
 LFlowStream:destroy()
@@ -2967,7 +2967,7 @@ end
 
 #### `LFlowStream:getId`
 
-Returns this flow field id.
+Returns the stable numeric ID for this flow field.
 
 ```lua
 LFlowStream:getId()
@@ -3038,7 +3038,7 @@ end
 
 #### `LFlowStream:getStrength`
 
-Returns this flow field strength.
+Returns the current movement strength for this flow field.
 
 ```lua
 LFlowStream:getStrength()
@@ -3291,7 +3291,7 @@ end
 
 #### `LFlowStream:setStrength`
 
-Sets this flow field strength.
+Sets the current movement strength for this flow field.
 
 ```lua
 LFlowStream:setStrength(strength)
@@ -3610,7 +3610,7 @@ LLiquidMap:getCell(cx, cy)
 | Type | Description |
 |------|-------------|
 | number | Fill amount in `0.0..1.0`. |
-| any | Liquid kind as a built-in string or custom integer id; or nil when the cell is empty. |
+| LuaValue | Liquid kind as a built-in string or custom integer id; or nil when the cell is empty. |
 
 **Example**
 
@@ -4047,7 +4047,7 @@ LPhysicsShape:getVertices()
 
 | Type | Description |
 |------|-------------|
-| table? | Vertex table, or nil for circles. |
+| table | Vertex table, or nil for circles. |
 
 **Example**
 
@@ -6824,7 +6824,7 @@ LWorld:getFlowField(id)
 
 | Type | Description |
 |------|-------------|
-| table? | Flow field descriptor table with geometry, enabled, strength, application, combine, and layer-mask fields. |
+| table | Flow field descriptor table with geometry, enabled, strength, application, combine, and layer-mask fields. |
 
 **Example**
 
@@ -6897,7 +6897,7 @@ LWorld:getGravityVector(id)
 
 | Type | Description |
 |------|-------------|
-| table? | Table with id, gx, gy, layerMask, and enabled fields. |
+| table | Table with id, gx, gy, layerMask, and enabled fields. |
 
 **Example**
 
@@ -7902,7 +7902,7 @@ end
 
 #### `LWorld:removeFlowField`
 
-Disables one flow field by id.
+Disables and removes one authored flow field by id.
 
 ```lua
 LWorld:removeFlowField(id)

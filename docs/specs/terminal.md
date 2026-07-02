@@ -204,7 +204,7 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LTerminal:getDimensions() -> integer, integer`: Returns the number of columns and rows in the terminal grid.
 - `LTerminal:getFocused() -> LWidget`: Returns the widget that currently has keyboard focus, or nil if no widget is focused.
 - `LTerminal:getRenderStats() -> table`: Returns the most recent render composition stats gathered by terminal render helpers.
-- `LTerminal:getShader() -> LShader?`: Returns the UI shader bound to this terminal, or nil when default terminal rendering is used.
+- `LTerminal:getShader() -> LShader`: Returns the UI shader bound to this terminal, or nil when default terminal rendering is used.
 - `LTerminal:getWidgetCount() -> integer`: Returns the number of widgets currently attached to this terminal.
 - `LTerminal:keypressed(key) -> boolean`: Forwards a key press event to the terminal for widget input processing.
 - `LTerminal:mousepressed(px, py, button?) -> nil`: Forwards a mouse press event to the terminal, converting pixel coordinates to cell coordinates.

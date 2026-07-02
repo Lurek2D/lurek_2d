@@ -150,17 +150,17 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `lurek.ecs.destroyObject(id) -> boolean`: Removes a live ECS object from the global object registry.
 - `lurek.ecs.getClass(name) -> table`: Returns metadata for a global ECS class.
 - `lurek.ecs.getObject(id) -> table`: Returns a live ECS object table by object id.
-- `lurek.ecs.getProperty(name, name) -> any`: Returns the current value of one object property, honoring any registered getter override first.
+- `lurek.ecs.getProperty(self, name) -> LuaValue`: Returns the current value of one object property, honoring any registered getter override first.
 - `lurek.ecs.hasClass(name) -> boolean`: Returns whether a global ECS class name is defined.
 - `lurek.ecs.hasObject(id) -> boolean`: Returns whether a live ECS object id exists.
-- `lurek.ecs.isA(candidate, candidate) -> boolean`: Returns whether this object inherits from or matches the supplied ECS class name.
+- `lurek.ecs.isA(self, candidate) -> boolean`: Returns whether this object inherits from or matches the supplied ECS class name.
 - `lurek.ecs.newObject(className, props?) -> table`: Creates a Lua table object from a registered ECS class.
 - `lurek.ecs.newRelationshipManager() -> LRelationshipManager`: Creates a relationship manager for tracking numeric values and named levels between entity pairs.
 - `lurek.ecs.newUniverse() -> LUniverse`: Creates an empty ECS universe for entity, component, system, and relationship management.
 - `lurek.ecs.objectIds() -> integer[]`: Returns all live ECS object ids in ascending order.
-- `lurek.ecs.setProperty(name, value, value) -> nil`: Writes one object property, delegating to a registered setter override when the property defines one.
-- `lurek.ecs.type(this) -> string`: Returns the registered ECS class name for this object table.
-- `lurek.ecs.typeOf(candidate, candidate) -> boolean`: Returns whether this object matches a supported Lua-visible type or ECS class name.
+- `lurek.ecs.setProperty(self, name, value) -> nil`: Writes one object property, delegating to a registered setter override when the property defines one.
+- `lurek.ecs.type(self) -> string`: Returns the registered ECS class name for this object table.
+- `lurek.ecs.typeOf(self, candidate) -> boolean`: Returns whether this object matches a supported Lua-visible type or ECS class name.
 
 ### Callbacks
 

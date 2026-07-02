@@ -207,7 +207,7 @@ end
 
 #### `LTileLightMap:addRectLight`
 
-Alias for `addAreaLight`.
+Creates a rectangular area light via `addAreaLight`.
 
 ```lua
 LTileLightMap:addRectLight(opts)
@@ -321,7 +321,7 @@ end
 
 #### `LTileLightMap:clearRectLights`
 
-Alias for `clearAreaLights`.
+Clears all rectangular area lights via `clearAreaLights`.
 
 ```lua
 LTileLightMap:clearRectLights()
@@ -636,7 +636,7 @@ end
 
 #### `LTileLightMap:removeRectLight`
 
-Alias for `removeAreaLight`.
+Removes a rectangular area light via `removeAreaLight`.
 
 ```lua
 LTileLightMap:removeRectLight(id)
@@ -934,7 +934,7 @@ end
 
 #### `LTileLightMap:updateRectLight`
 
-Alias for `updateAreaLight`.
+Updates a rectangular area light via `updateAreaLight`.
 
 ```lua
 LTileLightMap:updateRectLight(id, opts)

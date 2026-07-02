@@ -271,7 +271,7 @@ This module primarily collaborates with `camera`, `image`, `pathfind`, `render`,
 - `LProvinceRegistry:getNeighbors(id) -> integer[]`: Returns a table of province IDs that share a border with the given province.
 - `LProvinceRegistry:getProvince(id) -> table`: Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state, visual_state), centroid, capital marker, and custom attributes.
 - `LProvinceRegistry:getRevision() -> integer`: Returns the current change revision counter. Incremented on every mutation (color, terrain, border, fog changes). Use with `getChangesSince` for incremental updates.
-- `LProvinceRegistry:getShader() -> LShader?`: Returns the currently bound command-render province shader, or nil.
+- `LProvinceRegistry:getShader() -> LShader`: Returns the currently bound command-render province shader, or nil.
 - `LProvinceRegistry:getWidth() -> integer`: Returns the width of the province grid in cells (pixels of the source PNG).
 - `LProvinceRegistry:importMetadataFromFiles(opts) -> table`: Bulk-imports province metadata (colors, capitals, labels, terrain) from external files (PNG color map, CSV color table, TOML province definitions, marker PNG). Returns a summary of how many provinces were mapped.
 - `LProvinceRegistry:isConnected(from_id, to_id) -> boolean`: Returns true when there is at least one pathfind graph route between two provinces.

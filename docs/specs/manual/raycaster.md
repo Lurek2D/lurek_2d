@@ -50,6 +50,9 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - Depth-aware fog is a first-class overlay mode. Use `{ type = "depth_fog", ... }` or `{ type = "fog", mode = "depth", ... }` when the effect should read per-column scene depth instead of only layering a flat fullscreen tint.
 - `LRaycaster:addParticleEmitter(emitter)` spawns deterministic projected 2.5D particles during scene builds. Emitters can bind textures, `particle` shaders, blend modes, seeded jitter, and volumetric placement hints (`z`, `radius`, `height`) while still remaining raycaster scene data instead of direct render command ownership.
 - `lurek.raycaster.drawLastScene(width, height)` is an evidence-oriented CPU fallback. It preserves base textures, tint, UV scrolling, frame-atlas animation, depth fog, and projected particle placement, but it does not execute WGSL for raycaster materials, shader backgrounds, or shader overlays.
+- Raycaster picking now carries semantic metadata for cursor/runtime consumers. `pickScreen*` and multilevel pick helpers return stable `kind` strings plus optional `attrs` on wall, floor, ceiling, sprite, and model hits.
+- `LRaycaster:setPickAttr/getPickAttr/clearPickAttr` and the matching `LMultiLevelGrid` methods store per-surface metadata on `wall`, `floor`, `ceiling`, or shared `any` channels so first-person surfaces can declare cursor states or effects without hardcoded Lua branching.
+- `LSpriteManager:setAttr/getAttr/clearAttr` and scene sprite/model `attrs` tables let entity picks surface the same semantic cursor metadata as world geometry. This keeps `raycaster` aligned with the attrs-first hover model already used by `globe`.
 
 ## Architecture Links
 

@@ -4,6 +4,7 @@
 //! Picking helpers resolve screen pixels against projected sprites and model triangles, with optional sprite alpha tests.
 //! `EntityPickResult` and related enums define the stable payload returned when higher layers query scene selections.
 //! This file is the staging boundary between raycaster world reasoning and renderer or CPU draw translation.
+//! Cursor integrations read attrs, ids, and hit kinds from these scene records without needing access to source grids.
 //! Open this file when prepared-scene data or picking semantics change; build and render flow live in siblings.
 
 use crate::math::Vec2;
@@ -11,6 +12,7 @@ use crate::render::mesh::Mesh;
 use crate::render::renderer::ParticleRenderShape;
 use crate::render::BlendMode;
 use crate::runtime::resource_keys::{ShaderKey, TextureKey};
+use std::collections::HashMap;
 
 /// Build-time counters captured while assembling a `RaycasterScene`.
 #[derive(Debug, Clone, Copy, Default)]
@@ -59,7 +61,7 @@ impl EntityPickKind {
 }
 
 /// Result of picking a projected sprite or model from a prepared raycaster scene.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 pub struct EntityPickResult {
     /// Entity class that was selected.
     pub kind: EntityPickKind,
@@ -79,6 +81,8 @@ pub struct EntityPickResult {
     pub tex_v: f32,
     /// Optional texture key bound to the picked entity.
     pub texture_key: Option<TextureKey>,
+    /// Arbitrary string metadata attached to the picked entity.
+    pub attrs: HashMap<String, String>,
 }
 
 /// A textured or flat-shaded wall slice quad emitted for one raycaster column or face.
@@ -164,6 +168,8 @@ pub struct BillboardSprite {
     pub world_x: f32,
     /// World-space anchor Y position of the sprite.
     pub world_y: f32,
+    /// Arbitrary string metadata attached to the sprite.
+    pub attrs: HashMap<String, String>,
 }
 
 /// Atlas-frame layout used by a raycaster material animation strip.
@@ -322,6 +328,8 @@ pub struct ModelMesh {
     pub world_x: f32,
     /// World-space anchor Y position of the model instance.
     pub world_y: f32,
+    /// Arbitrary string metadata attached to the model instance.
+    pub attrs: HashMap<String, String>,
 }
 /// Full frame scene produced by `RaycasterScene::build`; consumed by `render::generate_render_commands`.
 #[derive(Debug, Clone, Default)]
@@ -482,6 +490,7 @@ impl RaycasterScene {
                 tex_u: u,
                 tex_v: v,
                 texture_key: Some(sprite.texture_key),
+                attrs: sprite.attrs.clone(),
             };
             if best_pick
                 .as_ref()
@@ -519,6 +528,7 @@ impl RaycasterScene {
                     tex_u: (tri[0].u * wa + tri[1].u * wb + tri[2].u * wc).clamp(0.0, 1.0),
                     tex_v: (tri[0].v * wa + tri[1].v * wb + tri[2].v * wc).clamp(0.0, 1.0),
                     texture_key: model.mesh.texture,
+                    attrs: model.attrs.clone(),
                 };
                 if best_pick
                     .as_ref()

@@ -292,7 +292,7 @@ fn write_procgen_scalar_grid_to_field(
 impl LuaUserData for LuaProcgenGrid {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- getSize --
-        /// Returns grid width and height.
+        /// Returns the generated grid width and height in cells.
         /// @return | integer | Width.
         /// @return | integer | Height.
         methods.add_method("getSize", |_, this, ()| Ok((this.width, this.height)));

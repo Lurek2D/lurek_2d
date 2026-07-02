@@ -5,18 +5,21 @@
 //! Door synchronization translates `DoorManager` openness into wall features without replacing underlying tile identity.
 //! Sprite and floor helpers project billboards and sample floor rows with the same camera conventions as wall casting.
 //! Safe setters ignore invalid writes, and out-of-range reads fall back predictably for tools and runtime probes.
+//! Pick attributes also live with the grid here so wall, floor, and ceiling metadata follow the owning cell surface.
+//! Screen picking and scene builders read this owner when they need tile semantics beyond the raw numeric cell value.
 //! Open this file when marching semantics or map-owned ray data change; debug views and scene building live in siblings.
 
 use super::contract::{OutOfBoundsPolicy, RaycastParams, RaycasterError, RaycasterLimits};
 use super::doors::DoorManager;
 use super::ray_hit::RayHit;
 use super::sprite_projection::SpriteProjection;
+use super::tile_picker::PickAttrSurface;
 use super::wall_feature::WallFeature;
 use crate::log_msg;
 use crate::runtime::log_messages::RC01;
 use std::collections::{HashMap, HashSet};
 /// 2D grid map and DDA ray-stepping engine used by the raycaster subsystem.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Raycaster2D {
     /// Map width in tiles.
     width: u32,
@@ -30,6 +33,8 @@ pub struct Raycaster2D {
     wall_alphas: HashMap<u8, f32>,
     /// Per-cell wall feature descriptors used by rendering, picking, and ray probes.
     wall_features: HashMap<(u32, u32), WallFeature>,
+    /// Per-cell pick metadata keyed by `(x, y, surface)`.
+    pick_attrs: HashMap<(u32, u32, PickAttrSurface), HashMap<String, String>>,
     /// Door cells last synchronized from a `DoorManager`.
     synced_door_cells: HashSet<(u32, u32)>,
 }
@@ -47,6 +52,7 @@ impl Raycaster2D {
             oob_policy: limits.default_oob_policy,
             wall_alphas: HashMap::new(),
             wall_features: HashMap::new(),
+            pick_attrs: HashMap::new(),
             synced_door_cells: HashSet::new(),
         }
     }
@@ -68,6 +74,7 @@ impl Raycaster2D {
             oob_policy: limits.default_oob_policy,
             wall_alphas: HashMap::new(),
             wall_features: HashMap::new(),
+            pick_attrs: HashMap::new(),
             synced_door_cells: HashSet::new(),
         })
     }
@@ -198,6 +205,68 @@ impl Raycaster2D {
     /// Return the wall feature descriptor at `(x, y)`, if present.
     pub fn wall_feature(&self, x: u32, y: u32) -> Option<WallFeature> {
         self.wall_features.get(&(x, y)).copied()
+    }
+
+    /// Attach one string pick attribute to cell `(x, y)` and surface channel.
+    pub fn set_pick_attr(
+        &mut self,
+        x: u32,
+        y: u32,
+        surface: PickAttrSurface,
+        key: impl Into<String>,
+        value: impl Into<String>,
+    ) {
+        if x >= self.width || y >= self.height {
+            return;
+        }
+        self.pick_attrs
+            .entry((x, y, surface))
+            .or_default()
+            .insert(key.into(), value.into());
+    }
+
+    /// Read one pick attribute from cell `(x, y)` and surface channel.
+    pub fn get_pick_attr(&self, x: u32, y: u32, surface: PickAttrSurface, key: &str) -> Option<&str> {
+        self.pick_attrs
+            .get(&(x, y, surface))
+            .and_then(|attrs| attrs.get(key))
+            .map(String::as_str)
+    }
+
+    /// Clear one pick attribute or the whole surface-channel map for cell `(x, y)`.
+    pub fn clear_pick_attr(
+        &mut self,
+        x: u32,
+        y: u32,
+        surface: PickAttrSurface,
+        key: Option<&str>,
+    ) {
+        let Some(attrs) = self.pick_attrs.get_mut(&(x, y, surface)) else {
+            return;
+        };
+        if let Some(key) = key {
+            attrs.remove(key);
+            if attrs.is_empty() {
+                self.pick_attrs.remove(&(x, y, surface));
+            }
+        } else {
+            self.pick_attrs.remove(&(x, y, surface));
+        }
+    }
+
+    /// Return merged pick attributes for one surface, including shared `any` attrs.
+    pub fn pick_attrs_at(&self, x: u32, y: u32, surface: PickAttrSurface) -> HashMap<String, String> {
+        let mut attrs = self
+            .pick_attrs
+            .get(&(x, y, PickAttrSurface::Any))
+            .cloned()
+            .unwrap_or_default();
+        if surface != PickAttrSurface::Any {
+            if let Some(surface_attrs) = self.pick_attrs.get(&(x, y, surface)) {
+                attrs.extend(surface_attrs.clone());
+            }
+        }
+        attrs
     }
     /// Synchronize door wall-features from `doors`, leaving underlying cell values unchanged.
     ///
