@@ -125,14 +125,14 @@ This module is mostly self-contained inside the `Feature Systems` group. Cross-m
 
 ### mod.rs
 
-- This module is the learning index, wiring tensors, dense and sequence layers, optimizers, and model adapters.
-- It reexports neural, recurrent, convolutional, attention, and transformer owners from one subsystem entry point.
-- `tensor.rs` owns row-major data carriers, while `evolutionary.rs` defines the flat-parameter contract shared by layers.
-- `neural_net.rs`, `recurrent.rs`, `conv.rs`, and `attention.rs` implement CPU learning blocks with trainable weights.
-- `transformer.rs` composes attention, norms, and feed-forward blocks, while `engine.rs` chains heterogeneous blocks.
-- `genetic.rs`, `neuroevolution.rs`, `bandit.rs`, and `qlearner.rs` cover search and reinforcement loops.
-- `env.rs` plus `tensor.rs` define the data surfaces consumed by these learners.
-- This file owns visibility and navigation only; actual math, training state, and inference behavior live in siblings.
+- This module re-exports learning surface for `attention.rs`, `bandit.rs`, `conv.rs`, and `engine.rs` and runtime helpers.
+- It keeps navigation explicit by showing which sibling files own state, validation, transport, or render behavior.
+- Public exports here route callers toward `attention.rs`, `bandit.rs`, and `conv.rs` first, while deeper behavior owners.
+- Open this file when the public learning symbol map moves; edit siblings when runtime rules themselves change.
+- This index exists to organize entrypoints, not to absorb the state, caches, or algorithms its children own.
+- Use neighboring owners for behavioral fixes, and keep this file limited to exports, docs, and navigation.
+- Reexports here help agents find right module quickly when changes touch `attention.rs`, `bandit.rs`, subsystem.
+- Keep concrete logic in `attention.rs`, `bandit.rs`, and `conv.rs` so symbol lookup stays shallow.
 
 ### neural_net.rs
 

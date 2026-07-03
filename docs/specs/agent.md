@@ -74,9 +74,12 @@ This module owns its small local Ollama HTTP client rather than depending on `ne
 
 ### local_http.rs
 
-- Minimal plain-HTTP client used only by the local Ollama agent runtime.
-- It intentionally supports a narrow HTTP/1.1 request/response path so the
-- game networking module does not need a general web client dependency.
+- Owns the agent local HTTP implementation for the agent subsystem and keeps related runtime rules local here.
+- Keeps agent requests, HTTP boundaries, and service state so helpers stay close to invariants this file updates.
+- Defines how agent local HTTP data is validated, transformed, or stored before neighboring systems consume it.
+- Separates agent local HTTP behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where agent code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing agent local HTTP defaults, lifecycle handling, validation, or data ownership rules.
 
 ### memory.rs
 

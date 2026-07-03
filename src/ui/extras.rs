@@ -1,13 +1,14 @@
-//! Defines the extended widget set that covers dialogs, menus, trees, overlays, toasts, tables, and status views.
-//! Owns richer retained components used by editor-like, data-heavy, or feedback-oriented screens beyond core controls.
-//! Models hierarchical trees and menu structures in forms that remain safe for incremental retained updates.
-//! Provides toast and status style widgets that surface runtime feedback without custom one-off widget plumbing.
-//! Supplies dialog, accordion, toolbar, and custom widget shells for script-driven or advanced interaction patterns.
-//! Includes data and color oriented helpers that support dashboards, inspectors, and analytics-heavy interfaces.
-//! Keeps advanced widgets aligned with shared base semantics so layout, focus, and render code can stay generic.
-//! Acts as the boundary for non-baseline widgets that still need first-class participation in the retained tree.
-//! Open this file when complex composite widgets work incorrectly even though simpler controls still behave well.
-//! Read this owner for tree, menu, dialog, or notification issues before changing the central context logic.
+//! Owns the UI extras implementation for the UI subsystem and keeps related runtime rules local here.
+//! Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
+//! Defines how UI extras data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates UI extras behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing UI extras defaults, lifecycle handling, validation, or data ownership rules.
+//! Keeps failure paths and edge cases near the UI extras state that explains them instead of spreading rules outward.
+//! Preserves deterministic behavior by keeping UI extras calculations explicit at their owning subsystem boundary.
+//! Provides the local adaptation layer that lets callers reuse UI extras rules without duplicating engine decisions.
+//! Open this owner before sibling files when a regression centers on UI extras state, helpers, or integration rules.
+//! Works with neighboring UI owners while keeping the main UI extras responsibility anchored in one file.
 
 use crate::dataframe::frame::{ColRef, DataFrame};
 use crate::ui::widget::{WidgetBase, WidgetType};

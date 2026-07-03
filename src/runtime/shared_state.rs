@@ -1,14 +1,15 @@
-//! Owns the shared state owner for the runtime subsystem and keeps its rules local to this file.
-//! Centers the implementation around FullscreenType, WindowState, default, with helpers kept close to their invariants.
-//! Defines how shared state data is validated, transformed, or stored before neighboring systems use it.
-//! Owns runtime behavior with explicit state, validation, and crate-local integration boundaries.
-//! Keeps public crate helpers focused on shared state behavior while Lua registration stays elsewhere.
-//! Documents the boundary where runtime code accepts inputs, reports errors, or updates state.
-//! Use this file when changing shared state defaults, lifecycle handling, validation, or data ownership.
-//! Keeps failure paths and edge cases near the runtime state that can explain them while keeping call sites explicit.
-//! Preserves deterministic behavior by keeping shared state calculations explicit at their owner boundary.
-//! Provides the local adaptation layer that lets callers avoid duplicating runtime rules while keeping call sites explicit.
-//! Maintains small helper surfaces so broader engine modules can compose shared state behavior safely.
+//! Owns the runtime shared state implementation for the runtime subsystem and keeps related runtime rules local here.
+//! Keeps shared state, boundaries, and execution helpers ownership so helpers stay close to invariants this file updates.
+//! Defines how runtime shared state data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates runtime shared state behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where runtime code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing runtime shared state defaults, lifecycle handling, validation, or data ownership rules.
+//! Keeps failure paths and edge cases near shared state state that explains them instead of spreading rules outward.
+//! Preserves deterministic behavior by keeping runtime shared state calculations at their owning subsystem boundary.
+//! Provides local adaptation layer that lets callers reuse runtime shared state rules without duplicating engine decisions.
+//! Open this owner before sibling files when a regression centers on shared state state, helpers, or integration rules.
+//! Works with neighboring runtime owners while keeping the main runtime shared state responsibility anchored in one file.
+//! Changes to runtime shared state names, caches, or helper boundaries should usually stay coupled inside this owner.
 
 use crate::audio::Mixer;
 use crate::camera::Camera;

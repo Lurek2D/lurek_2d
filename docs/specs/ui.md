@@ -78,31 +78,85 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 
 ### containers.rs
 
-- Defines retained UI container widgets that organize child hierarchies before controls or visuals are drawn.
-- Owns panels, windows, split layouts, scroll regions, docks, and nine-slice shells used across the UI tree.
-- Applies vertical, horizontal, and grid arrangement rules so parent widgets can size and place children predictably.
-- Keeps scroll overflow handling local to container state instead of leaking viewport math into leaf controls.
-- Provides scalable frame metadata through nine-slice records so borders survive resize without visual distortion.
-- Acts as the structural boundary between raw widget nodes and higher-level layout orchestration in the context.
-- Open this file when hierarchy composition, docking, scroll behavior, or container sizing rules look incorrect.
+- Owns the UI containers implementation for the UI subsystem and keeps related runtime rules local here.
+- Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
+- Defines how UI containers data is validated, transformed, or stored before neighboring systems consume it.
+- Separates UI containers behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing UI containers defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near the UI containers state that explains them instead of spreading rules outward.
+- Preserves deterministic behavior by keeping UI containers calculations explicit at their owning subsystem boundary.
+
+### context/builders.rs
+
+- Owns the UI context builders implementation for the UI subsystem and keeps related runtime rules local here.
+- Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
+- Defines how UI context builders data is validated, transformed, or stored before neighboring systems consume it.
+- Separates UI context builders behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing UI context builders defaults, lifecycle handling, validation, or data ownership rules.
+
+### context/color.rs
+
+- Owns the UI context color implementation for the UI subsystem and keeps related runtime rules local here.
+- Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
+- Defines how UI context color data is validated, transformed, or stored before neighboring systems consume it.
+
+### context/focus.rs
+
+- Owns the UI context focus implementation for the UI subsystem and keeps related runtime rules local here.
+- Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
+- Defines how UI context focus data is validated, transformed, or stored before neighboring systems consume it.
+- Separates UI context focus behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing UI context focus defaults, lifecycle handling, validation, or data ownership rules.
+
+### context/geometry.rs
+
+- Owns the UI context geometry implementation for the UI subsystem and keeps related runtime rules local here.
+- Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
+- Defines how UI context geometry data is validated, transformed, or stored before neighboring systems consume it.
+- Separates UI context geometry behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+
+### context/input.rs
+
+- Owns the UI context input implementation for the UI subsystem and keeps related runtime rules local here.
+- Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
+- Defines how UI context input data is validated, transformed, or stored before neighboring systems consume it.
+- Separates UI context input behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing UI context input defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near UI context input state that explains them instead of spreading rules outward.
+- Preserves deterministic behavior by keeping UI context input calculations explicit at their owning subsystem boundary.
+- Provides the local adaptation layer that lets callers reuse UI context input rules without duplicating engine decisions.
+- Open this owner before sibling files when a regression centers on UI context input state, helpers, or integration rules.
+- Works with neighboring UI owners while keeping the main UI context input responsibility anchored in one file.
+- Changes to UI context input names, caches, or helper boundaries should usually stay coupled inside this owner.
+- Local input routing changes should stay here so pointer capture and hit-testing rules remain aligned.
+- This file is the right stop for maintainers tracing UI context input regressions back to their concrete owner boundary.
+
+### context/lifecycle.rs
+
+- Owns the UI context lifecycle implementation for the UI subsystem and keeps related runtime rules local here.
+- Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
+- Defines how UI context lifecycle data is validated, transformed, or stored before neighboring systems consume it.
+- Separates UI context lifecycle behavior from Lua bindings, tests, and sibling owners so integration stays readable.
 
 ### context.rs
 
-- Owns the central retained UI context that stores widget arenas, events, bindings, and per-frame lifecycle state.
-- Maintains stable widget identity through indexed storage so tree references survive updates and scripted mutation.
-- Runs recursive layout passes that turn parent-relative placement data into absolute rectangles for render and hit tests.
-- Routes mouse and keyboard input through explicit dispatch paths tied to focus, hover, capture, and active widgets.
-- Tracks drag, drop, and resize interactions while preventing invalid parent-child cycles or unsafe reparenting.
-- Queues UI events in frame order so Lua and gameplay systems observe interactions as a coherent transaction stream.
-- Advances alpha, position, and other transition state so motion and visibility changes remain deterministic.
-- Stores binding values that synchronize widget state with script-visible keys without leaking control internals.
-- Computes dirtiness and render signatures so unchanged subtrees avoid unnecessary rebuild and traversal work.
-- Owns dialog geometry helpers that keep body, footer, and chrome rectangles aligned with the active viewport.
-- Exposes children, base-state, and widget-lookup helpers used by layout, render, and control code paths.
-- Integrates math, runtime, and logging concerns only where they support safe UI orchestration and diagnostics.
-- Acts as the operational boundary between widget definitions and the live tree that receives layout and input.
-- Open this file when focus, event routing, bindings, drag logic, or retained-tree lifecycle behavior breaks.
-- It is the first owner to inspect for UI state bugs because most widget interaction semantics converge here.
+- Owns the UI context implementation for the UI subsystem and keeps related runtime rules local here.
+- Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
+- Defines how UI context data is validated, transformed, or stored before neighboring systems consume it.
+- Separates UI context behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing UI context defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near the UI context state that explains them instead of spreading rules outward.
+- Preserves deterministic behavior by keeping UI context calculations explicit at their owning subsystem boundary.
+- Provides the local adaptation layer that lets callers reuse UI context rules without duplicating engine decisions.
+- Open this owner before sibling files when a regression centers on UI context state, helpers, or integration rules.
+- Works with neighboring UI owners while keeping the main UI context responsibility anchored in one file.
+- Changes to UI context names, caches, or helper boundaries should usually stay coupled inside this owner.
+- This file is the right stop for maintainers tracing UI context regressions back to their concrete owner boundary.
 
 ### controls.rs
 
@@ -125,63 +179,95 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 
 ### extras.rs
 
-- Defines the extended widget set that covers dialogs, menus, trees, overlays, toasts, tables, and status views.
-- Owns richer retained components used by editor-like, data-heavy, or feedback-oriented screens beyond core controls.
-- Models hierarchical trees and menu structures in forms that remain safe for incremental retained updates.
-- Provides toast and status style widgets that surface runtime feedback without custom one-off widget plumbing.
-- Supplies dialog, accordion, toolbar, and custom widget shells for script-driven or advanced interaction patterns.
-- Includes data and color oriented helpers that support dashboards, inspectors, and analytics-heavy interfaces.
-- Keeps advanced widgets aligned with shared base semantics so layout, focus, and render code can stay generic.
-- Acts as the boundary for non-baseline widgets that still need first-class participation in the retained tree.
-- Open this file when complex composite widgets work incorrectly even though simpler controls still behave well.
-- Read this owner for tree, menu, dialog, or notification issues before changing the central context logic.
+- Owns the UI extras implementation for the UI subsystem and keeps related runtime rules local here.
+- Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
+- Defines how UI extras data is validated, transformed, or stored before neighboring systems consume it.
+- Separates UI extras behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing UI extras defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near the UI extras state that explains them instead of spreading rules outward.
+- Preserves deterministic behavior by keeping UI extras calculations explicit at their owning subsystem boundary.
+- Provides the local adaptation layer that lets callers reuse UI extras rules without duplicating engine decisions.
+- Open this owner before sibling files when a regression centers on UI extras state, helpers, or integration rules.
+- Works with neighboring UI owners while keeping the main UI extras responsibility anchored in one file.
 
 ### icons.rs
 
-- Owns the built-in UI icon catalog used by retained widgets, TOML layouts, and Lua helpers.
-- The catalog maps stable semantic names to compact text glyphs so icons work without external assets.
-- Names stay independent from the rendered glyphs, allowing a future SVG or atlas backend to reuse the same API.
-- Widget code stores icon names, while render code resolves them here at paint time.
-- Keep this module focused on catalog lookup and icon placement metadata, not widget state or drawing policy.
+- Owns the UI icons implementation for the UI subsystem and keeps related runtime rules local here.
+- Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
+- Defines how UI icons data is validated, transformed, or stored before neighboring systems consume it.
+- Separates UI icons behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing UI icons defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near the UI icons state that explains them instead of spreading rules outward.
+- Preserves deterministic behavior by keeping UI icons calculations explicit at their owning subsystem boundary.
 
 ### layout_loader.rs
 
-- Owns ui behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
-- Centers the implementation around DialogActionDef, WidgetDef, LayoutDef, with helpers kept close to their invariants.
-- Defines how layout loader data is validated, transformed, or stored before neighboring systems use it.
-- Owns ui behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
-- Keeps public crate helpers focused on layout loader behavior while Lua registration stays elsewhere.
-- Documents the boundary where ui code accepts inputs, reports errors, or updates state while keeping call sites explicit.
-- Use this file when changing layout loader defaults, lifecycle handling, validation, or data ownership.
-- Keeps failure paths and edge cases near the ui state that can explain them while keeping call sites explicit.
-- Preserves deterministic behavior by keeping layout loader calculations explicit at their owner boundary.
+- Owns the UI layout loader implementation for the UI subsystem and keeps related runtime rules local here.
+- Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
+- Defines how UI layout loader data is validated, transformed, or stored before neighboring systems consume it.
+- Separates UI layout loader behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing UI layout loader defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near UI layout loader state that explains them instead of spreading rules outward.
+- Preserves deterministic behavior by keeping UI layout loader calculations explicit at their owning subsystem boundary.
+- Provides the local adaptation layer that lets callers reuse UI layout loader rules without duplicating engine decisions.
+- Open this owner before sibling files when a regression centers on UI layout loader state, helpers, or integration rules.
 
 ### mod.rs
 
-- Exports the retained UI subsystem surface that combines widgets, containers, context, render, and theming.
-- Acts as the index for UI ownership so callers can see where tree state, controls, layout, and draw logic live.
-- Centralizes module visibility and re-exports instead of storing live widget state or performing UI updates.
-- Connects code-built and data-driven UI flows by exposing the owners used by both runtime screens and tools.
-- Open this file first when adding or removing a UI owner or when public UI re-export policy needs to change.
-- Use it to map a UI concern to its concrete Rust file before editing control, context, or render behavior.
+- This module re-exports UI surface for `containers.rs`, `context.rs`, `controls.rs`, and `diagnostics.rs` and helpers.
+- It keeps navigation explicit by showing which sibling files own state, validation, transport, or render behavior.
+- Public exports here route callers toward `containers.rs`, `context.rs`, and `controls.rs` first, while deeper owners.
+- Open this file when the public UI symbol map moves; edit siblings when runtime rules themselves change.
+- This index exists to organize entrypoints, not to absorb the state, caches, or algorithms its children own.
+- Use neighboring owners for behavioral fixes, and keep this file limited to exports, docs, and navigation.
+- Reexports here help agents find right module quickly when changes touch `containers.rs`, `context.rs`, subsystem.
+- Keep concrete logic in `containers.rs`, `context.rs`, and `controls.rs` so symbol lookup stays shallow.
+
+### render/cpu.rs
+
+- Owns the UI render cpu implementation for the UI subsystem and keeps related runtime rules local here.
+- Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
+- Defines how UI render cpu data is validated, transformed, or stored before neighboring systems consume it.
+- Separates UI render cpu behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing UI render cpu defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near the UI render cpu state that explains them instead of spreading rules outward.
+- Preserves deterministic behavior by keeping UI render cpu calculations explicit at their owning subsystem boundary.
+- Provides the local adaptation layer that lets callers reuse UI render cpu rules without duplicating engine decisions.
+- Open this owner before sibling files when a regression centers on UI render cpu state, helpers, or integration rules.
+- Works with neighboring UI owners while keeping the main UI render cpu responsibility anchored in one file.
+- Changes to UI render cpu names, caches, or helper boundaries should usually stay coupled inside this owner.
+
+### render/helpers.rs
+
+- Owns the UI render helpers implementation for the UI subsystem and keeps related runtime rules local here.
+- Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
+- Defines how UI render helpers data is validated, transformed, or stored before neighboring systems consume it.
+- Separates UI render helpers behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing UI render helpers defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near UI render helpers state that explains them instead of spreading rules outward.
+- Preserves deterministic behavior by keeping UI render helpers calculations explicit at their owning subsystem boundary.
+- Provides local adaptation layer that lets callers reuse UI render helpers rules without duplicating engine decisions.
 
 ### render.rs
 
-- Turns retained UI state into render commands and headless pixel output for screenshots, docs, and tests.
-- Resolves theme style data per widget state and applies alpha-aware fills, borders, shadows, and highlights.
-- Emits control-specific visuals for sliders, checkboxes, radios, combos, switches, and progress indicators.
-- Measures, lays out, and draws text with active font context so labels and values stay aligned across widgets.
-- Renders tree, menu, and other hierarchical content while preserving ordering and structural readability.
-- Supports CPU image output for offline verification so UI visuals can be checked without a live GPU frame.
-- Includes hue conversion and color-picker helpers needed by visual controls inside the retained widget catalog.
-- Merges generic children and type-specific children into one deterministic traversal for stable render ordering.
-- Threads context, fonts, scissor state, and output carriers through a single render pass boundary.
-- Keeps widget drawing policy local so the central context does not need to understand visual implementation details.
-- Acts as the presentation boundary between retained widget state and the renderer command language.
-- Exposes draw-to-image behavior that tooling and tests rely on when comparing visual regressions frame to frame.
-- Integrates only the math and render helpers required to translate widget rectangles into concrete draw output.
-- Open this file when a widget exists and lays out correctly but still draws with the wrong visual behavior.
-- It is the right owner for UI paint bugs because control semantics stay elsewhere and visuals converge here.
+- Owns the UI render implementation for the UI subsystem and keeps related runtime rules local here.
+- Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
+- Defines how UI render data is validated, transformed, or stored before neighboring systems consume it.
+- Separates UI render behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing UI render defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near the UI render state that explains them instead of spreading rules outward.
+- Preserves deterministic behavior by keeping UI render calculations explicit at their owning subsystem boundary.
+- Provides the local adaptation layer that lets callers reuse UI render rules without duplicating engine decisions.
+- Open this owner before sibling files when a regression centers on UI render state, helpers, or integration rules.
+- Works with neighboring UI owners while keeping the main UI render responsibility anchored in one file.
+- Changes to UI render names, caches, or helper boundaries should usually stay coupled inside this owner.
+- This file is the right stop for maintainers tracing UI render regressions back to their concrete owner boundary.
 
 ### theme.rs
 

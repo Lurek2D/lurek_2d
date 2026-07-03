@@ -1,7 +1,14 @@
-//! Owns destructible terrain grid storage, collider rebuild ownership, and collapse analysis.
-//! Keeps Lua-facing terrain helpers thin by centralizing validation, component scans, and debris spawning here.
-//! Defines the boundary where terrain edits become dirty chunks, rebuilt static colliders, or optional debris bodies.
-//! Use this file when changing terrain fill semantics, collapse policies, serialization, or terrain-owned diagnostics.
+//! Owns the physics terrain implementation for the physics subsystem and keeps related runtime rules local here.
+//! Keeps body state, simulation helpers, and authored world contracts so helpers stay close to invariants this updates.
+//! Defines how physics terrain data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates physics terrain behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where physics code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing physics terrain defaults, lifecycle handling, validation, or data ownership rules.
+//! Keeps failure paths and edge cases near the physics terrain state that explains them instead of spreading rules outward.
+//! Preserves deterministic behavior by keeping physics terrain calculations explicit at their owning subsystem boundary.
+//! Provides the local adaptation layer that lets callers reuse physics terrain rules without duplicating engine decisions.
+//! Open this owner before sibling files when a regression centers on physics terrain state, helpers, or integration rules.
+//! Works with neighboring physics owners while keeping the main physics terrain responsibility anchored in one file.
 
 use super::body::{Body, BodyType};
 use super::error::PhysicsError;

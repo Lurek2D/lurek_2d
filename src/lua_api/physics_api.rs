@@ -235,18 +235,27 @@ fn physics_material_to_table<'lua>(
         tbl.set("angularDamping", value)?;
     }
     if let Some(value) = material.gravity_scale {
+        /// Optional gravity multiplier applied to bodies using this material.
         tbl.set("gravityScale", value)?;
     }
     if let Some(value) = material.mass_override {
+        /// Optional explicit mass override used instead of density-derived mass.
         tbl.set("massOverride", value)?;
     }
+    /// Tangential stick force applied when contacts try to slide across this material.
     tbl.set("stickiness", material.stickiness)?;
+    /// Normal adhesion force that helps contacts stay attached under load.
     tbl.set("adhesion", material.adhesion)?;
+    /// Reflectivity multiplier used when beam queries bounce from this material.
     tbl.set("beamReflectivity", material.beam_reflectivity)?;
+    /// Reflectivity multiplier used when projectile helpers bounce from this material.
     tbl.set("projectileReflectivity", material.projectile_reflectivity)?;
+    /// Beam energy absorbed by this material during reflective beam queries.
     tbl.set("beamAbsorption", material.beam_absorption)?;
+    /// Buoyancy multiplier used when liquid sampling applies lift to a body.
     tbl.set("buoyancy", material.buoyancy)?;
     if let Some(surface_type) = &material.surface_type {
+        /// Optional authored surface label returned to gameplay scripts.
         tbl.set("surfaceType", surface_type.clone())?;
     }
     Ok(tbl)
@@ -666,11 +675,15 @@ fn beam_hit_to_table<'lua>(lua: &'lua Lua, hit: &BeamHit) -> LuaResult<LuaTable<
     tbl.set("reflectivity", hit.reflectivity)?;
     match hit.outgoing_dir {
         Some((x, y)) => {
+            /// Reflected beam X direction, or `nil` when the hit does not continue.
             tbl.set("outgoingDirX", x)?;
+            /// Reflected beam Y direction, or `nil` when the hit does not continue.
             tbl.set("outgoingDirY", y)?;
         }
         None => {
+            /// Reflected beam X direction, or `nil` when the hit does not continue.
             tbl.set("outgoingDirX", LuaValue::Nil)?;
+            /// Reflected beam Y direction, or `nil` when the hit does not continue.
             tbl.set("outgoingDirY", LuaValue::Nil)?;
         }
     }
@@ -906,6 +919,7 @@ fn stats_to_table<'lua>(lua: &'lua Lua, stats: PhysicsWorldStats) -> LuaResult<L
     tbl.set("skippedSteps", stats.skipped_steps)?;
     tbl.set("clampedSteps", stats.clamped_steps)?;
     tbl.set("invalidOperations", stats.invalid_operations)?;
+    /// Number of bodies scanned during the last simulation step.
     tbl.set("bodiesScanned", stats.bodies_scanned)?;
     /// Number of collider shapes rebuilt during the last synchronization pass.
     tbl.set("collidersRebuilt", stats.colliders_rebuilt)?;
@@ -952,6 +966,7 @@ fn flow_sample_to_table<'lua>(lua: &'lua Lua, sample: &FlowSample) -> LuaResult<
         entry.set("magnitude", contribution.magnitude)?;
         sources.set(index + 1, entry)?;
     }
+    /// Per-field contribution rows used to build the sampled flow vector.
     tbl.set("sources", sources)?;
     Ok(tbl)
 }
@@ -971,6 +986,7 @@ fn flow_field_to_table<'lua>(lua: &'lua Lua, field: &FlowField) -> LuaResult<Lua
             FlowMedium::Custom => "custom",
         },
     )?;
+    /// Base flow strength applied before falloff and combine rules.
     tbl.set("strength", field.strength)?;
     tbl.set(
         "application",
@@ -994,16 +1010,25 @@ fn flow_field_to_table<'lua>(lua: &'lua Lua, field: &FlowField) -> LuaResult<Lua
             FlowFalloff::Smoothstep => "smoothstep",
         },
     )?;
+    /// Priority used when overlapping fields resolve non-additive behavior.
     tbl.set("priority", field.priority)?;
+    /// Layer mask that limits which bodies receive this field.
     tbl.set("layerMask", field.layer_mask)?;
+    /// Maximum acceleration this field may contribute during one step.
     tbl.set("maxAccel", field.max_accel)?;
+    /// Velocity drag used when the field steers bodies toward a target velocity.
     tbl.set("drag", field.drag)?;
     match &field.geometry {
         FlowGeometry::UniformRect { x, y, w, h } => {
+            /// Geometry kind of this field (`rect`).
             tbl.set("geometry", "rect")?;
+            /// Rectangle X coordinate in world units.
             tbl.set("x", *x)?;
+            /// Rectangle Y coordinate in world units.
             tbl.set("y", *y)?;
+            /// Rectangle width in world units.
             tbl.set("w", *w)?;
+            /// Rectangle height in world units.
             tbl.set("h", *h)?;
         }
         FlowGeometry::CircleFan {
@@ -1012,10 +1037,15 @@ fn flow_field_to_table<'lua>(lua: &'lua Lua, field: &FlowField) -> LuaResult<Lua
             radius,
             inner_radius,
         } => {
+            /// Geometry kind of this field (`circle`).
             tbl.set("geometry", "circle")?;
+            /// Circle center X coordinate in world units.
             tbl.set("x", *cx)?;
+            /// Circle center Y coordinate in world units.
             tbl.set("y", *cy)?;
+            /// Outer radius in world units.
             tbl.set("radius", *radius)?;
+            /// Inner dead-zone radius in world units.
             tbl.set("innerRadius", *inner_radius)?;
         }
         FlowGeometry::DirectionalFan {
@@ -1026,19 +1056,28 @@ fn flow_field_to_table<'lua>(lua: &'lua Lua, field: &FlowField) -> LuaResult<Lua
             facing,
             half_angle_deg,
         } => {
+            /// Geometry kind of this field (`fan`).
             tbl.set("geometry", "fan")?;
+            /// Fan center X coordinate in world units.
             tbl.set("x", *cx)?;
+            /// Fan center Y coordinate in world units.
             tbl.set("y", *cy)?;
+            /// Outer fan radius in world units.
             tbl.set("radius", *radius)?;
+            /// Inner dead-zone radius in world units.
             tbl.set("innerRadius", *inner_radius)?;
+            /// Full fan width angle in degrees.
             tbl.set("widthAngle", *half_angle_deg * 2.0)?;
             let direction_tbl = lua.create_table()?;
             direction_tbl.set("x", facing.x)?;
             direction_tbl.set("y", facing.y)?;
+            /// Unit direction vector that points along the fan centerline.
             tbl.set("directionVector", direction_tbl)?;
         }
         FlowGeometry::PolylineTube { points, width } => {
+            /// Geometry kind of this field (`path`).
             tbl.set("geometry", "path")?;
+            /// Tube width in world units.
             tbl.set("width", *width)?;
             let points_tbl = lua.create_table()?;
             for (index, point) in points.iter().enumerate() {
@@ -1047,6 +1086,7 @@ fn flow_field_to_table<'lua>(lua: &'lua Lua, field: &FlowField) -> LuaResult<Lua
                 row.set("y", point.y)?;
                 points_tbl.set(index + 1, row)?;
             }
+            /// Polyline control points that describe the field path.
             tbl.set("points", points_tbl)?;
         }
     }

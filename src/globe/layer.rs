@@ -1,7 +1,8 @@
-//! Stores named globe overlay layers that apply ordered region color overrides on top of each region's base style.
-//! Owns layer insertion, removal, visibility, alpha, region-color mutation, and z-order sorted resolution helpers.
-//! Provides the overlay state boundary between gameplay thematic maps and draw code that asks for effective colors.
-//! Open this owner when layer stacking, alpha policy, or region color override semantics need to be revised.
+//! Owns the globe layer implementation for the globe subsystem and keeps related runtime rules local here.
+//! Keeps globe state, province data, and world-facing render helpers so helpers stay close to invariants this file updates.
+//! Defines how globe layer data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates globe layer behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where globe code accepts inputs, reports errors, allocates state, or emits outputs.
 
 use crate::globe::types::{Layer, RegionId};
 use crate::globe::validation::validate_layer;

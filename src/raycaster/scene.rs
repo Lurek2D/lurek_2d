@@ -420,7 +420,8 @@ impl RaycasterScene {
             }
             let index = (((screen_x / screen_width.max(1.0)) * depth_columns.len() as f32).floor()
                 as isize)
-                .clamp(0, depth_columns.len().saturating_sub(1) as isize) as usize;
+                .clamp(0, depth_columns.len().saturating_sub(1) as isize)
+                as usize;
             depth_columns.get(index).copied()
         }
 

@@ -1,8 +1,9 @@
-//! Turns screen-space globe clicks into front-hemisphere surface hits and region selections under the active camera.
-//! Owns hit payload types, geographic point-in-polygon tests, screen-to-surface conversion, and depth-based picking.
-//! Provides the interaction boundary between projection math and higher-level UI or gameplay selection workflows.
-//! Also resolves centroid screen positions for picked regions, keeping interaction outputs close to hit computation.
-//! Open this owner when picking misses, hit ordering, or geo containment logic stops matching visible globe regions.
+//! Owns the globe picking implementation for the globe subsystem and keeps related runtime rules local here.
+//! Keeps globe state, province data, and world-facing render helpers so helpers stay close to invariants this file updates.
+//! Defines how globe picking data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates globe picking behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where globe code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing globe picking defaults, lifecycle handling, validation, or data ownership rules.
 
 use super::sphere::{lat_lon_to_unit, unit_to_lat_lon};
 use crate::globe::projection::{build_view_matrix, OrbitCamera};

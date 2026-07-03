@@ -56,11 +56,12 @@ This module primarily collaborates with `event`, `input`, `runtime`, `timer`. It
 
 ### script.rs
 
-- `src/automation/script.rs` owns automation script storage and TOML parsing into named, time-sorted step sequences.
-- It defines `Script`, expands repeat directives, sorts steps by time, and enforces bounded script size in one owner.
-- Metadata loading and field extraction from TOML also live here, keeping authoring rules close to stored script data.
-- This file is the boundary for authored automation content before runtime playback policy is applied by the simulator.
-- Read this file when script import rules, repeat expansion, or step-cap enforcement for automation content must change.
+- Owns the automation script implementation for the automation subsystem and keeps related runtime rules local here.
+- Keeps automation steps, script state, and orchestration ownership so helpers stay close to invariants this file updates.
+- Defines how automation script data is validated, transformed, or stored before neighboring systems consume it.
+- Separates automation script behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where automation code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing automation script defaults, lifecycle handling, validation, or data ownership rules.
 
 ### simulator.rs
 
@@ -76,11 +77,12 @@ This module primarily collaborates with `event`, `input`, `runtime`, `timer`. It
 
 ### step.rs
 
-- `src/automation/step.rs` owns the typed action enum and step record that describe timed automation inputs and checks.
-- It defines `Action` and `Step`, keeping parseable action names and optional per-step payload fields under one owner.
-- Keyboard, mouse, wheel, text, touch, gamepad, combo, wait, macro, assert, and visual-assert categories are declared here.
-- Read this file when action vocabulary, step fields, or scancode fallback behavior for automation content changes.
-- This file is the schema boundary for automation scripts, while parsing and playback behavior stay in sibling modules.
+- Owns the automation step implementation for the automation subsystem and keeps related runtime rules local here.
+- Keeps automation steps, script state, and orchestration ownership so helpers stay close to invariants this file updates.
+- Defines how automation step data is validated, transformed, or stored before neighboring systems consume it.
+- Separates automation step behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where automation code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing automation step defaults, lifecycle handling, validation, or data ownership rules.
 
 
 

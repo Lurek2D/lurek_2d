@@ -1,8 +1,7 @@
-//! This file owns the reusable deck/card ordering primitive exposed through `lurek.patterns`.
-//! It tracks draw-pile order, discard membership, deterministic shuffling, and reset semantics.
-//! Card payload storage stays in the Lua binding because cards may be any Lua value; this Rust
-//! type owns only stable card ids and pile transitions so deck behavior remains deterministic.
-//! Open it when card draw, discard, reset, or shuffle policy changes.
+//! Owns the patterns deck implementation for the patterns subsystem and keeps related runtime rules local here.
+//! Keeps pattern data, exported submodules, and navigation helpers so helpers stay close to invariants this file updates.
+//! Defines how patterns deck data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates patterns deck behavior from Lua bindings, tests, and sibling owners so integration stays readable.
 
 /// Reusable deck state backed by stable card ids.
 #[derive(Debug, Clone, Default)]

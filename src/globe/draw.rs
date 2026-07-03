@@ -1,12 +1,14 @@
-//! Generates the full globe render command stream from topology, camera, overlays, fog, markers, labels, and arcs.
-//! Owns the projected-region draw policy that blends lighting, atmosphere, borders, heat layers, textures, and fog.
-//! Projects region geometry and arcs through the current orbit camera so every primitive shares one spatial frame.
-//! Also renders markers and labels with LOD checks, pulse effects, and optional icon textures for strategic views.
-//! Provides the presentation boundary between globe state stores and the generic renderer command vocabulary.
-//! This file is where thematic overlays, marker glyphs, night shading, and atmospheric effects are coordinated.
-//! Neighboring changes usually involve projection math, fog semantics, resource keys, and region style contracts.
-//! Open this owner when the globe looks wrong even though source data is correct and available to the renderer.
-//! It is the right file for draw ordering bugs because no sibling module owns the final command assembly pipeline.
+//! Owns the globe draw implementation for the globe subsystem and keeps related runtime rules local here.
+//! Keeps globe state, province data, and world-facing render helpers so helpers stay close to invariants this file updates.
+//! Defines how globe draw data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates globe draw behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where globe code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing globe draw defaults, lifecycle handling, validation, or data ownership rules.
+//! Keeps failure paths and edge cases near the globe draw state that explains them instead of spreading rules outward.
+//! Preserves deterministic behavior by keeping globe draw calculations explicit at their owning subsystem boundary.
+//! Provides the local adaptation layer that lets callers reuse globe draw rules without duplicating engine decisions.
+//! Open this owner before sibling files when a regression centers on globe draw state, helpers, or integration rules.
+//! Works with neighboring globe owners while keeping the main globe draw responsibility anchored in one file.
 
 use super::sphere::great_circle_path;
 use crate::globe::fog::FogStore;
@@ -20,8 +22,8 @@ use crate::globe::projection::{
 };
 use crate::globe::topology::RegionGraph;
 use crate::globe::types::{
-    Arc as GlobeArc, FogState, GlobeOrbit, GlobeOrbitKind, GlobeRenderStats, GlobeSpec,
-    HeatLayer, LodTier, MarkerShape, Region, RegionId,
+    Arc as GlobeArc, FogState, GlobeOrbit, GlobeOrbitKind, GlobeRenderStats, GlobeSpec, HeatLayer,
+    LodTier, MarkerShape, Region, RegionId,
 };
 use crate::math::{polygon, Vec2, Vec3};
 use crate::render::mesh::{Mesh, MeshDrawMode, MeshVertex};
@@ -50,11 +52,7 @@ impl GlobeFrameScratch {
         stats.scratch_hole_loops_high_water = stats
             .scratch_hole_loops_high_water
             .max(self.projected_holes.len());
-        let hole_vertices = self
-            .projected_holes
-            .iter()
-            .map(Vec::len)
-            .sum::<usize>();
+        let hole_vertices = self.projected_holes.iter().map(Vec::len).sum::<usize>();
         stats.scratch_hole_vertices_high_water =
             stats.scratch_hole_vertices_high_water.max(hole_vertices);
     }
@@ -862,10 +860,7 @@ fn emit_border_polyline(
     stats.scratch_border_vertices_high_water = stats
         .scratch_border_vertices_high_water
         .max(smoothed_border.len().max(smoothed_border_work.len()));
-    let mut pts: Vec<f32> = smoothed_border
-        .iter()
-        .flat_map(|v| [v.x, v.y])
-        .collect();
+    let mut pts: Vec<f32> = smoothed_border.iter().flat_map(|v| [v.x, v.y]).collect();
     if let Some(first) = smoothed_border.first() {
         pts.push(first.x);
         pts.push(first.y);
@@ -971,12 +966,7 @@ fn emit_atmosphere_halo(cmds: &mut Vec<RenderCommand>, spec: &GlobeSpec, camera:
     });
 }
 /// Smooth a closed polyline by repeated corner subdivision.
-fn smooth_polyline_into(
-    points: &[Vec2],
-    passes: u8,
-    out: &mut Vec<Vec2>,
-    work: &mut Vec<Vec2>,
-) {
+fn smooth_polyline_into(points: &[Vec2], passes: u8, out: &mut Vec<Vec2>, work: &mut Vec<Vec2>) {
     out.clear();
     if points.len() < 3 || passes == 0 {
         out.extend_from_slice(points);

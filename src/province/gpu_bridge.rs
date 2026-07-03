@@ -1,7 +1,9 @@
-//! Maps province registry data into flat GPU-friendly records that shaders and upload code can consume without Rust state.
-//! Owns ProvinceGpuRecord and BorderStyleGpuRecord layouts plus builders that normalize colors, flags, and style bits.
-//! Provides the translation boundary between rich province metadata and tightly packed buffers for renderer-side lookup.
-//! Use this file when GPU record shape, packing rules, or registry fields required by province shaders are changing.
+//! Owns the province GPU bridge implementation for the province subsystem and keeps related runtime rules local here.
+//! Keeps province data, render helpers, and map-facing transforms so helpers stay close to invariants this file updates.
+//! Defines how province GPU bridge data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates province GPU bridge behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where province code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing province GPU bridge defaults, lifecycle handling, validation, or data ownership rules.
 
 use bytemuck::{Pod, Zeroable};
 

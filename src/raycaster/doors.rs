@@ -54,10 +54,18 @@ impl DoorManager {
     }
     /// Register a new closed door at `(x, y)` with the given `direction` and `speed`; return its index handle.
     pub fn add_door(&mut self, x: u32, y: u32, direction: DoorDirection, speed: f32) -> usize {
-        if let Some(existing) = self.doors.iter().position(|door| door.x == x && door.y == y) {
+        if let Some(existing) = self
+            .doors
+            .iter()
+            .position(|door| door.x == x && door.y == y)
+        {
             let door = &mut self.doors[existing];
             door.direction = direction;
-            door.speed = if speed.is_finite() { speed.max(0.0) } else { 0.0 };
+            door.speed = if speed.is_finite() {
+                speed.max(0.0)
+            } else {
+                0.0
+            };
             return existing;
         }
         let index = self.doors.len();
@@ -65,7 +73,11 @@ impl DoorManager {
             x,
             y,
             open_amount: 0.0,
-            speed: if speed.is_finite() { speed.max(0.0) } else { 0.0 },
+            speed: if speed.is_finite() {
+                speed.max(0.0)
+            } else {
+                0.0
+            },
             direction,
             state: DoorState::Closed,
         });

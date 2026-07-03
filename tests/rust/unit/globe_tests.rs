@@ -932,11 +932,11 @@ mod topology_tests {
 mod registry_and_picking_tests {
     use lurek2d::globe::export::export_regions_to_obj;
     use lurek2d::globe::label::LabelStore;
+    use lurek2d::globe::layer::LayerStore;
     use lurek2d::globe::loader::{
         load_from_png_file_safe, load_from_province_grid, load_from_toml_file_safe,
         load_from_toml_str,
     };
-    use lurek2d::globe::layer::LayerStore;
     use lurek2d::globe::marker::MarkerPlacement;
     use lurek2d::globe::picking::{
         point_in_geo_polygon, point_in_geo_region, screen_to_shell, screen_to_surface,
@@ -1577,7 +1577,9 @@ return hits[1], hits[2], g:regionCount()
                 vec![(22.0, -10.0), (22.0, 10.0), (38.0, 10.0), (38.0, -10.0)],
             ))
             .unwrap();
-        globe.markers.add("poi", 30.0, 0.0, None, Default::default());
+        globe
+            .markers
+            .add("poi", 30.0, 0.0, None, Default::default());
         globe
             .labels
             .add("city", 30.0, 0.0, "Capital", LabelStyle::default(), 0)
@@ -1616,7 +1618,9 @@ return hits[1], hits[2], g:regionCount()
         globe.set_region_sector(RegionId(1), "east");
         assert_eq!(globe.region_sector(RegionId(1)), Some("east"));
         assert!(globe.sector_regions("west").is_empty());
-        globe.remove_province(RegionId(1)).expect("province should be removed");
+        globe
+            .remove_province(RegionId(1))
+            .expect("province should be removed");
         assert_eq!(globe.region_sector(RegionId(1)), None);
         assert!(globe.sector_regions("east").is_empty());
     }

@@ -1,10 +1,12 @@
-//! Owns user-facing shader parsing, validation, and uniform bookkeeping for custom WGSL-driven render effects.
-//! Wraps incoming WGSL source into renderer-ready templates so fragment entry points match engine expectations.
-//! Inspects fragment inputs and uniform declarations to reject unsupported bindings before runtime use.
-//! Represents uniform values in typed forms that later upload code can preserve in stable buffer order.
-//! Keeps wrapper generation and ordered-uniform logic local instead of scattering shader policy through backends.
-//! Acts as the custom-shader boundary between authored WGSL text and engine-managed pipeline integration.
-//! Open this file when shader source validation, wrapper rewriting, or uniform ordering behaves incorrectly.
+//! Owns the render shader implementation for the render subsystem and keeps related runtime rules local here.
+//! Keeps draw commands, GPU resources, and render-pass configuration so helpers stay close to invariants this file updates.
+//! Defines how render shader data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates render shader behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where render code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing render shader defaults, lifecycle handling, validation, or data ownership rules.
+//! Keeps failure paths and edge cases near the render shader state that explains them instead of spreading rules outward.
+//! Preserves deterministic behavior by keeping render shader calculations explicit at their owning subsystem boundary.
+//! Provides the local adaptation layer that lets callers reuse render shader rules without duplicating engine decisions.
 
 use crate::log_msg;
 use crate::runtime::log_messages::SH01_SHADER_OK;

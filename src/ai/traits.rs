@@ -1,9 +1,10 @@
-//! Owns persistent personality trait profiles and temporary modifiers that shape how other AI systems score choices.
-//! Stores base values, expiring additive modifiers, and optional archetype provenance used to initialize a profile.
-//! Supports deterministic archetype jitter, modifier aging, interpolation, and source-based modifier removal.
-//! Provides the temperament boundary between authored character identity and tactical systems that read trait values.
-//! Also maintains the archetype registry so reusable presets stay separate from one-off agent mutation logic.
-//! Open this owner when personality baselines, modifier lifetimes, or archetype contracts need shared changes.
+//! Owns the ai traits implementation for the ai subsystem and keeps related runtime rules local here.
+//! Keeps AI world state, traits, and decision-facing helpers so helpers stay close to invariants this file updates.
+//! Defines how ai traits data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates ai traits behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where ai code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing ai traits defaults, lifecycle handling, validation, or data ownership rules.
+//! Keeps failure paths and edge cases near the ai traits state that explains them instead of spreading rules outward.
 
 use std::collections::HashMap;
 

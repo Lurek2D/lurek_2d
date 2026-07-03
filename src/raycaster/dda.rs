@@ -226,7 +226,13 @@ impl Raycaster2D {
     }
 
     /// Read one pick attribute from cell `(x, y)` and surface channel.
-    pub fn get_pick_attr(&self, x: u32, y: u32, surface: PickAttrSurface, key: &str) -> Option<&str> {
+    pub fn get_pick_attr(
+        &self,
+        x: u32,
+        y: u32,
+        surface: PickAttrSurface,
+        key: &str,
+    ) -> Option<&str> {
         self.pick_attrs
             .get(&(x, y, surface))
             .and_then(|attrs| attrs.get(key))
@@ -234,13 +240,7 @@ impl Raycaster2D {
     }
 
     /// Clear one pick attribute or the whole surface-channel map for cell `(x, y)`.
-    pub fn clear_pick_attr(
-        &mut self,
-        x: u32,
-        y: u32,
-        surface: PickAttrSurface,
-        key: Option<&str>,
-    ) {
+    pub fn clear_pick_attr(&mut self, x: u32, y: u32, surface: PickAttrSurface, key: Option<&str>) {
         let Some(attrs) = self.pick_attrs.get_mut(&(x, y, surface)) else {
             return;
         };
@@ -255,7 +255,12 @@ impl Raycaster2D {
     }
 
     /// Return merged pick attributes for one surface, including shared `any` attrs.
-    pub fn pick_attrs_at(&self, x: u32, y: u32, surface: PickAttrSurface) -> HashMap<String, String> {
+    pub fn pick_attrs_at(
+        &self,
+        x: u32,
+        y: u32,
+        surface: PickAttrSurface,
+    ) -> HashMap<String, String> {
         let mut attrs = self
             .pick_attrs
             .get(&(x, y, PickAttrSurface::Any))
@@ -805,7 +810,10 @@ impl Raycaster2D {
             floor_y += floor_step_y;
             result.push((tx, ty));
         }
-        log::debug!("raycaster: cast_floor_row row={row} -> {} samples", result.len());
+        log::debug!(
+            "raycaster: cast_floor_row row={row} -> {} samples",
+            result.len()
+        );
         result
     }
     /// Return per-pixel `(tex_u, tex_v)` world UV coordinates for every pixel in floor row `row`.

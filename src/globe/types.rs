@@ -1,11 +1,12 @@
-//! Defines the shared globe data model for regions, overlays, markers, labels, arcs, specs, and projected outputs.
-//! Owns stable identifiers, multipart geographic geometry, edge tags, base styling, and screen-space result types.
-//! Encodes the parameters that drive rotation, lighting, atmosphere, borders, and thematic overlay composition.
-//! Provides the schema boundary that every globe owner depends on, from loaders and registries to draw and picking.
-//! Also models fog state, label and marker styles, heat layers, and level-of-detail tiers used across rendering.
-//! This file matters when globe shape data, overlay contracts, or style fields need to stay reusable everywhere.
-//! Neighboring edits usually involve loader parsing, projection outputs, registry state, and draw-time expectations.
-//! Open this owner for shape-independent globe schema changes before touching behavior-specific sibling modules.
+//! Owns the globe types implementation for the globe subsystem and keeps related runtime rules local here.
+//! Keeps globe state, province data, and world-facing render helpers so helpers stay close to invariants this file updates.
+//! Defines how globe types data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates globe types behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where globe code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing globe types defaults, lifecycle handling, validation, or data ownership rules.
+//! Keeps failure paths and edge cases near the globe types state that explains them instead of spreading rules outward.
+//! Preserves deterministic behavior by keeping globe types calculations explicit at their owning subsystem boundary.
+//! Provides the local adaptation layer that lets callers reuse globe types rules without duplicating engine decisions.
 
 use crate::globe::sphere::{lat_lon_to_unit, unit_to_lat_lon};
 use crate::math::{Vec2, Vec3};

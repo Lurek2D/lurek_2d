@@ -1,7 +1,9 @@
-//! This file owns archetype behavior inside the tileset subsystem, close to its data and invariants.
-//! It keeps validation, defaults, and error-facing rules near the operations that mutate archetype state.
-//! Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
-//! Public functions in this file are the stable entry points other modules should use for archetype work.
+//! Owns the tileset archetype implementation for the tileset subsystem and keeps related runtime rules local here.
+//! Keeps tileset metadata, archetypes, and render-facing lookup helpers so helpers stay close to invariants this updates.
+//! Defines how tileset archetype data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates tileset archetype behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where tileset code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing tileset archetype defaults, lifecycle handling, validation, or data ownership rules.
 
 use crate::tilefield::TileChannel;
 use crate::tileset::visual::TileVisual;

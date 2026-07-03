@@ -78,9 +78,10 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 
 ### render.rs
 
-- `src/parallax/render.rs` converts `ParallaxDrawBatch` and `ParallaxLayer` state into flat renderer command lists.
-- It owns the final bridge from tiled layer batches to `RenderCommand` sequences, including tint, blend, and effects.
-- Read it when parallax draw submission, batch flattening, or layer-to-renderer integration behavior needs to change.
+- Owns the parallax render implementation for the parallax subsystem and keeps related runtime rules local here.
+- Keeps parallax layers, draw state, and render-facing helpers so helpers stay close to invariants this file updates.
+- Defines how parallax render data is validated, transformed, or stored before neighboring systems consume it.
+- Separates parallax render behavior from Lua bindings, tests, and sibling owners so integration stays readable.
 
 ### tile_iter.rs
 

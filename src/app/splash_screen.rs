@@ -1,8 +1,7 @@
-//! This file owns minimal startup render-command generation for the desktop app.
-//! It keeps the no-game screen free of embedded bitmap assets so the runtime exe stays compact.
-//! Layout helpers center the footer hint and switch it when drag-and-drop is hovering.
-//! The file is only about splash visuals; window creation, input handling, and frame flow stay in the main app owner.
-//! Open this file when startup presentation changes; runtime orchestration and fatal fallback screens live in siblings.
+//! Owns the app splash screen implementation for the app subsystem and keeps related runtime rules local here.
+//! Keeps application state, orchestration, and window actions so helpers stay close to invariants this file updates.
+//! Defines how app splash screen data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates app splash screen behavior from Lua bindings, tests, and sibling owners so integration stays readable.
 
 use crate::render::renderer::{DrawMode, RenderCommand, TextureData};
 use crate::runtime::resource_keys::{FontKey, TextureKey};

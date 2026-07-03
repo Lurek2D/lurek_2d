@@ -1,6 +1,10 @@
-//! Shared validation contracts for raycaster storage, ray parameters, projection, and scene input.
-//! Strict `try_*` entrypoints surface `RaycasterError` through Rust and Lua, while legacy helpers can
-//! sanitize or ignore invalid requests without panicking or allocating unbounded buffers.
+//! Owns the raycaster contract implementation for the raycaster subsystem and keeps related runtime rules local here.
+//! Keeps ray hits, scene data, and first-person render helpers so helpers stay close to invariants this file updates.
+//! Defines how raycaster contract data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates raycaster contract behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where raycaster code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing raycaster contract defaults, lifecycle handling, validation, or data ownership rules.
+//! Keeps failure paths and edge cases near raycaster contract state that explains them instead of spreading rules outward.
 
 use std::f32::consts::PI;
 use thiserror::Error;

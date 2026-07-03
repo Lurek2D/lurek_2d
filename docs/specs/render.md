@@ -145,32 +145,84 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 
 ### gpu_pipeline.rs
 
-- Builds and caches wgpu render pipelines so repeated material and geometry combinations compile only once.
-- Keys pipelines by geometry kind, blend state, stencil mode, and custom shader selection inputs.
-- Chooses built-in shader paths when callers do not supply overrides, keeping fallback behavior centralized.
-- Generates helper WGSL fragments and uniform declarations needed by custom color and texture pipelines.
-- Standardizes alpha, additive, multiplicative, and replace blend policies for the whole render subsystem.
-- Configures depth and stencil state mapping so pipeline creation reflects the front-end render command model.
-- Acts as the pipeline-construction boundary rather than the owner of per-frame draw traversal.
-- Open this file when render state caching, blend mapping, or custom shader pipeline assembly is incorrect.
+- Owns the render GPU pipeline implementation for the render subsystem and keeps related runtime rules local here.
+- Keeps draw commands, GPU resources, and render-pass configuration so helpers stay close to invariants this file updates.
+- Defines how render GPU pipeline data is validated, transformed, or stored before neighboring systems consume it.
+- Separates render GPU pipeline behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where render code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing render GPU pipeline defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near render GPU pipeline state that explains them instead of spreading rules outward.
+- Preserves deterministic behavior by keeping render GPU pipeline calculations at their owning subsystem boundary.
+- Provides local adaptation layer that lets callers reuse render GPU pipeline rules without duplicating engine decisions.
+- Open this owner before sibling files when a regression centers on render GPU pipeline state, helpers, or rules.
+
+### gpu_renderer/frame.rs
+
+- Owns the render GPU renderer frame implementation for the render subsystem and keeps related runtime rules local here.
+- Keeps draw commands, GPU resources, and render-pass configuration so helpers stay close to invariants this file updates.
+- Defines how render GPU renderer frame data is validated, transformed, or stored before neighboring systems consume it.
+- Separates render GPU renderer frame behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where render code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing render GPU renderer frame defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near render GPU renderer frame state that explains them instead of spreading outward.
+- Preserves deterministic behavior by keeping render GPU renderer frame calculations at their owning subsystem boundary.
+- Provides adaptation layer that lets callers reuse render GPU renderer frame rules without duplicating engine decisions.
+- Open this owner before sibling files when a regression centers on render GPU renderer frame state, helpers, or rules.
+
+### gpu_renderer/frame_advanced.rs
+
+- Owns the render GPU renderer frame advanced implementation for the render subsystem and keeps rules local here.
+- Keeps draw commands, GPU resources, and render-pass configuration so helpers stay close to invariants this file updates.
+- Defines how render GPU renderer frame advanced data is validated, transformed, or stored before systems consume it.
+- Separates render GPU renderer frame advanced behavior from Lua bindings, tests, and sibling owners so readable.
+- Documents the boundary where render code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing render GPU renderer frame advanced defaults, lifecycle handling, validation, or data rules.
+- Keeps failure paths and edge cases near render GPU renderer frame advanced state that explains them instead of outward.
+- Preserves deterministic behavior by keeping render GPU renderer frame advanced calculations at their owning boundary.
+- Provides layer that lets callers reuse render GPU renderer frame advanced rules without duplicating engine decisions.
+- Open this owner before sibling files when a regression centers on render GPU renderer frame advanced state, rules.
+- Works with render owners while keeping main render GPU renderer frame advanced responsibility anchored in one file.
+
+### gpu_renderer/frame_basic.rs
+
+- Owns the render GPU renderer frame basic implementation for the render subsystem and keeps rules local here.
+- Keeps draw commands, GPU resources, and render-pass configuration so helpers stay close to invariants this file updates.
+- Defines how render GPU renderer frame basic data is validated, transformed, or stored before systems consume it.
+- Separates render GPU renderer frame basic behavior from Lua bindings, tests, and sibling owners so integration readable.
+- Documents the boundary where render code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing render GPU renderer frame basic defaults, lifecycle handling, validation, or data rules.
+- Keeps failure paths and edge cases near render GPU renderer frame basic state that explains them instead of outward.
+- Preserves deterministic behavior by keeping render GPU renderer frame basic calculations at their owning boundary.
+- Provides layer that lets callers reuse render GPU renderer frame basic rules without duplicating engine decisions.
+
+### gpu_renderer/frame_mid.rs
+
+- Owns the render GPU renderer frame mid implementation for the render subsystem and keeps rules local here.
+- Keeps draw commands, GPU resources, and render-pass configuration so helpers stay close to invariants this file updates.
+- Defines how render GPU renderer frame mid data is validated, transformed, or stored before systems consume it.
+- Separates render GPU renderer frame mid behavior from Lua bindings, tests, and sibling owners so integration readable.
+- Documents the boundary where render code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing render GPU renderer frame mid defaults, lifecycle handling, validation, or data rules.
+- Keeps failure paths and edge cases near render GPU renderer frame mid state that explains them instead of outward.
+- Preserves deterministic behavior by keeping render GPU renderer frame mid calculations at their owning boundary.
+- Provides layer that lets callers reuse render GPU renderer frame mid rules without duplicating engine decisions.
+- Open this owner before sibling files when a regression centers on render GPU renderer frame mid state, helpers, rules.
+- Works with render owners while keeping main render GPU renderer frame mid responsibility anchored in one file.
+- Changes to render GPU renderer frame mid names, caches, or helper boundaries should usually stay coupled inside owner.
 
 ### gpu_renderer.rs
 
-- Owns the main hardware renderer that turns front-end render commands into concrete wgpu draw submission.
-- Manages device, queue, swapchain, canvases, textures, and persistent GPU state under one frame orchestrator.
-- Drives multi-pass flow for scene color, shadows, decals, text, province maps, and post-processing output.
-- Coalesces compatible draw calls so repeated materials and textures do not force unnecessary pipeline churn.
-- Uploads and reuses static geometry to bypass repeated tessellation and reduce CPU-side frame overhead.
-- Supports GPU instancing for repeated sprites, particles, and grid-like content that share one draw shape.
-- Delegates text glyph replay to a focused owner while batching the resulting draw work with the frame.
-- Maintains offscreen canvases as render targets so composite views and multi-surface workflows stay possible.
-- Handles resize, viewport updates, and target-dimension logic that keep swapchain-backed output coherent.
-- Owns readback orchestration for surfaces when screenshots or software-visible capture need GPU results.
-- Bridges lighting, shadows, geometry, and resource owners instead of embedding their detailed policies here.
-- Acts as the runtime boundary between the engine's render command language and low-level wgpu execution.
-- Concentrates helper routines near state so render-frame changes remain auditable despite subsystem breadth.
-- Open this file when full-frame GPU output is wrong and the fault is not isolated to one narrow helper owner.
-- It is the right owner for render orchestration bugs because most GPU passes and resource handoffs converge here.
+- Owns the render GPU renderer implementation for the render subsystem and keeps related runtime rules local here.
+- Keeps draw commands, GPU resources, and render-pass configuration so helpers stay close to invariants this file updates.
+- Defines how render GPU renderer data is validated, transformed, or stored before neighboring systems consume it.
+- Separates render GPU renderer behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where render code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing render GPU renderer defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near render GPU renderer state that explains them instead of spreading rules outward.
+- Preserves deterministic behavior by keeping render GPU renderer calculations at their owning subsystem boundary.
+- Provides local adaptation layer that lets callers reuse render GPU renderer rules without duplicating engine decisions.
+- Open this owner before sibling files when a regression centers on render GPU renderer state, helpers, or rules.
+- Works with neighboring render owners while keeping the main render GPU renderer responsibility anchored in one file.
 
 ### gpu_resources.rs
 
@@ -194,12 +246,14 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 
 ### gpu_shader_cache.rs
 
-- Owns the gpu shader cache owner for the render subsystem and keeps its rules local to this file.
-- Keeps render data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
-- Defines how gpu shader cache data is validated, transformed, or stored before neighboring systems use it.
-- Owns render behavior with explicit state, validation, and crate-local integration boundaries.
-- Keeps public crate helpers focused on gpu shader cache behavior while Lua registration stays elsewhere.
-- Documents the boundary where render code accepts inputs, reports errors, or updates state.
+- Owns the render GPU shader cache implementation for the render subsystem and keeps related runtime rules local here.
+- Keeps draw commands, GPU resources, and render-pass configuration so helpers stay close to invariants this file updates.
+- Defines how render GPU shader cache data is validated, transformed, or stored before neighboring systems consume it.
+- Separates render GPU shader cache behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where render code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing render GPU shader cache defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near render GPU shader cache state that explains them instead of spreading outward.
+- Preserves deterministic behavior by keeping render GPU shader cache calculations at their owning subsystem boundary.
 
 ### gpu_shaders.rs
 
@@ -277,16 +331,17 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 
 ### input_validation.rs
 
-- Owns the input validation owner for the render subsystem and keeps its rules local to this file.
-- Keeps render data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
-- Defines how input validation data is validated, transformed, or stored before neighboring systems use it.
-- Owns render behavior with explicit state, validation, and crate-local integration boundaries.
-- Keeps public crate helpers focused on input validation behavior while Lua registration stays elsewhere.
-- Documents the boundary where render code accepts inputs, reports errors, or updates state.
-- Use this file when changing input validation defaults, lifecycle handling, validation, or data ownership.
-- Keeps failure paths and edge cases near the render state that can explain them while keeping call sites explicit.
-- Preserves deterministic behavior by keeping input validation calculations explicit at their owner boundary.
-- Provides the local adaptation layer that lets callers avoid duplicating render rules while keeping call sites explicit.
+- Owns the render input validation implementation for the render subsystem and keeps related runtime rules local here.
+- Keeps draw commands, GPU resources, and render-pass configuration so helpers stay close to invariants this file updates.
+- Defines how render input validation data is validated, transformed, or stored before neighboring systems consume it.
+- Separates render input validation behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where render code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing render input validation defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near render input validation state that explains them instead of spreading outward.
+- Preserves deterministic behavior by keeping render input validation calculations at their owning subsystem boundary.
+- Provides adaptation layer that lets callers reuse render input validation rules without duplicating engine decisions.
+- Open this owner before sibling files when a regression centers on render input validation state, helpers, or rules.
+- Works with neighboring render owners while keeping the main render input validation responsibility anchored in one file.
 
 ### mesh.rs
 
@@ -323,33 +378,37 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 
 ### offline_image_shader.rs
 
-- Runs target-aware WGSL image shaders against `ImageData` through a temporary headless wgpu device.
-- Keeps offline bitmap processing inside the render subsystem so image and Lua APIs never own `wgpu`.
-- Uploads source RGBA bytes, renders a fullscreen pass into an offscreen RGBA8 texture, and reads pixels back.
-- Uses the same fullscreen wrapper contract as post-processing shaders, preserving target validation semantics.
-- Open this file when `ImageData:applyShader` or `lurek.image.requestShader` output differs from WGSL intent.
+- Owns the render offline image shader implementation for the render subsystem and keeps related runtime rules local here.
+- Keeps draw commands, GPU resources, and render-pass configuration so helpers stay close to invariants this file updates.
+- Defines how render offline image shader data is validated, transformed, or stored before neighboring systems consume it.
+- Separates render offline image shader behavior from Lua bindings, tests, and sibling owners so integration readable.
+- Documents the boundary where render code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing render offline image shader defaults, lifecycle handling, validation, or data rules.
+- Keeps failure paths and edge cases near render offline image shader state that explains them instead of outward.
 
 ### postfx_pipeline.rs
 
-- Owns post-processing pipeline setup and execution for screen-space shader passes over offscreen textures.
-- Connects canvas textures, samplers, and effect uniforms to fullscreen draw operations executed after scene render.
-- Groups effect parameters and swap textures so multi-pass blur, CRT, or color-correction chains stay organized.
-- Configures pipeline states, write masks, and fallback shaders needed by default and custom postfx passes.
-- Minimizes allocation churn by reusing descriptors and intermediate textures sized to current output targets.
-- Stores custom post-processing registrations separately from the frame renderer so effect catalogs stay modular.
-- Acts as the screen-pass boundary between a finished scene texture and final composited presentation output.
-- Keeps shader-source and uniform conversion concerns local instead of spreading them across the main renderer.
-- Open this file when post-processing order, texture swaps, or effect application behavior is incorrect.
-- Use this owner for postfx bugs before changing the broader GPU renderer orchestration path.
+- Owns the render postfx pipeline implementation for the render subsystem and keeps related runtime rules local here.
+- Keeps draw commands, GPU resources, and render-pass configuration so helpers stay close to invariants this file updates.
+- Defines how render postfx pipeline data is validated, transformed, or stored before neighboring systems consume it.
+- Separates render postfx pipeline behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where render code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing render postfx pipeline defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near render postfx pipeline state that explains them instead of spreading outward.
+- Preserves deterministic behavior by keeping render postfx pipeline calculations at their owning subsystem boundary.
+- Provides adaptation layer that lets callers reuse render postfx pipeline rules without duplicating engine decisions.
+- Open this owner before sibling files when a regression centers on render postfx pipeline state, helpers, or rules.
+- Works with neighboring render owners while keeping the main render postfx pipeline responsibility anchored in one file.
 
 ### province_map_pipeline.rs
 
-- Defines the specialized GPU pipeline used to render detailed province-map views with dedicated shader inputs.
-- Binds region ids, border data, height-like fields, and viewport parameters needed by province-focused passes.
-- Packages uniforms for zoom, map size, viewport range, and time so province visuals update coherently.
-- Keeps province-specific bind groups and pipeline layout separate from the general-purpose render backend.
-- Acts as the province-map boundary between geographic data textures and shader-driven fullscreen presentation.
-- Open this file when province shader inputs, uniforms, or fullscreen province-map output behaves incorrectly.
+- Owns the render province map pipeline implementation for the render subsystem and keeps rules local here.
+- Keeps draw commands, GPU resources, and render-pass configuration so helpers stay close to invariants this file updates.
+- Defines how render province map pipeline data is validated, transformed, or stored before systems consume it.
+- Separates render province map pipeline behavior from Lua bindings, tests, and sibling owners so integration readable.
+- Documents the boundary where render code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing render province map pipeline defaults, lifecycle handling, validation, or data rules.
+- Keeps failure paths and edge cases near render province map pipeline state that explains them instead of outward.
 
 ### render_diagnostics.rs
 
@@ -361,26 +420,29 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 
 ### renderer.rs
 
-- Owns render behavior with explicit state, validation, and crate-local integration boundaries.
-- Centers the implementation around CompareMode, StencilAction, StencilMode, with helpers kept close to their invariants.
-- Defines how renderer data is validated, transformed, or stored before neighboring systems use it.
-- Owns render behavior with explicit state, validation, and crate-local integration boundaries.
-- Keeps public crate helpers focused on renderer behavior while Lua registration stays elsewhere.
-- Documents the boundary where render code accepts inputs, reports errors, or updates state.
-- Use this file when changing renderer defaults, lifecycle handling, validation, or data ownership.
-- Keeps failure paths and edge cases near the render state that can explain them while keeping call sites explicit.
-- Preserves deterministic behavior by keeping renderer calculations explicit at their owner boundary.
-- Provides the local adaptation layer that lets callers avoid duplicating render rules while keeping call sites explicit.
+- Owns the render renderer implementation for the render subsystem and keeps related runtime rules local here.
+- Keeps draw commands, GPU resources, and render-pass configuration so helpers stay close to invariants this file updates.
+- Defines how render renderer data is validated, transformed, or stored before neighboring systems consume it.
+- Separates render renderer behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where render code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing render renderer defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near the render renderer state that explains them instead of spreading rules outward.
+- Preserves deterministic behavior by keeping render renderer calculations explicit at their owning subsystem boundary.
+- Provides the local adaptation layer that lets callers reuse render renderer rules without duplicating engine decisions.
+- Open this owner before sibling files when a regression centers on render renderer state, helpers, or integration rules.
+- Works with neighboring render owners while keeping the main render renderer responsibility anchored in one file.
 
 ### shader.rs
 
-- Owns user-facing shader parsing, validation, and uniform bookkeeping for custom WGSL-driven render effects.
-- Wraps incoming WGSL source into renderer-ready templates so fragment entry points match engine expectations.
-- Inspects fragment inputs and uniform declarations to reject unsupported bindings before runtime use.
-- Represents uniform values in typed forms that later upload code can preserve in stable buffer order.
-- Keeps wrapper generation and ordered-uniform logic local instead of scattering shader policy through backends.
-- Acts as the custom-shader boundary between authored WGSL text and engine-managed pipeline integration.
-- Open this file when shader source validation, wrapper rewriting, or uniform ordering behaves incorrectly.
+- Owns the render shader implementation for the render subsystem and keeps related runtime rules local here.
+- Keeps draw commands, GPU resources, and render-pass configuration so helpers stay close to invariants this file updates.
+- Defines how render shader data is validated, transformed, or stored before neighboring systems consume it.
+- Separates render shader behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where render code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing render shader defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near the render shader state that explains them instead of spreading rules outward.
+- Preserves deterministic behavior by keeping render shader calculations explicit at their owning subsystem boundary.
+- Provides the local adaptation layer that lets callers reuse render shader rules without duplicating engine decisions.
 
 ### shape.rs
 

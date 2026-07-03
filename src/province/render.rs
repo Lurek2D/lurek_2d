@@ -1,11 +1,14 @@
-//! Generates province render commands from registry state so the map can draw fills, borders, labels, and overlays.
-//! Owns ProvinceRenderOptions, zoom-mode interpretation, viewport culling, and helper rules for visible border output.
-//! Converts province spans, styles, capitals, roads, labels, and selection state into ordered RenderCommand batches.
-//! Provides the presentation boundary between authoritative province data and the lower renderer command stream.
-//! Encodes how fog, visibility, hover, border types, and level-of-detail choices alter what the province map emits.
-//! Neighboring changes usually involve ProvinceRegistry fields, map mode colors, and render command capabilities.
-//! Open this owner when visual province behavior changes, especially if command ordering or LOD rules need revision.
-//! This file is where province-specific drawing policy lives instead of the generic renderer or data registry layers.
+//! Owns the province render implementation for the province subsystem and keeps related runtime rules local here.
+//! Keeps province data, render helpers, and map-facing transforms so helpers stay close to invariants this file updates.
+//! Defines how province render data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates province render behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where province code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing province render defaults, lifecycle handling, validation, or data ownership rules.
+//! Keeps failure paths and edge cases near the province render state that explains them instead of spreading rules outward.
+//! Preserves deterministic behavior by keeping province render calculations explicit at their owning subsystem boundary.
+//! Provides the local adaptation layer that lets callers reuse province render rules without duplicating engine decisions.
+//! Open this owner before sibling files when a regression centers on province render state, helpers, or integration rules.
+//! Works with neighboring province owners while keeping the main province render responsibility anchored in one file.
 
 use std::collections::HashMap;
 use std::f32::consts::{FRAC_PI_2, PI};

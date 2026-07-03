@@ -50,8 +50,10 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 
 ### attachment.rs
 
-- Defines neutral attachment source DTOs used by Spine without owning asset loading.
-- Attachment sources point at sprite, image, or tileset visuals and may carry a texture handle for rendering.
+- Owns the spine attachment implementation for the spine subsystem and keeps related runtime rules local here.
+- Keeps Spine assets, attachment data, and animation-facing helpers so helpers stay close to invariants this file updates.
+- Defines how spine attachment data is validated, transformed, or stored before neighboring systems consume it.
+- Separates spine attachment behavior from Lua bindings, tests, and sibling owners so integration stays readable.
 
 ### bone.rs
 

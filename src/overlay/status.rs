@@ -1,7 +1,10 @@
-//! Owns the status-overlay stack used for designer-controlled HUD and fullscreen danger effects.
-//! It keeps intensity normalization, fade timing, texture/shader metadata, and ordering rules in one place.
-//! The file stores overlay-layer state only; Lua registration, render command emission, and post-fx execution live elsewhere.
-//! Use this file when status-layer semantics change; weather, ambient, and transient flash/fade effects live in sibling overlay files.
+//! Owns the overlay status implementation for the overlay subsystem and keeps related runtime rules local here.
+//! Keeps overlay state, effects, and presentation helpers ownership so helpers stay close to invariants this file updates.
+//! Defines how overlay status data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates overlay status behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where overlay code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing overlay status defaults, lifecycle handling, validation, or data ownership rules.
+//! Keeps failure paths and edge cases near the overlay status state that explains them instead of spreading rules outward.
 
 use crate::runtime::resource_keys::TextureKey;
 

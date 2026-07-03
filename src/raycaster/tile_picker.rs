@@ -285,7 +285,8 @@ impl TilePicker {
         if self.grid_width == 0 || self.grid_height == 0 {
             return None;
         }
-        let mut raycaster = Raycaster2D::try_new(self.grid_width as u32, self.grid_height as u32).ok()?;
+        let mut raycaster =
+            Raycaster2D::try_new(self.grid_width as u32, self.grid_height as u32).ok()?;
         raycaster.try_set_cells(self.cells.clone()).ok()?;
         for (pos, feature) in &self.wall_features {
             raycaster.set_wall_feature(pos.0, pos.1, *feature);

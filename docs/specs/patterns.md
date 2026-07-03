@@ -102,11 +102,10 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ### deck.rs
 
-- This file owns the reusable deck/card ordering primitive exposed through `lurek.patterns`.
-- It tracks draw-pile order, discard membership, deterministic shuffling, and reset semantics.
-- Card payload storage stays in the Lua binding because cards may be any Lua value; this Rust
-- type owns only stable card ids and pile transitions so deck behavior remains deterministic.
-- Open it when card draw, discard, reset, or shuffle policy changes.
+- Owns the patterns deck implementation for the patterns subsystem and keeps related runtime rules local here.
+- Keeps pattern data, exported submodules, and navigation helpers so helpers stay close to invariants this file updates.
+- Defines how patterns deck data is validated, transformed, or stored before neighboring systems consume it.
+- Separates patterns deck behavior from Lua bindings, tests, and sibling owners so integration stays readable.
 
 ### event_bus.rs
 
@@ -148,15 +147,14 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ### mod.rs
 
-- This module is the patterns index, exposing coordination, selection, history, and reuse primitives for engine code.
-- It exports behavior trees, state machines, observers, event buses, mediators, factories, and service discovery tools.
-- It also exports support structures such as graphs, tries, rings, weighted picks, priority queues, and object pools.
-- `mod.rs` owns visibility and reexport boundaries, not runtime state, so feature ownership stays in sibling files.
-- Open this file to map which source owns undo history, typed shared state, cadence control, or batching behavior.
-- `behavior_tree.rs`, `blackboard.rs`, and `state_machine.rs` cover decision and state orchestration primitives.
-- `event_bus.rs`, `observer.rs`, `mediator.rs`, and `service_locator.rs` cover decoupled communication surfaces.
-- `graph.rs`, `trie.rs`, `ring.rs`, and `weighted_random.rs` cover storage and selection helpers for gameplay data.
-- `deck.rs` covers reusable deck/card ordering and draw/discard workflows for card-like game logic.
+- This module re-exports patterns surface for `behavior_tree.rs`, `bimap.rs`, `blackboard.rs`, and helpers.
+- It keeps navigation explicit by showing which sibling files own state, validation, transport, or render behavior.
+- Public exports here route callers toward `behavior_tree.rs`, `bimap.rs`, and `blackboard.rs` first, while deeper owners.
+- Open this file when the public patterns symbol map moves; edit siblings when runtime rules themselves change.
+- This index exists to organize entrypoints, not to absorb the state, caches, or algorithms its children own.
+- Use neighboring owners for behavioral fixes, and keep this file limited to exports, docs, and navigation.
+- Reexports here help agents find right module quickly when changes touch `behavior_tree.rs`, `bimap.rs`, subsystem.
+- Keep concrete logic in `behavior_tree.rs`, `bimap.rs`, and `blackboard.rs` so symbol lookup stays shallow.
 
 ### object_pool.rs
 

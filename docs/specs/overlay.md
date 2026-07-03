@@ -65,31 +65,66 @@ This module primarily collaborates with `color`, `image`, `render`, `runtime`. I
 - No frame orchestration lives here; the file is the shared data boundary consumed by the main overlay controller.
 - Open this file when atmosphere state semantics change; weather, water, and controller logic live in sibling files.
 
+### controller/debug_image.rs
+
+- Owns the overlay controller debug image implementation for the overlay subsystem and keeps rules local here.
+- Keeps overlay state, effects, and presentation helpers ownership so helpers stay close to invariants this file updates.
+- Defines how overlay controller debug image data is validated, transformed, or stored before systems consume it.
+- Separates overlay controller debug image behavior from Lua bindings, tests, and sibling owners so integration readable.
+- Documents the boundary where overlay code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing overlay controller debug image defaults, lifecycle handling, validation, or data rules.
+- Open this owner when overlay debug imagery changes even if flash, shake, and fade state stay valid.
+
+### controller/effects.rs
+
+- Owns the overlay controller effects implementation for the overlay subsystem and keeps related runtime rules local here.
+- Keeps overlay state, effects, and presentation helpers ownership so helpers stay close to invariants this file updates.
+- Defines how overlay controller effects data is validated, transformed, or stored before neighboring systems consume it.
+- Separates overlay controller effects behavior from Lua bindings, tests, and sibling owners so integration readable.
+- Documents the boundary where overlay code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing overlay controller effects defaults, lifecycle handling, validation, or data rules.
+- Keeps failure paths and edge cases near overlay controller effects state that explains them instead of outward.
+
+### controller/render.rs
+
+- Owns the overlay controller render implementation for the overlay subsystem and keeps related runtime rules local here.
+- Keeps overlay state, effects, and presentation helpers ownership so helpers stay close to invariants this file updates.
+- Defines how overlay controller render data is validated, transformed, or stored before neighboring systems consume it.
+- Separates overlay controller render behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where overlay code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing overlay controller render defaults, lifecycle handling, validation, or data ownership rules.
+- Open this owner when overlay layer ordering or draw responsibility shifts even if effect state stays valid.
+
+### controller/weather.rs
+
+- Owns the overlay controller weather implementation for the overlay subsystem and keeps related runtime rules local here.
+- Keeps overlay state, effects, and presentation helpers ownership so helpers stay close to invariants this file updates.
+- Defines how overlay controller weather data is validated, transformed, or stored before neighboring systems consume it.
+- Separates overlay controller weather behavior from Lua bindings, tests, and sibling owners so integration readable.
+- Documents the boundary where overlay code accepts inputs, reports errors, allocates state, or emits outputs.
+
 ### controller.rs
 
-- Owns the controller owner for the overlay subsystem and keeps its rules local to this file.
-- Keeps overlay data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
-- Defines how controller data is validated, transformed, or stored before neighboring systems use it.
-- Owns overlay behavior with explicit state, validation, and crate-local integration boundaries.
-- Keeps public crate helpers focused on controller behavior while Lua registration stays elsewhere.
-- Documents the boundary where overlay code accepts inputs, reports errors, or updates state.
-- Use this file when changing controller defaults, lifecycle handling, validation, or data ownership.
-- Keeps failure paths and edge cases near the overlay state that can explain them while keeping call sites explicit.
-- Preserves deterministic behavior by keeping controller calculations explicit at their owner boundary.
-- Provides the local adaptation layer that lets callers avoid duplicating overlay rules while keeping call sites explicit.
-- Maintains small helper surfaces so broader engine modules can compose controller behavior safely.
-- Protects subsystem contracts by keeping resource, cache, or state mutations visible in one place.
-- Links adjacent concerns only where controller changes need coordination with owned engine data.
+- Owns the overlay controller implementation for the overlay subsystem and keeps related runtime rules local here.
+- Keeps overlay state, effects, and presentation helpers ownership so helpers stay close to invariants this file updates.
+- Defines how overlay controller data is validated, transformed, or stored before neighboring systems consume it.
+- Separates overlay controller behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where overlay code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing overlay controller defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near overlay controller state that explains them instead of spreading rules outward.
+- Preserves deterministic behavior by keeping overlay controller calculations explicit at their owning subsystem boundary.
+- Provides local adaptation layer that lets callers reuse overlay controller rules without duplicating engine decisions.
+- Open this owner before sibling files when a regression centers on overlay controller state, helpers, or rules.
+- Works with neighboring overlay owners while keeping the main overlay controller responsibility anchored in one file.
 
 ### mod.rs
 
-- This module re-exports the screen-overlay subsystem for ambient tint, weather, water, transitions, and controller state.
-- It is the navigation map for long-lived overlay data, timed screen effects, and renderer-facing overlay ownership.
-- `controller.rs` owns the main `Overlay` runtime, while `ambient.rs`, `weather.rs`, and `water.rs` hold state blocks.
-- `screen_effects.rs` and `transition.rs` cover timed flashes, shakes, fades, and full-screen transition playback models.
-- `atmosphere.rs` groups clouds, fog, haze, vignette, grain, and lightning so callers can compose atmospheric layers.
-- `status.rs` owns stacked player-state overlays such as frozen, poison, and danger feedback recipes.
-- Change this file when public overlay exports move; change sibling files when overlay simulation or render data changes.
+- This module re-exports overlay surface for `ambient.rs`, `atmosphere.rs`, `controller.rs`, and helpers.
+- It keeps navigation explicit by showing which sibling files own state, validation, transport, or render behavior.
+- Public exports here route callers toward `ambient.rs`, `atmosphere.rs`, and `controller.rs` first, while deeper owners.
+- Open this file when the public overlay symbol map moves; edit siblings when runtime rules themselves change.
+- This index exists to organize entrypoints, not to absorb the state, caches, or algorithms its children own.
+- Use neighboring owners for behavioral fixes, and keep this file limited to exports, docs, and navigation.
 
 ### screen_effects.rs
 
@@ -100,10 +135,13 @@ This module primarily collaborates with `color`, `image`, `render`, `runtime`. I
 
 ### status.rs
 
-- Owns the status-overlay stack used for designer-controlled HUD and fullscreen danger effects.
-- It keeps intensity normalization, fade timing, texture/shader metadata, and ordering rules in one place.
-- The file stores overlay-layer state only; Lua registration, render command emission, and post-fx execution live elsewhere.
-- Use this file when status-layer semantics change; weather, ambient, and transient flash/fade effects live in sibling overlay files.
+- Owns the overlay status implementation for the overlay subsystem and keeps related runtime rules local here.
+- Keeps overlay state, effects, and presentation helpers ownership so helpers stay close to invariants this file updates.
+- Defines how overlay status data is validated, transformed, or stored before neighboring systems consume it.
+- Separates overlay status behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where overlay code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing overlay status defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near the overlay status state that explains them instead of spreading rules outward.
 
 ### transition.rs
 

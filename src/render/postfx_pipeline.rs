@@ -1,13 +1,14 @@
-//! Owns post-processing pipeline setup and execution for screen-space shader passes over offscreen textures.
-//! Connects canvas textures, samplers, and effect uniforms to fullscreen draw operations executed after scene render.
-//! Groups effect parameters and swap textures so multi-pass blur, CRT, or color-correction chains stay organized.
-//! Configures pipeline states, write masks, and fallback shaders needed by default and custom postfx passes.
-//! Minimizes allocation churn by reusing descriptors and intermediate textures sized to current output targets.
-//! Stores custom post-processing registrations separately from the frame renderer so effect catalogs stay modular.
-//! Acts as the screen-pass boundary between a finished scene texture and final composited presentation output.
-//! Keeps shader-source and uniform conversion concerns local instead of spreading them across the main renderer.
-//! Open this file when post-processing order, texture swaps, or effect application behavior is incorrect.
-//! Use this owner for postfx bugs before changing the broader GPU renderer orchestration path.
+//! Owns the render postfx pipeline implementation for the render subsystem and keeps related runtime rules local here.
+//! Keeps draw commands, GPU resources, and render-pass configuration so helpers stay close to invariants this file updates.
+//! Defines how render postfx pipeline data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates render postfx pipeline behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where render code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing render postfx pipeline defaults, lifecycle handling, validation, or data ownership rules.
+//! Keeps failure paths and edge cases near render postfx pipeline state that explains them instead of spreading outward.
+//! Preserves deterministic behavior by keeping render postfx pipeline calculations at their owning subsystem boundary.
+//! Provides adaptation layer that lets callers reuse render postfx pipeline rules without duplicating engine decisions.
+//! Open this owner before sibling files when a regression centers on render postfx pipeline state, helpers, or rules.
+//! Works with neighboring render owners while keeping the main render postfx pipeline responsibility anchored in one file.
 
 use crate::render::shader::{Shader, ShaderTarget};
 use crate::runtime::resource_keys::ShaderKey;

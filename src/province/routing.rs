@@ -1,7 +1,7 @@
-//! Adapts province registry data to pathfinding-owned graph traversal helpers.
-//! Keeps province-specific owner and attribute aggregation near the registry-facing module.
-//! Path search, Dijkstra, connectivity, and component traversal live in `pathfind::graph_path`.
-//! Open this file when province-specific routing adapters or owner-attribute analytics need revision.
+//! Owns the province routing implementation for the province subsystem and keeps related runtime rules local here.
+//! Keeps province data, render helpers, and map-facing transforms so helpers stay close to invariants this file updates.
+//! Defines how province routing data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates province routing behavior from Lua bindings, tests, and sibling owners so integration stays readable.
 
 use crate::pathfind::graph_path::{
     build_province_adjacency_map, find_province_route_bfs, find_province_route_dijkstra,

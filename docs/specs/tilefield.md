@@ -131,10 +131,11 @@ This module is mostly self-contained inside the Feature Systems group. Cross-mod
 
 ### topology.rs
 
-- Owns logical tilefield topology parsing and distance rules for square, isometric-square, and axial hex grids.
-- Treats isometric-square as square gameplay math because projection belongs to tilemap and render code.
-- Provides distance helpers used by field lighting, ranges, and topology-aware line generation.
-- Does not store map data, render coordinates, pathfinding policies, player masks, or minimap presentation.
+- Owns the tilefield topology implementation for the tilefield subsystem and keeps related runtime rules local here.
+- Keeps tilefield topology, authored grid data, and lookup helpers so helpers stay close to invariants this file updates.
+- Defines how tilefield topology data is validated, transformed, or stored before neighboring systems consume it.
+- Separates tilefield topology behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where tilefield code accepts inputs, reports errors, allocates state, or emits outputs.
 
 
 

@@ -205,11 +205,23 @@ fn attrs_first_hover_can_drive_state_effect_and_zoom() {
     hit.attrs
         .insert("cursor_zoom".to_string(), "3.25".to_string());
 
-    manager.tick(10.0, 14.0, 0.016, CursorInputFrame::default(), Some(hit.clone()));
+    manager.tick(
+        10.0,
+        14.0,
+        0.016,
+        CursorInputFrame::default(),
+        Some(hit.clone()),
+    );
     assert_eq!(active_system(&manager), Some(SystemCursor::Crosshair));
     assert_eq!(manager.bursts().len(), 1);
     assert!(
-        (manager.zoom().expect("attr zoom should exist").magnification - 3.25).abs() < 1e-5
+        (manager
+            .zoom()
+            .expect("attr zoom should exist")
+            .magnification
+            - 3.25)
+            .abs()
+            < 1e-5
     );
 
     manager.tick(10.0, 14.0, 0.016, CursorInputFrame::default(), Some(hit));

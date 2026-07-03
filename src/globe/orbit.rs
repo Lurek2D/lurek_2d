@@ -1,7 +1,8 @@
-//! Stores named globe orbit shells with deterministic ordering for render, picking, and marker placement.
-//! Owns shell insertion, updates, visibility, attrs, and the special always-present surface shell contract.
-//! Provides the state boundary between Lua-facing orbit configuration and the projection or draw code that consumes it.
-//! This file matters when shell ordering, pickability, or orbit metadata drift out of sync across globe features.
+//! Owns the globe orbit implementation for the globe subsystem and keeps related runtime rules local here.
+//! Keeps globe state, province data, and world-facing render helpers so helpers stay close to invariants this file updates.
+//! Defines how globe orbit data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates globe orbit behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where globe code accepts inputs, reports errors, allocates state, or emits outputs.
 
 use crate::globe::types::{GlobeOrbit, GlobeOrbitKind};
 use std::collections::HashMap;

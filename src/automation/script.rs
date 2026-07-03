@@ -1,8 +1,9 @@
-//! `src/automation/script.rs` owns automation script storage and TOML parsing into named, time-sorted step sequences.
-//! It defines `Script`, expands repeat directives, sorts steps by time, and enforces bounded script size in one owner.
-//! Metadata loading and field extraction from TOML also live here, keeping authoring rules close to stored script data.
-//! This file is the boundary for authored automation content before runtime playback policy is applied by the simulator.
-//! Read this file when script import rules, repeat expansion, or step-cap enforcement for automation content must change.
+//! Owns the automation script implementation for the automation subsystem and keeps related runtime rules local here.
+//! Keeps automation steps, script state, and orchestration ownership so helpers stay close to invariants this file updates.
+//! Defines how automation script data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates automation script behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where automation code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing automation script defaults, lifecycle handling, validation, or data ownership rules.
 
 use super::{Action, Step};
 /// Maximum number of steps retained in a single automation script.

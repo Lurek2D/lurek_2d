@@ -27079,8 +27079,8 @@ function LSpriteManager:addDirectional(x, y, front, right, back, left, angle, sc
 function LSpriteManager:clear() end
 
 --- Clears one arbitrary string attribute or all attrs from the sprite.
----@param id any
----@param key? any
+---@param id number Sprite id.
+---@param key? string Optional attribute key; omit it to clear every stored attribute.
 function LSpriteManager:clearAttr(id, key) end
 
 --- Reads one arbitrary string attribute from the sprite.

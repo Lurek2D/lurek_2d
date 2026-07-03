@@ -1,10 +1,11 @@
-//! Owns the shape owner for the physics subsystem and keeps its rules local to this file while keeping call sites explicit.
-//! Centers the implementation around Shape, polygon_area2, is_convex_polygon, with helpers kept close to their invariants.
-//! Defines how shape data is validated, transformed, or stored before neighboring systems use it.
-//! Owns physics behavior with explicit state, validation, and crate-local integration boundaries.
-//! Keeps public crate helpers focused on shape behavior while Lua registration stays elsewhere.
-//! Documents the boundary where physics code accepts inputs, reports errors, or updates state.
-//! Use this file when changing shape defaults, lifecycle handling, validation, or data ownership.
+//! Owns the physics shape implementation for the physics subsystem and keeps related runtime rules local here.
+//! Keeps body state, simulation helpers, and authored world contracts so helpers stay close to invariants this updates.
+//! Defines how physics shape data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates physics shape behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where physics code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing physics shape defaults, lifecycle handling, validation, or data ownership rules.
+//! Keeps failure paths and edge cases near the physics shape state that explains them instead of spreading rules outward.
+//! Preserves deterministic behavior by keeping physics shape calculations explicit at their owning subsystem boundary.
 
 use crate::image::ImageData;
 use crate::math::Vec2;

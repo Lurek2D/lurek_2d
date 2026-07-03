@@ -59,11 +59,12 @@ This module primarily collaborates with `camera`, `image`, `pathfind`, `render`,
 
 ### border_index.rs
 
-- Builds a province-pair lookup from the ownership grid so render and gameplay systems can query shared borders quickly.
-- Owns ProvinceBorderIndex storage, pair-id assignment, and the dilation pass that widens border pixels by style hints.
-- Provides the boundary between raw province occupancy data and later GPU or renderer code that needs stable border IDs.
-- This file is the right owner when border pairing, style-aware expansion, or pair lookup invariants need adjustment.
-- Neighboring changes usually involve ProvinceGrid extraction, registry border styles, and GPU bridge packing formats.
+- Owns the province border index implementation for the province subsystem and keeps related runtime rules local here.
+- Keeps province data, render helpers, and map-facing transforms so helpers stay close to invariants this file updates.
+- Defines how province border index data is validated, transformed, or stored before neighboring systems consume it.
+- Separates province border index behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where province code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing province border index defaults, lifecycle handling, validation, or data ownership rules.
 
 ### cache.rs
 
@@ -89,10 +90,12 @@ This module primarily collaborates with `camera`, `image`, `pathfind`, `render`,
 
 ### gpu_bridge.rs
 
-- Maps province registry data into flat GPU-friendly records that shaders and upload code can consume without Rust state.
-- Owns ProvinceGpuRecord and BorderStyleGpuRecord layouts plus builders that normalize colors, flags, and style bits.
-- Provides the translation boundary between rich province metadata and tightly packed buffers for renderer-side lookup.
-- Use this file when GPU record shape, packing rules, or registry fields required by province shaders are changing.
+- Owns the province GPU bridge implementation for the province subsystem and keeps related runtime rules local here.
+- Keeps province data, render helpers, and map-facing transforms so helpers stay close to invariants this file updates.
+- Defines how province GPU bridge data is validated, transformed, or stored before neighboring systems consume it.
+- Separates province GPU bridge behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where province code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing province GPU bridge defaults, lifecycle handling, validation, or data ownership rules.
 
 ### gpu_upload.rs
 
@@ -171,21 +174,24 @@ This module primarily collaborates with `camera`, `image`, `pathfind`, `render`,
 
 ### render.rs
 
-- Generates province render commands from registry state so the map can draw fills, borders, labels, and overlays.
-- Owns ProvinceRenderOptions, zoom-mode interpretation, viewport culling, and helper rules for visible border output.
-- Converts province spans, styles, capitals, roads, labels, and selection state into ordered RenderCommand batches.
-- Provides the presentation boundary between authoritative province data and the lower renderer command stream.
-- Encodes how fog, visibility, hover, border types, and level-of-detail choices alter what the province map emits.
-- Neighboring changes usually involve ProvinceRegistry fields, map mode colors, and render command capabilities.
-- Open this owner when visual province behavior changes, especially if command ordering or LOD rules need revision.
-- This file is where province-specific drawing policy lives instead of the generic renderer or data registry layers.
+- Owns the province render implementation for the province subsystem and keeps related runtime rules local here.
+- Keeps province data, render helpers, and map-facing transforms so helpers stay close to invariants this file updates.
+- Defines how province render data is validated, transformed, or stored before neighboring systems consume it.
+- Separates province render behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where province code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing province render defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near the province render state that explains them instead of spreading rules outward.
+- Preserves deterministic behavior by keeping province render calculations explicit at their owning subsystem boundary.
+- Provides the local adaptation layer that lets callers reuse province render rules without duplicating engine decisions.
+- Open this owner before sibling files when a regression centers on province render state, helpers, or integration rules.
+- Works with neighboring province owners while keeping the main province render responsibility anchored in one file.
 
 ### routing.rs
 
-- Adapts province registry data to pathfinding-owned graph traversal helpers.
-- Keeps province-specific owner and attribute aggregation near the registry-facing module.
-- Path search, Dijkstra, connectivity, and component traversal live in `pathfind::graph_path`.
-- Open this file when province-specific routing adapters or owner-attribute analytics need revision.
+- Owns the province routing implementation for the province subsystem and keeps related runtime rules local here.
+- Keeps province data, render helpers, and map-facing transforms so helpers stay close to invariants this file updates.
+- Defines how province routing data is validated, transformed, or stored before neighboring systems consume it.
+- Separates province routing behavior from Lua bindings, tests, and sibling owners so integration stays readable.
 
 ### topology.rs
 
@@ -196,18 +202,20 @@ This module primarily collaborates with `camera`, `image`, `pathfind`, `render`,
 
 ### types.rs
 
-- Defines shared province value types used across registry, rendering, routing, and import code paths together.
-- Owns identifiers, border configuration structs, style payloads, and lightweight province snapshot structures.
-- Provides the data contract boundary for province styling and border-pair semantics that many files depend on.
-- This file is the right owner for shape-independent province schema changes that should stay reusable everywhere.
-- Neighboring work often touches registry mutation APIs, renderer color logic, and border indexing expectations.
+- Owns the province types implementation for the province subsystem and keeps related runtime rules local here.
+- Keeps province data, render helpers, and map-facing transforms so helpers stay close to invariants this file updates.
+- Defines how province types data is validated, transformed, or stored before neighboring systems consume it.
+- Separates province types behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where province code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing province types defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near the province types state that explains them instead of spreading rules outward.
 
 ### view_transform.rs
 
-- Adapts generic camera viewport math to province-grid map coordinates and cell picking.
-- Owns province-specific conversion from floating map positions into bounded province cell coordinates.
-- Generic fit, screen/content conversion, and zoom-anchor math live in `camera::viewport`.
-- Open this file when province map interaction needs a different grid-space adapter.
+- Owns the province view transform implementation for the province subsystem and keeps related runtime rules local here.
+- Keeps province data, render helpers, and map-facing transforms so helpers stay close to invariants this file updates.
+- Defines how province view transform data is validated, transformed, or stored before neighboring systems consume it.
+- Separates province view transform behavior from Lua bindings, tests, and sibling owners so integration stays readable.
 
 
 

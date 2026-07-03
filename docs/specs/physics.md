@@ -103,10 +103,14 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 ### flow.rs
 
-- Owns authored flow-field definitions, validation, and deterministic sampling for the physics subsystem.
-- It keeps geometry math, medium/application metadata, and overlap contribution data outside the main world step owner.
-- The file samples vector fields only; body iteration, Rapier mutation, and Lua registration live in neighboring physics files.
-- Use this file when stream geometry or combination semantics change; world storage and debug drawing stay elsewhere.
+- Owns the physics flow implementation for the physics subsystem and keeps related runtime rules local here.
+- Keeps body state, simulation helpers, and authored world contracts so helpers stay close to invariants this updates.
+- Defines how physics flow data is validated, transformed, or stored before neighboring systems consume it.
+- Separates physics flow behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where physics code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing physics flow defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near the physics flow state that explains them instead of spreading rules outward.
+- Preserves deterministic behavior by keeping physics flow calculations explicit at their owning subsystem boundary.
 
 ### limits.rs
 
@@ -118,17 +122,24 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 ### liquid.rs
 
-- Owns separate grid-based liquids for leaking-container gameplay, conservative cell flow, and body sampling.
-- Keeps liquid state distinct from `TerrainMap` while allowing the two grids to share cell metrics when linked.
-- This file handles cell editing, serialization, deterministic stepping, and sampled buoyancy or drag forces.
-- It intentionally stops short of SPH, particle fluids, or collider-backed liquid volumes.
+- Owns the physics liquid implementation for the physics subsystem and keeps related runtime rules local here.
+- Keeps body state, simulation helpers, and authored world contracts so helpers stay close to invariants this updates.
+- Defines how physics liquid data is validated, transformed, or stored before neighboring systems consume it.
+- Separates physics liquid behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where physics code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing physics liquid defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near the physics liquid state that explains them instead of spreading rules outward.
+- Preserves deterministic behavior by keeping physics liquid calculations explicit at their owning subsystem boundary.
+- Provides the local adaptation layer that lets callers reuse physics liquid rules without duplicating engine decisions.
+- Open this owner before sibling files when a regression centers on physics liquid state, helpers, or integration rules.
 
 ### material.rs
 
-- Owns the reusable physics material model shared by body defaults, fixture overrides, and Lua table conversions.
-- Keeps solver-backed fields and gameplay metadata in one value type so validation and storage stay consistent.
-- Defines the first-pass material contract without forcing a global registry or callback-driven gameplay hooks yet.
-- Open this file when changing material defaults, validation ranges, or which properties are considered body-only.
+- Owns the physics material implementation for the physics subsystem and keeps related runtime rules local here.
+- Keeps body state, simulation helpers, and authored world contracts so helpers stay close to invariants this updates.
+- Defines how physics material data is validated, transformed, or stored before neighboring systems consume it.
+- Separates physics material behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where physics code accepts inputs, reports errors, allocates state, or emits outputs.
 
 ### mod.rs
 
@@ -151,20 +162,28 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 ### shape.rs
 
-- Owns the shape owner for the physics subsystem and keeps its rules local to this file while keeping call sites explicit.
-- Centers the implementation around Shape, polygon_area2, is_convex_polygon, with helpers kept close to their invariants.
-- Defines how shape data is validated, transformed, or stored before neighboring systems use it.
-- Owns physics behavior with explicit state, validation, and crate-local integration boundaries.
-- Keeps public crate helpers focused on shape behavior while Lua registration stays elsewhere.
-- Documents the boundary where physics code accepts inputs, reports errors, or updates state.
-- Use this file when changing shape defaults, lifecycle handling, validation, or data ownership.
+- Owns the physics shape implementation for the physics subsystem and keeps related runtime rules local here.
+- Keeps body state, simulation helpers, and authored world contracts so helpers stay close to invariants this updates.
+- Defines how physics shape data is validated, transformed, or stored before neighboring systems consume it.
+- Separates physics shape behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where physics code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing physics shape defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near the physics shape state that explains them instead of spreading rules outward.
+- Preserves deterministic behavior by keeping physics shape calculations explicit at their owning subsystem boundary.
 
 ### terrain.rs
 
-- Owns destructible terrain grid storage, collider rebuild ownership, and collapse analysis.
-- Keeps Lua-facing terrain helpers thin by centralizing validation, component scans, and debris spawning here.
-- Defines the boundary where terrain edits become dirty chunks, rebuilt static colliders, or optional debris bodies.
-- Use this file when changing terrain fill semantics, collapse policies, serialization, or terrain-owned diagnostics.
+- Owns the physics terrain implementation for the physics subsystem and keeps related runtime rules local here.
+- Keeps body state, simulation helpers, and authored world contracts so helpers stay close to invariants this updates.
+- Defines how physics terrain data is validated, transformed, or stored before neighboring systems consume it.
+- Separates physics terrain behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where physics code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing physics terrain defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near the physics terrain state that explains them instead of spreading rules outward.
+- Preserves deterministic behavior by keeping physics terrain calculations explicit at their owning subsystem boundary.
+- Provides the local adaptation layer that lets callers reuse physics terrain rules without duplicating engine decisions.
+- Open this owner before sibling files when a regression centers on physics terrain state, helpers, or integration rules.
+- Works with neighboring physics owners while keeping the main physics terrain responsibility anchored in one file.
 
 ### types.rs
 
@@ -173,23 +192,70 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - Open this file when body-handle representation changes; world storage and body descriptors live in sibling owners.
 - This is the right owner for changing Rust or Lua identity semantics without touching simulation behavior directly.
 
+### world/bodies.rs
+
+- Owns the physics world bodies implementation for the physics subsystem and keeps related runtime rules local here.
+- Keeps body state, simulation helpers, and authored world contracts so helpers stay close to invariants this updates.
+- Defines how physics world bodies data is validated, transformed, or stored before neighboring systems consume it.
+- Separates physics world bodies behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where physics code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing physics world bodies defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near physics world bodies state that explains them instead of spreading outward.
+- Preserves deterministic behavior by keeping physics world bodies calculations at their owning subsystem boundary.
+- Provides local adaptation layer that lets callers reuse physics world bodies rules without duplicating engine decisions.
+
+### world/joints.rs
+
+- Owns the physics world joints implementation for the physics subsystem and keeps related runtime rules local here.
+- Keeps body state, simulation helpers, and authored world contracts so helpers stay close to invariants this updates.
+- Defines how physics world joints data is validated, transformed, or stored before neighboring systems consume it.
+- Separates physics world joints behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where physics code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing physics world joints defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near physics world joints state that explains them instead of spreading outward.
+- Preserves deterministic behavior by keeping physics world joints calculations at their owning subsystem boundary.
+
+### world/queries.rs
+
+- Owns the physics world queries implementation for the physics subsystem and keeps related runtime rules local here.
+- Keeps body state, simulation helpers, and authored world contracts so helpers stay close to invariants this updates.
+- Defines how physics world queries data is validated, transformed, or stored before neighboring systems consume it.
+- Separates physics world queries behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where physics code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing physics world queries defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near physics world queries state that explains them instead of spreading outward.
+- Preserves deterministic behavior by keeping physics world queries calculations at their owning subsystem boundary.
+- Provides adaptation layer that lets callers reuse physics world queries rules without duplicating engine decisions.
+
+### world/simulation.rs
+
+- Owns the physics world simulation implementation for the physics subsystem and keeps related runtime rules local here.
+- Keeps body state, simulation helpers, and authored world contracts so helpers stay close to invariants this updates.
+- Defines how physics world simulation data is validated, transformed, or stored before neighboring systems consume it.
+- Separates physics world simulation behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where physics code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing physics world simulation defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near physics world simulation state that explains them instead of spreading outward.
+- Preserves deterministic behavior by keeping physics world simulation calculations at their owning subsystem boundary.
+- Provides adaptation layer that lets callers reuse physics world simulation rules without duplicating engine decisions.
+- Open this owner before sibling files when a regression centers on physics world simulation state, helpers, or rules.
+- Works with neighboring physics owners while keeping main physics world simulation responsibility anchored in one file.
+
 ### world.rs
 
-- This file owns `World`, the Rapier-backed runtime that stores live bodies, colliders, joints, and zones.
-- It mirrors authored `Body` data into Rapier sets, keeps stable ids, and tracks tombstones for removed slots.
-- Stepping syncs scripted state into Rapier, runs the solver pipeline, then writes motion back into body mirrors.
-- Collision handling buffers begin and end contact pairs plus overlap events so gameplay reads post-step results.
-- Contact and stats helpers summarize active manifolds, sleeping bodies, collider counts, and joint counts.
-- Spatial query helpers provide filtered raycasts, swept circle casts, instant beam traces, reflective beam paths, AABB scans, and point tests.
-- Fixture APIs let one body carry multiple colliders, while rebuild paths refresh filters and materials after edits.
-- Joint APIs create revolute, rope, prismatic, weld, wheel, friction, motor, and mouse constraints with stable ids.
-- Joint utilities also expose motor speeds, limits, break thresholds, connected bodies, and explicit destruction paths.
-- Zone integration applies priority-ordered gravity and damping overrides, then emits enter and leave events per body.
-- One-way platform handling and sleep controls adapt raw solver behavior to platformer-style gameplay expectations.
-- Meter conversion helpers keep pixel-authored content aligned with simulation units without spreading scale math.
-- Debug extraction exposes shape snapshots and image drawing support so tools can inspect runtime geometry easily.
-- Open this file when runtime ownership or physics behavior changes; pure shape and zone definitions live nearby.
-- Keep Lua conversion, renderer submission, asset parsing, and editor UI policy outside this simulation owner.
+- Owns the physics world implementation for the physics subsystem and keeps related runtime rules local here.
+- Keeps body state, simulation helpers, and authored world contracts so helpers stay close to invariants this updates.
+- Defines how physics world data is validated, transformed, or stored before neighboring systems consume it.
+- Separates physics world behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where physics code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing physics world defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near the physics world state that explains them instead of spreading rules outward.
+- Preserves deterministic behavior by keeping physics world calculations explicit at their owning subsystem boundary.
+- Provides the local adaptation layer that lets callers reuse physics world rules without duplicating engine decisions.
+- Open this owner before sibling files when a regression centers on physics world state, helpers, or integration rules.
+- Works with neighboring physics owners while keeping the main physics world responsibility anchored in one file.
+- Changes to physics world names, caches, or helper boundaries should usually stay coupled inside this owner.
+- This file is the right stop for maintainers tracing physics world regressions back to their concrete owner boundary.
 
 ### zone.rs
 

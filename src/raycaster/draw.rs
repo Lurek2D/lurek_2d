@@ -1,8 +1,12 @@
-//! This file owns the software rasterization path that turns a prepared `RaycasterScene` into CPU-side `ImageData`.
-//! It fills ceilings, floors, walls, sprites, and transient meshes in a fixed order using quad and triangle helpers.
-//! The scene already carries geometry, UVs, lighting, and depth intent, so this file translates instead of recomputing.
-//! It is the right owner for previews, captures, and tool outputs that need first-person imagery without renderer commands.
-//! Open this file when CPU draw ordering or fill behavior changes; scene assembly and GPU translation live in siblings.
+//! Owns the raycaster draw implementation for the raycaster subsystem and keeps related runtime rules local here.
+//! Keeps ray hits, scene data, and first-person render helpers so helpers stay close to invariants this file updates.
+//! Defines how raycaster draw data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates raycaster draw behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where raycaster code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing raycaster draw defaults, lifecycle handling, validation, or data ownership rules.
+//! Keeps failure paths and edge cases near the raycaster draw state that explains them instead of spreading rules outward.
+//! Preserves deterministic behavior by keeping raycaster draw calculations explicit at their owning subsystem boundary.
+//! Provides the local adaptation layer that lets callers reuse raycaster draw rules without duplicating engine decisions.
 
 use crate::image::ImageData;
 use crate::math::Vec2;

@@ -1,8 +1,11 @@
-//! This file owns the render-command bridge that turns a prepared `RaycasterScene` into generic engine draw commands.
-//! It emits textured quads, fullscreen overlays, particle batches, and transient meshes while preserving raycaster depth order.
-//! Material metadata stays render-facing here: the scene already carries UVs, light, blend intent, and optional shader handles.
-//! The bridge deliberately reuses existing render-owned shader and particle infrastructure instead of adding GPU ownership to raycaster.
-//! Open this file when raycaster presentation ordering or command translation changes; CPU rasterization and scene assembly live in siblings.
+//! Owns the raycaster render implementation for the raycaster subsystem and keeps related runtime rules local here.
+//! Keeps ray hits, scene data, and first-person render helpers so helpers stay close to invariants this file updates.
+//! Defines how raycaster render data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates raycaster render behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where raycaster code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing raycaster render defaults, lifecycle handling, validation, or data ownership rules.
+//! Keeps failure paths and edge cases near raycaster render state that explains them instead of spreading rules outward.
+//! Preserves deterministic behavior by keeping raycaster render calculations explicit at their owning subsystem boundary.
 
 use crate::math::Vec2;
 use crate::raycaster::scene::{

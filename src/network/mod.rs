@@ -1,7 +1,9 @@
-//! This module is the network index, exposing ENet host ownership, sync helpers, and local lobby coordination.
-//! `host.rs` owns ENet peers, while `message.rs` owns portable wire values.
-//! `lobby.rs`, `relay.rs`, `rpc.rs`, `net_sync.rs`, and `netstate.rs` cover higher-level multiplayer coordination.
-//! Open this file to navigate subsystem boundaries; actual transport logic and state live in sibling modules.
+//! This module re-exports network surface for `constants.rs`, `error.rs`, `host.rs`, and `lobby.rs` and runtime helpers.
+//! It keeps navigation explicit by showing which sibling files own state, validation, transport, or render behavior.
+//! Public exports here route callers toward `constants.rs`, `error.rs`, and `host.rs` first, while deeper behavior owners.
+//! Open this file when the public network symbol map moves; edit siblings when runtime rules themselves change.
+//! This index exists to organize entrypoints, not to absorb the state, caches, or algorithms its children own.
+//! Use neighboring owners for behavioral fixes, and keep this file limited to exports, docs, and navigation.
 
 /// Shared numeric limits and protocol constants used across all network layers.
 pub mod constants;

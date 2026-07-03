@@ -1,6 +1,6 @@
-//! This file owns shared numeric limits for peers and ENet channels in networking.
-//! It centralizes defaults such as `DEFAULT_PEERS`, `DEFAULT_CHANNELS`, and transport buffer capacities.
-//! Open it when protocol ceilings change; host logic, runtime polling, and message framing live in siblings.
+//! Owns the network constants implementation for the network subsystem and keeps related runtime rules local here.
+//! Keeps transport state, peers, and protocol-facing helpers so helpers stay close to invariants this file updates.
+//! Defines how network constants data is validated, transformed, or stored before neighboring systems consume it.
 
 /// Hard ceiling on simultaneous peer connections across all transports.
 pub const MAX_PEERS: usize = 4096;

@@ -1,13 +1,14 @@
-//! Owns render behavior with explicit state, validation, and crate-local integration boundaries.
-//! Centers the implementation around CompareMode, StencilAction, StencilMode, with helpers kept close to their invariants.
-//! Defines how renderer data is validated, transformed, or stored before neighboring systems use it.
-//! Owns render behavior with explicit state, validation, and crate-local integration boundaries.
-//! Keeps public crate helpers focused on renderer behavior while Lua registration stays elsewhere.
-//! Documents the boundary where render code accepts inputs, reports errors, or updates state.
-//! Use this file when changing renderer defaults, lifecycle handling, validation, or data ownership.
-//! Keeps failure paths and edge cases near the render state that can explain them while keeping call sites explicit.
-//! Preserves deterministic behavior by keeping renderer calculations explicit at their owner boundary.
-//! Provides the local adaptation layer that lets callers avoid duplicating render rules while keeping call sites explicit.
+//! Owns the render renderer implementation for the render subsystem and keeps related runtime rules local here.
+//! Keeps draw commands, GPU resources, and render-pass configuration so helpers stay close to invariants this file updates.
+//! Defines how render renderer data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates render renderer behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where render code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing render renderer defaults, lifecycle handling, validation, or data ownership rules.
+//! Keeps failure paths and edge cases near the render renderer state that explains them instead of spreading rules outward.
+//! Preserves deterministic behavior by keeping render renderer calculations explicit at their owning subsystem boundary.
+//! Provides the local adaptation layer that lets callers reuse render renderer rules without duplicating engine decisions.
+//! Open this owner before sibling files when a regression centers on render renderer state, helpers, or integration rules.
+//! Works with neighboring render owners while keeping the main render renderer responsibility anchored in one file.
 
 use crate::math::Vec2;
 use crate::render::image_effect::ShaderPassDescriptor;

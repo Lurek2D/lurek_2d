@@ -62,22 +62,58 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 
 ## Source Files
 
+### build_scene/floors.rs
+
+- Owns the raycaster build scene floors implementation for the raycaster subsystem and keeps rules local here.
+- Keeps ray hits, scene data, and first-person render helpers so helpers stay close to invariants this file updates.
+- Defines how raycaster build scene floors data is validated, transformed, or stored before systems consume it.
+- Separates raycaster build scene floors behavior from Lua bindings, tests, and sibling owners so integration readable.
+- Documents the boundary where raycaster code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing raycaster build scene floors defaults, lifecycle handling, validation, or data rules.
+- Keeps failure paths and edge cases near raycaster build scene floors state that explains them instead of outward.
+- Preserves deterministic behavior by keeping raycaster build scene floors calculations at their owning boundary.
+
+### build_scene/pipeline.rs
+
+- Owns the raycaster build scene pipeline implementation for the raycaster subsystem and keeps rules local here.
+- Keeps ray hits, scene data, and first-person render helpers so helpers stay close to invariants this file updates.
+- Defines how raycaster build scene pipeline data is validated, transformed, or stored before systems consume it.
+- Separates raycaster build scene pipeline behavior from Lua bindings, tests, and sibling owners so integration readable.
+- Documents the boundary where raycaster code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing raycaster build scene pipeline defaults, lifecycle handling, validation, or data rules.
+- Keeps failure paths and edge cases near raycaster build scene pipeline state that explains them instead of outward.
+
+### build_scene/sprites.rs
+
+- Owns the raycaster build scene sprites implementation for the raycaster subsystem and keeps rules local here.
+- Keeps ray hits, scene data, and first-person render helpers so helpers stay close to invariants this file updates.
+- Defines how raycaster build scene sprites data is validated, transformed, or stored before systems consume it.
+- Separates raycaster build scene sprites behavior from Lua bindings, tests, and sibling owners so integration readable.
+- Documents the boundary where raycaster code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing raycaster build scene sprites defaults, lifecycle handling, validation, or data rules.
+
+### build_scene/walls.rs
+
+- Owns the raycaster build scene walls implementation for the raycaster subsystem and keeps rules local here.
+- Keeps ray hits, scene data, and first-person render helpers so helpers stay close to invariants this file updates.
+- Defines how raycaster build scene walls data is validated, transformed, or stored before neighboring systems consume it.
+- Separates raycaster build scene walls behavior from Lua bindings, tests, and sibling owners so integration readable.
+- Documents the boundary where raycaster code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing raycaster build scene walls defaults, lifecycle handling, validation, or data rules.
+- Keeps failure paths and edge cases near raycaster build scene walls state that explains them instead of outward.
+- Preserves deterministic behavior by keeping raycaster build scene walls calculations at their owning subsystem boundary.
+- Provides layer that lets callers reuse raycaster build scene walls rules without duplicating engine decisions.
+
 ### build_scene.rs
 
-- This file owns `RaycasterScene::build` and `build_multilevel`, which turn camera state into prepared scene geometry.
-- It defines scene-build inputs such as `SceneBuildParams`, `LoweredFloorCell`, `WorldSprite`, and `LevelSprite`.
-- Wall hits are converted here into perspective-correct quads with texture routing, cell values, depths, and light tint.
-- Floor and ceiling tiles expand into screen-space spans with stable UVs, texture overrides, and roof-aware lighting.
-- Lowered-floor cells generate pits, bottoms, and side faces so vertical relief survives scene translation cleanly.
-- Lighting sampling blends ambient, point, and global light here, with a cache that keeps repeated queries affordable.
-- Roofed cells, ceiling holes, and multilevel visibility rules influence which surfaces are emitted and how they render.
-- Billboard sprites use the same camera model as walls, including directional texture selection from viewer angle.
-- Multilevel builds group sprites and lights per slice, compile level runtimes on demand, and merge visible slices.
-- Texture lookup callbacks keep resource routing outside the builder while geometry and lighting policy stay centralized.
-- This file is the staging boundary between grid-owned ray data and the renderer-facing `RaycasterScene` surface.
-- It is the right owner for changing surface emission, pit geometry, or light application without renderer rewrites.
-- Cursor-facing attrs on tiles, sprites, and models are carried through scene assembly so later picks keep semantics.
-- Open this file when scene assembly semantics change; casting, picking, and draw translation live in siblings.
+- Owns the raycaster build scene implementation for the raycaster subsystem and keeps related runtime rules local here.
+- Keeps ray hits, scene data, and first-person render helpers so helpers stay close to invariants this file updates.
+- Defines how raycaster build scene data is validated, transformed, or stored before neighboring systems consume it.
+- Separates raycaster build scene behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where raycaster code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing raycaster build scene defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near raycaster build scene state that explains them instead of spreading outward.
+- Preserves deterministic behavior by keeping raycaster build scene calculations at their owning subsystem boundary.
 
 ### column_batch.rs
 
@@ -89,9 +125,13 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 
 ### contract.rs
 
-- Shared validation contracts for raycaster storage, ray parameters, projection, and scene input.
-- Strict `try_*` entrypoints surface `RaycasterError` through Rust and Lua, while legacy helpers can
-- sanitize or ignore invalid requests without panicking or allocating unbounded buffers.
+- Owns the raycaster contract implementation for the raycaster subsystem and keeps related runtime rules local here.
+- Keeps ray hits, scene data, and first-person render helpers so helpers stay close to invariants this file updates.
+- Defines how raycaster contract data is validated, transformed, or stored before neighboring systems consume it.
+- Separates raycaster contract behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where raycaster code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing raycaster contract defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near raycaster contract state that explains them instead of spreading rules outward.
 
 ### dda.rs
 
@@ -122,11 +162,15 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 
 ### draw.rs
 
-- This file owns the software rasterization path that turns a prepared `RaycasterScene` into CPU-side `ImageData`.
-- It fills ceilings, floors, walls, sprites, and transient meshes in a fixed order using quad and triangle helpers.
-- The scene already carries geometry, UVs, lighting, and depth intent, so this file translates instead of recomputing.
-- It is the right owner for previews, captures, and tool outputs that need first-person imagery without renderer commands.
-- Open this file when CPU draw ordering or fill behavior changes; scene assembly and GPU translation live in siblings.
+- Owns the raycaster draw implementation for the raycaster subsystem and keeps related runtime rules local here.
+- Keeps ray hits, scene data, and first-person render helpers so helpers stay close to invariants this file updates.
+- Defines how raycaster draw data is validated, transformed, or stored before neighboring systems consume it.
+- Separates raycaster draw behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where raycaster code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing raycaster draw defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near the raycaster draw state that explains them instead of spreading rules outward.
+- Preserves deterministic behavior by keeping raycaster draw calculations explicit at their owning subsystem boundary.
+- Provides the local adaptation layer that lets callers reuse raycaster draw rules without duplicating engine decisions.
 
 ### heightmap.rs
 
@@ -177,9 +221,10 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 
 ### projection.rs
 
-- Owns wall-column projection math and distance-based shading for the raycaster renderer.
-- Converts corrected ray distances into screen-space wall heights and brightness multipliers.
-- Open this file when wall projection math changes; hit records and sprite payloads live in sibling files.
+- Owns the raycaster projection implementation for the raycaster subsystem and keeps related runtime rules local here.
+- Keeps ray hits, scene data, and first-person render helpers so helpers stay close to invariants this file updates.
+- Defines how raycaster projection data is validated, transformed, or stored before neighboring systems consume it.
+- Separates raycaster projection behavior from Lua bindings, tests, and sibling owners so integration stays readable.
 
 ### ray_hit.rs
 
@@ -189,11 +234,14 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 
 ### render.rs
 
-- This file owns the render-command bridge that turns a prepared `RaycasterScene` into generic engine draw commands.
-- It emits textured quads, fullscreen overlays, particle batches, and transient meshes while preserving raycaster depth order.
-- Material metadata stays render-facing here: the scene already carries UVs, light, blend intent, and optional shader handles.
-- The bridge deliberately reuses existing render-owned shader and particle infrastructure instead of adding GPU ownership to raycaster.
-- Open this file when raycaster presentation ordering or command translation changes; CPU rasterization and scene assembly live in siblings.
+- Owns the raycaster render implementation for the raycaster subsystem and keeps related runtime rules local here.
+- Keeps ray hits, scene data, and first-person render helpers so helpers stay close to invariants this file updates.
+- Defines how raycaster render data is validated, transformed, or stored before neighboring systems consume it.
+- Separates raycaster render behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where raycaster code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing raycaster render defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near raycaster render state that explains them instead of spreading rules outward.
+- Preserves deterministic behavior by keeping raycaster render calculations explicit at their owning subsystem boundary.
 
 ### scene.rs
 

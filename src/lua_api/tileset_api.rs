@@ -1,4 +1,4 @@
-//! Registers the `lurek.tileset` Lua API, keeping Lua-table conversion at the binding edge.
+//! Registers lurek.tileset bindings, validates Lua inputs, converts engine values, and exposes userdata callbacks.
 
 use super::SharedState;
 use crate::tilefield::{TileObjectCatalog, TileRef};

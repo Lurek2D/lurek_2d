@@ -46,9 +46,9 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ### constants.rs
 
-- This file owns shared numeric limits for peers and ENet channels in networking.
-- It centralizes defaults such as `DEFAULT_PEERS`, `DEFAULT_CHANNELS`, and transport buffer capacities.
-- Open it when protocol ceilings change; host logic, runtime polling, and message framing live in siblings.
+- Owns the network constants implementation for the network subsystem and keeps related runtime rules local here.
+- Keeps transport state, peers, and protocol-facing helpers so helpers stay close to invariants this file updates.
+- Defines how network constants data is validated, transformed, or stored before neighboring systems consume it.
 
 ### error.rs
 
@@ -58,14 +58,14 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ### host.rs
 
-- This file owns the ENet host wrapper that binds one UDP socket and manages peer slots for a network endpoint.
-- `NetworkHost` stores the inner ENet host, local address, host role, and reconnection leases for peer resumption.
-- `HostRole`, `NetworkEvent`, `EnetLease`, and `PeerStats` live here because they describe host-owned peer lifecycle.
-- Service, connect, send, broadcast, ping, and disconnect flows stay here because ENet peer control is this boundary.
-- Lease registration and cleanup also belong here since reconnect tokens are indexed by peer ownership state.
-- Bandwidth, channel, address, and connection metrics remain local because they report or tune host-level behavior.
-- Server and client convenience constructors stay here because role assignment and binding strategy are host concerns.
-- Open it when ENet peer ownership changes; lobbies and wire values do not.
+- Owns the network host implementation for the network subsystem and keeps related runtime rules local here.
+- Keeps transport state, peers, and protocol-facing helpers so helpers stay close to invariants this file updates.
+- Defines how network host data is validated, transformed, or stored before neighboring systems consume it.
+- Separates network host behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where network code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing network host defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near the network host state that explains them instead of spreading rules outward.
+- Preserves deterministic behavior by keeping network host calculations explicit at their owning subsystem boundary.
 
 ### lobby.rs
 
@@ -85,10 +85,12 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ### mod.rs
 
-- This module is the network index, exposing ENet host ownership, sync helpers, and local lobby coordination.
-- `host.rs` owns ENet peers, while `message.rs` owns portable wire values.
-- `lobby.rs`, `relay.rs`, `rpc.rs`, `net_sync.rs`, and `netstate.rs` cover higher-level multiplayer coordination.
-- Open this file to navigate subsystem boundaries; actual transport logic and state live in sibling modules.
+- This module re-exports network surface for `constants.rs`, `error.rs`, `host.rs`, and `lobby.rs` and runtime helpers.
+- It keeps navigation explicit by showing which sibling files own state, validation, transport, or render behavior.
+- Public exports here route callers toward `constants.rs`, `error.rs`, and `host.rs` first, while deeper behavior owners.
+- Open this file when the public network symbol map moves; edit siblings when runtime rules themselves change.
+- This index exists to organize entrypoints, not to absorb the state, caches, or algorithms its children own.
+- Use neighboring owners for behavioral fixes, and keep this file limited to exports, docs, and navigation.
 
 ### net_sync.rs
 

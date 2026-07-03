@@ -1,10 +1,9 @@
-//! This module re-exports the screen-overlay subsystem for ambient tint, weather, water, transitions, and controller state.
-//! It is the navigation map for long-lived overlay data, timed screen effects, and renderer-facing overlay ownership.
-//! `controller.rs` owns the main `Overlay` runtime, while `ambient.rs`, `weather.rs`, and `water.rs` hold state blocks.
-//! `screen_effects.rs` and `transition.rs` cover timed flashes, shakes, fades, and full-screen transition playback models.
-//! `atmosphere.rs` groups clouds, fog, haze, vignette, grain, and lightning so callers can compose atmospheric layers.
-//! `status.rs` owns stacked player-state overlays such as frozen, poison, and danger feedback recipes.
-//! Change this file when public overlay exports move; change sibling files when overlay simulation or render data changes.
+//! This module re-exports overlay surface for `ambient.rs`, `atmosphere.rs`, `controller.rs`, and helpers.
+//! It keeps navigation explicit by showing which sibling files own state, validation, transport, or render behavior.
+//! Public exports here route callers toward `ambient.rs`, `atmosphere.rs`, and `controller.rs` first, while deeper owners.
+//! Open this file when the public overlay symbol map moves; edit siblings when runtime rules themselves change.
+//! This index exists to organize entrypoints, not to absorb the state, caches, or algorithms its children own.
+//! Use neighboring owners for behavioral fixes, and keep this file limited to exports, docs, and navigation.
 
 /// Ambient color state derived from time-of-day settings.
 pub mod ambient;

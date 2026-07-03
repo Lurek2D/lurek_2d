@@ -1,9 +1,10 @@
-//! Defines the specialized GPU pipeline used to render detailed province-map views with dedicated shader inputs.
-//! Binds region ids, border data, height-like fields, and viewport parameters needed by province-focused passes.
-//! Packages uniforms for zoom, map size, viewport range, and time so province visuals update coherently.
-//! Keeps province-specific bind groups and pipeline layout separate from the general-purpose render backend.
-//! Acts as the province-map boundary between geographic data textures and shader-driven fullscreen presentation.
-//! Open this file when province shader inputs, uniforms, or fullscreen province-map output behaves incorrectly.
+//! Owns the render province map pipeline implementation for the render subsystem and keeps rules local here.
+//! Keeps draw commands, GPU resources, and render-pass configuration so helpers stay close to invariants this file updates.
+//! Defines how render province map pipeline data is validated, transformed, or stored before systems consume it.
+//! Separates render province map pipeline behavior from Lua bindings, tests, and sibling owners so integration readable.
+//! Documents the boundary where render code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing render province map pipeline defaults, lifecycle handling, validation, or data rules.
+//! Keeps failure paths and edge cases near render province map pipeline state that explains them instead of outward.
 
 use bytemuck::{Pod, Zeroable};
 use wgpu::util::DeviceExt;

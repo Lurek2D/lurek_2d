@@ -1,9 +1,11 @@
-//! Runs graph pathfinding over adjacency maps with configurable node and edge-tag move costs.
-//! Owns graph path results, cost rules, blocked-node handling, components, and route search.
-//! Computes cheapest graph routes and budget-limited reachability, keeping traversal near cost semantics.
-//! Provides the boundary between topology data and higher-level systems that need traversable graph paths.
-//! This file matters when blocking, tag surcharges, or graph traversal semantics need revision.
-//! Open this owner before touching province or globe registries when only graph search behavior changed.
+//! Owns the pathfind graph path implementation for the pathfind subsystem and keeps related runtime rules local here.
+//! Keeps path graphs, routes, and traversal-facing helpers ownership so helpers stay close to invariants this file updates.
+//! Defines how pathfind graph path data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates pathfind graph path behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where pathfind code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing pathfind graph path defaults, lifecycle handling, validation, or data ownership rules.
+//! Keeps failure paths and edge cases near pathfind graph path state that explains them instead of spreading rules outward.
+//! Preserves deterministic behavior by keeping pathfind graph path calculations at their owning subsystem boundary.
 
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap, HashSet, VecDeque};

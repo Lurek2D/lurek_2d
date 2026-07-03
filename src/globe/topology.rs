@@ -1,9 +1,10 @@
-//! Owns the region topology graph that stores regions, cached neighbors, centroids, and tagged region border edges.
-//! Provides insert, remove, mutation, and cache rebuild flows so topology lookups stay coherent after region edits.
-//! Delegates route and reachability queries to graph pathfinding while translating results back to RegionId.
-//! Acts as the structural boundary between region geometry records and graph-style traversal used by globe gameplay.
-//! Also exposes region attrs and edge tags, keeping topology metadata near the adjacency data it qualifies.
-//! Open this owner when connectivity, border tags, or region path queries change without altering render policy.
+//! Owns the globe topology implementation for the globe subsystem and keeps related runtime rules local here.
+//! Keeps globe state, province data, and world-facing render helpers so helpers stay close to invariants this file updates.
+//! Defines how globe topology data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates globe topology behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where globe code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing globe topology defaults, lifecycle handling, validation, or data ownership rules.
+//! Keeps failure paths and edge cases near the globe topology state that explains them instead of spreading rules outward.
 
 use crate::globe::types::{GlobeError, Region, RegionId, MAX_REGIONS};
 use crate::pathfind::graph_path::{find_graph_path, graph_reachable, GraphCostFn, GraphPath};
@@ -188,7 +189,10 @@ impl RegionGraph {
         }
         let id = p.id;
         if self.regions.contains_key(&id) {
-            return Err(GlobeError::LoadError(format!("region {} already exists", id)));
+            return Err(GlobeError::LoadError(format!(
+                "region {} already exists",
+                id
+            )));
         }
         let nbrs: Vec<u32> = p.neighbors.iter().map(|r| r.0).collect();
         for ((a, b), tags) in &p.edge_tags {

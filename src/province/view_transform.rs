@@ -1,7 +1,7 @@
-//! Adapts generic camera viewport math to province-grid map coordinates and cell picking.
-//! Owns province-specific conversion from floating map positions into bounded province cell coordinates.
-//! Generic fit, screen/content conversion, and zoom-anchor math live in `camera::viewport`.
-//! Open this file when province map interaction needs a different grid-space adapter.
+//! Owns the province view transform implementation for the province subsystem and keeps related runtime rules local here.
+//! Keeps province data, render helpers, and map-facing transforms so helpers stay close to invariants this file updates.
+//! Defines how province view transform data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates province view transform behavior from Lua bindings, tests, and sibling owners so integration stays readable.
 
 use crate::camera::{fit_content_to_screen, screen_to_content, zoom_offset_at};
 

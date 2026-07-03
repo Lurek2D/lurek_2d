@@ -5930,8 +5930,8 @@ LSpriteManager:clearAttr(id, key)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | any |  |
-| `key?` | any |  |
+| `id` | number | Sprite id. |
+| `key?` | string | Optional attribute key; omit it to clear every stored attribute. |
 
 **Example**
 

@@ -76,7 +76,9 @@ pub use build_scene::{
     SceneBuildParams, WorldSprite,
 };
 pub use column_batch::{ColumnBatch, ColumnData};
-pub use contract::{OutOfBoundsPolicy, ProjectionParams, RaycastParams, RaycasterError, RaycasterLimits};
+pub use contract::{
+    OutOfBoundsPolicy, ProjectionParams, RaycastParams, RaycasterError, RaycasterLimits,
+};
 pub use dda::Raycaster2D;
 pub use depth_buffer::DepthBuffer;
 pub use doors::{Door, DoorDirection, DoorManager, DoorState};

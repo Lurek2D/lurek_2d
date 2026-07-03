@@ -53,10 +53,12 @@ This module primarily collaborates with `math`, `runtime`, `tilefield`. Its resp
 
 ### archetype.rs
 
-- This file owns archetype behavior inside the tileset subsystem, close to its data and invariants.
-- It keeps validation, defaults, and error-facing rules near the operations that mutate archetype state.
-- Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
-- Public functions in this file are the stable entry points other modules should use for archetype work.
+- Owns the tileset archetype implementation for the tileset subsystem and keeps related runtime rules local here.
+- Keeps tileset metadata, archetypes, and render-facing lookup helpers so helpers stay close to invariants this updates.
+- Defines how tileset archetype data is validated, transformed, or stored before neighboring systems consume it.
+- Separates tileset archetype behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where tileset code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing tileset archetype defaults, lifecycle handling, validation, or data ownership rules.
 
 ### autotile.rs
 
@@ -82,12 +84,13 @@ This module primarily collaborates with `math`, `runtime`, `tilefield`. Its resp
 
 ### tileset.rs
 
-- This file owns tileset behavior inside the tileset subsystem, close to its data and invariants.
-- It keeps validation, defaults, and error-facing rules near the operations that mutate tileset state.
-- Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
-- Public functions in this file are the stable entry points other modules should use for tileset work.
-- Serialization, indexing, and boundary checks stay here when they depend on tileset internals.
-- Renderer, API, and test layers should call through these helpers rather than duplicate private rules.
+- Owns the tileset tileset implementation for the tileset subsystem and keeps related runtime rules local here.
+- Keeps tileset metadata, archetypes, and render-facing lookup helpers so helpers stay close to invariants this updates.
+- Defines how tileset tileset data is validated, transformed, or stored before neighboring systems consume it.
+- Separates tileset tileset behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where tileset code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing tileset tileset defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near the tileset tileset state that explains them instead of spreading rules outward.
 
 ### visual.rs
 

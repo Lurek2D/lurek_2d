@@ -97,22 +97,65 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - Documents the boundary where terminal code accepts inputs, reports errors, or updates state.
 - Use this file when changing render defaults, lifecycle handling, validation, or data ownership.
 
+### terminal_state/grid.rs
+
+- Owns the terminal terminal state grid implementation for the terminal subsystem and keeps rules local here.
+- Keeps terminal buffers, widgets, and text-facing presentation state so helpers stay close to invariants this updates.
+- Defines how terminal terminal state grid data is validated, transformed, or stored before systems consume it.
+- Separates terminal terminal state grid behavior from Lua bindings, tests, and sibling owners so integration readable.
+- Documents the boundary where terminal code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing terminal terminal state grid defaults, lifecycle handling, validation, or data rules.
+
+### terminal_state/history.rs
+
+- Owns the terminal terminal state history implementation for the terminal subsystem and keeps rules local here.
+- Keeps terminal buffers, widgets, and text-facing presentation state so helpers stay close to invariants this updates.
+- Defines how terminal terminal state history data is validated, transformed, or stored before systems consume it.
+- Separates terminal terminal state history behavior from Lua bindings, tests, and sibling owners so integration readable.
+- Documents the boundary where terminal code accepts inputs, reports errors, allocates state, or emits outputs.
+
+### terminal_state/input.rs
+
+- Owns the terminal terminal state input implementation for the terminal subsystem and keeps rules local here.
+- Keeps terminal buffers, widgets, and text-facing presentation state so helpers stay close to invariants this updates.
+- Defines how terminal terminal state input data is validated, transformed, or stored before systems consume it.
+- Separates terminal terminal state input behavior from Lua bindings, tests, and sibling owners so integration readable.
+- Documents the boundary where terminal code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing terminal terminal state input defaults, lifecycle handling, validation, or data rules.
+- Keeps failure paths and edge cases near terminal terminal state input state that explains them instead of outward.
+
+### terminal_state/render.rs
+
+- Owns the terminal terminal state render implementation for the terminal subsystem and keeps rules local here.
+- Keeps terminal buffers, widgets, and text-facing presentation state so helpers stay close to invariants this updates.
+- Defines how terminal terminal state render data is validated, transformed, or stored before systems consume it.
+- Separates terminal terminal state render behavior from Lua bindings, tests, and sibling owners so integration readable.
+- Documents the boundary where terminal code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing terminal terminal state render defaults, lifecycle handling, validation, or data rules.
+- Keeps failure paths and edge cases near terminal terminal state render state that explains them instead of outward.
+
+### terminal_state/widgets.rs
+
+- Owns the terminal terminal state widgets implementation for the terminal subsystem and keeps rules local here.
+- Keeps terminal buffers, widgets, and text-facing presentation state so helpers stay close to invariants this updates.
+- Defines how terminal terminal state widgets data is validated, transformed, or stored before systems consume it.
+- Separates terminal terminal state widgets behavior from Lua bindings, tests, and sibling owners so integration readable.
+- Documents the boundary where terminal code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing terminal terminal state widgets defaults, lifecycle handling, validation, or data rules.
+- Keeps failure paths and edge cases near terminal terminal state widgets state that explains them instead of outward.
+
 ### terminal_state.rs
 
-- Owns the terminal state owner for the terminal subsystem and keeps its rules local to this file.
-- Centers the implementation around MAX_COLS, MAX_ROWS, BUTTON_FG, with helpers kept close to their invariants.
-- Defines how terminal state data is validated, transformed, or stored before neighboring systems use it.
-- Owns terminal behavior with explicit state, validation, and crate-local integration boundaries.
-- Keeps public crate helpers focused on terminal state behavior while Lua registration stays elsewhere.
-- Documents the boundary where terminal code accepts inputs, reports errors, or updates state.
-- Use this file when changing terminal state defaults, lifecycle handling, validation, or data ownership.
-- Keeps failure paths and edge cases near the terminal state that can explain them while keeping call sites explicit.
-- Preserves deterministic behavior by keeping terminal state calculations explicit at their owner boundary.
-- Owns terminal behavior with explicit state, validation, and crate-local integration boundaries.
-- Maintains small helper surfaces so broader engine modules can compose terminal state behavior safely.
-- Protects subsystem contracts by keeping resource, cache, or state mutations visible in one place.
-- Links adjacent concerns only where terminal state changes need coordination with owned engine data.
-- Keeps terminal data ownership and helper behavior clear for future engine maintenance. for engine changes.
+- Owns the terminal terminal state implementation for the terminal subsystem and keeps related runtime rules local here.
+- Keeps terminal buffers, widgets, and text-facing presentation state so helpers stay close to invariants this updates.
+- Defines how terminal terminal state data is validated, transformed, or stored before neighboring systems consume it.
+- Separates terminal terminal state behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where terminal code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing terminal terminal state defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near terminal terminal state state that explains them instead of spreading outward.
+- Preserves deterministic behavior by keeping terminal terminal state calculations at their owning subsystem boundary.
+- Provides adaptation layer that lets callers reuse terminal terminal state rules without duplicating engine decisions.
+- Open this owner before sibling files when a regression centers on terminal terminal state state, helpers, or rules.
 
 ### text_utils.rs
 

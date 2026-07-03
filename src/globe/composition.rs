@@ -1,6 +1,7 @@
-//! Composes several named globe views into one render batch by overriding each globe camera's screen center.
-//! Owns SplitViewport and the frame assembly loop that clones camera pivots and reuses normal globe frame emission.
-//! Provides the layout boundary between GlobeRegistry state and split-screen style globe presentation workflows.
+//! Owns the globe composition implementation for the globe subsystem and keeps related runtime rules local here.
+//! Keeps globe state, province data, and world-facing render helpers so helpers stay close to invariants this file updates.
+//! Defines how globe composition data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates globe composition behavior from Lua bindings, tests, and sibling owners so integration stays readable.
 
 use crate::globe::draw::emit_globe_frame;
 use crate::globe::registry::GlobeRegistry;

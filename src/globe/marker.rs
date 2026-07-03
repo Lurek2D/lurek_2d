@@ -1,8 +1,9 @@
-//! Stores globe markers with stable ids so pins and point annotations can be added, moved, filtered, and rendered.
-//! Owns marker lookup, visibility, arbitrary string attrs, and typed grouping by marker classification name.
-//! Provides the state boundary between gameplay marker semantics and draw or picking code that consumes marker data.
-//! Keeps iteration and id assignment deterministic so UI, render, and sync systems see stable marker identity.
-//! Open this owner when marker lifecycle, filtering, or per-marker metadata behavior needs adjustment.
+//! Owns the globe marker implementation for the globe subsystem and keeps related runtime rules local here.
+//! Keeps globe state, province data, and world-facing render helpers so helpers stay close to invariants this file updates.
+//! Defines how globe marker data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates globe marker behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where globe code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing globe marker defaults, lifecycle handling, validation, or data ownership rules.
 
 use crate::globe::orbit::SURFACE_ORBIT_NAME;
 use crate::globe::types::{Marker, MarkerStyle};

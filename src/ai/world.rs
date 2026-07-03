@@ -1,7 +1,7 @@
-//! Owns the global AI world registry that stores agents, name lookup, and the shared blackboard inherited by new actors.
-//! Provides add, remove, index, and mutable access helpers so population-level systems can manage agents coherently.
-//! Advances all agents through one broad world pulse, integrating velocity and per-agent support state inside the central owner.
-//! Open this owner when registry integrity or world-wide update flow needs coordinated changes across agents.
+//! Owns the ai world implementation for the ai subsystem and keeps related runtime rules local here.
+//! Keeps AI world state, traits, and decision-facing helpers so helpers stay close to invariants this file updates.
+//! Defines how ai world data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates ai world behavior from Lua bindings, tests, and sibling owners so integration stays readable.
 
 use crate::ai::agent::Agent;
 use crate::patterns::Blackboard;

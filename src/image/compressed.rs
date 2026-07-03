@@ -1,6 +1,7 @@
-//! Keeps the compressed-image API surface stable while the runtime build only accepts PNG image content.
-//! Keeps compressed-image parsing separate from ordinary RGBA image loading and PNG style content workflows.
-//! Open this owner when DDS rejection or compressed texture metadata behavior must change.
+//! Owns the image compressed implementation for the image subsystem and keeps related runtime rules local here.
+//! Keeps image data, encoded assets, and effect helpers ownership so helpers stay close to invariants this file updates.
+//! Defines how image compressed data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates image compressed behavior from Lua bindings, tests, and sibling owners so integration stays readable.
 
 use crate::runtime::EngineError;
 /// Compressed texture format recognized from DDS metadata.

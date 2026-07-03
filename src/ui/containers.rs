@@ -1,10 +1,11 @@
-//! Defines retained UI container widgets that organize child hierarchies before controls or visuals are drawn.
-//! Owns panels, windows, split layouts, scroll regions, docks, and nine-slice shells used across the UI tree.
-//! Applies vertical, horizontal, and grid arrangement rules so parent widgets can size and place children predictably.
-//! Keeps scroll overflow handling local to container state instead of leaking viewport math into leaf controls.
-//! Provides scalable frame metadata through nine-slice records so borders survive resize without visual distortion.
-//! Acts as the structural boundary between raw widget nodes and higher-level layout orchestration in the context.
-//! Open this file when hierarchy composition, docking, scroll behavior, or container sizing rules look incorrect.
+//! Owns the UI containers implementation for the UI subsystem and keeps related runtime rules local here.
+//! Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
+//! Defines how UI containers data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates UI containers behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing UI containers defaults, lifecycle handling, validation, or data ownership rules.
+//! Keeps failure paths and edge cases near the UI containers state that explains them instead of spreading rules outward.
+//! Preserves deterministic behavior by keeping UI containers calculations explicit at their owning subsystem boundary.
 
 use crate::ui::widget::{WidgetBase, WidgetType};
 /// Plain box container that groups children with an optional title and scroll flag.

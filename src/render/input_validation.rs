@@ -1,13 +1,14 @@
-//! Owns the input validation owner for the render subsystem and keeps its rules local to this file.
-//! Keeps render data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
-//! Defines how input validation data is validated, transformed, or stored before neighboring systems use it.
-//! Owns render behavior with explicit state, validation, and crate-local integration boundaries.
-//! Keeps public crate helpers focused on input validation behavior while Lua registration stays elsewhere.
-//! Documents the boundary where render code accepts inputs, reports errors, or updates state.
-//! Use this file when changing input validation defaults, lifecycle handling, validation, or data ownership.
-//! Keeps failure paths and edge cases near the render state that can explain them while keeping call sites explicit.
-//! Preserves deterministic behavior by keeping input validation calculations explicit at their owner boundary.
-//! Provides the local adaptation layer that lets callers avoid duplicating render rules while keeping call sites explicit.
+//! Owns the render input validation implementation for the render subsystem and keeps related runtime rules local here.
+//! Keeps draw commands, GPU resources, and render-pass configuration so helpers stay close to invariants this file updates.
+//! Defines how render input validation data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates render input validation behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where render code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing render input validation defaults, lifecycle handling, validation, or data ownership rules.
+//! Keeps failure paths and edge cases near render input validation state that explains them instead of spreading outward.
+//! Preserves deterministic behavior by keeping render input validation calculations at their owning subsystem boundary.
+//! Provides adaptation layer that lets callers reuse render input validation rules without duplicating engine decisions.
+//! Open this owner before sibling files when a regression centers on render input validation state, helpers, or rules.
+//! Works with neighboring render owners while keeping the main render input validation responsibility anchored in one file.
 
 use crate::math::Vec2;
 use crate::render::renderer::{

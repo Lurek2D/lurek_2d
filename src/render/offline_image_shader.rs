@@ -1,8 +1,10 @@
-//! Runs target-aware WGSL image shaders against `ImageData` through a temporary headless wgpu device.
-//! Keeps offline bitmap processing inside the render subsystem so image and Lua APIs never own `wgpu`.
-//! Uploads source RGBA bytes, renders a fullscreen pass into an offscreen RGBA8 texture, and reads pixels back.
-//! Uses the same fullscreen wrapper contract as post-processing shaders, preserving target validation semantics.
-//! Open this file when `ImageData:applyShader` or `lurek.image.requestShader` output differs from WGSL intent.
+//! Owns the render offline image shader implementation for the render subsystem and keeps related runtime rules local here.
+//! Keeps draw commands, GPU resources, and render-pass configuration so helpers stay close to invariants this file updates.
+//! Defines how render offline image shader data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates render offline image shader behavior from Lua bindings, tests, and sibling owners so integration readable.
+//! Documents the boundary where render code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing render offline image shader defaults, lifecycle handling, validation, or data rules.
+//! Keeps failure paths and edge cases near render offline image shader state that explains them instead of outward.
 
 use std::sync::mpsc;
 

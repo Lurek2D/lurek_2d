@@ -16,13 +16,13 @@ use crate::raycaster::sprite_manager::SpriteManager;
 use crate::raycaster::SceneAdapterModel;
 use crate::raycaster::{
     compute_lighting, distance_shade, DirectionalSpriteTextures, DoorDirection, DoorManager,
-    DoorState, EntityPickResult, HeightMap, LevelSprite, ModelMesh, MultiLevelGrid, PickResult,
-    PickAttrSurface, PickSurface, PointLight, RayHit, Raycaster2D, RaycasterBackground, RaycasterBuildStats,
-    RaycasterLastBuildContext, RaycasterLevel, RaycasterLimits, RaycasterMaterial,
-    RaycasterMaterialFrameLayout, RaycasterOverlayEffect, RaycasterParticleEmitter,
-    RaycasterPickWorld, RaycasterScene, SceneAdapter,
-    SceneAdapterLight, SceneAdapterSprite, SceneBuildParams, SceneTransform, ScreenPickParams,
-    WallFeature, WallFeatureKind, WorldSprite,
+    DoorState, EntityPickResult, HeightMap, LevelSprite, ModelMesh, MultiLevelGrid,
+    PickAttrSurface, PickResult, PickSurface, PointLight, RayHit, Raycaster2D, RaycasterBackground,
+    RaycasterBuildStats, RaycasterLastBuildContext, RaycasterLevel, RaycasterLimits,
+    RaycasterMaterial, RaycasterMaterialFrameLayout, RaycasterOverlayEffect,
+    RaycasterParticleEmitter, RaycasterPickWorld, RaycasterScene, SceneAdapter, SceneAdapterLight,
+    SceneAdapterSprite, SceneBuildParams, SceneTransform, ScreenPickParams, WallFeature,
+    WallFeatureKind, WorldSprite,
 };
 #[cfg(feature = "obj-loader")]
 use crate::render::obj_loader::Vec3;
@@ -3063,10 +3063,8 @@ impl LuaUserData for LuaRaycaster {
         methods.add_method_mut(
             "setPickAttr",
             |_, this, (x, y, surface, key, value): (u32, u32, String, String, String)| {
-                let surface = parse_pick_attr_surface(
-                    &surface,
-                    "lurek.raycaster.LRaycaster:setPickAttr",
-                )?;
+                let surface =
+                    parse_pick_attr_surface(&surface, "lurek.raycaster.LRaycaster:setPickAttr")?;
                 this.inner.set_pick_attr(x, y, surface, key, value);
                 Ok(())
             },
@@ -3076,10 +3074,8 @@ impl LuaUserData for LuaRaycaster {
         methods.add_method(
             "getPickAttr",
             |_, this, (x, y, surface, key): (u32, u32, String, String)| {
-                let surface = parse_pick_attr_surface(
-                    &surface,
-                    "lurek.raycaster.LRaycaster:getPickAttr",
-                )?;
+                let surface =
+                    parse_pick_attr_surface(&surface, "lurek.raycaster.LRaycaster:getPickAttr")?;
                 Ok(this
                     .inner
                     .get_pick_attr(x, y, surface, &key)
@@ -3091,10 +3087,8 @@ impl LuaUserData for LuaRaycaster {
         methods.add_method_mut(
             "clearPickAttr",
             |_, this, (x, y, surface, key): (u32, u32, String, Option<String>)| {
-                let surface = parse_pick_attr_surface(
-                    &surface,
-                    "lurek.raycaster.LRaycaster:clearPickAttr",
-                )?;
+                let surface =
+                    parse_pick_attr_surface(&surface, "lurek.raycaster.LRaycaster:clearPickAttr")?;
                 this.inner.clear_pick_attr(x, y, surface, key.as_deref());
                 Ok(())
             },
@@ -4578,10 +4572,8 @@ impl LuaUserData for LuaMultiLevelGrid {
                     "lurek.raycaster.LMultiLevelGrid:getPickAttr",
                 )?;
                 let grid = this.inner.borrow();
-                let level = active_multilevel_level(
-                    &grid,
-                    "lurek.raycaster.LMultiLevelGrid:getPickAttr",
-                )?;
+                let level =
+                    active_multilevel_level(&grid, "lurek.raycaster.LMultiLevelGrid:getPickAttr")?;
                 Ok(level
                     .get_pick_attr(x as usize, y as usize, surface, &key)
                     .map(str::to_string))
@@ -6587,13 +6579,12 @@ impl LuaUserData for LuaSpriteManager {
         });
         // -- clearAttr --
         /// Clears one arbitrary string attribute or all attrs from the sprite.
-        methods.add_method_mut(
-            "clearAttr",
-            |_, this, (id, key): (u32, Option<String>)| {
-                this.inner.clear_attr(id, key.as_deref());
-                Ok(())
-            },
-        );
+        /// @param | id | integer | Sprite id.
+        /// @param | key | string? | Optional attribute key; omit it to clear every stored attribute.
+        methods.add_method_mut("clearAttr", |_, this, (id, key): (u32, Option<String>)| {
+            this.inner.clear_attr(id, key.as_deref());
+            Ok(())
+        });
         // -- clear --
         /// Removes all sprites from the manager.
         methods.add_method_mut("clear", |_, this, ()| {

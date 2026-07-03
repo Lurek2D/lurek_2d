@@ -1,12 +1,14 @@
-//! Centralizes globe validation and file-load safety shared by loaders, registries, and Lua bindings.
-//! Owns numeric range checks, region topology diagnostics, sandboxed file-path resolution, and loader size limits.
-//! Keeps geometry and load-policy invariants in one place so globe callers do not drift into inconsistent error rules.
-//! Open this owner when globe specs, multipart regions, or file-loader trust boundaries need coordinated updates.
+//! Owns the globe validation implementation for the globe subsystem and keeps related runtime rules local here.
+//! Keeps globe state, province data, and world-facing render helpers so helpers stay close to invariants this file updates.
+//! Defines how globe validation data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates globe validation behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where globe code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing globe validation defaults, lifecycle handling, validation, or data ownership rules.
+//! Keeps failure paths and edge cases near globe validation state that explains them instead of spreading rules outward.
 
 use crate::globe::marker::MarkerPlacement;
 use crate::globe::types::{
-    Arc as GlobeArc, GlobeSpec, HeatLayer, Label, LabelStyle, Layer, MarkerStyle, Region,
-    RegionId,
+    Arc as GlobeArc, GlobeSpec, HeatLayer, Label, LabelStyle, Layer, MarkerStyle, Region, RegionId,
 };
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
@@ -182,13 +184,19 @@ pub fn validate_region(region: &Region, label: &str) -> Result<(), String> {
         region.centroid.1,
         &format!("{label} {} centroid", region.id),
     )?;
-    validate_rgba(region.base_color, &format!("{label} {} base_color", region.id))?;
+    validate_rgba(
+        region.base_color,
+        &format!("{label} {} base_color", region.id),
+    )?;
     if let Some(color) = region.overlay_color {
         validate_rgba(color, &format!("{label} {} overlay_color", region.id))?;
     }
     if let Some([u0, v0, u1, v1]) = region.texture_uv_rect {
         for (value, axis) in [(u0, "u0"), (v0, "v0"), (u1, "u1"), (v1, "v1")] {
-            validate_finite(value, &format!("{label} {} texture_uv_rect {axis}", region.id))?;
+            validate_finite(
+                value,
+                &format!("{label} {} texture_uv_rect {axis}", region.id),
+            )?;
             if !(0.0..=1.0).contains(&value) {
                 return Err(format!(
                     "{label} {} texture_uv_rect {axis} must be in 0..1",
@@ -236,7 +244,10 @@ pub fn validate_region_set(regions: &[Region], label: &str) -> Result<(), String
     for region in regions {
         validate_region(region, label)?;
         if by_id.insert(region.id, region).is_some() {
-            return Err(format!("{label} contains duplicate region id {}", region.id));
+            return Err(format!(
+                "{label} contains duplicate region id {}",
+                region.id
+            ));
         }
     }
     for region in regions {
@@ -288,10 +299,7 @@ pub fn validate_marker_style(style: &MarkerStyle, label: &str) -> Result<(), Str
     if style.pulse_hz < 0.0 {
         return Err(format!("{label} pulse_hz must be >= 0"));
     }
-    validate_finite(
-        style.pulse_amplitude,
-        &format!("{label} pulse_amplitude"),
-    )?;
+    validate_finite(style.pulse_amplitude, &format!("{label} pulse_amplitude"))?;
     if !(0.0..=1.0).contains(&style.pulse_amplitude) {
         return Err(format!("{label} pulse_amplitude must be in 0..1"));
     }

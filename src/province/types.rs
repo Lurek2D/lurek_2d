@@ -1,8 +1,10 @@
-//! Defines shared province value types used across registry, rendering, routing, and import code paths together.
-//! Owns identifiers, border configuration structs, style payloads, and lightweight province snapshot structures.
-//! Provides the data contract boundary for province styling and border-pair semantics that many files depend on.
-//! This file is the right owner for shape-independent province schema changes that should stay reusable everywhere.
-//! Neighboring work often touches registry mutation APIs, renderer color logic, and border indexing expectations.
+//! Owns the province types implementation for the province subsystem and keeps related runtime rules local here.
+//! Keeps province data, render helpers, and map-facing transforms so helpers stay close to invariants this file updates.
+//! Defines how province types data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates province types behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where province code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing province types defaults, lifecycle handling, validation, or data ownership rules.
+//! Keeps failure paths and edge cases near the province types state that explains them instead of spreading rules outward.
 
 use std::collections::HashMap;
 

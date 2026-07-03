@@ -1,9 +1,11 @@
-//! Exports the retained UI subsystem surface that combines widgets, containers, context, render, and theming.
-//! Acts as the index for UI ownership so callers can see where tree state, controls, layout, and draw logic live.
-//! Centralizes module visibility and re-exports instead of storing live widget state or performing UI updates.
-//! Connects code-built and data-driven UI flows by exposing the owners used by both runtime screens and tools.
-//! Open this file first when adding or removing a UI owner or when public UI re-export policy needs to change.
-//! Use it to map a UI concern to its concrete Rust file before editing control, context, or render behavior.
+//! This module re-exports UI surface for `containers.rs`, `context.rs`, `controls.rs`, and `diagnostics.rs` and helpers.
+//! It keeps navigation explicit by showing which sibling files own state, validation, transport, or render behavior.
+//! Public exports here route callers toward `containers.rs`, `context.rs`, and `controls.rs` first, while deeper owners.
+//! Open this file when the public UI symbol map moves; edit siblings when runtime rules themselves change.
+//! This index exists to organize entrypoints, not to absorb the state, caches, or algorithms its children own.
+//! Use neighboring owners for behavioral fixes, and keep this file limited to exports, docs, and navigation.
+//! Reexports here help agents find right module quickly when changes touch `containers.rs`, `context.rs`, subsystem.
+//! Keep concrete logic in `containers.rs`, `context.rs`, and `controls.rs` so symbol lookup stays shallow.
 
 /// Container widgets: panels, docks, scroll areas, split views.
 pub mod containers;

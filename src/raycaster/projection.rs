@@ -1,6 +1,7 @@
-//! Owns wall-column projection math and distance-based shading for the raycaster renderer.
-//! Converts corrected ray distances into screen-space wall heights and brightness multipliers.
-//! Open this file when wall projection math changes; hit records and sprite payloads live in sibling files.
+//! Owns the raycaster projection implementation for the raycaster subsystem and keeps related runtime rules local here.
+//! Keeps ray hits, scene data, and first-person render helpers so helpers stay close to invariants this file updates.
+//! Defines how raycaster projection data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates raycaster projection behavior from Lua bindings, tests, and sibling owners so integration stays readable.
 
 use super::contract::{ProjectionParams, RaycasterError, RaycasterLimits};
 

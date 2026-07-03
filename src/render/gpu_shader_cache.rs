@@ -1,9 +1,11 @@
-//! Owns the gpu shader cache owner for the render subsystem and keeps its rules local to this file.
-//! Keeps render data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
-//! Defines how gpu shader cache data is validated, transformed, or stored before neighboring systems use it.
-//! Owns render behavior with explicit state, validation, and crate-local integration boundaries.
-//! Keeps public crate helpers focused on gpu shader cache behavior while Lua registration stays elsewhere.
-//! Documents the boundary where render code accepts inputs, reports errors, or updates state.
+//! Owns the render GPU shader cache implementation for the render subsystem and keeps related runtime rules local here.
+//! Keeps draw commands, GPU resources, and render-pass configuration so helpers stay close to invariants this file updates.
+//! Defines how render GPU shader cache data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates render GPU shader cache behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where render code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing render GPU shader cache defaults, lifecycle handling, validation, or data ownership rules.
+//! Keeps failure paths and edge cases near render GPU shader cache state that explains them instead of spreading outward.
+//! Preserves deterministic behavior by keeping render GPU shader cache calculations at their owning subsystem boundary.
 
 use std::collections::HashMap;
 

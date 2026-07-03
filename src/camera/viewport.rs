@@ -1,8 +1,9 @@
-//! `src/camera/viewport.rs` owns viewport scaling policies that map fixed game space into variable window dimensions.
-//! It defines `ScaleMode` and `Viewport`, keeping scaling mode selection, offsets, and coordinate remapping together.
-//! Letterbox, stretch, and pixel-perfect transform computation all live here, separate from camera transform state.
-//! Resize handling plus game-to-screen and screen-to-game conversion helpers are implemented directly in this file.
-//! Read it when scale-mode policy or viewport transform behavior for resized windows needs to change.
+//! Owns the camera viewport implementation for the camera subsystem and keeps related runtime rules local here.
+//! Keeps camera transforms, view state, and viewport rules ownership so helpers stay close to invariants this file updates.
+//! Defines how camera viewport data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates camera viewport behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where camera code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing camera viewport defaults, lifecycle handling, validation, or data ownership rules.
 
 #[derive(Debug, Clone, PartialEq)]
 /// Selects how the game surface scales into a window surface.

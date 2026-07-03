@@ -1,7 +1,11 @@
-//! Owns authored flow-field definitions, validation, and deterministic sampling for the physics subsystem.
-//! It keeps geometry math, medium/application metadata, and overlap contribution data outside the main world step owner.
-//! The file samples vector fields only; body iteration, Rapier mutation, and Lua registration live in neighboring physics files.
-//! Use this file when stream geometry or combination semantics change; world storage and debug drawing stay elsewhere.
+//! Owns the physics flow implementation for the physics subsystem and keeps related runtime rules local here.
+//! Keeps body state, simulation helpers, and authored world contracts so helpers stay close to invariants this updates.
+//! Defines how physics flow data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates physics flow behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where physics code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing physics flow defaults, lifecycle handling, validation, or data ownership rules.
+//! Keeps failure paths and edge cases near the physics flow state that explains them instead of spreading rules outward.
+//! Preserves deterministic behavior by keeping physics flow calculations explicit at their owning subsystem boundary.
 
 use super::error::PhysicsError;
 use super::limits::{validate_finite, validate_positive};

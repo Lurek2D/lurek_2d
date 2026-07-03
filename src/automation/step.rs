@@ -1,8 +1,9 @@
-//! `src/automation/step.rs` owns the typed action enum and step record that describe timed automation inputs and checks.
-//! It defines `Action` and `Step`, keeping parseable action names and optional per-step payload fields under one owner.
-//! Keyboard, mouse, wheel, text, touch, gamepad, combo, wait, macro, assert, and visual-assert categories are declared here.
-//! Read this file when action vocabulary, step fields, or scancode fallback behavior for automation content changes.
-//! This file is the schema boundary for automation scripts, while parsing and playback behavior stay in sibling modules.
+//! Owns the automation step implementation for the automation subsystem and keeps related runtime rules local here.
+//! Keeps automation steps, script state, and orchestration ownership so helpers stay close to invariants this file updates.
+//! Defines how automation step data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates automation step behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where automation code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing automation step defaults, lifecycle handling, validation, or data ownership rules.
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 /// Input event kind dispatched by a `Step` during automation playback.

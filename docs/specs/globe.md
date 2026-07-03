@@ -56,21 +56,24 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 
 ### composition.rs
 
-- Composes several named globe views into one render batch by overriding each globe camera's screen center.
-- Owns SplitViewport and the frame assembly loop that clones camera pivots and reuses normal globe frame emission.
-- Provides the layout boundary between GlobeRegistry state and split-screen style globe presentation workflows.
+- Owns the globe composition implementation for the globe subsystem and keeps related runtime rules local here.
+- Keeps globe state, province data, and world-facing render helpers so helpers stay close to invariants this file updates.
+- Defines how globe composition data is validated, transformed, or stored before neighboring systems consume it.
+- Separates globe composition behavior from Lua bindings, tests, and sibling owners so integration stays readable.
 
 ### draw.rs
 
-- Generates the full globe render command stream from topology, camera, overlays, fog, markers, labels, and arcs.
-- Owns the projected-region draw policy that blends lighting, atmosphere, borders, heat layers, textures, and fog.
-- Projects region geometry and arcs through the current orbit camera so every primitive shares one spatial frame.
-- Also renders markers and labels with LOD checks, pulse effects, and optional icon textures for strategic views.
-- Provides the presentation boundary between globe state stores and the generic renderer command vocabulary.
-- This file is where thematic overlays, marker glyphs, night shading, and atmospheric effects are coordinated.
-- Neighboring changes usually involve projection math, fog semantics, resource keys, and region style contracts.
-- Open this owner when the globe looks wrong even though source data is correct and available to the renderer.
-- It is the right file for draw ordering bugs because no sibling module owns the final command assembly pipeline.
+- Owns the globe draw implementation for the globe subsystem and keeps related runtime rules local here.
+- Keeps globe state, province data, and world-facing render helpers so helpers stay close to invariants this file updates.
+- Defines how globe draw data is validated, transformed, or stored before neighboring systems consume it.
+- Separates globe draw behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where globe code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing globe draw defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near the globe draw state that explains them instead of spreading rules outward.
+- Preserves deterministic behavior by keeping globe draw calculations explicit at their owning subsystem boundary.
+- Provides the local adaptation layer that lets callers reuse globe draw rules without duplicating engine decisions.
+- Open this owner before sibling files when a regression centers on globe draw state, helpers, or integration rules.
+- Works with neighboring globe owners while keeping the main globe draw responsibility anchored in one file.
 
 ### export.rs
 
@@ -101,10 +104,11 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 
 ### layer.rs
 
-- Stores named globe overlay layers that apply ordered region color overrides on top of each region's base style.
-- Owns layer insertion, removal, visibility, alpha, region-color mutation, and z-order sorted resolution helpers.
-- Provides the overlay state boundary between gameplay thematic maps and draw code that asks for effective colors.
-- Open this owner when layer stacking, alpha policy, or region color override semantics need to be revised.
+- Owns the globe layer implementation for the globe subsystem and keeps related runtime rules local here.
+- Keeps globe state, province data, and world-facing render helpers so helpers stay close to invariants this file updates.
+- Defines how globe layer data is validated, transformed, or stored before neighboring systems consume it.
+- Separates globe layer behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where globe code accepts inputs, reports errors, allocates state, or emits outputs.
 
 ### lighting.rs
 
@@ -126,11 +130,12 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 
 ### marker.rs
 
-- Stores globe markers with stable ids so pins and point annotations can be added, moved, filtered, and rendered.
-- Owns marker lookup, visibility, arbitrary string attrs, and typed grouping by marker classification name.
-- Provides the state boundary between gameplay marker semantics and draw or picking code that consumes marker data.
-- Keeps iteration and id assignment deterministic so UI, render, and sync systems see stable marker identity.
-- Open this owner when marker lifecycle, filtering, or per-marker metadata behavior needs adjustment.
+- Owns the globe marker implementation for the globe subsystem and keeps related runtime rules local here.
+- Keeps globe state, province data, and world-facing render helpers so helpers stay close to invariants this file updates.
+- Defines how globe marker data is validated, transformed, or stored before neighboring systems consume it.
+- Separates globe marker behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where globe code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing globe marker defaults, lifecycle handling, validation, or data ownership rules.
 
 ### mod.rs
 
@@ -145,18 +150,20 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 
 ### orbit.rs
 
-- Stores named globe orbit shells with deterministic ordering for render, picking, and marker placement.
-- Owns shell insertion, updates, visibility, attrs, and the special always-present surface shell contract.
-- Provides the state boundary between Lua-facing orbit configuration and the projection or draw code that consumes it.
-- This file matters when shell ordering, pickability, or orbit metadata drift out of sync across globe features.
+- Owns the globe orbit implementation for the globe subsystem and keeps related runtime rules local here.
+- Keeps globe state, province data, and world-facing render helpers so helpers stay close to invariants this file updates.
+- Defines how globe orbit data is validated, transformed, or stored before neighboring systems consume it.
+- Separates globe orbit behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where globe code accepts inputs, reports errors, allocates state, or emits outputs.
 
 ### picking.rs
 
-- Turns screen-space globe clicks into front-hemisphere surface hits and region selections under the active camera.
-- Owns hit payload types, geographic point-in-polygon tests, screen-to-surface conversion, and depth-based picking.
-- Provides the interaction boundary between projection math and higher-level UI or gameplay selection workflows.
-- Also resolves centroid screen positions for picked regions, keeping interaction outputs close to hit computation.
-- Open this owner when picking misses, hit ordering, or geo containment logic stops matching visible globe regions.
+- Owns the globe picking implementation for the globe subsystem and keeps related runtime rules local here.
+- Keeps globe state, province data, and world-facing render helpers so helpers stay close to invariants this file updates.
+- Defines how globe picking data is validated, transformed, or stored before neighboring systems consume it.
+- Separates globe picking behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where globe code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing globe picking defaults, lifecycle handling, validation, or data ownership rules.
 
 ### projection.rs
 
@@ -175,13 +182,17 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 
 ### registry.rs
 
-- Owns the mutable globe runtime state that aggregates topology, semantic regions, fog, overlays, camera, and arcs.
-- Stores markers, labels, layers, heat layers, sectors, viewer selection, and reachability cache beside globe spec.
-- Provides mutation and lookup APIs for regions and provinces, plus picking, dragging, marker queries, and frame emit.
-- Acts as the integration boundary where projection, picking, draw emission, and gameplay-facing globe state meet.
-- Also advances simulation time and auto-rotation, keeping temporal globe behavior close to the authoritative store.
-- This file matters when globe state semantics, sector grouping, or cached reachability rules need coordinated edits.
-- Open this owner when multiple globe features drift together, because it is the main state hub for the subsystem.
+- Owns the globe registry implementation for the globe subsystem and keeps related runtime rules local here.
+- Keeps globe state, province data, and world-facing render helpers so helpers stay close to invariants this file updates.
+- Defines how globe registry data is validated, transformed, or stored before neighboring systems consume it.
+- Separates globe registry behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where globe code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing globe registry defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near the globe registry state that explains them instead of spreading rules outward.
+- Preserves deterministic behavior by keeping globe registry calculations explicit at their owning subsystem boundary.
+- Provides the local adaptation layer that lets callers reuse globe registry rules without duplicating engine decisions.
+- Open this owner before sibling files when a regression centers on globe registry state, helpers, or integration rules.
+- Works with neighboring globe owners while keeping the main globe registry responsibility anchored in one file.
 
 ### sphere.rs
 
@@ -201,30 +212,35 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 
 ### topology.rs
 
-- Owns the region topology graph that stores regions, cached neighbors, centroids, and tagged region border edges.
-- Provides insert, remove, mutation, and cache rebuild flows so topology lookups stay coherent after region edits.
-- Delegates route and reachability queries to graph pathfinding while translating results back to RegionId.
-- Acts as the structural boundary between region geometry records and graph-style traversal used by globe gameplay.
-- Also exposes region attrs and edge tags, keeping topology metadata near the adjacency data it qualifies.
-- Open this owner when connectivity, border tags, or region path queries change without altering render policy.
+- Owns the globe topology implementation for the globe subsystem and keeps related runtime rules local here.
+- Keeps globe state, province data, and world-facing render helpers so helpers stay close to invariants this file updates.
+- Defines how globe topology data is validated, transformed, or stored before neighboring systems consume it.
+- Separates globe topology behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where globe code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing globe topology defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near the globe topology state that explains them instead of spreading rules outward.
 
 ### types.rs
 
-- Defines the shared globe data model for regions, overlays, markers, labels, arcs, specs, and projected outputs.
-- Owns stable identifiers, multipart geographic geometry, edge tags, base styling, and screen-space result types.
-- Encodes the parameters that drive rotation, lighting, atmosphere, borders, and thematic overlay composition.
-- Provides the schema boundary that every globe owner depends on, from loaders and registries to draw and picking.
-- Also models fog state, label and marker styles, heat layers, and level-of-detail tiers used across rendering.
-- This file matters when globe shape data, overlay contracts, or style fields need to stay reusable everywhere.
-- Neighboring edits usually involve loader parsing, projection outputs, registry state, and draw-time expectations.
-- Open this owner for shape-independent globe schema changes before touching behavior-specific sibling modules.
+- Owns the globe types implementation for the globe subsystem and keeps related runtime rules local here.
+- Keeps globe state, province data, and world-facing render helpers so helpers stay close to invariants this file updates.
+- Defines how globe types data is validated, transformed, or stored before neighboring systems consume it.
+- Separates globe types behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where globe code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing globe types defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near the globe types state that explains them instead of spreading rules outward.
+- Preserves deterministic behavior by keeping globe types calculations explicit at their owning subsystem boundary.
+- Provides the local adaptation layer that lets callers reuse globe types rules without duplicating engine decisions.
 
 ### validation.rs
 
-- Centralizes globe validation and file-load safety shared by loaders, registries, and Lua bindings.
-- Owns numeric range checks, region topology diagnostics, sandboxed file-path resolution, and loader size limits.
-- Keeps geometry and load-policy invariants in one place so globe callers do not drift into inconsistent error rules.
-- Open this owner when globe specs, multipart regions, or file-loader trust boundaries need coordinated updates.
+- Owns the globe validation implementation for the globe subsystem and keeps related runtime rules local here.
+- Keeps globe state, province data, and world-facing render helpers so helpers stay close to invariants this file updates.
+- Defines how globe validation data is validated, transformed, or stored before neighboring systems consume it.
+- Separates globe validation behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where globe code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing globe validation defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near globe validation state that explains them instead of spreading rules outward.
 
 
 

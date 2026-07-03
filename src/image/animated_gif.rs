@@ -1,8 +1,9 @@
-//! Encodes a sequence of RGBA frames into animated GIF output and owns the save path used by image exports.
-//! Defines repeat and timing options that validate frame delays and playback speed before bytes are emitted.
-//! Builds per-frame palette data from ImageData snapshots so tooling can export simple preview animations.
-//! Handles quantization and encoder setup in one owner instead of spreading GIF policy across render code.
-//! Open this file when looping policy, frame timing, or GIF export failures affect generated image sequences.
+//! Owns the image animated gif implementation for the image subsystem and keeps related runtime rules local here.
+//! Keeps image data, encoded assets, and effect helpers ownership so helpers stay close to invariants this file updates.
+//! Defines how image animated gif data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates image animated gif behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where image code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing image animated gif defaults, lifecycle handling, validation, or data ownership rules.
 
 use crate::image::ImageData;
 use ::gif::{ColorOutput, DecodeOptions, Encoder, Frame, Repeat};

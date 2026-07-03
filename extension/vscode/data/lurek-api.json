@@ -1,6 +1,6 @@
 {
   "version": "auto-generated",
-  "generated": "2026-07-02",
+  "generated": "2026-07-03",
   "modules": [
     {
       "name": "agent",
@@ -30224,7 +30224,7 @@
     },
     {
       "name": "tileset",
-      "description": "Registers the `lurek.tileset` Lua API, keeping Lua-table conversion at the binding edge.",
+      "description": "Registers lurek.tileset bindings, validates Lua inputs, converts engine values, and exposes userdata callbacks.",
       "functions": [
         {
           "name": "newTileSet",
@@ -147328,14 +147328,14 @@
           "parameters": [
             {
               "name": "id",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Sprite id.",
               "optional": false
             },
             {
               "name": "key",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Optional attribute key; omit it to clear every stored attribute.",
               "optional": true
             }
           ],

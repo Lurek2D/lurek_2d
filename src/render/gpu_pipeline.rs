@@ -1,11 +1,13 @@
-//! Builds and caches wgpu render pipelines so repeated material and geometry combinations compile only once.
-//! Keys pipelines by geometry kind, blend state, stencil mode, and custom shader selection inputs.
-//! Chooses built-in shader paths when callers do not supply overrides, keeping fallback behavior centralized.
-//! Generates helper WGSL fragments and uniform declarations needed by custom color and texture pipelines.
-//! Standardizes alpha, additive, multiplicative, and replace blend policies for the whole render subsystem.
-//! Configures depth and stencil state mapping so pipeline creation reflects the front-end render command model.
-//! Acts as the pipeline-construction boundary rather than the owner of per-frame draw traversal.
-//! Open this file when render state caching, blend mapping, or custom shader pipeline assembly is incorrect.
+//! Owns the render GPU pipeline implementation for the render subsystem and keeps related runtime rules local here.
+//! Keeps draw commands, GPU resources, and render-pass configuration so helpers stay close to invariants this file updates.
+//! Defines how render GPU pipeline data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates render GPU pipeline behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where render code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing render GPU pipeline defaults, lifecycle handling, validation, or data ownership rules.
+//! Keeps failure paths and edge cases near render GPU pipeline state that explains them instead of spreading rules outward.
+//! Preserves deterministic behavior by keeping render GPU pipeline calculations at their owning subsystem boundary.
+//! Provides local adaptation layer that lets callers reuse render GPU pipeline rules without duplicating engine decisions.
+//! Open this owner before sibling files when a regression centers on render GPU pipeline state, helpers, or rules.
 
 use crate::render::gpu_shaders::ShaderUniformKind;
 use crate::render::gpu_tess::color_write_mask_from_bits;

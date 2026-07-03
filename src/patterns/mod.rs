@@ -1,12 +1,11 @@
-//! This module is the patterns index, exposing coordination, selection, history, and reuse primitives for engine code.
-//! It exports behavior trees, state machines, observers, event buses, mediators, factories, and service discovery tools.
-//! It also exports support structures such as graphs, tries, rings, weighted picks, priority queues, and object pools.
-//! `mod.rs` owns visibility and reexport boundaries, not runtime state, so feature ownership stays in sibling files.
-//! Open this file to map which source owns undo history, typed shared state, cadence control, or batching behavior.
-//! `behavior_tree.rs`, `blackboard.rs`, and `state_machine.rs` cover decision and state orchestration primitives.
-//! `event_bus.rs`, `observer.rs`, `mediator.rs`, and `service_locator.rs` cover decoupled communication surfaces.
-//! `graph.rs`, `trie.rs`, `ring.rs`, and `weighted_random.rs` cover storage and selection helpers for gameplay data.
-//! `deck.rs` covers reusable deck/card ordering and draw/discard workflows for card-like game logic.
+//! This module re-exports patterns surface for `behavior_tree.rs`, `bimap.rs`, `blackboard.rs`, and helpers.
+//! It keeps navigation explicit by showing which sibling files own state, validation, transport, or render behavior.
+//! Public exports here route callers toward `behavior_tree.rs`, `bimap.rs`, and `blackboard.rs` first, while deeper owners.
+//! Open this file when the public patterns symbol map moves; edit siblings when runtime rules themselves change.
+//! This index exists to organize entrypoints, not to absorb the state, caches, or algorithms its children own.
+//! Use neighboring owners for behavioral fixes, and keep this file limited to exports, docs, and navigation.
+//! Reexports here help agents find right module quickly when changes touch `behavior_tree.rs`, `bimap.rs`, subsystem.
+//! Keep concrete logic in `behavior_tree.rs`, `bimap.rs`, and `blackboard.rs` so symbol lookup stays shallow.
 
 /// Behavior tree execution engine with composite and leaf nodes.
 pub mod behavior_tree;

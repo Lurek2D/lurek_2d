@@ -60,10 +60,9 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ### api_schema.rs
 
-- Compatibility reexports for mod schema types backed by the shared `lurek_schema` crate.
-- Keep this file as the mod-facing import boundary while docs, mods, and validator converge on one schema model.
-- These reexports preserve existing module paths so internal callers can migrate without a flag day.
-- Runtime validation logic still lives in `api_registry.rs`; this file only defines the shared contract types.
+- Owns the mods API schema implementation for the mods subsystem and keeps related runtime rules local here.
+- Keeps mod metadata, schema state, and extension-facing boundaries so helpers stay close to invariants this file updates.
+- Defines how mods API schema data is validated, transformed, or stored before neighboring systems consume it.
 
 ### mod.rs
 

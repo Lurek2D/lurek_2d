@@ -1,10 +1,9 @@
-//! This module is the ECS index, re-exporting entity ids, world storage, relationships, and Lua table helpers.
-//! It is the navigation point for identity packing, query caching, hierarchy state, and component row ownership.
-//! `universe.rs` owns live entities, components, tags, layers, blueprints, systems, and directed relation helpers.
-//! `relationships.rs` owns typed pair records and named links, while `query_view.rs` caches component-set lookups.
-//! `object_model.rs` owns class metadata and object id bookkeeping for Lua-facing ECS objects.
-//! `types.rs`, `generational_id.rs`, and `lua_table.rs` provide handles, id packing, and recursive table cloning.
-//! Change this file when public ECS exports move; change siblings when storage rules or query semantics change.
+//! This module re-exports ecs surface for `generational_id.rs`, `lua_table.rs`, `object_model.rs`, and helpers.
+//! It keeps navigation explicit by showing which sibling files own state, validation, transport, or render behavior.
+//! Public exports here route callers toward `generational_id.rs`, `lua_table.rs`, and `object_model.rs` first, owners.
+//! Open this file when the public ecs symbol map moves; edit siblings when runtime rules themselves change.
+//! This index exists to organize entrypoints, not to absorb the state, caches, or algorithms its children own.
+//! Use neighboring owners for behavioral fixes, and keep this file limited to exports, docs, and navigation.
 
 /// Entity id packing and unpacking helpers.
 pub mod generational_id;

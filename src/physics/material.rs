@@ -1,7 +1,8 @@
-//! Owns the reusable physics material model shared by body defaults, fixture overrides, and Lua table conversions.
-//! Keeps solver-backed fields and gameplay metadata in one value type so validation and storage stay consistent.
-//! Defines the first-pass material contract without forcing a global registry or callback-driven gameplay hooks yet.
-//! Open this file when changing material defaults, validation ranges, or which properties are considered body-only.
+//! Owns the physics material implementation for the physics subsystem and keeps related runtime rules local here.
+//! Keeps body state, simulation helpers, and authored world contracts so helpers stay close to invariants this updates.
+//! Defines how physics material data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates physics material behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where physics code accepts inputs, reports errors, allocates state, or emits outputs.
 
 use super::error::PhysicsError;
 use super::limits::{validate_finite, validate_positive, validate_range};

@@ -1,10 +1,14 @@
-//! Owns the mutable globe runtime state that aggregates topology, semantic regions, fog, overlays, camera, and arcs.
-//! Stores markers, labels, layers, heat layers, sectors, viewer selection, and reachability cache beside globe spec.
-//! Provides mutation and lookup APIs for regions and provinces, plus picking, dragging, marker queries, and frame emit.
-//! Acts as the integration boundary where projection, picking, draw emission, and gameplay-facing globe state meet.
-//! Also advances simulation time and auto-rotation, keeping temporal globe behavior close to the authoritative store.
-//! This file matters when globe state semantics, sector grouping, or cached reachability rules need coordinated edits.
-//! Open this owner when multiple globe features drift together, because it is the main state hub for the subsystem.
+//! Owns the globe registry implementation for the globe subsystem and keeps related runtime rules local here.
+//! Keeps globe state, province data, and world-facing render helpers so helpers stay close to invariants this file updates.
+//! Defines how globe registry data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates globe registry behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where globe code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing globe registry defaults, lifecycle handling, validation, or data ownership rules.
+//! Keeps failure paths and edge cases near the globe registry state that explains them instead of spreading rules outward.
+//! Preserves deterministic behavior by keeping globe registry calculations explicit at their owning subsystem boundary.
+//! Provides the local adaptation layer that lets callers reuse globe registry rules without duplicating engine decisions.
+//! Open this owner before sibling files when a regression centers on globe registry state, helpers, or integration rules.
+//! Works with neighboring globe owners while keeping the main globe registry responsibility anchored in one file.
 
 use crate::globe::draw::emit_globe_frame_with_stats;
 use crate::globe::fog::FogStore;

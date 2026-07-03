@@ -1,8 +1,9 @@
-//! Builds a province-pair lookup from the ownership grid so render and gameplay systems can query shared borders quickly.
-//! Owns ProvinceBorderIndex storage, pair-id assignment, and the dilation pass that widens border pixels by style hints.
-//! Provides the boundary between raw province occupancy data and later GPU or renderer code that needs stable border IDs.
-//! This file is the right owner when border pairing, style-aware expansion, or pair lookup invariants need adjustment.
-//! Neighboring changes usually involve ProvinceGrid extraction, registry border styles, and GPU bridge packing formats.
+//! Owns the province border index implementation for the province subsystem and keeps related runtime rules local here.
+//! Keeps province data, render helpers, and map-facing transforms so helpers stay close to invariants this file updates.
+//! Defines how province border index data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates province border index behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where province code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing province border index defaults, lifecycle handling, validation, or data ownership rules.
 
 use crate::province::registry::ProvinceRegistry;
 use crate::province::types::{BorderPairStyle, ProvinceId};

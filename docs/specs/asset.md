@@ -41,13 +41,14 @@ This module is mostly self-contained inside the `Feature Systems` group. Cross-m
 
 ### cache.rs
 
-- `src/asset/cache.rs` owns ref-counted asset bookkeeping, including registration, lookup, tagging, and eviction.
-- It defines `AssetType`, `AssetEntry`, and `AssetCache`, keeping asset identity and lifecycle under one owner.
-- Normalized path keys live here so repeated registrations of the same typed asset resolve to one shared cache entry.
-- Reference increments, decrements, and zero-count removal are handled here, keeping lifetime behavior explicit.
-- Search helpers for names, groups, tags, and types also live here, giving tools and runtime systems one query surface.
-- Text-like assets may retain source content in memory here, while binary assets keep only path and metadata references.
-- Open this file when asset identity, retention policy, cache queries, or metadata semantics need engine-wide changes.
+- Owns the asset cache implementation for the asset subsystem and keeps related runtime rules local here.
+- Keeps asset caches, loading state, and lookup helpers ownership so helpers stay close to invariants this file updates.
+- Defines how asset cache data is validated, transformed, or stored before neighboring systems consume it.
+- Separates asset cache behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where asset code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing asset cache defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near the asset cache state that explains them instead of spreading rules outward.
+- Preserves deterministic behavior by keeping asset cache calculations explicit at their owning subsystem boundary.
 
 ### mod.rs
 

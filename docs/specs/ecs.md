@@ -67,21 +67,20 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ### mod.rs
 
-- This module is the ECS index, re-exporting entity ids, world storage, relationships, and Lua table helpers.
-- It is the navigation point for identity packing, query caching, hierarchy state, and component row ownership.
-- `universe.rs` owns live entities, components, tags, layers, blueprints, systems, and directed relation helpers.
-- `relationships.rs` owns typed pair records and named links, while `query_view.rs` caches component-set lookups.
-- `object_model.rs` owns class metadata and object id bookkeeping for Lua-facing ECS objects.
-- `types.rs`, `generational_id.rs`, and `lua_table.rs` provide handles, id packing, and recursive table cloning.
-- Change this file when public ECS exports move; change siblings when storage rules or query semantics change.
+- This module re-exports ecs surface for `generational_id.rs`, `lua_table.rs`, `object_model.rs`, and helpers.
+- It keeps navigation explicit by showing which sibling files own state, validation, transport, or render behavior.
+- Public exports here route callers toward `generational_id.rs`, `lua_table.rs`, and `object_model.rs` first, owners.
+- Open this file when the public ecs symbol map moves; edit siblings when runtime rules themselves change.
+- This index exists to organize entrypoints, not to absorb the state, caches, or algorithms its children own.
+- Use neighboring owners for behavioral fixes, and keep this file limited to exports, docs, and navigation.
 
 ### object_model.rs
 
-- This file owns ECS class metadata, inheritance linearization, and object id bookkeeping.
-- It is the Rust-side policy layer for Lua-facing class definitions and object registry state.
-- Lua registry handles and metatable assembly stay in `src/lua_api/ecs_api.rs`; this file keeps
-- class names, parent order, tags, object ids, and validation rules independent from mlua.
-- Open it when ECS object model naming, inheritance precedence, or registry cleanup changes.
+- Owns the ecs object model implementation for the ecs subsystem and keeps related runtime rules local here.
+- Keeps entity state, object models, and graph boundaries ownership so helpers stay close to invariants this file updates.
+- Defines how ecs object model data is validated, transformed, or stored before neighboring systems consume it.
+- Separates ecs object model behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where ecs code accepts inputs, reports errors, allocates state, or emits outputs.
 
 ### query_view.rs
 

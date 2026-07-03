@@ -57,23 +57,64 @@ This module primarily collaborates with `event`, `filesystem`, `image`, `input`,
 
 ## Source Files
 
+### app/gamepad.rs
+
+- Owns the app app gamepad implementation for the app subsystem and keeps related runtime rules local here.
+- Keeps application state, orchestration, and window actions so helpers stay close to invariants this file updates.
+- Defines how app app gamepad data is validated, transformed, or stored before neighboring systems consume it.
+- Separates app app gamepad behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where app code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing app app gamepad defaults, lifecycle handling, validation, or data ownership rules.
+
+### app/main_loop.rs
+
+- Owns the app app main loop implementation for the app subsystem and keeps related runtime rules local here.
+- Keeps application state, orchestration, and window actions so helpers stay close to invariants this file updates.
+- Defines how app app main loop data is validated, transformed, or stored before neighboring systems consume it.
+- Separates app app main loop behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where app code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing app app main loop defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near app app main loop state that explains them instead of spreading rules outward.
+- Preserves deterministic behavior by keeping app app main loop calculations explicit at their owning subsystem boundary.
+- Provides local adaptation layer that lets callers reuse app app main loop rules without duplicating engine decisions.
+- Open this owner before sibling files when a regression centers on app app main loop state, helpers, or rules.
+- Works with neighboring app owners while keeping the main app app main loop responsibility anchored in one file.
+- Changes to app app main loop names, caches, or helper boundaries should usually stay coupled inside this owner.
+- This file is the right stop for maintainers tracing app app main loop regressions back to their concrete owner boundary.
+
+### app/runner.rs
+
+- Owns the app app runner implementation for the app subsystem and keeps related runtime rules local here.
+- Keeps application state, orchestration, and window actions so helpers stay close to invariants this file updates.
+- Defines how app app runner data is validated, transformed, or stored before neighboring systems consume it.
+- Separates app app runner behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where app code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing app app runner defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near the app app runner state that explains them instead of spreading rules outward.
+- Preserves deterministic behavior by keeping app app runner calculations explicit at their owning subsystem boundary.
+- Provides the local adaptation layer that lets callers reuse app app runner rules without duplicating engine decisions.
+
+### app/screens.rs
+
+- Owns the app app screens implementation for the app subsystem and keeps related runtime rules local here.
+- Keeps application state, orchestration, and window actions so helpers stay close to invariants this file updates.
+- Defines how app app screens data is validated, transformed, or stored before neighboring systems consume it.
+- Separates app app screens behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where app code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing app app screens defaults, lifecycle handling, validation, or data ownership rules.
+
 ### app.rs
 
-- This file owns the desktop runtime loop, from startup target selection through steady frame execution and shutdown.
-- It defines viewport helpers, splash-title utilities, startup-drop classification, and key rules for the splash screen.
-- `RunState` models running, fatal-error, and restarting modes, while `LurekApp` stores the live host-side app state.
-- That state includes window and surface handles, renderer and Lua ownership, hot-reload watchers, timing, and input.
-- GPU setup, present-mode selection, surface configuration, resize clamping, and vsync switching are centralized here.
-- Lua initialization also lives here, including VM creation, shared-state hookup, startup file loading, and callbacks.
-- Per-frame control is split across tick, update, render, splash render, and error render paths with deterministic order.
-- Window actions are deferred through local helpers so resize, focus, visibility, cursor, and fullscreen stay guarded.
-- The file owns weather-free host input routing for keyboard, mouse, text, wheel, touch, drag-drop, and window events.
-- Gamepad polling and vibration effects are handled here too, including slot assignment, naming, and feedback playback.
-- Hot reload for scripts, assets, and config files is coordinated here through watcher refresh and polling helpers.
-- Screenshot capture, auto-quit timers, perf logging, archive extraction, and restart flow are also app-level concerns.
-- The `ApplicationHandler` impl binds winit lifecycle callbacks to safe runtime operations and guarded Lua dispatch.
-- The outer `App` and `AppRunOptions` types provide bootstrap input, logger setup, and event-loop launch entrypoints.
-- Open this file when desktop host orchestration changes; splash, errors, HUD, and callback helpers live in siblings.
+- Owns the app app implementation for the app subsystem and keeps related runtime rules local here.
+- Keeps application state, orchestration, and window actions so helpers stay close to invariants this file updates.
+- Defines how app app data is validated, transformed, or stored before neighboring systems consume it.
+- Separates app app behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where app code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing app app defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near the app app state that explains them instead of spreading rules outward.
+- Preserves deterministic behavior by keeping app app calculations explicit at their owning subsystem boundary.
+- Provides the local adaptation layer that lets callers reuse app app rules without duplicating engine decisions.
+- Open this owner before sibling files when a regression centers on app app state, helpers, or integration rules.
 
 ### debug_overlay.rs
 
@@ -116,11 +157,10 @@ This module primarily collaborates with `event`, `filesystem`, `image`, `input`,
 
 ### splash_screen.rs
 
-- This file owns minimal startup render-command generation for the desktop app.
-- It keeps the no-game screen free of embedded bitmap assets so the runtime exe stays compact.
-- Layout helpers center the footer hint and switch it when drag-and-drop is hovering.
-- The file is only about splash visuals; window creation, input handling, and frame flow stay in the main app owner.
-- Open this file when startup presentation changes; runtime orchestration and fatal fallback screens live in siblings.
+- Owns the app splash screen implementation for the app subsystem and keeps related runtime rules local here.
+- Keeps application state, orchestration, and window actions so helpers stay close to invariants this file updates.
+- Defines how app splash screen data is validated, transformed, or stored before neighboring systems consume it.
+- Separates app splash screen behavior from Lua bindings, tests, and sibling owners so integration stays readable.
 
 ## Callbacks
 

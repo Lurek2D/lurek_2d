@@ -480,7 +480,9 @@ fn field_type_matches(expected: &FieldType, actual_type: &'static str) -> bool {
         FieldType::Table | FieldType::Array(_) => actual_type == "table",
         FieldType::Function => actual_type == "function",
         FieldType::Userdata(_) => actual_type == "userdata",
-        FieldType::Optional(inner) => actual_type == "nil" || field_type_matches(inner, actual_type),
+        FieldType::Optional(inner) => {
+            actual_type == "nil" || field_type_matches(inner, actual_type)
+        }
     }
 }
 

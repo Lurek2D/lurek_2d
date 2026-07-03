@@ -1,8 +1,8 @@
-//! This file owns ECS class metadata, inheritance linearization, and object id bookkeeping.
-//! It is the Rust-side policy layer for Lua-facing class definitions and object registry state.
-//! Lua registry handles and metatable assembly stay in `src/lua_api/ecs_api.rs`; this file keeps
-//! class names, parent order, tags, object ids, and validation rules independent from mlua.
-//! Open it when ECS object model naming, inheritance precedence, or registry cleanup changes.
+//! Owns the ecs object model implementation for the ecs subsystem and keeps related runtime rules local here.
+//! Keeps entity state, object models, and graph boundaries ownership so helpers stay close to invariants this file updates.
+//! Defines how ecs object model data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates ecs object model behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where ecs code accepts inputs, reports errors, allocates state, or emits outputs.
 
 use std::collections::{HashMap, HashSet};
 

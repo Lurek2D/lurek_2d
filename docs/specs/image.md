@@ -61,29 +61,33 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 
 ### animated_gif.rs
 
-- Encodes a sequence of RGBA frames into animated GIF output and owns the save path used by image exports.
-- Defines repeat and timing options that validate frame delays and playback speed before bytes are emitted.
-- Builds per-frame palette data from ImageData snapshots so tooling can export simple preview animations.
-- Handles quantization and encoder setup in one owner instead of spreading GIF policy across render code.
-- Open this file when looping policy, frame timing, or GIF export failures affect generated image sequences.
+- Owns the image animated gif implementation for the image subsystem and keeps related runtime rules local here.
+- Keeps image data, encoded assets, and effect helpers ownership so helpers stay close to invariants this file updates.
+- Defines how image animated gif data is validated, transformed, or stored before neighboring systems consume it.
+- Separates image animated gif behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where image code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing image animated gif defaults, lifecycle handling, validation, or data ownership rules.
 
 ### compressed.rs
 
-- Keeps the compressed-image API surface stable while the runtime build only accepts PNG image content.
-- Keeps compressed-image parsing separate from ordinary RGBA image loading and PNG style content workflows.
-- Open this owner when DDS rejection or compressed texture metadata behavior must change.
+- Owns the image compressed implementation for the image subsystem and keeps related runtime rules local here.
+- Keeps image data, encoded assets, and effect helpers ownership so helpers stay close to invariants this file updates.
+- Defines how image compressed data is validated, transformed, or stored before neighboring systems consume it.
+- Separates image compressed behavior from Lua bindings, tests, and sibling owners so integration stays readable.
 
 ### effects.rs
 
-- Implements the main CPU image-effects surface for color correction, transforms, filtering, and composition.
-- Applies brightness, contrast, saturation, gamma, tint, grayscale, sepia, invert, threshold, and posterize.
-- Adds deterministic RGB noise and alpha scaling so tests and tooling can reproduce visual post-processing.
-- Owns crop, region copy, horizontal flip, vertical flip, and ninety-degree rotation for image editing flows.
-- Provides nearest, bilinear, and Lanczos resize paths through ResizeFilter so callers can choose quality.
-- Runs blur, sharpen, and generic square-kernel convolution while clamping edges and preserving source alpha.
-- Blends source images with alpha-aware blit semantics and a fast opaque-copy path for large image overlays.
-- Draws nine-slice patches by extracting source regions, resizing them, and composing them into a target UI.
-- Open this file when visual output drift comes from pixel math rather than loading, storage, or GPU upload.
+- Owns the image effects implementation for the image subsystem and keeps related runtime rules local here.
+- Keeps image data, encoded assets, and effect helpers ownership so helpers stay close to invariants this file updates.
+- Defines how image effects data is validated, transformed, or stored before neighboring systems consume it.
+- Separates image effects behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Documents the boundary where image code accepts inputs, reports errors, allocates state, or emits outputs.
+- Use this file when changing image effects defaults, lifecycle handling, validation, or data ownership rules.
+- Keeps failure paths and edge cases near the image effects state that explains them instead of spreading rules outward.
+- Preserves deterministic behavior by keeping image effects calculations explicit at their owning subsystem boundary.
+- Provides the local adaptation layer that lets callers reuse image effects rules without duplicating engine decisions.
+- Open this owner before sibling files when a regression centers on image effects state, helpers, or integration rules.
+- Works with neighboring image owners while keeping the main image effects responsibility anchored in one file.
 
 ### image_data.rs
 

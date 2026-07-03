@@ -1,11 +1,11 @@
-//! This file owns the ENet host wrapper that binds one UDP socket and manages peer slots for a network endpoint.
-//! `NetworkHost` stores the inner ENet host, local address, host role, and reconnection leases for peer resumption.
-//! `HostRole`, `NetworkEvent`, `EnetLease`, and `PeerStats` live here because they describe host-owned peer lifecycle.
-//! Service, connect, send, broadcast, ping, and disconnect flows stay here because ENet peer control is this boundary.
-//! Lease registration and cleanup also belong here since reconnect tokens are indexed by peer ownership state.
-//! Bandwidth, channel, address, and connection metrics remain local because they report or tune host-level behavior.
-//! Server and client convenience constructors stay here because role assignment and binding strategy are host concerns.
-//! Open it when ENet peer ownership changes; lobbies and wire values do not.
+//! Owns the network host implementation for the network subsystem and keeps related runtime rules local here.
+//! Keeps transport state, peers, and protocol-facing helpers so helpers stay close to invariants this file updates.
+//! Defines how network host data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates network host behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where network code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing network host defaults, lifecycle handling, validation, or data ownership rules.
+//! Keeps failure paths and edge cases near the network host state that explains them instead of spreading rules outward.
+//! Preserves deterministic behavior by keeping network host calculations explicit at their owning subsystem boundary.
 
 use super::constants::{DEFAULT_CHANNELS, DEFAULT_PEERS, MAX_PEERS};
 use super::error::NetworkError;

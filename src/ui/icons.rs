@@ -1,8 +1,11 @@
-//! Owns the built-in UI icon catalog used by retained widgets, TOML layouts, and Lua helpers.
-//! The catalog maps stable semantic names to compact text glyphs so icons work without external assets.
-//! Names stay independent from the rendered glyphs, allowing a future SVG or atlas backend to reuse the same API.
-//! Widget code stores icon names, while render code resolves them here at paint time.
-//! Keep this module focused on catalog lookup and icon placement metadata, not widget state or drawing policy.
+//! Owns the UI icons implementation for the UI subsystem and keeps related runtime rules local here.
+//! Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
+//! Defines how UI icons data is validated, transformed, or stored before neighboring systems consume it.
+//! Separates UI icons behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
+//! Use this file when changing UI icons defaults, lifecycle handling, validation, or data ownership rules.
+//! Keeps failure paths and edge cases near the UI icons state that explains them instead of spreading rules outward.
+//! Preserves deterministic behavior by keeping UI icons calculations explicit at their owning subsystem boundary.
 
 /// One built-in UI icon entry.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

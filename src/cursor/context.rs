@@ -427,7 +427,8 @@ impl CursorManager {
     pub fn add_rule(&mut self, rule: ContextRule) {
         let token = format!("__legacy_ctx_{}__", rule.context.as_str());
         let rule_id = self.next_rule_id();
-        self.rules.retain(|existing| existing.state.as_deref() != Some(token.as_str()));
+        self.rules
+            .retain(|existing| existing.state.as_deref() != Some(token.as_str()));
         self.rules.push(CursorRule {
             id: rule_id,
             priority: 0,
@@ -542,7 +543,8 @@ impl CursorManager {
         let derived_released = std::array::from_fn(|index| {
             input.buttons_released[index] || (!input.buttons[index] && self.last_buttons[index])
         });
-        let wheel_active = input.scroll_x.abs() > f32::EPSILON || input.scroll_y.abs() > f32::EPSILON;
+        let wheel_active =
+            input.scroll_x.abs() > f32::EPSILON || input.scroll_y.abs() > f32::EPSILON;
         let hover_active = self.last_hit.is_some();
         let hover_enter = self.last_hit.is_some() && self.last_hit != self.previous_hit;
         let leave_active = self.previous_hit.is_some() && self.last_hit.is_none();
@@ -679,10 +681,8 @@ impl CursorManager {
                         zoom.set_magnification(magnification);
                     }
                     self.zoom = Some(zoom);
-                    self.zoom_owner = CursorAttachmentOwner::State(format!(
-                        "{}__attr_zoom",
-                        self.active_token
-                    ));
+                    self.zoom_owner =
+                        CursorAttachmentOwner::State(format!("{}__attr_zoom", self.active_token));
                 }
             }
             _ => {
@@ -823,7 +823,13 @@ impl CursorManager {
             buttons: self.last_buttons,
             ..CursorInputFrame::default()
         };
-        self.tick(self.position.0, self.position.1, 0.0, input, self.last_hit.clone());
+        self.tick(
+            self.position.0,
+            self.position.1,
+            0.0,
+            input,
+            self.last_hit.clone(),
+        );
     }
 
     /// Update cursor state from one manual position override.
@@ -908,8 +914,10 @@ impl CursorManager {
         if !self.visible {
             return false;
         }
-        matches!(self.active, CursorState::Custom(_) | CursorState::Animated(_))
-            || self.trail.is_some()
+        matches!(
+            self.active,
+            CursorState::Custom(_) | CursorState::Animated(_)
+        ) || self.trail.is_some()
             || self.zoom.as_ref().map(|zoom| zoom.enabled).unwrap_or(false)
             || !self.bursts.is_empty()
     }

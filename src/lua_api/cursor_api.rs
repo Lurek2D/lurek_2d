@@ -67,8 +67,12 @@ fn parse_texture_key(value: LuaValue, api_name: &str) -> LuaResult<Option<Textur
         LuaValue::Integer(value) if value >= 0 => Ok(Some(TextureKey::from(
             slotmap::KeyData::from_ffi(value as u64),
         ))),
-        LuaValue::Number(value) if value.is_finite() && value >= 0.0 && value.fract().abs() < f64::EPSILON => {
-            Ok(Some(TextureKey::from(slotmap::KeyData::from_ffi(value as u64))))
+        LuaValue::Number(value)
+            if value.is_finite() && value >= 0.0 && value.fract().abs() < f64::EPSILON =>
+        {
+            Ok(Some(TextureKey::from(slotmap::KeyData::from_ffi(
+                value as u64,
+            ))))
         }
         LuaValue::UserData(ud) => {
             let image = ud.borrow::<LuaImage>().map_err(|_| {
@@ -84,7 +88,10 @@ fn parse_texture_key(value: LuaValue, api_name: &str) -> LuaResult<Option<Textur
     }
 }
 
-fn parse_optional_shader_key(value: LuaValue, api_name: &str) -> LuaResult<Option<crate::runtime::resource_keys::ShaderKey>> {
+fn parse_optional_shader_key(
+    value: LuaValue,
+    api_name: &str,
+) -> LuaResult<Option<crate::runtime::resource_keys::ShaderKey>> {
     match value {
         LuaValue::Nil => Ok(None),
         LuaValue::UserData(ud) => Ok(Some(shader_key_from_userdata(&ud)?)),
@@ -112,20 +119,22 @@ fn parse_blend_mode(value: Option<String>) -> LuaResult<BlendMode> {
 }
 
 fn parse_particle_shape(value: Option<String>) -> LuaResult<ParticleRenderShape> {
-    Ok(match value
-        .unwrap_or_else(|| "spark".to_string())
-        .to_ascii_lowercase()
-        .as_str()
-    {
-        "square" => ParticleRenderShape::Square,
-        "circle" => ParticleRenderShape::Circle,
-        "triangle" => ParticleRenderShape::Triangle,
-        "diamond" => ParticleRenderShape::Diamond,
-        "puff" => ParticleRenderShape::Puff,
-        "capsule" => ParticleRenderShape::Capsule,
-        "ring" => ParticleRenderShape::Ring { thickness: 0.25 },
-        _ => ParticleRenderShape::Spark,
-    })
+    Ok(
+        match value
+            .unwrap_or_else(|| "spark".to_string())
+            .to_ascii_lowercase()
+            .as_str()
+        {
+            "square" => ParticleRenderShape::Square,
+            "circle" => ParticleRenderShape::Circle,
+            "triangle" => ParticleRenderShape::Triangle,
+            "diamond" => ParticleRenderShape::Diamond,
+            "puff" => ParticleRenderShape::Puff,
+            "capsule" => ParticleRenderShape::Capsule,
+            "ring" => ParticleRenderShape::Ring { thickness: 0.25 },
+            _ => ParticleRenderShape::Spark,
+        },
+    )
 }
 
 fn parse_trail_mode(value: Option<String>) -> TrailMode {
@@ -191,33 +200,57 @@ fn parse_state_spec(tbl: LuaTable) -> LuaResult<CursorStateSpec> {
     spec.scale = tbl.get::<_, Option<f32>>("scale")?.unwrap_or(1.0);
     spec.offset_x = tbl.get::<_, Option<f32>>("offset_x")?.unwrap_or(0.0);
     spec.offset_y = tbl.get::<_, Option<f32>>("offset_y")?.unwrap_or(0.0);
-    spec.native_preferred = tbl.get::<_, Option<bool>>("native_preferred")?.unwrap_or(true);
+    spec.native_preferred = tbl
+        .get::<_, Option<bool>>("native_preferred")?
+        .unwrap_or(true);
 
     if let Some(trail_tbl) = tbl.get::<_, Option<LuaTable>>("trail")? {
-        let mut trail = CursorTrail::new(parse_trail_mode(trail_tbl.get::<_, Option<String>>("mode")?));
+        let mut trail = CursorTrail::new(parse_trail_mode(
+            trail_tbl.get::<_, Option<String>>("mode")?,
+        ));
         trail.set_color(table_color(&trail_tbl, [1.0, 1.0, 1.0, 0.85])?);
-        trail.set_lifetime(trail_tbl.get::<_, Option<f32>>("lifetime")?.unwrap_or(trail.lifetime()));
-        trail.set_spacing(trail_tbl.get::<_, Option<f32>>("spacing")?.unwrap_or(trail.spacing()));
-        trail.set_width(trail_tbl.get::<_, Option<f32>>("width")?.unwrap_or(trail.width()));
+        trail.set_lifetime(
+            trail_tbl
+                .get::<_, Option<f32>>("lifetime")?
+                .unwrap_or(trail.lifetime()),
+        );
+        trail.set_spacing(
+            trail_tbl
+                .get::<_, Option<f32>>("spacing")?
+                .unwrap_or(trail.spacing()),
+        );
+        trail.set_width(
+            trail_tbl
+                .get::<_, Option<f32>>("width")?
+                .unwrap_or(trail.width()),
+        );
         trail.set_max_points(
             trail_tbl
                 .get::<_, Option<usize>>("max_points")?
                 .unwrap_or(trail.max_points()),
         );
         trail.set_texture_key(parse_texture_key(
-            trail_tbl.get::<_, LuaValue>("texture").unwrap_or(LuaValue::Nil),
+            trail_tbl
+                .get::<_, LuaValue>("texture")
+                .unwrap_or(LuaValue::Nil),
             "defineState(trail.texture)",
         )?);
         trail.set_shader_key(parse_optional_shader_key(
-            trail_tbl.get::<_, LuaValue>("shader").unwrap_or(LuaValue::Nil),
+            trail_tbl
+                .get::<_, LuaValue>("shader")
+                .unwrap_or(LuaValue::Nil),
             "defineState(trail.shader)",
         )?);
-        trail.set_blend(parse_blend_mode(trail_tbl.get::<_, Option<String>>("blend")?)?);
+        trail.set_blend(parse_blend_mode(
+            trail_tbl.get::<_, Option<String>>("blend")?,
+        )?);
         spec.trail = Some(trail);
     }
 
     if let Some(zoom_tbl) = tbl.get::<_, Option<LuaTable>>("zoom")? {
-        let magnification = zoom_tbl.get::<_, Option<f32>>("magnification")?.unwrap_or(2.0);
+        let magnification = zoom_tbl
+            .get::<_, Option<f32>>("magnification")?
+            .unwrap_or(2.0);
         let radius = zoom_tbl.get::<_, Option<f32>>("radius")?.unwrap_or(64.0);
         let mut zoom = CursorZoom::new(magnification, radius);
         zoom.border_color = table_color(&zoom_tbl, zoom.border_color)?;
@@ -228,7 +261,9 @@ fn parse_state_spec(tbl: LuaTable) -> LuaResult<CursorStateSpec> {
             .get::<_, Option<f32>>("softness")?
             .unwrap_or(zoom.softness);
         zoom.shader_key = parse_optional_shader_key(
-            zoom_tbl.get::<_, LuaValue>("shader").unwrap_or(LuaValue::Nil),
+            zoom_tbl
+                .get::<_, LuaValue>("shader")
+                .unwrap_or(LuaValue::Nil),
             "defineState(zoom.shader)",
         )?;
         spec.zoom = Some(zoom);
@@ -264,7 +299,8 @@ fn rule_to_struct(tbl: LuaTable) -> LuaResult<CursorRule> {
         id: 0,
         priority: tbl.get::<_, Option<i32>>("priority")?.unwrap_or(0),
         event: parse_rule_event(
-            &tbl.get::<_, Option<String>>("event")?.unwrap_or_else(|| "context".to_string()),
+            &tbl.get::<_, Option<String>>("event")?
+                .unwrap_or_else(|| "context".to_string()),
         ),
         context: tbl
             .get::<_, Option<String>>("context")?
@@ -280,10 +316,12 @@ fn rule_to_struct(tbl: LuaTable) -> LuaResult<CursorRule> {
     })
 }
 
-fn source_from_table(lua: &Lua, tbl: LuaTable, state: &Rc<RefCell<SharedState>>) -> LuaResult<CursorSource> {
-    let kind = tbl
-        .get::<_, String>("kind")?
-        .to_ascii_lowercase();
+fn source_from_table(
+    lua: &Lua,
+    tbl: LuaTable,
+    state: &Rc<RefCell<SharedState>>,
+) -> LuaResult<CursorSource> {
+    let kind = tbl.get::<_, String>("kind")?.to_ascii_lowercase();
     let id = state.borrow_mut().cursor_runtime.next_source_id();
     match kind.as_str() {
         "globe" => {
@@ -384,10 +422,21 @@ fn raycaster_scene_hit_to_cursor_hit(scene: &RaycasterScene, x: f32, y: f32) -> 
     })
 }
 
-fn poll_callback_hit(lua: &Lua, callback: &LuaRegistryKey, x: f32, y: f32, timeout_ms: Option<f32>) -> LuaResult<Option<CursorHit>> {
+fn poll_callback_hit(
+    lua: &Lua,
+    callback: &LuaRegistryKey,
+    x: f32,
+    y: f32,
+    timeout_ms: Option<f32>,
+) -> LuaResult<Option<CursorHit>> {
     let func: LuaFunction = lua.registry_value(callback)?;
-    let value: LuaValue =
-        call_function_with_optional_timeout(lua, "lurek.cursor.sourceCallback", func, (x, y), timeout_ms)?;
+    let value: LuaValue = call_function_with_optional_timeout(
+        lua,
+        "lurek.cursor.sourceCallback",
+        func,
+        (x, y),
+        timeout_ms,
+    )?;
     let LuaValue::Table(tbl) = value else {
         return Ok(None);
     };
@@ -399,8 +448,12 @@ fn poll_callback_hit(lua: &Lua, callback: &LuaRegistryKey, x: f32, y: f32, timeo
         }
     }
     Ok(Some(CursorHit {
-        module_name: tbl.get::<_, Option<String>>("module")?.unwrap_or_else(|| "callback".to_string()),
-        kind: tbl.get::<_, Option<String>>("kind")?.unwrap_or_else(|| "hover".to_string()),
+        module_name: tbl
+            .get::<_, Option<String>>("module")?
+            .unwrap_or_else(|| "callback".to_string()),
+        kind: tbl
+            .get::<_, Option<String>>("kind")?
+            .unwrap_or_else(|| "hover".to_string()),
         surface: tbl
             .get::<_, Option<String>>("surface")?
             .unwrap_or_else(|| "surface".to_string()),
@@ -471,8 +524,11 @@ fn render_cursor_trail(st: &mut SharedState) {
         return;
     };
     let color = trail.color();
-    st.render_commands.push(RenderCommand::SetBlendMode(trail.blend()));
-    st.render_commands.push(RenderCommand::SetColor(color[0], color[1], color[2], color[3]));
+    st.render_commands
+        .push(RenderCommand::SetBlendMode(trail.blend()));
+    st.render_commands.push(RenderCommand::SetColor(
+        color[0], color[1], color[2], color[3],
+    ));
     match trail.mode() {
         TrailMode::FadePoints | TrailMode::Points => {
             let points: Vec<(f32, f32)> = trail
@@ -481,7 +537,8 @@ fn render_cursor_trail(st: &mut SharedState) {
                 .map(|point| (point.x, point.y))
                 .collect();
             if !points.is_empty() {
-                st.render_commands.push(RenderCommand::SetPointSize(trail.width()));
+                st.render_commands
+                    .push(RenderCommand::SetPointSize(trail.width()));
                 st.render_commands.push(RenderCommand::Points { points });
             }
         }
@@ -492,10 +549,11 @@ fn render_cursor_trail(st: &mut SharedState) {
                 points.push(point.y);
             }
             if points.len() >= 4 {
-                st.render_commands.push(RenderCommand::SetLineWidth(match trail.mode() {
-                    TrailMode::Ribbon => trail.width().max(2.0),
-                    _ => trail.width(),
-                }));
+                st.render_commands
+                    .push(RenderCommand::SetLineWidth(match trail.mode() {
+                        TrailMode::Ribbon => trail.width().max(2.0),
+                        _ => trail.width(),
+                    }));
                 st.render_commands.push(RenderCommand::Polyline { points });
             }
         }
@@ -579,13 +637,19 @@ fn render_zoom_lens(st: &mut SharedState) {
     if !zoom.enabled {
         return;
     }
-    let screen_x =
-        st.cursor_runtime.position().0 * st.window_state.viewport_scale_x + st.window_state.viewport_offset_x;
-    let screen_y =
-        st.cursor_runtime.position().1 * st.window_state.viewport_scale_y + st.window_state.viewport_offset_y;
+    let screen_x = st.cursor_runtime.position().0 * st.window_state.viewport_scale_x
+        + st.window_state.viewport_offset_x;
+    let screen_y = st.cursor_runtime.position().1 * st.window_state.viewport_scale_y
+        + st.window_state.viewport_offset_y;
     let mut params = HashMap::new();
-    params.insert("focus_x".to_string(), screen_x / st.window_width.max(1) as f32);
-    params.insert("focus_y".to_string(), screen_y / st.window_height.max(1) as f32);
+    params.insert(
+        "focus_x".to_string(),
+        screen_x / st.window_width.max(1) as f32,
+    );
+    params.insert(
+        "focus_y".to_string(),
+        screen_y / st.window_height.max(1) as f32,
+    );
     params.insert("intensity".to_string(), zoom.magnification);
     params.insert("radius".to_string(), zoom.radius);
     params.insert("thickness".to_string(), zoom.border_width);
@@ -594,10 +658,12 @@ fn render_zoom_lens(st: &mut SharedState) {
     params.insert("color_b".to_string(), zoom.border_color[2]);
     params.insert("strength".to_string(), zoom.border_color[3]);
     params.insert("density".to_string(), zoom.softness);
-    st.render_commands
-        .push(RenderCommand::BeginPostFx { stack_id: CURSOR_LENS_STACK_ID });
-    st.render_commands
-        .push(RenderCommand::EndPostFx { stack_id: CURSOR_LENS_STACK_ID });
+    st.render_commands.push(RenderCommand::BeginPostFx {
+        stack_id: CURSOR_LENS_STACK_ID,
+    });
+    st.render_commands.push(RenderCommand::EndPostFx {
+        stack_id: CURSOR_LENS_STACK_ID,
+    });
     st.render_commands.push(RenderCommand::ApplyPostFx {
         stack_id: CURSOR_LENS_STACK_ID,
         passes: vec![PostFxPass {
@@ -619,7 +685,8 @@ fn render_cursor_overlay(st: &mut SharedState) -> LuaResult<()> {
     match &active_state {
         CursorState::Custom(image) => {
             let texture_key = ensure_overlay_texture(st, image)?;
-            st.render_commands.push(RenderCommand::SetColor(1.0, 1.0, 1.0, 1.0));
+            st.render_commands
+                .push(RenderCommand::SetColor(1.0, 1.0, 1.0, 1.0));
             st.render_commands.push(RenderCommand::DrawImageEx {
                 texture_key,
                 x: position.0 + visual.offset_x,
@@ -636,7 +703,8 @@ fn render_cursor_overlay(st: &mut SharedState) -> LuaResult<()> {
             if let Some(frame) = anim.current_frame() {
                 let texture_key = ensure_overlay_texture(st, &frame.image)?;
                 let scale = visual.scale * anim.current_scale();
-                st.render_commands.push(RenderCommand::SetColor(1.0, 1.0, 1.0, 1.0));
+                st.render_commands
+                    .push(RenderCommand::SetColor(1.0, 1.0, 1.0, 1.0));
                 st.render_commands.push(RenderCommand::DrawImageEx {
                     texture_key,
                     x: position.0 + visual.offset_x,
@@ -655,8 +723,9 @@ fn render_cursor_overlay(st: &mut SharedState) -> LuaResult<()> {
         }
     }
     if let Some(color) = restore_color {
-        st.render_commands
-            .push(RenderCommand::SetColor(color[0], color[1], color[2], color[3]));
+        st.render_commands.push(RenderCommand::SetColor(
+            color[0], color[1], color[2], color[3],
+        ));
     }
     Ok(())
 }
@@ -711,7 +780,9 @@ fn poll_sources(
             }
             CursorSource::RaycasterLast { .. } => {
                 if let Some(context) = last_build {
-                    if let Some(entity_hit) = raycaster_scene_hit_to_cursor_hit(&context.scene, x, y) {
+                    if let Some(entity_hit) =
+                        raycaster_scene_hit_to_cursor_hit(&context.scene, x, y)
+                    {
                         Some(entity_hit)
                     } else {
                         let tile_pick = match &context.world {
@@ -740,7 +811,9 @@ fn poll_sources(
                     None
                 }
             }
-            CursorSource::Callback { callback, .. } => poll_callback_hit(lua, callback, x, y, timeout_ms)?,
+            CursorSource::Callback { callback, .. } => {
+                poll_callback_hit(lua, callback, x, y, timeout_ms)?
+            }
         };
         if hit.is_some() {
             return Ok(hit);
@@ -749,6 +822,7 @@ fn poll_sources(
     Ok(None)
 }
 
+/// Polls cursor sources, advances runtime cursor effects, and refreshes cursor overlay output.
 pub(crate) fn refresh_cursor_runtime(
     lua: &Lua,
     state: Rc<RefCell<SharedState>>,
@@ -775,7 +849,8 @@ pub(crate) fn refresh_cursor_runtime(
     let hit = poll_sources(lua, &sources, x, y, timeout_ms, &last_build)?;
 
     let mut st = state.borrow_mut();
-    st.cursor_runtime.replace_sources(std::mem::take(&mut sources));
+    st.cursor_runtime
+        .replace_sources(std::mem::take(&mut sources));
     st.cursor_runtime.tick(x, y, dt, input, hit);
     sync_runtime_mouse_state(&mut st);
     render_zoom_lens(&mut st);
@@ -844,14 +919,17 @@ impl LuaUserData for LuaCursorManager {
         /// @field | native_preferred | boolean | True to keep the OS cursor when possible. Defaults to `true`.
         /// @field | trail | table | Optional trail configuration with `mode`, `color`, `lifetime`, `spacing`, `width`, `max_points`, `texture`, `shader`, and `blend`.
         /// @field | zoom | table | Optional zoom-lens configuration with `magnification`, `radius`, `border_color`, `border_width`, `softness`, and `shader`.
-        methods.add_method_mut("defineState", |_, this, (name, spec): (String, LuaTable)| {
-            let spec = parse_state_spec(spec)?;
-            this.state
-                .borrow_mut()
-                .cursor_runtime
-                .define_state(name, spec);
-            Ok(())
-        });
+        methods.add_method_mut(
+            "defineState",
+            |_, this, (name, spec): (String, LuaTable)| {
+                let spec = parse_state_spec(spec)?;
+                this.state
+                    .borrow_mut()
+                    .cursor_runtime
+                    .define_state(name, spec);
+                Ok(())
+            },
+        );
         // -- defineEffect --
         /// Defines a reusable cursor-local burst effect preset for hover or click rules.
         /// @param | name | string | Unique effect name used by rules or hit attrs such as `cursor_effect`.
@@ -867,14 +945,17 @@ impl LuaUserData for LuaCursorManager {
         /// @field | size | number | Particle size in pixels. Defaults to `5`.
         /// @field | blend | string | Blend mode such as `"alpha"` or `"add"`.
         /// @field | button | integer | Optional mouse button filter for click/release triggers.
-        methods.add_method_mut("defineEffect", |_, this, (name, spec): (String, LuaTable)| {
-            let spec = parse_effect_spec(spec)?;
-            this.state
-                .borrow_mut()
-                .cursor_runtime
-                .define_effect(name, spec);
-            Ok(())
-        });
+        methods.add_method_mut(
+            "defineEffect",
+            |_, this, (name, spec): (String, LuaTable)| {
+                let spec = parse_effect_spec(spec)?;
+                this.state
+                    .borrow_mut()
+                    .cursor_runtime
+                    .define_effect(name, spec);
+                Ok(())
+            },
+        );
         // -- addRule --
         /// Registers a legacy context rule or a v2 runtime rule table for hover, click, release, leave, wheel, or context state resolution.
         /// @param | context_or_rule | string|table | Legacy context name, or a v2 rule table with `priority`, `event`, `context`, `target`, `state`, `effect`, and `duration_ms`.
@@ -885,11 +966,15 @@ impl LuaUserData for LuaCursorManager {
             match (iter.next(), iter.next(), iter.next()) {
                 (Some(LuaValue::String(ctx)), Some(LuaValue::String(cursor_name)), None) => {
                     let ctx = CursorContext::from_name(ctx.to_str()?);
-                    let cursor = CursorState::System(parse_system_cursor_name(cursor_name.to_str()?)?);
+                    let cursor =
+                        CursorState::System(parse_system_cursor_name(cursor_name.to_str()?)?);
                     this.state
                         .borrow_mut()
                         .cursor_runtime
-                        .add_rule(ContextRule { context: ctx, cursor });
+                        .add_rule(ContextRule {
+                            context: ctx,
+                            cursor,
+                        });
                     Ok(LuaValue::Nil)
                 }
                 (Some(LuaValue::Table(rule_tbl)), None, None) => {
@@ -1023,13 +1108,19 @@ impl LuaUserData for LuaCursorManager {
         /// @param | g | number | Green channel in the 0.0 through 1.0 range.
         /// @param | b | number | Blue channel in the 0.0 through 1.0 range.
         /// @param | lifetime | number | Trail point lifetime in seconds.
-        methods.add_method("enableTrail", |_, this, (r, g, b, lifetime): (f32, f32, f32, f32)| {
-            let mut trail = CursorTrail::new(TrailMode::FadePoints);
-            trail.set_color([r, g, b, 1.0]);
-            trail.set_lifetime(lifetime);
-            this.state.borrow_mut().cursor_runtime.set_trail(Some(trail));
-            Ok(())
-        });
+        methods.add_method(
+            "enableTrail",
+            |_, this, (r, g, b, lifetime): (f32, f32, f32, f32)| {
+                let mut trail = CursorTrail::new(TrailMode::FadePoints);
+                trail.set_color([r, g, b, 1.0]);
+                trail.set_lifetime(lifetime);
+                this.state
+                    .borrow_mut()
+                    .cursor_runtime
+                    .set_trail(Some(trail));
+                Ok(())
+            },
+        );
         // -- enableLineTrail --
         /// Enables a simple connected line trail behind the cursor.
         /// @param | r | number | Red channel in the 0.0 through 1.0 range.
@@ -1042,7 +1133,10 @@ impl LuaUserData for LuaCursorManager {
                 let mut trail = CursorTrail::new(TrailMode::Line);
                 trail.set_color([r, g, b, 1.0]);
                 trail.set_width(width);
-                this.state.borrow_mut().cursor_runtime.set_trail(Some(trail));
+                this.state
+                    .borrow_mut()
+                    .cursor_runtime
+                    .set_trail(Some(trail));
                 Ok(())
             },
         );
@@ -1129,13 +1223,16 @@ impl LuaUserData for LuaAnimatedCursor {
         /// Appends one frame to the animated cursor sequence.
         /// @param | cursor | LCustomCursor | Frame image to append.
         /// @param | duration_ms | integer | Frame duration in milliseconds.
-        methods.add_method("addFrame", |_, this, (cursor, duration_ms): (LuaAnyUserData, u32)| {
-            let cursor = cursor.borrow::<LuaCustomCursor>()?.clone();
-            this.inner
-                .borrow_mut()
-                .add_frame(cursor.inner.borrow().clone(), duration_ms);
-            Ok(())
-        });
+        methods.add_method(
+            "addFrame",
+            |_, this, (cursor, duration_ms): (LuaAnyUserData, u32)| {
+                let cursor = cursor.borrow::<LuaCustomCursor>()?.clone();
+                this.inner
+                    .borrow_mut()
+                    .add_frame(cursor.inner.borrow().clone(), duration_ms);
+                Ok(())
+            },
+        );
         // -- update --
         /// Advances animated cursor playback and pulse state.
         /// @param | dt | number | Delta time in seconds.
@@ -1166,14 +1263,17 @@ impl LuaUserData for LuaAnimatedCursor {
         /// @param | min_scale | number | Minimum scale multiplier.
         /// @param | max_scale | number | Maximum scale multiplier.
         /// @param | speed | number | Pulse speed in oscillations per second.
-        methods.add_method("setPulse", |_, this, (min_scale, max_scale, speed): (f32, f32, f32)| {
-            this.inner.borrow_mut().set_pulse(Some(PulseConfig {
-                min_scale,
-                max_scale,
-                speed,
-            }));
-            Ok(())
-        });
+        methods.add_method(
+            "setPulse",
+            |_, this, (min_scale, max_scale, speed): (f32, f32, f32)| {
+                this.inner.borrow_mut().set_pulse(Some(PulseConfig {
+                    min_scale,
+                    max_scale,
+                    speed,
+                }));
+                Ok(())
+            },
+        );
         // -- clearPulse --
         /// Disables pulse scaling for the animated cursor.
         methods.add_method("clearPulse", |_, this, ()| {
@@ -1189,6 +1289,7 @@ impl LuaUserData for LuaAnimatedCursor {
     }
 }
 
+/// Registers the `lurek.cursor` module table and cursor runtime userdata constructors.
 pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let module = lua.create_table()?;
 
