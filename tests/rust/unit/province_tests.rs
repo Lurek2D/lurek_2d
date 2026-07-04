@@ -368,7 +368,7 @@ fn test_label_render_commands_follow_label_line_transform() {
             draw_labels: true,
             draw_capitals: false,
             draw_roads: false,
-            pixel_size: 8.0,
+            pixel_size: 10.0,
             ..ProvinceRenderOptions::default()
         },
         Some(dummy_font_key()),
@@ -402,6 +402,52 @@ fn test_label_render_commands_follow_label_line_transform() {
     assert!(label_commands.iter().all(|(rotation, sx, sy)| {
         rotation.abs() < 0.001 && *sx > 0.0 && (*sx - *sy).abs() < 0.001
     }));
+}
+
+#[test]
+fn test_label_render_commands_skip_overlapping_labels() {
+    let mut img = ImageData::new(1, 2);
+    img.set_pixel(0, 0, 255, 0, 0, 255);
+    img.set_pixel(0, 1, 0, 255, 0, 255);
+
+    let grid = ProvinceGrid::from_image(&img);
+    let mut reg = ProvinceRegistry::from_grid(&grid);
+    assert!(reg.set_visibility_state(ProvinceId(1), 2));
+    assert!(reg.set_visibility_state(ProvinceId(2), 2));
+    assert!(reg.set_label_text(ProvinceId(1), "Province Alpha".to_string()));
+    assert!(reg.set_label_text(ProvinceId(2), "Province Beta".to_string()));
+    assert!(reg.set_label_line(ProvinceId(1), 0.0, 0.0, 10.0, 0.0));
+    assert!(reg.set_label_line(ProvinceId(2), 0.0, 1.0, 10.0, 1.0));
+
+    let commands = generate_render_commands(
+        &reg,
+        &ProvinceRenderOptions {
+            draw_fills: false,
+            draw_borders: false,
+            draw_labels: true,
+            draw_capitals: false,
+            draw_roads: false,
+            pixel_size: 10.0,
+            ..ProvinceRenderOptions::default()
+        },
+        Some(dummy_font_key()),
+    );
+
+    let label_commands = commands
+        .iter()
+        .filter(|cmd| {
+            matches!(
+                cmd,
+                RenderCommand::PrintTransformed { text, .. }
+                    if text == "Province Alpha" || text == "Province Beta"
+            )
+        })
+        .count();
+
+    assert_eq!(
+        label_commands, 2,
+        "only one label should render as shadow + foreground when candidates overlap"
+    );
 }
 
 #[test]

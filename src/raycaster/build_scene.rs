@@ -379,6 +379,8 @@ pub struct SceneBuildParams {
     /// Flat tint color for untextured floor surfaces.
     pub floor_color: Color,
     /// Flat tint color for untextured ceiling surfaces.
+    /// Set alpha to `0.0` to leave untextured ceiling cells transparent so a
+    /// background or caller-drawn sky can show through.
     pub ceiling_color: Color,
     /// Camera eye height as a fraction of cell height, 0.1..0.9.
     pub camera_height: f32,

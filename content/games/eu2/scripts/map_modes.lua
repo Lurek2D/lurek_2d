@@ -96,6 +96,13 @@ local function province_color(state, province, mode)
     return political_base_color(state, province)
 end
 
+function M.province_color(state, province, mode)
+    if not province then
+        return relation_color(state, "SEA")
+    end
+    return province_color(state, province, mode or state.map_mode or "political")
+end
+
 local function apply_country_borders(reg, state)
     if not reg.adjacencies or not reg.setBorderPairStyle then
         return

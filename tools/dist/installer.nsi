@@ -3,7 +3,7 @@
 ;
 ; Requirements:
 ;   - NSIS 3.x (https://nsis.sourceforge.io/Download)
-;   - Built dist binary at:     build\dist\lurek2d.exe
+;   - Built release binary at:  build\release\lurek2d.exe
 ;   - Icon at:                  assets\icon.ico
 ;   - Run from workspace root:  makensis tools\installer.nsi
 ;
@@ -72,8 +72,8 @@ Section "Engine (required)" SecEngine
 
     SetOutPath "$INSTDIR"
 
-    ; Core binary — use dist-profile binary if present, else release
-    File "..\..\build\dist\lurek2d.exe"
+    ; Core binary comes from the release build; dist.ps1 handles portable repackaging separately.
+    File "..\..\build\release\lurek2d.exe"
 
     ; Engine assets
     SetOutPath "$INSTDIR\assets"

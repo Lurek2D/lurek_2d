@@ -1,19 +1,22 @@
 local M = {}
 
-local MM_GRID_W = 120
-local MM_GRID_H = 54
-local MM_W = 184
-local MM_H = 86
-local MAP_W = 1000
-local MAP_H = 450
+local R = lurek.render
+
+local MM_GRID_W = 180
+local MM_GRID_H = 81
 local PIXEL_SIZE = 8
 
-local widgets = nil
 local minimap = nil
-local minimap_revision = -1
-local owner_terrain_types = {}
+local minimap_key = nil
+local minimap_colors = nil
+local next_minimap_color = 1
 local army_object_type = 1
-local viewport_initialized = false
+
+local function clamp(v, lo, hi)
+    if v < lo then return lo end
+    if v > hi then return hi end
+    return v
+end
 
 local function country_name(state, tag)
     local c = state.countries[tag]
@@ -28,17 +31,6 @@ local function speed_label(state)
     return tostring(speeds[state.speed_index] or 1) .. "x"
 end
 
-local function province_line(state, province)
-    if not province then
-        return "No province selected"
-    end
-    return string.format("%s | %s | income:%s | unrest:%.1f",
-        province.name,
-        country_name(state, province.owner),
-        tostring(province.income or 0),
-        province.unrest or 0)
-end
-
 local function selected_army(state)
     for _, army in ipairs(state.armies) do
         if army.id == state.selected_army_id then
@@ -48,248 +40,254 @@ local function selected_army(state)
     return nil
 end
 
-local function call(widget, method, ...)
-    if widget and widget[method] then
-        widget[method](widget, ...)
-    end
+local function draw_panel(x, y, w, h, alpha)
+    R.setColor(0.08, 0.055, 0.035, alpha or 0.88)
+    R.rectangle("fill", x, y, w, h)
+    R.setColor(0.56, 0.39, 0.20, 0.95)
+    R.rectangle("line", x, y, w, h)
+    R.setColor(0.86, 0.68, 0.38, 0.35)
+    R.rectangle("line", x + 2, y + 2, math.max(0, w - 4), math.max(0, h - 4))
 end
 
-local function label(text, color)
-    local w = lurek.ui.newLabel(text or "")
-    call(w, "setColor", color[1], color[2], color[3], color[4] or 1)
-    call(w, "setTextEllipsis", true)
-    return w
+local function draw_paper_panel(x, y, w, h)
+    R.setColor(0.82, 0.70, 0.50, 0.94)
+    R.rectangle("fill", x, y, w, h)
+    R.setColor(0.30, 0.19, 0.10, 0.95)
+    R.rectangle("line", x, y, w, h)
+    R.setColor(0.98, 0.89, 0.67, 0.32)
+    R.rectangle("line", x + 3, y + 3, math.max(0, w - 6), math.max(0, h - 6))
 end
 
-local function panel(alpha)
-    local w = lurek.ui.newPanel()
-    call(w, "setAlpha", alpha or 0.82)
-    return w
+local function draw_text(text, x, y, scale, color)
+    local c = color or { 0.95, 0.90, 0.78, 1 }
+    R.setColor(c[1], c[2], c[3], c[4] or 1)
+    R.print(tostring(text or ""), x, y, scale or 1)
 end
 
-local function place(w, x, y, width, height, text)
-    call(w, "setPosition", x, y)
-    call(w, "setSize", width, height)
-    if text ~= nil then
-        call(w, "setText", text)
+local function draw_button(x, y, w, h, text, active)
+    if active then
+        R.setColor(0.48, 0.17, 0.13, 0.94)
+    else
+        R.setColor(0.19, 0.15, 0.10, 0.92)
     end
+    R.rectangle("fill", x, y, w, h)
+    R.setColor(0.77, 0.58, 0.32, 0.92)
+    R.rectangle("line", x, y, w, h)
+    draw_text(text, x + 5, y + 4, 0.92, { 0.98, 0.89, 0.68, 1 })
 end
 
-local function ensure_widgets()
-    if widgets then
-        return
-    end
-    if lurek.ui.clear then
-        lurek.ui.clear()
-    end
-    if lurek.ui.setDefaultTheme then
-        lurek.ui.setDefaultTheme()
-    end
-    widgets = {
-        top_panel = panel(0.97),
-        side_panel = panel(0.92),
-        log_panel = panel(0.92),
-        minimap_panel = panel(0.92),
-        title = label("Europa Universalis 2 Lite", { 0.95, 0.90, 0.78, 1 }),
-        status = label("", { 0.80, 0.84, 0.88, 1 }),
-        controls = label("", { 0.72, 0.76, 0.78, 1 }),
-        mode = label("", { 0.95, 0.84, 0.42, 1 }),
-        province_title = label("Province", { 0.95, 0.86, 0.58, 1 }),
-        province_line = label("", { 0.88, 0.90, 0.92, 1 }),
-        province_stats = label("", { 0.84, 0.86, 0.88, 1 }),
-        province_neighbors = label("", { 0.84, 0.86, 0.88, 1 }),
-        hover_title = label("Hover", { 0.55, 0.70, 0.95, 1 }),
-        hover_line = label("", { 0.80, 0.82, 0.84, 1 }),
-        army_title = label("Selected army", { 0.95, 0.86, 0.58, 1 }),
-        army_line = label("", { 0.88, 0.90, 0.92, 1 }),
-        army_pos = label("", { 0.88, 0.90, 0.92, 1 }),
-        log_title = label("Campaign log", { 0.95, 0.86, 0.58, 1 }),
-        log_lines = {},
-    }
-    for i = 1, 4 do
-        widgets.log_lines[i] = label("", { 0.82, 0.84, 0.86, 1 })
-    end
-    local root = lurek.ui.getRoot and lurek.ui.getRoot()
-    if root and root.addChild then
-        local ordered = {
-            widgets.top_panel,
-            widgets.side_panel,
-            widgets.log_panel,
-            widgets.minimap_panel,
-            widgets.title,
-            widgets.status,
-            widgets.controls,
-            widgets.mode,
-            widgets.province_title,
-            widgets.province_line,
-            widgets.province_stats,
-            widgets.province_neighbors,
-            widgets.hover_title,
-            widgets.hover_line,
-            widgets.army_title,
-            widgets.army_line,
-            widgets.army_pos,
-            widgets.log_title,
-        }
-        for _, w in ipairs(ordered) do
-            root:addChild(w)
-        end
-        for _, w in ipairs(widgets.log_lines) do
-            root:addChild(w)
-        end
-    end
+local function color_key(c)
+    return string.format("%d:%d:%d:%d",
+        math.floor(clamp(c[1] or 0, 0, 1) * 255 + 0.5),
+        math.floor(clamp(c[2] or 0, 0, 1) * 255 + 0.5),
+        math.floor(clamp(c[3] or 0, 0, 1) * 255 + 0.5),
+        math.floor(clamp(c[4] or 1, 0, 1) * 255 + 0.5))
 end
 
-local function terrain_type_for_owner(state, owner)
-    owner = owner or "SEA"
-    local idx = owner_terrain_types[owner]
+local function terrain_type_for_color(c)
+    local key = color_key(c)
+    local idx = minimap_colors[key]
     if idx then
         return idx
     end
-    idx = 1
-    for _ in pairs(owner_terrain_types) do
-        idx = idx + 1
-    end
-    owner_terrain_types[owner] = idx
-    local country = state.countries[owner] or state.countries.NEU or { color = { 0.45, 0.45, 0.45, 1 } }
-    local c = country.color or { 0.45, 0.45, 0.45, 1 }
-    if owner == "SEA" then
-        c = { 0.16, 0.36, 0.58, 1 }
-    end
+    idx = next_minimap_color
+    next_minimap_color = next_minimap_color + 1
+    minimap_colors[key] = idx
     minimap:setTerrainColor(idx, c[1], c[2], c[3], c[4] or 1)
     return idx
 end
 
-local function build_minimap(state)
-    if minimap and minimap_revision == state.style_revision then
-        return
+local function province_color(state, province, mode, map_modes)
+    if map_modes and map_modes.province_color then
+        return map_modes.province_color(state, province, mode)
     end
-    minimap = lurek.minimap.newMinimap(MM_GRID_W, MM_GRID_H, MM_W, MM_H)
+    local country = province and state.countries[province.owner] or state.countries.SEA
+    return (country and country.color) or { 0.18, 0.38, 0.60, 1 }
+end
+
+local function build_minimap(state, view, map_modes, display_w, display_h)
+    local map_w = state.reg:getWidth()
+    local map_h = state.reg:getHeight()
+    local key = table.concat({
+        tostring(view.map_mode),
+        tostring(state.revision or 0),
+        tostring(state.style_revision or 0),
+        tostring(display_w),
+        tostring(display_h),
+    }, ":")
+    if minimap and minimap_key == key then
+        return map_w, map_h
+    end
+
+    minimap = lurek.minimap.newMinimap(MM_GRID_W, MM_GRID_H, display_w, display_h)
     minimap:setColorMode("terrain")
-    owner_terrain_types = {}
-    army_object_type = minimap:addObjectType("army", 1.0, 0.88, 0.28, 1.0)
+    minimap_colors = {}
+    next_minimap_color = 1
+    army_object_type = minimap:addObjectType("army", 1.0, 0.86, 0.26, 1.0)
 
     for y = 1, MM_GRID_H do
         for x = 1, MM_GRID_W do
-            local map_x = math.floor((x - 0.5) * MAP_W / MM_GRID_W)
-            local map_y = math.floor((y - 0.5) * MAP_H / MM_GRID_H)
+            local map_x = math.floor((x - 0.5) * map_w / MM_GRID_W)
+            local map_y = math.floor((y - 0.5) * map_h / MM_GRID_H)
             local gid = state.reg:getAt(map_x, map_y)
             local province = state.provinces[gid]
-            local owner = province and province.owner or "SEA"
-            minimap:setTerrain(x, y, terrain_type_for_owner(state, owner))
+            minimap:setTerrain(x, y, terrain_type_for_color(province_color(state, province, view.map_mode, map_modes)))
         end
     end
-    minimap_revision = state.style_revision
+    minimap_key = key
+    return map_w, map_h
 end
 
-local function update_minimap(state, view, ww, hh)
-    build_minimap(state)
+local function update_minimap(state, view, map_modes, display_w, display_h)
+    local map_w, map_h = build_minimap(state, view, map_modes, display_w, display_h)
     minimap:clearObjects()
     for _, army in ipairs(state.armies) do
         local province = state.provinces[army.province_id]
         if province and province.cx and province.cy then
-            local x = 1 + province.cx / MAP_W * MM_GRID_W
-            local y = 1 + province.cy / MAP_H * MM_GRID_H
+            local x = 1 + province.cx / map_w * MM_GRID_W
+            local y = 1 + province.cy / map_h * MM_GRID_H
             minimap:setObject(army.id, x, y, army_object_type)
         end
     end
 
-    local visible_w = ww / math.max(0.001, PIXEL_SIZE * view.cam.zoom)
-    local visible_h = hh / math.max(0.001, PIXEL_SIZE * view.cam.zoom)
-    local map_x = -view.cam.x / math.max(0.001, PIXEL_SIZE * view.cam.zoom)
-    local map_y = -view.cam.y / math.max(0.001, PIXEL_SIZE * view.cam.zoom)
-    minimap:setViewportRect(
-        1 + map_x / MAP_W * MM_GRID_W,
-        1 + map_y / MAP_H * MM_GRID_H,
-        visible_w / MAP_W * MM_GRID_W,
-        visible_h / MAP_H * MM_GRID_H)
+    local ww, hh = lurek.window.getDimensions()
+    if state.reg.viewportRect then
+        local rect = state.reg:viewportRect({
+            x = view.cam.x,
+            y = view.cam.y,
+            zoom = view.cam.zoom,
+            pixel_size = PIXEL_SIZE,
+            screen_w = ww,
+            screen_h = hh,
+        })
+        minimap:setViewportRect(
+            1 + rect.x / map_w * MM_GRID_W,
+            1 + rect.y / map_h * MM_GRID_H,
+            rect.w / map_w * MM_GRID_W,
+            rect.h / map_h * MM_GRID_H)
+    end
 end
 
-local function update_layout(state, view, hovered_gid, selected_gid)
-    local ww, hh = lurek.window.getDimensions()
-    if lurek.ui.setViewport then
-        lurek.ui.setViewport(ww, hh)
+local function minimap_size(ww, hh)
+    local w = math.floor(clamp(ww * 0.15, 142, 190))
+    if hh < 560 then
+        w = math.floor(clamp(ww * 0.13, 124, 160))
     end
-    if not viewport_initialized and lurek.ui.setBaseResolution then
-        lurek.ui.setBaseResolution(ww, hh)
-        viewport_initialized = true
-    end
+    return w, math.floor(w * 0.47)
+end
 
+local function draw_top_bar(state, view, ww)
     local player = state.countries[state.player_tag]
-    local side_x = math.max(ww - 326, 320)
-    local side_h = math.max(320, hh - 142)
-    local log_w = math.max(320, ww - 350)
-    local mini_x = ww - MM_W - 24
-    local mini_y = hh - MM_H - 20
+    draw_panel(6, 6, math.min(410, ww - 18), 48, 0.94)
+    R.setColor(0.68, 0.10, 0.12, 1)
+    R.rectangle("fill", 14, 12, 34, 34)
+    R.setColor(0.96, 0.92, 0.82, 1)
+    R.rectangle("line", 14, 12, 34, 34)
+    draw_text("KINGDOM OF POLAND", 58, 13, 1.0, { 1.0, 0.92, 0.74, 1 })
+    draw_text("Poland | " .. tostring(country_name(state, state.player_tag)), 58, 33, 0.82, { 0.78, 0.84, 0.90, 1 })
 
-    place(widgets.top_panel, 0, 0, ww, 54)
-    place(widgets.title, 12, 8, 420, 18, "Europa Universalis 2 Lite - GPU province showcase")
-    place(widgets.status, 12, 28, 480, 18, string.format("%s   %s   Treasury:%d   Manpower:%d   Stability:%d",
-        state:date_string(),
-        speed_label(state),
-        player and player.treasury or 0,
-        player and player.manpower or 0,
-        player and player.stability or 0))
-    place(widgets.controls, 520, 28, math.max(260, ww - 540), 18, "1 Political  2 Terrain  3 Economy  4 Diplomacy  5 Unrest   L labels   Space pause   RMB move   F12 roads")
-    place(widgets.mode, 520, 8, 320, 18,
-        "Map: " .. tostring(view.map_mode)
-        .. " | Labels " .. (view.draw_labels and "on" or "off")
-        .. (view.debug_mode and " | Roads on" or " | Province FX"))
+    local date_w = 218
+    local date_x = math.max(430, math.floor((ww - date_w) * 0.5))
+    if date_x + date_w < ww - 250 then
+        draw_panel(date_x, 8, date_w, 48, 0.94)
+        draw_text(state:date_string(), date_x + 68, 14, 0.98, { 1.0, 0.92, 0.74, 1 })
+        draw_text("Treasury: " .. tostring(player and player.treasury or 0) .. "   Manpower: " .. tostring(player and player.manpower or 0),
+            date_x + 16, 34, 0.78, { 0.88, 0.86, 0.76, 1 })
+    end
 
-    place(widgets.side_panel, side_x, 62, 318, side_h)
-    place(widgets.province_title, side_x + 12, 74, 280, 18, "Province")
+    local stat_w = math.min(314, math.max(220, ww - 742))
+    local stat_x = ww - stat_w - 8
+    if stat_x > 650 then
+        draw_panel(stat_x, 8, stat_w, 48, 0.94)
+        draw_text("Stability: " .. tostring(player and player.stability or 0), stat_x + 12, 16, 0.84, { 0.74, 1.0, 0.64, 1 })
+        draw_text("Speed: " .. speed_label(state) .. "   Map: " .. tostring(view.map_mode), stat_x + 12, 34, 0.78, { 0.96, 0.86, 0.64, 1 })
+    end
+end
+
+local function draw_side_panel(state, hovered_gid, selected_gid, ww, hh)
+    if ww < 720 or hh < 480 then
+        return
+    end
     local selected = state.provinces[selected_gid or state.selected_province_id]
     local hovered = state.provinces[hovered_gid]
-    place(widgets.province_line, side_x + 12, 96, 290, 18, province_line(state, selected))
+    local panel_w = math.floor(clamp(ww * 0.23, 250, 306))
+    local panel_h = math.floor(clamp(hh * 0.34, 210, 278))
+    draw_paper_panel(8, 68, panel_w, panel_h)
+    draw_text(selected and string.upper(selected.name) or "NO PROVINCE", 22, 84, 0.96, { 0.08, 0.06, 0.04, 1 })
     if selected then
-        place(widgets.province_stats, side_x + 12, 118, 290, 18,
-            "Terrain: " .. tostring(selected.terrain) .. " | Goods: " .. tostring(selected.goods))
-        place(widgets.province_neighbors, side_x + 12, 140, 290, 18,
-            "Manpower: " .. tostring(selected.manpower) .. " | Fort: " .. tostring(selected.fort) .. " | Neighbors: " .. tostring(#(selected.neighbors or {})))
-    else
-        place(widgets.province_stats, side_x + 12, 118, 290, 18, "")
-        place(widgets.province_neighbors, side_x + 12, 140, 290, 18, "")
+        draw_text(country_name(state, selected.owner) .. " | " .. tostring(selected.terrain), 22, 106, 0.78, { 0.10, 0.07, 0.04, 1 })
+        draw_text("Goods: " .. tostring(selected.goods) .. "   Income: " .. tostring(selected.income or 0), 22, 124, 0.78, { 0.10, 0.07, 0.04, 1 })
+        draw_text("Manpower: " .. tostring(selected.manpower or 0) .. "   Fort: " .. tostring(selected.fort or 0), 22, 142, 0.78, { 0.10, 0.07, 0.04, 1 })
+        draw_text("Unrest: " .. string.format("%.1f", selected.unrest or 0) .. "   Neighbors: " .. tostring(#(selected.neighbors or {})), 22, 160, 0.78, { 0.10, 0.07, 0.04, 1 })
     end
-    place(widgets.hover_title, side_x + 12, 190, 280, 18, "Hover")
-    place(widgets.hover_line, side_x + 12, 212, 290, 18, province_line(state, hovered))
+    R.setColor(0.28, 0.19, 0.10, 0.70)
+    R.rectangle("fill", 18, 184, panel_w - 20, 1)
+    draw_text("Hover: " .. (hovered and hovered.name or "-"), 22, 198, 0.76, { 0.10, 0.07, 0.04, 1 })
 
     local army = selected_army(state)
-    place(widgets.army_title, side_x + 12, 252, 280, 18, "Selected army")
+    draw_text("Selected army", 22, 226, 0.88, { 0.10, 0.07, 0.04, 1 })
     if army then
         local here = state.provinces[army.province_id]
         local target = state.provinces[army.target_id]
-        place(widgets.army_line, side_x + 12, 274, 290, 18, army.name .. " (" .. country_name(state, army.tag) .. ")")
-        if target then
-            place(widgets.army_pos, side_x + 12, 296, 290, 18,
-                string.format("Size:%d | At:%s | ETA %.1f to %s", army.size, here and here.name or "-", math.max(0, army.eta), target.name))
-        else
-            place(widgets.army_pos, side_x + 12, 296, 290, 18,
-                "Size:" .. tostring(army.size) .. " | At:" .. (here and here.name or "-"))
-        end
+        draw_text(army.name .. " | " .. tostring(math.floor(army.size / 1000)) .. "k", 22, 246, 0.76, { 0.10, 0.07, 0.04, 1 })
+        draw_text((here and here.name or "-") .. (target and (" -> " .. target.name) or ""), 22, 264, 0.72, { 0.10, 0.07, 0.04, 1 })
     else
-        place(widgets.army_line, side_x + 12, 274, 290, 18, "No player army selected.")
-        place(widgets.army_pos, side_x + 12, 296, 290, 18, "")
+        draw_text("No player army selected", 22, 246, 0.76, { 0.10, 0.07, 0.04, 1 })
     end
-
-    place(widgets.log_panel, 8, hh - 104, log_w, 96)
-    place(widgets.log_title, 18, hh - 96, 260, 18, "Campaign log")
-    for i = 1, 4 do
-        place(widgets.log_lines[i], 18, hh - 96 + i * 18, log_w - 20, 18, state.log[i] or "")
-    end
-    place(widgets.minimap_panel, mini_x - 6, mini_y - 8, MM_W + 12, MM_H + 16)
-
-    update_minimap(state, view, ww, hh)
-    return mini_x, mini_y
 end
 
-function M.draw(state, view, hovered_gid, selected_gid)
-    ensure_widgets()
-    local mini_x, mini_y = update_layout(state, view, hovered_gid, selected_gid)
-    if lurek.ui.update then
-        lurek.ui.update(0)
+local function draw_mode_panel(view, ww)
+    if ww < 760 then
+        return
     end
-    lurek.ui.draw()
+    local x = ww - 244
+    local y = 66
+    draw_panel(x, y, 236, 86, 0.92)
+    local modes = {
+        { "1", "political" },
+        { "2", "terrain" },
+        { "3", "economy" },
+        { "4", "diplomacy" },
+        { "5", "unrest" },
+    }
+    for i, mode in ipairs(modes) do
+        draw_button(x + 10 + (i - 1) * 43, y + 12, 34, 28, mode[1], view.map_mode == mode[2])
+    end
+    draw_text("L labels  Space pause  RMB move", x + 12, y + 54, 0.72, { 0.82, 0.83, 0.78, 1 })
+    draw_text("F12 roads  R reset  Tab armies", x + 12, y + 70, 0.72, { 0.82, 0.83, 0.78, 1 })
+end
+
+local function draw_log_panel(state, ww, hh, mini_x, mini_y)
+    local log_h = 92
+    local log_w = math.max(280, mini_x - 22)
+    local x = 8
+    local y = hh - log_h - 8
+    if log_w < 300 then
+        log_w = ww - 16
+        y = math.max(62, mini_y - log_h - 10)
+    end
+    draw_panel(x, y, log_w, log_h, 0.78)
+    draw_text("Campaign log", x + 12, y + 8, 0.82, { 1.0, 0.89, 0.62, 1 })
+    for i = 1, 4 do
+        draw_text(state.log[i] or "", x + 14, y + 10 + i * 17, 0.70, { 0.88, 0.90, 0.86, 1 })
+    end
+end
+
+function M.draw(state, view, hovered_gid, selected_gid, map_modes)
+    local ww, hh = lurek.window.getDimensions()
+    local mini_w, mini_h = minimap_size(ww, hh)
+    local mini_x = ww - mini_w - 16
+    local mini_y = hh - mini_h - 18
+
+    draw_top_bar(state, view, ww)
+    draw_side_panel(state, hovered_gid, selected_gid, ww, hh)
+    draw_mode_panel(view, ww)
+    draw_log_panel(state, ww, hh, mini_x, mini_y)
+
+    draw_panel(mini_x - 6, mini_y - 8, mini_w + 12, mini_h + 16, 0.88)
+    update_minimap(state, view, map_modes, mini_w, mini_h)
     minimap:render(mini_x, mini_y)
+    R.setColor(1, 1, 1, 1)
 end
 
 return M

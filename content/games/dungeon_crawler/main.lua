@@ -7,6 +7,11 @@ local VIEW_Y = 0
 local VIEW_W = 560
 local VIEW_H = 560
 
+local PANEL_W = 225
+local PANEL_H = 590
+local PANEL_MARGIN = 10
+local PANEL_PADDING = 10
+local MINIMAP_Y_OFFSET = 205
 local PANEL_X = 575
 local PANEL_Y = 20
 
@@ -94,6 +99,34 @@ local field_light_key = ""
 local static_render_lights = nil
 
 local app_ui = {}
+
+local function refresh_viewport()
+    local w, h = lurek.window.getDimensions()
+    VIEW_W = math.max(320, math.floor((w or 800) + 0.5))
+    VIEW_H = math.max(240, math.floor((h or 600) + 0.5))
+    RAY_COUNT = math.min(16384, VIEW_W)
+end
+
+local function update_hud_layout()
+    local w, h = lurek.window.getDimensions()
+    local window_w = math.max(320, math.floor((w or 800) + 0.5))
+    local window_h = math.max(240, math.floor((h or 600) + 0.5))
+    local panel_w = math.min(PANEL_W, math.max(180, window_w - PANEL_MARGIN * 2))
+    local panel_h = math.min(PANEL_H, math.max(220, window_h - PANEL_MARGIN * 2))
+    local panel_x = math.max(PANEL_MARGIN, window_w - panel_w - PANEL_MARGIN)
+    local panel_y = PANEL_MARGIN
+
+    PANEL_X = panel_x + PANEL_PADDING
+    PANEL_Y = panel_y + PANEL_PADDING
+
+    if app_ui.root then
+        app_ui.root:setSize(window_w, window_h)
+    end
+    if app_ui.side_panel then
+        app_ui.side_panel:setPosition(panel_x, panel_y)
+        app_ui.side_panel:setSize(panel_w, panel_h)
+    end
+end
 
 local player = {
     x = 8.5, y = 30.5,
@@ -626,6 +659,7 @@ end
 function lurek.init()
     lurek.window.setTitle("Dungeon Crawler")
     lurek.render.setBackgroundColor(0.03, 0.03, 0.04)
+    refresh_viewport()
     lurek.input.bind("forward",    {"w","up"})
     lurek.input.bind("back",       {"s","down"})
     lurek.input.bind("left",       {"a"})
@@ -660,6 +694,8 @@ function lurek.init()
     lurek.ui.loadLayoutFile("content/games/dungeon_crawler/ui.toml")
     local ui_root = lurek.ui.getRoot()
     app_ui = {}
+    app_ui.root = ui_root
+    app_ui.side_panel = ui_root:findById("side_panel")
     app_ui.score_label = ui_root:findById("score_label")
     app_ui.orbs_label = ui_root:findById("orbs_label")
     app_ui.torch_label = ui_root:findById("torch_label")
@@ -668,6 +704,7 @@ function lurek.init()
     app_ui.heading_label = ui_root:findById("heading_label")
     app_ui.complete_label = ui_root:findById("complete_label")
     app_ui.fps_label = ui_root:findById("fps_label")
+    update_hud_layout()
 end
 
 -- T / N are toggled here, NOT in process(), because wasActionPressed
@@ -784,7 +821,20 @@ end
 
 local draw_minimap
 
+local function draw_hud_backdrop()
+    local panel_w = PANEL_W
+    local panel_h = PANEL_H
+
+    if app_ui.side_panel then
+        panel_w, panel_h = app_ui.side_panel:getSize()
+    end
+
+    lurek.render.setColor(0.08, 0.08, 0.12, 0.92)
+    lurek.render.rectangle("fill", PANEL_X - PANEL_PADDING, PANEL_Y - PANEL_PADDING, panel_w, math.max(220, panel_h))
+end
+
 function lurek.draw()
+    refresh_viewport()
     if raycaster then
         local ambient = mode_ambient()
         local sky_r, sky_g, sky_b = mode_sky_color()
@@ -810,6 +860,7 @@ function lurek.draw()
             camera_height=camera_h,
             floor_r=1.0, floor_g=1.0, floor_b=1.0,
             ceiling_r=sky_r, ceiling_g=sky_g, ceiling_b=sky_b,
+            ceiling_a=0.0,
             horizon_offset=0.0,
         }, build_light_list(), build_world_sprites(), wall_texture_map(), build_world_models())
 
@@ -842,15 +893,17 @@ function lurek.draw()
         end
 
         -- Mask the area below the gameplay viewport so geometry never bleeds under UI.
-        lurek.render.setColor(0.07, 0.07, 0.10, 1.0)
-        lurek.render.rectangle("fill", 0, VIEW_H, VIEW_W, 600 - VIEW_H)
+        local _, window_h = lurek.window.getDimensions()
+        if window_h and window_h > VIEW_H then
+            lurek.render.setColor(0.07, 0.07, 0.10, 1.0)
+            lurek.render.rectangle("fill", 0, VIEW_H, VIEW_W, window_h - VIEW_H)
+        end
     end
-    draw_minimap()
 end
 
 draw_minimap = function()
     -- Smaller cells = larger tactical coverage.
-    local MM_X=PANEL_X; local MM_Y=PANEL_Y+176
+    local MM_X=PANEL_X; local MM_Y=PANEL_Y+MINIMAP_Y_OFFSET
     local MM_CELL=5; local MM_R=16
     local side=MM_R*2+1
     local mm_w=side*MM_CELL; local mm_h=side*MM_CELL
@@ -956,4 +1009,8 @@ draw_minimap = function()
 end
 
 function lurek.draw_ui()
+    refresh_viewport()
+    update_hud_layout()
+    draw_hud_backdrop()
+    draw_minimap()
 end

@@ -377,17 +377,34 @@ fn color_to_u8(color: [f32; 4]) -> [u8; 4] {
 
 const LABEL_FONT_WIDTH_HINT: f32 = 6.0;
 const LABEL_FONT_HEIGHT_HINT: f32 = 7.0;
-const LABEL_BASE_SCALE_PER_MAP_PIXEL: f32 = 0.6;
-const LABEL_MIN_SCALE: f32 = 0.8;
-const LABEL_MAX_SCALE: f32 = 6.0;
-const LABEL_MIN_SCREEN_HEIGHT: f32 = 4.5;
+const LABEL_TARGET_SCREEN_HEIGHT_FACTOR: f32 = 1.08;
+const LABEL_MIN_SCREEN_HEIGHT: f32 = 5.0;
+const LABEL_MAX_SCREEN_HEIGHT: f32 = 12.0;
+const LABEL_SCREEN_PADDING: f32 = 3.0;
+const LABEL_MIN_MAP_CELL_SCREEN: f32 = 9.0;
 
-fn label_transform(
-    text: &str,
-    opts: &ProvinceRenderOptions,
-    line: ((f32, f32), (f32, f32)),
-) -> Option<(f32, f32, f32, f32, f32, f32)> {
-    let ((ax, ay), (bx, by)) = line;
+#[derive(Debug, Clone)]
+struct LabelCandidate {
+    id: ProvinceId,
+    text: String,
+    x: f32,
+    y: f32,
+    rotation: f32,
+    scale: f32,
+    ox: f32,
+    oy: f32,
+    screen_rect: (f32, f32, f32, f32),
+    area: u32,
+}
+
+fn rects_overlap(a: (f32, f32, f32, f32), b: (f32, f32, f32, f32)) -> bool {
+    a.0 < b.2 && a.2 > b.0 && a.1 < b.3 && a.3 > b.1
+}
+
+fn label_rotation(line: Option<((f32, f32), (f32, f32))>) -> f32 {
+    let Some(((ax, ay), (bx, by))) = line else {
+        return 0.0;
+    };
     let dx = bx - ax;
     let dy = by - ay;
     let mut rotation = if dx.abs() <= f32::EPSILON && dy.abs() <= f32::EPSILON {
@@ -400,27 +417,72 @@ fn label_transform(
     } else if rotation < -FRAC_PI_2 {
         rotation += PI;
     }
+    rotation
+}
 
-    let line_len = (dx * dx + dy * dy).sqrt().max(1.0) * opts.pixel_size.max(0.1);
+fn label_candidate(
+    id: ProvinceId,
+    text: String,
+    opts: &ProvinceRenderOptions,
+    bb: (u32, u32, u32, u32),
+    center: (f32, f32),
+    line: Option<((f32, f32), (f32, f32))>,
+) -> Option<LabelCandidate> {
+    let rotation = label_rotation(line);
     let glyph_count = text.chars().count().max(1) as f32;
-    let text_width = glyph_count * LABEL_FONT_WIDTH_HINT;
-    let fit_scale = (line_len / ((glyph_count + 1.5) * LABEL_FONT_WIDTH_HINT))
-        .clamp(LABEL_MIN_SCALE, LABEL_MAX_SCALE);
-    let base_scale =
-        (opts.pixel_size * LABEL_BASE_SCALE_PER_MAP_PIXEL).clamp(LABEL_MIN_SCALE, LABEL_MAX_SCALE);
-    let scale = base_scale.min(fit_scale);
-    if scale * opts.zoom * LABEL_FONT_HEIGHT_HINT < LABEL_MIN_SCREEN_HEIGHT {
+    let map_cell_screen = opts.pixel_size * opts.zoom;
+    if map_cell_screen < LABEL_MIN_MAP_CELL_SCREEN {
+        return None;
+    }
+    let mut screen_scale =
+        (map_cell_screen * LABEL_TARGET_SCREEN_HEIGHT_FACTOR / LABEL_FONT_HEIGHT_HINT).clamp(
+            LABEL_MIN_SCREEN_HEIGHT / LABEL_FONT_HEIGHT_HINT,
+            LABEL_MAX_SCREEN_HEIGHT / LABEL_FONT_HEIGHT_HINT,
+        );
+
+    let bbox_w = (bb.2.saturating_sub(bb.0) + 1) as f32 * map_cell_screen;
+    let line_w = line
+        .map(|((ax, ay), (bx, by))| {
+            let dx = bx - ax;
+            let dy = by - ay;
+            (dx * dx + dy * dy).sqrt() * map_cell_screen
+        })
+        .unwrap_or(0.0);
+    let max_screen_w = bbox_w.max(line_w) * 0.86;
+    if max_screen_w < LABEL_FONT_WIDTH_HINT {
         return None;
     }
 
-    Some((
-        (ax + bx) * 0.5 * opts.pixel_size,
-        (ay + by) * 0.5 * opts.pixel_size,
+    let unfit_w = glyph_count * LABEL_FONT_WIDTH_HINT * screen_scale;
+    if unfit_w > max_screen_w {
+        screen_scale *= max_screen_w / unfit_w;
+    }
+    if screen_scale * LABEL_FONT_HEIGHT_HINT < LABEL_MIN_SCREEN_HEIGHT {
+        return None;
+    }
+
+    let text_width = glyph_count * LABEL_FONT_WIDTH_HINT;
+    let text_screen_w = text_width * screen_scale;
+    let text_screen_h = LABEL_FONT_HEIGHT_HINT * screen_scale;
+    let screen_x = opts.x + center.0 * opts.pixel_size * opts.zoom;
+    let screen_y = opts.y + center.1 * opts.pixel_size * opts.zoom;
+    Some(LabelCandidate {
+        id,
+        text,
+        x: center.0 * opts.pixel_size,
+        y: center.1 * opts.pixel_size,
         rotation,
-        scale,
-        text_width * 0.5,
-        LABEL_FONT_HEIGHT_HINT * 0.5,
-    ))
+        scale: screen_scale / opts.zoom.max(0.001),
+        ox: text_width * 0.5,
+        oy: LABEL_FONT_HEIGHT_HINT * 0.5,
+        screen_rect: (
+            screen_x - text_screen_w * 0.5 - LABEL_SCREEN_PADDING,
+            screen_y - text_screen_h * 0.5 - LABEL_SCREEN_PADDING,
+            screen_x + text_screen_w * 0.5 + LABEL_SCREEN_PADDING,
+            screen_y + text_screen_h * 0.5 + LABEL_SCREEN_PADDING,
+        ),
+        area: (bb.2.saturating_sub(bb.0) + 1) * (bb.3.saturating_sub(bb.1) + 1),
+    })
 }
 
 fn put_pixel(pixels: &mut [u8], width: u32, height: u32, x: i32, y: i32, color: [u8; 4]) {
@@ -965,6 +1027,7 @@ pub fn generate_render_commands(
     }
     if opts.draw_labels {
         if let Some(font) = font_key {
+            let mut candidates = Vec::new();
             for id in registry.province_ids() {
                 let Some(bb) = registry.bbox_for(id) else {
                     continue;
@@ -991,40 +1054,51 @@ pub fn generate_render_commands(
                     .label_text_for(id)
                     .map(|s| s.to_string())
                     .unwrap_or_else(|| id.to_string());
-                let mid_y = (bb.1 + bb.3) as f32 * 0.5;
-                let line = registry
-                    .label_line_for(id)
-                    .unwrap_or(((bb.0 as f32, mid_y), (bb.2 as f32, mid_y)));
-                let Some((mx, my, rotation, label_scale, ox, oy)) =
-                    label_transform(text.as_str(), opts, line)
-                else {
+                let center = registry
+                    .centroid_for(id)
+                    .unwrap_or(((bb.0 + bb.2) as f32 * 0.5, (bb.1 + bb.3) as f32 * 0.5));
+                if let Some(candidate) =
+                    label_candidate(id, text, opts, bb, center, registry.label_line_for(id))
+                {
+                    candidates.push(candidate);
+                }
+            }
+            candidates.sort_by(|a, b| b.area.cmp(&a.area).then_with(|| a.id.cmp(&b.id)));
+
+            let mut occupied: Vec<(f32, f32, f32, f32)> = Vec::new();
+            for label in candidates {
+                if occupied
+                    .iter()
+                    .any(|rect| rects_overlap(*rect, label.screen_rect))
+                {
                     continue;
-                };
+                }
+                occupied.push(label.screen_rect);
                 let shadow_offset = 1.0 / opts.zoom.max(0.001);
                 cmds.push(RenderCommand::SetColor(0.0, 0.0, 0.0, 0.65));
                 cmds.push(RenderCommand::PrintTransformed {
                     font_key: font,
-                    text: text.clone(),
-                    x: mx + shadow_offset,
-                    y: my + shadow_offset,
-                    rotation,
-                    sx: label_scale,
-                    sy: label_scale,
-                    ox,
-                    oy,
+                    text: label.text.clone(),
+                    x: label.x + shadow_offset,
+                    y: label.y + shadow_offset,
+                    rotation: label.rotation,
+                    sx: label.scale,
+                    sy: label.scale,
+                    ox: label.ox,
+                    oy: label.oy,
                     scale: 1.0,
                 });
                 cmds.push(RenderCommand::SetColor(0.92, 0.92, 0.86, 1.0));
                 cmds.push(RenderCommand::PrintTransformed {
                     font_key: font,
-                    text,
-                    x: mx,
-                    y: my,
-                    rotation,
-                    sx: label_scale,
-                    sy: label_scale,
-                    ox,
-                    oy,
+                    text: label.text,
+                    x: label.x,
+                    y: label.y,
+                    rotation: label.rotation,
+                    sx: label.scale,
+                    sy: label.scale,
+                    ox: label.ox,
+                    oy: label.oy,
                     scale: 1.0,
                 });
             }

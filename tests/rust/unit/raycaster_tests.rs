@@ -491,6 +491,148 @@ mod render_tests {
     }
 
     #[test]
+    fn wall_commands_are_depth_sorted_far_to_near() {
+        let mut scene = RaycasterScene::new(320.0, 200.0);
+        scene.walls.push(WallQuad {
+            corners: make_corners(0.0, 50.0, 64.0, 100.0),
+            uvs: unit_uvs(),
+            texture_key: None,
+            light: [1.0, 0.0, 0.0, 1.0],
+            depth: 2.0,
+            corner_w: [2.0, 2.0, 2.0, 2.0],
+            cell_value: 1,
+            level_index: 0,
+            material: None,
+        });
+        scene.walls.push(WallQuad {
+            corners: make_corners(0.0, 50.0, 64.0, 100.0),
+            uvs: unit_uvs(),
+            texture_key: None,
+            light: [0.0, 0.0, 1.0, 1.0],
+            depth: 8.0,
+            corner_w: [8.0, 8.0, 8.0, 8.0],
+            cell_value: 1,
+            level_index: 0,
+            material: None,
+        });
+
+        let cmds = scene.generate_render_commands();
+        let wall_colors: Vec<[f32; 4]> = cmds
+            .iter()
+            .filter_map(|cmd| match cmd {
+                RenderCommand::DrawColoredPolygon { colors, .. } => colors.first().copied(),
+                _ => None,
+            })
+            .collect();
+
+        assert_eq!(wall_colors.len(), 2);
+        assert_eq!(wall_colors[0], [0.0, 0.0, 1.0, 1.0]);
+        assert_eq!(wall_colors[1], [1.0, 0.0, 0.0, 1.0]);
+    }
+
+    #[test]
+    fn floor_commands_are_depth_sorted_far_to_near() {
+        let mut scene = RaycasterScene::new(320.0, 200.0);
+        scene.floors.push(FloorQuad {
+            corners: make_corners(0.0, 100.0, 64.0, 100.0),
+            uvs: unit_uvs(),
+            texture_key: None,
+            light: [1.0, 0.0, 0.0, 1.0],
+            depth: 2.0,
+            corner_w: [2.0, 2.0, 2.0, 2.0],
+            level_index: 0,
+            material: None,
+        });
+        scene.floors.push(FloorQuad {
+            corners: make_corners(0.0, 100.0, 64.0, 100.0),
+            uvs: unit_uvs(),
+            texture_key: None,
+            light: [0.0, 0.0, 1.0, 1.0],
+            depth: 8.0,
+            corner_w: [8.0, 8.0, 8.0, 8.0],
+            level_index: 0,
+            material: None,
+        });
+
+        let cmds = scene.generate_render_commands();
+        let floor_colors: Vec<[f32; 4]> = cmds
+            .iter()
+            .filter_map(|cmd| match cmd {
+                RenderCommand::DrawColoredPolygon { colors, .. } => colors.first().copied(),
+                _ => None,
+            })
+            .collect();
+
+        assert_eq!(floor_colors.len(), 2);
+        assert_eq!(floor_colors[0], [0.0, 0.0, 1.0, 1.0]);
+        assert_eq!(floor_colors[1], [1.0, 0.0, 0.0, 1.0]);
+    }
+
+    #[test]
+    fn sprites_are_depth_sorted_between_walls() {
+        let sprite_tex = TextureKey::from(KeyData::from_ffi(23));
+        let mut scene = RaycasterScene::new(320.0, 200.0);
+        scene.walls.push(WallQuad {
+            corners: make_corners(0.0, 50.0, 64.0, 100.0),
+            uvs: unit_uvs(),
+            texture_key: None,
+            light: [1.0, 0.0, 0.0, 1.0],
+            depth: 2.0,
+            corner_w: [2.0, 2.0, 2.0, 2.0],
+            cell_value: 1,
+            level_index: 0,
+            material: None,
+        });
+        scene.walls.push(WallQuad {
+            corners: make_corners(0.0, 50.0, 64.0, 100.0),
+            uvs: unit_uvs(),
+            texture_key: None,
+            light: [0.0, 0.0, 1.0, 1.0],
+            depth: 8.0,
+            corner_w: [8.0, 8.0, 8.0, 8.0],
+            cell_value: 1,
+            level_index: 0,
+            material: None,
+        });
+        scene.sprites.push(BillboardSprite {
+            corners: make_corners(16.0, 40.0, 24.0, 32.0),
+            uvs: unit_uvs(),
+            texture_key: sprite_tex,
+            light: [1.0, 1.0, 1.0, 1.0],
+            depth: 5.0,
+            entity_id: Some(77),
+            level_index: 0,
+            world_x: 5.0,
+            world_y: 2.0,
+            attrs: std::collections::HashMap::new(),
+        });
+
+        let cmds = scene.generate_render_commands();
+        let draw_order: Vec<&'static str> = cmds
+            .iter()
+            .filter_map(|cmd| match cmd {
+                RenderCommand::DrawColoredPolygon { colors, .. } => {
+                    if colors.first() == Some(&[0.0, 0.0, 1.0, 1.0]) {
+                        Some("far_wall")
+                    } else if colors.first() == Some(&[1.0, 0.0, 0.0, 1.0]) {
+                        Some("near_wall")
+                    } else {
+                        None
+                    }
+                }
+                RenderCommand::DrawTexturedQuad { texture_key, .. }
+                    if *texture_key == sprite_tex =>
+                {
+                    Some("sprite")
+                }
+                _ => None,
+            })
+            .collect();
+
+        assert_eq!(draw_order, vec!["far_wall", "sprite", "near_wall"]);
+    }
+
+    #[test]
     fn models_emit_transient_mesh_commands_in_depth_order_with_sprites() {
         let far_tex = TextureKey::from(KeyData::from_ffi(21));
         let near_tex = TextureKey::from(KeyData::from_ffi(22));
@@ -1220,6 +1362,45 @@ mod build_scene_tests {
         assert!(scene.walls.is_empty(), "No walls in empty grid");
         assert!(!scene.floors.is_empty(), "Floor quads should exist");
         assert!(!scene.ceilings.is_empty(), "Ceiling quads should exist");
+    }
+
+    #[test]
+    fn transparent_ceiling_color_leaves_untextured_sky_open() {
+        let rc = Raycaster2D::new(10, 10);
+        let mut params = default_params();
+        params.ceiling_color = Color::new(0.1, 0.1, 0.15, 0.0);
+
+        let open_scene = RaycasterScene::build(
+            &rc,
+            &params,
+            &[],
+            &[],
+            &|_| None,
+            &|_, _| None,
+            &|_, _| None,
+            &|_, _| None,
+        );
+        assert!(!open_scene.floors.is_empty(), "Floor quads should remain");
+        assert!(
+            open_scene.ceilings.is_empty(),
+            "Untextured transparent ceilings should not cover caller-drawn sky"
+        );
+
+        let roof_tex = TextureKey::from(KeyData::from_ffi(71));
+        let roof_scene = RaycasterScene::build(
+            &rc,
+            &params,
+            &[],
+            &[],
+            &|_| None,
+            &|_, _| None,
+            &|_, _| Some(roof_tex),
+            &|_, _| None,
+        );
+        assert!(
+            !roof_scene.ceilings.is_empty(),
+            "Textured roof cells should still render with ceiling_a=0"
+        );
     }
 
     #[test]

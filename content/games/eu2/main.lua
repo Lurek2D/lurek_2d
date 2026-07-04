@@ -21,6 +21,7 @@ local PROVINCE_GPU_STYLE = {
 local modules = {}
 local reg = nil
 local game = nil
+local map_font = nil
 local ui_font = nil
 
 local view = {
@@ -252,11 +253,9 @@ function lurek.init()
     modules.ui = load_module("scripts/ui.lua")
     modules.input = load_module("scripts/input.lua")
 
-    ui_font = lurek.render.newFont(7)
+    map_font = lurek.render.newFont(7)
+    ui_font = lurek.render.newFont(10)
     R.setFont(ui_font)
-    if lurek.ui and lurek.ui.setFont then
-        lurek.ui.setFont(ui_font)
-    end
 
     if map_needs_sanitize() then
         log_warn("sanitizing province map cache")
@@ -377,6 +376,9 @@ local function render_map()
     if refresh_colors then
         view.render_mode, view.province_tints = modules.map_modes.apply(reg, game, view.map_mode)
     end
+    if map_font then
+        R.setFont(map_font)
+    end
     reg_call("render", {
         backend = "gpu",
         x = cam_x,
@@ -412,13 +414,16 @@ function lurek.draw()
     if not reg or not game then
         return
     end
-    if ui_font then
-        R.setFont(ui_font)
-    end
     render_map()
     if view.show_overlay then
+        if map_font then
+            R.setFont(map_font)
+        end
         draw_city_markers()
         draw_armies()
-        modules.ui.draw(game, view, view.hovered_gid, view.selected_gid)
+        if ui_font then
+            R.setFont(ui_font)
+        end
+        modules.ui.draw(game, view, view.hovered_gid, view.selected_gid, modules.map_modes)
     end
 end

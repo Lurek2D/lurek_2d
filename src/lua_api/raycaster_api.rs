@@ -853,7 +853,10 @@ fn parse_scene_build_params_with_default_time(
             params_tbl
                 .get::<_, Option<f32>>("ceiling_b")?
                 .unwrap_or(0.15),
-            1.0,
+            params_tbl
+                .get::<_, Option<f32>>("ceiling_a")?
+                .unwrap_or(1.0)
+                .clamp(0.0, 1.0),
         ),
         camera_height: table_opt_clamped_f32(params_tbl, "camera_height", 0.5, 0.1, 0.9)?,
         horizon_offset: params_tbl
@@ -4139,7 +4142,7 @@ impl LuaUserData for LuaRaycaster {
         /// Builds a complete textured raycaster scene for GPU rendering. Stores the output internally.
         /// for the renderer to consume on the next frame. Returns the number of quads generated.
         /// Stored wall, floor, ceiling, and particle-emitter overrides from this map are included automatically.
-        /// @param | params | table | Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b?, camera_height?, horizon_offset?, time_seconds?, background?, overlays?}. `background` accepts solid, gradient, skybox, or shader descriptors. `overlays` accepts fog, depth fog, snow, or shader descriptors.
+        /// @param | params | table | Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b/a?, camera_height?, horizon_offset?, time_seconds?, background?, overlays?}. Set `ceiling_a=0` to skip untextured ceiling polygons while still rendering textured roof cells. `background` accepts solid, gradient, skybox, or shader descriptors. `overlays` accepts fog, depth fog, snow, or shader descriptors.
         /// @param | lights | table? | Array of render light tables {x, y, radius, r?, g?, b?, color?, intensity?, level?}.
         /// @param | sprites | table|LSpriteManager? | Array of sprite tables {x, y, texture?, size?, front_texture?, right_texture?, back_texture?, left_texture?, angle?} or an LSpriteManager with integer/LImage textures.
         /// @param | wallTextures | table? | Map of cell_value -> texture for wall surfaces.

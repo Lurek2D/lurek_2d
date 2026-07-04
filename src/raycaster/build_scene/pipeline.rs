@@ -135,6 +135,7 @@ impl RaycasterScene {
         }
         scene.depth_columns = build_depth_columns(raycaster, params);
         let mut lighting_cache = LightingSampleCache::default();
+        let draw_untextured_ceiling = params.ceiling_color.a > 0.0;
         scene.build_scene_into(
             raycaster,
             0,
@@ -150,7 +151,13 @@ impl RaycasterScene {
             floor_material_at,
             ceiling_material_at,
             &|_, _| true,
-            &|_, _| true,
+            &|x, y| {
+                draw_untextured_ceiling
+                    || ceiling_texture_at(x, y).is_some()
+                    || ceiling_material_at(x, y)
+                        .and_then(|material| material.texture_key)
+                        .is_some()
+            },
             &|x, y| ceiling_texture_at(x, y).is_some(),
             lowered_floor_at,
             &mut lighting_cache,
@@ -278,6 +285,7 @@ impl RaycasterScene {
         let visible_levels =
             grid.visible_level_indices(params.player_x, params.player_y, params.max_distance);
         let visible_level_count = visible_levels.len();
+        let draw_untextured_ceiling = params.ceiling_color.a > 0.0;
         for level_index in visible_levels {
             let _ = grid.with_runtime_level(level_index, |level, raycaster| {
                 scene.build_scene_into(
@@ -301,7 +309,17 @@ impl RaycasterScene {
                     &|x, y| floor_material_at(level_index, x, y),
                     &|x, y| ceiling_material_at(level_index, x, y),
                     &|x, y| !level.is_floor_hole(x as usize, y as usize),
-                    &|x, y| !level.is_ceiling_hole(x as usize, y as usize),
+                    &|x, y| {
+                        if level.is_ceiling_hole(x as usize, y as usize) {
+                            return false;
+                        }
+                        draw_untextured_ceiling
+                            || ceiling_texture_at(level_index, x, y).is_some()
+                            || level.ceiling_texture_at(x as usize, y as usize).is_some()
+                            || ceiling_material_at(level_index, x, y)
+                                .and_then(|material| material.texture_key)
+                                .is_some()
+                    },
                     &|x, y| !level.is_ceiling_hole(x as usize, y as usize),
                     &|x, y| {
                         lowered_floor_at(level_index, x, y)

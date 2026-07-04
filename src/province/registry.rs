@@ -278,6 +278,10 @@ impl ProvinceRegistry {
     pub fn capital_for(&self, id: ProvinceId) -> Option<(f32, f32)> {
         self.provinces.get(&id).and_then(|p| p.capital)
     }
+    /// Return the pixel-weighted centroid for id, or None if the province has no computed spans.
+    pub fn centroid_for(&self, id: ProvinceId) -> Option<(f32, f32)> {
+        self.provinces.get(&id).and_then(|p| p.centroid)
+    }
     /// Set the label anchor line for id from (ax, ay) to (bx, by); return false if id is unknown.
     pub fn set_label_line(&mut self, id: ProvinceId, ax: f32, ay: f32, bx: f32, by: f32) -> bool {
         let Some(rec) = self.provinces.get_mut(&id) else {

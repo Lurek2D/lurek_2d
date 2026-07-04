@@ -396,10 +396,26 @@ impl RaycasterScene {
         &self,
         render_state: RaycasterRenderState,
     ) -> Vec<RenderCommand> {
-        enum TransparentItem<'a> {
+        enum SceneItem<'a> {
+            Ceiling(&'a crate::raycaster::scene::CeilingQuad),
+            Floor(&'a crate::raycaster::scene::FloorQuad),
+            Wall(&'a crate::raycaster::scene::WallQuad),
             Sprite(&'a crate::raycaster::scene::BillboardSprite),
             Particle(&'a RaycasterParticle),
             Model(&'a crate::raycaster::scene::ModelMesh),
+        }
+
+        impl SceneItem<'_> {
+            fn depth(&self) -> f32 {
+                match self {
+                    SceneItem::Ceiling(ceiling) => ceiling.depth,
+                    SceneItem::Floor(floor) => floor.depth,
+                    SceneItem::Wall(wall) => wall.depth,
+                    SceneItem::Sprite(sprite) => sprite.depth,
+                    SceneItem::Particle(particle) => particle.depth,
+                    SceneItem::Model(model) => model.depth,
+                }
+            }
         }
 
         let mut cmds = Vec::with_capacity(self.quad_count() * 2 + self.overlays.len() * 2 + 4);
@@ -421,81 +437,88 @@ impl RaycasterScene {
                 &mut current_shader,
             );
         }
-        for ceil in &self.ceilings {
-            push_surface_quad_commands(
-                &mut cmds,
-                SurfaceQuadCommand {
-                    corners: ceil.corners,
-                    uvs: ceil.uvs,
-                    corner_w: ceil.corner_w,
-                    texture_key: ceil.texture_key,
-                    light: ceil.light,
-                    material: ceil.material.as_ref(),
-                    fallback_shader: render_state.scene_shader,
-                },
-                &mut current_blend,
-                &mut current_shader,
-            );
+        let mut scene_items = Vec::with_capacity(
+            self.ceilings.len()
+                + self.floors.len()
+                + self.walls.len()
+                + self.sprites.len()
+                + self.particles.len()
+                + self.models.len(),
+        );
+        for ceiling in &self.ceilings {
+            scene_items.push(SceneItem::Ceiling(ceiling));
         }
         for floor in &self.floors {
-            push_surface_quad_commands(
-                &mut cmds,
-                SurfaceQuadCommand {
-                    corners: floor.corners,
-                    uvs: floor.uvs,
-                    corner_w: floor.corner_w,
-                    texture_key: floor.texture_key,
-                    light: floor.light,
-                    material: floor.material.as_ref(),
-                    fallback_shader: render_state.scene_shader,
-                },
-                &mut current_blend,
-                &mut current_shader,
-            );
+            scene_items.push(SceneItem::Floor(floor));
         }
         for wall in &self.walls {
-            push_surface_quad_commands(
-                &mut cmds,
-                SurfaceQuadCommand {
-                    corners: wall.corners,
-                    uvs: wall.uvs,
-                    corner_w: wall.corner_w,
-                    texture_key: wall.texture_key,
-                    light: wall.light,
-                    material: wall.material.as_ref(),
-                    fallback_shader: render_state.scene_shader,
-                },
-                &mut current_blend,
-                &mut current_shader,
-            );
+            scene_items.push(SceneItem::Wall(wall));
         }
-        let mut transparent_items =
-            Vec::with_capacity(self.sprites.len() + self.particles.len() + self.models.len());
         for sprite in &self.sprites {
-            transparent_items.push(TransparentItem::Sprite(sprite));
+            scene_items.push(SceneItem::Sprite(sprite));
         }
         for particle in &self.particles {
-            transparent_items.push(TransparentItem::Particle(particle));
+            scene_items.push(SceneItem::Particle(particle));
         }
         for model in &self.models {
-            transparent_items.push(TransparentItem::Model(model));
+            scene_items.push(SceneItem::Model(model));
         }
-        transparent_items.sort_by(|a, b| {
-            let ad = match a {
-                TransparentItem::Sprite(sprite) => sprite.depth,
-                TransparentItem::Particle(particle) => particle.depth,
-                TransparentItem::Model(model) => model.depth,
-            };
-            let bd = match b {
-                TransparentItem::Sprite(sprite) => sprite.depth,
-                TransparentItem::Particle(particle) => particle.depth,
-                TransparentItem::Model(model) => model.depth,
-            };
-            bd.partial_cmp(&ad).unwrap_or(std::cmp::Ordering::Equal)
+        scene_items.sort_by(|a, b| {
+            b.depth()
+                .partial_cmp(&a.depth())
+                .unwrap_or(std::cmp::Ordering::Equal)
         });
-        for item in transparent_items {
+        for item in scene_items {
             match item {
-                TransparentItem::Sprite(sprite) => {
+                SceneItem::Ceiling(ceil) => {
+                    push_surface_quad_commands(
+                        &mut cmds,
+                        SurfaceQuadCommand {
+                            corners: ceil.corners,
+                            uvs: ceil.uvs,
+                            corner_w: ceil.corner_w,
+                            texture_key: ceil.texture_key,
+                            light: ceil.light,
+                            material: ceil.material.as_ref(),
+                            fallback_shader: render_state.scene_shader,
+                        },
+                        &mut current_blend,
+                        &mut current_shader,
+                    );
+                }
+                SceneItem::Floor(floor) => {
+                    push_surface_quad_commands(
+                        &mut cmds,
+                        SurfaceQuadCommand {
+                            corners: floor.corners,
+                            uvs: floor.uvs,
+                            corner_w: floor.corner_w,
+                            texture_key: floor.texture_key,
+                            light: floor.light,
+                            material: floor.material.as_ref(),
+                            fallback_shader: render_state.scene_shader,
+                        },
+                        &mut current_blend,
+                        &mut current_shader,
+                    );
+                }
+                SceneItem::Wall(wall) => {
+                    push_surface_quad_commands(
+                        &mut cmds,
+                        SurfaceQuadCommand {
+                            corners: wall.corners,
+                            uvs: wall.uvs,
+                            corner_w: wall.corner_w,
+                            texture_key: wall.texture_key,
+                            light: wall.light,
+                            material: wall.material.as_ref(),
+                            fallback_shader: render_state.scene_shader,
+                        },
+                        &mut current_blend,
+                        &mut current_shader,
+                    );
+                }
+                SceneItem::Sprite(sprite) => {
                     push_surface_quad_commands(
                         &mut cmds,
                         SurfaceQuadCommand {
@@ -511,7 +534,7 @@ impl RaycasterScene {
                         &mut current_shader,
                     );
                 }
-                TransparentItem::Particle(particle) => {
+                SceneItem::Particle(particle) => {
                     push_set_blend(&mut cmds, &mut current_blend, particle.blend_mode);
                     push_set_shader(&mut cmds, &mut current_shader, None);
                     cmds.push(RenderCommand::DrawParticleSystem {
@@ -539,7 +562,7 @@ impl RaycasterScene {
                         shader: particle.shader_key,
                     });
                 }
-                TransparentItem::Model(model) => {
+                SceneItem::Model(model) => {
                     push_set_blend(&mut cmds, &mut current_blend, BlendMode::Alpha);
                     push_set_shader(&mut cmds, &mut current_shader, render_state.scene_shader);
                     cmds.push(RenderCommand::DrawMeshTransient {

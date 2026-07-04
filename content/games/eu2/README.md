@@ -62,7 +62,7 @@ cargo run -- content/games/eu2
 - `scripts/state.lua` owns campaign state, time, economy, army movement, and AI;
   it consumes province adjacency/routes without owning pathfinding internals.
 - `scripts/map_modes.lua` maps campaign state back into `lurek.province` styles.
-- `scripts/ui.lua` owns retained `lurek.ui` widgets and the `lurek.minimap`
+- `scripts/ui.lua` owns the anchored HUD render pass and the `lurek.minimap`
   campaign overview.
 - `scripts/input.lua` maps keys to state/view changes.
 - `tools/prototype_map_explorer.html` is a preserved HTML prototype, not runtime content.
@@ -82,7 +82,7 @@ Manual smoke checklist:
 - `Space`, `+/-`, `1..5`, `L`, `R`, `Tab`, `F12`, and RMB movement work,
 - the base map is rendered by the GPU province path, while map-mode and ownership
   changes refresh registry colors and border styles,
-- province labels appear on zoomed-in views and follow the imported province
-  label lines instead of a fixed horizontal placement,
+- province labels appear on zoomed-in views, stay centered on province
+  centroids, and use engine-side collision filtering,
 - the province showcase FX are visible: terrain watermark, edge gradient,
   palette-driven borders, and hover/selection emphasis.
