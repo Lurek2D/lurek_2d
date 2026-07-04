@@ -8,6 +8,10 @@
 
 A life-sim RPG with daily schedules, farming or work loops, relationships, festivals, skills, quests, shops, and long-term calendar progression. The player advances through days, not combat arenas alone.
 
+## Market positioning
+
+Use the reference set (Stardew Valley, Harvest Moon, Rune Factory, Persona social-calendar structure) to define player expectations around pacing, readability, and production scope, not to copy mechanics directly. Target itch.io with a focused slice of combat, progression, and narrative tone. Target Steam with durable save data, readable stats, quest/state tooling, content pipelines, and enough authored encounters to support a commercial RPG loop. For life sim rpg, the store page must communicate the core verb, session length, progression promise, and why the 2D presentation is intentional.
+
 ## Lurek2D API map
 
 | Need | Lurek2D surface |
@@ -43,6 +47,22 @@ my_life_sim/
   scripts/systems/shops.lua
   scripts/ui/day_planner.lua
 ```
+
+## Data and content model
+
+- Author actors, classes, abilities, items, quests, factions, dialogue, and encounter tables as data, not hidden script constants.
+- Author party state, inventory, quest flags, reputation, combat logs, and save migrations as data, not hidden script constants.
+- Author world regions, shops, loot rules, progression curves, and localization keys as data, not hidden script constants.
+- Keep life sim rpg content split between durable authored files under `data/`, media under `assets/`, and orchestration modules under `scripts/`.
+- Save files should store player/world progress and stable identifiers, not transient render objects, cached paths, or UI widget instances.
+
+
+## Technical design notes
+
+- Use `lurek.scene` to isolate exploration, combat, dialogue, inventory, shops, and menu-heavy flows.
+- Use `lurek.dialog`, `lurek.ui`, and `lurek.save` as first-class RPG systems, not as presentation afterthoughts.
+- Use `lurek.dataframe` for large tables such as items, abilities, enemies, shops, and progression curves.
+- Use `lurek.ecs` for actors and world objects when many systems need shared identity and component data.
 
 ## Vertical slice acceptance
 

@@ -8,6 +8,10 @@
 
 A 2D trick-score game focused on movement lines, timed inputs, combo chains, multipliers, objectives, and expressive replay. It can be skateboarding, snowboarding, BMX, parkour, or fictional stunt movement.
 
+## Market positioning
+
+Use the reference set (Tony Hawk's Pro Skater as structure reference, OlliOlli, SSX as scoring reference, Jet Set Radio as style reference) to define player expectations around pacing, readability, and production scope, not to copy mechanics directly. Target itch.io with instant controls, one ruleset, and a short competitive loop. Target Steam with season/challenge structure, input remapping, ghosts or AI rivals, replayable tracks/arenas, and strong gamepad support. For trick score sports, the store page must communicate the core verb, session length, progression promise, and why the 2D presentation is intentional.
+
 ## Lurek2D API map
 
 | Need | Lurek2D surface |
@@ -40,6 +44,22 @@ my_trick_sport/
   scripts/ui/combo_hud.lua
   assets/rider/
 ```
+
+## Data and content model
+
+- Author arenas or tracks, teams, vehicles, athletes, ball/puck objects, checkpoints, and scoring zones as data, not hidden script constants.
+- Author input bindings, AI profiles, tournament state, lap/round timers, and replay or ghost data as data, not hidden script constants.
+- Author physics tuning, camera zones, crowd/audio cues, and challenge progression as data, not hidden script constants.
+- Keep trick score sports content split between durable authored files under `data/`, media under `assets/`, and orchestration modules under `scripts/`.
+- Save files should store player/world progress and stable identifiers, not transient render objects, cached paths, or UI widget instances.
+
+
+## Technical design notes
+
+- Use `lurek.physics` for collision, steering, ball/vehicle response, and trigger zones, with authored tuning data separate from code.
+- Use `lurek.input` action maps for keyboard and gamepad parity.
+- Use `lurek.camera`, `lurek.audio`, `lurek.particle`, and `lurek.effect` for speed, impact, crowd, and scoring feedback.
+- Use `lurek.save` for campaign, time trials, unlocks, best scores, and controller preferences.
 
 ## Vertical slice acceptance
 

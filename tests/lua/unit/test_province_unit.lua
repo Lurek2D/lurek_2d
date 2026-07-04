@@ -35,13 +35,13 @@ describe("registry queries", function()
     -- @covers LProvinceRegistry:getWidth
     it("reports the map width from the imported province atlas", function()
         local reg = lurek.province.newFromPng("test-province-q", "content/games/eu2/map.png")
-        expect_equal(1000, reg:getWidth())
+        expect_equal(2000, reg:getWidth())
     end)
 
     -- @covers LProvinceRegistry:getHeight
     it("reports the map height from the imported province atlas", function()
         local reg = lurek.province.newFromPng("test-province-h", "content/games/eu2/map.png")
-        expect_equal(450, reg:getHeight())
+        expect_equal(900, reg:getHeight())
     end)
 
     -- @covers LProvinceRegistry:getRevision
@@ -181,6 +181,7 @@ describe("province metadata import pipeline", function()
         expect_type("table", imported)
         expect_true((imported.mapped_provinces or 0) > 0)
         expect_true((imported.capitals_set or 0) > 0)
+        expect_true((imported.label_lines_set or 0) > 0)
 
         local snap = reg:getProvince(1)
         expect_type("table", snap)

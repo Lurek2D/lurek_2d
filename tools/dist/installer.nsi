@@ -3,7 +3,7 @@
 ;
 ; Requirements:
 ;   - NSIS 3.x (https://nsis.sourceforge.io/Download)
-;   - Built release binary at:  build\release\lurek2d.exe
+;   - Built release binaries at: build\release\lurek2d.exe, build\release\lurekc.exe
 ;   - Icon at:                  assets\icon.ico
 ;   - Run from workspace root:  makensis tools\installer.nsi
 ;
@@ -20,7 +20,7 @@
 !endif
 !define APP_PUBLISHER "Lurek2D Project"
 !define APP_URL      "https://github.com/RandomBladeDude/lurek2d"
-!define APP_EXE      "lurek2d.exe"
+!define APP_EXE      "lurekc.exe"
 !define APP_ICON     "..\..\assets\favicon.ico"
 
 ; Output installer filename
@@ -74,6 +74,7 @@ Section "Engine (required)" SecEngine
 
     ; Core binary comes from the release build; dist.ps1 handles portable repackaging separately.
     File "..\..\build\release\lurek2d.exe"
+    File "..\..\build\release\lurekc.exe"
 
     ; Engine assets
     SetOutPath "$INSTDIR\assets"
@@ -155,7 +156,7 @@ Section ".lua File Association" SecFileAssoc
     WriteRegStr HKCR "Lurek2DScript"                  ""            "Lurek2D Script"
     WriteRegStr HKCR "Lurek2DScript\DefaultIcon"      ""            "$INSTDIR\${APP_EXE},0"
 
-    ; Open verb: lurek2d.exe treats a .lua file path as its game argument
+    ; Open verb: lurekc.exe treats a .lua file path as its game argument
     WriteRegStr HKCR "Lurek2DScript\shell\open"       ""            "Run with Lurek2D"
     WriteRegStr HKCR "Lurek2DScript\shell\open\command" ""          '"$INSTDIR\${APP_EXE}" "%1"'
 
@@ -198,6 +199,7 @@ Section "Uninstall"
 
     ; Remove files
     Delete "$INSTDIR\lurek2d.exe"
+    Delete "$INSTDIR\lurekc.exe"
     Delete "$INSTDIR\uninstall.exe"
     Delete "$INSTDIR\README.md"
     Delete "$INSTDIR\LICENSE"

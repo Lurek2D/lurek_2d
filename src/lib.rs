@@ -191,6 +191,20 @@ pub fn cli_startup_main_path(
     }
 }
 
+#[cfg(target_os = "windows")]
+fn set_windows_timer_resolution() {
+    unsafe {
+        windows_sys::Win32::Media::timeBeginPeriod(1);
+    }
+}
+
+/// Starts the desktop runtime and applies platform boot hooks before entering the shared launcher.
+pub fn lurek_run_desktop() -> std::process::ExitCode {
+    #[cfg(target_os = "windows")]
+    set_windows_timer_resolution();
+    lurek_run()
+}
+
 /// Starts the Lurek2D runtime using the current CLI arguments and active game path.
 pub fn lurek_run() -> std::process::ExitCode {
     use app::{App, AppRunOptions};

@@ -256,6 +256,8 @@ pub const PROVINCE_EFFECT_FOG_NOISE: u32 = 0x04;
 pub const PROVINCE_EFFECT_HEAT_HAZE: u32 = 0x08;
 /// Province visual-effect bit for coastal foam emphasis.
 pub const PROVINCE_EFFECT_COAST_FOAM: u32 = 0x10;
+/// Province visual-effect bit for diagonal hatch or occupation stripes.
+pub const PROVINCE_EFFECT_STRIPES: u32 = 0x20;
 
 /// Parse a canonical province visual-effect flag token into a bitmask.
 pub fn parse_province_effect_flag_token(token: &str) -> Option<u32> {
@@ -265,6 +267,7 @@ pub fn parse_province_effect_flag_token(token: &str) -> Option<u32> {
         "fog_noise" | "fog-noise" | "mist" => Some(PROVINCE_EFFECT_FOG_NOISE),
         "heat_haze" | "heat-haze" | "heat haze" => Some(PROVINCE_EFFECT_HEAT_HAZE),
         "coast_foam" | "coast-foam" | "foam" => Some(PROVINCE_EFFECT_COAST_FOAM),
+        "stripe" | "stripes" | "hatch" | "hatched" => Some(PROVINCE_EFFECT_STRIPES),
         _ => None,
     }
 }

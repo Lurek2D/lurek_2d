@@ -162,6 +162,9 @@ notify = { version = "6", optional = true }
 
 [dev-dependencies]
 
+[build-dependencies]
+winresource = "0.1"
+
 [target.'cfg(windows)'.dependencies]
 # Windows message box for panic handler
 # Using 0.61 to match tempfile/winapi-util — reduces duplication in the windows-sys tree.

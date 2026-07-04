@@ -8,6 +8,10 @@
 
 A 2D social simulation where characters have schedules, relationships, needs, traits, memories, routines, conversations, events, and evolving social networks. The focus is believable change over time rather than combat.
 
+## Market positioning
+
+Use the reference set (The Sims as systems reference, Animal Crossing, Princess Maker, Tokimeki Memorial) to define player expectations around pacing, readability, and production scope, not to copy mechanics directly. Target itch.io with a strong premise, readable UI, and a complete short arc. Target Steam with branching content, localization-ready data, save slots, gallery/extras, and strong UX for re-reading, skipping, and reviewing choices. For social simulation, the store page must communicate the core verb, session length, progression promise, and why the 2D presentation is intentional.
+
 ## Lurek2D API map
 
 | Need | Lurek2D surface |
@@ -42,6 +46,22 @@ my_social_sim/
   scripts/ai/social_ai.lua
   scripts/ui/relationship_panel.lua
 ```
+
+## Data and content model
+
+- Author characters, locations, scenes, dialogue graphs, relationship variables, and evidence flags as data, not hidden script constants.
+- Author chapter state, choice history, timers or calendars, UI review logs, and unlockable extras as data, not hidden script constants.
+- Author localization keys, portrait/sprite references, audio cues, and branch validation metadata as data, not hidden script constants.
+- Keep social simulation content split between durable authored files under `data/`, media under `assets/`, and orchestration modules under `scripts/`.
+- Save files should store player/world progress and stable identifiers, not transient render objects, cached paths, or UI widget instances.
+
+
+## Technical design notes
+
+- Use `lurek.dialog` for branching dialogue flow and `lurek.ui` for backlog, choices, profile panels, and evidence review.
+- Keep authored content in data files loaded through `lurek.filesystem` and parsed through `lurek.serialize` or `lurek.dataframe`.
+- Use `lurek.scene` for title, chapter, free-roam, dialogue, investigation, and result screens.
+- Use `lurek.save` for choice history, relationship variables, flags, and gallery unlocks.
 
 ## Vertical slice acceptance
 

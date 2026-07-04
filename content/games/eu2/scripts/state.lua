@@ -89,6 +89,17 @@ local function sorted_string_keys(tbl)
     return keys
 end
 
+local function striped_signature(ids)
+    local out = {}
+    for id, enabled in pairs(ids or {}) do
+        if enabled and type(id) == "number" then
+            out[#out + 1] = id
+        end
+    end
+    table.sort(out)
+    return table.concat(out, ",")
+end
+
 local function find_start_province(state, army_spec)
     local best = nil
     for _, id in ipairs(sorted_numeric_keys(state.provinces)) do
@@ -207,6 +218,8 @@ function M.new(reg, scenario)
         revision = 0,
         style_revision = 0,
         border_revision = 0,
+        striped_province_ids = {},
+        striped_signature = "",
         log = {},
         date = {
             year = scenario.start_date.year,
@@ -217,6 +230,39 @@ function M.new(reg, scenario)
 
     function state:date_string()
         return string.format("%s %04d", MONTH_NAMES[self.date.month], self.date.year)
+    end
+
+    function state:set_striped_pair(first_id, second_id)
+        local next = {}
+        if type(first_id) == "number" and self.provinces[first_id] then
+            next[first_id] = true
+        end
+        if type(second_id) == "number" and self.provinces[second_id] then
+            next[second_id] = true
+        end
+        local signature = striped_signature(next)
+        if signature == self.striped_signature then
+            return false
+        end
+        self.striped_province_ids = next
+        self.striped_signature = signature
+        self.style_revision = self.style_revision + 1
+        return true
+    end
+
+    function state:toggle_striped_pair(first_id, second_id)
+        local next = {}
+        if type(first_id) == "number" and self.provinces[first_id] then
+            next[first_id] = true
+        end
+        if type(second_id) == "number" and self.provinces[second_id] then
+            next[second_id] = true
+        end
+        local signature = striped_signature(next)
+        if signature ~= "" and signature == self.striped_signature then
+            return self:set_striped_pair(nil, nil)
+        end
+        return self:set_striped_pair(first_id, second_id)
     end
 
     for _, tag in ipairs(sorted_string_keys(scenario.countries)) do
@@ -290,6 +336,12 @@ function M.new(reg, scenario)
     end
     if state.armies[1] then
         set_selected_army(state, state.armies[1].id)
+    end
+
+    local player_capital = state.countries[state.player_tag] and state.countries[state.player_tag].capital_province_id
+    local rival_capital = state.countries.LIT and state.countries.LIT.capital_province_id
+    if player_capital or rival_capital then
+        state:set_striped_pair(player_capital, rival_capital)
     end
 
     add_log(state, "The 1419 campaign begins. Poland is the player country.")
@@ -419,6 +471,20 @@ function M.speed_label(state)
         return "Paused"
     end
     return tostring(speed) .. "x"
+end
+
+function M.set_striped_pair(state, first_id, second_id)
+    if state and state.set_striped_pair then
+        return state:set_striped_pair(first_id, second_id)
+    end
+    return false
+end
+
+function M.toggle_striped_pair(state, first_id, second_id)
+    if state and state.toggle_striped_pair then
+        return state:toggle_striped_pair(first_id, second_id)
+    end
+    return false
 end
 
 return M

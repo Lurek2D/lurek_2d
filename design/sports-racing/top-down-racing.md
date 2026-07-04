@@ -8,6 +8,10 @@
 
 A top-down 2D racing game with tight vehicle handling, track boundaries, laps, checkpoints, AI drivers, hazards, boosts, and time trials. The architecture should make vehicle feel tunable and replayable.
 
+## Market positioning
+
+Use the reference set (Micro Machines, Super Sprint, Death Rally, Circuit Superstars) to define player expectations around pacing, readability, and production scope, not to copy mechanics directly. Target itch.io with instant controls, one ruleset, and a short competitive loop. Target Steam with season/challenge structure, input remapping, ghosts or AI rivals, replayable tracks/arenas, and strong gamepad support. For top-down racing, the store page must communicate the core verb, session length, progression promise, and why the 2D presentation is intentional.
+
 ## Lurek2D API map
 
 | Need | Lurek2D surface |
@@ -41,6 +45,22 @@ my_racer/
   assets/cars/
   assets/tracks/
 ```
+
+## Data and content model
+
+- Author arenas or tracks, teams, vehicles, athletes, ball/puck objects, checkpoints, and scoring zones as data, not hidden script constants.
+- Author input bindings, AI profiles, tournament state, lap/round timers, and replay or ghost data as data, not hidden script constants.
+- Author physics tuning, camera zones, crowd/audio cues, and challenge progression as data, not hidden script constants.
+- Keep top-down racing content split between durable authored files under `data/`, media under `assets/`, and orchestration modules under `scripts/`.
+- Save files should store player/world progress and stable identifiers, not transient render objects, cached paths, or UI widget instances.
+
+
+## Technical design notes
+
+- Use `lurek.physics` for collision, steering, ball/vehicle response, and trigger zones, with authored tuning data separate from code.
+- Use `lurek.input` action maps for keyboard and gamepad parity.
+- Use `lurek.camera`, `lurek.audio`, `lurek.particle`, and `lurek.effect` for speed, impact, crowd, and scoring feedback.
+- Use `lurek.save` for campaign, time trials, unlocks, best scores, and controller preferences.
 
 ## Vertical slice acceptance
 

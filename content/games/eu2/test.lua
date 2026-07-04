@@ -38,21 +38,42 @@ describe("eu2 playable slice", function()
 
     it("input toggles province labels and debug roads", function()
         local input = load_demo_module("input.lua")
-        local state = { paused = false, speed_index = 2, armies = {} }
-        local view = { draw_labels = false, debug_mode = false, map_dirty = false }
+        local toggled_a = nil
+        local toggled_b = nil
+        local state = {
+            paused = false,
+            speed_index = 2,
+            armies = {},
+            toggle_striped_pair = function(self, a, b)
+                toggled_a = a
+                toggled_b = b
+            end,
+        }
+        local view = {
+            draw_labels = false,
+            debug_mode = false,
+            map_dirty = false,
+            color_dirty = false,
+            selected_gid = 9,
+            hovered_gid = 14,
+        }
 
         assert(input.handle_key(state, view, "l") == true, "L should toggle province labels")
         assert(view.draw_labels == true, "province labels should enable after pressing L")
 
+        assert(input.handle_key(state, view, "x") == true, "X should toggle striped province overlay")
+        assert(toggled_a == 9 and toggled_b == 14, "stripe toggle should use selected and hovered provinces")
+        assert(view.color_dirty == true, "stripe toggle should force province color refresh")
         assert(input.handle_key(state, view, "f12") == true, "F12 should toggle debug roads")
         assert(view.debug_mode == true, "debug roads should enable after pressing F12")
         assert(view.map_dirty == true, "debug toggle should force a province map refresh")
     end)
 
-    it("map modes prepare registry colors and palette-driven borders", function()
+    it("map modes keep sea colors consistent and prepare palette-driven borders", function()
         local map_modes = load_demo_module("map_modes.lua")
         local border_styles = {}
         local colors = {}
+        local visual_states = {}
         local reg = {
             adjacencies = function()
                 return {
@@ -67,6 +88,10 @@ describe("eu2 playable slice", function()
             setVisibilityState = function() end,
             setPoliticalColor = function(_, id, r, g, b, a)
                 colors[id] = { r, g, b, a }
+                return true
+            end,
+            setVisualState = function(_, id, state)
+                visual_states[id] = state
                 return true
             end,
         }
@@ -86,21 +111,38 @@ describe("eu2 playable slice", function()
             style_revision = 1,
             border_revision = 1,
             revision = 1,
+            striped_province_ids = { [1] = true, [2] = true },
         }
 
-        local mode, tints = map_modes.apply(reg, state, "political")
+        local expected_sea = map_modes.sea_color
+        for _, mode_name in ipairs({ "political", "terrain", "economy", "diplomacy", "unrest" }) do
+            local color = map_modes.province_color(state, state.provinces[3], mode_name)
+            assert(color[1] == expected_sea[1], "sea red channel should stay stable in " .. mode_name)
+            assert(color[2] == expected_sea[2], "sea green channel should stay stable in " .. mode_name)
+            assert(color[3] == expected_sea[3], "sea blue channel should stay stable in " .. mode_name)
+        end
 
-        assert(mode == "political", "GPU province renderer should consume prepared political colors")
+        local render_mode, tints = map_modes.apply(reg, state, "political")
+
+        assert(render_mode == "political", "GPU province renderer should consume prepared political colors")
         assert(tints == nil, "EU2 should not send per-frame province_tints for stable map modes")
         assert(colors[1] ~= nil and colors[2] ~= nil, "registry colors should be updated")
-        assert(colors[1][1] == state.countries.POL.color[1], "political fill should use country color")
-        assert(colors[2][3] == state.countries.LIT.color[3], "political fill should distinguish country ownership")
+        assert(
+            colors[1][1] ~= state.countries.POL.color[1]
+                or colors[1][2] ~= state.countries.POL.color[2]
+                or colors[1][3] ~= state.countries.POL.color[3],
+            "political fill should be processed through the political wash"
+        )
+        assert(colors[2][4] == 1.0, "political fill alpha should stay opaque")
         assert(colors[3][3] > colors[3][1], "sea fill should stay blue")
         assert(border_styles["1:2"].flags[1] == "country", "land owner border should stay a country border")
         assert(border_styles["1:2"].color == nil, "country border color should come from render border_palette")
         assert(border_styles["1:3"].color == nil, "coast border color should come from render border_palette")
-        assert(border_styles["1:3"].thickness == 1.0, "coast borders should use normal palette thickness")
+        assert(border_styles["1:3"].thickness == 2.0, "coast borders should be doubled for the larger map scale")
+        assert(border_styles["1:2"].thickness == 1.5, "country borders should be 50% thicker")
         assert(border_styles["2:4"].color == nil, "local borders should use palette province color")
+        assert(visual_states[1].effect_flags == map_modes.stripe_effect_flag, "striped province should enable shader hatch flag")
+        assert(visual_states[3].effect_flags == 0, "non-striped provinces should keep stripes disabled")
     end)
 
     it("army movement consumes the province route adapter for non-neighbor targets", function()
@@ -180,5 +222,7 @@ describe("eu2 playable slice", function()
         assert(province ~= nil, "province should be imported into demo state")
         assert(province.cx == 321.5, "demo province x should use imported capital marker")
         assert(province.cy == 123.5, "demo province y should use imported capital marker")
+        assert(type(state.set_striped_pair) == "function", "state should expose stripe helper")
+        assert(type(state.toggle_striped_pair) == "function", "state should expose stripe toggle helper")
     end)
 end)

@@ -8,6 +8,10 @@
 
 A character-driven tactics RPG built around discrete maps, party growth, job classes, equipment, grid movement, skill ranges, and scripted battle objectives. Compared with a pure skirmish sim, this design emphasizes readable character identity, progression, ability kits, and authored encounter pacing.
 
+## Market positioning
+
+Use the reference set (Final Fantasy Tactics, Tactics Ogre, Fire Emblem, Shining Force) to define player expectations around pacing, readability, and production scope, not to copy mechanics directly. Target itch.io with a compact battle puzzle and readable combat outcomes. Target Steam with campaign structure, roster progression, AI variety, undo/replay tools where appropriate, and scenario authoring that keeps encounters maintainable. For tactics rpg grid battle, the store page must communicate the core verb, session length, progression promise, and why the 2D presentation is intentional.
+
 ## Lurek2D API map
 
 | Need | Lurek2D surface |
@@ -44,6 +48,22 @@ my_tactics_rpg/
   assets/portraits/
   assets/battle_sprites/
 ```
+
+## Data and content model
+
+- Author battle maps, cover/elevation tags, units, abilities, initiative, objectives, and spawn groups as data, not hidden script constants.
+- Author action history, line-of-sight, reservations, AI plans, status effects, and combat result records as data, not hidden script constants.
+- Author campaign roster, equipment, injuries, scenario rewards, and replay/debug traces as data, not hidden script constants.
+- Keep tactics rpg grid battle content split between durable authored files under `data/`, media under `assets/`, and orchestration modules under `scripts/`.
+- Save files should store player/world progress and stable identifiers, not transient render objects, cached paths, or UI widget instances.
+
+
+## Technical design notes
+
+- Use `lurek.tilefield` for tactical cell facts such as cover, elevation, movement cost, hazards, and occupancy.
+- Use `lurek.pathfind` for move ranges, attack reach previews, AI route checks, and objective distance scoring.
+- Use `lurek.ai` for staged enemy planning and `lurek.ui` for readable odds, tooltips, turn order, and action confirmation.
+- Use `lurek.save` for campaign roster and between-battle state; keep in-battle undo/replay as a separate deterministic action log.
 
 ## Vertical slice acceptance
 

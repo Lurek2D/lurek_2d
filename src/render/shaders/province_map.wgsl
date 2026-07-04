@@ -438,6 +438,24 @@ fn apply_weather_overlay(color: vec3<f32>, pd: ProvinceData, map_uv: vec2<f32>) 
     return color;
 }
 
+fn apply_stripe_overlay(color: vec3<f32>, pd: ProvinceData, map_uv: vec2<f32>) -> vec3<f32> {
+    if ((province_effect_flags(pd) & 0x20u) == 0u) {
+        return color;
+    }
+    let screen_uv = map_uv * max(screen_per_map_min(), 1.0);
+    let seed = province_visual_seed(pd);
+    let diag =
+        select(screen_uv.x + screen_uv.y, screen_uv.x - screen_uv.y, (seed & 0x01u) != 0u);
+    let stripe_spacing_px = 16.0;
+    let stripe_width_px = 4.0;
+    let stripe_phase = fract((diag + f32(seed % 31u)) / stripe_spacing_px);
+    let stripe_dist = abs(stripe_phase - 0.5);
+    let half_width = stripe_width_px / stripe_spacing_px * 0.5;
+    let stripe_mask = 1.0 - smoothstep(half_width, half_width + 0.08, stripe_dist);
+    let stripe_color = srgb_to_linear(vec3<f32>(0.22, 0.03, 0.03));
+    return mix(color, stripe_color, stripe_mask * 0.38);
+}
+
 fn boundary_offset_dist_px(offset: vec2<i32>, frac: vec2<f32>, screen_per_map: vec2<f32>) -> f32 {
     var delta = vec2<f32>(0.0, 0.0);
     if (offset.x > 0) {
@@ -647,6 +665,7 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
 
     out_color = vec4<f32>(apply_water_overlay(out_color.rgb, pd, map_uv, edge_hit), out_color.a);
     out_color = vec4<f32>(apply_weather_overlay(out_color.rgb, pd, map_uv), out_color.a);
+    out_color = vec4<f32>(apply_stripe_overlay(out_color.rgb, pd, map_uv), out_color.a);
 
     if (pd.visibility_state == 1u) {
         if (!fog_enabled) {

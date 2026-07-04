@@ -8,6 +8,10 @@
 
 A gentler survival/crafting game where farming, gathering, decorating, light crafting, relationships, and seasonal goals drive play. The challenge is pacing and routine rather than constant threat.
 
+## Market positioning
+
+Use the reference set (Stardew Valley, Moonlighter as loop reference, Graveyard Keeper, Spiritfarer) to define player expectations around pacing, readability, and production scope, not to copy mechanics directly. Target itch.io with a small biome, clear resource pressure, and a memorable crafting hook. Target Steam with persistence, progression gates, world generation or authored zones, difficulty options, and enough content to sustain multi-hour survival arcs. For farming cozy survival, the store page must communicate the core verb, session length, progression promise, and why the 2D presentation is intentional.
+
 ## Lurek2D API map
 
 | Need | Lurek2D surface |
@@ -42,6 +46,22 @@ my_cozy_survival/
   scripts/systems/relationships.lua
   scripts/ui/toolbelt.lua
 ```
+
+## Data and content model
+
+- Author biomes, resources, recipes, stations, enemies, weather, needs, and world objects as data, not hidden script constants.
+- Author player inventory, base state, discovered recipes, day/night schedule, and danger escalation as data, not hidden script constants.
+- Author save chunks, event history, crafting queues, audio ambience, and difficulty settings as data, not hidden script constants.
+- Keep farming cozy survival content split between durable authored files under `data/`, media under `assets/`, and orchestration modules under `scripts/`.
+- Save files should store player/world progress and stable identifiers, not transient render objects, cached paths, or UI widget instances.
+
+
+## Technical design notes
+
+- Use `lurek.tilefield` for terrain, collision, resource nodes, light blockers, and path costs.
+- Use `lurek.ecs` for player, creatures, projectiles, dropped items, stations, and world objects.
+- Use `lurek.audio`, `lurek.light`, `lurek.particle`, and `lurek.camera` to make day/night, danger, crafting, and combat legible.
+- Use `lurek.save` for world chunks, player inventory, base state, recipes, time, and event history.
 
 ## Vertical slice acceptance
 

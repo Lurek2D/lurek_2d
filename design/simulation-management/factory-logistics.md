@@ -8,6 +8,10 @@
 
 A 2D factory/logistics game where machines transform resources, conveyors or carriers move items, bottlenecks emerge, and the player optimizes throughput. The design should make flow visible and measurable.
 
+## Market positioning
+
+Use the reference set (Factorio, Shapez, Opus Magnum, Mini Motorways) to define player expectations around pacing, readability, and production scope, not to copy mechanics directly. Target itch.io with one visible systemic loop that players can understand in minutes. Target Steam with inspectable simulation, speed controls, overlays, scenario goals, save stability, and enough data-driven depth to support long sessions. For factory logistics, the store page must communicate the core verb, session length, progression promise, and why the 2D presentation is intentional.
+
 ## Lurek2D API map
 
 | Need | Lurek2D surface |
@@ -44,6 +48,22 @@ my_factory/
   assets/machines/
   assets/items/
 ```
+
+## Data and content model
+
+- Author map cells, resources, buildings, jobs, agents, production rules, and scenario goals as data, not hidden script constants.
+- Author derived overlays, reservations, alerts, history logs, budgets, and simulation tick snapshots as data, not hidden script constants.
+- Author balancing tables, tutorial milestones, save migrations, and debug inspection state as data, not hidden script constants.
+- Keep factory logistics content split between durable authored files under `data/`, media under `assets/`, and orchestration modules under `scripts/`.
+- Save files should store player/world progress and stable identifiers, not transient render objects, cached paths, or UI widget instances.
+
+
+## Technical design notes
+
+- Use a fixed simulation tick owned by a domain scheduler; rendering and UI should read prepared snapshots.
+- Use `lurek.tilefield`, `lurek.pathfind`, and `lurek.ai` for map facts, routing, job selection, and inspectable agent decisions.
+- Use `lurek.dataframe`, `lurek.serialize`, and `lurek.filesystem` for large balancing tables and scenario data.
+- Use `lurek.save` with explicit sections and versioning because long-running saves are central to the product.
 
 ## Vertical slice acceptance
 

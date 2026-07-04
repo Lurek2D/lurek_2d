@@ -8,6 +8,10 @@
 
 A run-based card combat game with map navigation, deck mutation, relics, enemies, events, and deterministic combat turns. Lurek2D is well suited because the design is UI-heavy, data-driven, and 2D.
 
+## Market positioning
+
+Use the reference set (Slay the Spire, Monster Train, Dicey Dungeons, Griftlands) to define player expectations around pacing, readability, and production scope, not to copy mechanics directly. Target itch.io with a short run loop, strong item identity, and readable failure feedback. Target Steam with meta progression, seeded runs, daily/challenge modes, balance telemetry, and enough encounter variety for replay-focused players. For deckbuilding roguelike, the store page must communicate the core verb, session length, progression promise, and why the 2D presentation is intentional.
+
 ## Lurek2D API map
 
 | Need | Lurek2D surface |
@@ -43,6 +47,22 @@ my_deckbuilder/
   scripts/ui/card_view.lua
   scripts/ui/run_map.lua
 ```
+
+## Data and content model
+
+- Author run seed, map chunks, rooms, enemies, loot tables, events, and encounter budgets as data, not hidden script constants.
+- Author player build, inventory, status effects, cooldowns, meta unlocks, and death history as data, not hidden script constants.
+- Author difficulty curves, procedural constraints, challenge modifiers, and balance telemetry as data, not hidden script constants.
+- Keep deckbuilding roguelike content split between durable authored files under `data/`, media under `assets/`, and orchestration modules under `scripts/`.
+- Save files should store player/world progress and stable identifiers, not transient render objects, cached paths, or UI widget instances.
+
+
+## Technical design notes
+
+- Use `lurek.math.newRandomGenerator` or explicit deterministic seed ownership, and store seeds in save data and run reports.
+- Use `lurek.ecs` when actors, items, effects, and projectiles share update/render/component needs.
+- Use `lurek.pathfind`, `lurek.ai`, and `lurek.tilefield` to keep navigation and monster decisions inspectable.
+- Use `lurek.save` for meta progression and optional run suspend, not for hiding non-deterministic state.
 
 ## Vertical slice acceptance
 

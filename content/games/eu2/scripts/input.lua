@@ -17,6 +17,16 @@ function M.handle_key(state, view, key)
         view.draw_labels = not view.draw_labels
         return true
     end
+    if key == "x" or key == "X" then
+        local selected = view.selected_gid or state.selected_province_id
+        local hovered = view.hovered_gid
+        if state.toggle_striped_pair then
+            state:toggle_striped_pair(selected, hovered)
+        end
+        view.color_dirty = true
+        view.map_dirty = true
+        return true
+    end
     if key == "f12" or key == "F12" then
         view.debug_mode = not view.debug_mode
         view.map_dirty = true

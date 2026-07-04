@@ -44,7 +44,8 @@ if (-not $Version) { $Version = "1.0.0" }
 $ArchName = "lurek2d-windows-x86_64"
 $PackageDir = Join-Path $OutDir $ArchName
 $ZipPath = Join-Path $OutDir "$ArchName.zip"
-$BinarySource = Join-Path $WorkspaceRoot 'build\release\lurek2d.exe'
+$ConsoleBinarySource = Join-Path $WorkspaceRoot 'build\release\lurek2d.exe'
+$GuiBinarySource = Join-Path $WorkspaceRoot 'build\release\lurekc.exe'
 
 $IdealBinarySizeMB = 10.0
 $AcceptableBinarySizeMB = 12.5
@@ -111,8 +112,11 @@ else {
     Write-Step "Skipping build (--SkipBuild set)."
 }
 
-if (-not (Test-Path $BinarySource)) {
-    Write-Fail "Binary not found at '$BinarySource'. Run without -SkipBuild."
+if (-not (Test-Path $ConsoleBinarySource)) {
+    Write-Fail "Console binary not found at '$ConsoleBinarySource'. Run without -SkipBuild."
+}
+if (-not (Test-Path $GuiBinarySource)) {
+    Write-Fail "GUI binary not found at '$GuiBinarySource'. Run without -SkipBuild."
 }
 
 Write-Step "Assembling distribution package at '$PackageDir' ..."
@@ -120,14 +124,14 @@ if (Test-Path $PackageDir) { Remove-Item $PackageDir -Recurse -Force }
 New-Item -ItemType Directory -Path $PackageDir -Force | Out-Null
 
 $DestBinary = Join-Path $PackageDir 'lurek2d.exe'
-Copy-Item $BinarySource -Destination $DestBinary -Force
+Copy-Item $ConsoleBinarySource -Destination $DestBinary -Force
 $SizeBefore = Get-FileSizeMB $DestBinary
 $FinalBinarySizeMB = $SizeBefore
 Write-OK ("Copied lurek2d.exe ({0} MB)" -f $SizeBefore)
 
 $upxPath = Resolve-UpxPath
 if ($upxPath) {
-    Copy-Item $BinarySource -Destination $DestBinary -Force
+    Copy-Item $ConsoleBinarySource -Destination $DestBinary -Force
     Write-Step "UPX mode 'best' ..."
     if (Compress-WithUpx $upxPath $DestBinary @("--best")) {
         $FinalBinarySizeMB = Get-FileSizeMB $DestBinary
@@ -141,6 +145,10 @@ else {
     Write-Warn "UPX not found on PATH -- skipping compression (add upx to PATH to enable)."
 }
 
+$DestGuiBinary = Join-Path $PackageDir 'lurekc.exe'
+Copy-Item $GuiBinarySource -Destination $DestGuiBinary -Force
+Write-OK ("Copied lurekc.exe ({0} MB)" -f (Get-FileSizeMB $DestGuiBinary))
+
 if ($FinalBinarySizeMB -le $IdealBinarySizeMB) {
     Write-OK ("Final binary size {0} MB meets the ideal <= {1} MB target." -f $FinalBinarySizeMB, $IdealBinarySizeMB)
 }
@@ -152,12 +160,6 @@ elseif ($FinalBinarySizeMB -le $HardMaxBinarySizeMB) {
 }
 else {
     Write-Fail ("Final binary size {0} MB exceeds the hard maximum {1} MB budget." -f $FinalBinarySizeMB, $HardMaxBinarySizeMB)
-}
-
-$LunecBat = Join-Path $WorkspaceRoot 'lurekc.bat'
-if (Test-Path $LunecBat) {
-    Copy-Item $LunecBat -Destination (Join-Path $PackageDir 'lurekc.bat') -Force
-    Write-OK "Copied lurekc.bat"
 }
 
 $AssetsSource = Join-Path $WorkspaceRoot 'assets'
@@ -226,20 +228,20 @@ LUREK2D $Version -- Windows Portable Distribution
 How to run a game
 -----------------
   lurek2d.exe  my_game\     (with console window -- for developers)
-  lurekc.bat   my_game\     (no console window  -- for end users)
+  lurekc.exe   my_game\     (no console window  -- for end users)
   lurekc.lnk                (shortcut with Lurek2D icon -- drag-drop a game folder)
 
 How to show the splash screen (no game)
 ----------------------------------------
   lurek2d.exe
-  lurekc.bat
+  lurekc.exe
 
 Bundled examples
 ----------------
   examples\   -- single-file API usage scripts (one per lurek.* module)
 
   Use any example as a starting point:
-    lurekc.bat examples\physics
+    lurekc.exe examples\physics
 
 Lureksome standard libraries (library\)
 ----------------------------------------
@@ -271,7 +273,7 @@ Writing your own game
   1. Create a folder, e.g. my_game\
   2. Add a main.lua with lurek.load() / lurek.update(dt) / lurek.draw()
   3. Optionally add a conf.lua for window title, width, height
-  4. Run: lurekc.bat my_game   (or drag the folder onto lurekc.lnk)
+  4. Run: lurekc.exe my_game   (or drag the folder onto lurekc.lnk)
 
 Opening .lurek game archives
 ----------------------------
@@ -293,7 +295,7 @@ if (Test-Path $IcoPath) {
     Write-Step "Creating lurekc.lnk shortcut with Lurek2D icon ..."
     $ws = New-Object -ComObject WScript.Shell
     $lnk = $ws.CreateShortcut((Join-Path $PackageDir 'lurekc.lnk'))
-    $lnk.TargetPath = Join-Path $PackageDir 'lurekc.bat'
+    $lnk.TargetPath = Join-Path $PackageDir 'lurekc.exe'
     $lnk.WorkingDirectory = $PackageDir
     $lnk.IconLocation = "$IcoPath,0"
     $lnk.Description = "Lurek2D -- launch game without console window"

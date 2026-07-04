@@ -377,11 +377,11 @@ fn color_to_u8(color: [f32; 4]) -> [u8; 4] {
 
 const LABEL_FONT_WIDTH_HINT: f32 = 6.0;
 const LABEL_FONT_HEIGHT_HINT: f32 = 7.0;
-const LABEL_TARGET_SCREEN_HEIGHT_FACTOR: f32 = 1.08;
-const LABEL_MIN_SCREEN_HEIGHT: f32 = 5.0;
-const LABEL_MAX_SCREEN_HEIGHT: f32 = 12.0;
-const LABEL_SCREEN_PADDING: f32 = 3.0;
-const LABEL_MIN_MAP_CELL_SCREEN: f32 = 9.0;
+const LABEL_MIN_MAP_CELL_SCREEN: f32 = 2.0;
+const LABEL_MIN_MAP_SCALE: f32 = 0.20;
+const LABEL_MAX_MAP_SCALE: f32 = 0.62;
+const LAND_LABEL_COLOR: [f32; 4] = [0.92, 0.92, 0.86, 1.0];
+const WATER_LABEL_COLOR: [f32; 4] = [0.10, 0.27, 0.40, 1.0];
 
 #[derive(Debug, Clone)]
 struct LabelCandidate {
@@ -393,12 +393,8 @@ struct LabelCandidate {
     scale: f32,
     ox: f32,
     oy: f32,
-    screen_rect: (f32, f32, f32, f32),
+    foreground: [f32; 4],
     area: u32,
-}
-
-fn rects_overlap(a: (f32, f32, f32, f32), b: (f32, f32, f32, f32)) -> bool {
-    a.0 < b.2 && a.2 > b.0 && a.1 < b.3 && a.3 > b.1
 }
 
 fn label_rotation(line: Option<((f32, f32), (f32, f32))>) -> f32 {
@@ -425,62 +421,39 @@ fn label_candidate(
     text: String,
     opts: &ProvinceRenderOptions,
     bb: (u32, u32, u32, u32),
-    center: (f32, f32),
-    line: Option<((f32, f32), (f32, f32))>,
+    line: ((f32, f32), (f32, f32)),
+    water: bool,
 ) -> Option<LabelCandidate> {
-    let rotation = label_rotation(line);
+    let rotation = label_rotation(Some(line));
     let glyph_count = text.chars().count().max(1) as f32;
     let map_cell_screen = opts.pixel_size * opts.zoom;
     if map_cell_screen < LABEL_MIN_MAP_CELL_SCREEN {
         return None;
     }
-    let mut screen_scale =
-        (map_cell_screen * LABEL_TARGET_SCREEN_HEIGHT_FACTOR / LABEL_FONT_HEIGHT_HINT).clamp(
-            LABEL_MIN_SCREEN_HEIGHT / LABEL_FONT_HEIGHT_HINT,
-            LABEL_MAX_SCREEN_HEIGHT / LABEL_FONT_HEIGHT_HINT,
-        );
 
-    let bbox_w = (bb.2.saturating_sub(bb.0) + 1) as f32 * map_cell_screen;
-    let line_w = line
-        .map(|((ax, ay), (bx, by))| {
-            let dx = bx - ax;
-            let dy = by - ay;
-            (dx * dx + dy * dy).sqrt() * map_cell_screen
-        })
-        .unwrap_or(0.0);
-    let max_screen_w = bbox_w.max(line_w) * 0.86;
-    if max_screen_w < LABEL_FONT_WIDTH_HINT {
-        return None;
-    }
-
-    let unfit_w = glyph_count * LABEL_FONT_WIDTH_HINT * screen_scale;
-    if unfit_w > max_screen_w {
-        screen_scale *= max_screen_w / unfit_w;
-    }
-    if screen_scale * LABEL_FONT_HEIGHT_HINT < LABEL_MIN_SCREEN_HEIGHT {
-        return None;
-    }
-
+    let ((ax, ay), (bx, by)) = line;
+    let center = ((ax + bx) * 0.5, (ay + by) * 0.5);
+    let dx = bx - ax;
+    let dy = by - ay;
+    let line_w = (dx * dx + dy * dy).sqrt() * opts.pixel_size;
+    let max_map_w = line_w * 0.92;
     let text_width = glyph_count * LABEL_FONT_WIDTH_HINT;
-    let text_screen_w = text_width * screen_scale;
-    let text_screen_h = LABEL_FONT_HEIGHT_HINT * screen_scale;
-    let screen_x = opts.x + center.0 * opts.pixel_size * opts.zoom;
-    let screen_y = opts.y + center.1 * opts.pixel_size * opts.zoom;
+    let map_scale = (max_map_w / text_width).clamp(LABEL_MIN_MAP_SCALE, LABEL_MAX_MAP_SCALE);
+    let foreground = if water {
+        WATER_LABEL_COLOR
+    } else {
+        LAND_LABEL_COLOR
+    };
     Some(LabelCandidate {
         id,
         text,
         x: center.0 * opts.pixel_size,
         y: center.1 * opts.pixel_size,
         rotation,
-        scale: screen_scale / opts.zoom.max(0.001),
+        scale: map_scale,
         ox: text_width * 0.5,
         oy: LABEL_FONT_HEIGHT_HINT * 0.5,
-        screen_rect: (
-            screen_x - text_screen_w * 0.5 - LABEL_SCREEN_PADDING,
-            screen_y - text_screen_h * 0.5 - LABEL_SCREEN_PADDING,
-            screen_x + text_screen_w * 0.5 + LABEL_SCREEN_PADDING,
-            screen_y + text_screen_h * 0.5 + LABEL_SCREEN_PADDING,
-        ),
+        foreground,
         area: (bb.2.saturating_sub(bb.0) + 1) * (bb.3.saturating_sub(bb.1) + 1),
     })
 }
@@ -1054,41 +1027,26 @@ pub fn generate_render_commands(
                     .label_text_for(id)
                     .map(|s| s.to_string())
                     .unwrap_or_else(|| id.to_string());
-                let center = registry
-                    .centroid_for(id)
-                    .unwrap_or(((bb.0 + bb.2) as f32 * 0.5, (bb.1 + bb.3) as f32 * 0.5));
-                if let Some(candidate) =
-                    label_candidate(id, text, opts, bb, center, registry.label_line_for(id))
-                {
+                let Some(line) = registry
+                    .label_line_for(id)
+                    .or_else(|| registry.auto_label_line_for(id))
+                else {
+                    continue;
+                };
+                let water = style.terrain_type == 0;
+                if let Some(candidate) = label_candidate(id, text, opts, bb, line, water) {
                     candidates.push(candidate);
                 }
             }
             candidates.sort_by(|a, b| b.area.cmp(&a.area).then_with(|| a.id.cmp(&b.id)));
 
-            let mut occupied: Vec<(f32, f32, f32, f32)> = Vec::new();
             for label in candidates {
-                if occupied
-                    .iter()
-                    .any(|rect| rects_overlap(*rect, label.screen_rect))
-                {
-                    continue;
-                }
-                occupied.push(label.screen_rect);
-                let shadow_offset = 1.0 / opts.zoom.max(0.001);
-                cmds.push(RenderCommand::SetColor(0.0, 0.0, 0.0, 0.65));
-                cmds.push(RenderCommand::PrintTransformed {
-                    font_key: font,
-                    text: label.text.clone(),
-                    x: label.x + shadow_offset,
-                    y: label.y + shadow_offset,
-                    rotation: label.rotation,
-                    sx: label.scale,
-                    sy: label.scale,
-                    ox: label.ox,
-                    oy: label.oy,
-                    scale: 1.0,
-                });
-                cmds.push(RenderCommand::SetColor(0.92, 0.92, 0.86, 1.0));
+                cmds.push(RenderCommand::SetColor(
+                    label.foreground[0],
+                    label.foreground[1],
+                    label.foreground[2],
+                    label.foreground[3],
+                ));
                 cmds.push(RenderCommand::PrintTransformed {
                     font_key: font,
                     text: label.text,
@@ -1142,6 +1100,7 @@ pub fn generate_render_commands(
             }
         }
     }
+    cmds.push(RenderCommand::SetLineWidth(1.0));
     cmds.push(RenderCommand::PopTransform);
     cmds
 }

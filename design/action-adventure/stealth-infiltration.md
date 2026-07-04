@@ -8,6 +8,10 @@
 
 A 2D stealth game where the player studies patrols, manipulates visibility and sound, avoids alarms, uses tools, and completes objectives. The game succeeds when detection is fair, readable, and debuggable.
 
+## Market positioning
+
+Use the reference set (Metal Gear 2: Solid Snake, Monaco, Mark of the Ninja, Gunpoint) to define player expectations around pacing, readability, and production scope, not to copy mechanics directly. Target itch.io with a compact exploration hook, readable screenshots, and a short demo that proves movement, discovery, and combat feel. Target Steam with durable progression, authored content density, controller support, achievements, and a polished save/resume loop. For stealth infiltration, the store page must communicate the core verb, session length, progression promise, and why the 2D presentation is intentional.
+
 ## Lurek2D API map
 
 | Need | Lurek2D surface |
@@ -42,6 +46,22 @@ my_stealth/
   assets/guards/
   assets/fx/
 ```
+
+## Data and content model
+
+- Author world zones, doors, locks, traversal flags, encounter groups, interactables as data, not hidden script constants.
+- Author actors, hitboxes, inventory items, quests, dialogue nodes, collectibles as data, not hidden script constants.
+- Author camera volumes, checkpoints, music regions, and map annotation state as data, not hidden script constants.
+- Keep stealth infiltration content split between durable authored files under `data/`, media under `assets/`, and orchestration modules under `scripts/`.
+- Save files should store player/world progress and stable identifiers, not transient render objects, cached paths, or UI widget instances.
+
+
+## Technical design notes
+
+- Use `lurek.scene` to separate title, world, pause, inventory, dialogue, and transition states.
+- Keep collision facts in `lurek.tilefield` while `lurek.tilemap` owns visual tile layers.
+- Use `lurek.input` action names for move, interact, attack, dodge, menu, and map so keyboard/gamepad bindings are data-driven.
+- Use `lurek.save` for traversal flags, inventory, quest state, and checkpoint resume.
 
 ## Vertical slice acceptance
 

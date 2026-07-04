@@ -173,6 +173,79 @@ fn find_owner_rgb(
     }
     None
 }
+
+fn farthest_pair(points: &[(f32, f32)]) -> Option<((f32, f32), (f32, f32))> {
+    if points.len() < 2 {
+        return None;
+    }
+    let mut best = -1.0f32;
+    let mut out = (points[0], points[1]);
+    for i in 0..(points.len() - 1) {
+        for j in (i + 1)..points.len() {
+            let dx = points[j].0 - points[i].0;
+            let dy = points[j].1 - points[i].1;
+            let d2 = dx * dx + dy * dy;
+            if d2 > best {
+                best = d2;
+                out = (points[i], points[j]);
+            }
+        }
+    }
+    Some(out)
+}
+
+fn label_line_from_marker_points(points: &[(u32, u32)]) -> Option<((f32, f32), (f32, f32))> {
+    if points.len() < 2 {
+        return None;
+    }
+
+    let mut remaining: HashSet<(u32, u32)> = points.iter().copied().collect();
+    let mut centroids: Vec<(f32, f32)> = Vec::new();
+
+    while let Some(&start) = remaining.iter().next() {
+        remaining.remove(&start);
+        let mut stack = vec![start];
+        let mut sum_x = 0.0f32;
+        let mut sum_y = 0.0f32;
+        let mut count = 0.0f32;
+
+        while let Some((x, y)) = stack.pop() {
+            sum_x += x as f32 + 0.5;
+            sum_y += y as f32 + 0.5;
+            count += 1.0;
+
+            let min_x = x.saturating_sub(1);
+            let min_y = y.saturating_sub(1);
+            let max_x = x.saturating_add(1);
+            let max_y = y.saturating_add(1);
+
+            for ny in min_y..=max_y {
+                for nx in min_x..=max_x {
+                    if (nx, ny) == (x, y) {
+                        continue;
+                    }
+                    if remaining.remove(&(nx, ny)) {
+                        stack.push((nx, ny));
+                    }
+                }
+            }
+        }
+
+        if count > 0.0 {
+            centroids.push((sum_x / count, sum_y / count));
+        }
+    }
+
+    if centroids.len() >= 2 {
+        return farthest_pair(&centroids);
+    }
+
+    let raw_centers: Vec<(f32, f32)> = points
+        .iter()
+        .map(|(x, y)| (*x as f32 + 0.5, *y as f32 + 0.5))
+        .collect();
+    farthest_pair(&raw_centers)
+}
 /// Replace capital and label marker pixels with their nearest non-marker neighbour and write the result to output_png_path; return pixel counts or an error string.
 pub fn sanitize_marked_png(
     input_png_path: &str,
@@ -383,7 +456,7 @@ pub fn import_metadata_from_files(
         .map(|s| s.to_ascii_lowercase())
         .collect();
     let mut gid_to_game_id: HashMap<u32, u32> = HashMap::new();
-    let mut label_points: HashMap<u32, Vec<(f32, f32)>> = HashMap::new();
+    let mut label_points: HashMap<u32, Vec<(u32, u32)>> = HashMap::new();
     let mut mapped_provinces = 0u32;
     let mut capitals_set = 0u32;
     let mut labels_set = 0u32;
@@ -444,34 +517,16 @@ pub fn import_metadata_from_files(
                     capitals_set = capitals_set.saturating_add(1);
                 }
             } else if opts.set_label_lines && is_label_marker(mr, mg, mb, &opts.marker_options) {
-                label_points
-                    .entry(gid)
-                    .or_default()
-                    .push((x as f32 + 0.5, y as f32 + 0.5));
+                label_points.entry(gid).or_default().push((x, y));
             }
         }
     }
     let mut label_lines_set = 0u32;
     if opts.set_label_lines {
         for (gid, points) in label_points {
-            if points.len() < 2 {
+            let Some((p1, p2)) = label_line_from_marker_points(&points) else {
                 continue;
-            }
-            let mut best = -1.0f32;
-            let mut p1 = points[0];
-            let mut p2 = points[1];
-            for i in 0..(points.len() - 1) {
-                for j in (i + 1)..points.len() {
-                    let dx = points[j].0 - points[i].0;
-                    let dy = points[j].1 - points[i].1;
-                    let d2 = dx * dx + dy * dy;
-                    if d2 > best {
-                        best = d2;
-                        p1 = points[i];
-                        p2 = points[j];
-                    }
-                }
-            }
+            };
             if registry.set_label_line(ProvinceId(gid), p1.0, p1.1, p2.0, p2.1) {
                 label_lines_set = label_lines_set.saturating_add(1);
             }

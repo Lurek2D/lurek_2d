@@ -3,18 +3,36 @@ local R = lurek.render
 local PIXEL_SIZE = 8
 local TACTICAL_ZOOM_THRESHOLD = 0.12
 local SANITIZED_MAP_PATH = "save/eu2/map2.png"
-local START_VIEW = { map_x = 470, map_y = 95, zoom = 1.0 }
+local SANITIZED_MARKER_PATH = "save/eu2/map2_markers.png"
+local START_VIEW = { map_x = 500, map_y = 112, zoom = 0.82 }
 local PROVINCE_GPU_STYLE = {
-    terrain_texture_scale = 18.0,
-    terrain_texture_strength = 0.09,
-    edge_gradient_radius = 20.0,
-    edge_gradient_strength = 0.42,
-    edge_gradient_color = { 0.11, 0.09, 0.05, 1.0 },
+    terrain_texture_scale = 8.0,
+    terrain_texture_strength = 0.022,
+    edge_gradient_radius = 10.0,
+    edge_gradient_strength = 0.18,
+    edge_gradient_softness = 0.94,
+    edge_gradient_color = { 0.16, 0.13, 0.11, 0.72 },
     border_palette = {
-        province_color = { 0.34, 0.28, 0.16, 0.56 },
-        coast_color = { 0.90, 0.78, 0.54, 1.0 },
-        country_color = { 1.0, 0.16, 0.10, 1.0 },
-        sea_darken = 0.22,
+        province_color = { 0.25, 0.22, 0.18, 0.62 },
+        coast_color = { 1.0, 0.0, 0.0, 1.0 },
+        country_color = { 1.0, 0.0, 0.0, 1.0 },
+        sea_darken = 0.08,
+    },
+    visual_effects = {
+        enabled = true,
+        border_noise = {
+            enabled = true,
+            frequency = 0.11,
+            amplitude_px = 1.6,
+            softness_px = 0.92,
+            seed = 271828,
+        },
+        water = {
+            enabled = true,
+            strength = 0.045,
+            speed = 0.06,
+            scale = 52.0,
+        },
     },
 }
 
@@ -23,6 +41,8 @@ local reg = nil
 local game = nil
 local map_font = nil
 local ui_font = nil
+local ui_small_font = nil
+local ui_title_font = nil
 
 local view = {
     cam = { x = 0, y = 0, zoom = 1.0 },
@@ -38,6 +58,7 @@ local view = {
     map_dirty = true,
     color_dirty = true,
     style_revision = -1,
+    fonts = nil,
 }
 
 local logged_reg_errors = {}
@@ -45,6 +66,19 @@ local function log_warn(message)
     if lurek.log and lurek.log.warn then
         lurek.log.warn(message, "eu2")
     end
+end
+
+local function new_font(path_or_size, size)
+    local ok, font
+    if size == nil then
+        ok, font = pcall(R.newFont, path_or_size)
+    else
+        ok, font = pcall(R.newFont, path_or_size, size)
+    end
+    if ok and font then
+        return font
+    end
+    return nil
 end
 
 local function load_module(path)
@@ -113,6 +147,24 @@ local function map_needs_sanitize()
     return false
 end
 
+local function marker_map_path()
+    if not lurek.filesystem.exists(SANITIZED_MARKER_PATH) then
+        return "map.png"
+    end
+    if not lurek.filesystem.getInfo then
+        return SANITIZED_MARKER_PATH
+    end
+    local src = lurek.filesystem.getInfo("map.png")
+    local out = lurek.filesystem.getInfo(SANITIZED_MARKER_PATH)
+    if type(src) == "table" and type(out) == "table" and src.modtime and out.modtime then
+        if out.modtime >= src.modtime then
+            return SANITIZED_MARKER_PATH
+        end
+        return "map.png"
+    end
+    return SANITIZED_MARKER_PATH
+end
+
 local function fit_camera()
     local ww, hh = lurek.window.getDimensions()
     view.cam.zoom = START_VIEW.zoom
@@ -149,6 +201,9 @@ local function draw_armies()
         return
     end
     local ww, hh = lurek.window.getDimensions()
+    if ui_small_font then
+        R.setFont(ui_small_font)
+    end
     for _, army in ipairs(game.armies) do
         local x, y = screen_from_province(army.province_id)
         if x and x > -16 and y > -16 and x < ww + 16 and y < hh + 16 then
@@ -171,10 +226,15 @@ local function draw_armies()
             end
             local text = tostring(math.floor(army.size / 1000))
             local text_scale = scale * 0.9
-            local tw = ui_font and ui_font.getWidth and ui_font:getWidth(text) or (#text * 5)
-            local th = ui_font and ui_font.getHeight and ui_font:getHeight() or 7
-            R.setColor(1, 1, 1, 1)
-            R.print(text, x0 + (width - tw * text_scale) * 0.5, y0 + (height - th * text_scale) * 0.5, text_scale)
+            local font = ui_small_font or ui_font
+            local tw = font and font.getWidth and font:getWidth(text) or (#text * 5)
+            local th = font and font.getHeight and font:getHeight() or 7
+            local tx = x0 + (width - tw * text_scale) * 0.5
+            local ty = y0 + (height - th * text_scale) * 0.5
+            R.setColor(0.08, 0.07, 0.05, 0.95)
+            R.print(text, tx + 1, ty + 1, text_scale)
+            R.setColor(0.99, 0.96, 0.84, 1)
+            R.print(text, tx, ty, text_scale)
             if army.target_id then
                 local tx, ty = screen_from_province(army.target_id)
                 if tx and ty then
@@ -201,9 +261,9 @@ local function draw_city_markers()
             if province.owner ~= "SEA" and province.cx and province.cy then
                 local x, y = screen_from_province(province.id)
                 if x and x > -8 and y > -8 and x < ww + 8 and y < hh + 8 then
-                    R.setColor(0.08, 0.06, 0.04, 0.75)
+                    R.setColor(0.10, 0.08, 0.05, 0.72)
                     R.circle("fill", x, y, r + outline)
-                    R.setColor(1.0, 0.82, 0.28, 0.95)
+                    R.setColor(0.96, 0.82, 0.39, 0.94)
                     R.circle("fill", x, y, r)
                 end
             end
@@ -217,11 +277,11 @@ local function draw_city_markers()
             if x and x > -16 and y > -16 and x < ww + 16 and y < hh + 16 then
                 local size = 6 * view.cam.zoom
                 local outline = view.cam.zoom * 1.5
-                R.setColor(0, 0, 0, 0.75)
+                R.setColor(0.08, 0.06, 0.04, 0.78)
                 R.rectangle("fill", x - size - outline, y - size - outline, size * 2 + outline * 2, size * 2 + outline * 2)
-                R.setColor(1.0, 0.86, 0.28, 1)
+                R.setColor(0.97, 0.84, 0.33, 1)
                 R.rectangle("fill", x - size, y - size, size * 2, size * 2)
-                R.setColor(0.2, 0.12, 0.02, 1)
+                R.setColor(0.22, 0.13, 0.03, 1)
                 R.rectangle("line", x - size, y - size, size * 2, size * 2)
             end
         end
@@ -253,9 +313,17 @@ function lurek.init()
     modules.ui = load_module("scripts/ui.lua")
     modules.input = load_module("scripts/input.lua")
 
-    map_font = lurek.render.newFont(7)
-    ui_font = lurek.render.newFont(10)
-    R.setFont(ui_font)
+    map_font = new_font("fonts/OpenSans.ttf", 10) or new_font(8)
+    ui_small_font = new_font("fonts/OpenSans.ttf", 11) or new_font(10) or map_font
+    ui_font = new_font("fonts/OpenSans.ttf", 13) or new_font(10) or ui_small_font or map_font
+    ui_title_font = new_font("fonts/OpenSans.ttf", 18) or ui_font
+    view.fonts = {
+        map = map_font,
+        ui = ui_font,
+        small = ui_small_font,
+        title = ui_title_font,
+    }
+    R.setFont(ui_font or map_font)
 
     if map_needs_sanitize() then
         log_warn("sanitizing province map cache")
@@ -266,7 +334,7 @@ function lurek.init()
     lurek.province.setActive("eu2")
     reg:importMetadataFromFiles({
         color_map_png = SANITIZED_MAP_PATH,
-        marker_png = "map.png",
+        marker_png = marker_map_path(),
         color_csv = "prov_cols.csv",
         province_toml = "province.toml",
         water_terrain_tokens = { "sea", "river" },
@@ -310,6 +378,15 @@ function lurek.process(dt)
 end
 
 function lurek.mousepressed(x, y, button)
+    if game and modules.ui and modules.ui.mousepressed and modules.ui.mousepressed(game, view, x, y, button) then
+        if game.map_mode ~= view.map_mode then
+            view.color_dirty = true
+        end
+        game.map_mode = view.map_mode
+        apply_map_mode_if_needed()
+        mark_map_dirty()
+        return
+    end
     if button == 1 then
         view.drag.active = true
         view.drag.sx, view.drag.sy = x, y
@@ -389,20 +466,22 @@ local function render_map()
         screen_h = hh,
         map_mode = view.render_mode,
         province_tints = view.province_tints,
-        zoom_mode = view.debug_mode and "tactical" or "auto",
+        zoom_mode = "tactical",
         tactical_zoom_threshold = TACTICAL_ZOOM_THRESHOLD,
         draw_fills = true,
         draw_borders = true,
         draw_labels = view.draw_labels,
         draw_capitals = false,
         draw_roads = view.debug_mode,
-        border_width = 1.0,
+        border_width = 0.95,
         terrain_texture_scale = PROVINCE_GPU_STYLE.terrain_texture_scale,
         terrain_texture_strength = PROVINCE_GPU_STYLE.terrain_texture_strength,
         edge_gradient_radius = PROVINCE_GPU_STYLE.edge_gradient_radius,
         edge_gradient_strength = PROVINCE_GPU_STYLE.edge_gradient_strength,
+        edge_gradient_softness = PROVINCE_GPU_STYLE.edge_gradient_softness,
         edge_gradient_color = PROVINCE_GPU_STYLE.edge_gradient_color,
         border_palette = PROVINCE_GPU_STYLE.border_palette,
+        visual_effects = PROVINCE_GPU_STYLE.visual_effects,
         hovered_id = view.show_overlay and view.hovered_gid or nil,
         selected_id = view.show_overlay and view.selected_gid or nil,
     })

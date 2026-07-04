@@ -8,6 +8,10 @@
 
 A run-based real-time action game with procedural rooms, randomized upgrades, escalating enemies, boss encounters, and fast restart. The architecture must separate durable meta progression from per-run state.
 
+## Market positioning
+
+Use the reference set (The Binding of Isaac, Nuclear Throne, Hades as structural reference, Enter the Gungeon) to define player expectations around pacing, readability, and production scope, not to copy mechanics directly. Target itch.io with a short run loop, strong item identity, and readable failure feedback. Target Steam with meta progression, seeded runs, daily/challenge modes, balance telemetry, and enough encounter variety for replay-focused players. For action roguelite, the store page must communicate the core verb, session length, progression promise, and why the 2D presentation is intentional.
+
 ## Lurek2D API map
 
 | Need | Lurek2D surface |
@@ -43,6 +47,22 @@ my_action_roguelite/
   scripts/ai/enemy_ai.lua
   scripts/ui/reward_choice.lua
 ```
+
+## Data and content model
+
+- Author run seed, map chunks, rooms, enemies, loot tables, events, and encounter budgets as data, not hidden script constants.
+- Author player build, inventory, status effects, cooldowns, meta unlocks, and death history as data, not hidden script constants.
+- Author difficulty curves, procedural constraints, challenge modifiers, and balance telemetry as data, not hidden script constants.
+- Keep action roguelite content split between durable authored files under `data/`, media under `assets/`, and orchestration modules under `scripts/`.
+- Save files should store player/world progress and stable identifiers, not transient render objects, cached paths, or UI widget instances.
+
+
+## Technical design notes
+
+- Use `lurek.math.newRandomGenerator` or explicit deterministic seed ownership, and store seeds in save data and run reports.
+- Use `lurek.ecs` when actors, items, effects, and projectiles share update/render/component needs.
+- Use `lurek.pathfind`, `lurek.ai`, and `lurek.tilefield` to keep navigation and monster decisions inspectable.
+- Use `lurek.save` for meta progression and optional run suspend, not for hiding non-deterministic state.
 
 ## Vertical slice acceptance
 

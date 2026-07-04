@@ -8,6 +8,10 @@
 
 A 2D investigation game where the player explores scenes, interviews characters, collects clues, connects evidence, makes accusations, and unlocks deductions. The architecture should make truth, belief, and player knowledge separate concepts.
 
+## Market positioning
+
+Use the reference set (Return of the Obra Dinn, Her Story as evidence-graph reference, Ace Attorney, Disco Elysium as investigation structure reference) to define player expectations around pacing, readability, and production scope, not to copy mechanics directly. Target itch.io with a strong premise, readable UI, and a complete short arc. Target Steam with branching content, localization-ready data, save slots, gallery/extras, and strong UX for re-reading, skipping, and reviewing choices. For detective investigation, the store page must communicate the core verb, session length, progression promise, and why the 2D presentation is intentional.
+
 ## Lurek2D API map
 
 | Need | Lurek2D surface |
@@ -41,6 +45,22 @@ my_detective/
   scripts/ui/interrogation.lua
   assets/scenes/
 ```
+
+## Data and content model
+
+- Author characters, locations, scenes, dialogue graphs, relationship variables, and evidence flags as data, not hidden script constants.
+- Author chapter state, choice history, timers or calendars, UI review logs, and unlockable extras as data, not hidden script constants.
+- Author localization keys, portrait/sprite references, audio cues, and branch validation metadata as data, not hidden script constants.
+- Keep detective investigation content split between durable authored files under `data/`, media under `assets/`, and orchestration modules under `scripts/`.
+- Save files should store player/world progress and stable identifiers, not transient render objects, cached paths, or UI widget instances.
+
+
+## Technical design notes
+
+- Use `lurek.dialog` for branching dialogue flow and `lurek.ui` for backlog, choices, profile panels, and evidence review.
+- Keep authored content in data files loaded through `lurek.filesystem` and parsed through `lurek.serialize` or `lurek.dataframe`.
+- Use `lurek.scene` for title, chapter, free-roam, dialogue, investigation, and result screens.
+- Use `lurek.save` for choice history, relationship variables, flags, and gallery unlocks.
 
 ## Vertical slice acceptance
 

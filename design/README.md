@@ -11,6 +11,7 @@ The documents assume Lurek2D's normal project shape: a game folder with `main.lu
 3. Start from the proposed state model and project structure.
 4. Build the vertical slice criteria before expanding content volume.
 5. Keep reusable systems in `scripts/systems/`, authored content in `data/`, and media in `assets/`.
+6. Check the `Market positioning`, `Data and content model`, and `Technical design notes` sections before writing implementation tasks.
 
 ## Categories
 
@@ -27,6 +28,14 @@ The documents assume Lurek2D's normal project shape: a game folder with `main.lu
 - `sports-racing/` - racing, team sports, and trick-score sports designs.
 - `card-board-dice/` - board game, card game, and dice-placement designs.
 - `narrative-social/` - visual novel, detective, and social simulation designs.
+- `rhythm-music/` - rhythm timing, music-action, and score-attack designs.
+- `commerce-economy/` - shopkeeper, trading, and small-business economy designs.
+
+## Market and scope assumptions
+
+Each design should name its market promise for itch.io and Steam. Itch.io targets can be narrower, experimental, and shorter, but still need a complete loop. Steam targets need stronger onboarding, save stability, settings, input remapping, accessibility, content depth, and presentation polish.
+
+Do not treat reference games as clone targets. Use them to clarify player expectations, production scope, UI density, session length, and replay structure.
 
 ## Cross-cutting architecture conventions
 

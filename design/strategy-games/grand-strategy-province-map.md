@@ -8,6 +8,10 @@
 
 A province-based grand strategy game focused on diplomacy, economy, war, state management, events, and long timelines. Unlike a tile 4X, the primary map is a graph of named provinces. Time can advance in daily, weekly, or monthly ticks while the player pauses to issue orders.
 
+## Market positioning
+
+Use the reference set (Europa Universalis II, Crusader Kings II, Hearts of Iron II, Risk) to define player expectations around pacing, readability, and production scope, not to copy mechanics directly. Target itch.io with a small scenario that proves the decision loop quickly. Target Steam with scenario tooling, AI turns, saves, tutorials, readable map overlays, and content depth that rewards repeat play. For grand strategy province map, the store page must communicate the core verb, session length, progression promise, and why the 2D presentation is intentional.
+
 ## Lurek2D API map
 
 | Need | Lurek2D surface |
@@ -46,6 +50,22 @@ my_grand_strategy/
   scripts/ui/outliner.lua
   assets/map/
 ```
+
+## Data and content model
+
+- Author map topology, factions, units, buildings, resources, technologies, and scenario scripts as data, not hidden script constants.
+- Author turn/tick state, orders, AI plans, fog-of-war, diplomacy, combat logs, and save sections as data, not hidden script constants.
+- Author map overlays, tutorial goals, balance tables, and deterministic replay seeds as data, not hidden script constants.
+- Keep grand strategy province map content split between durable authored files under `data/`, media under `assets/`, and orchestration modules under `scripts/`.
+- Save files should store player/world progress and stable identifiers, not transient render objects, cached paths, or UI widget instances.
+
+
+## Technical design notes
+
+- Use `lurek.scene` for title, scenario setup, gameplay, diplomacy/research panels, pause, result, and debug views.
+- Use `lurek.tilefield`, `lurek.pathfind`, `lurek.province`, or `lurek.graph` according to map topology rather than forcing every strategy game into one map model.
+- Use `lurek.ai` for staged decisions that can be inspected and budgeted per turn or tick.
+- Use `lurek.save`, `lurek.serialize`, and deterministic order records for long scenarios and reproducible bug reports.
 
 ## Vertical slice acceptance
 

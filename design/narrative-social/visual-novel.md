@@ -8,6 +8,10 @@
 
 A 2D visual novel with branching dialogue, portraits, backgrounds, music, choices, variables, unlockable routes, history log, save slots, localization, and optional minigame hooks. Lurek2D can support it through UI, rendering, audio, save, and data-driven dialogue.
 
+## Market positioning
+
+Use the reference set (Doki Doki Literature Club, Phoenix Wright as dialogue structure reference, VA-11 Hall-A, Fate/stay night) to define player expectations around pacing, readability, and production scope, not to copy mechanics directly. Target itch.io with a strong premise, readable UI, and a complete short arc. Target Steam with branching content, localization-ready data, save slots, gallery/extras, and strong UX for re-reading, skipping, and reviewing choices. For visual novel, the store page must communicate the core verb, session length, progression promise, and why the 2D presentation is intentional.
+
 ## Lurek2D API map
 
 | Need | Lurek2D surface |
@@ -41,6 +45,22 @@ my_visual_novel/
   assets/backgrounds/
   assets/portraits/
 ```
+
+## Data and content model
+
+- Author characters, locations, scenes, dialogue graphs, relationship variables, and evidence flags as data, not hidden script constants.
+- Author chapter state, choice history, timers or calendars, UI review logs, and unlockable extras as data, not hidden script constants.
+- Author localization keys, portrait/sprite references, audio cues, and branch validation metadata as data, not hidden script constants.
+- Keep visual novel content split between durable authored files under `data/`, media under `assets/`, and orchestration modules under `scripts/`.
+- Save files should store player/world progress and stable identifiers, not transient render objects, cached paths, or UI widget instances.
+
+
+## Technical design notes
+
+- Use `lurek.dialog` for branching dialogue flow and `lurek.ui` for backlog, choices, profile panels, and evidence review.
+- Keep authored content in data files loaded through `lurek.filesystem` and parsed through `lurek.serialize` or `lurek.dataframe`.
+- Use `lurek.scene` for title, chapter, free-roam, dialogue, investigation, and result screens.
+- Use `lurek.save` for choice history, relationship variables, flags, and gallery unlocks.
 
 ## Vertical slice acceptance
 

@@ -8,6 +8,10 @@
 
 A turn-based empire game where the player explores a tile map, founds settlements, researches technologies, moves units, negotiates borders, and grows an economy across many turns. The product should feel strategic rather than tactical: one turn is a bundle of movement, production, diplomacy, and long-term planning.
 
+## Market positioning
+
+Use the reference set (Civilization II, Freeciv, Battle for Wesnoth, Old World) to define player expectations around pacing, readability, and production scope, not to copy mechanics directly. Target itch.io with a small scenario that proves the decision loop quickly. Target Steam with scenario tooling, AI turns, saves, tutorials, readable map overlays, and content depth that rewards repeat play. For turn-based 4x grid strategy, the store page must communicate the core verb, session length, progression promise, and why the 2D presentation is intentional.
+
 ## Lurek2D API map
 
 | Need | Lurek2D surface |
@@ -47,6 +51,22 @@ my_4x/
   assets/tiles/
   assets/ui/
 ```
+
+## Data and content model
+
+- Author map topology, factions, units, buildings, resources, technologies, and scenario scripts as data, not hidden script constants.
+- Author turn/tick state, orders, AI plans, fog-of-war, diplomacy, combat logs, and save sections as data, not hidden script constants.
+- Author map overlays, tutorial goals, balance tables, and deterministic replay seeds as data, not hidden script constants.
+- Keep turn-based 4x grid strategy content split between durable authored files under `data/`, media under `assets/`, and orchestration modules under `scripts/`.
+- Save files should store player/world progress and stable identifiers, not transient render objects, cached paths, or UI widget instances.
+
+
+## Technical design notes
+
+- Use `lurek.scene` for title, scenario setup, gameplay, diplomacy/research panels, pause, result, and debug views.
+- Use `lurek.tilefield`, `lurek.pathfind`, `lurek.province`, or `lurek.graph` according to map topology rather than forcing every strategy game into one map model.
+- Use `lurek.ai` for staged decisions that can be inspected and budgeted per turn or tick.
+- Use `lurek.save`, `lurek.serialize`, and deterministic order records for long scenarios and reproducible bug reports.
 
 ## Vertical slice acceptance
 

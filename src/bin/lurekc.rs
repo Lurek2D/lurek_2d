@@ -6,5 +6,5 @@
 use std::process::ExitCode;
 /// Start the engine using the shared runtime bootstrap path and return its exit code.
 fn main() -> ExitCode {
-    lurek2d::lurek_run()
+    lurek2d::lurek_run_desktop()
 }

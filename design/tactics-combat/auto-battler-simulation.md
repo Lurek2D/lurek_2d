@@ -8,6 +8,10 @@
 
 An auto battler where the player drafts units, places them on a board, combines synergies, and watches deterministic or semi-deterministic combat resolve. The core tension is preparation quality, not moment-to-moment control.
 
+## Market positioning
+
+Use the reference set (Teamfight Tactics, Auto Chess, Gladiabots, The Last Flame) to define player expectations around pacing, readability, and production scope, not to copy mechanics directly. Target itch.io with a compact battle puzzle and readable combat outcomes. Target Steam with campaign structure, roster progression, AI variety, undo/replay tools where appropriate, and scenario authoring that keeps encounters maintainable. For auto battler simulation, the store page must communicate the core verb, session length, progression promise, and why the 2D presentation is intentional.
+
 ## Lurek2D API map
 
 | Need | Lurek2D surface |
@@ -43,6 +47,22 @@ my_auto_battler/
   scripts/ui/bench.lua
   scripts/ui/combat_log.lua
 ```
+
+## Data and content model
+
+- Author battle maps, cover/elevation tags, units, abilities, initiative, objectives, and spawn groups as data, not hidden script constants.
+- Author action history, line-of-sight, reservations, AI plans, status effects, and combat result records as data, not hidden script constants.
+- Author campaign roster, equipment, injuries, scenario rewards, and replay/debug traces as data, not hidden script constants.
+- Keep auto battler simulation content split between durable authored files under `data/`, media under `assets/`, and orchestration modules under `scripts/`.
+- Save files should store player/world progress and stable identifiers, not transient render objects, cached paths, or UI widget instances.
+
+
+## Technical design notes
+
+- Use `lurek.tilefield` for tactical cell facts such as cover, elevation, movement cost, hazards, and occupancy.
+- Use `lurek.pathfind` for move ranges, attack reach previews, AI route checks, and objective distance scoring.
+- Use `lurek.ai` for staged enemy planning and `lurek.ui` for readable odds, tooltips, turn order, and action confirmation.
+- Use `lurek.save` for campaign roster and between-battle state; keep in-battle undo/replay as a separate deterministic action log.
 
 ## Vertical slice acceptance
 

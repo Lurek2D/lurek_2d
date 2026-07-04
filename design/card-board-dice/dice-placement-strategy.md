@@ -8,6 +8,10 @@
 
 A dice-driven strategy game where rolled dice become resources placed into slots, abilities, workers, rooms, or actions. The game should balance randomness with planning, mitigation, and readable probabilities.
 
+## Market positioning
+
+Use the reference set (Dicey Dungeons, Roll Player, Tharsis, Sagrada) to define player expectations around pacing, readability, and production scope, not to copy mechanics directly. Target itch.io with a clear ruleset, fast onboarding, and a small set of replayable scenarios. Target Steam with AI opponents, campaign or challenge ladders, undo/replay support, accessibility options, and enough content variance to sustain repeated sessions. For dice placement strategy, the store page must communicate the core verb, session length, progression promise, and why the 2D presentation is intentional.
+
 ## Lurek2D API map
 
 | Need | Lurek2D surface |
@@ -40,6 +44,22 @@ my_dice_strategy/
   scripts/ui/dice_tray.lua
   scripts/ui/slot_board.lua
 ```
+
+## Data and content model
+
+- Author rulesets, cards, dice faces, board spaces, costs, triggers, and victory conditions as data, not hidden script constants.
+- Author match state, player hands, discard piles, public market rows, timers, and AI decision logs as data, not hidden script constants.
+- Author campaign unlocks, challenge seeds, tutorial gates, and replay records as data, not hidden script constants.
+- Keep dice placement strategy content split between durable authored files under `data/`, media under `assets/`, and orchestration modules under `scripts/`.
+- Save files should store player/world progress and stable identifiers, not transient render objects, cached paths, or UI widget instances.
+
+
+## Technical design notes
+
+- Use `lurek.ui` as the primary play surface for hands, tooltips, logs, confirm buttons, and accessible rules text.
+- Keep the rules engine deterministic and serializable; animation should consume resolved results rather than decide outcomes.
+- Use `lurek.serialize` and `lurek.save` for match snapshots, undo stacks, campaign progress, and replay seeds.
+- Use `lurek.ai` for opponent scoring over legal actions rather than embedding AI inside card or board definitions.
 
 ## Vertical slice acceptance
 

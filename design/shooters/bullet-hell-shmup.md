@@ -8,6 +8,10 @@
 
 A vertically or horizontally scrolling 2D shooter with precise hitboxes, dense bullet patterns, scoring systems, waves, bosses, and stage scripting. The architecture must handle many bullets while keeping collision and scoring deterministic.
 
+## Market positioning
+
+Use the reference set (DoDonPachi, Touhou Project, Ikaruga, Jamestown) to define player expectations around pacing, readability, and production scope, not to copy mechanics directly. Target itch.io with immediate feel, clear hit feedback, and a small arena or stage set. Target Steam with input remapping, difficulty curves, scoreboards or challenge goals, boss patterns, progression unlocks, and strong audio-visual feedback. For bullet-hell shmup, the store page must communicate the core verb, session length, progression promise, and why the 2D presentation is intentional.
+
 ## Lurek2D API map
 
 | Need | Lurek2D surface |
@@ -42,6 +46,22 @@ my_shmup/
   scripts/ui/replay_hud.lua
   assets/bullets/
 ```
+
+## Data and content model
+
+- Author arenas or stages, enemy waves, projectile patterns, pickups, and collision categories as data, not hidden script constants.
+- Author weapon data, cooldowns, score rules, player upgrades, difficulty modifiers, and hit feedback as data, not hidden script constants.
+- Author boss scripts, replay seeds, audio buses, particles, and camera shake profiles as data, not hidden script constants.
+- Keep bullet-hell shmup content split between durable authored files under `data/`, media under `assets/`, and orchestration modules under `scripts/`.
+- Save files should store player/world progress and stable identifiers, not transient render objects, cached paths, or UI widget instances.
+
+
+## Technical design notes
+
+- Use `lurek.ecs` for bullets, enemies, pickups, hit sparks, and timed effects so object churn remains organized.
+- Use `lurek.input` actions for move, aim, fire, dash, reload, weapon swap, and pause.
+- Use `lurek.physics` for collision categories and sensors, while projectile pattern ownership stays in gameplay systems.
+- Use `lurek.audio`, `lurek.particle`, `lurek.effect`, and `lurek.camera` for hit confirmation, screen shake, and danger readability.
 
 ## Vertical slice acceptance
 

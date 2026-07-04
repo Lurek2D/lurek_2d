@@ -19,7 +19,8 @@ use lurek2d::province::render::{
 };
 use lurek2d::province::types::{
     BorderPairFlags, BorderPairStyle, BorderTypeConfig, ProvinceClimateKind, ProvinceId,
-    ProvinceVisualState, ProvinceWeatherKind,
+    ProvinceVisualState, ProvinceWeatherKind, PROVINCE_EFFECT_STRIPES,
+    parse_province_effect_flag_token,
 };
 use lurek2d::province::{
     border_index::{
@@ -149,6 +150,18 @@ fn test_visual_state_roundtrip_clamps_weather_strength_and_logs_change() {
             && visual_state.weather_strength == 1.0
             && visual_state.visual_seed == 99
     ));
+}
+
+#[test]
+fn test_parse_province_effect_flag_token_supports_stripe_aliases() {
+    assert_eq!(
+        parse_province_effect_flag_token("stripes"),
+        Some(PROVINCE_EFFECT_STRIPES)
+    );
+    assert_eq!(
+        parse_province_effect_flag_token("hatched"),
+        Some(PROVINCE_EFFECT_STRIPES)
+    );
 }
 
 #[test]
@@ -295,6 +308,35 @@ fn test_render_commands_use_border_type_thickness() {
 }
 
 #[test]
+fn test_province_render_resets_line_width_before_pop() {
+    let grid = sample_grid();
+    let mut reg = ProvinceRegistry::from_grid(&grid);
+    assert!(reg.set_visibility_state(ProvinceId(1), 2));
+
+    let commands = generate_render_commands(
+        &reg,
+        &ProvinceRenderOptions {
+            draw_fills: false,
+            draw_borders: false,
+            draw_labels: false,
+            draw_capitals: false,
+            draw_roads: false,
+            selected_id: Some(ProvinceId(1)),
+            ..ProvinceRenderOptions::default()
+        },
+        None,
+    );
+
+    assert!(
+        commands.windows(2).any(|pair| matches!(
+            pair,
+            [RenderCommand::SetLineWidth(width), RenderCommand::PopTransform] if *width == 1.0
+        )),
+        "province rendering should not leak selected/hover line width into later draws"
+    );
+}
+
+#[test]
 fn test_registry_border_pair_style_roundtrip() {
     let grid = sample_grid();
     let mut reg = ProvinceRegistry::from_grid(&grid);
@@ -390,8 +432,8 @@ fn test_label_render_commands_follow_label_line_transform() {
 
     assert_eq!(
         label_commands.len(),
-        2,
-        "shadow + foreground label expected"
+        1,
+        "single plain label expected"
     );
     assert!(!commands.iter().any(|cmd| {
         matches!(
@@ -405,7 +447,127 @@ fn test_label_render_commands_follow_label_line_transform() {
 }
 
 #[test]
-fn test_label_render_commands_skip_overlapping_labels() {
+fn test_auto_label_line_prefers_row_away_from_centroid() {
+    let mut img = ImageData::new(8, 5);
+    for y in 0..5 {
+        for x in 0..8 {
+            img.set_pixel(x, y, 255, 0, 0, 255);
+        }
+    }
+
+    let grid = ProvinceGrid::from_image(&img);
+    let reg = ProvinceRegistry::from_grid(&grid);
+    let centroid = reg.centroid_for(ProvinceId(1)).expect("centroid");
+    let ((ax, ay), (bx, by)) = reg
+        .auto_label_line_for(ProvinceId(1))
+        .expect("auto label line");
+    let mid_y = (ay + by) * 0.5;
+
+    assert!(
+        (mid_y - centroid.1).abs() >= 0.75,
+        "label line should avoid the centroid row when another full row is available"
+    );
+    assert!((bx - ax).abs() > 1.0);
+}
+
+#[test]
+fn test_auto_label_line_follows_diagonal_province_axis() {
+    let mut img = ImageData::new(10, 10);
+    for y in 0..10 {
+        for x in 0..10 {
+            if x == y || x == y + 1 {
+                img.set_pixel(x, y, 255, 0, 0, 255);
+            }
+        }
+    }
+
+    let grid = ProvinceGrid::from_image(&img);
+    let reg = ProvinceRegistry::from_grid(&grid);
+    let ((ax, ay), (bx, by)) = reg
+        .auto_label_line_for(ProvinceId(1))
+        .expect("auto label line");
+    let rotation = (by - ay).atan2(bx - ax);
+
+    assert!(
+        rotation > 0.45 && rotation < 1.05,
+        "diagonal provinces should get a diagonal label baseline, got {rotation}"
+    );
+}
+
+#[test]
+fn test_label_scale_is_map_space_not_inverse_zoom() {
+    let grid = sample_grid();
+    let mut reg = ProvinceRegistry::from_grid(&grid);
+    assert!(reg.set_visibility_state(ProvinceId(1), 2));
+    assert!(reg.set_label_text(ProvinceId(1), "Scale".to_string()));
+    assert!(reg.set_label_line(ProvinceId(1), 0.0, 0.5, 8.0, 0.5));
+
+    let label_scale_at = |zoom| {
+        let commands = generate_render_commands(
+            &reg,
+            &ProvinceRenderOptions {
+                draw_fills: false,
+                draw_borders: false,
+                draw_labels: true,
+                draw_capitals: false,
+                draw_roads: false,
+                pixel_size: 10.0,
+                zoom,
+                ..ProvinceRenderOptions::default()
+            },
+            Some(dummy_font_key()),
+        );
+        commands
+            .iter()
+            .find_map(|cmd| match cmd {
+                RenderCommand::PrintTransformed { text, sx, .. } if text == "Scale" => Some(*sx),
+                _ => None,
+            })
+            .expect("label scale")
+    };
+
+    let scale_1 = label_scale_at(1.0);
+    let scale_2 = label_scale_at(2.0);
+    assert!((scale_1 - scale_2).abs() < 0.001);
+    assert!(scale_1 <= 0.62);
+}
+
+#[test]
+fn test_water_labels_use_dark_water_foreground() {
+    let grid = sample_grid();
+    let mut reg = ProvinceRegistry::from_grid(&grid);
+    assert!(reg.set_visibility_state(ProvinceId(1), 2));
+    assert!(reg.set_label_text(ProvinceId(1), "Sea".to_string()));
+    assert!(reg.set_label_line(ProvinceId(1), 0.0, 0.5, 8.0, 0.5));
+
+    let commands = generate_render_commands(
+        &reg,
+        &ProvinceRenderOptions {
+            draw_fills: false,
+            draw_borders: false,
+            draw_labels: true,
+            draw_capitals: false,
+            draw_roads: false,
+            pixel_size: 10.0,
+            ..ProvinceRenderOptions::default()
+        },
+        Some(dummy_font_key()),
+    );
+
+    assert!(commands.iter().any(|cmd| {
+        matches!(
+            cmd,
+            RenderCommand::SetColor(r, g, b, a)
+                if (*r - 0.10).abs() < 0.001
+                    && (*g - 0.27).abs() < 0.001
+                    && (*b - 0.40).abs() < 0.001
+                    && (*a - 1.0).abs() < 0.001
+        )
+    }));
+}
+
+#[test]
+fn test_label_render_commands_keep_overlapping_labels() {
     let mut img = ImageData::new(1, 2);
     img.set_pixel(0, 0, 255, 0, 0, 255);
     img.set_pixel(0, 1, 0, 255, 0, 255);
@@ -446,8 +608,42 @@ fn test_label_render_commands_skip_overlapping_labels() {
 
     assert_eq!(
         label_commands, 2,
-        "only one label should render as shadow + foreground when candidates overlap"
+        "overlap should not hide province labels"
     );
+}
+
+#[test]
+fn test_small_province_label_renders_at_minimum_scale() {
+    let mut img = ImageData::new(1, 1);
+    img.set_pixel(0, 0, 255, 0, 0, 255);
+
+    let grid = ProvinceGrid::from_image(&img);
+    let mut reg = ProvinceRegistry::from_grid(&grid);
+    assert!(reg.set_visibility_state(ProvinceId(1), 2));
+    assert!(reg.set_label_text(ProvinceId(1), "Tiny".to_string()));
+
+    let commands = generate_render_commands(
+        &reg,
+        &ProvinceRenderOptions {
+            draw_fills: false,
+            draw_borders: false,
+            draw_labels: true,
+            draw_capitals: false,
+            draw_roads: false,
+            pixel_size: 8.0,
+            ..ProvinceRenderOptions::default()
+        },
+        Some(dummy_font_key()),
+    );
+
+    let scale = commands
+        .iter()
+        .find_map(|cmd| match cmd {
+            RenderCommand::PrintTransformed { text, sx, .. } if text == "Tiny" => Some(*sx),
+            _ => None,
+        })
+        .expect("small province label should render");
+    assert!((0.20..=0.62).contains(&scale));
 }
 
 #[test]
@@ -554,6 +750,61 @@ fn test_import_metadata_from_files_sets_attrs_labels_and_markers() {
     );
     assert_eq!(reg.label_text_for(ProvinceId(1)), Some("Alpha Province"));
     assert_eq!(reg.capital_for(ProvinceId(1)), Some((1.5, 0.5)));
+}
+
+#[test]
+fn test_import_metadata_from_files_uses_label_marker_cluster_centers() {
+    let mut marker_map = ImageData::new(8, 3);
+    for y in 0..3 {
+        for x in 0..8 {
+            marker_map.set_pixel(x, y, 12, 34, 56, 255);
+        }
+    }
+    marker_map.set_pixel(0, 1, 255, 0, 255, 255);
+    marker_map.set_pixel(1, 1, 255, 0, 255, 255);
+    marker_map.set_pixel(6, 1, 255, 0, 255, 255);
+    marker_map.set_pixel(7, 1, 255, 0, 255, 255);
+
+    let mut color_map = ImageData::new(8, 3);
+    for y in 0..3 {
+        for x in 0..8 {
+            color_map.set_pixel(x, y, 12, 34, 56, 255);
+        }
+    }
+
+    let marked_path = test_output_path("import_label_clusters_marked.png");
+    let color_path = test_output_path("import_label_clusters_color.png");
+    let csv_path = test_output_path("import_label_clusters_map.csv");
+    let toml_path = test_output_path("import_label_clusters_data.toml");
+
+    write_png(&marked_path, &marker_map);
+    write_png(&color_path, &color_map);
+    write_text(&csv_path, "id,r,g,b\n101,12,34,56\n");
+    write_text(&toml_path, "[101]\nname = \"Alpha_Province\"\nterrain = \"plains\"\n");
+
+    let grid = ProvinceGrid::from_image(&color_map);
+    let mut reg = ProvinceRegistry::from_grid(&grid);
+
+    let opts = ProvinceMetadataImportOptions {
+        color_map_png_path: color_path.to_string_lossy().into_owned(),
+        marker_png_path: Some(marked_path.to_string_lossy().into_owned()),
+        color_csv_path: csv_path.to_string_lossy().into_owned(),
+        province_toml_path: Some(toml_path.to_string_lossy().into_owned()),
+        set_capitals: false,
+        set_label_lines: true,
+        ..Default::default()
+    };
+
+    let summary = import_metadata_from_files(&mut reg, &opts).expect("import metadata");
+    assert_eq!(summary.label_lines_set, 1);
+
+    let ((ax, ay), (bx, by)) = reg
+        .label_line_for(ProvinceId(1))
+        .expect("explicit label line");
+    assert!((ax - 1.0).abs() < 0.001);
+    assert!((ay - 1.5).abs() < 0.001);
+    assert!((bx - 7.0).abs() < 0.001);
+    assert!((by - 1.5).abs() < 0.001);
 }
 
 #[test]

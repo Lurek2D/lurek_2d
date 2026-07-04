@@ -18,6 +18,9 @@ use crate::province::types::{
 use crate::runtime::resource_keys::ShaderKey;
 use std::collections::HashMap;
 
+/// Two map-space endpoints used as the baseline for province label placement.
+pub type ProvinceLabelLine = ((f32, f32), (f32, f32));
+
 /// Full mutable record for a single province stored inside ProvinceRegistry.
 #[derive(Debug, Clone, Default)]
 pub struct ProvinceRecord {
@@ -28,7 +31,7 @@ pub struct ProvinceRecord {
     /// Capital marker position set by import; None if not yet assigned.
     pub capital: Option<(f32, f32)>,
     /// Label anchor line from marker import: ((x0,y0),(x1,y1)); None if not set.
-    pub label_line: Option<((f32, f32), (f32, f32))>,
+    pub label_line: Option<ProvinceLabelLine>,
     /// Display name string for UI labels; None if not imported.
     pub label_text: Option<String>,
     /// Arbitrary key-value metadata set via set_attr.
@@ -50,6 +53,8 @@ pub struct ProvinceRegistry {
     spans_by_province: HashMap<ProvinceId, Vec<(u32, u32, u32)>>,
     /// Axis-aligned bounding box per province: (min_x, min_y, max_x, max_y).
     bbox_by_province: HashMap<ProvinceId, (u32, u32, u32, u32)>,
+    /// Geometry-derived label baselines keyed by province id.
+    auto_label_lines_by_province: HashMap<ProvinceId, ProvinceLabelLine>,
     /// Border segments between adjacent provinces: (id_a, id_b, x0, y0, x1, y1).
     border_segments: Vec<(u32, u32, u32, u32, u32, u32)>,
     /// Undirected adjacency graph derived from the pixel scan.
@@ -82,6 +87,7 @@ impl ProvinceRegistry {
             spans: Vec::new(),
             spans_by_province: HashMap::new(),
             bbox_by_province: HashMap::new(),
+            auto_label_lines_by_province: HashMap::new(),
             border_segments: Vec::new(),
             graph: ProvinceGraph::new(),
             provinces: HashMap::new(),
@@ -173,6 +179,8 @@ impl ProvinceRegistry {
                 }
             }
         }
+        let auto_label_lines_by_province =
+            compute_auto_label_lines(&spans_by_province, &bbox_by_province, &provinces);
         Self {
             width,
             height,
@@ -180,6 +188,7 @@ impl ProvinceRegistry {
             spans,
             spans_by_province,
             bbox_by_province,
+            auto_label_lines_by_province,
             border_segments,
             graph,
             provinces,
@@ -291,8 +300,12 @@ impl ProvinceRegistry {
         true
     }
     /// Return the label line for id as ((x0,y0),(x1,y1)), or None if not set or id is unknown.
-    pub fn label_line_for(&self, id: ProvinceId) -> Option<((f32, f32), (f32, f32))> {
+    pub fn label_line_for(&self, id: ProvinceId) -> Option<ProvinceLabelLine> {
         self.provinces.get(&id).and_then(|p| p.label_line)
+    }
+    /// Return the geometry-derived label line for id, or None if geometry is unavailable.
+    pub fn auto_label_line_for(&self, id: ProvinceId) -> Option<ProvinceLabelLine> {
+        self.auto_label_lines_by_province.get(&id).copied()
     }
     /// Set the display label text for id; return false if id is unknown.
     pub fn set_label_text(&mut self, id: ProvinceId, text: String) -> bool {
@@ -511,6 +524,144 @@ impl ProvinceRegistry {
         self.map_modes.get_config(name)
     }
 }
+
+fn compute_auto_label_lines(
+    spans_by_province: &HashMap<ProvinceId, Vec<(u32, u32, u32)>>,
+    bbox_by_province: &HashMap<ProvinceId, (u32, u32, u32, u32)>,
+    provinces: &HashMap<ProvinceId, ProvinceRecord>,
+) -> HashMap<ProvinceId, ProvinceLabelLine> {
+    #[derive(Debug, Clone, Copy)]
+    struct Band {
+        min_p: f32,
+        max_p: f32,
+        sum_q: f32,
+        count: u32,
+    }
+
+    let mut lines = HashMap::new();
+    for (id, spans) in spans_by_province {
+        let Some(bb) = bbox_by_province.get(id).copied() else {
+            continue;
+        };
+        let center = provinces
+            .get(id)
+            .and_then(|rec| rec.centroid)
+            .unwrap_or(((bb.0 + bb.2) as f32 * 0.5, (bb.1 + bb.3) as f32 * 0.5));
+        let mut cells = Vec::new();
+        let mut cov_xx = 0.0;
+        let mut cov_xy = 0.0;
+        let mut cov_yy = 0.0;
+        for &(y, x0, x1) in spans {
+            if x1 <= x0 {
+                continue;
+            }
+            for x in x0..x1 {
+                let px = x as f32 + 0.5;
+                let py = y as f32 + 0.5;
+                let dx = px - center.0;
+                let dy = py - center.1;
+                cov_xx += dx * dx;
+                cov_xy += dx * dy;
+                cov_yy += dy * dy;
+                cells.push((px, py));
+            }
+        }
+        if cells.is_empty() {
+            continue;
+        }
+        let principal = if (cov_xx - cov_yy).abs() <= f32::EPSILON && cov_xy.abs() <= f32::EPSILON {
+            0.0
+        } else {
+            0.5 * (2.0 * cov_xy).atan2(cov_xx - cov_yy)
+        };
+        let mut angles = [
+            principal,
+            principal - 0.35,
+            principal + 0.35,
+            principal - 0.18,
+            principal + 0.18,
+            0.0,
+            -0.52,
+            0.52,
+            -0.79,
+            0.79,
+        ];
+        let min_dim = (bb.2.saturating_sub(bb.0) + 1).min(bb.3.saturating_sub(bb.1) + 1) as f32;
+        let clearance = (min_dim * 0.10).clamp(0.0, 1.75);
+        let mut best: Option<(ProvinceLabelLine, f32)> = None;
+        for angle in &mut angles {
+            while *angle > std::f32::consts::FRAC_PI_2 {
+                *angle -= std::f32::consts::PI;
+            }
+            while *angle < -std::f32::consts::FRAC_PI_2 {
+                *angle += std::f32::consts::PI;
+            }
+            let mut axis_delta = *angle - principal;
+            while axis_delta > std::f32::consts::FRAC_PI_2 {
+                axis_delta -= std::f32::consts::PI;
+            }
+            while axis_delta < -std::f32::consts::FRAC_PI_2 {
+                axis_delta += std::f32::consts::PI;
+            }
+            let axis_weight = (1.0 - axis_delta.abs() * 0.35).max(0.70);
+            let ux = angle.cos();
+            let uy = angle.sin();
+            let vx = -uy;
+            let vy = ux;
+            let center_q = center.0 * vx + center.1 * vy;
+            let mut bands: HashMap<i32, Band> = HashMap::new();
+            for &(px, py) in &cells {
+                let p = px * ux + py * uy;
+                let q = px * vx + py * vy;
+                let key = q.round() as i32;
+                bands
+                    .entry(key)
+                    .and_modify(|band| {
+                        band.min_p = band.min_p.min(p);
+                        band.max_p = band.max_p.max(p);
+                        band.sum_q += q;
+                        band.count = band.count.saturating_add(1);
+                    })
+                    .or_insert(Band {
+                        min_p: p,
+                        max_p: p,
+                        sum_q: q,
+                        count: 1,
+                    });
+            }
+            for band in bands.values() {
+                let len = band.max_p - band.min_p;
+                if len <= 0.0 {
+                    continue;
+                }
+                let q = band.sum_q / band.count as f32;
+                let offset = (q - center_q).abs();
+                let central_bonus = if offset >= clearance { len * 0.08 } else { 0.0 };
+                let score =
+                    (len + central_bonus + offset * 0.05 + band.count as f32 * 0.015) * axis_weight;
+                if best.map(|(_, current)| score > current).unwrap_or(true) {
+                    let shrink = len.min(0.5) * 0.5;
+                    let p0 = band.min_p + shrink;
+                    let p1 = band.max_p - shrink;
+                    let ax = p0 * ux + q * vx;
+                    let ay = p0 * uy + q * vy;
+                    let bx = p1 * ux + q * vx;
+                    let by = p1 * uy + q * vy;
+                    best = Some((((ax, ay), (bx, by)), score));
+                }
+            }
+        }
+        if let Some((line, _)) = best {
+            lines.insert(*id, line);
+        } else {
+            let ax = bb.0 as f32 + 0.10;
+            let bx = bb.2 as f32 + 0.90;
+            lines.insert(*id, ((ax, center.1), (bx, center.1)));
+        }
+    }
+    lines
+}
+
 /// Default ProvinceRegistry delegates to Self::new().
 impl Default for ProvinceRegistry {
     /// Return a default empty registry with zero dimensions.

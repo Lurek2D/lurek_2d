@@ -1,4 +1,6 @@
 local M = {}
+local SEA_COLOR = { 0.56, 0.72, 0.81, 1.0 }
+local STRIPE_EFFECT_FLAG = 0x20
 
 local function lerp(a, b, t)
     return a + (b - a) * t
@@ -13,6 +15,24 @@ local function color_mix(a, b, t)
     }
 end
 
+local function desaturate(color, amount)
+    local gray = color[1] * 0.299 + color[2] * 0.587 + color[3] * 0.114
+    return {
+        lerp(color[1], gray, amount),
+        lerp(color[2], gray, amount),
+        lerp(color[3], gray, amount),
+        1.0,
+    }
+end
+
+local function warm_wash(color, amount)
+    local t = amount or 0
+    if t < 0 then t = 0 end
+    if t > 1 then t = 1 end
+    local muted = desaturate(color, 0.24)
+    return color_mix(muted, { 0.90, 0.84, 0.72, 1.0 }, t)
+end
+
 local function clamp(v, lo, hi)
     if v < lo then return lo end
     if v > hi then return hi end
@@ -21,66 +41,72 @@ end
 
 local function relation_color(state, owner)
     if owner == "SEA" then
-        return { 0.20, 0.42, 0.64, 1.0 }
+        return SEA_COLOR
     end
     if owner == state.player_tag then
-        return { 0.20, 0.70, 0.25, 1.0 }
+        return { 0.45, 0.66, 0.39, 1.0 }
     end
     if owner == "LIT" then
-        return { 0.45, 0.55, 0.95, 1.0 }
+        return { 0.67, 0.57, 0.78, 1.0 }
     end
     if owner == "TEU" or owner == "MOS" or owner == "OTT" then
-        return { 0.85, 0.20, 0.18, 1.0 }
+        return { 0.76, 0.38, 0.32, 1.0 }
     end
-    return { 0.58, 0.58, 0.52, 1.0 }
+    return { 0.69, 0.64, 0.58, 1.0 }
 end
 
 local function economy_color(province)
     if province.owner == "SEA" then
-        return { 0.18, 0.38, 0.60, 1.0 }
+        return SEA_COLOR
     end
     local t = clamp((province.income or 0) / 10, 0, 1)
-    return color_mix({ 0.25, 0.20, 0.12, 1.0 }, { 1.0, 0.82, 0.25, 1.0 }, t)
+    return color_mix({ 0.54, 0.45, 0.28, 1.0 }, { 0.90, 0.76, 0.41, 1.0 }, t)
 end
 
 local function unrest_color(province)
     if province.owner == "SEA" then
-        return { 0.18, 0.38, 0.60, 1.0 }
+        return SEA_COLOR
     end
     local t = clamp((province.unrest or 0) / 10, 0, 1)
-    return color_mix({ 0.22, 0.45, 0.23, 1.0 }, { 0.88, 0.08, 0.05, 1.0 }, t)
+    return color_mix({ 0.48, 0.62, 0.39, 1.0 }, { 0.86, 0.28, 0.24, 1.0 }, t)
 end
 
 local function terrain_color(province)
     local terrain = tostring(province and province.terrain or ""):lower()
     if province and province.owner == "SEA" then
-        return { 0.18, 0.38, 0.60, 1.0 }
+        return SEA_COLOR
     end
     if terrain == "forest" then
-        return { 0.30, 0.55, 0.34, 1.0 }
+        return { 0.50, 0.62, 0.45, 1.0 }
     end
     if terrain == "mountain" then
-        return { 0.48, 0.46, 0.42, 1.0 }
+        return { 0.63, 0.60, 0.56, 1.0 }
     end
     if terrain == "desert" then
-        return { 0.78, 0.64, 0.36, 1.0 }
+        return { 0.79, 0.69, 0.48, 1.0 }
     end
     if terrain == "marsh" then
-        return { 0.35, 0.56, 0.52, 1.0 }
+        return { 0.52, 0.63, 0.57, 1.0 }
     end
-    return { 0.42, 0.62, 0.35, 1.0 }
+    return { 0.66, 0.72, 0.50, 1.0 }
 end
 
 local function political_base_color(state, province)
+    if province and province.owner == "SEA" then
+        return SEA_COLOR
+    end
     local country = state.countries[province.owner]
     if country and country.color then
-        return country.color
+        return warm_wash(country.color, 0.18)
     end
     local neutral = state.countries.NEU
-    return neutral and neutral.color or { 126 / 255, 126 / 255, 118 / 255, 1.0 }
+    return warm_wash(neutral and neutral.color or { 186 / 255, 181 / 255, 169 / 255, 1.0 }, 0.12)
 end
 
 local function province_color(state, province, mode)
+    if province and province.owner == "SEA" then
+        return SEA_COLOR
+    end
     if mode == "terrain" then
         return terrain_color(province)
     end
@@ -119,7 +145,7 @@ local function apply_country_borders(reg, state)
             local b_sea = b.owner == "SEA"
             if a_sea ~= b_sea then
                 reg:setBorderPairStyle(pair.province_a, pair.province_b, {
-                    thickness = 1.0,
+                    thickness = 2.0,
                     flags = {},
                 })
             elseif a.owner ~= b.owner and not a_sea and not b_sea then
@@ -141,6 +167,25 @@ local function apply_country_borders(reg, state)
         end
     end
     state.applied_border_revision = state.border_revision
+end
+
+local function apply_visual_states(reg, state)
+    if not reg.setVisualState then
+        return
+    end
+    if state.applied_visual_revision == state.style_revision then
+        return
+    end
+    local striped = state.striped_province_ids or {}
+    for id in pairs(state.provinces) do
+        local flagged = striped[id] == true
+        reg:setVisualState(id, {
+            weather_strength = 0,
+            effect_flags = flagged and STRIPE_EFFECT_FLAG or 0,
+            seed = flagged and ((id * 1103515245) % 2147483647) or 0,
+        })
+    end
+    state.applied_visual_revision = state.style_revision
 end
 
 local function mode_cache(state, mode, revision_key)
@@ -204,7 +249,11 @@ function M.apply(reg, state, mode)
     state.map_mode = mode
     apply_country_borders(reg, state)
     apply_visibility(reg, state)
+    apply_visual_states(reg, state)
     return "political", apply_mode_colors(reg, state, mode)
 end
+
+M.sea_color = SEA_COLOR
+M.stripe_effect_flag = STRIPE_EFFECT_FLAG
 
 return M

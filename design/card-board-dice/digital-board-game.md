@@ -8,6 +8,10 @@
 
 A digital board game with spaces, turns, cards, resources, dice or deterministic actions, AI opponents, readable rules, and strong UI. The product should feel like a complete tabletop rules engine with digital feedback.
 
+## Market positioning
+
+Use the reference set (Catan digital adaptations, Armello as structure reference, Mario Party board layer, Through the Ages digital) to define player expectations around pacing, readability, and production scope, not to copy mechanics directly. Target itch.io with a clear ruleset, fast onboarding, and a small set of replayable scenarios. Target Steam with AI opponents, campaign or challenge ladders, undo/replay support, accessibility options, and enough content variance to sustain repeated sessions. For digital board game, the store page must communicate the core verb, session length, progression promise, and why the 2D presentation is intentional.
+
 ## Lurek2D API map
 
 | Need | Lurek2D surface |
@@ -40,6 +44,22 @@ my_board_game/
   scripts/ai/board_ai.lua
   scripts/ui/action_panel.lua
 ```
+
+## Data and content model
+
+- Author rulesets, cards, dice faces, board spaces, costs, triggers, and victory conditions as data, not hidden script constants.
+- Author match state, player hands, discard piles, public market rows, timers, and AI decision logs as data, not hidden script constants.
+- Author campaign unlocks, challenge seeds, tutorial gates, and replay records as data, not hidden script constants.
+- Keep digital board game content split between durable authored files under `data/`, media under `assets/`, and orchestration modules under `scripts/`.
+- Save files should store player/world progress and stable identifiers, not transient render objects, cached paths, or UI widget instances.
+
+
+## Technical design notes
+
+- Use `lurek.ui` as the primary play surface for hands, tooltips, logs, confirm buttons, and accessible rules text.
+- Keep the rules engine deterministic and serializable; animation should consume resolved results rather than decide outcomes.
+- Use `lurek.serialize` and `lurek.save` for match snapshots, undo stacks, campaign progress, and replay seeds.
+- Use `lurek.ai` for opponent scoring over legal actions rather than embedding AI inside card or board definitions.
 
 ## Vertical slice acceptance
 

@@ -24,16 +24,16 @@ local function terrain_is_water(terrain)
 end
 
 local countries = {
-    POL = { tag = "POL", name = "Poland", ai = false, color = color(198, 42, 52), treasury = 120, manpower = 22000, stability = 1 },
-    LIT = { tag = "LIT", name = "Lithuania", ai = true, color = color(106, 74, 156), treasury = 90, manpower = 26000, stability = 0 },
-    TEU = { tag = "TEU", name = "Teutonic Order", ai = true, color = color(205, 205, 190), treasury = 80, manpower = 12000, stability = 1 },
-    MOS = { tag = "MOS", name = "Muscovy", ai = true, color = color(120, 190, 120), treasury = 100, manpower = 30000, stability = 0 },
-    OTT = { tag = "OTT", name = "Ottoman", ai = true, color = color(60, 150, 95), treasury = 160, manpower = 38000, stability = 1 },
-    FRA = { tag = "FRA", name = "France", ai = true, color = color(70, 95, 200), treasury = 170, manpower = 36000, stability = 1 },
-    ENG = { tag = "ENG", name = "England", ai = true, color = color(185, 65, 65), treasury = 150, manpower = 26000, stability = 0 },
-    CAS = { tag = "CAS", name = "Castile", ai = true, color = color(230, 198, 58), treasury = 145, manpower = 28000, stability = 1 },
-    NEU = { tag = "NEU", name = "Neutral", ai = true, color = color(128, 128, 118), treasury = 0, manpower = 0, stability = 0 },
-    SEA = { tag = "SEA", name = "Sea", ai = true, color = color(63, 125, 184), treasury = 0, manpower = 0, stability = 0 },
+    POL = { tag = "POL", name = "Kingdom of Poland", ruler = "King Wladyslaw II Jagiello", ai = false, color = color(191, 106, 116), treasury = 120, manpower = 22000, stability = 1 },
+    LIT = { tag = "LIT", name = "Grand Duchy of Lithuania", ruler = "Grand Duke Vytautas", ai = true, color = color(173, 134, 165), treasury = 90, manpower = 26000, stability = 0 },
+    TEU = { tag = "TEU", name = "Teutonic Order", ruler = "Grand Master Heinrich von Plauen", ai = true, color = color(208, 201, 186), treasury = 80, manpower = 12000, stability = 1 },
+    MOS = { tag = "MOS", name = "Grand Duchy of Moscow", ruler = "Grand Prince Vasili I", ai = true, color = color(180, 107, 101), treasury = 100, manpower = 30000, stability = 0 },
+    OTT = { tag = "OTT", name = "Ottoman Empire", ruler = "Sultan Mehmed I", ai = true, color = color(136, 179, 130), treasury = 160, manpower = 38000, stability = 1 },
+    FRA = { tag = "FRA", name = "Kingdom of France", ruler = "King Charles VI", ai = true, color = color(113, 132, 191), treasury = 170, manpower = 36000, stability = 1 },
+    ENG = { tag = "ENG", name = "Kingdom of England", ruler = "King Henry IV", ai = true, color = color(214, 154, 96), treasury = 150, manpower = 26000, stability = 0 },
+    CAS = { tag = "CAS", name = "Crown of Castile", ruler = "King Henry III", ai = true, color = color(210, 186, 98), treasury = 145, manpower = 28000, stability = 1 },
+    NEU = { tag = "NEU", name = "Neutral Lands", ruler = "", ai = true, color = color(194, 190, 177), treasury = 0, manpower = 0, stability = 0 },
+    SEA = { tag = "SEA", name = "Sea", ruler = "", ai = true, color = color(143, 184, 207), treasury = 0, manpower = 0, stability = 0 },
 }
 
 local rules = {
