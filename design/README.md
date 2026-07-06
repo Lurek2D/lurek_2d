@@ -21,7 +21,7 @@ The documents assume Lurek2D's normal project shape: a game folder with `main.lu
 - `action-adventure/` - top-down exploration, stealth, and collectathon designs.
 - `platformers/` - precision, puzzle, and run-and-gun platform designs.
 - `roguelikes/` - grid roguelike, action roguelite, and deckbuilding run designs.
-- `role-playing-games/` - action RPG, party CRPG, and life-sim RPG designs.
+- `role-playing-games/` - action RPG, party CRPG, life-sim RPG, and RPG Maker-style JRPG designs.
 - `shooters/` - twin-stick, bullet-hell, and tactical 2D shooter designs.
 - `puzzle-games/` - spatial, match-combo, and physics logic puzzle designs.
 - `survival-crafting/` - survival crafting, cozy farming, and base defense designs.
@@ -30,6 +30,11 @@ The documents assume Lurek2D's normal project shape: a game folder with `main.lu
 - `narrative-social/` - visual novel, detective, and social simulation designs.
 - `rhythm-music/` - rhythm timing, music-action, and score-attack designs.
 - `commerce-economy/` - shopkeeper, trading, and small-business economy designs.
+
+## Current design entries
+
+- [Japanese Visual Novel](narrative-social/japanese-visual-novel.md) - story-first route-based VN architecture with backlog, rollback, save slots, auto/skip, gallery unlocks, and scene command strategy.
+- [RPG Maker Style JRPG](role-playing-games/rpg-maker-style-jrpg.md) - tile-based JRPG architecture with map/event/database model, party progression, turn-based battles, and RPG Maker MZ-style importer/runtime notes.
 
 ## Market and scope assumptions
 
