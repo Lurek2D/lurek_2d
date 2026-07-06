@@ -33,6 +33,7 @@ The documents assume Lurek2D's normal project shape: a game folder with `main.lu
 
 ## Current design entries
 
+- [Massive 2D RTS](strategy-games/massive-2d-rts.md) - Rusted Warfare-inspired large-map RTS architecture with thousands of units, multi-size footprints, shared routing/flow fields, formation movement, RTS orders, stances, and benchmark targets.
 - [Japanese Visual Novel](narrative-social/japanese-visual-novel.md) - story-first route-based VN architecture with backlog, rollback, save slots, auto/skip, gallery unlocks, and scene command strategy.
 - [RPG Maker Style JRPG](role-playing-games/rpg-maker-style-jrpg.md) - tile-based JRPG architecture with map/event/database model, party progression, turn-based battles, and RPG Maker MZ-style importer/runtime notes.
 
