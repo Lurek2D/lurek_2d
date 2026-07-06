@@ -312,6 +312,9 @@ function M.new(reg, scenario)
             reg:setAttr(id, "goods", province.goods)
             reg:setAttr(id, "unrest", tostring(province.unrest))
         end
+        if reg.setCapital and cx and cy and owner ~= "SEA" then
+            reg:setCapital(id, cx, cy)
+        end
     end
 
     for i, spec in ipairs(scenario.starting_armies) do

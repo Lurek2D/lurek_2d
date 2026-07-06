@@ -507,6 +507,10 @@ fn pair_is_water(registry: &ProvinceRegistry, id: ProvinceId) -> bool {
         .unwrap_or(false)
 }
 
+fn road_anchor_for(registry: &ProvinceRegistry, id: ProvinceId) -> Option<(f32, f32)> {
+    registry.capital_for(id).or_else(|| registry.centroid_for(id))
+}
+
 fn segment_border_style(
     registry: &ProvinceRegistry,
     a: ProvinceId,
@@ -906,15 +910,7 @@ pub fn generate_render_commands(
         }
     }
     if opts.draw_roads && zoom_mode == ProvinceZoomMode::Tactical {
-        cmds.push(RenderCommand::SetLineWidth(
-            (opts.border_width * 1.25).max(1.0),
-        ));
-        cmds.push(RenderCommand::SetColor(
-            140.0 / 255.0,
-            100.0 / 255.0,
-            62.0 / 255.0,
-            0.85,
-        ));
+        let mut road_segments = Vec::new();
         for (a, b) in registry.adjacency_pairs() {
             let Some(sa) = registry.style_for(a) else {
                 continue;
@@ -925,10 +921,13 @@ pub fn generate_render_commands(
             if !is_fully_visible(sa.visibility_state) || !is_fully_visible(sb.visibility_state) {
                 continue;
             }
-            let Some((ax, ay)) = registry.capital_for(a) else {
+            if pair_is_water(registry, a) || pair_is_water(registry, b) {
+                continue;
+            }
+            let Some((ax, ay)) = road_anchor_for(registry, a) else {
                 continue;
             };
-            let Some((bx, by)) = registry.capital_for(b) else {
+            let Some((bx, by)) = road_anchor_for(registry, b) else {
                 continue;
             };
             let min_x = ax.min(bx);
@@ -938,12 +937,44 @@ pub fn generate_render_commands(
             if max_x < left || min_x > right || max_y < top || min_y > bottom {
                 continue;
             }
-            cmds.push(RenderCommand::Line {
-                x1: ax * opts.pixel_size,
-                y1: ay * opts.pixel_size,
-                x2: bx * opts.pixel_size,
-                y2: by * opts.pixel_size,
-            });
+            road_segments.push((ax, ay, bx, by));
+        }
+        if !road_segments.is_empty() {
+            cmds.push(RenderCommand::SetLineWidth(
+                (opts.border_width * 3.6).max(3.0),
+            ));
+            cmds.push(RenderCommand::SetColor(
+                60.0 / 255.0,
+                38.0 / 255.0,
+                18.0 / 255.0,
+                0.52,
+            ));
+            for &(ax, ay, bx, by) in &road_segments {
+                cmds.push(RenderCommand::Line {
+                    x1: ax * opts.pixel_size,
+                    y1: ay * opts.pixel_size,
+                    x2: bx * opts.pixel_size,
+                    y2: by * opts.pixel_size,
+                });
+            }
+
+            cmds.push(RenderCommand::SetLineWidth(
+                (opts.border_width * 2.3).max(2.0),
+            ));
+            cmds.push(RenderCommand::SetColor(
+                191.0 / 255.0,
+                154.0 / 255.0,
+                96.0 / 255.0,
+                0.92,
+            ));
+            for &(ax, ay, bx, by) in &road_segments {
+                cmds.push(RenderCommand::Line {
+                    x1: ax * opts.pixel_size,
+                    y1: ay * opts.pixel_size,
+                    x2: bx * opts.pixel_size,
+                    y2: by * opts.pixel_size,
+                });
+            }
         }
     }
     if opts.draw_capitals {

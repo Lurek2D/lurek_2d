@@ -6,17 +6,17 @@ local SANITIZED_MAP_PATH = "save/eu2/map2.png"
 local SANITIZED_MARKER_PATH = "save/eu2/map2_markers.png"
 local START_VIEW = { map_x = 500, map_y = 112, zoom = 0.82 }
 local PROVINCE_GPU_STYLE = {
-    terrain_texture_scale = 8.0,
-    terrain_texture_strength = 0.022,
+    terrain_texture_scale = 16.0,
+    terrain_texture_strength = 0.16,
     edge_gradient_radius = 10.0,
     edge_gradient_strength = 0.18,
     edge_gradient_softness = 0.94,
     edge_gradient_color = { 0.16, 0.13, 0.11, 0.72 },
     border_palette = {
         province_color = { 0.25, 0.22, 0.18, 0.62 },
-        coast_color = { 1.0, 0.0, 0.0, 1.0 },
+        coast_color = { 0.94, 0.83, 0.64, 1.0 },
         country_color = { 1.0, 0.0, 0.0, 1.0 },
-        sea_darken = 0.08,
+        sea_darken = 0.24,
     },
     visual_effects = {
         enabled = true,
@@ -29,7 +29,7 @@ local PROVINCE_GPU_STYLE = {
         },
         water = {
             enabled = true,
-            strength = 0.045,
+            strength = 0.04,
             speed = 0.06,
             scale = 52.0,
         },
@@ -313,10 +313,10 @@ function lurek.init()
     modules.ui = load_module("scripts/ui.lua")
     modules.input = load_module("scripts/input.lua")
 
-    map_font = new_font("fonts/OpenSans.ttf", 10) or new_font(8)
-    ui_small_font = new_font("fonts/OpenSans.ttf", 11) or new_font(10) or map_font
-    ui_font = new_font("fonts/OpenSans.ttf", 13) or new_font(10) or ui_small_font or map_font
-    ui_title_font = new_font("fonts/OpenSans.ttf", 18) or ui_font
+    map_font = new_font("fonts/OpenSans.ttf", 14) or new_font(12)
+    ui_small_font = new_font("fonts/OpenSans.ttf", 16) or new_font(14) or map_font
+    ui_font = new_font("fonts/OpenSans.ttf", 20) or new_font(17) or ui_small_font or map_font
+    ui_title_font = new_font("fonts/OpenSans.ttf", 28) or ui_font
     view.fonts = {
         map = map_font,
         ui = ui_font,
@@ -482,8 +482,8 @@ local function render_map()
         edge_gradient_color = PROVINCE_GPU_STYLE.edge_gradient_color,
         border_palette = PROVINCE_GPU_STYLE.border_palette,
         visual_effects = PROVINCE_GPU_STYLE.visual_effects,
-        hovered_id = view.show_overlay and view.hovered_gid or nil,
-        selected_id = view.show_overlay and view.selected_gid or nil,
+        hovered_id = nil,
+        selected_id = nil,
     })
     view.map_dirty = false
     view.color_dirty = false

@@ -33,7 +33,7 @@ local countries = {
     ENG = { tag = "ENG", name = "Kingdom of England", ruler = "King Henry IV", ai = true, color = color(214, 154, 96), treasury = 150, manpower = 26000, stability = 0 },
     CAS = { tag = "CAS", name = "Crown of Castile", ruler = "King Henry III", ai = true, color = color(210, 186, 98), treasury = 145, manpower = 28000, stability = 1 },
     NEU = { tag = "NEU", name = "Neutral Lands", ruler = "", ai = true, color = color(194, 190, 177), treasury = 0, manpower = 0, stability = 0 },
-    SEA = { tag = "SEA", name = "Sea", ruler = "", ai = true, color = color(143, 184, 207), treasury = 0, manpower = 0, stability = 0 },
+    SEA = { tag = "SEA", name = "Sea", ruler = "", ai = true, color = color(59, 92, 140), treasury = 0, manpower = 0, stability = 0 },
 }
 
 local rules = {

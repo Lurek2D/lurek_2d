@@ -1016,6 +1016,41 @@ fn test_fow_capitals_render_only_for_fully_visible_provinces() {
 }
 
 #[test]
+fn test_tactical_roads_render_for_visible_land_adjacencies_without_capitals() {
+    let grid = sample_grid();
+    let mut reg = ProvinceRegistry::from_grid(&grid);
+    assert!(reg.set_visibility_state(ProvinceId(1), 2));
+    assert!(reg.set_visibility_state(ProvinceId(2), 2));
+    assert!(reg.set_terrain_type(ProvinceId(1), 1));
+    assert!(reg.set_terrain_type(ProvinceId(2), 1));
+
+    let commands = generate_render_commands(
+        &reg,
+        &ProvinceRenderOptions {
+            draw_fills: false,
+            draw_borders: false,
+            draw_labels: false,
+            draw_capitals: false,
+            draw_roads: true,
+            zoom_mode: Some(ProvinceZoomMode::Tactical),
+            border_width: 1.0,
+            pixel_size: 10.0,
+            ..ProvinceRenderOptions::default()
+        },
+        None,
+    );
+
+    let road_lines = commands
+        .iter()
+        .filter(|cmd| matches!(cmd, RenderCommand::Line { .. }))
+        .count();
+    assert!(
+        road_lines >= 2,
+        "tactical roads should emit visible line segments even when provinces only have centroids"
+    );
+}
+
+#[test]
 fn test_strategic_mode_renders_country_overrides_but_skips_land_land() {
     let grid = sample_grid();
     let mut reg = ProvinceRegistry::from_grid(&grid);

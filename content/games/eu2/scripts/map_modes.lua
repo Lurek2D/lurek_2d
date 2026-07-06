@@ -1,5 +1,5 @@
 local M = {}
-local SEA_COLOR = { 0.56, 0.72, 0.81, 1.0 }
+local SEA_COLOR = { 0.23, 0.36, 0.55, 1.0 }
 local STRIPE_EFFECT_FLAG = 0x20
 
 local function lerp(a, b, t)
@@ -145,12 +145,12 @@ local function apply_country_borders(reg, state)
             local b_sea = b.owner == "SEA"
             if a_sea ~= b_sea then
                 reg:setBorderPairStyle(pair.province_a, pair.province_b, {
-                    thickness = 2.0,
+                    thickness = 4.0,
                     flags = {},
                 })
             elseif a.owner ~= b.owner and not a_sea and not b_sea then
                 reg:setBorderPairStyle(pair.province_a, pair.province_b, {
-                    thickness = 1.5,
+                    thickness = 4.8,
                     flags = { "country" },
                 })
             elseif a_sea and b_sea then
@@ -167,6 +167,26 @@ local function apply_country_borders(reg, state)
         end
     end
     state.applied_border_revision = state.border_revision
+end
+
+local function terrain_style_id(terrain)
+    terrain = tostring(terrain or ""):lower()
+    if terrain == "sea" or terrain == "river" or terrain == "ocean" then
+        return 0
+    end
+    if terrain == "forest" or terrain == "woods" then
+        return 2
+    end
+    if terrain == "mountain" or terrain == "hills" then
+        return 3
+    end
+    if terrain == "desert" then
+        return 4
+    end
+    if terrain == "marsh" or terrain == "swamp" then
+        return 5
+    end
+    return 1
 end
 
 local function apply_visual_states(reg, state)
@@ -186,6 +206,19 @@ local function apply_visual_states(reg, state)
         })
     end
     state.applied_visual_revision = state.style_revision
+end
+
+local function apply_terrain_types(reg, state)
+    if not reg.setTerrainType then
+        return
+    end
+    if state.applied_terrain_revision == state.style_revision then
+        return
+    end
+    for id, province in pairs(state.provinces) do
+        reg:setTerrainType(id, terrain_style_id(province.terrain))
+    end
+    state.applied_terrain_revision = state.style_revision
 end
 
 local function mode_cache(state, mode, revision_key)
@@ -249,6 +282,7 @@ function M.apply(reg, state, mode)
     state.map_mode = mode
     apply_country_borders(reg, state)
     apply_visibility(reg, state)
+    apply_terrain_types(reg, state)
     apply_visual_states(reg, state)
     return "political", apply_mode_colors(reg, state, mode)
 end

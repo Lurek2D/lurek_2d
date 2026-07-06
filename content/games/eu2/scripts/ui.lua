@@ -122,8 +122,8 @@ local function draw_button(view, x, y, w, h, text, active)
     R.rectangle("fill", x, y, w, h)
     R.setColor(0.82, 0.66, 0.39, 0.92)
     R.rectangle("line", x, y, w, h)
-    local label_w = text_width(view, "small", text, 0.82)
-    draw_text(view, "small", text, x + (w - label_w) * 0.5, y + 5, 0.82, { 0.98, 0.92, 0.78, 1 })
+    local label_w = text_width(view, "small", text, 1.0)
+    draw_text(view, "small", text, x + (w - label_w) * 0.5, y + 4, 1.0, { 0.98, 0.92, 0.78, 1 })
 end
 
 local function color_key(c)
@@ -232,36 +232,36 @@ end
 local function draw_top_bar(state, view, ww)
     local player = state.countries[state.player_tag]
 
-    draw_panel(8, 8, math.min(340, ww - 20), 50, 0.94)
+    draw_panel(8, 8, math.min(360, ww - 20), 56, 0.94)
     R.setColor(0.66, 0.19, 0.18, 0.98)
     R.rectangle("fill", 16, 14, 32, 38)
     R.setColor(0.96, 0.88, 0.68, 0.92)
     R.rectangle("line", 16, 14, 32, 38)
-    draw_text(view, "small", string.upper(player and player.name or "STATE"), 58, 14, 0.92, { 0.98, 0.94, 0.82, 1 })
-    draw_text(view, "small", player and player.ruler or country_name(state, state.player_tag), 58, 34, 0.80, { 0.84, 0.84, 0.82, 1 })
+    draw_text(view, "small", string.upper(player and player.name or "STATE"), 58, 12, 1.03, { 0.98, 0.94, 0.82, 1 })
+    draw_text(view, "small", player and player.ruler or country_name(state, state.player_tag), 58, 34, 1.0, { 0.84, 0.84, 0.82, 1 })
 
-    local date_w = 232
+    local date_w = 248
     local date_x = math.max(358, math.floor((ww - date_w) * 0.5))
     if date_x + date_w < ww - 276 then
-        draw_panel(date_x, 8, date_w, 50, 0.94)
+        draw_panel(date_x, 8, date_w, 56, 0.94)
         local date_label = state.date_string and state:date_string() or "Jan 1419"
-        local date_w_label = text_width(view, "ui", date_label, 0.92)
-        draw_text(view, "ui", date_label, date_x + (date_w - date_w_label) * 0.5, 14, 0.92, { 0.98, 0.94, 0.82, 1 })
+        local date_w_label = text_width(view, "ui", date_label, 1.0)
+        draw_text(view, "ui", date_label, date_x + (date_w - date_w_label) * 0.5, 11, 1.02, { 0.98, 0.94, 0.82, 1 })
         draw_text(view, "small",
             "Gold: " .. tostring(player and player.treasury or 0) .. "   Manpower: " .. tostring(player and player.manpower or 0),
-            date_x + 16, 35, 0.82, { 0.87, 0.86, 0.79, 1 })
+            date_x + 14, 36, 0.98, { 0.87, 0.86, 0.79, 1 })
     end
 
     local stat_w = math.min(290, math.max(230, ww - 768))
     local stat_x = ww - stat_w - 10
     if stat_x > 670 then
-        draw_panel(stat_x, 8, stat_w, 50, 0.94)
+        draw_panel(stat_x, 8, stat_w, 56, 0.94)
         draw_text(view, "small",
             "Stability: " .. tostring(player and player.stability or 0) .. "   Speed: " .. speed_label(state),
-            stat_x + 12, 16, 0.84, { 0.88, 0.94, 0.74, 1 })
+            stat_x + 12, 12, 0.98, { 0.88, 0.94, 0.74, 1 })
         draw_text(view, "small",
             "Map Mode: " .. tostring(view.map_mode),
-            stat_x + 12, 35, 0.82, { 0.94, 0.88, 0.70, 1 })
+            stat_x + 12, 36, 0.98, { 0.94, 0.88, 0.70, 1 })
     end
 end
 
@@ -277,50 +277,51 @@ local function draw_side_panel(state, view, hovered_gid, selected_gid, ww, hh)
     local y = 72
 
     draw_paper_panel(x, y, panel_w, panel_h)
-    draw_text(view, "ui", selected and string.upper(selected.name) or "NO PROVINCE", x + 16, y + 14, 0.88, { 0.14, 0.10, 0.06, 1 }, false)
+    draw_text(view, "ui", selected and string.upper(selected.name) or "NO PROVINCE", x + 16, y + 12, 1.08, { 0.14, 0.10, 0.06, 1 }, false)
     draw_text(view, "small",
         selected and (country_name(state, selected.owner) .. " (Province)") or "Unclaimed province",
-        x + 16, y + 38, 0.76, { 0.20, 0.13, 0.08, 1 }, false)
+        x + 16, y + 38, 0.92, { 0.20, 0.13, 0.08, 1 }, false)
     draw_divider(x + 12, y + 58, panel_w - 24, true)
 
     if selected then
-        draw_text(view, "small", "Terrain: " .. tostring(selected.terrain) .. " | Goods: " .. tostring(selected.goods), x + 16, y + 70, 0.76, { 0.17, 0.12, 0.08, 1 }, false)
-        draw_text(view, "small", "Income: " .. tostring(selected.income or 0) .. " | Fort: " .. tostring(selected.fort or 0), x + 16, y + 88, 0.76, { 0.17, 0.12, 0.08, 1 }, false)
-        draw_text(view, "small", "Manpower: " .. tostring(selected.manpower or 0) .. " | Unrest: " .. string.format("%.1f", selected.unrest or 0), x + 16, y + 106, 0.76, { 0.17, 0.12, 0.08, 1 }, false)
-        draw_text(view, "small", "Neighbors: " .. tostring(#(selected.neighbors or {})), x + 16, y + 124, 0.76, { 0.17, 0.12, 0.08, 1 }, false)
+        draw_text(view, "small", "Terrain: " .. tostring(selected.terrain) .. " | Goods: " .. tostring(selected.goods), x + 16, y + 70, 1.0, { 0.17, 0.12, 0.08, 1 }, false)
+        draw_text(view, "small", "Income: " .. tostring(selected.income or 0) .. " | Fort: " .. tostring(selected.fort or 0), x + 16, y + 92, 1.0, { 0.17, 0.12, 0.08, 1 }, false)
+        draw_text(view, "small", "Manpower: " .. tostring(selected.manpower or 0) .. " | Unrest: " .. string.format("%.1f", selected.unrest or 0), x + 16, y + 114, 1.0, { 0.17, 0.12, 0.08, 1 }, false)
+        draw_text(view, "small", "Neighbors: " .. tostring(#(selected.neighbors or {})), x + 16, y + 136, 1.0, { 0.17, 0.12, 0.08, 1 }, false)
     end
 
     draw_divider(x + 12, y + 146, panel_w - 24, true)
-    draw_text(view, "small", "SELECTED ARMY", x + 16, y + 156, 0.82, { 0.14, 0.10, 0.06, 1 }, false)
+    draw_text(view, "small", "SELECTED ARMY", x + 16, y + 156, 0.95, { 0.14, 0.10, 0.06, 1 }, false)
 
     local army = selected_army(state)
     if army then
         local here = state.provinces[army.province_id]
         local target = state.provinces[army.target_id]
-        draw_text(view, "small", army.name .. " (" .. tostring(math.floor(army.size / 1000)) .. ",000 men)", x + 16, y + 178, 0.74, { 0.17, 0.12, 0.08, 1 }, false)
-        draw_text(view, "small", "Current: " .. (here and here.name or "-"), x + 16, y + 196, 0.74, { 0.17, 0.12, 0.08, 1 }, false)
-        draw_text(view, "small", "Orders: " .. (target and ("Marching to " .. target.name) or "Holding position"), x + 16, y + 214, 0.74, { 0.17, 0.12, 0.08, 1 }, false)
+        draw_text(view, "small", army.name .. " (" .. tostring(math.floor(army.size / 1000)) .. ",000 men)", x + 16, y + 178, 0.98, { 0.17, 0.12, 0.08, 1 }, false)
+        draw_text(view, "small", "Current: " .. (here and here.name or "-"), x + 16, y + 200, 0.98, { 0.17, 0.12, 0.08, 1 }, false)
+        draw_text(view, "small", "Orders: " .. (target and ("Marching to " .. target.name) or "Holding position"), x + 16, y + 222, 0.98, { 0.17, 0.12, 0.08, 1 }, false)
     else
-        draw_text(view, "small", "No player army selected", x + 16, y + 178, 0.74, { 0.17, 0.12, 0.08, 1 }, false)
+        draw_text(view, "small", "No player army selected", x + 16, y + 178, 0.98, { 0.17, 0.12, 0.08, 1 }, false)
     end
 
     draw_divider(x + 12, y + panel_h - 36, panel_w - 24, true)
-    draw_text(view, "small", "Hover: " .. (hovered and hovered.name or "-"), x + 16, y + panel_h - 28, 0.74, { 0.17, 0.12, 0.08, 1 }, false)
+    draw_text(view, "small", "Hover: " .. (hovered and hovered.name or "-"), x + 16, y + panel_h - 28, 0.98, { 0.17, 0.12, 0.08, 1 }, false)
 end
 
 local function draw_mode_panel(view, ww)
     if ww < 760 then
         return
     end
-    local x = ww - 250
+    local x = ww - 330
     local y = 68
-    draw_panel(x, y, 240, 94, 0.92)
-    draw_text(view, "small", "MAP MODES", x + 12, y + 8, 0.86, { 0.99, 0.93, 0.78, 1 })
+    draw_panel(x, y, 320, 128, 0.92)
+    draw_text(view, "small", "MAP MODES", x + 14, y + 10, 1.0, { 0.99, 0.93, 0.78, 1 })
     for i, mode in ipairs(MODE_BUTTONS) do
-        draw_button(view, x + 11 + (i - 1) * 44, y + 28, 36, 24, mode.key, view.map_mode == mode.mode)
+        draw_button(view, x + 14 + (i - 1) * 53, y + 34, 42, 28, mode.key, view.map_mode == mode.mode)
     end
-    draw_text(view, "small", "L labels   Space pause   RMB move", x + 12, y + 60, 0.72, { 0.82, 0.84, 0.80, 1 })
-    draw_text(view, "small", "F12 roads   X stripes   R reset   Tab army", x + 12, y + 76, 0.72, { 0.82, 0.84, 0.80, 1 })
+    draw_text(view, "small", "L labels   Space pause", x + 14, y + 72, 1.0, { 0.82, 0.84, 0.80, 1 })
+    draw_text(view, "small", "RMB move   F12 roads", x + 14, y + 90, 1.0, { 0.82, 0.84, 0.80, 1 })
+    draw_text(view, "small", "X stripes   R reset   Tab army", x + 14, y + 108, 1.0, { 0.82, 0.84, 0.80, 1 })
 end
 
 local function map_mode_at(x, y)
@@ -328,12 +329,12 @@ local function map_mode_at(x, y)
     if ww < 760 then
         return nil
     end
-    local panel_x = ww - 250
+    local panel_x = ww - 330
     local panel_y = 68
     for i, mode in ipairs(MODE_BUTTONS) do
-        local bx = panel_x + 11 + (i - 1) * 44
-        local by = panel_y + 28
-        if x >= bx and x <= bx + 36 and y >= by and y <= by + 24 then
+        local bx = panel_x + 14 + (i - 1) * 53
+        local by = panel_y + 34
+        if x >= bx and x <= bx + 42 and y >= by and y <= by + 28 then
             return mode.mode
         end
     end
@@ -341,7 +342,7 @@ local function map_mode_at(x, y)
 end
 
 local function draw_log_panel(state, view, ww, hh, mini_x, mini_y)
-    local log_h = 90
+    local log_h = 104
     local log_w = math.max(300, mini_x - 22)
     local x = 8
     local y = hh - log_h - 8
@@ -350,9 +351,9 @@ local function draw_log_panel(state, view, ww, hh, mini_x, mini_y)
         y = math.max(62, mini_y - log_h - 10)
     end
     draw_panel(x, y, log_w, log_h, 0.80)
-    draw_text(view, "small", "CAMPAIGN LOG", x + 12, y + 8, 0.82, { 0.99, 0.90, 0.66, 1 })
+    draw_text(view, "small", "CAMPAIGN LOG", x + 12, y + 8, 1.0, { 0.99, 0.90, 0.66, 1 })
     for i = 1, 3 do
-        draw_text(view, "small", state.log[i] or "", x + 14, y + 16 + i * 18, 0.72, { 0.88, 0.90, 0.86, 1 })
+        draw_text(view, "small", state.log[i] or "", x + 14, y + 18 + i * 22, 0.98, { 0.88, 0.90, 0.86, 1 })
     end
 end
 
@@ -372,7 +373,7 @@ function M.draw(state, view, hovered_gid, selected_gid, map_modes)
     draw_log_panel(state, view, ww, hh, mini_x, mini_y)
 
     draw_panel(mini_x - 8, mini_y - 26, mini_w + 16, mini_h + 34, 0.90)
-    draw_text(view, "small", "WORLD OVERVIEW", mini_x + 8, mini_y - 20, 0.76, { 0.99, 0.93, 0.78, 1 })
+    draw_text(view, "small", "WORLD OVERVIEW", mini_x + 8, mini_y - 20, 0.92, { 0.99, 0.93, 0.78, 1 })
     update_minimap(state, view, map_modes, mini_w, mini_h)
     minimap:render(mini_x, mini_y)
     R.setColor(1, 1, 1, 1)

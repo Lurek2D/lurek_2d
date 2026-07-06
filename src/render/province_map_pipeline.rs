@@ -10,33 +10,115 @@ use bytemuck::{Pod, Zeroable};
 use wgpu::util::DeviceExt;
 
 const PROVINCE_MAP_SHADER: &str = include_str!("shaders/province_map.wgsl");
+const DEFAULT_TERRAIN_TILE_SIZE: u32 = 16;
+const DEFAULT_TERRAIN_TILE_COUNT: u32 = 6;
 
-fn default_province_watermark_rgba() -> [u8; 8 * 8 * 4] {
-    let mut pixels = [0_u8; 8 * 8 * 4];
-    let mark = [
-        (3, 1, 96),
-        (2, 2, 74),
-        (3, 2, 92),
-        (4, 2, 74),
-        (1, 3, 58),
-        (2, 3, 82),
-        (3, 3, 96),
-        (4, 3, 82),
-        (5, 3, 58),
-        (2, 4, 54),
-        (3, 4, 80),
-        (4, 4, 54),
-        (3, 5, 80),
-        (3, 6, 72),
-    ];
-    for (x, y, alpha) in mark {
-        let offset = ((y * 8 + x) * 4) as usize;
-        pixels[offset] = 96;
-        pixels[offset + 1] = 96;
-        pixels[offset + 2] = 88;
-        pixels[offset + 3] = alpha;
+fn default_province_watermark_rgba() -> (Vec<u8>, u32, u32) {
+    let width = DEFAULT_TERRAIN_TILE_SIZE * DEFAULT_TERRAIN_TILE_COUNT;
+    let height = DEFAULT_TERRAIN_TILE_SIZE;
+    let mut pixels = vec![0_u8; (width * height * 4) as usize];
+
+    let put = |pixels: &mut Vec<u8>, x: u32, y: u32, alpha: u8| {
+        if x >= width || y >= height {
+            return;
+        }
+        let offset = ((y * width + x) * 4) as usize;
+        pixels[offset] = 28;
+        pixels[offset + 1] = 24;
+        pixels[offset + 2] = 20;
+        pixels[offset + 3] = ((u16::from(alpha) * 2).min(180)) as u8;
+    };
+
+    let tile = |slot: u32, x: u32| slot * DEFAULT_TERRAIN_TILE_SIZE + x;
+
+    for y in [4, 8, 12] {
+        for x in 3..13 {
+            put(&mut pixels, tile(0, x), y, if y == 8 { 88 } else { 64 });
+        }
     }
-    pixels
+
+    for &(x, y, alpha) in &[
+        (8, 2, 96),
+        (7, 4, 84),
+        (8, 4, 92),
+        (9, 4, 84),
+        (6, 7, 72),
+        (7, 7, 86),
+        (8, 7, 96),
+        (9, 7, 86),
+        (10, 7, 72),
+        (8, 10, 84),
+        (6, 12, 60),
+        (10, 12, 60),
+    ] {
+        put(&mut pixels, tile(1, x), y, alpha);
+    }
+
+    for &(x, y, alpha) in &[
+        (3, 11, 66),
+        (4, 9, 74),
+        (5, 7, 84),
+        (6, 5, 92),
+        (7, 3, 98),
+        (8, 5, 88),
+        (9, 7, 78),
+        (10, 9, 70),
+        (11, 11, 60),
+        (8, 8, 96),
+        (9, 6, 82),
+        (10, 4, 76),
+        (11, 2, 68),
+    ] {
+        put(&mut pixels, tile(2, x), y, alpha);
+    }
+
+    for &(x, y, alpha) in &[
+        (3, 10, 68),
+        (5, 8, 78),
+        (7, 7, 88),
+        (9, 8, 78),
+        (11, 10, 68),
+        (4, 5, 58),
+        (6, 4, 72),
+        (8, 4, 82),
+        (10, 5, 72),
+        (12, 6, 58),
+    ] {
+        put(&mut pixels, tile(3, x), y, alpha);
+    }
+
+    for &(x, y, alpha) in &[
+        (4, 3, 66),
+        (4, 7, 90),
+        (4, 11, 72),
+        (7, 2, 58),
+        (7, 6, 86),
+        (7, 10, 64),
+        (10, 4, 62),
+        (10, 8, 88),
+        (10, 12, 68),
+        (12, 6, 52),
+        (12, 10, 64),
+    ] {
+        put(&mut pixels, tile(4, x), y, alpha);
+    }
+
+    for &(x, y, alpha) in &[
+        (3, 4, 54),
+        (5, 4, 70),
+        (7, 5, 84),
+        (9, 4, 70),
+        (11, 4, 54),
+        (4, 9, 58),
+        (6, 9, 74),
+        (8, 10, 88),
+        (10, 9, 74),
+        (12, 9, 58),
+    ] {
+        put(&mut pixels, tile(5, x), y, alpha);
+    }
+
+    (pixels, width, height)
 }
 
 /// Uniforms used by the province map fullscreen shader.
@@ -311,11 +393,13 @@ impl ProvinceMapPipeline {
                 resource: uniform_buffer.as_entire_binding(),
             }],
         });
+        let (default_terrain_pixels, default_terrain_width, default_terrain_height) =
+            default_province_watermark_rgba();
         let default_terrain_texture = device.create_texture(&wgpu::TextureDescriptor {
             label: Some("province_map_default_terrain_texture"),
             size: wgpu::Extent3d {
-                width: 8,
-                height: 8,
+                width: default_terrain_width,
+                height: default_terrain_height,
                 depth_or_array_layers: 1,
             },
             mip_level_count: 1,
@@ -332,15 +416,15 @@ impl ProvinceMapPipeline {
                 origin: wgpu::Origin3d::ZERO,
                 aspect: wgpu::TextureAspect::All,
             },
-            &default_province_watermark_rgba(),
+            &default_terrain_pixels,
             wgpu::ImageDataLayout {
                 offset: 0,
-                bytes_per_row: Some(8 * 4),
-                rows_per_image: Some(8),
+                bytes_per_row: Some(default_terrain_width * 4),
+                rows_per_image: Some(default_terrain_height),
             },
             wgpu::Extent3d {
-                width: 8,
-                height: 8,
+                width: default_terrain_width,
+                height: default_terrain_height,
                 depth_or_array_layers: 1,
             },
         );
@@ -351,8 +435,8 @@ impl ProvinceMapPipeline {
             address_mode_u: wgpu::AddressMode::Repeat,
             address_mode_v: wgpu::AddressMode::Repeat,
             address_mode_w: wgpu::AddressMode::Repeat,
-            mag_filter: wgpu::FilterMode::Linear,
-            min_filter: wgpu::FilterMode::Linear,
+            mag_filter: wgpu::FilterMode::Nearest,
+            min_filter: wgpu::FilterMode::Nearest,
             mipmap_filter: wgpu::FilterMode::Nearest,
             ..Default::default()
         });

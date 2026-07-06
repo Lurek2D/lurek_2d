@@ -138,8 +138,8 @@ describe("eu2 playable slice", function()
         assert(border_styles["1:2"].flags[1] == "country", "land owner border should stay a country border")
         assert(border_styles["1:2"].color == nil, "country border color should come from render border_palette")
         assert(border_styles["1:3"].color == nil, "coast border color should come from render border_palette")
-        assert(border_styles["1:3"].thickness == 2.0, "coast borders should be doubled for the larger map scale")
-        assert(border_styles["1:2"].thickness == 1.5, "country borders should be 50% thicker")
+        assert(border_styles["1:3"].thickness == 4.0, "coast borders should be distinctly thicker at this map scale")
+        assert(border_styles["1:2"].thickness == 4.8, "country borders should be thicker than coastal borders")
         assert(border_styles["2:4"].color == nil, "local borders should use palette province color")
         assert(visual_states[1].effect_flags == map_modes.stripe_effect_flag, "striped province should enable shader hatch flag")
         assert(visual_states[3].effect_flags == 0, "non-striped provinces should keep stripes disabled")
@@ -181,6 +181,7 @@ describe("eu2 playable slice", function()
 
     it("province positions prefer imported capital markers over centroids", function()
         local state_module = load_demo_module("state.lua")
+        local capital_calls = {}
         local reg = {
             provinceIds = function()
                 return { 7 }
@@ -199,6 +200,10 @@ describe("eu2 playable slice", function()
             end,
             getNeighbors = function()
                 return {}
+            end,
+            setCapital = function(_, id, x, y)
+                capital_calls[#capital_calls + 1] = { id = id, x = x, y = y }
+                return true
             end,
             setAttr = function()
                 return true
@@ -222,6 +227,7 @@ describe("eu2 playable slice", function()
         assert(province ~= nil, "province should be imported into demo state")
         assert(province.cx == 321.5, "demo province x should use imported capital marker")
         assert(province.cy == 123.5, "demo province y should use imported capital marker")
+        assert(#capital_calls == 1 and capital_calls[1].id == 7, "state bootstrap should feed province anchors back into registry capitals")
         assert(type(state.set_striped_pair) == "function", "state should expose stripe helper")
         assert(type(state.toggle_striped_pair) == "function", "state should expose stripe toggle helper")
     end)
