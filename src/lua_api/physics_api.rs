@@ -5,12 +5,15 @@ use crate::image::ImageData;
 use crate::math::Vec2;
 use crate::physics::world::{BodyContact, COLLISION_GROUP_COUNT};
 use crate::physics::{
-    AlphaShapeOptions, BeamHit, BeamHitMode, BeamOptions, BeamSegment, BeamTrace, Body, BodyId,
-    BodyType, FlowApplicationMode, FlowCombineMode, FlowDirectionMode, FlowFalloff, FlowField,
-    FlowGeometry, FlowMedium, FlowSample, LiquidBodyForceOptions, LiquidBodyForceStats, LiquidKind,
-    LiquidMap, LiquidStepOptions, LiquidStepStats, PhysicsMaterial, PhysicsQueryFilter,
-    PhysicsWorldStats, PhysicsZone, RaycastHit, Shape, ShapeSweepHit, TerrainCollapseMode,
-    TerrainCollapseOptions, TerrainCollapseResult, TerrainMap, TerrainSupportRule, World,
+    AlphaShapeOptions, AltitudeCollisionOptions, AltitudeHit, AltitudeHitKind, AltitudeLayer,
+    AltitudeLayerData, AltitudeMode, AltitudeSampleMode, BallisticArcOptions,
+    BallisticProjectileOptions, BallisticTrace, BeamHit, BeamHitMode, BeamOptions, BeamSegment,
+    BeamTrace, Body, BodyId, BodyType, CircleCast25DOptions, FlowApplicationMode, FlowCombineMode,
+    FlowDirectionMode, FlowFalloff, FlowField, FlowGeometry, FlowMedium, FlowSample,
+    LiquidBodyForceOptions, LiquidBodyForceStats, LiquidKind, LiquidMap, LiquidStepOptions,
+    LiquidStepStats, PhysicsLimits, PhysicsMaterial, PhysicsQueryFilter, PhysicsWorldStats,
+    PhysicsZone, RaycastHit, Shape, ShapeSweepHit, TerrainCollapseMode, TerrainCollapseOptions,
+    TerrainCollapseResult, TerrainMap, TerrainSupportRule, World,
 };
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -659,6 +662,54 @@ fn shape_sweep_hit_to_table<'lua>(
     Ok(tbl)
 }
 
+fn altitude_hit_kind_to_str(kind: AltitudeHitKind) -> &'static str {
+    match kind {
+        AltitudeHitKind::Body => "body",
+        AltitudeHitKind::Terrain => "terrain",
+        AltitudeHitKind::Ground => "ground",
+        AltitudeHitKind::Expired => "expired",
+    }
+}
+
+fn altitude_hit_to_table<'lua>(lua: &'lua Lua, hit: &AltitudeHit) -> LuaResult<LuaTable<'lua>> {
+    let tbl = lua.create_table()?;
+    tbl.set("bodyId", hit.body_id)?;
+    tbl.set("x", hit.point.0)?;
+    tbl.set("y", hit.point.1)?;
+    tbl.set("normalX", hit.normal.0)?;
+    tbl.set("normalY", hit.normal.1)?;
+    tbl.set("toi", hit.toi)?;
+    tbl.set("z", hit.z)?;
+    tbl.set("targetZMin", hit.target_z_min)?;
+    tbl.set("targetZMax", hit.target_z_max)?;
+    tbl.set("groundHeight", hit.ground_height)?;
+    tbl.set("hitKind", altitude_hit_kind_to_str(hit.hit_kind))?;
+    Ok(tbl)
+}
+
+fn ballistic_trace_to_table<'lua>(
+    lua: &'lua Lua,
+    trace: &BallisticTrace,
+) -> LuaResult<LuaTable<'lua>> {
+    let tbl = lua.create_table()?;
+    let samples = lua.create_table()?;
+    for (index, (x, y, z)) in trace.samples.iter().enumerate() {
+        let row = lua.create_table()?;
+        row.set("x", *x)?;
+        row.set("y", *y)?;
+        row.set("z", *z)?;
+        samples.set(index + 1, row)?;
+    }
+    tbl.set("samples", samples)?;
+    match &trace.hit {
+        Some(hit) => tbl.set("hit", altitude_hit_to_table(lua, hit)?)?,
+        None => tbl.set("hit", LuaValue::Nil)?,
+    }
+    tbl.set("travelTime", trace.travel_time)?;
+    tbl.set("expired", trace.expired)?;
+    Ok(tbl)
+}
+
 /// Serializes a beam hit into the Lua table shape exposed by the bindings.
 fn beam_hit_to_table<'lua>(lua: &'lua Lua, hit: &BeamHit) -> LuaResult<LuaTable<'lua>> {
     let tbl = lua.create_table()?;
@@ -759,6 +810,237 @@ fn query_filter_from_lua(method: &str, value: Option<LuaValue>) -> LuaResult<Phy
     }
     filter.exclude_body = tbl.get::<_, Option<BodyId>>("excludeBody")?;
     Ok(filter)
+}
+
+fn parse_altitude_sample_mode(
+    method: &str,
+    value: Option<String>,
+) -> LuaResult<AltitudeSampleMode> {
+    match value
+        .unwrap_or_else(|| "bilinear".to_string())
+        .trim()
+        .to_ascii_lowercase()
+        .as_str()
+    {
+        "nearest" => Ok(AltitudeSampleMode::Nearest),
+        "bilinear" => Ok(AltitudeSampleMode::Bilinear),
+        other => Err(physics_runtime_error(
+            method,
+            format!("invalid sample mode '{}'", other),
+        )),
+    }
+}
+
+fn parse_altitude_mode(method: &str, value: String) -> LuaResult<AltitudeMode> {
+    match value.trim().to_ascii_lowercase().as_str() {
+        "ground" => Ok(AltitudeMode::Ground),
+        "airborne" => Ok(AltitudeMode::Airborne),
+        "ballistic" => Ok(AltitudeMode::Ballistic),
+        "fixed" => Ok(AltitudeMode::Fixed),
+        other => Err(physics_runtime_error(
+            method,
+            format!("invalid altitude mode '{}'", other),
+        )),
+    }
+}
+
+fn altitude_mode_to_str(mode: AltitudeMode) -> &'static str {
+    match mode {
+        AltitudeMode::Ground => "ground",
+        AltitudeMode::Airborne => "airborne",
+        AltitudeMode::Ballistic => "ballistic",
+        AltitudeMode::Fixed => "fixed",
+    }
+}
+
+fn altitude_collision_from_lua(
+    _method: &str,
+    tbl: &LuaTable,
+) -> LuaResult<AltitudeCollisionOptions> {
+    Ok(AltitudeCollisionOptions {
+        enabled: tbl.get::<_, Option<bool>>("enabled")?.unwrap_or(true),
+        collide_when_separated: tbl
+            .get::<_, Option<bool>>("collideWhenSeparated")?
+            .unwrap_or(false),
+        hit_ground_when_below_terrain: tbl
+            .get::<_, Option<bool>>("hitGroundWhenBelowTerrain")?
+            .unwrap_or(true),
+    })
+}
+
+fn altitude_layer_data_to_table<'lua>(
+    lua: &'lua Lua,
+    data: &AltitudeLayerData,
+) -> LuaResult<LuaTable<'lua>> {
+    let tbl = lua.create_table()?;
+    tbl.set("width", data.width)?;
+    tbl.set("height", data.height)?;
+    tbl.set("cellSize", data.cell_size)?;
+    tbl.set("defaultGroundHeight", data.default_ground_height)?;
+    tbl.set(
+        "sampleMode",
+        match data.sample_mode {
+            AltitudeSampleMode::Nearest => "nearest",
+            AltitudeSampleMode::Bilinear => "bilinear",
+        },
+    )?;
+    let heights = lua.create_table()?;
+    for (index, value) in data.heights.iter().enumerate() {
+        heights.set(index + 1, *value)?;
+    }
+    let clearances = lua.create_table()?;
+    for (index, value) in data.clearances.iter().enumerate() {
+        clearances.set(index + 1, *value)?;
+    }
+    tbl.set("heights", heights)?;
+    tbl.set("clearances", clearances)?;
+    Ok(tbl)
+}
+
+fn altitude_layer_data_from_lua(method: &str, tbl: &LuaTable) -> LuaResult<AltitudeLayerData> {
+    let width = tbl.get::<_, u32>("width")?;
+    let height = tbl.get::<_, u32>("height")?;
+    let cell_size = tbl.get::<_, f32>("cellSize")?;
+    let default_ground_height = tbl
+        .get::<_, Option<f32>>("defaultGroundHeight")?
+        .unwrap_or(0.0);
+    let sample_mode = parse_altitude_sample_mode(method, tbl.get("sampleMode").ok())?;
+    let heights_tbl: LuaTable = tbl.get("heights")?;
+    let clearances_tbl: LuaTable = tbl.get("clearances")?;
+    let mut heights = Vec::with_capacity(heights_tbl.raw_len());
+    for index in 1..=heights_tbl.raw_len() {
+        heights.push(heights_tbl.raw_get(index)?);
+    }
+    let mut clearances = Vec::with_capacity(clearances_tbl.raw_len());
+    for index in 1..=clearances_tbl.raw_len() {
+        clearances.push(clearances_tbl.raw_get(index)?);
+    }
+    Ok(AltitudeLayerData {
+        width,
+        height,
+        cell_size,
+        default_ground_height,
+        sample_mode,
+        heights,
+        clearances,
+    })
+}
+
+fn point3_from_lua(method: &str, label: &str, tbl: &LuaTable) -> LuaResult<(f32, f32, f32)> {
+    let x = tbl
+        .get::<_, f32>("x")
+        .map_err(|_| physics_runtime_error(method, format!("{label}.x is required")))?;
+    let y = tbl
+        .get::<_, f32>("y")
+        .map_err(|_| physics_runtime_error(method, format!("{label}.y is required")))?;
+    let z = tbl
+        .get::<_, f32>("z")
+        .map_err(|_| physics_runtime_error(method, format!("{label}.z is required")))?;
+    Ok((x, y, z))
+}
+
+fn circle_cast_25d_options_from_lua(
+    method: &str,
+    tbl: &LuaTable,
+) -> LuaResult<CircleCast25DOptions> {
+    let x = tbl
+        .get::<_, f32>("x")
+        .map_err(|_| physics_runtime_error(method, "x is required"))?;
+    let y = tbl
+        .get::<_, f32>("y")
+        .map_err(|_| physics_runtime_error(method, "y is required"))?;
+    let z = tbl
+        .get::<_, f32>("z")
+        .map_err(|_| physics_runtime_error(method, "z is required"))?;
+    let radius = tbl
+        .get::<_, f32>("radius")
+        .map_err(|_| physics_runtime_error(method, "radius is required"))?;
+    let height = tbl.get::<_, Option<f32>>("height")?.unwrap_or(radius * 2.0);
+    let dx = tbl
+        .get::<_, f32>("dx")
+        .map_err(|_| physics_runtime_error(method, "dx is required"))?;
+    let dy = tbl
+        .get::<_, f32>("dy")
+        .map_err(|_| physics_runtime_error(method, "dy is required"))?;
+    let dz = tbl.get::<_, Option<f32>>("dz")?.unwrap_or(0.0);
+    let max_dist = (dx * dx + dy * dy).sqrt();
+    Ok(CircleCast25DOptions {
+        x,
+        y,
+        z,
+        radius,
+        height,
+        dx,
+        dy,
+        dz,
+        max_dist,
+    })
+}
+
+fn ballistic_arc_options_from_lua(method: &str, tbl: &LuaTable) -> LuaResult<BallisticArcOptions> {
+    let from_tbl: LuaTable = tbl
+        .get("from")
+        .map_err(|_| physics_runtime_error(method, "from = { x, y, z } is required"))?;
+    let to_tbl: LuaTable = tbl
+        .get("to")
+        .or_else(|_| tbl.get("target"))
+        .map_err(|_| physics_runtime_error(method, "to or target = { x, y, z } is required"))?;
+    let radius = tbl
+        .get::<_, f32>("radius")
+        .map_err(|_| physics_runtime_error(method, "radius is required"))?;
+    Ok(BallisticArcOptions {
+        from: point3_from_lua(method, "from", &from_tbl)?,
+        to: point3_from_lua(method, "to", &to_tbl)?,
+        speed: tbl
+            .get::<_, f32>("speed")
+            .map_err(|_| physics_runtime_error(method, "speed is required"))?,
+        gravity: tbl
+            .get::<_, f32>("gravity")
+            .map_err(|_| physics_runtime_error(method, "gravity is required"))?,
+        radius,
+        height: tbl.get::<_, Option<f32>>("height")?.unwrap_or(radius * 2.0),
+        max_time: tbl.get::<_, Option<f32>>("maxTime")?.unwrap_or(4.0),
+        sample_dt: tbl.get::<_, Option<f32>>("sampleDt")?.unwrap_or(1.0 / 30.0),
+    })
+}
+
+fn ballistic_projectile_options_from_lua(
+    method: &str,
+    tbl: &LuaTable,
+) -> LuaResult<BallisticProjectileOptions> {
+    let arc = ballistic_arc_options_from_lua(method, tbl)?;
+    Ok(BallisticProjectileOptions {
+        owner: tbl.get::<_, Option<usize>>("owner")?,
+        from: arc.from,
+        to: arc.to,
+        speed: arc.speed,
+        gravity: arc.gravity,
+        radius: arc.radius,
+        height: arc.height,
+        max_time: arc.max_time,
+        sample_dt: arc.sample_dt,
+    })
+}
+
+fn ballistic_projectile_to_table<'lua>(
+    lua: &'lua Lua,
+    projectile: &crate::physics::BallisticProjectile,
+) -> LuaResult<LuaTable<'lua>> {
+    let tbl = lua.create_table()?;
+    tbl.set("id", projectile.id)?;
+    tbl.set("owner", projectile.owner)?;
+    tbl.set("x", projectile.position.0)?;
+    tbl.set("y", projectile.position.1)?;
+    tbl.set("z", projectile.position.2)?;
+    tbl.set("vx", projectile.velocity.0)?;
+    tbl.set("vy", projectile.velocity.1)?;
+    tbl.set("vz", projectile.velocity.2)?;
+    tbl.set("radius", projectile.radius)?;
+    tbl.set("height", projectile.height)?;
+    tbl.set("gravity", projectile.gravity)?;
+    tbl.set("timeRemaining", projectile.time_remaining)?;
+    tbl.set("sampleDt", projectile.sample_dt)?;
+    Ok(tbl)
 }
 
 fn beam_options_from_lua(
@@ -1627,6 +1909,33 @@ impl LuaUserData for LuaWorld {
                 Ok(())
             },
         );
+        // -- drawAltitudeDebug --
+        /// Draws altitude-layer cells, body vertical ranges, and ballistic arcs into an ImageData target.
+        /// @param | target | LImageData | Mutable target image.
+        /// @param | opts | table? | Optional table with `drawLayer`, `drawBodies`, and `drawProjectiles` booleans.
+        methods.add_method(
+            "drawAltitudeDebug",
+            |_, this, (target, opts): (mlua::AnyUserData, Option<LuaTable>)| {
+                let (draw_layer, draw_bodies, draw_projectiles) = match opts {
+                    Some(table) => (
+                        table.get::<_, Option<bool>>("drawLayer")?.unwrap_or(true),
+                        table.get::<_, Option<bool>>("drawBodies")?.unwrap_or(true),
+                        table
+                            .get::<_, Option<bool>>("drawProjectiles")?
+                            .unwrap_or(true),
+                    ),
+                    None => (true, true, true),
+                };
+                let mut target_ref = target.borrow_mut::<crate::image::ImageData>()?;
+                this.world.borrow().draw_altitude_debug_to_image(
+                    &mut target_ref,
+                    draw_layer,
+                    draw_bodies,
+                    draw_projectiles,
+                );
+                Ok(())
+            },
+        );
         // -- destroyBody --
         /// Removes a body from the world by its ID, along with all attached fixtures and joints.
         /// @param | id | integer | The body ID to destroy.
@@ -2380,6 +2689,133 @@ impl LuaUserData for LuaWorld {
             let y = required_f32(lua, &vals, 1, "y")?;
             let filter = query_filter_from_lua("getBodyAtPoint", vals.get(2).cloned())?;
             Ok(this.world.borrow().get_body_at_point_filtered(x, y, filter))
+        });
+        // -- setAltitudeLayer --
+        /// Attaches or replaces the world's 2.5D altitude layer from an `LAltitudeLayer` snapshot.
+        /// @param | layer | LAltitudeLayer | Altitude layer payload to copy into this world.
+        methods.add_method("setAltitudeLayer", |_, this, layer_ud: LuaAnyUserData| {
+            let layer = layer_ud.borrow::<LuaAltitudeLayer>()?;
+            let layer = layer.clone_layer("setAltitudeLayer")?;
+            this.world.borrow_mut().set_altitude_layer(layer);
+            Ok(())
+        });
+        // -- getAltitudeLayer --
+        /// Returns the currently attached altitude layer, or nil when the world has none.
+        /// @return | LAltitudeLayer | Attached altitude layer view, or nil.
+        methods.add_method("getAltitudeLayer", |_, this, ()| {
+            if this.world.borrow().get_altitude_layer().is_some() {
+                Ok(Some(LuaAltitudeLayer::attached(Rc::clone(&this.world))))
+            } else {
+                Ok(None)
+            }
+        });
+        // -- queryAltitudeOverlap --
+        /// Returns all 2.5D overlaps whose XY footprint and world-space Z interval match the query.
+        /// @param | x | number | Query center X.
+        /// @param | y | number | Query center Y.
+        /// @param | radius | number | XY query radius.
+        /// @param | zMin | number | Minimum world-space Z.
+        /// @param | zMax | number | Maximum world-space Z.
+        /// @param | filter | table? | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}.
+        /// @return | table | Array of altitude-hit tables.
+        methods.add_method("queryAltitudeOverlap", |lua, this, args: LuaMultiValue| {
+            let vals: Vec<LuaValue> = args.into_iter().collect();
+            let x = required_f32(lua, &vals, 0, "x")?;
+            let y = required_f32(lua, &vals, 1, "y")?;
+            let radius = required_f32(lua, &vals, 2, "radius")?;
+            let z_min = required_f32(lua, &vals, 3, "zMin")?;
+            let z_max = required_f32(lua, &vals, 4, "zMax")?;
+            let filter = query_filter_from_lua("queryAltitudeOverlap", vals.get(5).cloned())?;
+            let hits = this
+                .world
+                .borrow()
+                .query_altitude_overlap(x, y, radius, z_min, z_max, filter)
+                .map_err(|err| physics_runtime_error("queryAltitudeOverlap", err))?;
+            let result = lua.create_table()?;
+            for (index, hit) in hits.iter().enumerate() {
+                result.set(index + 1, altitude_hit_to_table(lua, hit)?)?;
+            }
+            Ok(result)
+        });
+        // -- castCircle2_5d --
+        /// Sweeps a 2.5D circle and vertical interval, returning the earliest body or terrain hit.
+        /// @param | opts | table | Cast options: { x, y, z, radius, height?, dx, dy, dz?, filter? }.
+        /// @return | table | Altitude hit table, or nil when no body or terrain was reached.
+        methods.add_method("castCircle2_5d", |lua, this, opts: LuaTable| {
+            let options = circle_cast_25d_options_from_lua("castCircle2_5d", &opts)?;
+            let filter = query_filter_from_lua(
+                "castCircle2_5d",
+                opts.get::<_, Option<LuaValue>>("filter")?,
+            )?;
+            match this
+                .world
+                .borrow()
+                .try_cast_circle_25d(options, filter)
+                .map_err(|err| physics_runtime_error("castCircle2_5d", err))?
+            {
+                Some(hit) => Ok(LuaValue::Table(altitude_hit_to_table(lua, &hit)?)),
+                None => Ok(LuaValue::Nil),
+            }
+        });
+        // -- castBallisticArc --
+        /// Traces a deterministic ballistic arc without spawning a persistent projectile.
+        /// @param | opts | table | Arc options: { from, to or target, speed, gravity, radius, height?, maxTime?, sampleDt?, filter? }.
+        /// @return | table | Ballistic trace table with `samples`, optional `hit`, `travelTime`, and `expired`.
+        methods.add_method("castBallisticArc", |lua, this, opts: LuaTable| {
+            let options = ballistic_arc_options_from_lua("castBallisticArc", &opts)?;
+            let filter = query_filter_from_lua(
+                "castBallisticArc",
+                opts.get::<_, Option<LuaValue>>("filter")?,
+            )?;
+            let trace = this
+                .world
+                .borrow()
+                .try_cast_ballistic_arc(&options, filter)
+                .map_err(|err| physics_runtime_error("castBallisticArc", err))?;
+            Ok(LuaValue::Table(ballistic_trace_to_table(lua, &trace)?))
+        });
+        // -- spawnBallisticProjectile --
+        /// Spawns a deterministic engine-owned ballistic projectile and returns its stable id.
+        /// @param | opts | table | Projectile options: { owner?, from, to or target, speed, gravity, radius, height?, maxTime?, sampleDt? }.
+        /// @return | integer | Stable projectile id within the world.
+        methods.add_method("spawnBallisticProjectile", |_, this, opts: LuaTable| {
+            let options = ballistic_projectile_options_from_lua("spawnBallisticProjectile", &opts)?;
+            this.world
+                .borrow_mut()
+                .spawn_ballistic_projectile(options)
+                .map_err(|err| physics_runtime_error("spawnBallisticProjectile", err))
+        });
+        // -- getBallisticProjectile --
+        /// Returns one active engine-owned ballistic projectile by id, or nil when inactive.
+        /// @param | id | integer | Stable projectile id.
+        /// @return | table | Projectile state table, or nil.
+        methods.add_method("getBallisticProjectile", |lua, this, id: usize| match this
+            .world
+            .borrow()
+            .get_ballistic_projectile(id)
+        {
+            Some(projectile) => Ok(LuaValue::Table(ballistic_projectile_to_table(
+                lua, projectile,
+            )?)),
+            None => Ok(LuaValue::Nil),
+        });
+        // -- removeBallisticProjectile --
+        /// Removes one active engine-owned ballistic projectile by id.
+        /// @param | id | integer | Stable projectile id.
+        /// @return | boolean | True when the projectile existed.
+        methods.add_method("removeBallisticProjectile", |_, this, id: usize| {
+            Ok(this.world.borrow_mut().remove_ballistic_projectile(id))
+        });
+        // -- getBallisticProjectileHits --
+        /// Returns ballistic projectile impacts accumulated on this world since the last clear.
+        /// @return | table | Array of altitude-hit tables.
+        methods.add_method("getBallisticProjectileHits", |lua, this, ()| {
+            let hits = this.world.borrow().ballistic_projectile_hits().to_vec();
+            let result = lua.create_table()?;
+            for (index, hit) in hits.iter().enumerate() {
+                result.set(index + 1, altitude_hit_to_table(lua, hit)?)?;
+            }
+            Ok(result)
         });
         // -- castCircle --
         /// Sweeps a circle along a direction and returns the first collider hit.
@@ -3315,6 +3751,182 @@ impl LuaUserData for LuaZone {
         });
     }
 }
+
+#[derive(Clone)]
+enum LuaAltitudeLayerOwner {
+    Detached(Rc<RefCell<AltitudeLayer>>),
+    Attached(Rc<RefCell<World>>),
+}
+
+/// A deterministic 2.5D terrain-height and clearance grid used by physics altitude helpers.
+#[derive(Clone)]
+pub struct LuaAltitudeLayer {
+    owner: LuaAltitudeLayerOwner,
+}
+
+impl LuaAltitudeLayer {
+    fn detached(layer: AltitudeLayer) -> Self {
+        Self {
+            owner: LuaAltitudeLayerOwner::Detached(Rc::new(RefCell::new(layer))),
+        }
+    }
+
+    fn attached(world: Rc<RefCell<World>>) -> Self {
+        Self {
+            owner: LuaAltitudeLayerOwner::Attached(world),
+        }
+    }
+
+    fn with_ref<R>(
+        &self,
+        method: &str,
+        f: impl FnOnce(&AltitudeLayer) -> LuaResult<R>,
+    ) -> LuaResult<R> {
+        match &self.owner {
+            LuaAltitudeLayerOwner::Detached(layer) => {
+                let layer = layer.borrow();
+                f(&layer)
+            }
+            LuaAltitudeLayerOwner::Attached(world) => {
+                let world = world.borrow();
+                let layer = world.get_altitude_layer().ok_or_else(|| {
+                    physics_runtime_error(method, "altitude layer is not attached")
+                })?;
+                f(layer)
+            }
+        }
+    }
+
+    fn with_mut<R>(
+        &self,
+        method: &str,
+        f: impl FnOnce(&mut AltitudeLayer, PhysicsLimits) -> LuaResult<R>,
+    ) -> LuaResult<R> {
+        match &self.owner {
+            LuaAltitudeLayerOwner::Detached(layer) => {
+                let mut layer = layer.borrow_mut();
+                f(&mut layer, PhysicsLimits::default())
+            }
+            LuaAltitudeLayerOwner::Attached(world) => {
+                let mut world = world.borrow_mut();
+                let limits = *world.limits();
+                let layer = world.get_altitude_layer_mut().ok_or_else(|| {
+                    physics_runtime_error(method, "altitude layer is not attached")
+                })?;
+                f(layer, limits)
+            }
+        }
+    }
+
+    fn clone_layer(&self, method: &str) -> LuaResult<AltitudeLayer> {
+        self.with_ref(method, |layer| Ok(layer.clone()))
+    }
+}
+
+impl LuaUserData for LuaAltitudeLayer {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- setCellHeight --
+        /// Sets one terrain-height cell in the altitude layer.
+        /// @param | cx | integer | Cell column (0-based).
+        /// @param | cy | integer | Cell row (0-based).
+        /// @param | height | number | Ground height in world units.
+        methods.add_method(
+            "setCellHeight",
+            |_, this, (cx, cy, height): (u32, u32, f32)| {
+                this.with_mut("setCellHeight", |layer, _| {
+                    layer
+                        .set_cell_height(cx, cy, height)
+                        .map_err(|err| physics_runtime_error("setCellHeight", err))?;
+                    Ok(())
+                })
+            },
+        );
+        // -- getCellHeight --
+        /// Returns one terrain-height cell from the altitude layer.
+        /// @param | cx | integer | Cell column (0-based).
+        /// @param | cy | integer | Cell row (0-based).
+        /// @return | number | Ground height in world units.
+        methods.add_method("getCellHeight", |_, this, (cx, cy): (u32, u32)| {
+            this.with_ref("getCellHeight", |layer| {
+                layer
+                    .get_cell_height(cx, cy)
+                    .map_err(|err| physics_runtime_error("getCellHeight", err))
+            })
+        });
+        // -- sampleHeight --
+        /// Samples terrain height at world coordinates using the layer's current sampling mode.
+        /// @param | x | number | World-space X.
+        /// @param | y | number | World-space Y.
+        /// @return | number | Sampled terrain height.
+        methods.add_method("sampleHeight", |_, this, (x, y): (f32, f32)| {
+            this.with_ref("sampleHeight", |layer| {
+                layer
+                    .sample_height(x, y)
+                    .map_err(|err| physics_runtime_error("sampleHeight", err))
+            })
+        });
+        // -- setCellClearance --
+        /// Sets one gameplay-clearance cell in the altitude layer.
+        /// @param | cx | integer | Cell column (0-based).
+        /// @param | cy | integer | Cell row (0-based).
+        /// @param | clearance | number | Clearance height in world units.
+        methods.add_method(
+            "setCellClearance",
+            |_, this, (cx, cy, clearance): (u32, u32, f32)| {
+                this.with_mut("setCellClearance", |layer, _| {
+                    layer
+                        .set_cell_clearance(cx, cy, clearance)
+                        .map_err(|err| physics_runtime_error("setCellClearance", err))?;
+                    Ok(())
+                })
+            },
+        );
+        // -- sampleClearance --
+        /// Samples gameplay clearance at world coordinates using the layer's current sampling mode.
+        /// @param | x | number | World-space X.
+        /// @param | y | number | World-space Y.
+        /// @return | number | Sampled clearance height.
+        methods.add_method("sampleClearance", |_, this, (x, y): (f32, f32)| {
+            this.with_ref("sampleClearance", |layer| {
+                layer
+                    .sample_clearance(x, y)
+                    .map_err(|err| physics_runtime_error("sampleClearance", err))
+            })
+        });
+        // -- serialize --
+        /// Serializes the full altitude-layer payload for save/load and inspection.
+        /// @return | table | Layer data with width, height, cellSize, defaultGroundHeight, sampleMode, heights, and clearances.
+        methods.add_method("serialize", |lua, this, ()| {
+            this.with_ref("serialize", |layer| {
+                altitude_layer_data_to_table(lua, &layer.serialize())
+            })
+        });
+        // -- load --
+        /// Replaces this altitude-layer payload from serialized data.
+        /// @param | data | table | Serialized layer data previously returned by `serialize()`.
+        methods.add_method("load", |_, this, data: LuaTable| {
+            let data = altitude_layer_data_from_lua("load", &data)?;
+            this.with_mut("load", |layer, limits| {
+                layer
+                    .load(data, &limits)
+                    .map_err(|err| physics_runtime_error("load", err))?;
+                Ok(())
+            })
+        });
+        // -- type --
+        /// Returns the type name of this object ("LAltitudeLayer").
+        /// @return | string | "LAltitudeLayer".
+        methods.add_method("type", |_, _, ()| Ok("LAltitudeLayer"));
+        // -- typeOf --
+        /// Checks whether this object matches a given type name.
+        /// @param | name | string | Type name to check.
+        /// @return | boolean | True for `LAltitudeLayer` and `LObject`.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LAltitudeLayer" || name == "LObject")
+        });
+    }
+}
+
 /// A destructible terrain map backed by a grid of solid/empty cells. Generates physics colliders on flush.
 #[derive(Clone)]
 pub struct LuaTerrain {
@@ -3874,6 +4486,150 @@ impl LuaUserData for LuaBody {
         /// @param | vy | number | Velocity Y component.
         methods.add_method("setVelocity", |_, this, (vx, vy): (f32, f32)| {
             this.world.borrow_mut().set_body_velocity(this.id.0, vx, vy);
+            Ok(())
+        });
+        // -- setAltitude --
+        /// Sets this body's terrain-relative or fixed-world altitude value.
+        /// @param | z | number | Altitude in world units.
+        methods.add_method("setAltitude", |_, this, z: f32| {
+            this.world
+                .borrow_mut()
+                .try_set_body_altitude(this.id.0, z)
+                .map_err(|err| physics_runtime_error("setAltitude", err))?;
+            Ok(())
+        });
+        // -- getAltitude --
+        /// Returns this body's authored altitude value.
+        /// @return | number | Altitude in world units.
+        methods.add_method("getAltitude", |_, this, ()| {
+            Ok(this
+                .world
+                .borrow()
+                .get_body_altitude(this.id.0)
+                .unwrap_or(0.0))
+        });
+        // -- setVerticalVelocity --
+        /// Sets this body's vertical velocity used by airborne and ballistic altitude modes.
+        /// @param | vz | number | Vertical velocity in world units per second.
+        methods.add_method("setVerticalVelocity", |_, this, vz: f32| {
+            this.world
+                .borrow_mut()
+                .try_set_body_vertical_velocity(this.id.0, vz)
+                .map_err(|err| physics_runtime_error("setVerticalVelocity", err))?;
+            Ok(())
+        });
+        // -- getVerticalVelocity --
+        /// Returns this body's vertical velocity.
+        /// @return | number | Vertical velocity in world units per second.
+        methods.add_method("getVerticalVelocity", |_, this, ()| {
+            Ok(this
+                .world
+                .borrow()
+                .get_body_vertical_velocity(this.id.0)
+                .unwrap_or(0.0))
+        });
+        // -- setHeightExtent --
+        /// Sets this body's targetable vertical extent for 2.5D overlap tests.
+        /// @param | height | number | Height extent in world units.
+        methods.add_method("setHeightExtent", |_, this, height: f32| {
+            this.world
+                .borrow_mut()
+                .try_set_body_height_extent(this.id.0, height)
+                .map_err(|err| physics_runtime_error("setHeightExtent", err))?;
+            Ok(())
+        });
+        // -- getHeightExtent --
+        /// Returns this body's effective targetable vertical extent.
+        /// @return | number | Height extent in world units.
+        methods.add_method("getHeightExtent", |_, this, ()| {
+            Ok(this
+                .world
+                .borrow()
+                .get_body_height_extent(this.id.0)
+                .unwrap_or(0.0))
+        });
+        // -- setAltitudeMode --
+        /// Sets how this body's altitude is interpreted: ground, airborne, ballistic, or fixed.
+        /// @param | mode | string | Altitude mode name.
+        methods.add_method("setAltitudeMode", |_, this, mode: String| {
+            let mode = parse_altitude_mode("setAltitudeMode", mode)?;
+            this.world
+                .borrow_mut()
+                .set_body_altitude_mode(this.id.0, mode)
+                .map_err(|err| physics_runtime_error("setAltitudeMode", err))?;
+            Ok(())
+        });
+        // -- getAltitudeMode --
+        /// Returns this body's current altitude mode.
+        /// @return | string | One of `ground`, `airborne`, `ballistic`, or `fixed`.
+        methods.add_method("getAltitudeMode", |_, this, ()| {
+            let mode = this
+                .world
+                .borrow()
+                .get_body_altitude_mode(this.id.0)
+                .unwrap_or(AltitudeMode::Ground);
+            Ok(altitude_mode_to_str(mode))
+        });
+        // -- setVerticalGravity --
+        /// Sets this body's per-step vertical gravity.
+        /// @param | gravity | number | Vertical gravity in world units per second squared.
+        methods.add_method("setVerticalGravity", |_, this, gravity: f32| {
+            this.world
+                .borrow_mut()
+                .try_set_body_vertical_gravity(this.id.0, gravity)
+                .map_err(|err| physics_runtime_error("setVerticalGravity", err))?;
+            Ok(())
+        });
+        // -- getVerticalGravity --
+        /// Returns this body's per-step vertical gravity.
+        /// @return | number | Vertical gravity in world units per second squared.
+        methods.add_method("getVerticalGravity", |_, this, ()| {
+            Ok(this
+                .world
+                .borrow()
+                .get_body_vertical_gravity(this.id.0)
+                .unwrap_or(0.0))
+        });
+        // -- setClearanceClass --
+        /// Sets this body's authored clearance class for higher-level RTS filtering.
+        /// @param | className | string | Clearance class such as `ground`, `hover`, `air`, or `projectile`.
+        methods.add_method("setClearanceClass", |_, this, class_name: String| {
+            this.world
+                .borrow_mut()
+                .set_body_clearance_class(this.id.0, class_name)
+                .map_err(|err| physics_runtime_error("setClearanceClass", err))?;
+            Ok(())
+        });
+        // -- getClearanceClass --
+        /// Returns this body's authored clearance class.
+        /// @return | string | Clearance class name.
+        methods.add_method("getClearanceClass", |_, this, ()| {
+            Ok(this
+                .world
+                .borrow()
+                .get_body_clearance_class(this.id.0)
+                .unwrap_or_else(|| "ground".to_string()))
+        });
+        // -- getWorldZRange --
+        /// Returns this body's effective world-space Z interval.
+        /// @return | number | Minimum world-space Z.
+        /// @return | number | Maximum world-space Z.
+        methods.add_method("getWorldZRange", |_, this, ()| {
+            Ok(this
+                .world
+                .borrow()
+                .get_body_world_z_range(this.id.0)
+                .unwrap_or((0.0, 0.0)))
+        });
+        // -- setAltitudeCollision --
+        /// Replaces this body's altitude-collision flags.
+        /// @param | opts | table | Altitude collision options: { enabled?, collideWhenSeparated?, hitGroundWhenBelowTerrain? }.
+        methods.add_method("setAltitudeCollision", |_, this, opts: LuaTable| {
+            let options = altitude_collision_from_lua("setAltitudeCollision", &opts)?;
+            this.world
+                .borrow_mut()
+                .set_body_altitude_collision(this.id.0, options)
+                .map_err(|err| physics_runtime_error("setAltitudeCollision", err))?;
             Ok(())
         });
         // -- getAngle --
@@ -4585,6 +5341,41 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         lua.create_function(|lua, opts: LuaTable| {
             let material = physics_material_from_lua("newMaterial", &opts)?;
             physics_material_to_table(lua, &material)
+        })?,
+    )?;
+    // -- newAltitudeLayer --
+    /// Creates a deterministic altitude-layer grid for 2.5D terrain height and clearance sampling.
+    /// @param | opts | table | Layer options: { width, height, cellSize, defaultGroundHeight?, sampleMode? }.
+    /// @return | LAltitudeLayer | Detached altitude-layer handle.
+    tbl.set(
+        "newAltitudeLayer",
+        lua.create_function(|_, opts: LuaTable| {
+            let width = opts
+                .get::<_, u32>("width")
+                .map_err(|_| physics_runtime_error("newAltitudeLayer", "width is required"))?;
+            let height = opts
+                .get::<_, u32>("height")
+                .map_err(|_| physics_runtime_error("newAltitudeLayer", "height is required"))?;
+            let cell_size = opts
+                .get::<_, f32>("cellSize")
+                .map_err(|_| physics_runtime_error("newAltitudeLayer", "cellSize is required"))?;
+            let default_ground_height = opts
+                .get::<_, Option<f32>>("defaultGroundHeight")?
+                .unwrap_or(0.0);
+            let sample_mode = parse_altitude_sample_mode(
+                "newAltitudeLayer",
+                opts.get::<_, Option<String>>("sampleMode")?,
+            )?;
+            let layer = AltitudeLayer::new(
+                width,
+                height,
+                cell_size,
+                default_ground_height,
+                sample_mode,
+                &PhysicsLimits::default(),
+            )
+            .map_err(|err| physics_runtime_error("newAltitudeLayer", err))?;
+            Ok(LuaAltitudeLayer::detached(layer))
         })?,
     )?;
     // -- newBody --

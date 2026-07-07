@@ -52,11 +52,23 @@ describe("lurek.dialog", function()
 
     -- @covers lurek.dialog.say
     it("builds say nodes with actor and text", function()
-        local node = lurek.dialog.say("npc", "Hello there.")
+        local node = lurek.dialog.say("npc", "Hello there.", {
+            duration = 0.25,
+            id = "npc.hello",
+            voice = "npc_voice_1",
+            route = "intro",
+            tags = { "intro", "npc" },
+        })
         expect_type("table", node)
         expect_equal("say", node.type)
         expect_equal("npc", node.actor)
         expect_equal("Hello there.", node.text)
+        expect_equal(0.25, node.duration)
+        expect_equal("npc.hello", node.id)
+        expect_equal("npc_voice_1", node.voice)
+        expect_equal("intro", node.route)
+        expect_equal("intro", node.tags[1])
+        expect_equal("npc", node.tags[2])
     end)
 
     -- @covers lurek.dialog.choice
@@ -96,6 +108,13 @@ describe("lurek.dialog", function()
         local node = lurek.dialog.jump("ending_a")
         expect_equal("jump", node.type)
         expect_equal("ending_a", node.target)
+    end)
+
+    -- @covers lurek.dialog.label
+    it("builds label nodes with name", function()
+        local node = lurek.dialog.label("ending_a")
+        expect_equal("label", node.type)
+        expect_equal("ending_a", node.name)
     end)
 
     -- @covers LDialogueAI:type
@@ -297,17 +316,18 @@ describe("lurek.dialog", function()
     -- @covers LSpeakerRegistry:add
     it("registers speakers", function()
         local registry = new_registry()
-        registry:add("npc1", "Guard", "guard.png", "voice_1")
+        registry:add("npc1", "Guard", "guard.png", "voice_1", { tags = { "town", "merchant" } })
         expect_equal(1, registry:count())
     end)
 
     -- @covers LSpeakerRegistry:get
     it("retrieves speakers by id", function()
         local registry = new_registry()
-        registry:add("npc1", "Guard", "guard.png", "voice_1")
+        registry:add("npc1", "Guard", "guard.png", "voice_1", { tags = { "town", "merchant" } })
         local speaker = registry:get("npc1")
         expect_equal("Guard", speaker.name)
         expect_equal("guard.png", speaker.portrait)
+        expect_equal("merchant", speaker.tags[2])
     end)
 
     -- @covers LSpeakerRegistry:contains
@@ -362,12 +382,27 @@ describe("lurek.dialog", function()
     it("reveals text over time", function()
         local seq = new_sequencer()
         seq:setSpeed(10.0)
-        seq:load({ lurek.dialog.say("Hero", "Hello world!") })
+        seq:load({
+            lurek.dialog.say("Hero", "Hello", { duration = 0.2 }),
+            lurek.dialog.wait(0.3),
+            lurek.dialog.say("Hero", "After wait"),
+        })
         seq:start()
         seq:update(0.1)
         expect_equal(1, string.len(seq:revealedText()))
         seq:update(0.1)
         expect_equal(2, string.len(seq:revealedText()))
+        seq:skip()
+        expect_equal("waiting", seq:getState())
+        seq:update(0.19)
+        expect_equal("Hello", seq:currentText())
+        seq:update(0.02)
+        expect_equal("waiting", seq:getState())
+        expect_equal("", seq:currentText())
+        seq:update(0.29)
+        expect_equal("waiting", seq:getState())
+        seq:update(0.02)
+        expect_equal("After wait", seq:currentText())
     end)
 
     -- @covers LDialogSequencer:advance
@@ -465,6 +500,41 @@ describe("lurek.dialog", function()
         expect_equal("The full line here", seq:currentText())
     end)
 
+    -- @covers LDialogSequencer:currentId
+    it("returns the current line id", function()
+        local seq = new_sequencer()
+        seq:load({ lurek.dialog.say("NPC", "Tagged", { id = "line.tagged" }) })
+        seq:start()
+        expect_equal("line.tagged", seq:currentId())
+    end)
+
+    -- @covers LDialogSequencer:currentVoice
+    it("returns the current voice id", function()
+        local seq = new_sequencer()
+        seq:load({ lurek.dialog.say("NPC", "Tagged", { voice = "voice_1" }) })
+        seq:start()
+        expect_equal("voice_1", seq:currentVoice())
+    end)
+
+    -- @covers LDialogSequencer:currentRoute
+    it("returns the current route marker", function()
+        local seq = new_sequencer()
+        seq:load({ lurek.dialog.say("NPC", "Tagged", { route = "branch_a" }) })
+        seq:start()
+        expect_equal("branch_a", seq:currentRoute())
+    end)
+
+    -- @covers LDialogSequencer:currentTags
+    it("returns current line tags", function()
+        local seq = new_sequencer()
+        seq:load({ lurek.dialog.say("NPC", "Tagged", { tags = { "quest", "optional" } }) })
+        seq:start()
+        local tags = seq:currentTags()
+        expect_equal(2, #tags)
+        expect_equal("quest", tags[1])
+        expect_equal("optional", tags[2])
+    end)
+
     -- @covers LDialogSequencer:revealedText
     it("returns the partially revealed text", function()
         local seq = new_sequencer()
@@ -493,6 +563,93 @@ describe("lurek.dialog", function()
         expect_equal("Option A", labels[1])
         expect_equal("Option B", labels[2])
         expect_equal("Option C", labels[3])
+    end)
+
+    -- @covers LDialogSequencer:getHistory
+    it("stores spoken lines in history", function()
+        local seq = new_sequencer()
+        seq:setSpeed(100.0)
+        seq:load({
+            lurek.dialog.say("NPC", "First", { id = "line.one" }),
+            lurek.dialog.say("NPC", "Second"),
+        })
+        seq:start()
+        local history = seq:getHistory()
+        expect_equal(1, #history)
+        expect_equal("line.one", history[1].id)
+        expect_equal("First", history[1].text)
+    end)
+
+    -- @covers LDialogSequencer:clearHistory
+    it("clears spoken line history", function()
+        local seq = new_sequencer()
+        seq:load({ lurek.dialog.say("NPC", "First") })
+        seq:start()
+        expect_equal(1, #seq:getHistory())
+        seq:clearHistory()
+        expect_equal(0, #seq:getHistory())
+    end)
+
+    -- @covers LDialogSequencer:peekSignal
+    it("peeks pending event signals without removing them", function()
+        local seq = new_sequencer()
+        seq:load({
+            lurek.dialog.event("door_open", "north"),
+            lurek.dialog.say("NPC", "Opened"),
+        })
+        seq:start()
+        local signal = seq:peekSignal()
+        expect_equal("event", signal.kind)
+        expect_equal("door_open", signal.name)
+        expect_equal("north", signal.data)
+        expect_not_nil(seq:peekSignal())
+    end)
+
+    -- @covers LDialogSequencer:popSignal
+    it("pops pending signals in order", function()
+        local seq = new_sequencer()
+        seq:load({
+            lurek.dialog.call("onReward"),
+            lurek.dialog.event("reward_done", "ok"),
+            lurek.dialog.say("NPC", "Done"),
+        })
+        seq:start()
+        local first = seq:popSignal()
+        local second = seq:popSignal()
+        expect_equal("call", first.kind)
+        expect_equal("onReward", first.name)
+        expect_equal("event", second.kind)
+        expect_equal("reward_done", second.name)
+        expect_nil(seq:popSignal())
+    end)
+
+    -- @covers LDialogSequencer:snapshot
+    it("captures runtime progress, history, and pending signals", function()
+        local seq = new_sequencer()
+        seq:load({
+            lurek.dialog.say("NPC", "Snapshot line", { id = "snapshot.line" }),
+            lurek.dialog.event("snapshot_event", "ok"),
+        })
+        seq:start()
+        seq:update(0.2)
+        local snapshot = seq:snapshot()
+        expect_equal("typing", snapshot.state)
+        expect_equal(2, #snapshot.nodes)
+        expect_equal("snapshot.line", snapshot.history[1].id)
+        expect_equal("NPC", snapshot.currentSpeaker)
+    end)
+
+    -- @covers LDialogSequencer:restore
+    it("restores runtime progress from a snapshot", function()
+        local seq = new_sequencer()
+        seq:load({ lurek.dialog.say("NPC", "Restore line", { id = "restore.line" }) })
+        seq:start()
+        local snapshot = seq:snapshot()
+        seq:load({ lurek.dialog.say("NPC", "Other line") })
+        seq:start()
+        seq:restore(snapshot)
+        expect_equal("Restore line", seq:currentText())
+        expect_equal("restore.line", seq:currentId())
     end)
 
     -- @covers LDialogSequencer:type

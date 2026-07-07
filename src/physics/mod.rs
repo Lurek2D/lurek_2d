@@ -7,6 +7,8 @@
 //! `liquid.rs` owns separate grid liquids used for leaking tanks, simple buoyancy sampling, and conservative flow.
 //! Change this file when the public physics symbol map moves; change siblings when simulation data rules change.
 
+/// 2.5D altitude-layer data and vertical sidecar types.
+pub mod altitude;
 /// Rigid body management and handle types.
 pub mod body;
 /// Collision query and contact result types.
@@ -34,6 +36,11 @@ pub mod types;
 /// Physics world, stepping, bodies, raycasting, and instant beam queries.
 pub mod world;
 
+pub use altitude::{
+    AltitudeCollisionOptions, AltitudeHit, AltitudeHitKind, AltitudeLayer, AltitudeLayerData,
+    AltitudeMode, AltitudeSampleMode, BallisticArcOptions, BallisticProjectile,
+    BallisticProjectileOptions, BallisticTrace, BodyAltitudeState, CircleCast25DOptions,
+};
 pub use types::BodyId;
 /// Spatial trigger zones with gravity and event tracking.
 pub mod zone;

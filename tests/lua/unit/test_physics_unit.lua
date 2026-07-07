@@ -3191,4 +3191,350 @@ end)
 end
 -- END test_physics_alpha_shape_unit.lua
 
+-- BEGIN test_physics_altitude_unit.lua
+do
+-- Canonical public coverage for 2.5D altitude and ballistic helpers.
+
+local function new_altitude_layer(sample_mode)
+    return lurek.physics.newAltitudeLayer({
+        width = 4,
+        height = 4,
+        cellSize = 10,
+        defaultGroundHeight = 0,
+        sampleMode = sample_mode or "nearest",
+    })
+end
+
+local function new_altitude_world()
+    local world = lurek.physics.newWorld(0, 0)
+    local layer = new_altitude_layer("nearest")
+    world:setAltitudeLayer(layer)
+    return world
+end
+
+-- @describe physics altitude and ballistic api
+describe("physics altitude and ballistic api", function()
+    -- @covers lurek.physics.newAltitudeLayer
+    it("newAltitudeLayer returns an altitude layer userdata", function()
+        expect_type("userdata", new_altitude_layer("nearest"))
+    end)
+
+    -- @covers LAltitudeLayer:setCellHeight
+    it("setCellHeight updates one authored height cell", function()
+        local layer = new_altitude_layer("nearest")
+        layer:setCellHeight(1, 0, 6)
+        expect_equal(6, layer:getCellHeight(1, 0))
+    end)
+
+    -- @covers LAltitudeLayer:getCellHeight
+    it("getCellHeight reads one authored height cell", function()
+        local layer = new_altitude_layer("nearest")
+        layer:setCellHeight(0, 1, 7)
+        expect_equal(7, layer:getCellHeight(0, 1))
+    end)
+
+    -- @covers LAltitudeLayer:sampleHeight
+    it("sampleHeight reads deterministic height samples", function()
+        local layer = new_altitude_layer("nearest")
+        layer:setCellHeight(1, 0, 5)
+        expect_equal(5, layer:sampleHeight(15, 5))
+    end)
+
+    -- @covers LAltitudeLayer:setCellClearance
+    it("setCellClearance updates one authored clearance cell", function()
+        local layer = new_altitude_layer("nearest")
+        layer:setCellClearance(1, 1, 12)
+        expect_equal(12, layer:sampleClearance(15, 15))
+    end)
+
+    -- @covers LAltitudeLayer:sampleClearance
+    it("sampleClearance reads deterministic clearance samples", function()
+        local layer = new_altitude_layer("nearest")
+        layer:setCellClearance(0, 0, 4)
+        expect_equal(4, layer:sampleClearance(5, 5))
+    end)
+
+    -- @covers LAltitudeLayer:serialize
+    it("serialize returns a save-friendly altitude layer table", function()
+        local layer = new_altitude_layer("nearest")
+        layer:setCellHeight(1, 0, 8)
+        local data = layer:serialize()
+        expect_type("table", data)
+        expect_equal(4, data.width)
+        expect_equal(8, data.heights[2])
+    end)
+
+    -- @covers LAltitudeLayer:load
+    it("load restores serialized altitude layer data", function()
+        local source = new_altitude_layer("nearest")
+        source:setCellHeight(1, 0, 8)
+        local clone = new_altitude_layer("nearest")
+        clone:load(source:serialize())
+        expect_equal(8, clone:getCellHeight(1, 0))
+    end)
+
+    -- @covers LAltitudeLayer:type
+    it("type returns the altitude layer userdata name", function()
+        expect_equal("LAltitudeLayer", new_altitude_layer("nearest"):type())
+    end)
+
+    -- @covers LAltitudeLayer:typeOf
+    it("typeOf recognizes altitude layer userdata", function()
+        expect_true(new_altitude_layer("nearest"):typeOf("LAltitudeLayer"))
+    end)
+
+    -- @covers LWorld:setAltitudeLayer
+    it("setAltitudeLayer attaches an altitude layer snapshot to a world", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local layer = new_altitude_layer("nearest")
+        layer:setCellHeight(0, 0, 3)
+        world:setAltitudeLayer(layer)
+        expect_equal(3, world:getAltitudeLayer():sampleHeight(5, 5))
+    end)
+
+    -- @covers LWorld:getAltitudeLayer
+    it("getAltitudeLayer returns an attached altitude layer view", function()
+        local world = new_altitude_world()
+        expect_type("userdata", world:getAltitudeLayer())
+    end)
+
+    -- @covers LWorld:drawAltitudeDebug
+    it("drawAltitudeDebug renders layer, body, and projectile guides into an image target", function()
+        local world = new_altitude_world()
+        local layer = world:getAltitudeLayer()
+        layer:setCellHeight(1, 1, 6)
+        layer:setCellClearance(1, 1, 8)
+        local body = world:newBody(24, 24, 10, 10, "static")
+        body:setAltitudeMode("fixed")
+        body:setAltitude(6)
+        body:setHeightExtent(4)
+        world:spawnBallisticProjectile({
+            from = { x = 8, y = 40, z = 2 },
+            target = { x = 40, y = 40, z = 8 },
+            speed = 16, gravity = 0, radius = 1, maxTime = 2, sampleDt = 0.25,
+        })
+        local img = lurek.image.newImageData(64, 64)
+        world:drawAltitudeDebug(img)
+        local _, _, _, layer_alpha = img:getPixel(10, 10)
+        local _, _, _, body_alpha = img:getPixel(24, 24)
+        local _, _, _, projectile_alpha = img:getPixel(8, 38)
+        expect_true(layer_alpha > 0)
+        expect_true(body_alpha > 0)
+        expect_true(projectile_alpha > 0)
+    end)
+
+    -- @covers LWorld:queryAltitudeOverlap
+    it("queryAltitudeOverlap filters overlaps by world-space z range", function()
+        local world = new_altitude_world()
+        local low = world:newBody(20, 0, 8, 8, "static")
+        low:setAltitudeMode("fixed")
+        low:setAltitude(0)
+        low:setHeightExtent(2)
+        local high = world:newBody(20, 0, 8, 8, "static")
+        high:setAltitudeMode("fixed")
+        high:setAltitude(5)
+        high:setHeightExtent(3)
+        world:step(1 / 60)
+        local hits = world:queryAltitudeOverlap(20, 0, 8, 4, 9)
+        expect_equal(1, #hits)
+        expect_equal(high:getId(), hits[1].bodyId)
+    end)
+
+    -- @covers LWorld:castCircle2_5d
+    it("castCircle2_5d ignores low blockers and reaches matching altitude targets", function()
+        local world = new_altitude_world()
+        local low = world:newBody(14, 0, 6, 6, "static")
+        low:setAltitudeMode("fixed")
+        low:setAltitude(0)
+        low:setHeightExtent(2)
+        local high = world:newBody(28, 0, 6, 6, "static")
+        high:setAltitudeMode("fixed")
+        high:setAltitude(4)
+        high:setHeightExtent(4)
+        world:step(1 / 60)
+        local hit = world:castCircle2_5d({
+            x = 0, y = 0, z = 4, radius = 1, height = 2, dx = 40, dy = 0, dz = 0,
+        })
+        expect_equal(high:getId(), hit.bodyId)
+    end)
+
+    -- @covers LWorld:castBallisticArc
+    it("castBallisticArc returns deterministic altitude hit payloads", function()
+        local world = new_altitude_world()
+        local target = world:newBody(20, 0, 6, 6, "static")
+        target:setAltitudeMode("fixed")
+        target:setAltitude(4)
+        target:setHeightExtent(4)
+        world:step(1 / 60)
+        local trace = world:castBallisticArc({
+            from = { x = 0, y = 0, z = 4 },
+            to = { x = 20, y = 0, z = 4 },
+            speed = 20, gravity = 0, radius = 1, maxTime = 2, sampleDt = 0.25,
+        })
+        expect_equal(target:getId(), trace.hit.bodyId)
+    end)
+
+    -- @covers LWorld:spawnBallisticProjectile
+    it("spawnBallisticProjectile allocates engine-owned projectile ids", function()
+        local world = new_altitude_world()
+        local id = world:spawnBallisticProjectile({
+            from = { x = 0, y = 0, z = 1 },
+            target = { x = 8, y = 0, z = 1 },
+            speed = 8, gravity = 0, radius = 1, maxTime = 1, sampleDt = 0.25,
+        })
+        expect_true(id >= 0)
+    end)
+
+    -- @covers LWorld:getBallisticProjectile
+    it("getBallisticProjectile returns active projectile state tables", function()
+        local world = new_altitude_world()
+        local id = world:spawnBallisticProjectile({
+            owner = 77,
+            from = { x = 0, y = 0, z = 1 },
+            target = { x = 8, y = 0, z = 1 },
+            speed = 8, gravity = 0, radius = 1, maxTime = 1, sampleDt = 0.25,
+        })
+        local projectile = world:getBallisticProjectile(id)
+        expect_equal(77, projectile.owner)
+    end)
+
+    -- @covers LWorld:removeBallisticProjectile
+    it("removeBallisticProjectile tombstones active projectile slots", function()
+        local world = new_altitude_world()
+        local id = world:spawnBallisticProjectile({
+            from = { x = 0, y = 0, z = 1 },
+            target = { x = 8, y = 0, z = 1 },
+            speed = 8, gravity = 0, radius = 1, maxTime = 1, sampleDt = 0.25,
+        })
+        expect_true(world:removeBallisticProjectile(id))
+    end)
+
+    -- @covers LWorld:getBallisticProjectileHits
+    it("getBallisticProjectileHits reports completed projectile impacts", function()
+        local world = new_altitude_world()
+        local target = world:newBody(12, 0, 8, 8, "static")
+        target:setAltitudeMode("fixed")
+        target:setAltitude(2)
+        target:setHeightExtent(4)
+        world:step(1 / 60)
+        world:spawnBallisticProjectile({
+            from = { x = 0, y = 0, z = 2 },
+            target = { x = 12, y = 0, z = 2 },
+            speed = 12, gravity = 0, radius = 1, maxTime = 2, sampleDt = 0.25,
+        })
+        for _ = 1, 8 do world:step(0.25) end
+        local hits = world:getBallisticProjectileHits()
+        expect_equal(target:getId(), hits[1].bodyId)
+    end)
+
+    -- @covers LBody:setAltitude
+    it("setAltitude stores the body's altitude value", function()
+        local body = new_altitude_world():newCircleBody(20, 20, 4, "dynamic")
+        body:setAltitude(3)
+        expect_equal(3, body:getAltitude())
+    end)
+
+    -- @covers LBody:getAltitude
+    it("getAltitude returns the body's altitude value", function()
+        local body = new_altitude_world():newCircleBody(20, 20, 4, "dynamic")
+        body:setAltitude(5)
+        expect_equal(5, body:getAltitude())
+    end)
+
+    -- @covers LBody:setVerticalVelocity
+    it("setVerticalVelocity stores vertical speed for later stepping", function()
+        local body = new_altitude_world():newCircleBody(20, 20, 4, "dynamic")
+        body:setVerticalVelocity(5)
+        expect_equal(5, body:getVerticalVelocity())
+    end)
+
+    -- @covers LBody:getVerticalVelocity
+    it("getVerticalVelocity returns the stored vertical speed", function()
+        local body = new_altitude_world():newCircleBody(20, 20, 4, "dynamic")
+        body:setVerticalVelocity(9)
+        expect_equal(9, body:getVerticalVelocity())
+    end)
+
+    -- @covers LBody:setHeightExtent
+    it("setHeightExtent stores targetable vertical size", function()
+        local body = new_altitude_world():newCircleBody(20, 20, 4, "dynamic")
+        body:setHeightExtent(7)
+        expect_equal(7, body:getHeightExtent())
+    end)
+
+    -- @covers LBody:getHeightExtent
+    it("getHeightExtent returns targetable vertical size", function()
+        local body = new_altitude_world():newCircleBody(20, 20, 4, "dynamic")
+        body:setHeightExtent(11)
+        expect_equal(11, body:getHeightExtent())
+    end)
+
+    -- @covers LBody:setAltitudeMode
+    it("setAltitudeMode changes how altitude is interpreted", function()
+        local body = new_altitude_world():newCircleBody(20, 20, 4, "dynamic")
+        body:setAltitudeMode("fixed")
+        expect_equal("fixed", body:getAltitudeMode())
+    end)
+
+    -- @covers LBody:getAltitudeMode
+    it("getAltitudeMode reports the active altitude mode", function()
+        local body = new_altitude_world():newCircleBody(20, 20, 4, "dynamic")
+        body:setAltitudeMode("airborne")
+        expect_equal("airborne", body:getAltitudeMode())
+    end)
+
+    -- @covers LBody:setVerticalGravity
+    it("setVerticalGravity stores the per-body vertical gravity", function()
+        local body = new_altitude_world():newCircleBody(20, 20, 4, "dynamic")
+        body:setVerticalGravity(-12)
+        expect_equal(-12, body:getVerticalGravity())
+    end)
+
+    -- @covers LBody:getVerticalGravity
+    it("getVerticalGravity returns the per-body vertical gravity", function()
+        local body = new_altitude_world():newCircleBody(20, 20, 4, "dynamic")
+        body:setVerticalGravity(-9)
+        expect_equal(-9, body:getVerticalGravity())
+    end)
+
+    -- @covers LBody:setClearanceClass
+    it("setClearanceClass stores an authored clearance label", function()
+        local body = new_altitude_world():newCircleBody(20, 20, 4, "dynamic")
+        body:setClearanceClass("air")
+        expect_equal("air", body:getClearanceClass())
+    end)
+
+    -- @covers LBody:getClearanceClass
+    it("getClearanceClass returns the authored clearance label", function()
+        local body = new_altitude_world():newCircleBody(20, 20, 4, "dynamic")
+        body:setClearanceClass("hover")
+        expect_equal("hover", body:getClearanceClass())
+    end)
+
+    -- @covers LBody:getWorldZRange
+    it("getWorldZRange reports the effective world-space altitude interval", function()
+        local body = new_altitude_world():newCircleBody(20, 20, 4, "dynamic")
+        body:setAltitudeMode("fixed")
+        body:setAltitude(4)
+        body:setHeightExtent(5)
+        local z_min, z_max = body:getWorldZRange()
+        expect_equal(4, z_min)
+        expect_equal(9, z_max)
+    end)
+
+    -- @covers LBody:setAltitudeCollision
+    it("setAltitudeCollision stores altitude collision flags without error", function()
+        local body = new_altitude_world():newCircleBody(20, 20, 4, "dynamic")
+        expect_no_error(function()
+            body:setAltitudeCollision({
+                enabled = true,
+                collideWhenSeparated = false,
+                hitGroundWhenBelowTerrain = false,
+            })
+        end)
+    end)
+end)
+end
+-- END test_physics_altitude_unit.lua
+
 test_summary()

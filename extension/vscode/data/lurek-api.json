@@ -1,6 +1,6 @@
 {
   "version": "auto-generated",
-  "generated": "2026-07-03",
+  "generated": "2026-07-07",
   "modules": [
     {
       "name": "agent",
@@ -7067,7 +7067,7 @@
             {
               "name": "opts",
               "type": "table",
-              "description": "Optional table with duration field.",
+              "description": "Optional table with `duration`, `id`, `voice`, `route`, and `tags`.",
               "optional": true
             }
           ],
@@ -7177,6 +7177,24 @@
               "type": "table",
               "description": "Optional table (reserved for future use).",
               "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "label",
+          "fullPath": "lurek.dialog.label",
+          "signature": "(name)",
+          "description": "Creates a Label node used as a jump target marker.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Label name.",
+              "optional": false
             }
           ],
           "returns": "table",
@@ -20237,6 +20255,24 @@
           "objectType": null
         },
         {
+          "name": "newAltitudeLayer",
+          "fullPath": "lurek.physics.newAltitudeLayer",
+          "signature": "(opts)",
+          "description": "Creates a deterministic altitude-layer grid for 2.5D terrain height and clearance sampling.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Layer options: { width, height, cellSize, defaultGroundHeight?, sampleMode? }.",
+              "optional": false
+            }
+          ],
+          "returns": "LAltitudeLayer",
+          "returnType": "LAltitudeLayer",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "newBody",
           "fullPath": "lurek.physics.newBody",
           "signature": "(...)",
@@ -27435,6 +27471,30 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "restoreScene",
+          "fullPath": "lurek.scene.restoreScene",
+          "signature": "(snapshot, [opts])",
+          "description": "Fully restore scene shared data and rebuild the scene stack from registered scene names captured by `serializeScene`.",
+          "parameters": [
+            {
+              "name": "snapshot",
+              "type": "table",
+              "description": "Snapshot table with `stack` and `data` fields from `serializeScene`.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional table with `params[name] = value` forwarded to each restored scene's `enter(self, params)` callback.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": false,
           "objectType": null
         },
@@ -37364,6 +37424,202 @@
       ]
     },
     {
+      "name": "LAltitudeLayer",
+      "description": "A deterministic 2.5D terrain-height and clearance grid used by physics altitude helpers.",
+      "methods": [
+        {
+          "name": "setCellHeight",
+          "fullPath": "LAltitudeLayer:setCellHeight",
+          "signature": "(cx, cy, height)",
+          "description": "Sets one terrain-height cell in the altitude layer.",
+          "parameters": [
+            {
+              "name": "cx",
+              "type": "integer",
+              "description": "Cell column (0-based).",
+              "optional": false
+            },
+            {
+              "name": "cy",
+              "type": "integer",
+              "description": "Cell row (0-based).",
+              "optional": false
+            },
+            {
+              "name": "height",
+              "type": "number",
+              "description": "Ground height in world units.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAltitudeLayer"
+        },
+        {
+          "name": "getCellHeight",
+          "fullPath": "LAltitudeLayer:getCellHeight",
+          "signature": "(cx, cy)",
+          "description": "Returns one terrain-height cell from the altitude layer.",
+          "parameters": [
+            {
+              "name": "cx",
+              "type": "integer",
+              "description": "Cell column (0-based).",
+              "optional": false
+            },
+            {
+              "name": "cy",
+              "type": "integer",
+              "description": "Cell row (0-based).",
+              "optional": false
+            }
+          ],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LAltitudeLayer"
+        },
+        {
+          "name": "sampleHeight",
+          "fullPath": "LAltitudeLayer:sampleHeight",
+          "signature": "(x, y)",
+          "description": "Samples terrain height at world coordinates using the layer's current sampling mode.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "World-space X.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "World-space Y.",
+              "optional": false
+            }
+          ],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LAltitudeLayer"
+        },
+        {
+          "name": "setCellClearance",
+          "fullPath": "LAltitudeLayer:setCellClearance",
+          "signature": "(cx, cy, clearance)",
+          "description": "Sets one gameplay-clearance cell in the altitude layer.",
+          "parameters": [
+            {
+              "name": "cx",
+              "type": "integer",
+              "description": "Cell column (0-based).",
+              "optional": false
+            },
+            {
+              "name": "cy",
+              "type": "integer",
+              "description": "Cell row (0-based).",
+              "optional": false
+            },
+            {
+              "name": "clearance",
+              "type": "number",
+              "description": "Clearance height in world units.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAltitudeLayer"
+        },
+        {
+          "name": "sampleClearance",
+          "fullPath": "LAltitudeLayer:sampleClearance",
+          "signature": "(x, y)",
+          "description": "Samples gameplay clearance at world coordinates using the layer's current sampling mode.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "World-space X.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "World-space Y.",
+              "optional": false
+            }
+          ],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LAltitudeLayer"
+        },
+        {
+          "name": "serialize",
+          "fullPath": "LAltitudeLayer:serialize",
+          "signature": "()",
+          "description": "Serializes the full altitude-layer payload for save/load and inspection.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LAltitudeLayer"
+        },
+        {
+          "name": "load",
+          "fullPath": "LAltitudeLayer:load",
+          "signature": "(data)",
+          "description": "Replaces this altitude-layer payload from serialized data.",
+          "parameters": [
+            {
+              "name": "data",
+              "type": "table",
+              "description": "Serialized layer data previously returned by `serialize()`.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAltitudeLayer"
+        },
+        {
+          "name": "type",
+          "fullPath": "LAltitudeLayer:type",
+          "signature": "()",
+          "description": "Returns the type name of this object (\"LAltitudeLayer\").",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LAltitudeLayer"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LAltitudeLayer:typeOf",
+          "signature": "(name)",
+          "description": "Checks whether this object matches a given type name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to check.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LAltitudeLayer"
+        }
+      ]
+    },
+    {
       "name": "LAnimCurve",
       "description": "Lua-side animation curve with keyframes and optional custom easing callback.",
       "methods": [
@@ -45288,6 +45544,209 @@
               "name": "vy",
               "type": "number",
               "description": "Velocity Y component.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBody"
+        },
+        {
+          "name": "setAltitude",
+          "fullPath": "LBody:setAltitude",
+          "signature": "(z)",
+          "description": "Sets this body's terrain-relative or fixed-world altitude value.",
+          "parameters": [
+            {
+              "name": "z",
+              "type": "number",
+              "description": "Altitude in world units.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBody"
+        },
+        {
+          "name": "getAltitude",
+          "fullPath": "LBody:getAltitude",
+          "signature": "()",
+          "description": "Returns this body's authored altitude value.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LBody"
+        },
+        {
+          "name": "setVerticalVelocity",
+          "fullPath": "LBody:setVerticalVelocity",
+          "signature": "(vz)",
+          "description": "Sets this body's vertical velocity used by airborne and ballistic altitude modes.",
+          "parameters": [
+            {
+              "name": "vz",
+              "type": "number",
+              "description": "Vertical velocity in world units per second.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBody"
+        },
+        {
+          "name": "getVerticalVelocity",
+          "fullPath": "LBody:getVerticalVelocity",
+          "signature": "()",
+          "description": "Returns this body's vertical velocity.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LBody"
+        },
+        {
+          "name": "setHeightExtent",
+          "fullPath": "LBody:setHeightExtent",
+          "signature": "(height)",
+          "description": "Sets this body's targetable vertical extent for 2.5D overlap tests.",
+          "parameters": [
+            {
+              "name": "height",
+              "type": "number",
+              "description": "Height extent in world units.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBody"
+        },
+        {
+          "name": "getHeightExtent",
+          "fullPath": "LBody:getHeightExtent",
+          "signature": "()",
+          "description": "Returns this body's effective targetable vertical extent.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LBody"
+        },
+        {
+          "name": "setAltitudeMode",
+          "fullPath": "LBody:setAltitudeMode",
+          "signature": "(mode)",
+          "description": "Sets how this body's altitude is interpreted: ground, airborne, ballistic, or fixed.",
+          "parameters": [
+            {
+              "name": "mode",
+              "type": "string",
+              "description": "Altitude mode name.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBody"
+        },
+        {
+          "name": "getAltitudeMode",
+          "fullPath": "LBody:getAltitudeMode",
+          "signature": "()",
+          "description": "Returns this body's current altitude mode.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LBody"
+        },
+        {
+          "name": "setVerticalGravity",
+          "fullPath": "LBody:setVerticalGravity",
+          "signature": "(gravity)",
+          "description": "Sets this body's per-step vertical gravity.",
+          "parameters": [
+            {
+              "name": "gravity",
+              "type": "number",
+              "description": "Vertical gravity in world units per second squared.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBody"
+        },
+        {
+          "name": "getVerticalGravity",
+          "fullPath": "LBody:getVerticalGravity",
+          "signature": "()",
+          "description": "Returns this body's per-step vertical gravity.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LBody"
+        },
+        {
+          "name": "setClearanceClass",
+          "fullPath": "LBody:setClearanceClass",
+          "signature": "(class_name)",
+          "description": "Sets this body's authored clearance class for higher-level RTS filtering.",
+          "parameters": [
+            {
+              "name": "className",
+              "type": "string",
+              "description": "Clearance class such as `ground`, `hover`, `air`, or `projectile`.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBody"
+        },
+        {
+          "name": "getClearanceClass",
+          "fullPath": "LBody:getClearanceClass",
+          "signature": "()",
+          "description": "Returns this body's authored clearance class.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LBody"
+        },
+        {
+          "name": "getWorldZRange",
+          "fullPath": "LBody:getWorldZRange",
+          "signature": "()",
+          "description": "Returns this body's effective world-space Z interval.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LBody"
+        },
+        {
+          "name": "setAltitudeCollision",
+          "fullPath": "LBody:setAltitudeCollision",
+          "signature": "(opts)",
+          "description": "Replaces this body's altitude-collision flags.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Altitude collision options: { enabled?, collideWhenSeparated?, hitGroundWhenBelowTerrain? }.",
               "optional": false
             }
           ],
@@ -64120,6 +64579,50 @@
           "objectType": "LDialogSequencer"
         },
         {
+          "name": "currentId",
+          "fullPath": "LDialogSequencer:currentId",
+          "signature": "()",
+          "description": "Returns the authored id of the current line, or nil when unset.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LDialogSequencer"
+        },
+        {
+          "name": "currentVoice",
+          "fullPath": "LDialogSequencer:currentVoice",
+          "signature": "()",
+          "description": "Returns the current line voice id, or nil when unset.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LDialogSequencer"
+        },
+        {
+          "name": "currentRoute",
+          "fullPath": "LDialogSequencer:currentRoute",
+          "signature": "()",
+          "description": "Returns the current line route marker, or nil when unset.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LDialogSequencer"
+        },
+        {
+          "name": "currentTags",
+          "fullPath": "LDialogSequencer:currentTags",
+          "signature": "()",
+          "description": "Returns the current line tag array.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LDialogSequencer"
+        },
+        {
           "name": "revealedText",
           "fullPath": "LDialogSequencer:revealedText",
           "signature": "()",
@@ -64149,6 +64652,79 @@
           "parameters": [],
           "returns": "table",
           "returnType": "table",
+          "isMethod": true,
+          "objectType": "LDialogSequencer"
+        },
+        {
+          "name": "getHistory",
+          "fullPath": "LDialogSequencer:getHistory",
+          "signature": "()",
+          "description": "Returns spoken-line history in insertion order.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LDialogSequencer"
+        },
+        {
+          "name": "clearHistory",
+          "fullPath": "LDialogSequencer:clearHistory",
+          "signature": "()",
+          "description": "Clears accumulated spoken-line history.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDialogSequencer"
+        },
+        {
+          "name": "peekSignal",
+          "fullPath": "LDialogSequencer:peekSignal",
+          "signature": "()",
+          "description": "Returns the next pending event/call signal without removing it.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LDialogSequencer"
+        },
+        {
+          "name": "popSignal",
+          "fullPath": "LDialogSequencer:popSignal",
+          "signature": "()",
+          "description": "Removes and returns the next pending event/call signal.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LDialogSequencer"
+        },
+        {
+          "name": "snapshot",
+          "fullPath": "LDialogSequencer:snapshot",
+          "signature": "()",
+          "description": "Captures sequencer runtime state, including nodes, progress, history, and pending signals.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LDialogSequencer"
+        },
+        {
+          "name": "restore",
+          "fullPath": "LDialogSequencer:restore",
+          "signature": "(snapshot)",
+          "description": "Restores sequencer runtime state from a prior snapshot table.",
+          "parameters": [
+            {
+              "name": "snapshot",
+              "type": "table",
+              "description": "Snapshot returned by `snapshot()`.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": true,
           "objectType": "LDialogSequencer"
         },
@@ -128224,7 +128800,7 @@
             {
               "name": "params",
               "type": "table",
-              "description": "Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b?, camera_height?, horizon_offset?, time_seconds?, background?, overlays?}. `background` accepts solid, gradient, skybox, or shader descriptors. `overlays` accepts fog, depth fog, snow, or shader descriptors.",
+              "description": "Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b/a?, camera_height?, horizon_offset?, time_seconds?, background?, overlays?}. Set `ceiling_a=0` to skip untextured ceiling polygons while still rendering textured roof cells. `background` accepts solid, gradient, skybox, or shader descriptors. `overlays` accepts fog, depth fog, snow, or shader descriptors.",
               "optional": false
             },
             {
@@ -142658,7 +143234,7 @@
         {
           "name": "add",
           "fullPath": "LSpeakerRegistry:add",
-          "signature": "(id, name, [portrait], [voice_id])",
+          "signature": "LSpeakerRegistry:add(id, name, [portrait], [voice_id])",
           "description": "Registers a speaker in the registry.",
           "parameters": [
             {
@@ -161657,6 +162233,108 @@
           "signature": "()",
           "description": "Returns all region names in stable order.",
           "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "setRegionProperty",
+          "fullPath": "LTileField:setRegionProperty",
+          "signature": "(name, key, value)",
+          "description": "Sets or clears one string property on a named region. Numbers and booleans are stringified; nil removes the property.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Region name.",
+              "optional": false
+            },
+            {
+              "name": "key",
+              "type": "string",
+              "description": "Property key.",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "String/number/boolean value, or nil to remove.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "getRegionProperty",
+          "fullPath": "LTileField:getRegionProperty",
+          "signature": "(name, key)",
+          "description": "Returns one string property from a named region, or nil when absent.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Region name.",
+              "optional": false
+            },
+            {
+              "name": "key",
+              "type": "string",
+              "description": "Property key.",
+              "optional": false
+            }
+          ],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "getRegionProperties",
+          "fullPath": "LTileField:getRegionProperties",
+          "signature": "(name)",
+          "description": "Returns all properties for a named region, or nil when the region does not exist.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Region name.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "regionsAt",
+          "fullPath": "LTileField:regionsAt",
+          "signature": "(x, y, [z])",
+          "description": "Returns all region names that contain the addressed one-based tile cell.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "One-based column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "One-based row.",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "integer",
+              "description": "One-based level, default 1.",
+              "optional": true
+            }
+          ],
           "returns": "table",
           "returnType": "table",
           "isMethod": true,
@@ -181628,6 +182306,30 @@
           "objectType": "LWorld"
         },
         {
+          "name": "drawAltitudeDebug",
+          "fullPath": "LWorld:drawAltitudeDebug",
+          "signature": "(target, [opts])",
+          "description": "Draws altitude-layer cells, body vertical ranges, and ballistic arcs into an ImageData target.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "LImageData",
+              "description": "Mutable target image.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional table with `drawLayer`, `drawBodies`, and `drawProjectiles` booleans.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
           "name": "destroyBody",
           "fullPath": "LWorld:destroyBody",
           "signature": "(id)",
@@ -182978,6 +183680,184 @@
           ],
           "returns": "integer",
           "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "setAltitudeLayer",
+          "fullPath": "LWorld:setAltitudeLayer",
+          "signature": "(layer_ud)",
+          "description": "Attaches or replaces the world's 2.5D altitude layer from an `LAltitudeLayer` snapshot.",
+          "parameters": [
+            {
+              "name": "layer",
+              "type": "LAltitudeLayer",
+              "description": "Altitude layer payload to copy into this world.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "getAltitudeLayer",
+          "fullPath": "LWorld:getAltitudeLayer",
+          "signature": "()",
+          "description": "Returns the currently attached altitude layer, or nil when the world has none.",
+          "parameters": [],
+          "returns": "LAltitudeLayer",
+          "returnType": "LAltitudeLayer",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "queryAltitudeOverlap",
+          "fullPath": "LWorld:queryAltitudeOverlap",
+          "signature": "(...)",
+          "description": "Returns all 2.5D overlaps whose XY footprint and world-space Z interval match the query.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "Query center X.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Query center Y.",
+              "optional": false
+            },
+            {
+              "name": "radius",
+              "type": "number",
+              "description": "XY query radius.",
+              "optional": false
+            },
+            {
+              "name": "zMin",
+              "type": "number",
+              "description": "Minimum world-space Z.",
+              "optional": false
+            },
+            {
+              "name": "zMax",
+              "type": "number",
+              "description": "Maximum world-space Z.",
+              "optional": false
+            },
+            {
+              "name": "filter",
+              "type": "table",
+              "description": "Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "castCircle2_5d",
+          "fullPath": "LWorld:castCircle2_5d",
+          "signature": "(opts)",
+          "description": "Sweeps a 2.5D circle and vertical interval, returning the earliest body or terrain hit.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Cast options: { x, y, z, radius, height?, dx, dy, dz?, filter? }.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "castBallisticArc",
+          "fullPath": "LWorld:castBallisticArc",
+          "signature": "(opts)",
+          "description": "Traces a deterministic ballistic arc without spawning a persistent projectile.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Arc options: { from, to or target, speed, gravity, radius, height?, maxTime?, sampleDt?, filter? }.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "spawnBallisticProjectile",
+          "fullPath": "LWorld:spawnBallisticProjectile",
+          "signature": "(opts)",
+          "description": "Spawns a deterministic engine-owned ballistic projectile and returns its stable id.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Projectile options: { owner?, from, to or target, speed, gravity, radius, height?, maxTime?, sampleDt? }.",
+              "optional": false
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "getBallisticProjectile",
+          "fullPath": "LWorld:getBallisticProjectile",
+          "signature": "(id)",
+          "description": "Returns one active engine-owned ballistic projectile by id, or nil when inactive.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Stable projectile id.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "removeBallisticProjectile",
+          "fullPath": "LWorld:removeBallisticProjectile",
+          "signature": "(id)",
+          "description": "Removes one active engine-owned ballistic projectile by id.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Stable projectile id.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "getBallisticProjectileHits",
+          "fullPath": "LWorld:getBallisticProjectileHits",
+          "signature": "()",
+          "description": "Returns ballistic projectile impacts accumulated on this world since the last clear.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LWorld"
         },

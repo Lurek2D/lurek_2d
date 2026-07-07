@@ -18,9 +18,9 @@ use lurek2d::province::render::{
     ProvinceSegmentRasterOptions, ProvinceZoomMode,
 };
 use lurek2d::province::types::{
-    BorderPairFlags, BorderPairStyle, BorderTypeConfig, ProvinceClimateKind, ProvinceId,
-    ProvinceVisualState, ProvinceWeatherKind, PROVINCE_EFFECT_STRIPES,
-    parse_province_effect_flag_token,
+    parse_province_effect_flag_token, BorderPairFlags, BorderPairStyle, BorderTypeConfig,
+    ProvinceClimateKind, ProvinceId, ProvinceVisualState, ProvinceWeatherKind,
+    PROVINCE_EFFECT_STRIPES,
 };
 use lurek2d::province::{
     border_index::{
@@ -430,11 +430,7 @@ fn test_label_render_commands_follow_label_line_transform() {
         })
         .collect();
 
-    assert_eq!(
-        label_commands.len(),
-        1,
-        "single plain label expected"
-    );
+    assert_eq!(label_commands.len(), 1, "single plain label expected");
     assert!(!commands.iter().any(|cmd| {
         matches!(
             cmd,
@@ -606,10 +602,7 @@ fn test_label_render_commands_keep_overlapping_labels() {
         })
         .count();
 
-    assert_eq!(
-        label_commands, 2,
-        "overlap should not hide province labels"
-    );
+    assert_eq!(label_commands, 2, "overlap should not hide province labels");
 }
 
 #[test]
@@ -780,7 +773,10 @@ fn test_import_metadata_from_files_uses_label_marker_cluster_centers() {
     write_png(&marked_path, &marker_map);
     write_png(&color_path, &color_map);
     write_text(&csv_path, "id,r,g,b\n101,12,34,56\n");
-    write_text(&toml_path, "[101]\nname = \"Alpha_Province\"\nterrain = \"plains\"\n");
+    write_text(
+        &toml_path,
+        "[101]\nname = \"Alpha_Province\"\nterrain = \"plains\"\n",
+    );
 
     let grid = ProvinceGrid::from_image(&color_map);
     let mut reg = ProvinceRegistry::from_grid(&grid);

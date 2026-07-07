@@ -1679,6 +1679,55 @@ end
 
 ---
 
+### `lurek.scene.restoreScene`
+
+Fully restore scene shared data and rebuild the scene stack from registered scene names captured by `serializeScene`.
+
+```lua
+lurek.scene.restoreScene(snapshot, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `snapshot` | table | Snapshot table with `stack` and `data` fields from `serializeScene`. |
+| `opts?` | table | Optional table with `params[name] = value` forwarded to each restored scene's `enter(self, params)` callback. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Number of scenes restored onto the stack. |
+
+**Example**
+
+```lua
+do
+
+    lurek.scene.clear()
+    local menu = lurek.scene.new({ name = "menu" })
+    local game = lurek.scene.new({ name = "game" })
+    lurek.scene.registerScene("menu_restore", menu)
+    lurek.scene.registerScene("game_restore", game)
+    lurek.scene.pushRegistered("menu_restore")
+    lurek.scene.pushRegistered("game_restore")
+    lurek.scene.setData("chapter", "bridge")
+    local snapshot = lurek.scene.serializeScene()
+    lurek.scene.clear()
+    local restored = lurek.scene.restoreScene(snapshot, {
+        params = {
+            game_restore = { fromSave = true },
+        },
+    })
+    lurek.log.info("restored stack count = " .. tostring(restored))
+    lurek.log.info("restored chapter = " .. tostring(lurek.scene.getData("chapter")))
+    lurek.scene.clear()
+end
+```
+
+---
+
 ### `lurek.scene.serializeScene`
 
 Capture the current scene stack state as a serializable snapshot table. The snapshot contains a `stack` array of registered scene names (in stack order) and a `data` map of shared data key-value pairs. Use this for save/load systems to persist the player's navigation state.
@@ -1703,8 +1752,8 @@ do
     local game = lurek.scene.new({ name = "game" })
     lurek.scene.registerScene("menu", menu)
     lurek.scene.registerScene("game", game)
-    lurek.scene.push(menu)
-    lurek.scene.push(game)
+    lurek.scene.pushRegistered("menu")
+    lurek.scene.pushRegistered("game")
     lurek.scene.setData("level", 7)
     lurek.scene.setData("checkpoint", "bridge")
     local snapshot = lurek.scene.serializeScene()

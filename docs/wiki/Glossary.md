@@ -38,6 +38,7 @@ The glossary collects terms that appear across module and API pages.
 - `LAILod` ([lurek.ai](https://lurek2d.github.io/lurek_2d/modules/ai.html)) - Lua handle for distance-based AI level-of-detail tier selection.
 - `LAISystem` ([lurek.agent](https://lurek2d.github.io/lurek_2d/modules/agent.html)) - Lua-side handle for an AISystem multi-agent orchestrator.
 - `LAIWorld` ([lurek.ai](https://lurek2d.github.io/lurek_2d/modules/ai.html)) - Lua handle for an AI world that owns named agents, global blackboard data, and custom callback registrations.
+- `LAltitudeLayer` ([lurek.physics](https://lurek2d.github.io/lurek_2d/modules/physics.html)) - A deterministic 2.5D terrain-height and clearance grid used by physics altitude helpers.
 - `LAnimatedCursor` ([lurek.cursor](https://lurek2d.github.io/lurek_2d/modules/cursor.html)) - Creates an animated cursor that can cycle through custom cursor frames.
 - `LAnimatedImage` ([lurek.image](https://lurek2d.github.io/lurek_2d/modules/image.html)) - Lua-side decoded animated image containing frame images and durations.
 - `LAnimation` ([lurek.animation](https://lurek2d.github.io/lurek_2d/modules/animation.html)) - Lua-side animation object containing frame rectangles, named clips, playback state, and blend state.
@@ -143,4 +144,3 @@ The glossary collects terms that appear across module and API pages.
 - `LGroupedFrame` ([lurek.dataframe](https://lurek2d.github.io/lurek_2d/modules/dataframe.html)) - Lua-side grouped dataframe object containing group keys and subframes.
 - `LGRU` ([lurek.learning](https://lurek2d.github.io/lurek_2d/modules/learning.html)) - Stateful Lua wrapper over `GruLayer` with a mutable recurrent hidden-state buffer.
 - `LGuiTable` ([lurek.ui](https://lurek2d.github.io/lurek_2d/modules/ui.html)) - Adds GUI-table-specific methods to a table widget.
-- `LGuiWindow` ([lurek.ui](https://lurek2d.github.io/lurek_2d/modules/ui.html)) - Adds GUI-window-specific methods to a window widget table.

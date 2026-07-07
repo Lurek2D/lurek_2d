@@ -352,6 +352,45 @@ describe("LTileLightMap lighting and LTileField exports", function()
         expect_true(#names >= 1)
     end)
 
+    -- @covers LTileField:setRegionProperty
+    it("sets and clears region properties", function()
+        local field = lurek.tilefield.new({ width = 4, height = 4 })
+        field:setRegionCells("exit", { { x = 4, y = 2, z = 1 } })
+        field:setRegionProperty("exit", "targetScene", "town_square")
+        expect_equal("town_square", field:getRegionProperty("exit", "targetScene"))
+        field:setRegionProperty("exit", "targetScene", nil)
+        expect_nil(field:getRegionProperty("exit", "targetScene"))
+    end)
+
+    -- @covers LTileField:getRegionProperty
+    it("returns nil for missing region properties", function()
+        local field = lurek.tilefield.new({ width = 4, height = 4 })
+        field:setRegionCells("shop", { { x = 2, y = 2, z = 1 } })
+        expect_nil(field:getRegionProperty("shop", "music"))
+    end)
+
+    -- @covers LTileField:getRegionProperties
+    it("returns all properties for a region", function()
+        local field = lurek.tilefield.new({ width = 4, height = 4 })
+        field:setRegionCells("shop", { { x = 2, y = 2, z = 1 } })
+        field:setRegionProperty("shop", "trigger", "open_shop")
+        field:setRegionProperty("shop", "facing", "south")
+        local props = field:getRegionProperties("shop")
+        expect_equal("open_shop", props.trigger)
+        expect_equal("south", props.facing)
+    end)
+
+    -- @covers LTileField:regionsAt
+    it("lists all named regions containing a cell", function()
+        local field = lurek.tilefield.new({ width = 4, height = 4 })
+        field:setRegionRect("stairs", 2, 2, 3, 2, 1)
+        field:setRegionCells("shop_door", { { x = 2, y = 2, z = 1 } })
+        local regions = field:regionsAt(2, 2, 1)
+        expect_equal(2, #regions)
+        expect_equal("shop_door", regions[1])
+        expect_equal("stairs", regions[2])
+    end)
+
     -- @covers LTileField:type
     it("returns type name", function()
         local field = lurek.tilefield.new({ width = 2, height = 2 })

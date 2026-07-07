@@ -130,7 +130,6 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - Preserves deterministic behavior by keeping UI context input calculations explicit at their owning subsystem boundary.
 - Provides the local adaptation layer that lets callers reuse UI context input rules without duplicating engine decisions.
 - Open this owner before sibling files when a regression centers on UI context input state, helpers, or integration rules.
-- Works with neighboring UI owners while keeping the main UI context input responsibility anchored in one file.
 - Changes to UI context input names, caches, or helper boundaries should usually stay coupled inside this owner.
 - Local input routing changes should stay here so pointer capture and hit-testing rules remain aligned.
 - This file is the right stop for maintainers tracing UI context input regressions back to their concrete owner boundary.
@@ -252,6 +251,7 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - Keeps failure paths and edge cases near UI render helpers state that explains them instead of spreading rules outward.
 - Preserves deterministic behavior by keeping UI render helpers calculations explicit at their owning subsystem boundary.
 - Provides local adaptation layer that lets callers reuse UI render helpers rules without duplicating engine decisions.
+- Read this file when renderer output depends on shared UI helper math more than widget-specific state.
 
 ### render.rs
 

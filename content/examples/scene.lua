@@ -264,8 +264,8 @@ do
     local game = lurek.scene.new({ name = "game" })
     lurek.scene.registerScene("menu", menu)
     lurek.scene.registerScene("game", game)
-    lurek.scene.push(menu)
-    lurek.scene.push(game)
+    lurek.scene.pushRegistered("menu")
+    lurek.scene.pushRegistered("game")
     lurek.scene.setData("level", 7)
     lurek.scene.setData("checkpoint", "bridge")
     local snapshot = lurek.scene.serializeScene()
@@ -411,6 +411,29 @@ do
     lurek.scene.deserializeScene(snapshot)
     lurek.log.info("restored score = " .. tostring(lurek.scene.getData("score")))
     lurek.log.info("stack size after load = " .. lurek.scene.getStackSize())
+end
+
+--@api: lurek.scene.restoreScene
+do
+
+    lurek.scene.clear()
+    local menu = lurek.scene.new({ name = "menu" })
+    local game = lurek.scene.new({ name = "game" })
+    lurek.scene.registerScene("menu_restore", menu)
+    lurek.scene.registerScene("game_restore", game)
+    lurek.scene.pushRegistered("menu_restore")
+    lurek.scene.pushRegistered("game_restore")
+    lurek.scene.setData("chapter", "bridge")
+    local snapshot = lurek.scene.serializeScene()
+    lurek.scene.clear()
+    local restored = lurek.scene.restoreScene(snapshot, {
+        params = {
+            game_restore = { fromSave = true },
+        },
+    })
+    lurek.log.info("restored stack count = " .. tostring(restored))
+    lurek.log.info("restored chapter = " .. tostring(lurek.scene.getData("chapter")))
+    lurek.scene.clear()
 end
 
 --@api: lurek.scene.draw

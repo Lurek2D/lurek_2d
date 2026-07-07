@@ -9,8 +9,268 @@
 //! Provides adaptation layer that lets callers reuse physics world queries rules without duplicating engine decisions.
 
 use super::*;
+use crate::physics::altitude::{AltitudeHit, AltitudeHitKind, CircleCast25DOptions};
+
+type ApproxSweepHit = (f32, (f32, f32), (f32, f32));
 
 impl World {
+    fn approx_circle_body_sweep_toi(
+        &self,
+        body_id: usize,
+        x: f32,
+        y: f32,
+        radius: f32,
+        unit_dir: Vector,
+        max_dist: f32,
+    ) -> Option<ApproxSweepHit> {
+        let body = self.get_body(body_id)?;
+        let center = body.position;
+        let to_center = center - crate::math::Vec2::new(x, y);
+        let toi = to_center
+            .dot(crate::math::Vec2::new(unit_dir.x, unit_dir.y))
+            .clamp(0.0, max_dist);
+        let point = (x + unit_dir.x * toi, y + unit_dir.y * toi);
+        let delta = crate::math::Vec2::new(point.0 - center.x, point.1 - center.y);
+        let body_radius = ((body.width * 0.5).powi(2) + (body.height * 0.5).powi(2))
+            .sqrt()
+            .max(0.5);
+        if delta.length() > radius + body_radius + 1.0e-3 {
+            return None;
+        }
+        let normal = if delta.length() > 1.0e-6 {
+            let unit = delta.normalize();
+            (unit.x, unit.y)
+        } else {
+            (-unit_dir.x, -unit_dir.y)
+        };
+        Some((toi, point, normal))
+    }
+
+    fn sample_terrain_hit_on_25d_path(
+        &self,
+        options: &CircleCast25DOptions,
+    ) -> Option<AltitudeHit> {
+        let dir_len = (options.dx * options.dx + options.dy * options.dy).sqrt();
+        if dir_len < 1.0e-6 {
+            let ground_height = self.sample_ground_height(options.x, options.y)?;
+            if options.z <= ground_height {
+                return Some(AltitudeHit {
+                    body_id: None,
+                    point: (options.x, options.y),
+                    normal: (0.0, -1.0),
+                    toi: 0.0,
+                    z: options.z,
+                    target_z_min: None,
+                    target_z_max: None,
+                    ground_height,
+                    hit_kind: if self.get_altitude_layer().is_some() {
+                        AltitudeHitKind::Terrain
+                    } else {
+                        AltitudeHitKind::Ground
+                    },
+                });
+            }
+            return None;
+        }
+        let unit_dir = Vector::new(options.dx / dir_len, options.dy / dir_len);
+        let base_segments = self
+            .get_altitude_layer()
+            .map(|layer| (options.max_dist / (layer.cell_size() * 0.5).max(1.0)).ceil() as usize)
+            .unwrap_or_else(|| (options.max_dist / 8.0).ceil() as usize);
+        let segments = base_segments.clamp(1, 512);
+        for index in 1..=segments {
+            let safe_fraction = index as f32 / segments as f32;
+            let point = (
+                options.x + unit_dir.x * options.max_dist * safe_fraction,
+                options.y + unit_dir.y * options.max_dist * safe_fraction,
+            );
+            let impact_z = options.z + options.dz * safe_fraction;
+            let ground_height = self.sample_ground_height(point.0, point.1)?;
+            if impact_z <= ground_height {
+                return Some(AltitudeHit {
+                    body_id: None,
+                    point,
+                    normal: (0.0, -1.0),
+                    toi: options.max_dist * safe_fraction,
+                    z: impact_z,
+                    target_z_min: None,
+                    target_z_max: None,
+                    ground_height,
+                    hit_kind: if self.get_altitude_layer().is_some() {
+                        AltitudeHitKind::Terrain
+                    } else {
+                        AltitudeHitKind::Ground
+                    },
+                });
+            }
+        }
+        None
+    }
+
+    /// Return all bodies whose XY footprint overlaps the circle and whose world Z interval overlaps the query interval.
+    pub fn query_altitude_overlap(
+        &self,
+        x: f32,
+        y: f32,
+        radius: f32,
+        z_min: f32,
+        z_max: f32,
+        filter: PhysicsQueryFilter,
+    ) -> Result<Vec<AltitudeHit>, PhysicsError> {
+        validate_positive("radius", f64::from(radius))?;
+        validate_finite("z_min", f64::from(z_min))?;
+        validate_finite("z_max", f64::from(z_max))?;
+        let mut hits = Vec::new();
+        for body_id in
+            self.query_aabb_filtered(x - radius, y - radius, radius * 2.0, radius * 2.0, filter)
+        {
+            let Some(body) = self.get_body(body_id) else {
+                continue;
+            };
+            if !crate::physics::collision_helpers::test_circle_aabb(
+                x,
+                y,
+                radius,
+                body.position.x - body.width * 0.5,
+                body.position.y - body.height * 0.5,
+                body.width,
+                body.height,
+            ) {
+                continue;
+            }
+            let Some((target_z_min, target_z_max)) = self.get_body_world_z_range(body_id) else {
+                continue;
+            };
+            let collision = self
+                .get_body_altitude_collision(body_id)
+                .unwrap_or_default();
+            if collision.enabled
+                && !collision.collide_when_separated
+                && !self.altitude_intervals_overlap(z_min, z_max, target_z_min, target_z_max)
+            {
+                continue;
+            }
+            let point = (body.position.x, body.position.y);
+            let ground_height = self.sample_ground_height(point.0, point.1).unwrap_or(0.0);
+            hits.push(AltitudeHit {
+                body_id: Some(BodyId(body_id)),
+                point,
+                normal: (0.0, 0.0),
+                toi: 0.0,
+                z: z_min.max(target_z_min),
+                target_z_min: Some(target_z_min),
+                target_z_max: Some(target_z_max),
+                ground_height,
+                hit_kind: AltitudeHitKind::Body,
+            });
+        }
+        hits.sort_by(|a, b| {
+            a.body_id
+                .map(|id| id.0)
+                .unwrap_or(usize::MAX)
+                .cmp(&b.body_id.map(|id| id.0).unwrap_or(usize::MAX))
+        });
+        Ok(hits)
+    }
+
+    /// Sweep a vertical interval through XY and return the earliest body or terrain hit.
+    pub fn try_cast_circle_25d(
+        &self,
+        options: CircleCast25DOptions,
+        filter: PhysicsQueryFilter,
+    ) -> Result<Option<AltitudeHit>, PhysicsError> {
+        validate_positive("radius", f64::from(options.radius))?;
+        validate_positive("height", f64::from(options.height))?;
+        validate_finite("z", f64::from(options.z))?;
+        validate_finite("dz", f64::from(options.dz))?;
+        let unit_dir = self.validate_sweep_direction(
+            "physics circle 2.5d cast",
+            options.x,
+            options.y,
+            options.dx,
+            options.dy,
+            options.max_dist,
+        )?;
+
+        let mut best_body_hit: Option<AltitudeHit> = None;
+        let end_x = options.x + unit_dir.x * options.max_dist;
+        let end_y = options.y + unit_dir.y * options.max_dist;
+        let mut candidates = self.query_aabb_filtered(
+            options.x.min(end_x) - options.radius,
+            options.y.min(end_y) - options.radius,
+            (end_x - options.x).abs() + options.radius * 2.0,
+            (end_y - options.y).abs() + options.radius * 2.0,
+            filter,
+        );
+        candidates.sort_unstable();
+
+        for body_id in candidates {
+            let Some((toi, point, normal)) = self.approx_circle_body_sweep_toi(
+                body_id,
+                options.x,
+                options.y,
+                options.radius,
+                unit_dir,
+                options.max_dist,
+            ) else {
+                continue;
+            };
+            let safe_fraction = (toi / options.max_dist).clamp(0.0, 1.0);
+            let (moving_z_min, moving_z_max) =
+                self.moving_world_z_range(options.z, options.height, options.dz, safe_fraction);
+            let Some((target_z_min, target_z_max)) = self.get_body_world_z_range(body_id) else {
+                continue;
+            };
+            let collision = self
+                .get_body_altitude_collision(body_id)
+                .unwrap_or_default();
+            if collision.enabled
+                && !collision.collide_when_separated
+                && !self.altitude_intervals_overlap(
+                    moving_z_min,
+                    moving_z_max,
+                    target_z_min,
+                    target_z_max,
+                )
+            {
+                continue;
+            }
+            let impact_z = moving_z_min.max(target_z_min);
+            let Some(hit) = self.altitude_hit_for_body(body_id, point, normal, toi, impact_z)
+            else {
+                continue;
+            };
+            match best_body_hit {
+                Some(current) if current.toi <= hit.toi => {}
+                _ => best_body_hit = Some(hit),
+            }
+        }
+
+        let terrain_hit = self.sample_terrain_hit_on_25d_path(&options);
+
+        Ok(match (best_body_hit, terrain_hit) {
+            (Some(body_hit), Some(terrain_hit)) => {
+                if terrain_hit.toi <= body_hit.toi {
+                    Some(terrain_hit)
+                } else {
+                    Some(body_hit)
+                }
+            }
+            (Some(body_hit), None) => Some(body_hit),
+            (None, Some(terrain_hit)) => Some(terrain_hit),
+            (None, None) => None,
+        })
+    }
+
+    /// Best-effort 2.5D swept-circle cast that returns `None` on validation failure.
+    pub fn cast_circle_25d(
+        &self,
+        options: CircleCast25DOptions,
+        filter: PhysicsQueryFilter,
+    ) -> Option<AltitudeHit> {
+        self.try_cast_circle_25d(options, filter).ok().flatten()
+    }
+
     /// Cast a ray from `(x1,y1)` to `(x2,y2)` and return the first hit, or `None`.
     pub fn raycast(&self, x1: f32, y1: f32, x2: f32, y2: f32) -> Option<RaycastHit> {
         self.raycast_filtered(x1, y1, x2, y2, PhysicsQueryFilter::default())

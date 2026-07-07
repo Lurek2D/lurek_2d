@@ -1,20 +1,20 @@
 {
   "meta": {
-    "generated": "2026-07-03T06:42:03.212840+00:00",
+    "generated": "2026-07-07T07:44:35.991812+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "rust_items": 3214,
-      "rust_modules": 763,
+      "rust_items": 3234,
+      "rust_modules": 765,
       "rust_tests": 502,
       "lua_tests": 286
     }
   },
   "rust_api": {
     "summary": {
-      "total_items": 3214,
-      "documented": 3214,
-      "modules": 763
+      "total_items": 3234,
+      "documented": 3234,
+      "modules": 765
     },
     "modules": {
       "agent::chat": {
@@ -5533,25 +5533,53 @@
         "source_file": "src/dialog/sequencer.rs",
         "items": [
           {
+            "name": "DialogLineMeta",
+            "kind": "struct",
+            "description": "Metadata attached to a spoken dialog line.",
+            "file": "src/dialog/sequencer.rs",
+            "line": 13
+          },
+          {
+            "name": "DialogHistoryEntry",
+            "kind": "struct",
+            "description": "One completed or active spoken line stored in the backlog/history.",
+            "file": "src/dialog/sequencer.rs",
+            "line": 26
+          },
+          {
+            "name": "DialogSignal",
+            "kind": "struct",
+            "description": "Signal emitted when the sequencer reaches an event-like node.",
+            "file": "src/dialog/sequencer.rs",
+            "line": 37
+          },
+          {
+            "name": "DialogSequencerSnapshot",
+            "kind": "struct",
+            "description": "Serializable snapshot of sequencer runtime state.",
+            "file": "src/dialog/sequencer.rs",
+            "line": 48
+          },
+          {
             "name": "DialogNode",
             "kind": "enum",
             "description": "A single dialog node in a sequence.",
             "file": "src/dialog/sequencer.rs",
-            "line": 13
+            "line": 85
           },
           {
             "name": "SequencerState",
             "kind": "enum",
             "description": "Sequencer playback states.",
             "file": "src/dialog/sequencer.rs",
-            "line": 39
+            "line": 115
           },
           {
             "name": "DialogSequencer",
             "kind": "struct",
             "description": "Dialog sequencer: manages playback of a node sequence with typewriter effect.",
             "file": "src/dialog/sequencer.rs",
-            "line": 62
+            "line": 138
           }
         ]
       },
@@ -10799,7 +10827,7 @@
         ]
       },
       "root": {
-        "module_doc": "`src/main.rs` is the native executable entrypoint and keeps boot logic thin by forwarding control into `lurek2d`. On Windows it raises timer resolution before startup so frame pacing and input timing stay consistent at launch. Beyond that hook, the file delegates to `lurek_run()`, leaving runtime policy and argument handling in the library.",
+        "module_doc": "`src/main.rs` is the native executable entrypoint and keeps boot logic thin by forwarding control into `lurek2d`. On Windows the shared desktop launcher raises timer resolution before startup so frame pacing and input timing stay consistent at launch. Runtime policy and argument handling remain in the library entrypoint.",
         "source_file": "src/main.rs",
         "items": []
       },
@@ -15440,6 +15468,103 @@
           }
         ]
       },
+      "physics::altitude": {
+        "module_doc": "Owns altitude-layer and 2.5D sidecar data for physics without changing the XY Rapier authority. `AltitudeLayer` stores deterministic sampled terrain height and clearance grids for gameplay queries. `BodyAltitudeState` and related enums keep per-body vertical metadata separate from core rigid-body state. Ballistic and 2.5D query option/result structs live here so future world and Lua owners share one vocabulary. This file does not run simulation steps; it only defines data and deterministic sampling helpers.",
+        "source_file": "src/physics/altitude.rs",
+        "items": [
+          {
+            "name": "AltitudeSampleMode",
+            "kind": "enum",
+            "description": "Sampling policy for altitude-layer world-coordinate lookups.",
+            "file": "src/physics/altitude.rs",
+            "line": 14
+          },
+          {
+            "name": "AltitudeLayerData",
+            "kind": "struct",
+            "description": "Serialized altitude-layer payload used for save/load and Lua-facing snapshots.",
+            "file": "src/physics/altitude.rs",
+            "line": 23
+          },
+          {
+            "name": "AltitudeLayer",
+            "kind": "struct",
+            "description": "Deterministic authored terrain-height and clearance grid for 2.5D gameplay.",
+            "file": "src/physics/altitude.rs",
+            "line": 42
+          },
+          {
+            "name": "AltitudeMode",
+            "kind": "enum",
+            "description": "Body altitude interpretation mode.",
+            "file": "src/physics/altitude.rs",
+            "line": 54
+          },
+          {
+            "name": "AltitudeCollisionOptions",
+            "kind": "struct",
+            "description": "Flags controlling how altitude metadata participates in 2.5D collision rules.",
+            "file": "src/physics/altitude.rs",
+            "line": 67
+          },
+          {
+            "name": "BodyAltitudeState",
+            "kind": "struct",
+            "description": "Per-body vertical sidecar state stored by `World`.",
+            "file": "src/physics/altitude.rs",
+            "line": 88
+          },
+          {
+            "name": "AltitudeHitKind",
+            "kind": "enum",
+            "description": "Result classification for future 2.5D hits and projectile traces.",
+            "file": "src/physics/altitude.rs",
+            "line": 134
+          },
+          {
+            "name": "AltitudeHit",
+            "kind": "struct",
+            "description": "Shared 2.5D hit payload owned by the physics domain.",
+            "file": "src/physics/altitude.rs",
+            "line": 147
+          },
+          {
+            "name": "CircleCast25DOptions",
+            "kind": "struct",
+            "description": "Options for a future 2.5D swept-circle query.",
+            "file": "src/physics/altitude.rs",
+            "line": 170
+          },
+          {
+            "name": "BallisticArcOptions",
+            "kind": "struct",
+            "description": "Options for a future deterministic ballistic trace.",
+            "file": "src/physics/altitude.rs",
+            "line": 193
+          },
+          {
+            "name": "BallisticProjectileOptions",
+            "kind": "struct",
+            "description": "Options for an engine-owned ballistic projectile.",
+            "file": "src/physics/altitude.rs",
+            "line": 214
+          },
+          {
+            "name": "BallisticTrace",
+            "kind": "struct",
+            "description": "Deterministic ballistic trace result.",
+            "file": "src/physics/altitude.rs",
+            "line": 237
+          },
+          {
+            "name": "BallisticProjectile",
+            "kind": "struct",
+            "description": "Engine-owned ballistic projectile state for future world stepping.",
+            "file": "src/physics/altitude.rs",
+            "line": 250
+          }
+        ]
+      },
       "physics::body": {
         "module_doc": "Owns the body owner for the physics subsystem and keeps its rules local to this file while keeping call sites explicit. Centers the implementation around BodyType, BodyShape, Body, with helpers kept close to their invariants. Defines how body data is validated, transformed, or stored before neighboring systems use it. Owns physics behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on body behavior while Lua registration stays elsewhere. Documents the boundary where physics code accepts inputs, reports errors, or updates state. Use this file when changing body defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the physics state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping body calculations explicit at their owner boundary.",
         "source_file": "src/physics/body.rs",
@@ -15703,102 +15828,109 @@
         "source_file": "src/physics/mod.rs",
         "items": [
           {
+            "name": "altitude",
+            "kind": "mod",
+            "description": "2.5D altitude-layer data and vertical sidecar types.",
+            "file": "src/physics/mod.rs",
+            "line": 11
+          },
+          {
             "name": "body",
             "kind": "mod",
             "description": "Rigid body management and handle types.",
             "file": "src/physics/mod.rs",
-            "line": 11
+            "line": 13
           },
           {
             "name": "collision",
             "kind": "mod",
             "description": "Collision query and contact result types.",
             "file": "src/physics/mod.rs",
-            "line": 13
+            "line": 15
           },
           {
             "name": "collision_helpers",
             "kind": "mod",
             "description": "AABB, circle, and point-AABB collision helpers.",
             "file": "src/physics/mod.rs",
-            "line": 15
+            "line": 17
           },
           {
             "name": "error",
             "kind": "mod",
             "description": "Shared typed physics errors.",
             "file": "src/physics/mod.rs",
-            "line": 17
+            "line": 19
           },
           {
             "name": "flow",
             "kind": "mod",
             "description": "Authored flow-field definitions and samplers.",
             "file": "src/physics/mod.rs",
-            "line": 19
+            "line": 21
           },
           {
             "name": "limits",
             "kind": "mod",
             "description": "Shared sizing and validation limits.",
             "file": "src/physics/mod.rs",
-            "line": 21
+            "line": 23
           },
           {
             "name": "liquid",
             "kind": "mod",
             "description": "Separate grid-based liquids for leaking-container gameplay.",
             "file": "src/physics/mod.rs",
-            "line": 23
+            "line": 25
           },
           {
             "name": "material",
             "kind": "mod",
             "description": "Reusable body and fixture material descriptors.",
             "file": "src/physics/mod.rs",
-            "line": 25
+            "line": 27
           },
           {
             "name": "render",
             "kind": "mod",
             "description": "Debug render helpers for physics shapes.",
             "file": "src/physics/mod.rs",
-            "line": 27
+            "line": 29
           },
           {
             "name": "shape",
             "kind": "mod",
             "description": "Shape definitions for bodies and standalone queries.",
             "file": "src/physics/mod.rs",
-            "line": 29
+            "line": 31
           },
           {
             "name": "terrain",
             "kind": "mod",
             "description": "Static terrain tile-map. This module is publicly re-exported.",
             "file": "src/physics/mod.rs",
-            "line": 31
+            "line": 33
           },
           {
             "name": "types",
             "kind": "mod",
             "description": "Core type definitions for the physics subsystem.",
             "file": "src/physics/mod.rs",
-            "line": 33
+            "line": 35
           },
           {
             "name": "world",
             "kind": "mod",
             "description": "Physics world, stepping, bodies, raycasting, and instant beam queries.",
             "file": "src/physics/mod.rs",
-            "line": 35
+            "line": 37
           },
           {
             "name": "zone",
             "kind": "mod",
             "description": "Spatial trigger zones with gravity and event tracking.",
             "file": "src/physics/mod.rs",
-            "line": 39
+            "line": 46
           }
         ]
       },
@@ -15916,6 +16048,11 @@
           }
         ]
       },
+      "physics::world::altitude": {
+        "module_doc": "Owns world-side altitude-layer attachment and per-body vertical metadata accessors. This file keeps 2.5D sidecar storage near `World` lifecycle rules without mixing Lua parsing into physics owners. Query logic and vertical stepping will extend this owner later; for now it handles storage, defaults, and cleanup-safe access.",
+        "source_file": "src/physics/world/altitude.rs",
+        "items": []
+      },
       "physics::world::bodies": {
         "module_doc": "Owns the physics world bodies implementation for the physics subsystem and keeps related runtime rules local here. Keeps body state, simulation helpers, and authored world contracts so helpers stay close to invariants this updates. Defines how physics world bodies data is validated, transformed, or stored before neighboring systems consume it. Separates physics world bodies behavior from Lua bindings, tests, and sibling owners so integration stays readable. Documents the boundary where physics code accepts inputs, reports errors, allocates state, or emits outputs. Use this file when changing physics world bodies defaults, lifecycle handling, validation, or data ownership rules. Keeps failure paths and edge cases near physics world bodies state that explains them instead of spreading outward. Preserves deterministic behavior by keeping physics world bodies calculations at their owning subsystem boundary. Provides local adaptation layer that lets callers reuse physics world bodies rules without duplicating engine decisions.",
         "source_file": "src/physics/world/bodies.rs",
@@ -15945,112 +16082,112 @@
             "kind": "const",
             "description": "Number of low-bit collision groups controlled by the world-level collision matrix.",
             "file": "src/physics/world.rs",
-            "line": 40
+            "line": 42
           },
           {
             "name": "BodyContact",
             "kind": "struct",
             "description": "A pair of body ids that have started or are overlapping. # Fields - `body_a`: first body id. - `body_b`: second body id.",
             "file": "src/physics/world.rs",
-            "line": 95
+            "line": 97
           },
           {
             "name": "RaycastHit",
             "kind": "struct",
             "description": "The closest raycast intersection result. # Fields - `body_id`: body hit by the ray. - `point`: world-space hit point. - `normal`: outward hit normal. - `toi`: parametric distance along the cast.",
             "file": "src/physics/world.rs",
-            "line": 108
+            "line": 110
           },
           {
             "name": "ShapeSweepHit",
             "kind": "struct",
             "description": "The closest swept-shape intersection result. # Fields - `body_id`: body hit by the sweep. - `point`: world-space impact point on the hit collider. - `normal`: outward hit normal on the hit collider. - `toi`: travel distance from the cast origin to the first impact. - `safe_fraction`: normalized travel fraction in `0.0..=1.0` before the impact.",
             "file": "src/physics/world.rs",
-            "line": 126
+            "line": 128
           },
           {
             "name": "BeamHitMode",
             "kind": "enum",
             "description": "Beam hit collection mode for instant gameplay beams.",
             "file": "src/physics/world.rs",
-            "line": 140
+            "line": 142
           },
           {
             "name": "BeamOptions",
             "kind": "struct",
             "description": "Options controlling one instant beam query. # Fields - `max_distance`: maximum beam travel distance in world units. - `thickness`: beam radius in world units; only `0.0` is currently supported. - `hit_mode`: how many hits to collect. - `reflect`: whether the beam should continue reflecting from mirror bodies. - `max_bounces`: maximum number of reflections allowed when `reflect` is true. - `energy`: starting beam energy multiplier used with reflective surfaces. - `min_energy`: beam tracing stops when reflected energy would drop below this threshold. - `filter`: collision and sensor filtering shared with other physics queries.",
             "file": "src/physics/world.rs",
-            "line": 162
+            "line": 164
           },
           {
             "name": "BeamHit",
             "kind": "struct",
             "description": "One beam hit ready for gameplay or debug rendering. # Fields - `body_id`: body hit by the beam. - `point`: world-space hit point. - `normal`: outward surface normal. - `distance`: beam travel distance from the origin to the hit point. - `segment_index`: 1-based segment index for reflected or chained traces. - `reflected`: whether the beam continued past this hit by reflecting. - `incoming_dir`: normalized incoming beam direction at the hit. - `outgoing_dir`: normalized reflected direction, if the hit reflected the beam. - `reflectivity`: beam reflectivity multiplier used for the hit body.",
             "file": "src/physics/world.rs",
-            "line": 192
+            "line": 194
           },
           {
             "name": "BeamSegment",
             "kind": "struct",
             "description": "One visible segment of a beam trace. # Fields - `from`: segment start in world space. - `to`: segment end in world space. - `blocked_by`: body that stopped this segment, if any.",
             "file": "src/physics/world.rs",
-            "line": 218
+            "line": 220
           },
           {
             "name": "BeamTrace",
             "kind": "struct",
             "description": "Full instant beam query result. # Fields - `hits`: ordered hit results. - `segments`: ordered beam segments for gameplay and rendering. - `reached_max_range`: whether the trace extended to the requested max range.",
             "file": "src/physics/world.rs",
-            "line": 232
+            "line": 234
           },
           {
             "name": "ContactInfo",
             "kind": "struct",
             "description": "Contact information between two bodies. # Fields - `body_a`: first body id. - `body_b`: second body id. - `normal_x`: contact normal x component. - `normal_y`: contact normal y component. - `is_touching`: whether the bodies are currently touching.",
             "file": "src/physics/world.rs",
-            "line": 248
+            "line": 250
           },
           {
             "name": "PhysicsShapeSnapshot",
             "kind": "struct",
             "description": "Snapshot of a physics shape used for debug rendering. # Fields - `x`: world-space x center. - `y`: world-space y center. - `half_w`: half-width for box-like shapes. - `half_h`: half-height for box-like shapes. - `angle`: rotation in radians. - `is_static`: whether the source body is static. - `is_sleeping`: whether the source body is sleeping. - `is_sensor`: whether the source collider is a sensor. - `is_circle`: whether the shape should be rendered as a circle. - `hull_verts`: polygon hull vertices for non-rectangular shapes.",
             "file": "src/physics/world.rs",
-            "line": 272
+            "line": 274
           },
           {
             "name": "PhysicsQueryFilter",
             "kind": "struct",
             "description": "Optional filters applied to physics spatial queries. # Fields - `layer`: optional query-side collision layer mask. - `mask`: optional query-side collision mask. - `groups`: optional 16-group query-side membership mask. - `include_sensors`: whether sensor colliders should be returned. - `exclude_body`: optional body whose colliders should be excluded.",
             "file": "src/physics/world.rs",
-            "line": 302
+            "line": 304
           },
           {
             "name": "GravityVector",
             "kind": "struct",
             "description": "Additive directional gravity vector applied to matching dynamic bodies before the solver step. # Fields - `id`: stable gravity vector identifier. - `gx`: x acceleration in world units per second squared. - `gy`: y acceleration in world units per second squared. - `layer_mask`: body layer mask; bodies with `body.layer & layer_mask == 0` are skipped. - `enabled`: whether the vector participates in the next step.",
             "file": "src/physics/world.rs",
-            "line": 334
+            "line": 336
           },
           {
             "name": "PhysicsDiagnostics",
             "kind": "struct",
             "description": "Runtime diagnostics recorded by the physics world across steps and strict mutators. # Fields - `skipped_steps`: invalid or empty `step` calls rejected before rapier. - `clamped_steps`: `step` calls whose dt was reduced to the configured ceiling. - `invalid_operations`: strict helper failures observed through legacy wrappers. - `last_bodies_scanned`: body slots examined during the most recent step. - `last_colliders_rebuilt`: collider rebuilds triggered during the most recent step. - `last_zone_checks`: body-zone containment checks performed during the most recent step. - `last_flow_samples`: field samples evaluated during the most recent step. - `last_flow_affected_bodies`: dynamic bodies that received non-zero flow influence during the most recent step. - `last_contacts`: contact events emitted during the most recent step. - `last_synced_bodies`: body mirrors pushed into rapier during the most recent step.",
             "file": "src/physics/world.rs",
-            "line": 359
+            "line": 361
           },
           {
             "name": "PhysicsWorldStats",
             "kind": "struct",
             "description": "Lightweight world diagnostics for Lua/editor tooling. # Fields - `bodies`: active body count. - `body_slots`: total allocated body slots. - `colliders`: active collider count. - `joints`: active joint count. - `joint_slots`: total allocated joint slots. - `zones`: active zone count. - `gravity_vectors`: active additive gravity vector count. - `flow_fields`: active flow-field count. - `sleeping_bodies`: active bodies currently sleeping. - `skipped_steps`: invalid or empty `step` calls rejected before rapier. - `clamped_steps`: `step` calls whose dt was reduced to the configured ceiling. - `invalid_operations`: strict helper failures observed through legacy wrappers. - `bodies_scanned`: body slots examined during the most recent step. - `colliders_rebuilt`: collider rebuilds triggered during the most recent step. - `zone_checks`: body-zone containment checks performed during the most recent step. - `flow_samples`: flow-field samples evaluated during the most recent step. - `flow_affected_bodies`: dynamic bodies that received non-zero flow influence during the most recent step. - `contacts`: contact events emitted during the most recent step. - `synced_bodies`: body mirrors pushed into rapier during the most recent step.",
             "file": "src/physics/world.rs",
-            "line": 403
+            "line": 405
           },
           {
             "name": "World",
             "kind": "struct",
-            "description": "Full rapier2d-backed simulation world. # Fields - `bodies`: Lua-visible body mirrors. - `body_handles`: rapier rigid body handles for each slot. - `body_active`: active/tombstoned body slot state. - `collider_handles`: primary collider per body. - `extra_collider_handles`: additional colliders per body. - `collider_to_body`: reverse collider-to-body lookup. - `cached_shapes`: cached shape descriptors for rebuild detection. - `cached_restitutions`: cached restitution values per body. - `cached_layers`: cached layer/mask pairs per body. - `collision_group_masks`: world-level 16-group collision matrix rows. - `cached_frictions`: cached friction values per body. - `pipeline`: rapier simulation pipeline. - `gravity`: world gravity vector. - `params`: integration parameters. - `islands`: rapier island manager. - `broad_phase`: rapier broad phase. - `narrow_phase`: rapier narrow phase. - `rbodies`: rapier rigid body storage. - `rcolliders`: rapier collider storage. - `impulse_joints`: rapier impulse joint storage. - `multibody_joints`: rapier multibody joint storage. - `ccd_solver`: rapier CCD solver. - `joint_handles`: rapier impulse joint handles by slot. - `joint_active`: active/tombstoned joint slot state. - `collision_events`: buffered overlap/contact events. - `begin_contact_events`: body pairs that started touching this step. - `end_contact_events`: body pairs that stopped touching this step. - `event_handler`: local rapier event collector. - `joint_types`: joint type labels by stable joint id. - `mouse_joint_anchors`: mouse-joint anchor body lookup. - `pixels_per_meter`: pixels-to-meter conversion ratio. - `joint_break_forces`: optional joint break thresholds. - `one_way_normals`: one-way platform normals by body id. - `body_dirty_sync`: explicit mirror-to-rapier sync flags for dynamic bodies. - `body_base_gravity_scales`: gravity scales restored after temporary zone overrides. - `body_base_linear_damping`: linear damping restored after temporary zone overrides. - `body_base_angular_damping`: angular damping restored after temporary zone overrides. - `body_mass_overrides`: explicit mass values authored through `setMass`. - `body_materials`: body-default material snapshots kept in sync with direct setters. - `fixture_materials`: extra-fixture material snapshots keyed by `(body_id, fixture_index)`. - `zones`: registered physics zones. - `gravity_vectors`: additive world gravity vectors. - `flow_fields`: authored flow fields sampled before the solver step. - `gravity_vector_id_counter`: next stable additive gravity vector id. - `zone_id_counter`: next stable zone id. - `flow_field_id_counter`: next stable flow-field id. - `zone_tracker`: body/zone membership tracker. - `zone_events`: buffered zone enter/leave events. - `limits`: shared safety ceilings for strict helpers and bounded stepping. - `diagnostics`: cumulative and per-step instrumentation counters. - `rebuild_scratch`: reusable body-id buffer for collider rebuild scans. - `sync_scratch`: reusable mirror-state buffer for rapier sync. - `sorted_zone_indices`: reusable priority-order buffer for zones. - `default_gravity`: gravity captured at construction for full reset semantics. # Fields See inline field docs below for the authoritative per-field details.",
+            "description": "Full rapier2d-backed simulation world. # Fields - `bodies`: Lua-visible body mirrors. - `body_handles`: rapier rigid body handles for each slot. - `body_active`: active/tombstoned body slot state. - `collider_handles`: primary collider per body. - `extra_collider_handles`: additional colliders per body. - `collider_to_body`: reverse collider-to-body lookup. - `cached_shapes`: cached shape descriptors for rebuild detection. - `cached_restitutions`: cached restitution values per body. - `cached_layers`: cached layer/mask pairs per body. - `collision_group_masks`: world-level 16-group collision matrix rows. - `cached_frictions`: cached friction values per body. - `pipeline`: rapier simulation pipeline. - `gravity`: world gravity vector. - `params`: integration parameters. - `islands`: rapier island manager. - `broad_phase`: rapier broad phase. - `narrow_phase`: rapier narrow phase. - `rbodies`: rapier rigid body storage. - `rcolliders`: rapier collider storage. - `impulse_joints`: rapier impulse joint storage. - `multibody_joints`: rapier multibody joint storage. - `ccd_solver`: rapier CCD solver. - `joint_handles`: rapier impulse joint handles by slot. - `joint_active`: active/tombstoned joint slot state. - `collision_events`: buffered overlap/contact events. - `begin_contact_events`: body pairs that started touching this step. - `end_contact_events`: body pairs that stopped touching this step. - `event_handler`: local rapier event collector. - `joint_types`: joint type labels by stable joint id. - `mouse_joint_anchors`: mouse-joint anchor body lookup. - `pixels_per_meter`: pixels-to-meter conversion ratio. - `joint_break_forces`: optional joint break thresholds. - `one_way_normals`: one-way platform normals by body id. - `body_dirty_sync`: explicit mirror-to-rapier sync flags for dynamic bodies. - `body_base_gravity_scales`: gravity scales restored after temporary zone overrides. - `body_base_linear_damping`: linear damping restored after temporary zone overrides. - `body_base_angular_damping`: angular damping restored after temporary zone overrides. - `body_mass_overrides`: explicit mass values authored through `setMass`. - `body_materials`: body-default material snapshots kept in sync with direct setters. - `fixture_materials`: extra-fixture material snapshots keyed by `(body_id, fixture_index)`. - `altitude_layer`: optional terrain-height grid used for terrain-relative altitude rules. - `body_altitudes`: per-body vertical sidecar state keyed by stable body id. - `ballistic_projectiles`: engine-owned projectile slots keyed by stable projectile id. - `ballistic_projectile_hits`: buffered projectile hit events from the last step. - `zones`: registered physics zones. - `gravity_vectors`: additive world gravity vectors. - `flow_fields`: authored flow fields sampled before the solver step. - `gravity_vector_id_counter`: next stable additive gravity vector id. - `zone_id_counter`: next stable zone id. - `flow_field_id_counter`: next stable flow-field id. - `zone_tracker`: body/zone membership tracker. - `zone_events`: buffered zone enter/leave events. - `limits`: shared safety ceilings for strict helpers and bounded stepping. - `diagnostics`: cumulative and per-step instrumentation counters. - `rebuild_scratch`: reusable body-id buffer for collider rebuild scans. - `sync_scratch`: reusable mirror-state buffer for rapier sync. - `sorted_zone_indices`: reusable priority-order buffer for zones. - `default_gravity`: gravity captured at construction for full reset semantics. # Fields See inline field docs below for the authoritative per-field details.",
             "file": "src/physics/world.rs",
-            "line": 501
+            "line": 507
           }
         ]
       },
@@ -17351,14 +17488,14 @@
             "kind": "fn",
             "description": "Replace capital and label marker pixels with their nearest non-marker neighbour and write the result to output_png_path; return pixel counts or an error string.",
             "file": "src/province/import.rs",
-            "line": 177
+            "line": 250
           },
           {
             "name": "import_metadata_from_files",
             "kind": "fn",
             "description": "Import province metadata from colour-map PNG, RGB CSV, and optional TOML/marker files into registry; return counts or an error string.",
             "file": "src/province/import.rs",
-            "line": 339
+            "line": 412
           }
         ]
       },
@@ -17572,18 +17709,25 @@
         "source_file": "src/province/registry.rs",
         "items": [
           {
+            "name": "ProvinceLabelLine",
+            "kind": "type",
+            "description": "Two map-space endpoints used as the baseline for province label placement.",
+            "file": "src/province/registry.rs",
+            "line": 22
+          },
+          {
             "name": "ProvinceRecord",
             "kind": "struct",
             "description": "Full mutable record for a single province stored inside ProvinceRegistry.",
             "file": "src/province/registry.rs",
-            "line": 23
+            "line": 26
           },
           {
             "name": "ProvinceRegistry",
             "kind": "struct",
             "description": "Central authoritative store for all province state: geometry, style, labels, adjacency, and change log.",
             "file": "src/province/registry.rs",
-            "line": 40
+            "line": 43
           }
         ]
       },
@@ -17659,14 +17803,14 @@
             "kind": "fn",
             "description": "Rasterize a province map using registry spans and border segments.",
             "file": "src/province/render.rs",
-            "line": 609
+            "line": 650
           },
           {
             "name": "generate_render_commands",
             "kind": "fn",
             "description": "Generate a RenderCommand Vec for the province map: fills, borders, capitals, and labels with viewport culling.",
             "file": "src/province/render.rs",
-            "line": 725
+            "line": 766
           }
         ]
       },
@@ -17827,32 +17971,39 @@
             "line": 258
           },
           {
+            "name": "PROVINCE_EFFECT_STRIPES",
+            "kind": "const",
+            "description": "Province visual-effect bit for diagonal hatch or occupation stripes.",
+            "file": "src/province/types.rs",
+            "line": 260
+          },
+          {
             "name": "parse_province_effect_flag_token",
             "kind": "fn",
             "description": "Parse a canonical province visual-effect flag token into a bitmask.",
             "file": "src/province/types.rs",
-            "line": 261
+            "line": 263
           },
           {
             "name": "ProvinceVisualState",
             "kind": "struct",
             "description": "Compact shader-facing visual state attached to a province without owning gameplay simulation.",
             "file": "src/province/types.rs",
-            "line": 274
+            "line": 277
           },
           {
             "name": "ProvinceStyle",
             "kind": "struct",
             "description": "Visual and gameplay state attached to a single province, stored in ProvinceRegistry.",
             "file": "src/province/types.rs",
-            "line": 301
+            "line": 304
           },
           {
             "name": "ProvinceSnapshot",
             "kind": "struct",
             "description": "Immutable point-in-time view of a province returned by ProvinceRegistry::get_province.",
             "file": "src/province/types.rs",
-            "line": 332
+            "line": 335
           }
         ]
       },
@@ -17947,35 +18098,35 @@
             "kind": "struct",
             "description": "Optional 4-direction texture set for bitmap actors that should read as front/side/back sprites.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 489
+            "line": 491
           },
           {
             "name": "WorldSprite",
             "kind": "struct",
             "description": "A billboard sprite placed in world space and projected to screen by `RaycasterScene::build`.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 529
+            "line": 531
           },
           {
             "name": "RaycasterParticleEmitter",
             "kind": "struct",
             "description": "A deterministic world-space particle emitter projected into the raycaster view.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 550
+            "line": 552
           },
           {
             "name": "TextureLookup",
             "kind": "type",
             "description": "Callback type mapping a wall cell value to an optional `TextureKey`.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 592
+            "line": 594
           },
           {
             "name": "CellTextureLookup",
             "kind": "type",
             "description": "Callback type mapping a grid `(x, y)` cell to an optional `TextureKey`.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 594
+            "line": 596
           }
         ]
       },
@@ -19854,21 +20005,21 @@
             "kind": "struct",
             "description": "Uniforms used by the province map fullscreen shader.",
             "file": "src/render/province_map_pipeline.rs",
-            "line": 45
+            "line": 127
           },
           {
             "name": "ProvinceMapPipeline",
             "kind": "struct",
             "description": "Province map GPU pipeline and bind-group layouts.",
             "file": "src/render/province_map_pipeline.rs",
-            "line": 123
+            "line": 205
           },
           {
             "name": "ProvinceMapDataBindings",
             "kind": "struct",
             "description": "Texture and buffer inputs bound by the province map fullscreen shader.",
             "file": "src/render/province_map_pipeline.rs",
-            "line": 143
+            "line": 225
           }
         ]
       },
@@ -24373,7 +24524,7 @@
             "kind": "struct",
             "description": "Multi-level tile gameplay field.",
             "file": "src/tilefield/field.rs",
-            "line": 33
+            "line": 35
           }
         ]
       },
@@ -25674,7 +25825,7 @@
         "items": []
       },
       "ui::context::input": {
-        "module_doc": "Owns the UI context input implementation for the UI subsystem and keeps related runtime rules local here. Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates. Defines how UI context input data is validated, transformed, or stored before neighboring systems consume it. Separates UI context input behavior from Lua bindings, tests, and sibling owners so integration stays readable. Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs. Use this file when changing UI context input defaults, lifecycle handling, validation, or data ownership rules. Keeps failure paths and edge cases near UI context input state that explains them instead of spreading rules outward. Preserves deterministic behavior by keeping UI context input calculations explicit at their owning subsystem boundary. Provides the local adaptation layer that lets callers reuse UI context input rules without duplicating engine decisions. Open this owner before sibling files when a regression centers on UI context input state, helpers, or integration rules. Works with neighboring UI owners while keeping the main UI context input responsibility anchored in one file. Changes to UI context input names, caches, or helper boundaries should usually stay coupled inside this owner. Local input routing changes should stay here so pointer capture and hit-testing rules remain aligned. This file is the right stop for maintainers tracing UI context input regressions back to their concrete owner boundary.",
+        "module_doc": "Owns the UI context input implementation for the UI subsystem and keeps related runtime rules local here. Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates. Defines how UI context input data is validated, transformed, or stored before neighboring systems consume it. Separates UI context input behavior from Lua bindings, tests, and sibling owners so integration stays readable. Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs. Use this file when changing UI context input defaults, lifecycle handling, validation, or data ownership rules. Keeps failure paths and edge cases near UI context input state that explains them instead of spreading rules outward. Preserves deterministic behavior by keeping UI context input calculations explicit at their owning subsystem boundary. Provides the local adaptation layer that lets callers reuse UI context input rules without duplicating engine decisions. Open this owner before sibling files when a regression centers on UI context input state, helpers, or integration rules. Changes to UI context input names, caches, or helper boundaries should usually stay coupled inside this owner. Local input routing changes should stay here so pointer capture and hit-testing rules remain aligned. This file is the right stop for maintainers tracing UI context input regressions back to their concrete owner boundary.",
         "source_file": "src/ui/context/input.rs",
         "items": []
       },
@@ -26228,7 +26379,7 @@
         "items": []
       },
       "ui::render::helpers": {
-        "module_doc": "Owns the UI render helpers implementation for the UI subsystem and keeps related runtime rules local here. Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates. Defines how UI render helpers data is validated, transformed, or stored before neighboring systems consume it. Separates UI render helpers behavior from Lua bindings, tests, and sibling owners so integration stays readable. Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs. Use this file when changing UI render helpers defaults, lifecycle handling, validation, or data ownership rules. Keeps failure paths and edge cases near UI render helpers state that explains them instead of spreading rules outward. Preserves deterministic behavior by keeping UI render helpers calculations explicit at their owning subsystem boundary. Provides local adaptation layer that lets callers reuse UI render helpers rules without duplicating engine decisions.",
+        "module_doc": "Owns the UI render helpers implementation for the UI subsystem and keeps related runtime rules local here. Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates. Defines how UI render helpers data is validated, transformed, or stored before neighboring systems consume it. Separates UI render helpers behavior from Lua bindings, tests, and sibling owners so integration stays readable. Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs. Use this file when changing UI render helpers defaults, lifecycle handling, validation, or data ownership rules. Keeps failure paths and edge cases near UI render helpers state that explains them instead of spreading rules outward. Preserves deterministic behavior by keeping UI render helpers calculations explicit at their owning subsystem boundary. Provides local adaptation layer that lets callers reuse UI render helpers rules without duplicating engine decisions. Read this file when renderer output depends on shared UI helper math more than widget-specific state.",
         "source_file": "src/ui/render/helpers.rs",
         "items": []
       },

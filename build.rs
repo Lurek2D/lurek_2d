@@ -19,7 +19,8 @@ fn main() {
             println!("cargo:rerun-if-changed=assets/favicon.ico");
             let mut res = winresource::WindowsResource::new();
             res.set_icon(icon.to_string_lossy().as_ref());
-            res.compile().expect("failed to embed Windows icon resource");
+            res.compile()
+                .expect("failed to embed Windows icon resource");
         }
     }
 }

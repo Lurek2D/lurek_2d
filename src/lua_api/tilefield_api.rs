@@ -485,7 +485,7 @@ impl TileFieldLuaParser {
                         out.push(coord_from_table(cell.map_err(|e| lua_err(api, e))?, api)?);
                     }
                     field
-                        .set_region_cells(name, out)
+                        .set_region_cells(name.clone(), out)
                         .map_err(|e| lua_err(api, e))?;
                 } else {
                     let z = one_based(
@@ -509,8 +509,20 @@ impl TileFieldLuaParser {
                     )
                     .map_err(|e| lua_err(api, e))?;
                     field
-                        .set_region_rect(name, a.x, a.y, b.x, b.y, z)
+                        .set_region_rect(name.clone(), a.x, a.y, b.x, b.y, z)
                         .map_err(|e| lua_err(api, e))?;
+                }
+                if let Ok(properties) = region.get::<_, LuaTable>("properties") {
+                    for pair in properties.pairs::<String, LuaValue>() {
+                        let (key, value) = pair.map_err(|e| lua_err(api, e))?;
+                        field
+                            .set_region_property(
+                                &name,
+                                key,
+                                property_value_to_string(value).map_err(|e| lua_err(api, e))?,
+                            )
+                            .map_err(|e| lua_err(api, e))?;
+                    }
                 }
             }
         }
@@ -1413,6 +1425,85 @@ impl LuaUserData for LuaTileField {
             }
             Ok(out)
         });
+
+        // -- setRegionProperty --
+        /// Sets or clears one string property on a named region. Numbers and booleans are stringified; nil removes the property.
+        /// @param | name | string | Region name.
+        /// @param | key | string | Property key.
+        /// @param | value | any | String/number/boolean value, or nil to remove.
+        methods.add_method(
+            "setRegionProperty",
+            |_, this, (name, key, value): (String, String, LuaValue)| {
+                this.inner
+                    .borrow_mut()
+                    .set_region_property(
+                        &name,
+                        key,
+                        property_value_to_string(value)
+                            .map_err(|e| lua_err("setRegionProperty", e))?,
+                    )
+                    .map_err(|e| lua_err("setRegionProperty", e))
+            },
+        );
+
+        // -- getRegionProperty --
+        /// Returns one string property from a named region, or nil when absent.
+        /// @param | name | string | Region name.
+        /// @param | key | string | Property key.
+        /// @return | string | Stored property value, or nil.
+        methods.add_method(
+            "getRegionProperty",
+            |_, this, (name, key): (String, String)| {
+                Ok(this
+                    .inner
+                    .borrow()
+                    .region_property(&name, &key)
+                    .map(|value| value.to_string()))
+            },
+        );
+
+        // -- getRegionProperties --
+        /// Returns all properties for a named region, or nil when the region does not exist.
+        /// @param | name | string | Region name.
+        /// @return | table | Key-value table of string properties, or nil.
+        methods.add_method("getRegionProperties", |lua, this, name: String| match this
+            .inner
+            .borrow()
+            .region_properties(&name)
+        {
+            Some(properties) => {
+                let out = lua.create_table()?;
+                for (key, value) in properties {
+                    out.set(key, value)?;
+                }
+                Ok(LuaValue::Table(out))
+            }
+            None => Ok(LuaValue::Nil),
+        });
+
+        // -- regionsAt --
+        /// Returns all region names that contain the addressed one-based tile cell.
+        /// @param | x | integer | One-based column.
+        /// @param | y | integer | One-based row.
+        /// @param | z | integer? | One-based level, default 1.
+        /// @return | table | Array of region names in stable order.
+        methods.add_method(
+            "regionsAt",
+            |lua, this, (x, y, z): (u32, u32, Option<u32>)| {
+                let coord = coord_from_values(x, y, z)?;
+                let out = lua.create_table()?;
+                for (index, name) in this
+                    .inner
+                    .borrow()
+                    .regions_at(coord)
+                    .into_iter()
+                    .enumerate()
+                {
+                    out.set(index + 1, name)?;
+                }
+                Ok(out)
+            },
+        );
 
         // -- clear --
         /// Clears all gameplay state, modifiers, and references in the field.

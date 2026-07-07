@@ -1,7 +1,8 @@
 //! Registers the `lurek.dialog` Lua API for dialog userdata, action control, and script-managed dialog flows.
 
 use crate::dialog::{
-    DialogSequencer, DialogueAI, DialogueState, SequencerNode, Speaker, SpeakerRegistry,
+    DialogHistoryEntry, DialogLineMeta, DialogSequencer, DialogSequencerSnapshot, DialogSignal,
+    DialogueAI, DialogueState, SequencerNode, Speaker, SpeakerRegistry,
 };
 use crate::runtime::SharedState;
 use mlua::prelude::*;
@@ -34,6 +35,312 @@ pub(crate) struct LuaSpeakerRegistry {
 pub(crate) struct LuaDialogSequencer {
     /// Sequencer managing node playback, choices, and typewriter effect.
     pub inner: Rc<RefCell<DialogSequencer>>,
+}
+
+fn tags_from_opts(opts: &LuaTable, field: &str) -> LuaResult<Vec<String>> {
+    let Ok(tags_tbl) = opts.get::<_, LuaTable>(field) else {
+        return Ok(Vec::new());
+    };
+    let mut tags = Vec::new();
+    for index in 1..=tags_tbl.len()? {
+        tags.push(tags_tbl.get(index)?);
+    }
+    Ok(tags)
+}
+
+fn line_meta_from_opts(opts: Option<&LuaTable>) -> LuaResult<DialogLineMeta> {
+    let Some(opts) = opts else {
+        return Ok(DialogLineMeta::default());
+    };
+    Ok(DialogLineMeta {
+        id: opts.get("id").ok(),
+        voice: opts.get("voice").ok(),
+        route: opts.get("route").ok(),
+        tags: tags_from_opts(opts, "tags")?,
+    })
+}
+
+fn node_from_lua(node_tbl: &LuaTable) -> LuaResult<SequencerNode> {
+    let node_type: String = node_tbl.get("type")?;
+    match node_type.as_str() {
+        "say" => {
+            let actor = node_tbl.get("actor")?;
+            let text = node_tbl.get("text")?;
+            let duration = node_tbl.get("duration").ok();
+            let meta = line_meta_from_opts(Some(node_tbl))?;
+            Ok(SequencerNode::Say {
+                actor,
+                text,
+                duration,
+                id: meta.id,
+                voice: meta.voice,
+                route: meta.route,
+                tags: meta.tags,
+            })
+        }
+        "choice" => {
+            let prompt = node_tbl.get("prompt")?;
+            let options_tbl: LuaTable = node_tbl.get("options")?;
+            let mut options = Vec::new();
+            for j in 1..=options_tbl.len()? {
+                options.push(options_tbl.get(j)?);
+            }
+            Ok(SequencerNode::Choice { prompt, options })
+        }
+        "wait" => Ok(SequencerNode::Wait {
+            seconds: node_tbl.get("seconds")?,
+        }),
+        "event" => Ok(SequencerNode::Event {
+            name: node_tbl.get("name")?,
+            data: node_tbl.get("data").ok(),
+        }),
+        "call" => Ok(SequencerNode::Call {
+            name: node_tbl.get("name")?,
+        }),
+        "label" => Ok(SequencerNode::Label {
+            name: node_tbl.get("name")?,
+        }),
+        "jump" => Ok(SequencerNode::Jump {
+            target: node_tbl.get("target")?,
+        }),
+        _ => Err(LuaError::RuntimeError(format!(
+            "Unknown node type: {}",
+            node_type
+        ))),
+    }
+}
+
+fn apply_meta_to_node(lua: &Lua, node: &LuaTable, meta: &DialogLineMeta) -> LuaResult<()> {
+    if let Some(id) = meta.id.as_ref() {
+        node.set("id", id.clone())?;
+    }
+    if let Some(voice) = meta.voice.as_ref() {
+        node.set("voice", voice.clone())?;
+    }
+    if let Some(route) = meta.route.as_ref() {
+        node.set("route", route.clone())?;
+    }
+    if !meta.tags.is_empty() {
+        let tags = lua.create_table()?;
+        for (index, tag) in meta.tags.iter().enumerate() {
+            tags.set(index + 1, tag.clone())?;
+        }
+        node.set("tags", tags)?;
+    }
+    Ok(())
+}
+
+fn node_to_lua<'lua>(lua: &'lua Lua, node: &SequencerNode) -> LuaResult<LuaTable<'lua>> {
+    let table = lua.create_table()?;
+    match node {
+        SequencerNode::Say {
+            actor,
+            text,
+            duration,
+            id,
+            voice,
+            route,
+            tags,
+        } => {
+            table.set("type", "say")?;
+            table.set("actor", actor.as_str())?;
+            table.set("text", text.as_str())?;
+            if let Some(duration) = duration {
+                table.set("duration", *duration)?;
+            }
+            apply_meta_to_node(
+                lua,
+                &table,
+                &DialogLineMeta {
+                    id: id.clone(),
+                    voice: voice.clone(),
+                    route: route.clone(),
+                    tags: tags.clone(),
+                },
+            )?;
+        }
+        SequencerNode::Choice { prompt, options } => {
+            table.set("type", "choice")?;
+            table.set("prompt", prompt.as_str())?;
+            let options_tbl = lua.create_table()?;
+            for (index, option) in options.iter().enumerate() {
+                options_tbl.set(index + 1, option.as_str())?;
+            }
+            table.set("options", options_tbl)?;
+        }
+        SequencerNode::Wait { seconds } => {
+            table.set("type", "wait")?;
+            table.set("seconds", *seconds)?;
+        }
+        SequencerNode::Event { name, data } => {
+            table.set("type", "event")?;
+            table.set("name", name.as_str())?;
+            if let Some(data) = data.as_ref() {
+                table.set("data", data.as_str())?;
+            }
+        }
+        SequencerNode::Call { name } => {
+            table.set("type", "call")?;
+            table.set("name", name.as_str())?;
+        }
+        SequencerNode::Label { name } => {
+            table.set("type", "label")?;
+            table.set("name", name.as_str())?;
+        }
+        SequencerNode::Jump { target } => {
+            table.set("type", "jump")?;
+            table.set("target", target.as_str())?;
+        }
+    }
+    Ok(table)
+}
+
+fn history_entry_to_lua<'lua>(
+    lua: &'lua Lua,
+    entry: &DialogHistoryEntry,
+) -> LuaResult<LuaTable<'lua>> {
+    let table = lua.create_table()?;
+    table.set("speaker", entry.speaker.clone())?;
+    table.set("text", entry.text.clone())?;
+    apply_meta_to_node(lua, &table, &entry.meta)?;
+    Ok(table)
+}
+
+fn signal_to_lua<'lua>(lua: &'lua Lua, signal: &DialogSignal) -> LuaResult<LuaTable<'lua>> {
+    let table = lua.create_table()?;
+    table.set("kind", signal.kind.as_str())?;
+    table.set("name", signal.name.as_str())?;
+    table.set("data", signal.data.clone())?;
+    Ok(table)
+}
+
+fn snapshot_to_lua<'lua>(
+    lua: &'lua Lua,
+    snapshot: &DialogSequencerSnapshot,
+) -> LuaResult<LuaTable<'lua>> {
+    let table = lua.create_table()?;
+    let nodes = lua.create_table()?;
+    for (index, node) in snapshot.nodes.iter().enumerate() {
+        nodes.set(index + 1, node_to_lua(lua, node)?)?;
+    }
+    table.set("nodes", nodes)?;
+    table.set("nextIndex", snapshot.current_index + 1)?;
+    table.set("state", snapshot.state.as_str())?;
+    table.set("revealedChars", snapshot.revealed_chars)?;
+    table.set("elapsed", snapshot.elapsed)?;
+    table.set("cps", snapshot.cps)?;
+    if let Some(choice) = snapshot.current_choice {
+        table.set("currentChoice", choice + 1)?;
+    }
+    table.set("choicePrompt", snapshot.choice_prompt.clone())?;
+    let choice_labels = lua.create_table()?;
+    for (index, label) in snapshot.choice_labels.iter().enumerate() {
+        choice_labels.set(index + 1, label.clone())?;
+    }
+    table.set("choiceLabels", choice_labels)?;
+    table.set("currentSpeaker", snapshot.current_speaker.clone())?;
+    table.set("currentText", snapshot.current_text.clone())?;
+    apply_meta_to_node(lua, &table, &snapshot.current_meta)?;
+    table.set("waitRemaining", snapshot.wait_remaining)?;
+    table.set("lineHoldRemaining", snapshot.line_hold_remaining)?;
+    let history = lua.create_table()?;
+    for (index, entry) in snapshot.history.iter().enumerate() {
+        history.set(index + 1, history_entry_to_lua(lua, entry)?)?;
+    }
+    table.set("history", history)?;
+    let signals = lua.create_table()?;
+    for (index, signal) in snapshot.pending_signals.iter().enumerate() {
+        signals.set(index + 1, signal_to_lua(lua, signal)?)?;
+    }
+    table.set("pendingSignals", signals)?;
+    Ok(table)
+}
+
+fn snapshot_from_lua(snapshot: LuaTable) -> LuaResult<DialogSequencerSnapshot> {
+    let nodes_tbl: LuaTable = snapshot.get("nodes")?;
+    let mut nodes = Vec::new();
+    for index in 1..=nodes_tbl.len()? {
+        nodes.push(node_from_lua(&nodes_tbl.get::<_, LuaTable>(index)?)?);
+    }
+
+    let mut history = Vec::new();
+    if let Some(history_tbl) = snapshot.get::<_, Option<LuaTable>>("history")? {
+        for index in 1..=history_tbl.len()? {
+            let entry: LuaTable = history_tbl.get(index)?;
+            history.push(DialogHistoryEntry {
+                speaker: entry.get("speaker").ok(),
+                text: entry.get("text")?,
+                meta: line_meta_from_opts(Some(&entry))?,
+            });
+        }
+    }
+
+    let mut pending_signals = Vec::new();
+    if let Some(signals_tbl) = snapshot.get::<_, Option<LuaTable>>("pendingSignals")? {
+        for index in 1..=signals_tbl.len()? {
+            let signal: LuaTable = signals_tbl.get(index)?;
+            pending_signals.push(DialogSignal {
+                kind: signal.get("kind")?,
+                name: signal.get("name")?,
+                data: signal.get("data").ok(),
+            });
+        }
+    }
+
+    let mut choice_labels = Vec::new();
+    if let Some(choice_labels_tbl) = snapshot.get::<_, Option<LuaTable>>("choiceLabels")? {
+        for index in 1..=choice_labels_tbl.len()? {
+            choice_labels.push(choice_labels_tbl.get(index)?);
+        }
+    }
+
+    let current_choice = snapshot
+        .get::<_, Option<usize>>("currentChoice")?
+        .map(|value| value.saturating_sub(1));
+    let next_index = snapshot.get::<_, Option<usize>>("nextIndex")?.unwrap_or(1);
+    let current_meta = line_meta_from_opts(Some(&snapshot))?;
+    let state_name = snapshot
+        .get::<_, Option<String>>("state")?
+        .unwrap_or_else(|| "idle".to_string());
+    let state = match state_name.as_str() {
+        "idle" => crate::dialog::SequencerState::Idle,
+        "typing" => crate::dialog::SequencerState::Typing,
+        "waiting" => crate::dialog::SequencerState::Waiting,
+        "choice" => crate::dialog::SequencerState::WaitingForChoice,
+        "done" => crate::dialog::SequencerState::Done,
+        other => {
+            return Err(LuaError::RuntimeError(format!(
+                "Unknown sequencer state: {other}"
+            )));
+        }
+    };
+
+    Ok(DialogSequencerSnapshot {
+        nodes,
+        current_index: next_index.saturating_sub(1),
+        state,
+        revealed_chars: snapshot
+            .get::<_, Option<usize>>("revealedChars")?
+            .unwrap_or(0),
+        elapsed: snapshot.get::<_, Option<f32>>("elapsed")?.unwrap_or(0.0),
+        cps: snapshot.get::<_, Option<f32>>("cps")?.unwrap_or(60.0),
+        current_choice,
+        choice_prompt: snapshot.get("choicePrompt").ok(),
+        choice_labels,
+        current_speaker: snapshot.get("currentSpeaker").ok(),
+        current_text: snapshot
+            .get::<_, Option<String>>("currentText")?
+            .unwrap_or_default(),
+        current_meta,
+        wait_remaining: snapshot
+            .get::<_, Option<f32>>("waitRemaining")?
+            .unwrap_or(0.0),
+        line_hold_remaining: snapshot
+            .get::<_, Option<f32>>("lineHoldRemaining")?
+            .unwrap_or(0.0),
+        history,
+        pending_signals,
+    })
 }
 
 impl LuaUserData for LuaDialogueAI {
@@ -254,10 +561,21 @@ impl LuaUserData for LuaSpeakerRegistry {
         /// @param | voice_id | string? | Optional voice identifier.
         methods.add_method(
             "add",
-            |_, this, (id, name, portrait, voice_id): (String, String, Option<String>, Option<String>)| {
+            |_,
+             this,
+             (id, name, portrait, voice_id, opts): (
+                String,
+                String,
+                Option<String>,
+                Option<String>,
+                Option<LuaTable>,
+            )| {
                 let mut speaker = Speaker::new(id, name);
                 speaker.portrait = portrait;
                 speaker.voice_id = voice_id;
+                if let Some(opts) = opts {
+                    speaker.tags = tags_from_opts(&opts, "tags")?;
+                }
                 this.inner.borrow_mut().add(speaker);
                 Ok(())
             },
@@ -274,6 +592,11 @@ impl LuaUserData for LuaSpeakerRegistry {
                     tbl.set("name", s.name.clone())?;
                     tbl.set("portrait", s.portrait.clone())?;
                     tbl.set("voice_id", s.voice_id.clone())?;
+                    let tags = lua.create_table()?;
+                    for (index, tag) in s.tags.iter().enumerate() {
+                        tags.set(index + 1, tag.clone())?;
+                    }
+                    tbl.set("tags", tags)?;
                     Ok(LuaValue::Table(tbl))
                 }
                 None => Ok(LuaValue::Nil),
@@ -320,57 +643,7 @@ impl LuaUserData for LuaDialogSequencer {
             let mut seq_nodes = Vec::new();
             for i in 1..=nodes.len()? {
                 let node_tbl: LuaTable = nodes.get(i)?;
-                let node_type: String = node_tbl.get("type")?;
-
-                let node = match node_type.as_str() {
-                    "say" => {
-                        let actor = node_tbl.get("actor")?;
-                        let text = node_tbl.get("text")?;
-                        let duration = node_tbl.get("duration").ok();
-                        SequencerNode::Say {
-                            actor,
-                            text,
-                            duration,
-                        }
-                    }
-                    "choice" => {
-                        let prompt = node_tbl.get("prompt")?;
-                        let options_tbl: LuaTable = node_tbl.get("options")?;
-                        let mut options = Vec::new();
-                        for j in 1..=options_tbl.len()? {
-                            options.push(options_tbl.get(j)?);
-                        }
-                        SequencerNode::Choice { prompt, options }
-                    }
-                    "wait" => {
-                        let seconds = node_tbl.get("seconds")?;
-                        SequencerNode::Wait { seconds }
-                    }
-                    "event" => {
-                        let name = node_tbl.get("name")?;
-                        let data = node_tbl.get("data").ok();
-                        SequencerNode::Event { name, data }
-                    }
-                    "call" => {
-                        let name = node_tbl.get("name")?;
-                        SequencerNode::Call { name }
-                    }
-                    "label" => {
-                        let name = node_tbl.get("name")?;
-                        SequencerNode::Label { name }
-                    }
-                    "jump" => {
-                        let target = node_tbl.get("target")?;
-                        SequencerNode::Jump { target }
-                    }
-                    _ => {
-                        return Err(LuaError::RuntimeError(format!(
-                            "Unknown node type: {}",
-                            node_type
-                        )));
-                    }
-                };
-                seq_nodes.push(node);
+                seq_nodes.push(node_from_lua(&node_tbl)?);
             }
             this.inner.borrow_mut().load(seq_nodes);
             Ok(())
@@ -465,6 +738,38 @@ impl LuaUserData for LuaDialogSequencer {
             Ok(this.inner.borrow().current_text().to_string())
         });
 
+        // -- currentId --
+        /// Returns the authored id of the current line, or nil when unset.
+        /// @return | string | Current line id, or nil.
+        methods.add_method("currentId", |_, this, ()| {
+            Ok(this.inner.borrow().current_id().map(|s| s.to_string()))
+        });
+
+        // -- currentVoice --
+        /// Returns the current line voice id, or nil when unset.
+        /// @return | string | Current voice id, or nil.
+        methods.add_method("currentVoice", |_, this, ()| {
+            Ok(this.inner.borrow().current_voice().map(|s| s.to_string()))
+        });
+
+        // -- currentRoute --
+        /// Returns the current line route marker, or nil when unset.
+        /// @return | string | Current route marker, or nil.
+        methods.add_method("currentRoute", |_, this, ()| {
+            Ok(this.inner.borrow().current_route().map(|s| s.to_string()))
+        });
+
+        // -- currentTags --
+        /// Returns the current line tag array.
+        /// @return | table | Array of current line tags.
+        methods.add_method("currentTags", |lua, this, ()| {
+            let table = lua.create_table()?;
+            for (index, tag) in this.inner.borrow().current_tags().iter().enumerate() {
+                table.set(index + 1, tag.as_str())?;
+            }
+            Ok(table)
+        });
+
         // -- revealedText --
         /// Returns only the typewriter-revealed portion of the current line.
         /// @return | string | Revealed text.
@@ -490,6 +795,61 @@ impl LuaUserData for LuaDialogSequencer {
                 tbl.set(i + 1, label.clone())?;
             }
             Ok(tbl)
+        });
+
+        // -- getHistory --
+        /// Returns spoken-line history in insertion order.
+        /// @return | table | Array of `{speaker,text,id?,voice?,route?,tags?}` entries.
+        methods.add_method("getHistory", |lua, this, ()| {
+            let table = lua.create_table()?;
+            for (index, entry) in this.inner.borrow().history().iter().enumerate() {
+                table.set(index + 1, history_entry_to_lua(lua, entry)?)?;
+            }
+            Ok(table)
+        });
+
+        // -- clearHistory --
+        /// Clears accumulated spoken-line history.
+        methods.add_method_mut("clearHistory", |_, this, ()| {
+            this.inner.borrow_mut().clear_history();
+            Ok(())
+        });
+
+        // -- peekSignal --
+        /// Returns the next pending event/call signal without removing it.
+        /// @return | table | `{kind,name,data?}`, or nil when no signal is pending.
+        methods.add_method("peekSignal", |lua, this, ()| {
+            match this.inner.borrow().peek_signal() {
+                Some(signal) => Ok(LuaValue::Table(signal_to_lua(lua, signal)?)),
+                None => Ok(LuaValue::Nil),
+            }
+        });
+
+        // -- popSignal --
+        /// Removes and returns the next pending event/call signal.
+        /// @return | table | `{kind,name,data?}`, or nil when no signal is pending.
+        methods.add_method_mut("popSignal", |lua, this, ()| {
+            match this.inner.borrow_mut().pop_signal() {
+                Some(signal) => Ok(LuaValue::Table(signal_to_lua(lua, &signal)?)),
+                None => Ok(LuaValue::Nil),
+            }
+        });
+
+        // -- snapshot --
+        /// Captures sequencer runtime state, including nodes, progress, history, and pending signals.
+        /// @return | table | Serializable snapshot table.
+        methods.add_method("snapshot", |lua, this, ()| {
+            snapshot_to_lua(lua, &this.inner.borrow().snapshot())
+        });
+
+        // -- restore --
+        /// Restores sequencer runtime state from a prior snapshot table.
+        /// @param | snapshot | table | Snapshot returned by `snapshot()`.
+        methods.add_method_mut("restore", |_, this, snapshot: LuaTable| {
+            this.inner
+                .borrow_mut()
+                .restore(snapshot_from_lua(snapshot)?);
+            Ok(())
         });
 
         // -- type --
@@ -563,7 +923,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Creates a Say node for character dialog.
     /// @param | actor | string | Character name.
     /// @param | text | string | Dialog text.
-    /// @param | opts | table? | Optional table with duration field.
+    /// @param | opts | table? | Optional table with `duration`, `id`, `voice`, `route`, and `tags`.
     /// @return | table | Say node table for sequencer.load().
     dialog_table.set(
         "say",
@@ -577,6 +937,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                     if let Ok(duration) = o.get::<_, f32>("duration") {
                         node.set("duration", duration)?;
                     }
+                    apply_meta_to_node(lua, &node, &line_meta_from_opts(Some(&o))?)?;
                 }
                 Ok(node)
             },
@@ -648,6 +1009,20 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         lua.create_function(|lua, (name, _opts): (String, Option<LuaTable>)| {
             let node = lua.create_table()?;
             node.set("type", "call")?;
+            node.set("name", name)?;
+            Ok(node)
+        })?,
+    )?;
+
+    // -- label --
+    /// Creates a Label node used as a jump target marker.
+    /// @param | name | string | Label name.
+    /// @return | table | Label node table for sequencer.load().
+    dialog_table.set(
+        "label",
+        lua.create_function(|lua, name: String| {
+            let node = lua.create_table()?;
+            node.set("type", "label")?;
             node.set("name", name)?;
             Ok(node)
         })?,

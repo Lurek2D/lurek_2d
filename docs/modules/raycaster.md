@@ -3292,7 +3292,7 @@ LRaycaster:buildScene(params, lights, sprites, wallTextures)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `params` | table | Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b?, camera_height?, horizon_offset?, time_seconds?, background?, overlays?}. `background` accepts solid, gradient, skybox, or shader descriptors. `overlays` accepts fog, depth fog, snow, or shader descriptors. |
+| `params` | table | Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b/a?, camera_height?, horizon_offset?, time_seconds?, background?, overlays?}. Set `ceiling_a=0` to skip untextured ceiling polygons while still rendering textured roof cells. `background` accepts solid, gradient, skybox, or shader descriptors. `overlays` accepts fog, depth fog, snow, or shader descriptors. |
 | `lights?` | table | Array of render light tables {x, y, radius, r?, g?, b?, color?, intensity?, level?}. |
 | `sprites?` | table|[LSpriteManager](#lspritemanager) | Array of sprite tables {x, y, texture?, size?, front_texture?, right_texture?, back_texture?, left_texture?, angle?} or an [LSpriteManager](#lspritemanager) with integer/[LImage](render.md#limage) textures. |
 | `wallTextures?` | table | Map of cell_value -> texture for wall surfaces. |

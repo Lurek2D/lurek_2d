@@ -619,6 +619,7 @@ end)
 describe("serializeScene and deserializeScene", function()
     -- @covers lurek.scene.serializeScene
     it("serializeScene captures setData values", function()
+        lurek.scene.clear()
         lurek.scene.setData("level", 3)
         lurek.scene.setData("score", 9999)
         local snap = lurek.scene.serializeScene()
@@ -629,10 +630,47 @@ describe("serializeScene and deserializeScene", function()
     end)
     -- @covers lurek.scene.deserializeScene
     it("deserializeScene restores setData values", function()
+        lurek.scene.clear()
         local snap = { data = { gold = 150, hp = 80 }, stack = {} }
         lurek.scene.deserializeScene(snap)
         expect_equal(150, lurek.scene.getData("gold"))
         expect_equal(80, lurek.scene.getData("hp"))
+    end)
+
+    -- @covers lurek.scene.restoreScene
+    it("restoreScene rebuilds the registered stack and replaces shared data", function()
+        lurek.scene.clear()
+        local received = nil
+        local menu = { name = "menu" }
+        local game = {
+            name = "game",
+            enter = function(self, params)
+                received = params
+            end,
+        }
+        lurek.scene.registerScene("menu_restore", menu)
+        lurek.scene.registerScene("game_restore", game)
+        lurek.scene.pushRegistered("menu_restore")
+        lurek.scene.pushRegistered("game_restore")
+        lurek.scene.setData("chapter", "bridge")
+        local snap = lurek.scene.serializeScene()
+        lurek.scene.clear()
+        lurek.scene.setData("chapter", "stale")
+        local restored = lurek.scene.restoreScene(snap, {
+            params = {
+                game_restore = { fromSave = true, chapter = "bridge" },
+            },
+        })
+        expect_equal(2, restored)
+        expect_equal(2, lurek.scene.getStackSize())
+        expect_equal("bridge", lurek.scene.getData("chapter"))
+        expect_equal(game, lurek.scene.getCurrent())
+        expect_type("table", received)
+        expect_true(received.fromSave)
+        expect_equal("bridge", received.chapter)
+        lurek.scene.unregisterScene("menu_restore")
+        lurek.scene.unregisterScene("game_restore")
+        lurek.scene.clear()
     end)
     -- @pending: requires a global scene-data reset API (e.g. clearAllData()).
     -- deserializeScene merges, not replaces; no way to guarantee zero keys with shared global state.

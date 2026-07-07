@@ -1,15 +1,15 @@
 {
   "meta": {
-    "generated": "2026-07-03T06:43:16.936687+00:00",
+    "generated": "2026-07-07T07:45:35.919798+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
-    "total_api_functions": 6491,
-    "marker_covered": 6466,
+    "total_api_functions": 6541,
+    "marker_covered": 6516,
     "describe_covered": 150,
     "describe_coverage_pct": 2.3,
     "heuristic_covered": 0,
-    "total_covered": 6491,
+    "total_covered": 6541,
     "coverage_pct": 100.0
   },
   "modules": {
@@ -14220,11 +14220,11 @@
       ]
     },
     "dialog": {
-      "total": 58,
-      "marker_covered": 58,
+      "total": 69,
+      "marker_covered": 69,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 58,
+      "covered": 69,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -14308,6 +14308,15 @@
         },
         {
           "lua_name": "lurek.dialog.call",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.dialog.label",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -14712,6 +14721,42 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "LDialogSequencer:currentId",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LDialogSequencer:currentVoice",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LDialogSequencer:currentRoute",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LDialogSequencer:currentTags",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "LDialogSequencer:revealedText",
           "kind": "method",
           "marker_covered": true,
@@ -14731,6 +14776,60 @@
         },
         {
           "lua_name": "LDialogSequencer:getChoiceLabels",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LDialogSequencer:getHistory",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LDialogSequencer:clearHistory",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LDialogSequencer:peekSignal",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LDialogSequencer:popSignal",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LDialogSequencer:snapshot",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LDialogSequencer:restore",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -38441,11 +38540,11 @@
       ]
     },
     "physics": {
-      "total": 280,
-      "marker_covered": 280,
+      "total": 314,
+      "marker_covered": 314,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 280,
+      "covered": 314,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -38485,6 +38584,15 @@
         },
         {
           "lua_name": "lurek.physics.newMaterial",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.physics.newAltitudeLayer",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -38970,6 +39078,15 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "LWorld:drawAltitudeDebug",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "LWorld:destroyBody",
           "kind": "method",
           "marker_covered": true,
@@ -39322,6 +39439,87 @@
         },
         {
           "lua_name": "LWorld:getBodyAtPoint",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LWorld:setAltitudeLayer",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LWorld:getAltitudeLayer",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LWorld:queryAltitudeOverlap",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LWorld:castCircle2_5d",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LWorld:castBallisticArc",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LWorld:spawnBallisticProjectile",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LWorld:getBallisticProjectile",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LWorld:removeBallisticProjectile",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LWorld:getBallisticProjectileHits",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -40005,6 +40203,87 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "LAltitudeLayer:setCellHeight",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LAltitudeLayer:getCellHeight",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LAltitudeLayer:sampleHeight",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LAltitudeLayer:setCellClearance",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LAltitudeLayer:sampleClearance",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LAltitudeLayer:serialize",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LAltitudeLayer:load",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LAltitudeLayer:type",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LAltitudeLayer:typeOf",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "LTerrain:setCell",
           "kind": "method",
           "marker_covered": true,
@@ -40366,6 +40645,132 @@
         },
         {
           "lua_name": "LBody:setVelocity",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LBody:setAltitude",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LBody:getAltitude",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LBody:setVerticalVelocity",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LBody:getVerticalVelocity",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LBody:setHeightExtent",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LBody:getHeightExtent",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LBody:setAltitudeMode",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LBody:getAltitudeMode",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LBody:setVerticalGravity",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LBody:getVerticalGravity",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LBody:setClearanceClass",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LBody:getClearanceClass",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LBody:getWorldZRange",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LBody:setAltitudeCollision",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -46845,11 +47250,11 @@
       ]
     },
     "scene": {
-      "total": 89,
-      "marker_covered": 89,
+      "total": 90,
+      "marker_covered": 90,
       "describe_covered": 2,
       "heuristic_covered": 0,
-      "covered": 89,
+      "covered": 90,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 2.2,
       "describe_score": 0.022,
@@ -47376,6 +47781,15 @@
         },
         {
           "lua_name": "lurek.scene.deserializeScene",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.scene.restoreScene",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -50778,11 +51192,11 @@
       ]
     },
     "tilefield": {
-      "total": 81,
-      "marker_covered": 81,
+      "total": 85,
+      "marker_covered": 85,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 81,
+      "covered": 85,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -50930,6 +51344,42 @@
         },
         {
           "lua_name": "LTileField:getRegionNames",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileField:setRegionProperty",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileField:getRegionProperty",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileField:getRegionProperties",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileField:regionsAt",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,

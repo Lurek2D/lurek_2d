@@ -15,7 +15,7 @@
 - Source path: `src/scene`
 - Binding: `src/lua_api/scene_api.rs`
 - Namespace: `lurek.scene`
-- Lua API surface: `63` functions, `10` types, `26` methods
+- Lua API surface: `64` functions, `10` types, `26` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -166,6 +166,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `lurek.scene.removeData(key) -> nil`: Remove a key and its associated value from the shared scene data map. No-op if the key does not exist.
 - `lurek.scene.render() -> nil`: Call `render(self)` on render-active scenes ordered by layer (lowest first).
 - `lurek.scene.renderUi() -> nil`: Call `render_ui(self)` on render-active scenes ordered by layer (lowest first).
+- `lurek.scene.restoreScene(snapshot, opts?) -> integer`: Fully restore scene shared data and rebuild the scene stack from registered scene names captured by `serializeScene`.
 - `lurek.scene.serializeScene() -> table`: Capture the current scene stack state as a serializable snapshot table. The snapshot contains a `stack` array of registered scene names (in stack order) and a `data` map of shared data key-value pairs. Use this for save/load systems to persist the player's navigation state.
 - `lurek.scene.setCurrentLayer(layer) -> boolean`: Set the rendering layer of the current top scene. Scenes with higher layer values are processed and drawn after lower-layer scenes. Use layers to control draw order when multiple scenes are active (e.g. game world at layer 0, HUD overlay at layer 10).
 - `lurek.scene.setData(key, value) -> nil`: Store an arbitrary Lua value in the scene module's shared data map, keyed by a string name. Scenes can use this to pass information between each other without direct references â€” for example, passing a selected level index from a menu scene to a gameplay scene.

@@ -44,7 +44,7 @@ _Eksploruj trójwymiarowe korytarze lochów z perspektywy pierwszej osoby (FPP) 
 
 **Engine:** Lurek2D
 
-**Modules:** [automation](https://lurek2d.github.io/lurek_2d/modules/automation.html), [event](https://lurek2d.github.io/lurek_2d/modules/event.html), [filesystem](https://lurek2d.github.io/lurek_2d/modules/filesystem.html), [input](https://lurek2d.github.io/lurek_2d/modules/input.html), [log](https://lurek2d.github.io/lurek_2d/modules/log.html), [province](https://lurek2d.github.io/lurek_2d/modules/province.html), [render](https://lurek2d.github.io/lurek_2d/modules/render.html), [ui](https://lurek2d.github.io/lurek_2d/modules/ui.html), +1
+**Modules:** [automation](https://lurek2d.github.io/lurek_2d/modules/automation.html), [event](https://lurek2d.github.io/lurek_2d/modules/event.html), [filesystem](https://lurek2d.github.io/lurek_2d/modules/filesystem.html), [input](https://lurek2d.github.io/lurek_2d/modules/input.html), [log](https://lurek2d.github.io/lurek_2d/modules/log.html), [province](https://lurek2d.github.io/lurek_2d/modules/province.html), [render](https://lurek2d.github.io/lurek_2d/modules/render.html), [window](https://lurek2d.github.io/lurek_2d/modules/window.html)
 
 ### [Hex Logistics](../tree/main/content/games/hex_logistics)
 

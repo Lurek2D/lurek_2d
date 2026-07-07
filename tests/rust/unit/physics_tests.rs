@@ -96,6 +96,343 @@ mod render_tests {
     }
 }
 
+mod altitude_tests {
+    use super::*;
+
+    fn default_limits() -> PhysicsLimits {
+        PhysicsLimits::default()
+    }
+
+    #[test]
+    fn altitude_layer_samples_nearest_and_bilinear_from_cell_centers() {
+        let mut layer = AltitudeLayer::new(
+            2,
+            2,
+            10.0,
+            0.0,
+            AltitudeSampleMode::Nearest,
+            &default_limits(),
+        )
+        .expect("layer");
+        layer.set_cell_height(0, 0, 10.0).unwrap();
+        layer.set_cell_height(1, 0, 20.0).unwrap();
+        layer.set_cell_height(0, 1, 30.0).unwrap();
+        layer.set_cell_height(1, 1, 40.0).unwrap();
+
+        assert!((layer.sample_height(5.0, 5.0).unwrap() - 10.0).abs() < 1e-6);
+        assert!((layer.sample_height(15.0, 5.0).unwrap() - 20.0).abs() < 1e-6);
+
+        layer.set_sample_mode(AltitudeSampleMode::Bilinear);
+        assert!((layer.sample_height(10.0, 10.0).unwrap() - 25.0).abs() < 1e-6);
+    }
+
+    #[test]
+    fn altitude_layer_serialization_round_trips() {
+        let mut layer = AltitudeLayer::new(
+            3,
+            2,
+            8.0,
+            4.0,
+            AltitudeSampleMode::Bilinear,
+            &default_limits(),
+        )
+        .expect("layer");
+        layer.set_cell_height(2, 1, 19.0).unwrap();
+        layer.set_cell_clearance(1, 0, 6.5).unwrap();
+
+        let data = layer.serialize();
+        let clone = AltitudeLayer::from_data(data.clone(), &default_limits()).expect("clone");
+        assert_eq!(clone.serialize(), data);
+
+        let mut loaded = AltitudeLayer::new(
+            1,
+            1,
+            8.0,
+            0.0,
+            AltitudeSampleMode::Nearest,
+            &default_limits(),
+        )
+        .expect("fresh layer");
+        loaded.load(data.clone(), &default_limits()).unwrap();
+        assert_eq!(loaded.serialize(), data);
+    }
+
+    #[test]
+    fn world_altitude_state_defaults_and_lifecycle_cleanup() {
+        let mut world = World::new(0.0, 0.0);
+        let body = world.add_body(Body::new(12.0, 18.0, 20.0, 8.0, BodyType::Dynamic));
+
+        assert_eq!(world.get_body_altitude(body.0), Some(0.0));
+        assert_eq!(world.get_body_vertical_velocity(body.0), Some(0.0));
+        assert_eq!(
+            world.get_body_altitude_mode(body.0),
+            Some(AltitudeMode::Ground)
+        );
+        assert_eq!(world.get_body_height_extent(body.0), Some(20.0));
+        assert_eq!(world.get_body_world_z_range(body.0), Some((0.0, 20.0)));
+
+        world.try_set_body_altitude(body.0, 7.0).unwrap();
+        world.try_set_body_vertical_velocity(body.0, 3.0).unwrap();
+        world.try_set_body_height_extent(body.0, 6.0).unwrap();
+        world
+            .set_body_altitude_mode(body.0, AltitudeMode::Fixed)
+            .unwrap();
+        assert_eq!(world.get_body_world_z_range(body.0), Some((7.0, 13.0)));
+
+        world.destroy_body(body.0);
+        assert_eq!(world.body_altitude_state(body.0), None);
+
+        let replacement = world.add_body(Body::new(0.0, 0.0, 4.0, 4.0, BodyType::Dynamic));
+        world.try_set_body_altitude(replacement.0, 2.0).unwrap();
+        world.clear();
+        assert!(world.get_altitude_layer().is_none());
+        assert_eq!(world.body_altitude_state(replacement.0), None);
+    }
+
+    #[test]
+    fn world_body_ground_height_uses_attached_layer() {
+        let mut world = World::new(0.0, 0.0);
+        let mut layer = AltitudeLayer::new(
+            2,
+            2,
+            10.0,
+            1.0,
+            AltitudeSampleMode::Bilinear,
+            &default_limits(),
+        )
+        .expect("layer");
+        layer.set_cell_height(0, 0, 10.0).unwrap();
+        layer.set_cell_height(1, 0, 14.0).unwrap();
+        layer.set_cell_height(0, 1, 18.0).unwrap();
+        layer.set_cell_height(1, 1, 22.0).unwrap();
+        world.set_altitude_layer(layer);
+
+        let body = world.add_body(Body::new(10.0, 10.0, 4.0, 4.0, BodyType::Dynamic));
+        world.try_set_body_altitude(body.0, 3.0).unwrap();
+        world.try_set_body_height_extent(body.0, 2.0).unwrap();
+
+        assert_eq!(world.get_body_ground_height(body.0), Some(16.0));
+        assert_eq!(world.get_body_world_z_range(body.0), Some((19.0, 21.0)));
+    }
+
+    #[test]
+    fn ballistic_altitude_integrates_and_clamps_at_ground() {
+        let mut world = World::new(0.0, 0.0);
+        let body = world.add_body(Body::new(0.0, 0.0, 4.0, 4.0, BodyType::Dynamic));
+        world
+            .set_body_altitude_mode(body.0, AltitudeMode::Ballistic)
+            .unwrap();
+        world.try_set_body_altitude(body.0, 10.0).unwrap();
+        world.try_set_body_vertical_velocity(body.0, -4.0).unwrap();
+        world.try_set_body_vertical_gravity(body.0, -2.0).unwrap();
+
+        for _ in 0..4 {
+            world.step(0.25);
+        }
+        assert_eq!(world.get_body_altitude(body.0), Some(4.75));
+        assert_eq!(world.get_body_vertical_velocity(body.0), Some(-6.0));
+
+        for _ in 0..4 {
+            world.step(0.25);
+        }
+        assert_eq!(world.get_body_altitude(body.0), Some(0.0));
+        assert_eq!(world.get_body_vertical_velocity(body.0), Some(0.0));
+    }
+
+    #[test]
+    fn fixed_altitude_integrates_without_ground_clamp() {
+        let mut world = World::new(0.0, 0.0);
+        let body = world.add_body(Body::new(0.0, 0.0, 4.0, 4.0, BodyType::Dynamic));
+        world
+            .set_body_altitude_mode(body.0, AltitudeMode::Fixed)
+            .unwrap();
+        world.try_set_body_altitude(body.0, 5.0).unwrap();
+        world.try_set_body_vertical_velocity(body.0, -3.0).unwrap();
+        world.try_set_body_vertical_gravity(body.0, -1.0).unwrap();
+
+        for _ in 0..4 {
+            world.step(0.25);
+        }
+        assert_eq!(world.get_body_altitude(body.0), Some(1.375));
+        assert_eq!(world.get_body_vertical_velocity(body.0), Some(-4.0));
+
+        for _ in 0..4 {
+            world.step(0.25);
+        }
+        assert_eq!(world.get_body_altitude(body.0), Some(-3.25));
+        assert_eq!(world.get_body_world_z_range(body.0), Some((-3.25, 0.75)));
+    }
+
+    #[test]
+    fn query_altitude_overlap_filters_by_z_interval() {
+        let mut world = World::new(0.0, 0.0);
+        let ground = world.add_body(Body::new(0.0, 0.0, 8.0, 8.0, BodyType::Static));
+        let air = world.add_body(Body::new(2.0, 0.0, 8.0, 8.0, BodyType::Static));
+        world.try_set_body_height_extent(ground.0, 2.0).unwrap();
+        world.try_set_body_height_extent(air.0, 2.0).unwrap();
+        world
+            .set_body_altitude_mode(air.0, AltitudeMode::Fixed)
+            .unwrap();
+        world.try_set_body_altitude(air.0, 10.0).unwrap();
+        world.step(1.0 / 60.0);
+
+        let low_hits = world
+            .query_altitude_overlap(0.0, 0.0, 8.0, 0.0, 3.0, PhysicsQueryFilter::default())
+            .unwrap();
+        assert_eq!(low_hits.len(), 1);
+        assert_eq!(low_hits[0].body_id, Some(ground));
+
+        let high_hits = world
+            .query_altitude_overlap(0.0, 0.0, 8.0, 9.0, 12.0, PhysicsQueryFilter::default())
+            .unwrap();
+        assert_eq!(high_hits.len(), 1);
+        assert_eq!(high_hits[0].body_id, Some(air));
+    }
+
+    #[test]
+    fn cast_circle_25d_skips_low_blocker_and_hits_higher_target() {
+        let mut world = World::new(0.0, 0.0);
+        let blocker = world.add_body(Body::new(10.0, 0.0, 6.0, 6.0, BodyType::Static));
+        let target = world.add_body(Body::new(24.0, 0.0, 6.0, 6.0, BodyType::Static));
+        world.try_set_body_height_extent(blocker.0, 2.0).unwrap();
+        world.try_set_body_height_extent(target.0, 4.0).unwrap();
+        world
+            .set_body_altitude_mode(target.0, AltitudeMode::Fixed)
+            .unwrap();
+        world.try_set_body_altitude(target.0, 8.0).unwrap();
+        world.step(1.0 / 60.0);
+
+        let hit = world
+            .try_cast_circle_25d(
+                CircleCast25DOptions {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 8.0,
+                    radius: 2.0,
+                    height: 2.0,
+                    dx: 1.0,
+                    dy: 0.0,
+                    dz: 0.0,
+                    max_dist: 30.0,
+                },
+                PhysicsQueryFilter::default(),
+            )
+            .unwrap()
+            .expect("target hit");
+        assert_eq!(hit.body_id, Some(target));
+        assert_eq!(hit.hit_kind, AltitudeHitKind::Body);
+    }
+
+    #[test]
+    fn cast_circle_25d_hits_terrain_before_body() {
+        let mut world = World::new(0.0, 0.0);
+        let mut layer = AltitudeLayer::new(
+            4,
+            1,
+            10.0,
+            0.0,
+            AltitudeSampleMode::Nearest,
+            &default_limits(),
+        )
+        .expect("layer");
+        layer.set_cell_height(2, 0, 6.0).unwrap();
+        world.set_altitude_layer(layer);
+        let target = world.add_body(Body::new(35.0, 0.0, 6.0, 6.0, BodyType::Static));
+        world
+            .set_body_altitude_mode(target.0, AltitudeMode::Fixed)
+            .unwrap();
+        world.try_set_body_altitude(target.0, 10.0).unwrap();
+        world.try_set_body_height_extent(target.0, 4.0).unwrap();
+        world.step(1.0 / 60.0);
+
+        let hit = world
+            .try_cast_circle_25d(
+                CircleCast25DOptions {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 4.0,
+                    radius: 1.0,
+                    height: 2.0,
+                    dx: 1.0,
+                    dy: 0.0,
+                    dz: 0.0,
+                    max_dist: 40.0,
+                },
+                PhysicsQueryFilter::default(),
+            )
+            .unwrap()
+            .expect("terrain hit");
+        assert_eq!(hit.hit_kind, AltitudeHitKind::Terrain);
+        assert!(hit.toi < 35.0);
+    }
+
+    #[test]
+    fn ballistic_arc_returns_body_hit() {
+        let mut world = World::new(0.0, 0.0);
+        let target = world.add_body(Body::new(20.0, 0.0, 6.0, 6.0, BodyType::Static));
+        world
+            .set_body_altitude_mode(target.0, AltitudeMode::Fixed)
+            .unwrap();
+        world.try_set_body_altitude(target.0, 4.0).unwrap();
+        world.try_set_body_height_extent(target.0, 4.0).unwrap();
+        world.step(1.0 / 60.0);
+
+        let trace = world
+            .try_cast_ballistic_arc(
+                &BallisticArcOptions {
+                    from: (0.0, 0.0, 4.0),
+                    to: (20.0, 0.0, 4.0),
+                    speed: 20.0,
+                    gravity: 0.0,
+                    radius: 1.0,
+                    height: 2.0,
+                    max_time: 2.0,
+                    sample_dt: 0.25,
+                },
+                PhysicsQueryFilter::default(),
+            )
+            .unwrap();
+        assert!(trace.samples.len() >= 2);
+        assert_eq!(trace.hit.expect("hit").body_id, Some(target));
+        assert!(!trace.expired);
+    }
+
+    #[test]
+    fn spawned_ballistic_projectile_emits_hit_and_removes_slot() {
+        let mut world = World::new(0.0, 0.0);
+        let target = world.add_body(Body::new(16.0, 0.0, 6.0, 6.0, BodyType::Static));
+        world
+            .set_body_altitude_mode(target.0, AltitudeMode::Fixed)
+            .unwrap();
+        world.try_set_body_altitude(target.0, 4.0).unwrap();
+        world.try_set_body_height_extent(target.0, 4.0).unwrap();
+        world.step(1.0 / 60.0);
+
+        let projectile_id = world
+            .spawn_ballistic_projectile(BallisticProjectileOptions {
+                owner: None,
+                from: (0.0, 0.0, 4.0),
+                to: (16.0, 0.0, 4.0),
+                speed: 16.0,
+                gravity: 0.0,
+                radius: 1.0,
+                height: 2.0,
+                max_time: 2.0,
+                sample_dt: 0.25,
+            })
+            .unwrap();
+        assert!(world.get_ballistic_projectile(projectile_id).is_some());
+
+        for _ in 0..8 {
+            world.step(0.25);
+        }
+        let hits = world.take_ballistic_projectile_hits();
+        assert_eq!(hits.len(), 1);
+        assert_eq!(hits[0].body_id, Some(target));
+        assert!(world.get_ballistic_projectile(projectile_id).is_none());
+    }
+}
+
 // â”€â”€ zone â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod zone_tests {

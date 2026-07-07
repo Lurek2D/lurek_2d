@@ -783,8 +783,10 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - Checked Rust-only grid probes use `OutOfBoundsPolicy::{Open, Blocked, Stop}`. Legacy unchecked map reads still treat out-of-bounds as open space, but safety-sensitive owners should prefer the checked policy-aware helpers.
 - `TilePicker::pick_tile` is expected to match the full `Raycaster2D` screen-volume picker. Screen Y must distinguish wall vs floor vs ceiling hits rather than returning a stub first-step cell.
 - Wall features separate primary render-ray blocking from render visibility/light blocking. Windows stay open to visibility and lighting while doors block until mostly open; half walls still block primary wall hits but render shorter geometry.
+- First-person scene geometry render commands are depth-sorted far-to-near before submission so nearer floor, wall, roof, lowered-floor side, sprite, particle, and model quads cover farther scene items.
 - Built-scene entity picking is depth-aware. Billboard and model picks should be rejected when the wall depth column at the clicked screen X is nearer than the candidate entity.
 - `LRaycaster:castFloorRow` keeps a legacy 7-argument form that samples by map dimensions, and also supports explicit `screenWidth`/`screenHeight` arguments for viewport-width per-pixel sampling.
+- Scene params accept `ceiling_a`; use `ceiling_a = 0` when an untextured ceiling should be transparent open sky while textured ceiling cells should still render as roofs.
 - `lurek.raycaster.getLastBuildStats()` should be treated as the public diagnostics surface for lighting cache counts, geometry counts, visible-level traversal, and cached wall-depth columns.
 - Tile gameplay semantics such as movement blockers, vision blockers, action blockers, point tile-light, global sunlight, and window/door/half-wall profile behavior belong in `lurek.tilefield`.
 - `raycaster` no longer exposes gameplay movement, line-of-sight, tile-light, or minimap-light helpers. Tile-based gameplay flows should build or export from `lurek.tilefield`, then pass render input to `raycaster`.

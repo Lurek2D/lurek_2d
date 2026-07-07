@@ -1720,6 +1720,76 @@ end
 
 ---
 
+#### `LTileField:getRegionProperties`
+
+Returns all properties for a named region, or nil when the region does not exist.
+
+```lua
+LTileField:getRegionProperties(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Region name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Key-value table of string properties, or nil. |
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    field:setRegionCells("shop", { { x = 3, y = 3, z = 1 } })
+    field:setRegionProperty("shop", "trigger", "open_shop")
+    field:setRegionProperty("shop", "facing", "south")
+    local props = field:getRegionProperties("shop")
+    lurek.log.info("region properties trigger = " .. tostring(props and props.trigger))
+    lurek.log.info("region properties facing = " .. tostring(props and props.facing))
+end
+```
+
+---
+
+#### `LTileField:getRegionProperty`
+
+Returns one string property from a named region, or nil when absent.
+
+```lua
+LTileField:getRegionProperty(name, key)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Region name. |
+| `key` | string | Property key. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Stored property value, or nil. |
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    field:setRegionCells("inn", { { x = 2, y = 2, z = 1 } })
+    field:setRegionProperty("inn", "music", "inn_theme")
+    lurek.log.info("region property = " .. tostring(field:getRegionProperty("inn", "music")))
+end
+```
+
+---
+
 #### `LTileField:getSize`
 
 Returns field width, height, and level count.
@@ -1996,6 +2066,43 @@ do
     end)
     local status = ok and "ok" or "error"
     lurek.log.info(status .. " " .. tostring(value))
+end
+```
+
+---
+
+#### `LTileField:regionsAt`
+
+Returns all region names that contain the addressed one-based tile cell.
+
+```lua
+LTileField:regionsAt(x, y, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of region names in stable order. |
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    field:setRegionRect("stairs", 2, 2, 3, 2, 1)
+    field:setRegionCells("shop_door", { { x = 2, y = 2, z = 1 } })
+    local names = field:regionsAt(2, 2, 1)
+    lurek.log.info("regions at tile = " .. #names)
+    lurek.log.info("first region = " .. tostring(names[1]))
 end
 ```
 
@@ -2528,6 +2635,35 @@ do
     field:setRegionCells("stairs", cells)
     local ok = field:regionContains("stairs", 3, 2, 1)
     lurek.log.info("setRegionCells contains=" .. tostring(ok))
+end
+```
+
+---
+
+#### `LTileField:setRegionProperty`
+
+Sets or clears one string property on a named region. Numbers and booleans are stringified; nil removes the property.
+
+```lua
+LTileField:setRegionProperty(name, key, value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Region name. |
+| `key` | string | Property key. |
+| `value` | any | String/number/boolean value, or nil to remove. |
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    field:setRegionCells("exit", { { x = 5, y = 2, z = 1 } })
+    field:setRegionProperty("exit", "targetScene", "town_square")
+    lurek.log.info("region property set = " .. tostring(field:getRegionProperty("exit", "targetScene")))
 end
 ```
 

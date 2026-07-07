@@ -158,10 +158,46 @@ lurek.dialog.jump(target, opts)
 ```lua
 do
     local node = lurek.dialog.jump("ending_good")
-    local timeline = { lurek.dialog.say("Guide", "Choose your fate."), node }
+    local timeline = {
+        lurek.dialog.say("Guide", "Choose your fate."),
+        node,
+        lurek.dialog.label("ending_good"),
+    }
     local jump = timeline[2]
     lurek.log.info("jump node type = " .. jump.type)
     lurek.log.info("jump target = " .. jump.target)
+end
+```
+
+---
+
+### `lurek.dialog.label`
+
+Creates a Label node used as a jump target marker.
+
+```lua
+lurek.dialog.label(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Label name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Label node table for sequencer.load(). |
+
+**Example**
+
+```lua
+do
+    local node = lurek.dialog.label("branch_a")
+    lurek.log.info("label node type = " .. node.type)
+    lurek.log.info("label name = " .. node.name)
 end
 ```
 
@@ -301,7 +337,7 @@ lurek.dialog.say(actor, text, opts)
 |------|------|-------------|
 | `actor` | string | Character name. |
 | `text` | string | Dialog text. |
-| `opts?` | table | Optional table with duration field. |
+| `opts?` | table | Optional table with `duration`, `id`, `voice`, `route`, and `tags`. |
 
 **Returns**
 
@@ -313,12 +349,18 @@ lurek.dialog.say(actor, text, opts)
 
 ```lua
 do
-    local node = lurek.dialog.say("Hero", "I'm ready!")
+    local node = lurek.dialog.say("Hero", "I'm ready!", {
+        id = "intro.ready",
+        voice = "hero_ready",
+        route = "intro",
+        tags = { "hero", "opening" },
+    })
     local seq = lurek.dialog.newSequencer()
     seq:load({ node })
     seq:start()
     lurek.log.info("say node type = " .. node.type)
     lurek.log.info("speaker=" .. node.actor .. " text=" .. seq:currentText())
+    lurek.log.info("id=" .. tostring(node.id) .. " voice=" .. tostring(node.voice))
 end
 ```
 
@@ -441,6 +483,86 @@ end
 
 ---
 
+#### `LDialogSequencer:clearHistory`
+
+Clears accumulated spoken-line history.
+
+```lua
+LDialogSequencer:clearHistory()
+```
+
+**Example**
+
+```lua
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({ lurek.dialog.say("NPC", "Clear me") })
+    seq:start()
+    seq:clearHistory()
+    lurek.log.info("history after clear = " .. #seq:getHistory())
+end
+```
+
+---
+
+#### `LDialogSequencer:currentId`
+
+Returns the authored id of the current line, or nil when unset.
+
+```lua
+LDialogSequencer:currentId()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Current line id, or nil. |
+
+**Example**
+
+```lua
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({
+        lurek.dialog.say("NPC", "Tagged line", { id = "npc.tagged", route = "intro" }),
+    })
+    seq:start()
+    lurek.log.info("current id = " .. tostring(seq:currentId()))
+end
+```
+
+---
+
+#### `LDialogSequencer:currentRoute`
+
+Returns the current line route marker, or nil when unset.
+
+```lua
+LDialogSequencer:currentRoute()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Current route marker, or nil. |
+
+**Example**
+
+```lua
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({
+        lurek.dialog.say("NPC", "Route line", { route = "shop" }),
+    })
+    seq:start()
+    lurek.log.info("current route = " .. tostring(seq:currentRoute()))
+end
+```
+
+---
+
 #### `LDialogSequencer:currentSpeaker`
 
 Returns the actor name for the current line, or nil.
@@ -472,6 +594,36 @@ end
 
 ---
 
+#### `LDialogSequencer:currentTags`
+
+Returns the current line tag array.
+
+```lua
+LDialogSequencer:currentTags()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of current line tags. |
+
+**Example**
+
+```lua
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({
+        lurek.dialog.say("NPC", "Tagged line", { tags = { "merchant", "optional" } }),
+    })
+    seq:start()
+    local tags = seq:currentTags()
+    lurek.log.info("current tags = " .. #tags .. " first=" .. tostring(tags[1]))
+end
+```
+
+---
+
 #### `LDialogSequencer:currentText`
 
 Returns the full text of the current line.
@@ -498,6 +650,35 @@ do
     local speaker = seq:currentSpeaker()
     lurek.log.info("current text = " .. text)
     lurek.log.info("speaker=" .. tostring(speaker) .. " revealed=" .. revealed)
+end
+```
+
+---
+
+#### `LDialogSequencer:currentVoice`
+
+Returns the current line voice id, or nil when unset.
+
+```lua
+LDialogSequencer:currentVoice()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Current voice id, or nil. |
+
+**Example**
+
+```lua
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({
+        lurek.dialog.say("NPC", "Voice line", { voice = "npc_voice_1" }),
+    })
+    seq:start()
+    lurek.log.info("current voice = " .. tostring(seq:currentVoice()))
 end
 ```
 
@@ -558,6 +739,41 @@ do
     local waiting = seq:isWaitingForChoice()
     lurek.log.info("choice prompt = " .. tostring(prompt))
     lurek.log.info("waiting=" .. tostring(waiting) .. " options=" .. #labels)
+end
+```
+
+---
+
+#### `LDialogSequencer:getHistory`
+
+Returns spoken-line history in insertion order.
+
+```lua
+LDialogSequencer:getHistory()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of `{speaker,text,id?,voice?,route?,tags?}` entries. |
+
+**Example**
+
+```lua
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:setSpeed(100.0)
+    seq:load({
+        lurek.dialog.say("NPC", "First history line", { id = "history.1" }),
+        lurek.dialog.say("NPC", "Second history line"),
+    })
+    seq:start()
+    seq:update(1.0)
+    seq:advance()
+    local history = seq:getHistory()
+    lurek.log.info("history count = " .. #history)
+    lurek.log.info("first history id = " .. tostring(history[1] and history[1].id))
 end
 ```
 
@@ -714,6 +930,101 @@ end
 
 ---
 
+#### `LDialogSequencer:peekSignal`
+
+Returns the next pending event/call signal without removing it.
+
+```lua
+LDialogSequencer:peekSignal()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | `{kind,name,data?}`, or nil when no signal is pending. |
+
+**Example**
+
+```lua
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({
+        lurek.dialog.event("door_open", "north"),
+        lurek.dialog.say("NPC", "Door opened"),
+    })
+    seq:start()
+    local signal = seq:peekSignal()
+    lurek.log.info("peek signal kind = " .. tostring(signal and signal.kind))
+end
+```
+
+---
+
+#### `LDialogSequencer:popSignal`
+
+Removes and returns the next pending event/call signal.
+
+```lua
+LDialogSequencer:popSignal()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | `{kind,name,data?}`, or nil when no signal is pending. |
+
+**Example**
+
+```lua
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({
+        lurek.dialog.call("onReward"),
+        lurek.dialog.say("NPC", "Reward granted"),
+    })
+    seq:start()
+    local signal = seq:popSignal()
+    lurek.log.info("pop signal name = " .. tostring(signal and signal.name))
+    lurek.log.info("remaining signals = " .. tostring(seq:peekSignal() == nil))
+end
+```
+
+---
+
+#### `LDialogSequencer:restore`
+
+Restores sequencer runtime state from a prior snapshot table.
+
+```lua
+LDialogSequencer:restore(snapshot)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `snapshot` | table | Snapshot returned by `snapshot()`. |
+
+**Example**
+
+```lua
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({ lurek.dialog.say("NPC", "Original") })
+    seq:start()
+    local snapshot = seq:snapshot()
+    snapshot.currentText = "Restored text"
+    snapshot.id = "restored.id"
+    seq:restore(snapshot)
+    lurek.log.info("restored text = " .. seq:currentText())
+    lurek.log.info("restored id = " .. tostring(seq:currentId()))
+end
+```
+
+---
+
 #### `LDialogSequencer:revealedText`
 
 Returns only the typewriter-revealed portion of the current line.
@@ -791,6 +1102,40 @@ do
     seq:start()
     seq:skip()
     lurek.log.info("LDialogSequencer:skip revealed=" .. seq:revealedText())
+end
+```
+
+---
+
+#### `LDialogSequencer:snapshot`
+
+Captures sequencer runtime state, including nodes, progress, history, and pending signals.
+
+```lua
+LDialogSequencer:snapshot()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Serializable snapshot table. |
+
+**Example**
+
+```lua
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({
+        lurek.dialog.say("NPC", "Snapshot line", { id = "snapshot.line" }),
+        lurek.dialog.wait(0.25),
+        lurek.dialog.event("snapshot_event", "ok"),
+    })
+    seq:start()
+    seq:update(0.2)
+    local snapshot = seq:snapshot()
+    lurek.log.info("snapshot state = " .. tostring(snapshot.state))
+    lurek.log.info("snapshot nodes = " .. #snapshot.nodes)
 end
 ```
 

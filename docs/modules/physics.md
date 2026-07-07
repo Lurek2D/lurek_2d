@@ -277,6 +277,46 @@ end
 
 ---
 
+### `lurek.physics.newAltitudeLayer`
+
+Creates a deterministic altitude-layer grid for 2.5D terrain height and clearance sampling.
+
+```lua
+lurek.physics.newAltitudeLayer(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts` | table | Layer options: { width, height, cellSize, defaultGroundHeight?, sampleMode? }. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LAltitudeLayer](#laltitudelayer) | Detached altitude-layer handle. |
+
+**Example**
+
+```lua
+do
+    local layer = lurek.physics.newAltitudeLayer({
+        width = 4,
+        height = 4,
+        cellSize = 10,
+        defaultGroundHeight = 0,
+        sampleMode = "nearest",
+    })
+    layer:setCellHeight(0, 0, 2)
+    layer:setCellClearance(0, 0, 6)
+    local data = layer:serialize()
+    lurek.log.info("[physics] altitude layer " .. tostring(data.width) .. "x" .. tostring(data.height))
+end
+```
+
+---
+
 ### `lurek.physics.newBody`
 
 Creates a new body in a world (free-function variant).
@@ -975,6 +1015,7 @@ end
 
 ## Types
 
+- [LAltitudeLayer](#laltitudelayer)
 - [LBody](#lbody)
 - [LFlowStream](#lflowstream)
 - [LLiquidMap](#lliquidmap)
@@ -982,6 +1023,298 @@ end
 - [LTerrain](#lterrain)
 - [LWorld](#lworld)
 - [LZone](#lzone)
+
+## LAltitudeLayer
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LAltitudeLayer:getCellHeight`
+
+Returns one terrain-height cell from the altitude layer.
+
+```lua
+LAltitudeLayer:getCellHeight(cx, cy)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `cx` | number | Cell column (0-based). |
+| `cy` | number | Cell row (0-based). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Ground height in world units. |
+
+**Example**
+
+```lua
+do
+    local layer = lurek.physics.newAltitudeLayer({ width = 2, height = 2, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" })
+    layer:setCellHeight(0, 1, 7)
+    local height = layer:getCellHeight(0, 1)
+    local data = layer:serialize()
+    lurek.log.info("[physics] getCellHeight=" .. tostring(height) .. " rows=" .. tostring(data.height))
+end
+```
+
+---
+
+#### `LAltitudeLayer:load`
+
+Replaces this altitude-layer payload from serialized data.
+
+```lua
+LAltitudeLayer:load(data)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `data` | table | Serialized layer data previously returned by `serialize()`. |
+
+**Example**
+
+```lua
+do
+    local source = lurek.physics.newAltitudeLayer({ width = 2, height = 2, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" })
+    source:setCellHeight(1, 0, 8)
+    local target = lurek.physics.newAltitudeLayer({ width = 2, height = 2, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" })
+    target:load(source:serialize())
+    lurek.log.info("[physics] load height=" .. tostring(target:getCellHeight(1, 0)))
+end
+```
+
+---
+
+#### `LAltitudeLayer:sampleClearance`
+
+Samples gameplay clearance at world coordinates using the layer's current sampling mode.
+
+```lua
+LAltitudeLayer:sampleClearance(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | World-space X. |
+| `y` | number | World-space Y. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Sampled clearance height. |
+
+**Example**
+
+```lua
+do
+    local layer = lurek.physics.newAltitudeLayer({ width = 2, height = 2, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" })
+    layer:setCellClearance(0, 0, 4)
+    local sample = layer:sampleClearance(5, 5)
+    local data = layer:serialize()
+    lurek.log.info("[physics] sampleClearance=" .. tostring(sample) .. " width=" .. tostring(data.width))
+end
+```
+
+---
+
+#### `LAltitudeLayer:sampleHeight`
+
+Samples terrain height at world coordinates using the layer's current sampling mode.
+
+```lua
+LAltitudeLayer:sampleHeight(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | World-space X. |
+| `y` | number | World-space Y. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Sampled terrain height. |
+
+**Example**
+
+```lua
+do
+    local layer = lurek.physics.newAltitudeLayer({ width = 2, height = 2, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" })
+    layer:setCellHeight(1, 1, 9)
+    local sample = layer:sampleHeight(15, 15)
+    local data = layer:serialize()
+    lurek.log.info("[physics] sampleHeight=" .. tostring(sample) .. " mode=" .. tostring(data.sampleMode))
+end
+```
+
+---
+
+#### `LAltitudeLayer:serialize`
+
+Serializes the full altitude-layer payload for save/load and inspection.
+
+```lua
+LAltitudeLayer:serialize()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Layer data with width, height, cellSize, defaultGroundHeight, sampleMode, heights, and clearances. |
+
+**Example**
+
+```lua
+do
+    local layer = lurek.physics.newAltitudeLayer({ width = 2, height = 2, cellSize = 10, defaultGroundHeight = 1, sampleMode = "nearest" })
+    layer:setCellHeight(0, 0, 3)
+    local data = layer:serialize()
+    local copy = lurek.physics.newAltitudeLayer({ width = 2, height = 2, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" })
+    copy:load(data)
+    lurek.log.info("[physics] serialize copy=" .. tostring(copy:getCellHeight(0, 0)))
+end
+```
+
+---
+
+#### `LAltitudeLayer:setCellClearance`
+
+Sets one gameplay-clearance cell in the altitude layer.
+
+```lua
+LAltitudeLayer:setCellClearance(cx, cy, clearance)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `cx` | number | Cell column (0-based). |
+| `cy` | number | Cell row (0-based). |
+| `clearance` | number | Clearance height in world units. |
+
+**Example**
+
+```lua
+do
+    local layer = lurek.physics.newAltitudeLayer({ width = 2, height = 2, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" })
+    layer:setCellClearance(1, 1, 12)
+    local clearance = layer:sampleClearance(15, 15)
+    local data = layer:serialize()
+    lurek.log.info("[physics] setCellClearance sample=" .. tostring(clearance) .. " cells=" .. tostring(#data.clearances))
+end
+```
+
+---
+
+#### `LAltitudeLayer:setCellHeight`
+
+Sets one terrain-height cell in the altitude layer.
+
+```lua
+LAltitudeLayer:setCellHeight(cx, cy, height)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `cx` | number | Cell column (0-based). |
+| `cy` | number | Cell row (0-based). |
+| `height` | number | Ground height in world units. |
+
+**Example**
+
+```lua
+do
+    local layer = lurek.physics.newAltitudeLayer({ width = 2, height = 2, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" })
+    layer:setCellHeight(1, 0, 5)
+    local height = layer:getCellHeight(1, 0)
+    local sample = layer:sampleHeight(15, 5)
+    lurek.log.info("[physics] setCellHeight cell=" .. tostring(height) .. " sample=" .. tostring(sample))
+end
+```
+
+---
+
+#### `LAltitudeLayer:type`
+
+Returns the type name of this object ("[LAltitudeLayer](#laltitudelayer)").
+
+```lua
+LAltitudeLayer:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | "[LAltitudeLayer](#laltitudelayer)". |
+
+**Example**
+
+```lua
+do
+    local layer = lurek.physics.newAltitudeLayer({ width = 2, height = 2, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" })
+    layer:setCellHeight(0, 0, 1)
+    local type_name = layer:type()
+    local data = layer:serialize()
+    lurek.log.info("[physics] altitude type=" .. tostring(type_name) .. " default=" .. tostring(data.defaultGroundHeight))
+end
+```
+
+---
+
+#### `LAltitudeLayer:typeOf`
+
+Checks whether this object matches a given type name.
+
+```lua
+LAltitudeLayer:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to check. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True for `[LAltitudeLayer](#laltitudelayer)` and `LObject`. |
+
+**Example**
+
+```lua
+do
+    local layer = lurek.physics.newAltitudeLayer({ width = 2, height = 2, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" })
+    layer:setCellClearance(0, 0, 2)
+    local matches = layer:typeOf("LAltitudeLayer")
+    local data = layer:serialize()
+    lurek.log.info("[physics] altitude typeOf=" .. tostring(matches) .. " clearances=" .. tostring(#data.clearances))
+end
+```
+
+---
 
 ## LBody
 
@@ -1169,6 +1502,62 @@ end
 
 ---
 
+#### `LBody:getAltitude`
+
+Returns this body's authored altitude value.
+
+```lua
+LBody:getAltitude()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Altitude in world units. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(10, 10, 4, "dynamic")
+    body:setAltitude(5)
+    body:setHeightExtent(6)
+    lurek.log.info("[physics] getAltitude=" .. tostring(body:getAltitude()))
+end
+```
+
+---
+
+#### `LBody:getAltitudeMode`
+
+Returns this body's current altitude mode.
+
+```lua
+LBody:getAltitudeMode()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | One of `ground`, `airborne`, `ballistic`, or `fixed`. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(10, 10, 4, "dynamic")
+    body:setAltitudeMode("airborne")
+    body:setAltitude(2)
+    lurek.log.info("[physics] getAltitudeMode=" .. tostring(body:getAltitudeMode()))
+end
+```
+
+---
+
 #### `LBody:getAngle`
 
 Returns the body's rotation angle in radians.
@@ -1283,6 +1672,34 @@ do
     local trace = world:castBeam(40, 90, 1, 0, 140, { reflect = true, maxBounces = 1, minEnergy = 0.1 })
     lurek.log.info("beam_reflectivity=" .. tostring(reflectivity))
     lurek.log.info("trace_hits=" .. tostring(#trace.hits))
+end
+```
+
+---
+
+#### `LBody:getClearanceClass`
+
+Returns this body's authored clearance class.
+
+```lua
+LBody:getClearanceClass()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Clearance class name. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(10, 10, 4, "dynamic")
+    body:setClearanceClass("hover")
+    body:setAltitude(1)
+    lurek.log.info("[physics] getClearanceClass=" .. tostring(body:getClearanceClass()))
 end
 ```
 
@@ -1403,6 +1820,34 @@ do
     world:step(1 / 60)
     lurek.log.info("character height=" .. body:getHeight() .. " width=" .. body:getWidth())
     lurek.log.info("spawn pos=" .. select(1, body:getPosition()) .. "," .. select(2, body:getPosition()))
+end
+```
+
+---
+
+#### `LBody:getHeightExtent`
+
+Returns this body's effective targetable vertical extent.
+
+```lua
+LBody:getHeightExtent()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Height extent in world units. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(10, 10, 4, "dynamic")
+    body:setHeightExtent(11)
+    body:setAltitude(1)
+    lurek.log.info("[physics] getHeightExtent=" .. tostring(body:getHeightExtent()))
 end
 ```
 
@@ -1747,6 +2192,62 @@ end
 
 ---
 
+#### `LBody:getVerticalGravity`
+
+Returns this body's per-step vertical gravity.
+
+```lua
+LBody:getVerticalGravity()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Vertical gravity in world units per second squared. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(10, 10, 4, "dynamic")
+    body:setVerticalGravity(-14)
+    body:setAltitudeMode("fixed")
+    lurek.log.info("[physics] getVerticalGravity=" .. tostring(body:getVerticalGravity()))
+end
+```
+
+---
+
+#### `LBody:getVerticalVelocity`
+
+Returns this body's vertical velocity.
+
+```lua
+LBody:getVerticalVelocity()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Vertical velocity in world units per second. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(10, 10, 4, "dynamic")
+    body:setVerticalVelocity(9)
+    body:setAltitudeMode("fixed")
+    lurek.log.info("[physics] getVerticalVelocity=" .. tostring(body:getVerticalVelocity()))
+end
+```
+
+---
+
 #### `LBody:getWidth`
 
 Returns the body's bounding width (from its primary shape).
@@ -1773,6 +2274,37 @@ do
     world:step(1 / 60)
     lurek.log.info("bridge plank width=" .. body:getWidth())
     lurek.log.info("bridge plank height=" .. body:getHeight())
+end
+```
+
+---
+
+#### `LBody:getWorldZRange`
+
+Returns this body's effective world-space Z interval.
+
+```lua
+LBody:getWorldZRange()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Minimum world-space Z. |
+| number | Maximum world-space Z. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(10, 10, 4, "dynamic")
+    body:setAltitudeMode("fixed")
+    body:setAltitude(4)
+    body:setHeightExtent(5)
+    local z_min, z_max = body:getWorldZRange()
+    lurek.log.info("[physics] getWorldZRange=" .. tostring(z_min) .. "," .. tostring(z_max))
 end
 ```
 
@@ -2058,6 +2590,93 @@ end
 
 ---
 
+#### `LBody:setAltitude`
+
+Sets this body's terrain-relative or fixed-world altitude value.
+
+```lua
+LBody:setAltitude(z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `z` | number | Altitude in world units. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(10, 10, 4, "dynamic")
+    body:setAltitude(3)
+    body:setHeightExtent(6)
+    local z_min, z_max = body:getWorldZRange()
+    lurek.log.info("[physics] setAltitude range=" .. tostring(z_min) .. "," .. tostring(z_max))
+end
+```
+
+---
+
+#### `LBody:setAltitudeCollision`
+
+Replaces this body's altitude-collision flags.
+
+```lua
+LBody:setAltitudeCollision(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts` | table | Altitude collision options: { enabled?, collideWhenSeparated?, hitGroundWhenBelowTerrain? }. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(10, 10, 4, "dynamic")
+    body:setAltitudeMode("airborne")
+    body:setAltitudeCollision({ enabled = true, collideWhenSeparated = false, hitGroundWhenBelowTerrain = true })
+    body:setVerticalVelocity(-6)
+    world:step(0.1)
+    lurek.log.info("[physics] setAltitudeCollision altitude=" .. tostring(body:getAltitude()))
+end
+```
+
+---
+
+#### `LBody:setAltitudeMode`
+
+Sets how this body's altitude is interpreted: ground, airborne, ballistic, or fixed.
+
+```lua
+LBody:setAltitudeMode(mode)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `mode` | string | Altitude mode name. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(10, 10, 4, "dynamic")
+    body:setAltitudeMode("fixed")
+    body:setAltitude(6)
+    lurek.log.info("[physics] setAltitudeMode=" .. tostring(body:getAltitudeMode()))
+end
+```
+
+---
+
 #### `LBody:setAngle`
 
 Sets the body's rotation angle directly.
@@ -2201,6 +2820,34 @@ do
     bullet:setBullet(true)
     lurek.log.info("is_bullet=" .. tostring(bullet:isBullet()))
     lurek.log.info("type=" .. tostring(bullet:getType()))
+end
+```
+
+---
+
+#### `LBody:setClearanceClass`
+
+Sets this body's authored clearance class for higher-level RTS filtering.
+
+```lua
+LBody:setClearanceClass(className)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `className` | string | Clearance class such as `ground`, `hover`, `air`, or `projectile`. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(10, 10, 4, "dynamic")
+    body:setClearanceClass("air")
+    body:setAltitudeMode("fixed")
+    lurek.log.info("[physics] setClearanceClass=" .. tostring(body:getClearanceClass()))
 end
 ```
 
@@ -2399,6 +3046,35 @@ do
     floaty:setGravityScale(0.2)
     lurek.log.info("normal=" .. tostring(normal:getGravityScale()))
     lurek.log.info("floaty=" .. tostring(floaty:getGravityScale()))
+end
+```
+
+---
+
+#### `LBody:setHeightExtent`
+
+Sets this body's targetable vertical extent for 2.5D overlap tests.
+
+```lua
+LBody:setHeightExtent(height)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `height` | number | Height extent in world units. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(10, 10, 4, "dynamic")
+    body:setAltitude(2)
+    body:setHeightExtent(9)
+    local z_min, z_max = body:getWorldZRange()
+    lurek.log.info("[physics] setHeightExtent max=" .. tostring(z_max) .. " min=" .. tostring(z_min))
 end
 ```
 
@@ -2764,6 +3440,65 @@ do
     lurek.log.info("velocity=" .. tostring(body:getVelocity()))
     world:step(1 / 60)
     lurek.log.info("position=" .. tostring(body:getPosition()))
+end
+```
+
+---
+
+#### `LBody:setVerticalGravity`
+
+Sets this body's per-step vertical gravity.
+
+```lua
+LBody:setVerticalGravity(gravity)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `gravity` | number | Vertical gravity in world units per second squared. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(10, 10, 4, "dynamic")
+    body:setAltitudeMode("ballistic")
+    body:setVerticalGravity(-20)
+    body:setVerticalVelocity(10)
+    world:step(0.25)
+    lurek.log.info("[physics] setVerticalGravity vz=" .. tostring(body:getVerticalVelocity()))
+end
+```
+
+---
+
+#### `LBody:setVerticalVelocity`
+
+Sets this body's vertical velocity used by airborne and ballistic altitude modes.
+
+```lua
+LBody:setVerticalVelocity(vz)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `vz` | number | Vertical velocity in world units per second. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(10, 10, 4, "dynamic")
+    body:setAltitudeMode("ballistic")
+    body:setVerticalVelocity(12)
+    world:step(0.1)
+    lurek.log.info("[physics] setVerticalVelocity=" .. tostring(body:getVerticalVelocity()))
 end
 ```
 
@@ -5749,6 +6484,44 @@ end
 
 ---
 
+#### `LWorld:castBallisticArc`
+
+Traces a deterministic ballistic arc without spawning a persistent projectile.
+
+```lua
+LWorld:castBallisticArc(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts` | table | Arc options: { from, to or target, speed, gravity, radius, height?, maxTime?, sampleDt?, filter? }. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Ballistic trace table with `samples`, optional `hit`, `travelTime`, and `expired`. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    world:setAltitudeLayer(lurek.physics.newAltitudeLayer({ width = 4, height = 4, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" }))
+    local body = world:newBody(20, 0, 8, 8, "static")
+    body:setAltitudeMode("fixed")
+    body:setAltitude(4)
+    body:setHeightExtent(4)
+    world:step(1 / 60)
+    local trace = world:castBallisticArc({ from = { x = 0, y = 0, z = 4 }, to = { x = 20, y = 0, z = 4 }, speed = 20, gravity = 0, radius = 1, maxTime = 2, sampleDt = 0.25 })
+    lurek.log.info("[physics] castBallisticArc samples=" .. tostring(#trace.samples))
+end
+```
+
+---
+
 #### `LWorld:castBeam`
 
 Casts an instant beam and returns hit plus segment data for gameplay or rendering.
@@ -5844,6 +6617,44 @@ do
     lurek.log.info("sensor_first=" .. tostring(with_sensor and with_sensor.bodyId) .. " solid_owner=" .. tostring(sensor:getId()))
     lurek.log.info("solid_first=" .. tostring(solid_hit and solid_hit.bodyId) .. " wall_owner=" .. tostring(wall:getId()))
     lurek.log.info("solid_normal=" .. tostring(solid_hit and solid_hit.normalX) .. "," .. tostring(solid_hit and solid_hit.normalY))
+end
+```
+
+---
+
+#### `LWorld:castCircle2_5d`
+
+Sweeps a 2.5D circle and vertical interval, returning the earliest body or terrain hit.
+
+```lua
+LWorld:castCircle2_5d(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts` | table | Cast options: { x, y, z, radius, height?, dx, dy, dz?, filter? }. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Altitude hit table, or nil when no body or terrain was reached. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    world:setAltitudeLayer(lurek.physics.newAltitudeLayer({ width = 4, height = 4, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" }))
+    local body = world:newBody(24, 0, 8, 8, "static")
+    body:setAltitudeMode("fixed")
+    body:setAltitude(4)
+    body:setHeightExtent(4)
+    world:step(1 / 60)
+    local hit = world:castCircle2_5d({ x = 0, y = 0, z = 4, radius = 1, height = 2, dx = 30, dy = 0, dz = 0 })
+    lurek.log.info("[physics] castCircle2_5d hit=" .. tostring(hit and hit.hitKind))
 end
 ```
 
@@ -6105,6 +6916,44 @@ end
 
 ---
 
+#### `LWorld:drawAltitudeDebug`
+
+Draws altitude-layer cells, body vertical ranges, and ballistic arcs into an ImageData target.
+
+```lua
+LWorld:drawAltitudeDebug(target, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `target` | [LImageData](render.md#limagedata) | Mutable target image. |
+| `opts?` | table | Optional table with `drawLayer`, `drawBodies`, and `drawProjectiles` booleans. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local layer = lurek.physics.newAltitudeLayer({ width = 4, height = 4, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" })
+    layer:setCellHeight(1, 1, 6)
+    layer:setCellClearance(1, 1, 8)
+    world:setAltitudeLayer(layer)
+    local body = world:newBody(24, 24, 10, 10, "static")
+    body:setAltitudeMode("fixed")
+    body:setAltitude(6)
+    body:setHeightExtent(4)
+    world:spawnBallisticProjectile({ from = { x = 8, y = 40, z = 2 }, target = { x = 40, y = 40, z = 8 }, speed = 16, gravity = 0, radius = 1, maxTime = 2, sampleDt = 0.25 })
+    local img = lurek.image.newImageData(64, 64)
+    world:drawAltitudeDebug(img)
+    local _, _, _, a = img:getPixel(24, 24)
+    lurek.log.info("[physics] altitude debug alpha=" .. tostring(a))
+end
+```
+
+---
+
 #### `LWorld:drawDebug`
 
 Renders a debug visualization of all physics bodies onto a software ImageData target.
@@ -6209,6 +7058,103 @@ do
     world:step(1 / 60)
     lurek.log.info("fixture count=" .. world:fixtureCount(body:getId()))
     lurek.log.info("body type=" .. body:getType())
+end
+```
+
+---
+
+#### `LWorld:getAltitudeLayer`
+
+Returns the currently attached altitude layer, or nil when the world has none.
+
+```lua
+LWorld:getAltitudeLayer()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LAltitudeLayer](#laltitudelayer) | Attached altitude layer view, or nil. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local layer = lurek.physics.newAltitudeLayer({ width = 2, height = 2, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" })
+    world:setAltitudeLayer(layer)
+    local attached = world:getAltitudeLayer()
+    attached:setCellHeight(0, 0, 7)
+    lurek.log.info("[physics] getAltitudeLayer sample=" .. tostring(attached:sampleHeight(5, 5)))
+end
+```
+
+---
+
+#### `LWorld:getBallisticProjectile`
+
+Returns one active engine-owned ballistic projectile by id, or nil when inactive.
+
+```lua
+LWorld:getBallisticProjectile(id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Stable projectile id. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Projectile state table, or nil. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    world:setAltitudeLayer(lurek.physics.newAltitudeLayer({ width = 4, height = 4, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" }))
+    local id = world:spawnBallisticProjectile({ from = { x = 0, y = 0, z = 1 }, target = { x = 8, y = 0, z = 1 }, speed = 8, gravity = 0, radius = 1, maxTime = 1, sampleDt = 0.25 })
+    local projectile = world:getBallisticProjectile(id)
+    world:step(0.25)
+    lurek.log.info("[physics] getBallisticProjectile vz=" .. tostring(projectile and projectile.vz))
+end
+```
+
+---
+
+#### `LWorld:getBallisticProjectileHits`
+
+Returns ballistic projectile impacts accumulated on this world since the last clear.
+
+```lua
+LWorld:getBallisticProjectileHits()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of altitude-hit tables. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    world:setAltitudeLayer(lurek.physics.newAltitudeLayer({ width = 4, height = 4, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" }))
+    local body = world:newBody(12, 0, 8, 8, "static")
+    body:setAltitudeMode("fixed")
+    body:setAltitude(2)
+    body:setHeightExtent(4)
+    world:step(1 / 60)
+    world:spawnBallisticProjectile({ from = { x = 0, y = 0, z = 2 }, target = { x = 12, y = 0, z = 2 }, speed = 12, gravity = 0, radius = 1, maxTime = 2, sampleDt = 0.25 })
+    for _ = 1, 8 do world:step(0.25) end
+    lurek.log.info("[physics] projectile hits=" .. tostring(#world:getBallisticProjectileHits()))
 end
 ```
 
@@ -7723,6 +8669,49 @@ end
 
 ---
 
+#### `LWorld:queryAltitudeOverlap`
+
+Returns all 2.5D overlaps whose XY footprint and world-space Z interval match the query.
+
+```lua
+LWorld:queryAltitudeOverlap(x, y, radius, zMin, zMax, filter)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Query center X. |
+| `y` | number | Query center Y. |
+| `radius` | number | XY query radius. |
+| `zMin` | number | Minimum world-space Z. |
+| `zMax` | number | Maximum world-space Z. |
+| `filter?` | table | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of altitude-hit tables. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    world:setAltitudeLayer(lurek.physics.newAltitudeLayer({ width = 4, height = 4, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" }))
+    local body = world:newBody(20, 0, 8, 8, "static")
+    body:setAltitudeMode("fixed")
+    body:setAltitude(5)
+    body:setHeightExtent(4)
+    world:step(1 / 60)
+    local hits = world:queryAltitudeOverlap(20, 0, 8, 4, 10)
+    lurek.log.info("[physics] queryAltitudeOverlap hits=" .. tostring(#hits))
+end
+```
+
+---
+
 #### `LWorld:raycast`
 
 Casts a ray from point (x1,y1) to (x2,y2) and returns the first body hit, or nil.
@@ -7900,6 +8889,41 @@ end
 
 ---
 
+#### `LWorld:removeBallisticProjectile`
+
+Removes one active engine-owned ballistic projectile by id.
+
+```lua
+LWorld:removeBallisticProjectile(id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Stable projectile id. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the projectile existed. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    world:setAltitudeLayer(lurek.physics.newAltitudeLayer({ width = 4, height = 4, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" }))
+    local id = world:spawnBallisticProjectile({ from = { x = 0, y = 0, z = 1 }, target = { x = 8, y = 0, z = 1 }, speed = 8, gravity = 0, radius = 1, maxTime = 1, sampleDt = 0.25 })
+    local removed = world:removeBallisticProjectile(id)
+    local projectile = world:getBallisticProjectile(id)
+    lurek.log.info("[physics] removeBallisticProjectile removed=" .. tostring(removed) .. " alive=" .. tostring(projectile ~= nil))
+end
+```
+
+---
+
 #### `LWorld:removeFlowField`
 
 Disables and removes one authored flow field by id.
@@ -8070,6 +9094,34 @@ do
     })
     local sample = world:sampleFlow(20, 20)
     lurek.log.info("[physics] flow sample=" .. string.format("%.2f,%.2f", sample.vx, sample.vy))
+end
+```
+
+---
+
+#### `LWorld:setAltitudeLayer`
+
+Attaches or replaces the world's 2.5D altitude layer from an `[LAltitudeLayer](#laltitudelayer)` snapshot.
+
+```lua
+LWorld:setAltitudeLayer(layer)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | [LAltitudeLayer](#laltitudelayer) | Altitude layer payload to copy into this world. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local layer = lurek.physics.newAltitudeLayer({ width = 2, height = 2, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" })
+    layer:setCellHeight(0, 0, 4)
+    world:setAltitudeLayer(layer)
+    lurek.log.info("[physics] setAltitudeLayer sample=" .. tostring(world:getAltitudeLayer():sampleHeight(5, 5)))
 end
 ```
 
@@ -8816,6 +9868,41 @@ do
     body:setSleepingAllowed(true)
     world:sleepBody(body:getId())
     lurek.log.info("sleeping=" .. tostring(world:isBodySleeping(body:getId())))
+end
+```
+
+---
+
+#### `LWorld:spawnBallisticProjectile`
+
+Spawns a deterministic engine-owned ballistic projectile and returns its stable id.
+
+```lua
+LWorld:spawnBallisticProjectile(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts` | table | Projectile options: { owner?, from, to or target, speed, gravity, radius, height?, maxTime?, sampleDt? }. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Stable projectile id within the world. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    world:setAltitudeLayer(lurek.physics.newAltitudeLayer({ width = 4, height = 4, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" }))
+    local id = world:spawnBallisticProjectile({ from = { x = 0, y = 0, z = 2 }, target = { x = 16, y = 0, z = 2 }, speed = 16, gravity = 0, radius = 1, maxTime = 2, sampleDt = 0.25 })
+    local projectile = world:getBallisticProjectile(id)
+    world:step(0.25)
+    lurek.log.info("[physics] spawnBallisticProjectile id=" .. tostring(projectile and projectile.id))
 end
 ```
 

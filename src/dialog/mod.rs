@@ -20,7 +20,10 @@ pub mod tree;
 
 pub use condition::{DialogueCondition, GateContext};
 pub use events::DialogueEvent;
-pub use sequencer::{DialogNode as SequencerNode, DialogSequencer, SequencerState};
+pub use sequencer::{
+    DialogHistoryEntry, DialogLineMeta, DialogNode as SequencerNode, DialogSequencer,
+    DialogSequencerSnapshot, DialogSignal, SequencerState,
+};
 pub use speaker::{Speaker, SpeakerRegistry};
 pub use state::DialogueState;
 pub use tree::{DialogueAI, DialogueBranch, DialogueNode, DialogueTopic};

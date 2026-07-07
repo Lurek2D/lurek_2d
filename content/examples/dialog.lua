@@ -363,12 +363,18 @@ end
 
 --@api: lurek.dialog.say
 do
-    local node = lurek.dialog.say("Hero", "I'm ready!")
+    local node = lurek.dialog.say("Hero", "I'm ready!", {
+        id = "intro.ready",
+        voice = "hero_ready",
+        route = "intro",
+        tags = { "hero", "opening" },
+    })
     local seq = lurek.dialog.newSequencer()
     seq:load({ node })
     seq:start()
     lurek.log.info("say node type = " .. node.type)
     lurek.log.info("speaker=" .. node.actor .. " text=" .. seq:currentText())
+    lurek.log.info("id=" .. tostring(node.id) .. " voice=" .. tostring(node.voice))
 end
 
 --@api: lurek.dialog.choice
@@ -413,10 +419,21 @@ end
 --@api: lurek.dialog.jump
 do
     local node = lurek.dialog.jump("ending_good")
-    local timeline = { lurek.dialog.say("Guide", "Choose your fate."), node }
+    local timeline = {
+        lurek.dialog.say("Guide", "Choose your fate."),
+        node,
+        lurek.dialog.label("ending_good"),
+    }
     local jump = timeline[2]
     lurek.log.info("jump node type = " .. jump.type)
     lurek.log.info("jump target = " .. jump.target)
+end
+
+--@api: lurek.dialog.label
+do
+    local node = lurek.dialog.label("branch_a")
+    lurek.log.info("label node type = " .. node.type)
+    lurek.log.info("label name = " .. node.name)
 end
 
 --@api: LDialogSequencer:load
@@ -568,6 +585,47 @@ do
     lurek.log.info("speaker=" .. tostring(speaker) .. " revealed=" .. revealed)
 end
 
+--@api: LDialogSequencer:currentId
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({
+        lurek.dialog.say("NPC", "Tagged line", { id = "npc.tagged", route = "intro" }),
+    })
+    seq:start()
+    lurek.log.info("current id = " .. tostring(seq:currentId()))
+end
+
+--@api: LDialogSequencer:currentVoice
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({
+        lurek.dialog.say("NPC", "Voice line", { voice = "npc_voice_1" }),
+    })
+    seq:start()
+    lurek.log.info("current voice = " .. tostring(seq:currentVoice()))
+end
+
+--@api: LDialogSequencer:currentRoute
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({
+        lurek.dialog.say("NPC", "Route line", { route = "shop" }),
+    })
+    seq:start()
+    lurek.log.info("current route = " .. tostring(seq:currentRoute()))
+end
+
+--@api: LDialogSequencer:currentTags
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({
+        lurek.dialog.say("NPC", "Tagged line", { tags = { "merchant", "optional" } }),
+    })
+    seq:start()
+    local tags = seq:currentTags()
+    lurek.log.info("current tags = " .. #tags .. " first=" .. tostring(tags[1]))
+end
+
 --@api: LDialogSequencer:revealedText
 do
     local seq = lurek.dialog.newSequencer()
@@ -598,6 +656,84 @@ do
     local labels = seq:getChoiceLabels()
     lurek.log.info("LDialogSequencer:getChoiceLabels count=" .. #labels)
     lurek.log.info("first=" .. labels[1])
+end
+
+--@api: LDialogSequencer:getHistory
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:setSpeed(100.0)
+    seq:load({
+        lurek.dialog.say("NPC", "First history line", { id = "history.1" }),
+        lurek.dialog.say("NPC", "Second history line"),
+    })
+    seq:start()
+    seq:update(1.0)
+    seq:advance()
+    local history = seq:getHistory()
+    lurek.log.info("history count = " .. #history)
+    lurek.log.info("first history id = " .. tostring(history[1] and history[1].id))
+end
+
+--@api: LDialogSequencer:clearHistory
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({ lurek.dialog.say("NPC", "Clear me") })
+    seq:start()
+    seq:clearHistory()
+    lurek.log.info("history after clear = " .. #seq:getHistory())
+end
+
+--@api: LDialogSequencer:peekSignal
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({
+        lurek.dialog.event("door_open", "north"),
+        lurek.dialog.say("NPC", "Door opened"),
+    })
+    seq:start()
+    local signal = seq:peekSignal()
+    lurek.log.info("peek signal kind = " .. tostring(signal and signal.kind))
+end
+
+--@api: LDialogSequencer:popSignal
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({
+        lurek.dialog.call("onReward"),
+        lurek.dialog.say("NPC", "Reward granted"),
+    })
+    seq:start()
+    local signal = seq:popSignal()
+    lurek.log.info("pop signal name = " .. tostring(signal and signal.name))
+    lurek.log.info("remaining signals = " .. tostring(seq:peekSignal() == nil))
+end
+
+--@api: LDialogSequencer:snapshot
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({
+        lurek.dialog.say("NPC", "Snapshot line", { id = "snapshot.line" }),
+        lurek.dialog.wait(0.25),
+        lurek.dialog.event("snapshot_event", "ok"),
+    })
+    seq:start()
+    seq:update(0.2)
+    local snapshot = seq:snapshot()
+    lurek.log.info("snapshot state = " .. tostring(snapshot.state))
+    lurek.log.info("snapshot nodes = " .. #snapshot.nodes)
+end
+
+--@api: LDialogSequencer:restore
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({ lurek.dialog.say("NPC", "Original") })
+    seq:start()
+    local snapshot = seq:snapshot()
+    snapshot.currentText = "Restored text"
+    snapshot.id = "restored.id"
+    seq:restore(snapshot)
+    lurek.log.info("restored text = " .. seq:currentText())
+    lurek.log.info("restored id = " .. tostring(seq:currentId()))
 end
 
 --@api: LDialogSequencer:type

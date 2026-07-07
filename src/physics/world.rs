@@ -12,6 +12,7 @@
 //! Changes to physics world names, caches, or helper boundaries should usually stay coupled inside this owner.
 //! This file is the right stop for maintainers tracing physics world regressions back to their concrete owner boundary.
 
+use super::altitude::{AltitudeHit, AltitudeLayer, BallisticProjectile, BodyAltitudeState};
 use super::body::{Body, BodyShape, BodyType};
 use super::error::PhysicsError;
 use super::flow::{
@@ -30,6 +31,7 @@ use rapier2d::prelude::*;
 use std::collections::{HashMap, HashSet};
 use std::sync::Mutex;
 
+mod altitude;
 mod bodies;
 mod joints;
 mod queries;
@@ -482,6 +484,10 @@ pub struct PhysicsWorldStats {
 /// - `body_mass_overrides`: explicit mass values authored through `setMass`.
 /// - `body_materials`: body-default material snapshots kept in sync with direct setters.
 /// - `fixture_materials`: extra-fixture material snapshots keyed by `(body_id, fixture_index)`.
+/// - `altitude_layer`: optional terrain-height grid used for terrain-relative altitude rules.
+/// - `body_altitudes`: per-body vertical sidecar state keyed by stable body id.
+/// - `ballistic_projectiles`: engine-owned projectile slots keyed by stable projectile id.
+/// - `ballistic_projectile_hits`: buffered projectile hit events from the last step.
 /// - `zones`: registered physics zones.
 /// - `gravity_vectors`: additive world gravity vectors.
 /// - `flow_fields`: authored flow fields sampled before the solver step.
@@ -577,6 +583,14 @@ pub struct World {
     body_materials: Vec<PhysicsMaterial>,
     /// Material snapshots for fixture overrides; primary collider uses `body_materials`.
     fixture_materials: HashMap<(usize, usize), PhysicsMaterial>,
+    /// Optional authored terrain-height and clearance grid.
+    altitude_layer: Option<AltitudeLayer>,
+    /// Optional vertical sidecar state keyed by stable body id.
+    body_altitudes: HashMap<usize, BodyAltitudeState>,
+    /// Engine-owned ballistic projectile slots keyed by stable projectile id.
+    ballistic_projectiles: Vec<Option<BallisticProjectile>>,
+    /// Buffered ballistic projectile hit events emitted during stepping.
+    ballistic_projectile_hits: Vec<AltitudeHit>,
     /// Active trigger zones.
     zones: Vec<PhysicsZone>,
     /// Additive world gravity vectors applied when no non-additive zone override is active.
@@ -937,6 +951,216 @@ impl World {
             }
         }
     }
+
+    /// Draws altitude-layer cells, body vertical ranges, and ballistic arcs into an RGBA image target.
+    pub fn draw_altitude_debug_to_image(
+        &self,
+        img: &mut crate::image::ImageData,
+        draw_layer: bool,
+        draw_bodies: bool,
+        draw_projectiles: bool,
+    ) {
+        if draw_layer {
+            if let Some(layer) = &self.altitude_layer {
+                let cell_size = layer.cell_size().max(1.0);
+                let visible_cols = (((img.width() as f32) / cell_size).ceil() as u32)
+                    .saturating_add(1)
+                    .min(layer.width());
+                let visible_rows = (((img.height() as f32) / cell_size).ceil() as u32)
+                    .saturating_add(1)
+                    .min(layer.height());
+                for cy in 0..visible_rows {
+                    for cx in 0..visible_cols {
+                        let Ok(height) = layer.get_cell_height(cx, cy) else {
+                            continue;
+                        };
+                        let Ok(clearance) = layer.get_cell_clearance(cx, cy) else {
+                            continue;
+                        };
+                        let x0 = (cx as f32 * cell_size).round() as i32;
+                        let y0 = (cy as f32 * cell_size).round() as i32;
+                        let x1 = ((cx + 1) as f32 * cell_size).round() as i32;
+                        let y1 = ((cy + 1) as f32 * cell_size).round() as i32;
+                        let center_x = (x0 + x1) / 2;
+                        let center_y = (y0 + y1) / 2;
+                        let height_tint = (height.abs() * 18.0).clamp(0.0, 120.0) as u8;
+                        let clearance_tint = (clearance.abs() * 12.0).clamp(0.0, 120.0) as u8;
+                        let border_r = 55u8.saturating_add(height_tint);
+                        let border_g = 90u8.saturating_add(clearance_tint / 2);
+                        let border_b = 120u8.saturating_add(clearance_tint);
+                        img.draw_line(x0, y0, x1, y0, border_r, border_g, border_b, 160);
+                        img.draw_line(x1, y0, x1, y1, border_r, border_g, border_b, 160);
+                        img.draw_line(x1, y1, x0, y1, border_r, border_g, border_b, 160);
+                        img.draw_line(x0, y1, x0, y0, border_r, border_g, border_b, 160);
+                        img.draw_circle(
+                            center_x,
+                            center_y,
+                            2 + (clearance.abs() / 8.0).clamp(0.0, 2.0) as u32,
+                            80,
+                            170,
+                            240,
+                            180,
+                        );
+                        let height_offset = height
+                            .round()
+                            .clamp(-(img.height() as f32), img.height() as f32)
+                            as i32;
+                        if height_offset != 0 {
+                            img.draw_line(
+                                center_x,
+                                center_y,
+                                center_x,
+                                center_y - height_offset,
+                                255,
+                                220,
+                                100,
+                                200,
+                            );
+                        }
+                    }
+                }
+            }
+        }
+
+        if draw_bodies {
+            for (id, body) in self.bodies.iter().enumerate() {
+                if !self.has_body(id) {
+                    continue;
+                }
+                let state = self.body_altitude_state(id).unwrap_or_default();
+                let ground_height = self
+                    .sample_ground_height(body.position.x, body.position.y)
+                    .unwrap_or(0.0);
+                let height_extent = self
+                    .get_body_height_extent(id)
+                    .unwrap_or_else(|| body.width.max(body.height).max(1.0));
+                let (z_min, z_max) = state.world_z_range(ground_height, height_extent);
+                let center_x = body.position.x.round() as i32;
+                let center_y = body.position.y.round() as i32;
+                let base_y = center_y - z_min.round() as i32;
+                let top_y = center_y - z_max.round() as i32;
+                let (body_r, body_g, body_b) = match state.mode {
+                    super::altitude::AltitudeMode::Ground => (90, 220, 140),
+                    super::altitude::AltitudeMode::Airborne => (90, 200, 255),
+                    super::altitude::AltitudeMode::Ballistic => (255, 180, 70),
+                    super::altitude::AltitudeMode::Fixed => (255, 110, 110),
+                };
+                match body.shape {
+                    super::body::BodyShape::Circle { radius } => {
+                        img.draw_circle(
+                            center_x,
+                            center_y,
+                            radius.round().max(1.0) as u32,
+                            body_r,
+                            body_g,
+                            body_b,
+                            180,
+                        );
+                    }
+                    super::body::BodyShape::Rect { width, height } => {
+                        let half_w = (width * 0.5).round() as i32;
+                        let half_h = (height * 0.5).round() as i32;
+                        let x0 = center_x - half_w;
+                        let y0 = center_y - half_h;
+                        let x1 = center_x + half_w;
+                        let y1 = center_y + half_h;
+                        img.draw_line(x0, y0, x1, y0, body_r, body_g, body_b, 180);
+                        img.draw_line(x1, y0, x1, y1, body_r, body_g, body_b, 180);
+                        img.draw_line(x1, y1, x0, y1, body_r, body_g, body_b, 180);
+                        img.draw_line(x0, y1, x0, y0, body_r, body_g, body_b, 180);
+                    }
+                }
+                img.draw_circle(center_x, center_y, 2, body_r, body_g, body_b, 255);
+                img.draw_line(
+                    center_x, base_y, center_x, top_y, body_r, body_g, body_b, 220,
+                );
+                img.draw_line(
+                    center_x - 2,
+                    base_y,
+                    center_x + 2,
+                    base_y,
+                    220,
+                    220,
+                    220,
+                    220,
+                );
+                img.draw_line(center_x - 2, top_y, center_x + 2, top_y, 255, 240, 160, 220);
+            }
+        }
+
+        if draw_projectiles {
+            for projectile in self.ballistic_projectiles.iter().flatten() {
+                let current_x = projectile.position.0.round() as i32;
+                let current_y = (projectile.position.1 - projectile.position.2).round() as i32;
+                img.draw_circle(current_x, current_y, 2, 255, 210, 80, 255);
+
+                let mut position = projectile.position;
+                let mut velocity = projectile.velocity;
+                let mut remaining = projectile.time_remaining.max(0.0);
+                let mut steps = 0usize;
+                while remaining > 1.0e-6 && steps < 128 {
+                    let step_dt = projectile.sample_dt.min(remaining).max(1.0e-4);
+                    let next_vz = velocity.2 + projectile.gravity * step_dt;
+                    let next_position = (
+                        position.0 + velocity.0 * step_dt,
+                        position.1 + velocity.1 * step_dt,
+                        position.2 + next_vz * step_dt,
+                    );
+                    let seg_dx = next_position.0 - position.0;
+                    let seg_dy = next_position.1 - position.1;
+                    let seg_dist = (seg_dx * seg_dx + seg_dy * seg_dy).sqrt();
+                    let filter = PhysicsQueryFilter {
+                        exclude_body: projectile.owner.map(BodyId),
+                        ..PhysicsQueryFilter::default()
+                    };
+                    let impact = if seg_dist > 1.0e-6 {
+                        self.try_cast_circle_25d(
+                            super::altitude::CircleCast25DOptions {
+                                x: position.0,
+                                y: position.1,
+                                z: position.2,
+                                radius: projectile.radius,
+                                height: projectile.height,
+                                dx: seg_dx,
+                                dy: seg_dy,
+                                dz: next_position.2 - position.2,
+                                max_dist: seg_dist,
+                            },
+                            filter,
+                        )
+                        .ok()
+                        .flatten()
+                    } else {
+                        None
+                    };
+
+                    let (x1, y1) = match impact {
+                        Some(hit) => (
+                            hit.point.0.round() as i32,
+                            (hit.point.1 - hit.z).round() as i32,
+                        ),
+                        None => (
+                            next_position.0.round() as i32,
+                            (next_position.1 - next_position.2).round() as i32,
+                        ),
+                    };
+                    let x0 = position.0.round() as i32;
+                    let y0 = (position.1 - position.2).round() as i32;
+                    img.draw_line(x0, y0, x1, y1, 255, 200, 70, 210);
+
+                    if impact.is_some() {
+                        img.draw_circle(x1, y1, 3, 255, 120, 120, 255);
+                        break;
+                    }
+
+                    position = next_position;
+                    velocity.2 = next_vz;
+                    remaining -= step_dt;
+                    steps += 1;
+                }
+            }
+        }
+    }
     /// Return a snapshot of all body shapes suitable for debug rendering.
     pub fn extract_shape_snapshots(&self) -> Vec<PhysicsShapeSnapshot> {
         let mut out = Vec::with_capacity(self.bodies.len());
@@ -1051,6 +1275,10 @@ impl World {
             body_mass_overrides: Vec::new(),
             body_materials: Vec::new(),
             fixture_materials: HashMap::new(),
+            altitude_layer: None,
+            body_altitudes: HashMap::new(),
+            ballistic_projectiles: Vec::new(),
+            ballistic_projectile_hits: Vec::new(),
             zones: Vec::new(),
             gravity_vectors: Vec::new(),
             flow_fields: Vec::new(),

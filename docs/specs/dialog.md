@@ -13,7 +13,7 @@
 - Source path: `src/dialog`
 - Binding: `src/lua_api/dialog_api.rs`
 - Namespace: `lurek.dialog`
-- Lua API surface: `10` functions, `4` types, `48` methods
+- Lua API surface: `11` functions, `4` types, `58` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -109,6 +109,7 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - `lurek.dialog.choice(prompt, options, opts?) -> table`: Creates a Choice node with selectable options.
 - `lurek.dialog.event(name, data?, opts?) -> table`: Creates an Event node (fires a named callback).
 - `lurek.dialog.jump(target, opts?) -> table`: Creates a Jump node (branches to a labeled position).
+- `lurek.dialog.label(name) -> table`: Creates a Label node used as a jump target marker.
 - `lurek.dialog.newAI() -> LDialogueAI`: Creates an empty dialogue selector for weighted topics and branches.
 - `lurek.dialog.newSequencer() -> LDialogSequencer`: Creates an empty dialog sequencer for typewriter-style playback.
 - `lurek.dialog.newSpeakerRegistry() -> LSpeakerRegistry`: Creates an empty speaker registry for dialog participants.
@@ -138,18 +139,28 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 - `LDialogSequencer:advance() -> nil`: Skips to the next node (or instantly reveals current line if typing).
 - `LDialogSequencer:choose(index) -> nil`: Selects a choice option when waiting for choice input.
+- `LDialogSequencer:clearHistory() -> nil`: Clears accumulated spoken-line history.
+- `LDialogSequencer:currentId() -> string`: Returns the authored id of the current line, or nil when unset.
+- `LDialogSequencer:currentRoute() -> string`: Returns the current line route marker, or nil when unset.
 - `LDialogSequencer:currentSpeaker() -> string`: Returns the actor name for the current line, or nil.
+- `LDialogSequencer:currentTags() -> table`: Returns the current line tag array.
 - `LDialogSequencer:currentText() -> string`: Returns the full text of the current line.
+- `LDialogSequencer:currentVoice() -> string`: Returns the current line voice id, or nil when unset.
 - `LDialogSequencer:getChoiceLabels() -> table`: Returns an array of choice option labels.
 - `LDialogSequencer:getChoiceText() -> string`: Returns the choice prompt text, or nil if not in a choice node.
+- `LDialogSequencer:getHistory() -> table`: Returns spoken-line history in insertion order.
 - `LDialogSequencer:getSpeed() -> number`: Gets the current typewriter speed in characters per second.
 - `LDialogSequencer:getState() -> string`: Returns the current playback state as a string.
 - `LDialogSequencer:isActive() -> boolean`: Checks if the sequencer is currently playing.
 - `LDialogSequencer:isWaitingForChoice() -> boolean`: Checks if the sequencer is waiting for a choice selection.
 - `LDialogSequencer:load(nodes) -> nil`: Loads a sequence of dialog nodes for playback.
+- `LDialogSequencer:peekSignal() -> table`: Returns the next pending event/call signal without removing it.
+- `LDialogSequencer:popSignal() -> table`: Removes and returns the next pending event/call signal.
+- `LDialogSequencer:restore(snapshot) -> nil`: Restores sequencer runtime state from a prior snapshot table.
 - `LDialogSequencer:revealedText() -> string`: Returns only the typewriter-revealed portion of the current line.
 - `LDialogSequencer:setSpeed(cps) -> nil`: Sets the typewriter reveal speed in characters per second.
 - `LDialogSequencer:skip() -> nil`: Instantly reveals the full current line without typewriter effect.
+- `LDialogSequencer:snapshot() -> table`: Captures sequencer runtime state, including nodes, progress, history, and pending signals.
 - `LDialogSequencer:start() -> nil`: Starts playback from the beginning of the loaded sequence.
 - `LDialogSequencer:type() -> string`: Returns the Lua-visible type name.
 - `LDialogSequencer:typeOf(name) -> boolean`: Returns whether this handle matches a supported type name.

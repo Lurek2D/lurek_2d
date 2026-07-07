@@ -21,7 +21,7 @@
 - Source path: `src/physics`
 - Binding: `src/lua_api/physics_api.rs`
 - Namespace: `lurek.physics`
-- Lua API surface: `25` functions, `25` types, `255` methods
+- Lua API surface: `26` functions, `26` types, `288` methods
 - User-facing: `true`
 - Plugin tier: `tier_2_plugin`
 
@@ -67,6 +67,14 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Platform Services` into `Core Runtime`.
 
 ## Source Files
+
+### altitude.rs
+
+- Owns altitude-layer and 2.5D sidecar data for physics without changing the XY Rapier authority.
+- `AltitudeLayer` stores deterministic sampled terrain height and clearance grids for gameplay queries.
+- `BodyAltitudeState` and related enums keep per-body vertical metadata separate from core rigid-body state.
+- Ballistic and 2.5D query option/result structs live here so future world and Lua owners share one vocabulary.
+- This file does not run simulation steps; it only defines data and deterministic sampling helpers.
 
 ### body.rs
 
@@ -192,6 +200,12 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - Open this file when body-handle representation changes; world storage and body descriptors live in sibling owners.
 - This is the right owner for changing Rust or Lua identity semantics without touching simulation behavior directly.
 
+### world/altitude.rs
+
+- Owns world-side altitude-layer attachment and per-body vertical metadata accessors.
+- This file keeps 2.5D sidecar storage near `World` lifecycle rules without mixing Lua parsing into physics owners.
+- Query logic and vertical stepping will extend this owner later; for now it handles storage, defaults, and cleanup-safe access.
+
 ### world/bodies.rs
 
 - Owns the physics world bodies implementation for the physics subsystem and keeps related runtime rules local here.
@@ -282,6 +296,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `lurek.physics.getBody(world, body) -> number`: Returns position and velocity of a body (free-function variant for quick queries).
 - `lurek.physics.getCollisions(world) -> table`: Returns all collision events from the last world step as {body_a, body_b} pairs.
 - `lurek.physics.isSleepingAllowed(world, body) -> boolean`: Checks if sleeping is allowed on a body (free-function variant).
+- `lurek.physics.newAltitudeLayer(opts) -> LAltitudeLayer`: Creates a deterministic altitude-layer grid for 2.5D terrain height and clearance sampling.
 - `lurek.physics.newBody(world, x, y, bodyType, opts?) -> LBody`: Creates a new body in a world (free-function variant).
 - `lurek.physics.newChainShape(closed, ...) -> LPhysicsShape`: Creates a chain (polyline) collision shape. Useful for terrain outlines.
 - `lurek.physics.newCircleShape(r) -> LPhysicsShape`: Creates a circle collision shape with the given radius.
@@ -312,6 +327,26 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 ### Types
 
+#### LAltitudeLayer Type
+
+- A deterministic 2.5D terrain-height and clearance grid used by physics altitude helpers.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LAltitudeLayer:getCellHeight(cx, cy) -> number`: Returns one terrain-height cell from the altitude layer.
+- `LAltitudeLayer:load(data) -> nil`: Replaces this altitude-layer payload from serialized data.
+- `LAltitudeLayer:sampleClearance(x, y) -> number`: Samples gameplay clearance at world coordinates using the layer's current sampling mode.
+- `LAltitudeLayer:sampleHeight(x, y) -> number`: Samples terrain height at world coordinates using the layer's current sampling mode.
+- `LAltitudeLayer:serialize() -> table`: Serializes the full altitude-layer payload for save/load and inspection.
+- `LAltitudeLayer:setCellClearance(cx, cy, clearance) -> nil`: Sets one gameplay-clearance cell in the altitude layer.
+- `LAltitudeLayer:setCellHeight(cx, cy, height) -> nil`: Sets one terrain-height cell in the altitude layer.
+- `LAltitudeLayer:type() -> string`: Returns the type name of this object ("LAltitudeLayer").
+- `LAltitudeLayer:typeOf(name) -> boolean`: Checks whether this object matches a given type name.
+
 #### LBody Type
 
 - A handle to a single physics body in the world, providing per-body manipulation methods.
@@ -328,14 +363,18 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LBody:applyImpulse(ix, iy) -> nil`: Applies an instantaneous linear impulse to the body's center of mass.
 - `LBody:applyTorque(torque) -> nil`: Applies a rotational torque to the body.
 - `LBody:destroy() -> nil`: Destroys this body, removing it from the world along with all fixtures and joints.
+- `LBody:getAltitude() -> number`: Returns this body's authored altitude value.
+- `LBody:getAltitudeMode() -> string`: Returns this body's current altitude mode.
 - `LBody:getAngle() -> number`: Returns the body's rotation angle in radians.
 - `LBody:getAngularDamping() -> number`: Returns the angular damping factor (rotational decay rate).
 - `LBody:getAngularVelocity() -> number`: Returns the body's angular (rotational) velocity.
 - `LBody:getBeamReflectivity() -> number`: Returns the energy multiplier used when a reflective beam bounces from this body.
+- `LBody:getClearanceClass() -> string`: Returns this body's authored clearance class.
 - `LBody:getCollisionGroup() -> integer`: Returns the single 0..15 collision group for this body, or nil for multi-group masks.
 - `LBody:getFriction() -> number`: Returns the body's friction coefficient.
 - `LBody:getGravityScale() -> number`: Returns the gravity scale multiplier for this body (1.0 = normal gravity).
 - `LBody:getHeight() -> number`: Returns the body's bounding height (from its primary shape).
+- `LBody:getHeightExtent() -> number`: Returns this body's effective targetable vertical extent.
 - `LBody:getId() -> integer`: Returns the unique numeric ID of this body within the world.
 - `LBody:getLayer() -> integer`: Returns the body's collision layer bitmask.
 - `LBody:getLinearDamping() -> number`: Returns the linear damping factor (velocity decay rate, like air resistance).
@@ -347,7 +386,10 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LBody:getRestitution() -> number`: Returns the body's restitution (bounciness) value.
 - `LBody:getType() -> string`: Returns the body's type as a string.
 - `LBody:getVelocity() -> number`: Returns the body's current linear velocity.
+- `LBody:getVerticalGravity() -> number`: Returns this body's per-step vertical gravity.
+- `LBody:getVerticalVelocity() -> number`: Returns this body's vertical velocity.
 - `LBody:getWidth() -> number`: Returns the body's bounding width (from its primary shape).
+- `LBody:getWorldZRange() -> number`: Returns this body's effective world-space Z interval.
 - `LBody:getX() -> number`: Returns only the X component of the body's position.
 - `LBody:getY() -> number`: Returns only the Y component of the body's position.
 - `LBody:isBullet() -> boolean`: Returns whether continuous collision detection (bullet mode) is enabled for this body.
@@ -357,17 +399,22 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LBody:isSleepingAllowed() -> boolean`: Returns whether the body is allowed to enter sleep state when at rest.
 - `LBody:isValid() -> boolean`: Returns whether this body handle still points to an active body.
 - `LBody:setAirScale(scale) -> nil`: Sets the extra multiplier used only for `air` flow fields.
+- `LBody:setAltitude(z) -> nil`: Sets this body's terrain-relative or fixed-world altitude value.
+- `LBody:setAltitudeCollision(opts) -> nil`: Replaces this body's altitude-collision flags.
+- `LBody:setAltitudeMode(mode) -> nil`: Sets how this body's altitude is interpreted: ground, airborne, ballistic, or fixed.
 - `LBody:setAngle(angle) -> nil`: Sets the body's rotation angle directly.
 - `LBody:setAngularDamping(damping) -> nil`: Sets the angular damping factor (higher = rotation decays faster).
 - `LBody:setAngularVelocity(omega) -> nil`: Sets the body's angular velocity directly.
 - `LBody:setBeamReflectivity(reflectivity) -> nil`: Sets the energy multiplier used when a reflective beam bounces from this body.
 - `LBody:setBullet(bullet) -> nil`: Enables or disables continuous collision detection to prevent fast-moving tunneling. Use it for small, fast bodies such as bullets and shrapnel, not every body in the scene.
+- `LBody:setClearanceClass(className) -> nil`: Sets this body's authored clearance class for higher-level RTS filtering.
 - `LBody:setCollisionGroup(group) -> nil`: Assigns the body to one collision group and opens its local mask to the 16 group bits.
 - `LBody:setFixedRotation(fixed) -> nil`: Locks or unlocks the body's rotation. Useful for player characters.
 - `LBody:setFlowCrossSection(crossSection) -> nil`: Sets the drag cross-section factor used by drag-style flow application.
 - `LBody:setFlowScale(scale) -> nil`: Sets the global multiplier applied to all flow-field influences on this body.
 - `LBody:setFriction(friction) -> nil`: Sets the body's friction coefficient.
 - `LBody:setGravityScale(scale) -> nil`: Sets a per-body gravity scale multiplier (0 = no gravity, 2 = double gravity, -1 = inverted).
+- `LBody:setHeightExtent(height) -> nil`: Sets this body's targetable vertical extent for 2.5D overlap tests.
 - `LBody:setLayer(layer) -> nil`: Sets the body's collision layer bitmask (which layers this body belongs to).
 - `LBody:setLinearDamping(damping) -> nil`: Sets the linear damping factor (higher = more velocity decay per step).
 - `LBody:setMask(mask) -> nil`: Sets the body's collision mask (which layers this body can collide with).
@@ -380,6 +427,8 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LBody:setSleepingAllowed(allowed) -> nil`: Controls whether the body can enter sleep state. Disable for bodies that must stay active.
 - `LBody:setType(bodyType) -> nil`: Changes the body's type at runtime.
 - `LBody:setVelocity(vx, vy) -> nil`: Directly sets the body's linear velocity.
+- `LBody:setVerticalGravity(gravity) -> nil`: Sets this body's per-step vertical gravity.
+- `LBody:setVerticalVelocity(vz) -> nil`: Sets this body's vertical velocity used by airborne and ballistic altitude modes.
 - `LBody:setWaterScale(scale) -> nil`: Sets the extra multiplier used only for `water` flow fields.
 - `LBody:sleep() -> nil`: Forces the body into sleep state, pausing its simulation until disturbed.
 - `LBody:type() -> string`: Returns the type name of this object ("LBody").
@@ -589,8 +638,10 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:addZone(x, y, w, h) -> LZone`: Creates a rectangular physics zone for area-based effects (custom gravity, damping overrides).
 - `LWorld:beamAll(x, y, dx, dy, range, filter?) -> table`: Returns all instant beam hits in deterministic distance order.
 - `LWorld:beamClosest(x, y, dx, dy, range, filter?) -> table`: Returns only the closest instant beam hit, or nil if nothing blocks the beam.
+- `LWorld:castBallisticArc(opts) -> table`: Traces a deterministic ballistic arc without spawning a persistent projectile.
 - `LWorld:castBeam(x, y, dx, dy, range, opts?) -> table`: Casts an instant beam and returns hit plus segment data for gameplay or rendering.
 - `LWorld:castCircle(x, y, radius, dx, dy, maxDist, filter?) -> table`: Sweeps a circle along a direction and returns the first collider hit.
+- `LWorld:castCircle2_5d(opts) -> table`: Sweeps a 2.5D circle and vertical interval, returning the earliest body or terrain hit.
 - `LWorld:clear() -> nil`: Removes bodies, joints, terrain colliders, and zones while preserving world-level settings.
 - `LWorld:clearBeginContact() -> nil`: Removes the begin-contact callback so it is no longer called.
 - `LWorld:clearBodyData(id) -> nil`: Removes and releases the Lua data attached to a body.
@@ -600,9 +651,13 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:clearGravityVectors() -> nil`: Removes all additive gravity vectors from the world.
 - `LWorld:destroyBody(id) -> nil`: Removes a body from the world by its ID, along with all attached fixtures and joints.
 - `LWorld:destroyJoint(jointId) -> nil`: Removes a joint from the world, disconnecting the two bodies it linked.
+- `LWorld:drawAltitudeDebug(target, opts?) -> nil`: Draws altitude-layer cells, body vertical ranges, and ballistic arcs into an ImageData target.
 - `LWorld:drawDebug(target, r?, g?, b?, a?) -> nil`: Renders a debug visualization of all physics bodies onto a software ImageData target.
 - `LWorld:drawFlowDebug(target, opts?) -> nil`: Draws flow-field centerlines and sampled arrows into an ImageData target.
 - `LWorld:fixtureCount(bodyId) -> integer`: Returns how many fixtures (colliders) are attached to a body.
+- `LWorld:getAltitudeLayer() -> LAltitudeLayer`: Returns the currently attached altitude layer, or nil when the world has none.
+- `LWorld:getBallisticProjectile(id) -> table`: Returns one active engine-owned ballistic projectile by id, or nil when inactive.
+- `LWorld:getBallisticProjectileHits() -> table`: Returns ballistic projectile impacts accumulated on this world since the last clear.
 - `LWorld:getBeginContactEvents() -> table`: Returns contact-begin events from the last step (pairs of bodies that started touching).
 - `LWorld:getBodyAtPoint(x, y, filter?) -> integer`: Returns the body ID at a specific world point, or nil if no body is there.
 - `LWorld:getBodyCCD(id) -> boolean`: Returns whether continuous collision detection is enabled on a body. This is the world-level alias for `LBody:isBullet`.
@@ -643,15 +698,18 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:newEdgeBody(x, y, x1, y1, x2, y2, bodyType, opts?) -> LBody`: Creates a new body with an edge (line segment) collider between two local points.
 - `LWorld:newPolygonBody(x, y, vertices, bodyType, opts?) -> LBody`: Creates a new body with a convex polygon collider defined by vertex pairs.
 - `LWorld:queryAABB(x, y, w, h, filter?) -> integer[]`: Returns all body IDs whose axis-aligned bounding boxes overlap the given rectangle.
+- `LWorld:queryAltitudeOverlap(x, y, radius, zMin, zMax, filter?) -> table`: Returns all 2.5D overlaps whose XY footprint and world-space Z interval match the query.
 - `LWorld:raycast(x1, y1, x2, y2, filter?) -> table`: Casts a ray from point (x1,y1) to (x2,y2) and returns the first body hit, or nil.
 - `LWorld:raycastAll(x, y, dx, dy, maxDist, filter?) -> table`: Casts a directional ray and returns all bodies hit within max distance as a table of results.
 - `LWorld:raycastClosest(x, y, dx, dy, maxDist, filter?) -> table`: Casts a directional ray from a point and returns the closest hit within max distance.
 - `LWorld:reflectBodyVelocity(bodyId, normalX, normalY, coefficient) -> boolean`: Reflects a body's current velocity around a supplied world-space surface normal.
+- `LWorld:removeBallisticProjectile(id) -> boolean`: Removes one active engine-owned ballistic projectile by id.
 - `LWorld:removeFlowField(id) -> boolean`: Disables and removes one authored flow field by id.
 - `LWorld:removeGravityVector(id) -> boolean`: Removes one additive gravity vector so it no longer affects future steps.
 - `LWorld:resetCollisionGroups() -> nil`: Restores all 16 collision groups so every group can collide with every other group.
 - `LWorld:resetWorld() -> nil`: Fully resets the world to its post-construction state.
 - `LWorld:sampleFlow(x, y, opts?) -> table`: Samples combined flow at a world position.
+- `LWorld:setAltitudeLayer(layer) -> nil`: Attaches or replaces the world's 2.5D altitude layer from an `LAltitudeLayer` snapshot.
 - `LWorld:setBeginContact(callback) -> nil`: Registers a callback function invoked whenever two bodies begin touching.
 - `LWorld:setBodyCCD(id, enabled) -> nil`: Enables or disables continuous collision detection (bullet mode) on a body to prevent tunneling. This is the world-level alias for `LBody:setBullet`.
 - `LWorld:setBodyData(id, value) -> nil`: Attaches arbitrary Lua data to a body ID for later retrieval (e.g. entity reference, tag).
@@ -675,6 +733,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:setMouseJointTarget(jointId, x, y) -> nil`: Moves the target position of a mouse joint, causing the attached body to follow.
 - `LWorld:setSolverIterations(n) -> nil`: Sets the number of velocity solver iterations. Higher values improve stability at the cost of performance.
 - `LWorld:sleepBody(id) -> nil`: Forces a body into the sleeping state, pausing its simulation until disturbed.
+- `LWorld:spawnBallisticProjectile(opts) -> integer`: Spawns a deterministic engine-owned ballistic projectile and returns its stable id.
 - `LWorld:step(dt) -> nil`: Advances the physics simulation by a time delta and fires any registered contact callbacks.
 - `LWorld:stepFixed(accumulator, stepDt, maxSteps) -> number`: Performs fixed-timestep physics stepping, consuming accumulated time. Use this for frame pacing; bullet CCD still matters for thin barriers.
 - `LWorld:toPhysics(px) -> number`: Converts a pixel measurement to physics-world meters using the current meter scale.

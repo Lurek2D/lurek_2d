@@ -3275,6 +3275,24 @@ do
     lurek.log.info("[physics] flow debug alpha=" .. tostring(a))
 end
 
+--@api: LWorld:drawAltitudeDebug
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local layer = lurek.physics.newAltitudeLayer({ width = 4, height = 4, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" })
+    layer:setCellHeight(1, 1, 6)
+    layer:setCellClearance(1, 1, 8)
+    world:setAltitudeLayer(layer)
+    local body = world:newBody(24, 24, 10, 10, "static")
+    body:setAltitudeMode("fixed")
+    body:setAltitude(6)
+    body:setHeightExtent(4)
+    world:spawnBallisticProjectile({ from = { x = 8, y = 40, z = 2 }, target = { x = 40, y = 40, z = 8 }, speed = 16, gravity = 0, radius = 1, maxTime = 2, sampleDt = 0.25 })
+    local img = lurek.image.newImageData(64, 64)
+    world:drawAltitudeDebug(img)
+    local _, _, _, a = img:getPixel(24, 24)
+    lurek.log.info("[physics] altitude debug alpha=" .. tostring(a))
+end
+
 --@api: LFlowStream:getId
 do
     local world = lurek.physics.newWorld(0, 0)
@@ -3590,4 +3608,338 @@ do
     })
     world:step(1 / 60)
     lurek.log.info("[physics] flowCrossSection vx=" .. tostring(select(1, body:getVelocity())))
+end
+
+--@api: lurek.physics.newAltitudeLayer
+do
+    local layer = lurek.physics.newAltitudeLayer({
+        width = 4,
+        height = 4,
+        cellSize = 10,
+        defaultGroundHeight = 0,
+        sampleMode = "nearest",
+    })
+    layer:setCellHeight(0, 0, 2)
+    layer:setCellClearance(0, 0, 6)
+    local data = layer:serialize()
+    lurek.log.info("[physics] altitude layer " .. tostring(data.width) .. "x" .. tostring(data.height))
+end
+
+--@api: LAltitudeLayer:setCellHeight
+do
+    local layer = lurek.physics.newAltitudeLayer({ width = 2, height = 2, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" })
+    layer:setCellHeight(1, 0, 5)
+    local height = layer:getCellHeight(1, 0)
+    local sample = layer:sampleHeight(15, 5)
+    lurek.log.info("[physics] setCellHeight cell=" .. tostring(height) .. " sample=" .. tostring(sample))
+end
+
+--@api: LAltitudeLayer:getCellHeight
+do
+    local layer = lurek.physics.newAltitudeLayer({ width = 2, height = 2, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" })
+    layer:setCellHeight(0, 1, 7)
+    local height = layer:getCellHeight(0, 1)
+    local data = layer:serialize()
+    lurek.log.info("[physics] getCellHeight=" .. tostring(height) .. " rows=" .. tostring(data.height))
+end
+
+--@api: LAltitudeLayer:sampleHeight
+do
+    local layer = lurek.physics.newAltitudeLayer({ width = 2, height = 2, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" })
+    layer:setCellHeight(1, 1, 9)
+    local sample = layer:sampleHeight(15, 15)
+    local data = layer:serialize()
+    lurek.log.info("[physics] sampleHeight=" .. tostring(sample) .. " mode=" .. tostring(data.sampleMode))
+end
+
+--@api: LAltitudeLayer:setCellClearance
+do
+    local layer = lurek.physics.newAltitudeLayer({ width = 2, height = 2, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" })
+    layer:setCellClearance(1, 1, 12)
+    local clearance = layer:sampleClearance(15, 15)
+    local data = layer:serialize()
+    lurek.log.info("[physics] setCellClearance sample=" .. tostring(clearance) .. " cells=" .. tostring(#data.clearances))
+end
+
+--@api: LAltitudeLayer:sampleClearance
+do
+    local layer = lurek.physics.newAltitudeLayer({ width = 2, height = 2, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" })
+    layer:setCellClearance(0, 0, 4)
+    local sample = layer:sampleClearance(5, 5)
+    local data = layer:serialize()
+    lurek.log.info("[physics] sampleClearance=" .. tostring(sample) .. " width=" .. tostring(data.width))
+end
+
+--@api: LAltitudeLayer:serialize
+do
+    local layer = lurek.physics.newAltitudeLayer({ width = 2, height = 2, cellSize = 10, defaultGroundHeight = 1, sampleMode = "nearest" })
+    layer:setCellHeight(0, 0, 3)
+    local data = layer:serialize()
+    local copy = lurek.physics.newAltitudeLayer({ width = 2, height = 2, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" })
+    copy:load(data)
+    lurek.log.info("[physics] serialize copy=" .. tostring(copy:getCellHeight(0, 0)))
+end
+
+--@api: LAltitudeLayer:load
+do
+    local source = lurek.physics.newAltitudeLayer({ width = 2, height = 2, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" })
+    source:setCellHeight(1, 0, 8)
+    local target = lurek.physics.newAltitudeLayer({ width = 2, height = 2, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" })
+    target:load(source:serialize())
+    lurek.log.info("[physics] load height=" .. tostring(target:getCellHeight(1, 0)))
+end
+
+--@api: LAltitudeLayer:type
+do
+    local layer = lurek.physics.newAltitudeLayer({ width = 2, height = 2, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" })
+    layer:setCellHeight(0, 0, 1)
+    local type_name = layer:type()
+    local data = layer:serialize()
+    lurek.log.info("[physics] altitude type=" .. tostring(type_name) .. " default=" .. tostring(data.defaultGroundHeight))
+end
+
+--@api: LAltitudeLayer:typeOf
+do
+    local layer = lurek.physics.newAltitudeLayer({ width = 2, height = 2, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" })
+    layer:setCellClearance(0, 0, 2)
+    local matches = layer:typeOf("LAltitudeLayer")
+    local data = layer:serialize()
+    lurek.log.info("[physics] altitude typeOf=" .. tostring(matches) .. " clearances=" .. tostring(#data.clearances))
+end
+
+--@api: LWorld:setAltitudeLayer
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local layer = lurek.physics.newAltitudeLayer({ width = 2, height = 2, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" })
+    layer:setCellHeight(0, 0, 4)
+    world:setAltitudeLayer(layer)
+    lurek.log.info("[physics] setAltitudeLayer sample=" .. tostring(world:getAltitudeLayer():sampleHeight(5, 5)))
+end
+
+--@api: LWorld:getAltitudeLayer
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local layer = lurek.physics.newAltitudeLayer({ width = 2, height = 2, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" })
+    world:setAltitudeLayer(layer)
+    local attached = world:getAltitudeLayer()
+    attached:setCellHeight(0, 0, 7)
+    lurek.log.info("[physics] getAltitudeLayer sample=" .. tostring(attached:sampleHeight(5, 5)))
+end
+
+--@api: LWorld:queryAltitudeOverlap
+do
+    local world = lurek.physics.newWorld(0, 0)
+    world:setAltitudeLayer(lurek.physics.newAltitudeLayer({ width = 4, height = 4, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" }))
+    local body = world:newBody(20, 0, 8, 8, "static")
+    body:setAltitudeMode("fixed")
+    body:setAltitude(5)
+    body:setHeightExtent(4)
+    world:step(1 / 60)
+    local hits = world:queryAltitudeOverlap(20, 0, 8, 4, 10)
+    lurek.log.info("[physics] queryAltitudeOverlap hits=" .. tostring(#hits))
+end
+
+--@api: LWorld:castCircle2_5d
+do
+    local world = lurek.physics.newWorld(0, 0)
+    world:setAltitudeLayer(lurek.physics.newAltitudeLayer({ width = 4, height = 4, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" }))
+    local body = world:newBody(24, 0, 8, 8, "static")
+    body:setAltitudeMode("fixed")
+    body:setAltitude(4)
+    body:setHeightExtent(4)
+    world:step(1 / 60)
+    local hit = world:castCircle2_5d({ x = 0, y = 0, z = 4, radius = 1, height = 2, dx = 30, dy = 0, dz = 0 })
+    lurek.log.info("[physics] castCircle2_5d hit=" .. tostring(hit and hit.hitKind))
+end
+
+--@api: LWorld:castBallisticArc
+do
+    local world = lurek.physics.newWorld(0, 0)
+    world:setAltitudeLayer(lurek.physics.newAltitudeLayer({ width = 4, height = 4, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" }))
+    local body = world:newBody(20, 0, 8, 8, "static")
+    body:setAltitudeMode("fixed")
+    body:setAltitude(4)
+    body:setHeightExtent(4)
+    world:step(1 / 60)
+    local trace = world:castBallisticArc({ from = { x = 0, y = 0, z = 4 }, to = { x = 20, y = 0, z = 4 }, speed = 20, gravity = 0, radius = 1, maxTime = 2, sampleDt = 0.25 })
+    lurek.log.info("[physics] castBallisticArc samples=" .. tostring(#trace.samples))
+end
+
+--@api: LWorld:spawnBallisticProjectile
+do
+    local world = lurek.physics.newWorld(0, 0)
+    world:setAltitudeLayer(lurek.physics.newAltitudeLayer({ width = 4, height = 4, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" }))
+    local id = world:spawnBallisticProjectile({ from = { x = 0, y = 0, z = 2 }, target = { x = 16, y = 0, z = 2 }, speed = 16, gravity = 0, radius = 1, maxTime = 2, sampleDt = 0.25 })
+    local projectile = world:getBallisticProjectile(id)
+    world:step(0.25)
+    lurek.log.info("[physics] spawnBallisticProjectile id=" .. tostring(projectile and projectile.id))
+end
+
+--@api: LWorld:getBallisticProjectile
+do
+    local world = lurek.physics.newWorld(0, 0)
+    world:setAltitudeLayer(lurek.physics.newAltitudeLayer({ width = 4, height = 4, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" }))
+    local id = world:spawnBallisticProjectile({ from = { x = 0, y = 0, z = 1 }, target = { x = 8, y = 0, z = 1 }, speed = 8, gravity = 0, radius = 1, maxTime = 1, sampleDt = 0.25 })
+    local projectile = world:getBallisticProjectile(id)
+    world:step(0.25)
+    lurek.log.info("[physics] getBallisticProjectile vz=" .. tostring(projectile and projectile.vz))
+end
+
+--@api: LWorld:removeBallisticProjectile
+do
+    local world = lurek.physics.newWorld(0, 0)
+    world:setAltitudeLayer(lurek.physics.newAltitudeLayer({ width = 4, height = 4, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" }))
+    local id = world:spawnBallisticProjectile({ from = { x = 0, y = 0, z = 1 }, target = { x = 8, y = 0, z = 1 }, speed = 8, gravity = 0, radius = 1, maxTime = 1, sampleDt = 0.25 })
+    local removed = world:removeBallisticProjectile(id)
+    local projectile = world:getBallisticProjectile(id)
+    lurek.log.info("[physics] removeBallisticProjectile removed=" .. tostring(removed) .. " alive=" .. tostring(projectile ~= nil))
+end
+
+--@api: LWorld:getBallisticProjectileHits
+do
+    local world = lurek.physics.newWorld(0, 0)
+    world:setAltitudeLayer(lurek.physics.newAltitudeLayer({ width = 4, height = 4, cellSize = 10, defaultGroundHeight = 0, sampleMode = "nearest" }))
+    local body = world:newBody(12, 0, 8, 8, "static")
+    body:setAltitudeMode("fixed")
+    body:setAltitude(2)
+    body:setHeightExtent(4)
+    world:step(1 / 60)
+    world:spawnBallisticProjectile({ from = { x = 0, y = 0, z = 2 }, target = { x = 12, y = 0, z = 2 }, speed = 12, gravity = 0, radius = 1, maxTime = 2, sampleDt = 0.25 })
+    for _ = 1, 8 do world:step(0.25) end
+    lurek.log.info("[physics] projectile hits=" .. tostring(#world:getBallisticProjectileHits()))
+end
+
+--@api: LBody:setAltitude
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(10, 10, 4, "dynamic")
+    body:setAltitude(3)
+    body:setHeightExtent(6)
+    local z_min, z_max = body:getWorldZRange()
+    lurek.log.info("[physics] setAltitude range=" .. tostring(z_min) .. "," .. tostring(z_max))
+end
+
+--@api: LBody:getAltitude
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(10, 10, 4, "dynamic")
+    body:setAltitude(5)
+    body:setHeightExtent(6)
+    lurek.log.info("[physics] getAltitude=" .. tostring(body:getAltitude()))
+end
+
+--@api: LBody:setVerticalVelocity
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(10, 10, 4, "dynamic")
+    body:setAltitudeMode("ballistic")
+    body:setVerticalVelocity(12)
+    world:step(0.1)
+    lurek.log.info("[physics] setVerticalVelocity=" .. tostring(body:getVerticalVelocity()))
+end
+
+--@api: LBody:getVerticalVelocity
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(10, 10, 4, "dynamic")
+    body:setVerticalVelocity(9)
+    body:setAltitudeMode("fixed")
+    lurek.log.info("[physics] getVerticalVelocity=" .. tostring(body:getVerticalVelocity()))
+end
+
+--@api: LBody:setHeightExtent
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(10, 10, 4, "dynamic")
+    body:setAltitude(2)
+    body:setHeightExtent(9)
+    local z_min, z_max = body:getWorldZRange()
+    lurek.log.info("[physics] setHeightExtent max=" .. tostring(z_max) .. " min=" .. tostring(z_min))
+end
+
+--@api: LBody:getHeightExtent
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(10, 10, 4, "dynamic")
+    body:setHeightExtent(11)
+    body:setAltitude(1)
+    lurek.log.info("[physics] getHeightExtent=" .. tostring(body:getHeightExtent()))
+end
+
+--@api: LBody:setAltitudeMode
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(10, 10, 4, "dynamic")
+    body:setAltitudeMode("fixed")
+    body:setAltitude(6)
+    lurek.log.info("[physics] setAltitudeMode=" .. tostring(body:getAltitudeMode()))
+end
+
+--@api: LBody:getAltitudeMode
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(10, 10, 4, "dynamic")
+    body:setAltitudeMode("airborne")
+    body:setAltitude(2)
+    lurek.log.info("[physics] getAltitudeMode=" .. tostring(body:getAltitudeMode()))
+end
+
+--@api: LBody:setVerticalGravity
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(10, 10, 4, "dynamic")
+    body:setAltitudeMode("ballistic")
+    body:setVerticalGravity(-20)
+    body:setVerticalVelocity(10)
+    world:step(0.25)
+    lurek.log.info("[physics] setVerticalGravity vz=" .. tostring(body:getVerticalVelocity()))
+end
+
+--@api: LBody:getVerticalGravity
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(10, 10, 4, "dynamic")
+    body:setVerticalGravity(-14)
+    body:setAltitudeMode("fixed")
+    lurek.log.info("[physics] getVerticalGravity=" .. tostring(body:getVerticalGravity()))
+end
+
+--@api: LBody:setClearanceClass
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(10, 10, 4, "dynamic")
+    body:setClearanceClass("air")
+    body:setAltitudeMode("fixed")
+    lurek.log.info("[physics] setClearanceClass=" .. tostring(body:getClearanceClass()))
+end
+
+--@api: LBody:getClearanceClass
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(10, 10, 4, "dynamic")
+    body:setClearanceClass("hover")
+    body:setAltitude(1)
+    lurek.log.info("[physics] getClearanceClass=" .. tostring(body:getClearanceClass()))
+end
+
+--@api: LBody:getWorldZRange
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(10, 10, 4, "dynamic")
+    body:setAltitudeMode("fixed")
+    body:setAltitude(4)
+    body:setHeightExtent(5)
+    local z_min, z_max = body:getWorldZRange()
+    lurek.log.info("[physics] getWorldZRange=" .. tostring(z_min) .. "," .. tostring(z_max))
+end
+
+--@api: LBody:setAltitudeCollision
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(10, 10, 4, "dynamic")
+    body:setAltitudeMode("airborne")
+    body:setAltitudeCollision({ enabled = true, collideWhenSeparated = false, hitGroundWhenBelowTerrain = true })
+    body:setVerticalVelocity(-6)
+    world:step(0.1)
+    lurek.log.info("[physics] setAltitudeCollision altitude=" .. tostring(body:getAltitude()))
 end

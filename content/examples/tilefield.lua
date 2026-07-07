@@ -516,6 +516,43 @@ do
     lurek.log.info(status .. " " .. tostring(value))
 end
 
+--@api: LTileField:setRegionProperty
+do
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    field:setRegionCells("exit", { { x = 5, y = 2, z = 1 } })
+    field:setRegionProperty("exit", "targetScene", "town_square")
+    lurek.log.info("region property set = " .. tostring(field:getRegionProperty("exit", "targetScene")))
+end
+
+--@api: LTileField:getRegionProperty
+do
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    field:setRegionCells("inn", { { x = 2, y = 2, z = 1 } })
+    field:setRegionProperty("inn", "music", "inn_theme")
+    lurek.log.info("region property = " .. tostring(field:getRegionProperty("inn", "music")))
+end
+
+--@api: LTileField:getRegionProperties
+do
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    field:setRegionCells("shop", { { x = 3, y = 3, z = 1 } })
+    field:setRegionProperty("shop", "trigger", "open_shop")
+    field:setRegionProperty("shop", "facing", "south")
+    local props = field:getRegionProperties("shop")
+    lurek.log.info("region properties trigger = " .. tostring(props and props.trigger))
+    lurek.log.info("region properties facing = " .. tostring(props and props.facing))
+end
+
+--@api: LTileField:regionsAt
+do
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    field:setRegionRect("stairs", 2, 2, 3, 2, 1)
+    field:setRegionCells("shop_door", { { x = 2, y = 2, z = 1 } })
+    local names = field:regionsAt(2, 2, 1)
+    lurek.log.info("regions at tile = " .. #names)
+    lurek.log.info("first region = " .. tostring(names[1]))
+end
+
 --@api: LTileField:defineCategory
 do
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })

@@ -8,6 +8,78 @@
 
 use std::collections::HashMap;
 
+/// Metadata attached to a spoken dialog line.
+#[derive(Debug, Clone, Default)]
+pub struct DialogLineMeta {
+    /// Stable authored line id for save/load, read-state, or analytics.
+    pub id: Option<String>,
+    /// Optional voice clip identifier associated with the line.
+    pub voice: Option<String>,
+    /// Optional route or branch label associated with the line.
+    pub route: Option<String>,
+    /// Arbitrary tags associated with the line.
+    pub tags: Vec<String>,
+}
+
+/// One completed or active spoken line stored in the backlog/history.
+#[derive(Debug, Clone)]
+pub struct DialogHistoryEntry {
+    /// Speaker name shown for the line, if any.
+    pub speaker: Option<String>,
+    /// Full line text.
+    pub text: String,
+    /// Structured metadata carried with the line.
+    pub meta: DialogLineMeta,
+}
+
+/// Signal emitted when the sequencer reaches an event-like node.
+#[derive(Debug, Clone)]
+pub struct DialogSignal {
+    /// Signal kind name: currently `event` or `call`.
+    pub kind: String,
+    /// Event or function identifier.
+    pub name: String,
+    /// Optional payload string.
+    pub data: Option<String>,
+}
+
+/// Serializable snapshot of sequencer runtime state.
+#[derive(Debug, Clone)]
+pub struct DialogSequencerSnapshot {
+    /// Full node list currently loaded into the sequencer.
+    pub nodes: Vec<DialogNode>,
+    /// Zero-based index of the next node to execute.
+    pub current_index: usize,
+    /// Active playback state.
+    pub state: SequencerState,
+    /// Number of currently revealed bytes in `current_text`.
+    pub revealed_chars: usize,
+    /// Elapsed seconds for the current typing node.
+    pub elapsed: f32,
+    /// Characters per second typing speed.
+    pub cps: f32,
+    /// Zero-based selected option index for the current choice, if any.
+    pub current_choice: Option<usize>,
+    /// Current choice prompt text, if any.
+    pub choice_prompt: Option<String>,
+    /// Current choice option labels.
+    pub choice_labels: Vec<String>,
+    /// Current speaker name, if any.
+    pub current_speaker: Option<String>,
+    /// Current full line text.
+    pub current_text: String,
+    /// Current line metadata.
+    pub current_meta: DialogLineMeta,
+    /// Remaining seconds for a pending wait node.
+    pub wait_remaining: f32,
+    /// Remaining seconds to auto-advance a revealed say node.
+    pub line_hold_remaining: f32,
+    /// Backlog of spoken lines.
+    pub history: Vec<DialogHistoryEntry>,
+    /// Pending event/call signals not yet consumed by Lua.
+    pub pending_signals: Vec<DialogSignal>,
+}
+
 /// A single dialog node in a sequence.
 #[derive(Debug, Clone)]
 pub enum DialogNode {
@@ -16,6 +88,10 @@ pub enum DialogNode {
         actor: String,
         text: String,
         duration: Option<f32>, // optional hold time
+        id: Option<String>,
+        voice: Option<String>,
+        route: Option<String>,
+        tags: Vec<String>,
     },
     /// A choice prompt with selectable options.
     Choice {
@@ -77,6 +153,11 @@ pub struct DialogSequencer {
     // Current line state
     current_speaker: Option<String>,
     current_text: String,
+    current_meta: DialogLineMeta,
+    wait_remaining: f32,
+    line_hold_remaining: f32,
+    history: Vec<DialogHistoryEntry>,
+    pending_signals: Vec<DialogSignal>,
 
     // Label map for jumps
     labels: HashMap<String, usize>,
@@ -97,6 +178,11 @@ impl DialogSequencer {
             choice_labels: Vec::new(),
             current_speaker: None,
             current_text: String::new(),
+            current_meta: DialogLineMeta::default(),
+            wait_remaining: 0.0,
+            line_hold_remaining: 0.0,
+            history: Vec::new(),
+            pending_signals: Vec::new(),
             labels: HashMap::new(),
         }
     }
@@ -111,14 +197,16 @@ impl DialogSequencer {
         self.current_speaker = None;
         self.current_text = String::new();
         self.current_choice = None;
+        self.choice_prompt = None;
+        self.choice_labels.clear();
+        self.current_meta = DialogLineMeta::default();
+        self.wait_remaining = 0.0;
+        self.line_hold_remaining = 0.0;
+        self.history.clear();
+        self.pending_signals.clear();
 
         // Build label map
-        self.labels.clear();
-        for (i, node) in self.nodes.iter().enumerate() {
-            if let DialogNode::Label { name } = node {
-                self.labels.insert(name.clone(), i);
-            }
-        }
+        self.rebuild_labels();
     }
 
     /// Starts playback from the beginning.
@@ -127,6 +215,14 @@ impl DialogSequencer {
         self.state = SequencerState::Idle;
         self.revealed_chars = 0;
         self.elapsed = 0.0;
+        self.wait_remaining = 0.0;
+        self.line_hold_remaining = 0.0;
+        self.choice_prompt = None;
+        self.choice_labels.clear();
+        self.current_choice = None;
+        self.current_speaker = None;
+        self.current_text.clear();
+        self.current_meta = DialogLineMeta::default();
         self._advance_node();
     }
 
@@ -142,7 +238,17 @@ impl DialogSequencer {
                 self.revealed_chars = target_chars;
             }
         } else if self.state == SequencerState::Waiting {
-            // Wait for user input via advance() or skip()
+            if self.wait_remaining > 0.0 {
+                self.wait_remaining = (self.wait_remaining - dt).max(0.0);
+                if self.wait_remaining == 0.0 {
+                    self._advance_node();
+                }
+            } else if self.line_hold_remaining > 0.0 {
+                self.line_hold_remaining = (self.line_hold_remaining - dt).max(0.0);
+                if self.line_hold_remaining == 0.0 {
+                    self._advance_node();
+                }
+            }
         }
     }
 
@@ -156,6 +262,8 @@ impl DialogSequencer {
             }
             SequencerState::Waiting => {
                 // Move to next node
+                self.wait_remaining = 0.0;
+                self.line_hold_remaining = 0.0;
                 self._advance_node();
             }
             SequencerState::WaitingForChoice => {
@@ -177,6 +285,8 @@ impl DialogSequencer {
     pub fn choose(&mut self, index: usize) {
         if self.state == SequencerState::WaitingForChoice && index < self.choice_labels.len() {
             self.current_choice = Some(index);
+            self.choice_prompt = None;
+            self.choice_labels.clear();
             self._advance_node();
         }
     }
@@ -216,6 +326,26 @@ impl DialogSequencer {
         &self.current_text
     }
 
+    /// Returns the current authored line id, if any.
+    pub fn current_id(&self) -> Option<&str> {
+        self.current_meta.id.as_deref()
+    }
+
+    /// Returns the current voice id, if any.
+    pub fn current_voice(&self) -> Option<&str> {
+        self.current_meta.voice.as_deref()
+    }
+
+    /// Returns the current route label, if any.
+    pub fn current_route(&self) -> Option<&str> {
+        self.current_meta.route.as_deref()
+    }
+
+    /// Returns current line tags.
+    pub fn current_tags(&self) -> &[String] {
+        &self.current_meta.tags
+    }
+
     /// Returns only the typewriter-revealed portion of the text.
     pub fn revealed_text(&self) -> &str {
         if !self.current_text.is_empty() && self.revealed_chars > 0 {
@@ -235,6 +365,73 @@ impl DialogSequencer {
         &self.choice_labels
     }
 
+    /// Returns spoken-line history in insertion order.
+    pub fn history(&self) -> &[DialogHistoryEntry] {
+        &self.history
+    }
+
+    /// Clear spoken-line history.
+    pub fn clear_history(&mut self) {
+        self.history.clear();
+    }
+
+    /// Returns the next pending event/call signal without removing it.
+    pub fn peek_signal(&self) -> Option<&DialogSignal> {
+        self.pending_signals.first()
+    }
+
+    /// Removes and returns the next pending event/call signal.
+    pub fn pop_signal(&mut self) -> Option<DialogSignal> {
+        if self.pending_signals.is_empty() {
+            None
+        } else {
+            Some(self.pending_signals.remove(0))
+        }
+    }
+
+    /// Capture a runtime snapshot that can be restored later.
+    pub fn snapshot(&self) -> DialogSequencerSnapshot {
+        DialogSequencerSnapshot {
+            nodes: self.nodes.clone(),
+            current_index: self.current_index,
+            state: self.state,
+            revealed_chars: self.revealed_chars,
+            elapsed: self.elapsed,
+            cps: self.cps,
+            current_choice: self.current_choice,
+            choice_prompt: self.choice_prompt.clone(),
+            choice_labels: self.choice_labels.clone(),
+            current_speaker: self.current_speaker.clone(),
+            current_text: self.current_text.clone(),
+            current_meta: self.current_meta.clone(),
+            wait_remaining: self.wait_remaining,
+            line_hold_remaining: self.line_hold_remaining,
+            history: self.history.clone(),
+            pending_signals: self.pending_signals.clone(),
+        }
+    }
+
+    /// Replace runtime state from a previously captured snapshot.
+    pub fn restore(&mut self, snapshot: DialogSequencerSnapshot) {
+        self.nodes = snapshot.nodes;
+        self.current_index = snapshot.current_index.min(self.nodes.len());
+        self.state = snapshot.state;
+        self.revealed_chars = snapshot.revealed_chars.min(snapshot.current_text.len());
+        self.elapsed = snapshot.elapsed.max(0.0);
+        self.cps = snapshot.cps.max(1.0);
+        self.current_choice = snapshot.current_choice;
+        self.choice_prompt = snapshot.choice_prompt;
+        self.choice_labels = snapshot.choice_labels;
+        self.current_speaker = snapshot.current_speaker;
+        self.current_text = snapshot.current_text;
+        self.current_meta = snapshot.current_meta;
+        self.wait_remaining = snapshot.wait_remaining.max(0.0);
+        self.line_hold_remaining = snapshot.line_hold_remaining.max(0.0);
+        self.history = snapshot.history;
+        self.pending_signals = snapshot.pending_signals;
+        self.rebuild_labels();
+    }
+
     // Private helper: advances to the next actionable node
     fn _advance_node(&mut self) {
         loop {
@@ -242,6 +439,11 @@ impl DialogSequencer {
                 self.state = SequencerState::Done;
                 self.current_speaker = None;
                 self.current_text.clear();
+                self.current_meta = DialogLineMeta::default();
+                self.choice_prompt = None;
+                self.choice_labels.clear();
+                self.wait_remaining = 0.0;
+                self.line_hold_remaining = 0.0;
                 return;
             }
 
@@ -252,12 +454,32 @@ impl DialogSequencer {
                 DialogNode::Say {
                     actor,
                     text,
-                    duration: _,
+                    duration,
+                    id,
+                    voice,
+                    route,
+                    tags,
                 } => {
-                    self.current_speaker = Some(actor);
-                    self.current_text = text;
+                    let meta = DialogLineMeta {
+                        id,
+                        voice,
+                        route,
+                        tags,
+                    };
+                    self.current_speaker = Some(actor.clone());
+                    self.current_text = text.clone();
+                    self.current_meta = meta.clone();
+                    self.choice_prompt = None;
+                    self.choice_labels.clear();
+                    self.wait_remaining = 0.0;
+                    self.line_hold_remaining = duration.unwrap_or(0.0).max(0.0);
                     self.revealed_chars = 0;
                     self.elapsed = 0.0;
+                    self.history.push(DialogHistoryEntry {
+                        speaker: Some(actor),
+                        text,
+                        meta,
+                    });
                     self.state = SequencerState::Typing;
                     return;
                 }
@@ -265,19 +487,44 @@ impl DialogSequencer {
                     self.choice_prompt = Some(prompt);
                     self.choice_labels = options;
                     self.current_choice = None;
+                    self.current_speaker = None;
+                    self.current_text.clear();
+                    self.current_meta = DialogLineMeta::default();
+                    self.wait_remaining = 0.0;
+                    self.line_hold_remaining = 0.0;
                     self.state = SequencerState::WaitingForChoice;
                     return;
                 }
-                DialogNode::Wait { .. } => {
-                    // For now, just skip waits (could store and apply in update)
+                DialogNode::Wait { seconds } => {
+                    self.current_speaker = None;
+                    self.current_text.clear();
+                    self.current_meta = DialogLineMeta::default();
+                    self.choice_prompt = None;
+                    self.choice_labels.clear();
+                    self.revealed_chars = 0;
+                    self.elapsed = 0.0;
+                    self.line_hold_remaining = 0.0;
+                    self.wait_remaining = seconds.max(0.0);
+                    if self.wait_remaining == 0.0 {
+                        continue;
+                    }
+                    self.state = SequencerState::Waiting;
+                    return;
+                }
+                DialogNode::Event { name, data } => {
+                    self.pending_signals.push(DialogSignal {
+                        kind: "event".to_string(),
+                        name,
+                        data,
+                    });
                     continue;
                 }
-                DialogNode::Event { .. } => {
-                    // Events fire immediately; continue to next node
-                    continue;
-                }
-                DialogNode::Call { .. } => {
-                    // Calls happen via Lua callback; continue to next node
+                DialogNode::Call { name } => {
+                    self.pending_signals.push(DialogSignal {
+                        kind: "call".to_string(),
+                        name,
+                        data: None,
+                    });
                     continue;
                 }
                 DialogNode::Label { .. } => {
@@ -290,6 +537,15 @@ impl DialogSequencer {
                     }
                     continue;
                 }
+            }
+        }
+    }
+
+    fn rebuild_labels(&mut self) {
+        self.labels.clear();
+        for (i, node) in self.nodes.iter().enumerate() {
+            if let DialogNode::Label { name } = node {
+                self.labels.insert(name.clone(), i);
             }
         }
     }

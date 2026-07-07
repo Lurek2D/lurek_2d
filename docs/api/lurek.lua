@@ -2783,6 +2783,10 @@ LThrottle = {}
 ---@class LWeightedRandom
 LWeightedRandom = {}
 
+--- A deterministic 2.5D terrain-height and clearance grid used by physics altitude helpers.
+---@class LAltitudeLayer
+LAltitudeLayer = {}
+
 --- A handle to a single physics body in the world, providing per-body manipulation methods.
 ---@class LBody
 LBody = {}
@@ -10616,13 +10620,32 @@ function LDialogSequencer:advance() end
 ---@param index number Option index (1-based) to select.
 function LDialogSequencer:choose(index) end
 
+--- Clears accumulated spoken-line history.
+function LDialogSequencer:clearHistory() end
+
+--- Returns the authored id of the current line, or nil when unset.
+---@return string Current line id, or nil.
+function LDialogSequencer:currentId() end
+
+--- Returns the current line route marker, or nil when unset.
+---@return string Current route marker, or nil.
+function LDialogSequencer:currentRoute() end
+
 --- Returns the actor name for the current line, or nil.
 ---@return string Actor name, or nil.
 function LDialogSequencer:currentSpeaker() end
 
+--- Returns the current line tag array.
+---@return table Array of current line tags.
+function LDialogSequencer:currentTags() end
+
 --- Returns the full text of the current line.
 ---@return string Full line text.
 function LDialogSequencer:currentText() end
+
+--- Returns the current line voice id, or nil when unset.
+---@return string Current voice id, or nil.
+function LDialogSequencer:currentVoice() end
 
 --- Returns an array of choice option labels.
 ---@return table Array of choice strings.
@@ -10631,6 +10654,10 @@ function LDialogSequencer:getChoiceLabels() end
 --- Returns the choice prompt text, or nil if not in a choice node.
 ---@return string Choice prompt, or nil.
 function LDialogSequencer:getChoiceText() end
+
+--- Returns spoken-line history in insertion order.
+---@return table Array of `{speaker,text,id?,voice?,route?,tags?}` entries.
+function LDialogSequencer:getHistory() end
 
 --- Gets the current typewriter speed in characters per second.
 ---@return number Characters per second.
@@ -10652,6 +10679,18 @@ function LDialogSequencer:isWaitingForChoice() end
 ---@param nodes table Array of node tables created via lurek.dialog.say(), choice(), etc.
 function LDialogSequencer:load(nodes) end
 
+--- Returns the next pending event/call signal without removing it.
+---@return table `{kind,name,data?}`, or nil when no signal is pending.
+function LDialogSequencer:peekSignal() end
+
+--- Removes and returns the next pending event/call signal.
+---@return table `{kind,name,data?}`, or nil when no signal is pending.
+function LDialogSequencer:popSignal() end
+
+--- Restores sequencer runtime state from a prior snapshot table.
+---@param snapshot table Snapshot returned by `snapshot()`.
+function LDialogSequencer:restore(snapshot) end
+
 --- Returns only the typewriter-revealed portion of the current line.
 ---@return string Revealed text.
 function LDialogSequencer:revealedText() end
@@ -10662,6 +10701,10 @@ function LDialogSequencer:setSpeed(cps) end
 
 --- Instantly reveals the full current line without typewriter effect.
 function LDialogSequencer:skip() end
+
+--- Captures sequencer runtime state, including nodes, progress, history, and pending signals.
+---@return table Serializable snapshot table.
+function LDialogSequencer:snapshot() end
 
 --- Starts playback from the beginning of the loaded sequence.
 function LDialogSequencer:start() end
@@ -10846,6 +10889,11 @@ lurek.dialog.event = function(name, data, opts) end
 ---@return table Jump node table for sequencer.load().
 lurek.dialog.jump = function(target, opts) end
 
+--- Creates a Label node used as a jump target marker.
+---@param name string Label name.
+---@return table Label node table for sequencer.load().
+lurek.dialog.label = function(name) end
+
 --- Creates an empty dialogue selector for weighted topics and branches.
 ---@return LDialogueAI New dialogue AI handle.
 lurek.dialog.newAI = function() end
@@ -10865,7 +10913,7 @@ lurek.dialog.newState = function() end
 --- Creates a Say node for character dialog.
 ---@param actor string Character name.
 ---@param text string Dialog text.
----@param opts? table Optional table with duration field.
+---@param opts? table Optional table with `duration`, `id`, `voice`, `route`, and `tags`.
 ---@return table Say node table for sequencer.load().
 lurek.dialog.say = function(actor, text, opts) end
 
@@ -23571,6 +23619,53 @@ lurek.patterns.newThrottle = function(interval) end
 ---@return LWeightedRandom A new weighted random pool instance.
 lurek.patterns.newWeightedRandom = function() end
 
+--- Returns one terrain-height cell from the altitude layer.
+---@param cx number Cell column (0-based).
+---@param cy number Cell row (0-based).
+---@return number Ground height in world units.
+function LAltitudeLayer:getCellHeight(cx, cy) end
+
+--- Replaces this altitude-layer payload from serialized data.
+---@param data table Serialized layer data previously returned by `serialize()`.
+function LAltitudeLayer:load(data) end
+
+--- Samples gameplay clearance at world coordinates using the layer's current sampling mode.
+---@param x number World-space X.
+---@param y number World-space Y.
+---@return number Sampled clearance height.
+function LAltitudeLayer:sampleClearance(x, y) end
+
+--- Samples terrain height at world coordinates using the layer's current sampling mode.
+---@param x number World-space X.
+---@param y number World-space Y.
+---@return number Sampled terrain height.
+function LAltitudeLayer:sampleHeight(x, y) end
+
+--- Serializes the full altitude-layer payload for save/load and inspection.
+---@return table Layer data with width, height, cellSize, defaultGroundHeight, sampleMode, heights, and clearances.
+function LAltitudeLayer:serialize() end
+
+--- Sets one gameplay-clearance cell in the altitude layer.
+---@param cx number Cell column (0-based).
+---@param cy number Cell row (0-based).
+---@param clearance number Clearance height in world units.
+function LAltitudeLayer:setCellClearance(cx, cy, clearance) end
+
+--- Sets one terrain-height cell in the altitude layer.
+---@param cx number Cell column (0-based).
+---@param cy number Cell row (0-based).
+---@param height number Ground height in world units.
+function LAltitudeLayer:setCellHeight(cx, cy, height) end
+
+--- Returns the type name of this object ("LAltitudeLayer").
+---@return string "LAltitudeLayer".
+function LAltitudeLayer:type() end
+
+--- Checks whether this object matches a given type name.
+---@param name string Type name to check.
+---@return boolean True for `LAltitudeLayer` and `LObject`.
+function LAltitudeLayer:typeOf(name) end
+
 --- Applies an instantaneous angular impulse (spin) to the body.
 ---@param impulse number Angular impulse value.
 function LBody:applyAngularImpulse(impulse) end
@@ -23599,6 +23694,14 @@ function LBody:applyTorque(torque) end
 --- Destroys this body, removing it from the world along with all fixtures and joints.
 function LBody:destroy() end
 
+--- Returns this body's authored altitude value.
+---@return number Altitude in world units.
+function LBody:getAltitude() end
+
+--- Returns this body's current altitude mode.
+---@return string One of `ground`, `airborne`, `ballistic`, or `fixed`.
+function LBody:getAltitudeMode() end
+
 --- Returns the body's rotation angle in radians.
 ---@return number Angle in radians.
 function LBody:getAngle() end
@@ -23615,6 +23718,10 @@ function LBody:getAngularVelocity() end
 ---@return number Beam reflection multiplier in the range 0..1.
 function LBody:getBeamReflectivity() end
 
+--- Returns this body's authored clearance class.
+---@return string Clearance class name.
+function LBody:getClearanceClass() end
+
 --- Returns the single 0..15 collision group for this body, or nil for multi-group masks.
 ---@return number Collision group index, or nil.
 function LBody:getCollisionGroup() end
@@ -23630,6 +23737,10 @@ function LBody:getGravityScale() end
 --- Returns the body's bounding height (from its primary shape).
 ---@return number Height in world units.
 function LBody:getHeight() end
+
+--- Returns this body's effective targetable vertical extent.
+---@return number Height extent in world units.
+function LBody:getHeightExtent() end
 
 --- Returns the unique numeric ID of this body within the world.
 ---@return number Body ID.
@@ -23677,9 +23788,22 @@ function LBody:getType() end
 ---@return number Velocity Y component.
 function LBody:getVelocity() end
 
+--- Returns this body's per-step vertical gravity.
+---@return number Vertical gravity in world units per second squared.
+function LBody:getVerticalGravity() end
+
+--- Returns this body's vertical velocity.
+---@return number Vertical velocity in world units per second.
+function LBody:getVerticalVelocity() end
+
 --- Returns the body's bounding width (from its primary shape).
 ---@return number Width in world units.
 function LBody:getWidth() end
+
+--- Returns this body's effective world-space Z interval.
+---@return number Minimum world-space Z.
+---@return number Maximum world-space Z.
+function LBody:getWorldZRange() end
 
 --- Returns only the X component of the body's position.
 ---@return number X coordinate.
@@ -23717,6 +23841,18 @@ function LBody:isValid() end
 ---@param scale number Non-negative air multiplier.
 function LBody:setAirScale(scale) end
 
+--- Sets this body's terrain-relative or fixed-world altitude value.
+---@param z number Altitude in world units.
+function LBody:setAltitude(z) end
+
+--- Replaces this body's altitude-collision flags.
+---@param opts table Altitude collision options: { enabled?, collideWhenSeparated?, hitGroundWhenBelowTerrain? }.
+function LBody:setAltitudeCollision(opts) end
+
+--- Sets how this body's altitude is interpreted: ground, airborne, ballistic, or fixed.
+---@param mode string Altitude mode name.
+function LBody:setAltitudeMode(mode) end
+
 --- Sets the body's rotation angle directly.
 ---@param angle number New angle in radians.
 function LBody:setAngle(angle) end
@@ -23736,6 +23872,10 @@ function LBody:setBeamReflectivity(reflectivity) end
 --- Enables or disables continuous collision detection to prevent fast-moving tunneling. Use it for small, fast bodies such as bullets and shrapnel, not every body in the scene.
 ---@param bullet boolean True to enable CCD.
 function LBody:setBullet(bullet) end
+
+--- Sets this body's authored clearance class for higher-level RTS filtering.
+---@param className string Clearance class such as `ground`, `hover`, `air`, or `projectile`.
+function LBody:setClearanceClass(className) end
 
 --- Assigns the body to one collision group and opens its local mask to the 16 group bits.
 ---@param group number Collision group index, 0..15.
@@ -23760,6 +23900,10 @@ function LBody:setFriction(friction) end
 --- Sets a per-body gravity scale multiplier (0 = no gravity, 2 = double gravity, -1 = inverted).
 ---@param scale number Gravity scale factor.
 function LBody:setGravityScale(scale) end
+
+--- Sets this body's targetable vertical extent for 2.5D overlap tests.
+---@param height number Height extent in world units.
+function LBody:setHeightExtent(height) end
 
 --- Sets the body's collision layer bitmask (which layers this body belongs to).
 ---@param layer number Layer bitmask.
@@ -23810,6 +23954,14 @@ function LBody:setType(bodyType) end
 ---@param vx number Velocity X component.
 ---@param vy number Velocity Y component.
 function LBody:setVelocity(vx, vy) end
+
+--- Sets this body's per-step vertical gravity.
+---@param gravity number Vertical gravity in world units per second squared.
+function LBody:setVerticalGravity(gravity) end
+
+--- Sets this body's vertical velocity used by airborne and ballistic altitude modes.
+---@param vz number Vertical velocity in world units per second.
+function LBody:setVerticalVelocity(vz) end
 
 --- Sets the extra multiplier used only for `water` flow fields.
 ---@param scale number Non-negative water multiplier.
@@ -24285,6 +24437,11 @@ function LWorld:beamAll(x, y, dx, dy, range, filter) end
 ---@return LWorldBeamClosestResult Hit info {bodyId, x, y, normalX, normalY, distance, segmentIndex} or nil if no hit.
 function LWorld:beamClosest(x, y, dx, dy, range, filter) end
 
+--- Traces a deterministic ballistic arc without spawning a persistent projectile.
+---@param opts table Arc options: { from, to or target, speed, gravity, radius, height?, maxTime?, sampleDt?, filter? }.
+---@return table Ballistic trace table with `samples`, optional `hit`, `travelTime`, and `expired`.
+function LWorld:castBallisticArc(opts) end
+
 --- Casts an instant beam and returns hit plus segment data for gameplay or rendering.
 ---@param x number Beam origin X.
 ---@param y number Beam origin Y.
@@ -24305,6 +24462,11 @@ function LWorld:castBeam(x, y, dx, dy, range, opts) end
 ---@param filter? table Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}.
 ---@return table Hit info {bodyId, x, y, normalX, normalY, toi, safeFraction} or nil if no hit.
 function LWorld:castCircle(x, y, radius, dx, dy, maxDist, filter) end
+
+--- Sweeps a 2.5D circle and vertical interval, returning the earliest body or terrain hit.
+---@param opts table Cast options: { x, y, z, radius, height?, dx, dy, dz?, filter? }.
+---@return table Altitude hit table, or nil when no body or terrain was reached.
+function LWorld:castCircle2_5d(opts) end
 
 --- Removes bodies, joints, terrain colliders, and zones while preserving world-level settings.
 function LWorld:clear() end
@@ -24337,6 +24499,11 @@ function LWorld:destroyBody(id) end
 ---@param jointId number The joint ID to destroy.
 function LWorld:destroyJoint(jointId) end
 
+--- Draws altitude-layer cells, body vertical ranges, and ballistic arcs into an ImageData target.
+---@param target LImageData Mutable target image.
+---@param opts? table Optional table with `drawLayer`, `drawBodies`, and `drawProjectiles` booleans.
+function LWorld:drawAltitudeDebug(target, opts) end
+
 --- Renders a debug visualization of all physics bodies onto a software ImageData target.
 ---@param target LImageData The image to draw debug shapes onto.
 ---@param r? number Red channel (0-255, default 0).
@@ -24354,6 +24521,19 @@ function LWorld:drawFlowDebug(target, opts) end
 ---@param bodyId number The body to query.
 ---@return number Number of attached fixtures.
 function LWorld:fixtureCount(bodyId) end
+
+--- Returns the currently attached altitude layer, or nil when the world has none.
+---@return LAltitudeLayer Attached altitude layer view, or nil.
+function LWorld:getAltitudeLayer() end
+
+--- Returns one active engine-owned ballistic projectile by id, or nil when inactive.
+---@param id number Stable projectile id.
+---@return table Projectile state table, or nil.
+function LWorld:getBallisticProjectile(id) end
+
+--- Returns ballistic projectile impacts accumulated on this world since the last clear.
+---@return table Array of altitude-hit tables.
+function LWorld:getBallisticProjectileHits() end
 
 --- Returns contact-begin events from the last step (pairs of bodies that started touching).
 ---@return LWorldGetBeginContactEventsResult Array of {bodyA, bodyB} tables.
@@ -24576,6 +24756,16 @@ function LWorld:newPolygonBody(x, y, vertices, bodyType, opts) end
 ---@return number[] Body ID numbers found in the region.
 function LWorld:queryAABB(x, y, w, h, filter) end
 
+--- Returns all 2.5D overlaps whose XY footprint and world-space Z interval match the query.
+---@param x number Query center X.
+---@param y number Query center Y.
+---@param radius number XY query radius.
+---@param zMin number Minimum world-space Z.
+---@param zMax number Maximum world-space Z.
+---@param filter? table Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}.
+---@return table Array of altitude-hit tables.
+function LWorld:queryAltitudeOverlap(x, y, radius, zMin, zMax, filter) end
+
 --- Casts a ray from point (x1,y1) to (x2,y2) and returns the first body hit, or nil.
 ---@param x1 number Ray origin X.
 ---@param y1 number Ray origin Y.
@@ -24613,6 +24803,11 @@ function LWorld:raycastClosest(x, y, dx, dy, maxDist, filter) end
 ---@return boolean True when the body velocity was updated, false for inactive bodies, zero-speed bodies, or degenerate normals.
 function LWorld:reflectBodyVelocity(bodyId, normalX, normalY, coefficient) end
 
+--- Removes one active engine-owned ballistic projectile by id.
+---@param id number Stable projectile id.
+---@return boolean True when the projectile existed.
+function LWorld:removeBallisticProjectile(id) end
+
 --- Disables and removes one authored flow field by id.
 ---@param id number Flow field id.
 ---@return boolean True when the field existed and was active.
@@ -24635,6 +24830,10 @@ function LWorld:resetWorld() end
 ---@param opts? table Optional table with `layerMask`.
 ---@return table Flow sample table with `vx`, `vy`, `magnitude`, `intensity`, and `sources`.
 function LWorld:sampleFlow(x, y, opts) end
+
+--- Attaches or replaces the world's 2.5D altitude layer from an `LAltitudeLayer` snapshot.
+---@param layer LAltitudeLayer Altitude layer payload to copy into this world.
+function LWorld:setAltitudeLayer(layer) end
 
 --- Registers a callback function invoked whenever two bodies begin touching.
 ---@param callback function Called with (bodyIdA, bodyIdB) on each new contact.
@@ -24754,6 +24953,11 @@ function LWorld:setSolverIterations(n) end
 --- Forces a body into the sleeping state, pausing its simulation until disturbed.
 ---@param id number The body ID.
 function LWorld:sleepBody(id) end
+
+--- Spawns a deterministic engine-owned ballistic projectile and returns its stable id.
+---@param opts table Projectile options: { owner?, from, to or target, speed, gravity, radius, height?, maxTime?, sampleDt? }.
+---@return number Stable projectile id within the world.
+function LWorld:spawnBallisticProjectile(opts) end
 
 --- Advances the physics simulation by a time delta and fires any registered contact callbacks.
 ---@param dt number Time step in seconds (e.g. 1/60 for 60 FPS).
@@ -24922,6 +25126,11 @@ lurek.physics.getCollisions = function(world) end
 ---@param body LBody The body.
 ---@return boolean True if sleeping is allowed.
 lurek.physics.isSleepingAllowed = function(world, body) end
+
+--- Creates a deterministic altitude-layer grid for 2.5D terrain height and clearance sampling.
+---@param opts table Layer options: { width, height, cellSize, defaultGroundHeight?, sampleMode? }.
+---@return LAltitudeLayer Detached altitude-layer handle.
+lurek.physics.newAltitudeLayer = function(opts) end
 
 --- Creates a new body in a world (free-function variant).
 ---@param world LWorld The target world.
@@ -26666,7 +26875,7 @@ function LRaycaster:addParticleEmitter(emitter) end
 function LRaycaster:applyDoorManager(doors, alpha) end
 
 --- Builds a complete textured raycaster scene for GPU rendering. Stores the output internally.
----@param params table Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b?, camera_height?, horizon_offset?, time_seconds?, background?, overlays?}. `background` accepts solid, gradient, skybox, or shader descriptors. `overlays` accepts fog, depth fog, snow, or shader descriptors.
+---@param params table Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b/a?, camera_height?, horizon_offset?, time_seconds?, background?, overlays?}. Set `ceiling_a=0` to skip untextured ceiling polygons while still rendering textured roof cells. `background` accepts solid, gradient, skybox, or shader descriptors. `overlays` accepts fog, depth fog, snow, or shader descriptors.
 ---@param lights? table Array of render light tables {x, y, radius, r?, g?, b?, color?, intensity?, level?}.
 ---@param sprites? table|LSpriteManager Array of sprite tables {x, y, texture?, size?, front_texture?, right_texture?, back_texture?, left_texture?, angle?} or an LSpriteManager with integer/LImage textures.
 ---@param wallTextures? table Map of cell_value -> texture for wall surfaces.
@@ -28972,6 +29181,12 @@ lurek.scene.render = function() end
 --- Call `render_ui(self)` on render-active scenes ordered by layer (lowest first).
 lurek.scene.renderUi = function() end
 
+--- Fully restore scene shared data and rebuild the scene stack from registered scene names captured by `serializeScene`.
+---@param snapshot table Snapshot table with `stack` and `data` fields from `serializeScene`.
+---@param opts? table Optional table with `params[name] = value` forwarded to each restored scene's `enter(self, params)` callback.
+---@return number Number of scenes restored onto the stack.
+lurek.scene.restoreScene = function(snapshot, opts) end
+
 --- Capture the current scene stack state as a serializable snapshot table. The snapshot contains a `stack` array of registered scene names (in stack order) and a `data` map of shared data key-value pairs. Use this for save/load systems to persist the player's navigation state.
 ---@return LSceneSerializeSceneResult A snapshot table with `stack` (array of scene name strings) and `data` (key-value map) fields.
 lurek.scene.serializeScene = function() end
@@ -30948,6 +31163,17 @@ function LTileField:getRegionCells(name) end
 ---@return table Array of region names.
 function LTileField:getRegionNames() end
 
+--- Returns all properties for a named region, or nil when the region does not exist.
+---@param name string Region name.
+---@return table Key-value table of string properties, or nil.
+function LTileField:getRegionProperties(name) end
+
+--- Returns one string property from a named region, or nil when absent.
+---@param name string Region name.
+---@param key string Property key.
+---@return string Stored property value, or nil.
+function LTileField:getRegionProperty(name, key) end
+
 --- Returns field width, height, and level count.
 ---@return number Field width in cells.
 ---@return number Field height in cells.
@@ -30992,6 +31218,13 @@ function LTileField:line(opts) end
 ---@param z? number One-based level, default 1.
 ---@return boolean True when the region contains the cell.
 function LTileField:regionContains(name, x, y, z) end
+
+--- Returns all region names that contain the addressed one-based tile cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@return table Array of region names in stable order.
+function LTileField:regionsAt(x, y, z) end
 
 --- Removes a named modifier and clears it from all cells.
 ---@param name string Modifier name.
@@ -31090,6 +31323,12 @@ function LTileField:setRef(x, y, z, slot, value) end
 ---@param name string Region name.
 ---@param cells table Array of `{ x, y, z? }` cells.
 function LTileField:setRegionCells(name, cells) end
+
+--- Sets or clears one string property on a named region. Numbers and booleans are stringified; nil removes the property.
+---@param name string Region name.
+---@param key string Property key.
+---@param value any String/number/boolean value, or nil to remove.
+function LTileField:setRegionProperty(name, key, value) end
 
 --- Defines or replaces a named region from an inclusive one-based tile rectangle.
 ---@param name string Region name.

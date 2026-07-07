@@ -26,6 +26,8 @@ pub struct TileRegion {
     pub name: String,
     /// Whole tile cells owned by the region.
     pub cells: Vec<CellCoord>,
+    /// Arbitrary string properties attached to the region.
+    pub properties: HashMap<String, String>,
 }
 
 /// Multi-level tile gameplay field.
@@ -221,8 +223,18 @@ impl TileField {
                 cells.push(CellCoord { x, y, z });
             }
         }
-        self.regions
-            .insert(name.clone(), TileRegion { name, cells });
+        self.regions.insert(
+            name.clone(),
+            TileRegion {
+                properties: self
+                    .regions
+                    .get(&name)
+                    .map(|region| region.properties.clone())
+                    .unwrap_or_default(),
+                name,
+                cells,
+            },
+        );
         Ok(())
     }
 
@@ -244,6 +256,11 @@ impl TileField {
         self.regions.insert(
             name.clone(),
             TileRegion {
+                properties: self
+                    .regions
+                    .get(&name)
+                    .map(|region| region.properties.clone())
+                    .unwrap_or_default(),
                 name,
                 cells: unique,
             },
@@ -271,6 +288,60 @@ impl TileField {
     /// Return region names in stable sorted order.
     pub fn region_names(&self) -> Vec<String> {
         let mut names: Vec<_> = self.regions.keys().cloned().collect();
+        names.sort();
+        names
+    }
+
+    /// Set, replace, or clear one string property on a named region.
+    pub fn set_region_property(
+        &mut self,
+        name: &str,
+        key: String,
+        value: Option<String>,
+    ) -> Result<(), String> {
+        let region = self
+            .regions
+            .get_mut(name)
+            .ok_or_else(|| format!("tilefield region '{name}' does not exist"))?;
+        let key = key.trim();
+        if key.is_empty() {
+            return Err("tilefield region property name must not be empty".to_string());
+        }
+        match value {
+            Some(value) => {
+                region.properties.insert(key.to_string(), value);
+            }
+            None => {
+                region.properties.remove(key);
+            }
+        }
+        self.bump_version();
+        Ok(())
+    }
+
+    /// Return one string property from a named region.
+    pub fn region_property(&self, name: &str, key: &str) -> Option<&str> {
+        self.regions
+            .get(name)
+            .and_then(|region| region.properties.get(key))
+            .map(|value| value.as_str())
+    }
+
+    /// Return cloned properties for a named region.
+    pub fn region_properties(&self, name: &str) -> Option<HashMap<String, String>> {
+        self.regions
+            .get(name)
+            .map(|region| region.properties.clone())
+    }
+
+    /// Return sorted region names that contain the given coordinate.
+    pub fn regions_at(&self, coord: CellCoord) -> Vec<String> {
+        let mut names = Vec::new();
+        for (name, region) in &self.regions {
+            if region.cells.contains(&coord) {
+                names.push(name.clone());
+            }
+        }
         names.sort();
         names
     }

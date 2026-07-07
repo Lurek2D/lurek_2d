@@ -149,6 +149,8 @@ impl World {
             self.bodies[i].angle = angle;
             self.bodies[i].angular_velocity = angvel;
         }
+        self.step_body_altitudes(effective_dt);
+        self.step_ballistic_projectiles(effective_dt);
         for event in event_col.drain() {
             let ca = event.collider1();
             let cb = event.collider2();
@@ -1050,6 +1052,9 @@ impl World {
         self.body_mass_overrides.clear();
         self.body_materials.clear();
         self.fixture_materials.clear();
+        self.body_altitudes.clear();
+        self.ballistic_projectiles.clear();
+        self.ballistic_projectile_hits.clear();
         self.zones.clear();
         self.gravity_vectors.clear();
         self.flow_fields.clear();
@@ -1138,6 +1143,7 @@ impl World {
         self.body_active[id] = false;
         self.zone_tracker.remove_body(id);
         self.one_way_normals[id] = None;
+        self.clear_body_altitude_state(id);
     }
     /// Set linear velocity of body `id` in world units per second.
     pub fn set_body_velocity(&mut self, id: usize, vx: f32, vy: f32) {

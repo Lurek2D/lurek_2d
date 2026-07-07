@@ -508,7 +508,9 @@ fn pair_is_water(registry: &ProvinceRegistry, id: ProvinceId) -> bool {
 }
 
 fn road_anchor_for(registry: &ProvinceRegistry, id: ProvinceId) -> Option<(f32, f32)> {
-    registry.capital_for(id).or_else(|| registry.centroid_for(id))
+    registry
+        .capital_for(id)
+        .or_else(|| registry.centroid_for(id))
 }
 
 fn segment_border_style(
