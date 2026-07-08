@@ -61,6 +61,30 @@ describe("registry queries", function()
         local changes = reg:getChangesSince(rev0)
         expect_true(#changes >= 1)
     end)
+
+    -- @covers LProvinceRegistry:resolveMapModeColors
+    it("resolves map mode colors without rendering", function()
+        local reg = lurek.province.newFromPng("test-province-mode-colors", "content/games/eu2/map.png")
+        reg:setPoliticalColor(1, 0.25, 0.5, 0.75, 1.0)
+        local colors = reg:resolveMapModeColors(nil, { ids = { 1 } })
+        expect_near(0.25, colors[1][1], 0.001)
+        expect_near(0.5, colors[1][2], 0.001)
+        expect_near(0.75, colors[1][3], 0.001)
+        expect_near(1.0, colors[1][4], 0.001)
+    end)
+
+    -- @covers LProvinceRegistry:borderSegmentsWhere
+    it("filters border segments by province", function()
+        local reg = lurek.province.newFromPng("test-province-border-filter", "content/games/eu2/map.png")
+        local all = reg:borderSegments()
+        expect_true(#all > 0)
+        local id = all[1].province_a
+        local filtered = reg:borderSegmentsWhere({ province = id })
+        expect_true(#filtered > 0)
+        for i = 1, #filtered do
+            expect_true(filtered[i].province_a == id or filtered[i].province_b == id)
+        end
+    end)
 end)
 
 -- @describe province camera/view helpers

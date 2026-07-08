@@ -214,6 +214,14 @@ pub struct BallisticArcOptions {
 pub struct BallisticProjectileOptions {
     /// Optional owning body id.
     pub owner: Option<usize>,
+    /// Optional homing target body id for gameplay steering.
+    pub homing_target: Option<usize>,
+    /// Optional faction bit used by gameplay-side filtering.
+    pub faction_mask: u32,
+    /// Number of targets this projectile may pierce before expiring.
+    pub pierce_count: u32,
+    /// Optional impact metadata label returned to scripts for hit routing.
+    pub impact_metadata: Option<String>,
     /// Spawn origin in XY and altitude.
     pub from: (f32, f32, f32),
     /// Desired target point in XY and altitude.
@@ -252,6 +260,14 @@ pub struct BallisticProjectile {
     pub id: usize,
     /// Optional owning body or gameplay id.
     pub owner: Option<usize>,
+    /// Optional homing target body id for gameplay steering.
+    pub homing_target: Option<usize>,
+    /// Optional faction bit used by gameplay-side filtering.
+    pub faction_mask: u32,
+    /// Number of targets this projectile may pierce before expiring.
+    pub pierce_count: u32,
+    /// Optional impact metadata label returned to scripts for hit routing.
+    pub impact_metadata: Option<String>,
     /// Current XY and altitude position.
     pub position: (f32, f32, f32),
     /// Current XY and vertical velocity.

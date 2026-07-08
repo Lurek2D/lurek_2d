@@ -249,6 +249,32 @@ impl LuaUserData for LuaParticleSystem {
             }
             Ok(())
         });
+        // -- emitAt --
+        /// Moves the emitter, optionally changes direction, and emits particles immediately.
+        /// @param | x | number | Emitter x coordinate.
+        /// @param | y | number | Emitter y coordinate.
+        /// @param | count? | integer | Number of particles to emit; defaults to 1.
+        /// @param | direction? | number | Optional emission direction in radians.
+        methods.add_method(
+            "emitAt",
+            |_, this, (x, y, count, direction): (f32, f32, Option<u32>, Option<f32>)| {
+                let x = finite_f32("LParticleSystem:emitAt", "x", x)?;
+                let y = finite_f32("LParticleSystem:emitAt", "y", y)?;
+                let direction = direction
+                    .map(|dir| finite_f32("LParticleSystem:emitAt", "direction", dir))
+                    .transpose()?;
+                let mut st = this.state.borrow_mut();
+                if let Some(ps) = st.particle_systems.get_mut(this.key) {
+                    ps.emitter_x = x;
+                    ps.emitter_y = y;
+                    if let Some(direction) = direction {
+                        ps.config.direction = direction;
+                    }
+                    ps.emit(count.unwrap_or(1));
+                }
+                Ok(())
+            },
+        );
         // -- start --
         /// Starts particle emission on this object.
         methods.add_method("start", |_, this, ()| {
@@ -1739,7 +1765,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s_preset = state.clone();
     // -- newPreset --
     /// Creates a particle system from a named preset.
-    /// @param | name | string | Preset name: `fire`, `smoke`, `rain`, `snow`, or `sparks`.
+    /// @param | name | string | Preset name: `fire`, `smoke`, `rain`, `snow`, `sparks`, `explosion`, `muzzle`, or `smoke_trail`.
     /// @return | LParticleSystem | New particle system handle.
     tbl.set(
         "newPreset",
@@ -1750,6 +1776,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 "rain" => particle_presets::rain(),
                 "snow" => particle_presets::snow(),
                 "sparks" => particle_presets::sparks(),
+                "explosion" => particle_presets::explosion(),
+                "muzzle" => particle_presets::muzzle(),
+                "smoke_trail" => particle_presets::smoke_trail(),
                 _ => {
                     return Err(LuaError::runtime(format!(
                         "unknown particle preset '{name}'"

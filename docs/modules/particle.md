@@ -117,7 +117,7 @@ lurek.particle.newPreset(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Preset name: `fire`, `smoke`, `rain`, `snow`, or `sparks`. |
+| `name` | string | Preset name: `fire`, `smoke`, `rain`, `snow`, `sparks`, `explosion`, `muzzle`, or `smoke_trail`. |
 
 **Returns**
 
@@ -135,7 +135,11 @@ do
     fire:setEmissionRate(48)
     local x, y = fire:getPosition()
     local rate = fire:getEmissionRate()
+    local explosion = lurek.particle.newPreset("explosion")
+    local muzzle = lurek.particle.newPreset("muzzle")
+    local trail = lurek.particle.newPreset("smoke_trail")
     lurek.log.info("campfire preset at " .. x .. "," .. y .. " emits " .. rate)
+    lurek.log.info("shooter presets = " .. explosion:type() .. "," .. muzzle:type() .. "," .. trail:type())
 end
 ```
 
@@ -735,6 +739,39 @@ do
     ps:emit(100)
 
     lurek.log.info("after emit = " .. ps:count())
+end
+```
+
+---
+
+#### `LParticleSystem:emitAt`
+
+Moves the emitter, optionally changes direction, and emits particles immediately.
+
+```lua
+LParticleSystem:emitAt(x, y, count, direction)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Emitter x coordinate. |
+| `y` | number | Emitter y coordinate. |
+| `count?` | number | Number of particles to emit; defaults to 1. |
+| `direction?` | number | Optional emission direction in radians. |
+
+**Example**
+
+```lua
+do
+    local ps = lurek.particle.newPreset("muzzle")
+    ps:emitAt(48, 32, 6, 0)
+    local x, y = ps:getPosition()
+    local direction = ps:getDirection()
+    ps:emitAt(x + 8, y, 2, direction)
+    lurek.log.info("[particle.example] emitAt count=" .. tostring(ps:getCount()))
+    lurek.log.info("[particle.example] emitAt pos=" .. tostring(x) .. "," .. tostring(y))
 end
 ```
 

@@ -267,7 +267,7 @@ fn diagnostics_table(
 }
 /// Lua-side handle wrapping a `TileMap` with layers, tile data, viewports, auto-tiling, and render command output.
 pub struct LuaTileMap {
-    pub(super) inner: Rc<RefCell<TileMap>>,
+    pub(crate) inner: Rc<RefCell<TileMap>>,
     state: Rc<RefCell<SharedState>>,
 }
 impl LuaUserData for LuaTileMap {

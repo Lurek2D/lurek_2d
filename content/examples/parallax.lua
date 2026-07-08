@@ -704,3 +704,15 @@ do
     lurek.log.info("parallax shader active=" .. tostring(active ~= nil))
     lurek.log.info("parallax opacity=" .. tostring(layer:getOpacity()))
 end
+
+--@api: lurek.parallax.newLayerSet
+do
+    local img = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local set = lurek.parallax.newLayerSet("horizontal_bg", {
+        { texture = img, preset = "far" },
+        { texture = img, preset = "mid" },
+        { texture = img, preset = "fog" },
+    })
+    set:update(0.016)
+    lurek.log.info("newLayerSet layers=" .. tostring(set:layerCount()))
+end

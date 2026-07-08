@@ -666,6 +666,81 @@ describe("lurek.dialog", function()
         expect_false(seq:typeOf("LDialogueAI"))
     end)
 end)
+
+-- @describe dialog story compiler
+describe("dialog story compiler", function()
+    -- @covers lurek.dialog.compileStory
+    -- @covers LDialogStory:start
+    -- @covers LDialogStory:continue
+    -- @covers LDialogStory:getChoices
+    -- @covers LDialogStory:choose
+    it("runs safe Ink-subset lines, choices, variables, and diverts", function()
+        local story = lurek.dialog.compileStory([[
+            VAR hero = "Ada"
+            === START ===
+            Hello, {hero}. #greeting
+            * Continue | -> NEXT
+            === NEXT ===
+            Done.
+            -> END
+        ]])
+        story:start()
+        local line, tags = story:continue()
+        expect_equal("Hello, Ada.", line)
+        expect_equal("greeting", tags[1])
+        local choices = story:getChoices()
+        expect_equal(1, #choices)
+        expect_equal("Continue", choices[1].text)
+        story:choose(1)
+        expect_equal("Done.", story:continue())
+        expect_equal(nil, story:continue())
+        expect_false(story:canContinue())
+    end)
+
+    -- @covers LDialogStory:setVariable
+    -- @covers LDialogStory:getVariable
+    -- @covers LDialogStory:listVariables
+    -- @covers LDialogStory:visitCount
+    -- @covers LDialogStory:snapshot
+    -- @covers LDialogStory:restore
+    it("stores variables and restores snapshots", function()
+        local story = lurek.dialog.compileStory([[
+            === START ===
+            {flag}
+        ]])
+        story:setVariable("flag", "before")
+        story:start()
+        local snapshot = story:snapshot()
+        story:setVariable("flag", "after")
+        expect_equal("after", story:getVariable("flag"))
+        story:restore(snapshot)
+        expect_equal("before", story:getVariable("flag"))
+        expect_equal(1, story:visitCount("START"))
+        expect_true(#story:listVariables() >= 1)
+    end)
+
+    -- @covers LDialogStory:continueAll
+    -- @covers LDialogStory:gotoKnot
+    -- @covers LDialogStory:type
+    -- @covers LDialogStory:typeOf
+    it("supports draining lines, jumping knots, and runtime type checks", function()
+        local story = lurek.dialog.compileStory([[
+            === START ===
+            One.
+            Two.
+            === LATER ===
+            Later.
+        ]])
+        story:start()
+        expect_equal("One.\nTwo.", story:continueAll())
+        story:gotoKnot("LATER")
+        expect_equal("Later.", story:continueAll())
+        expect_equal("LDialogStory", story:type())
+        expect_true(story:typeOf("LDialogStory"))
+        expect_true(story:typeOf("LObject"))
+        expect_false(story:typeOf("LDialogSequencer"))
+    end)
+end)
 end
 -- END test_dialog_core_unit.lua
 

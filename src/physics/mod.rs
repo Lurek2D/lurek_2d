@@ -25,6 +25,8 @@ pub mod limits;
 pub mod liquid;
 /// Reusable body and fixture material descriptors.
 pub mod material;
+/// Stateless projectile math helpers for casts, reflection, and shooter-style ergonomics.
+pub mod projectile;
 /// Debug render helpers for physics shapes.
 pub mod render;
 /// Shape definitions for bodies and standalone queries.
@@ -58,6 +60,7 @@ pub use liquid::{
     LiquidStepOptions, LiquidStepStats,
 };
 pub use material::PhysicsMaterial;
+pub use projectile::reflect_velocity;
 pub use shape::{AlphaShapeOptions, Shape, StandaloneShape};
 pub use terrain::{
     TerrainCollapseMode, TerrainCollapseOptions, TerrainCollapseResult, TerrainComponent,

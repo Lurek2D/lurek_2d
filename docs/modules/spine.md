@@ -439,6 +439,28 @@ end
 
 ---
 
+#### `LSkeleton:applyLoadoutVisuals`
+
+Applies visual attachment mappings from an ECS loadout to matching skeleton slots.
+
+```lua
+LSkeleton:applyLoadoutVisuals(loadout)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `loadout` | [LLoadout](ecs.md#lloadout) | Loadout whose equipped parts provide visual slot mappings. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Number of slot attachments changed. |
+
+---
+
 #### `LSkeleton:bindAtlas`
 
 Binds all atlas entries as sprite-region attachment sources by name.

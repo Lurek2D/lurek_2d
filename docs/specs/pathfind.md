@@ -14,7 +14,7 @@
 - Source path: `src/pathfind`
 - Binding: `src/lua_api/pathfind_api.rs`
 - Namespace: `lurek.pathfind`
-- Lua API surface: `35` functions, `31` types, `205` methods
+- Lua API surface: `35` functions, `31` types, `209` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -838,7 +838,10 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 ##### Methods
 
 - `LUnitPathfinder:clearCache() -> nil`: Clears all cached paths on this object.
+- `LUnitPathfinder:clearReservations() -> integer`: Clears all caller-owned reserved cells.
 - `LUnitPathfinder:clearSharedGoalCache() -> nil`: Clears all cached shared-goal fields on this object.
+- `LUnitPathfinder:findAttackMovePaths(starts, gx, gy, unit_size?, max_steps?) -> table`: Finds one path per start toward a shared attack-move goal.
+- `LUnitPathfinder:findFormationPaths(starts, gx, gy, unit_size?, spacing?) -> table`: Finds one path per start toward formation slots around a shared goal.
 - `LUnitPathfinder:findNearestWalkable(x, y, max_radius, unit_size?) -> integer`: Finds nearest walkable one-based grid cell within a radius.
 - `LUnitPathfinder:findPartialPath(x1, y1, x2, y2, max_nodes, unit_size?) -> table`: Finds the best reachable path from a start to a goal within a maximum node budget. Useful for incremental pathfinding across frames.
 - `LUnitPathfinder:findPath(x1, y1, x2, y2, unit_size?) -> table`: Finds a path between one-based grid cells.
@@ -858,6 +861,7 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 - `LUnitPathfinder:heuristicDistance(x1, y1, x2, y2) -> number`: Returns heuristic distance between two one-based cells.
 - `LUnitPathfinder:isCacheEnabled() -> boolean`: Returns whether the pathfinder's internal caches are enabled.
 - `LUnitPathfinder:isReachable(x1, y1, x2, y2, unit_size?) -> boolean`: Returns whether a target cell is reachable from a start cell.
+- `LUnitPathfinder:reserveCells(cells) -> integer`: Records caller-owned cell reservations for batch planning.
 - `LUnitPathfinder:setCacheEnabled(enabled) -> nil`: Enables or disables the pathfinder's internal route and shared-goal caches on this object.
 - `LUnitPathfinder:setCacheMaxSize(n) -> nil`: Sets maximum path cache size for this object.
 - `LUnitPathfinder:type() -> string`: Returns the Lua-visible type name for this pathfinder handle.

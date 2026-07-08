@@ -3537,4 +3537,68 @@ end)
 end
 -- END test_physics_altitude_unit.lua
 
+-- @describe horizontal shooter physics helpers
+describe("horizontal shooter physics helpers", function()
+    -- @covers lurek.physics.reflectVelocity
+    it("reflectVelocity reflects a vector around a normal", function()
+        local vx, vy = lurek.physics.reflectVelocity(10, 0, -1, 0, 0.5)
+        expect_near(-5, vx, 0.001)
+        expect_near(0, vy, 0.001)
+        expect_error(function()
+            lurek.physics.reflectVelocity(10, 0, 0, 0)
+        end)
+    end)
+
+    -- @covers LWorld:configureCollisionGroups
+    it("configureCollisionGroups builds named group profiles", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local groups = world:configureCollisionGroups({
+            player = { group = 0, collidesWith = { "enemy" } },
+            enemy = { group = 1, collidesWith = { "player", "terrain" } },
+            terrain = { group = 2, collidesWith = { "enemy" } },
+        })
+        expect_equal(0, groups.player.group)
+        expect_equal(1, groups.enemy.group)
+        expect_equal(1, groups.player.layer)
+        expect_true(world:getCollisionPair(0, 1))
+        expect_false(world:getCollisionPair(0, 2))
+    end)
+
+    -- @covers LWorld:newProjectileBody
+    it("newProjectileBody applies projectile defaults and options", function()
+        local world = lurek.physics.newWorld(0, 100)
+        local projectile = world:newProjectileBody({
+            x = 0, y = 0, radius = 2, vx = 120, vy = -5,
+            group = 3, restitution = 0.25,
+        })
+        local vx, vy = projectile:getVelocity()
+        expect_near(120, vx, 0.001)
+        expect_near(-5, vy, 0.001)
+        expect_true(projectile:isBullet())
+        expect_true(projectile:isFixedRotation())
+        expect_near(0, projectile:getGravityScale(), 0.001)
+        expect_equal(3, projectile:getCollisionGroup())
+    end)
+
+    -- @covers LWorld:castProjectile
+    it("castProjectile returns hit and no-hit movement results", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local blocker = world:newCircleBody(20, 0, 4, "static")
+        world:step(1 / 60)
+        local hit = world:castProjectile({
+            x = 0, y = 0, radius = 2, dx = 1, dy = 0, maxDist = 50,
+        })
+        expect_true(hit.hit)
+        expect_equal(blocker:getId(), hit.hitBody)
+        expect_true(hit.travel < 50)
+
+        local miss = world:castProjectile({
+            x = 0, y = 20, radius = 2, vx = 10, vy = 0, dt = 1,
+        })
+        expect_false(miss.hit)
+        expect_near(10, miss.travel, 0.001)
+        expect_near(0, miss.remaining, 0.001)
+    end)
+end)
+
 test_summary()

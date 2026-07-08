@@ -755,3 +755,157 @@ do
     lurek.log.info("is sequencer = " .. tostring(is_seq))
     lurek.log.info("is object = " .. tostring(is_object) .. ", ai=" .. tostring(is_ai))
 end
+
+--@api: lurek.dialog.compileStory
+do
+    local story = lurek.dialog.compileStory("=== START ===\nHello, {hero}.\n-> END")
+    story:setVariable("hero", "Ada")
+    story:start()
+    local line = story:continue()
+    lurek.log.info("compiled story line = " .. tostring(line))
+end
+
+--@api: LDialogStory:start
+do
+    local story = lurek.dialog.compileStory("=== START ===\nIntro.\n=== LATER ===\nLater.")
+    story:start("LATER")
+    local line = story:continue()
+    local can_continue = story:canContinue()
+    lurek.log.info("started knot line = " .. tostring(line))
+    lurek.log.info("can continue after one line = " .. tostring(can_continue))
+end
+
+--@api: LDialogStory:canContinue
+do
+    local story = lurek.dialog.compileStory("=== START ===\nLine one.\nLine two.")
+    story:start()
+    local before = story:canContinue()
+    local first = story:continue()
+    local after = story:canContinue()
+    lurek.log.info("story canContinue before=" .. tostring(before) .. " after=" .. tostring(after) .. " first=" .. tostring(first))
+end
+
+--@api: LDialogStory:continue
+do
+    local story = lurek.dialog.compileStory("=== START ===\nTagged line. #mood:calm")
+    story:start()
+    local line, tags = story:continue()
+    local tag = tags[1]
+    lurek.log.info("story continue line = " .. tostring(line))
+    lurek.log.info("story continue tag = " .. tostring(tag))
+end
+
+--@api: LDialogStory:continueAll
+do
+    local story = lurek.dialog.compileStory("=== START ===\nOne.\nTwo.")
+    story:start()
+    local text = story:continueAll(" / ")
+    local ended = not story:canContinue()
+    lurek.log.info("story continueAll text = " .. tostring(text))
+    lurek.log.info("story continueAll ended = " .. tostring(ended))
+end
+
+--@api: LDialogStory:getChoices
+do
+    local story = lurek.dialog.compileStory("=== START ===\n* Open door | -> OPEN\n=== OPEN ===\nOpened.")
+    story:start()
+    local choices = story:getChoices()
+    local choice = choices[1]
+    lurek.log.info("choice count = " .. tostring(#choices))
+    lurek.log.info("first choice = " .. tostring(choice and choice.text))
+end
+
+--@api: LDialogStory:choose
+do
+    local story = lurek.dialog.compileStory("=== START ===\n* Continue | -> NEXT\n=== NEXT ===\nDone.")
+    story:start()
+    story:choose(1)
+    local line = story:continue()
+    lurek.log.info("chosen story line = " .. tostring(line))
+end
+
+--@api: LDialogStory:gotoKnot
+do
+    local story = lurek.dialog.compileStory("=== START ===\nStart.\n=== SECRET ===\nSecret.")
+    story:start()
+    story:gotoKnot("SECRET")
+    local line = story:continue()
+    lurek.log.info("goto knot line = " .. tostring(line))
+end
+
+--@api: LDialogStory:setVariable
+do
+    local story = lurek.dialog.compileStory("=== START ===\n{hero} enters.")
+    story:setVariable("hero", "Mira")
+    story:start()
+    local line = story:continue()
+    lurek.log.info("story variable line = " .. tostring(line))
+end
+
+--@api: LDialogStory:getVariable
+do
+    local story = lurek.dialog.compileStory("VAR score = 3\n=== START ===\nScore.")
+    story:start()
+    local score = story:getVariable("score")
+    story:setVariable("score", score + 2)
+    lurek.log.info("story variable score = " .. tostring(story:getVariable("score")))
+end
+
+--@api: LDialogStory:listVariables
+do
+    local story = lurek.dialog.compileStory("VAR route = \"common\"\n=== START ===\nRoute.")
+    story:setVariable("flag", true)
+    local vars = story:listVariables()
+    table.sort(vars)
+    lurek.log.info("story variable count = " .. tostring(#vars))
+    lurek.log.info("first variable = " .. tostring(vars[1]))
+end
+
+--@api: LDialogStory:visitCount
+do
+    local story = lurek.dialog.compileStory("=== START ===\nIntro.")
+    story:start()
+    local first = story:visitCount("START")
+    story:start()
+    local second = story:visitCount("START")
+    lurek.log.info("story visits " .. tostring(first) .. " -> " .. tostring(second))
+end
+
+--@api: LDialogStory:snapshot
+do
+    local story = lurek.dialog.compileStory("VAR flag = \"before\"\n=== START ===\n{flag}")
+    story:start()
+    local snapshot = story:snapshot()
+    story:setVariable("flag", "after")
+    lurek.log.info("story snapshot knot = " .. tostring(snapshot.knot))
+    lurek.log.info("story value after snapshot = " .. tostring(story:getVariable("flag")))
+end
+
+--@api: LDialogStory:restore
+do
+    local story = lurek.dialog.compileStory("VAR flag = \"before\"\n=== START ===\n{flag}")
+    story:start()
+    local snapshot = story:snapshot()
+    story:setVariable("flag", "after")
+    story:restore(snapshot)
+    lurek.log.info("restored story flag = " .. tostring(story:getVariable("flag")))
+end
+
+--@api: LDialogStory:type
+do
+    local story = lurek.dialog.compileStory("=== START ===\nType.")
+    story:start()
+    local type_name = story:type()
+    local line = story:continue()
+    lurek.log.info("story type = " .. tostring(type_name))
+    lurek.log.info("story type line = " .. tostring(line))
+end
+
+--@api: LDialogStory:typeOf
+do
+    local story = lurek.dialog.compileStory("=== START ===\nType check.")
+    local is_story = story:typeOf("LDialogStory")
+    local is_object = story:typeOf("LObject")
+    local is_seq = story:typeOf("LDialogSequencer")
+    lurek.log.info("story typeOf story=" .. tostring(is_story) .. " object=" .. tostring(is_object) .. " seq=" .. tostring(is_seq))
+end

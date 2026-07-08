@@ -1,4 +1,4 @@
-//! This file owns ready-made `ParticleConfig` constructors for common effects such as fire, smoke, rain, snow, and sparks.
+//! This file owns ready-made `ParticleConfig` constructors for common effects such as fire, smoke, rain, snow, sparks, explosion, muzzle, and smoke trails.
 //! Each function returns a fully populated config with tuned lifetimes, speeds, colors, sizes, and emission shapes.
 //! The presets are data-oriented so callers can clone them and override fields without touching emitter internals.
 //! No live particle state is stored here; this file is the catalog layer for reusable effect starting points.
@@ -97,6 +97,82 @@ pub fn sparks() -> ParticleConfig {
         spread: std::f32::consts::PI,
         sizes: vec![3.0, 1.0],
         colors: vec![[1.0, 0.9, 0.5, 1.0], [1.0, 0.25, 0.05, 0.0]],
+        ..ParticleConfig::default()
+    }
+}
+/// Return a burst-only radial explosion preset for impact effects; call `emit` or `emitAt` manually.
+pub fn explosion() -> ParticleConfig {
+    ParticleConfig {
+        emission_rate: 0.0,
+        lifetime_min: 0.18,
+        lifetime_max: 0.55,
+        speed_min: 90.0,
+        speed_max: 240.0,
+        spread: std::f32::consts::PI,
+        gravity_y: 20.0,
+        sizes: vec![10.0, 7.0, 2.0],
+        colors: vec![
+            [1.0, 0.95, 0.55, 1.0],
+            [1.0, 0.35, 0.08, 0.8],
+            [0.18, 0.12, 0.1, 0.0],
+        ],
+        emission_shape: EmissionShape::Circle {
+            radius: 8.0,
+            fill: true,
+        },
+        turbulence: 18.0,
+        drag: 0.02,
+        ..ParticleConfig::default()
+    }
+}
+
+/// Return a compact forward burst preset for weapon muzzle flashes; call `emitAt` with a direction.
+pub fn muzzle() -> ParticleConfig {
+    ParticleConfig {
+        emission_rate: 0.0,
+        lifetime_min: 0.04,
+        lifetime_max: 0.12,
+        speed_min: 120.0,
+        speed_max: 260.0,
+        direction: 0.0,
+        spread: 0.28,
+        sizes: vec![7.0, 2.0, 0.5],
+        colors: vec![
+            [1.0, 0.95, 0.6, 1.0],
+            [1.0, 0.55, 0.18, 0.6],
+            [0.5, 0.18, 0.05, 0.0],
+        ],
+        emission_shape: EmissionShape::Circle {
+            radius: 3.0,
+            fill: true,
+        },
+        ..ParticleConfig::default()
+    }
+}
+
+/// Return a low-rate smoke trail preset for projectiles and damaged objects.
+pub fn smoke_trail() -> ParticleConfig {
+    ParticleConfig {
+        emission_rate: 45.0,
+        lifetime_min: 0.45,
+        lifetime_max: 1.2,
+        speed_min: 8.0,
+        speed_max: 38.0,
+        direction: std::f32::consts::PI,
+        spread: 0.9,
+        gravity_y: -5.0,
+        sizes: vec![4.0, 9.0, 14.0],
+        colors: vec![
+            [0.24, 0.24, 0.22, 0.55],
+            [0.34, 0.34, 0.32, 0.32],
+            [0.42, 0.42, 0.4, 0.0],
+        ],
+        emission_shape: EmissionShape::Circle {
+            radius: 4.0,
+            fill: true,
+        },
+        drag: 0.04,
+        turbulence: 10.0,
         ..ParticleConfig::default()
     }
 }

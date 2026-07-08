@@ -13,8 +13,7 @@ use crate::pathfind::{
     bidirectional_astar, build_graph_adjacency_map, find_graph_route_bfs,
     find_graph_route_dijkstra, graph_connected, graph_connected_components, AsyncPathEvent,
     AsyncPathRequest, DiagonalMode, FlowField, FootprintSpec, NavGrid, NavMesh, ORCAAgent,
-    ORCAComputeStats, ORCASolver, PathEventStatus, PathThreadPool, SteeringManager,
-    UnitPathfinder,
+    ORCAComputeStats, ORCASolver, PathEventStatus, PathThreadPool, SteeringManager, UnitPathfinder,
     UpdateRebuildMode, Waypoint,
 };
 use crate::pathfind::{HexGrid, HexLayout, InfluenceMap, IsoGrid, JpsGrid, RangeMap};
@@ -252,16 +251,13 @@ fn lua_points_to_zero_based(points: LuaTable, api: &str) -> LuaResult<Vec<(u32, 
     Ok(out)
 }
 
-fn lua_path_pairs_to_zero_based(
-    pairs: LuaTable,
-    api: &str,
-) -> LuaResult<Vec<ZeroBasedPathPair>> {
+fn lua_path_pairs_to_zero_based(pairs: LuaTable, api: &str) -> LuaResult<Vec<ZeroBasedPathPair>> {
     let mut out = Vec::new();
     for pair in pairs.sequence_values::<LuaTable>() {
         let entry = pair?;
-        let start = entry
-            .get::<_, LuaTable>("start")
-            .map_err(|err| LuaError::RuntimeError(format!("{api}: start must be a table: {err}")))?;
+        let start = entry.get::<_, LuaTable>("start").map_err(|err| {
+            LuaError::RuntimeError(format!("{api}: start must be a table: {err}"))
+        })?;
         let goal = entry
             .get::<_, LuaTable>("goal")
             .map_err(|err| LuaError::RuntimeError(format!("{api}: goal must be a table: {err}")))?;
@@ -1138,6 +1134,82 @@ impl LuaUserData for LuaUnitPathfinder {
                 Ok(LuaValue::Table(waypoint_options_to_lua(lua, &paths)?))
             },
         );
+        // -- findFormationPaths --
+        /// Finds one path per start toward formation slots around a shared goal.
+        /// @param | starts | table | Array of `{x, y}` start tables.
+        /// @param | gx | integer | One-based formation center column.
+        /// @param | gy | integer | One-based formation center row.
+        /// @param | unit_size | integer? | Unit footprint in cells (default 1).
+        /// @param | spacing | integer? | Slot spacing in cells (default 1).
+        /// @return | table | Array of path arrays; unreachable entries are nil.
+        methods.add_method(
+            "findFormationPaths",
+            |lua,
+             this,
+             (starts, gx, gy, unit_size, spacing): (
+                LuaTable,
+                u32,
+                u32,
+                Option<u32>,
+                Option<u32>,
+            )| {
+                let goal = one_based_coords_u32(gx, gy, "gx", "gy")?;
+                let start_points =
+                    lua_points_to_zero_based(starts, "LUnitPathfinder:findFormationPaths")?;
+                let paths = this.inner.borrow_mut().find_formation_paths(
+                    &start_points,
+                    goal,
+                    unit_size.unwrap_or(1),
+                    spacing.unwrap_or(1),
+                );
+                Ok(LuaValue::Table(waypoint_options_to_lua(lua, &paths)?))
+            },
+        );
+        // -- findAttackMovePaths --
+        /// Finds one path per start toward a shared attack-move goal.
+        /// @param | starts | table | Array of `{x, y}` start tables.
+        /// @param | gx | integer | One-based goal column.
+        /// @param | gy | integer | One-based goal row.
+        /// @param | unit_size | integer? | Unit footprint in cells (default 1).
+        /// @param | max_steps | integer? | Maximum downhill steps to follow for each start.
+        /// @return | table | Array of path arrays; unreachable entries are nil.
+        methods.add_method(
+            "findAttackMovePaths",
+            |lua,
+             this,
+             (starts, gx, gy, unit_size, max_steps): (
+                LuaTable,
+                u32,
+                u32,
+                Option<u32>,
+                Option<u32>,
+            )| {
+                let goal = one_based_coords_u32(gx, gy, "gx", "gy")?;
+                let start_points =
+                    lua_points_to_zero_based(starts, "LUnitPathfinder:findAttackMovePaths")?;
+                let paths = this.inner.borrow_mut().find_attack_move_paths(
+                    &start_points,
+                    goal,
+                    unit_size.unwrap_or(1),
+                    max_steps.unwrap_or(0),
+                );
+                Ok(LuaValue::Table(waypoint_options_to_lua(lua, &paths)?))
+            },
+        );
+        // -- reserveCells --
+        /// Records caller-owned cell reservations for batch planning.
+        /// @param | cells | table | Array of `{x, y}` one-based cells.
+        /// @return | integer | Total reserved cell count after the update.
+        methods.add_method("reserveCells", |_, this, cells: LuaTable| {
+            let cells = lua_points_to_zero_based(cells, "LUnitPathfinder:reserveCells")?;
+            Ok(this.inner.borrow_mut().reserve_cells(&cells))
+        });
+        // -- clearReservations --
+        /// Clears all caller-owned reserved cells.
+        /// @return | integer | Number of reservations cleared.
+        methods.add_method("clearReservations", |_, this, ()| {
+            Ok(this.inner.borrow_mut().clear_reservations())
+        });
         // -- getSharedFlowField --
         /// Returns a cached shared-goal flow field handle for one target cell and unit footprint size.
         /// @param | gx | integer | One-based goal column.
@@ -2999,12 +3071,15 @@ impl LuaUserData for LuaORCASolver {
         /// @param | idx | integer | Zero-based ORCA agent index or stable caller-provided key.
         /// @param | vx | number | Current X velocity.
         /// @param | vy | number | Current Y velocity.
-        methods.add_method_mut("setVelocity", |_, this, (idx, vx, vy): (usize, f32, f32)| {
-            if let Some(a) = this.inner.borrow_mut().agent_for_key_mut(idx) {
-                a.velocity = (vx, vy);
-            }
-            Ok(())
-        });
+        methods.add_method_mut(
+            "setVelocity",
+            |_, this, (idx, vx, vy): (usize, f32, f32)| {
+                if let Some(a) = this.inner.borrow_mut().agent_for_key_mut(idx) {
+                    a.velocity = (vx, vy);
+                }
+                Ok(())
+            },
+        );
         // -- setPosition --
         /// Sets the position for an ORCA agent addressed by zero-based index or stable key.
         /// @param | idx | integer | Zero-based ORCA agent index or stable caller-provided key.

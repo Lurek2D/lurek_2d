@@ -13,7 +13,7 @@
 - Source path: `src/dialog`
 - Binding: `src/lua_api/dialog_api.rs`
 - Namespace: `lurek.dialog`
-- Lua API surface: `11` functions, `4` types, `58` methods
+- Lua API surface: `12` functions, `5` types, `73` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -90,6 +90,10 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - Start, advance, end, reset, and variable mutation helpers live here so dialog progression state stays centralized.
 - Read it when conversation persistence, visit tracking, or runtime variable handling for dialog sessions needs changes.
 
+### story.rs
+
+- Safe Ink-subset story compiler and runtime for `lurek.dialog.compileStory`.
+
 ### tree.rs
 
 - `src/dialog/tree.rs` owns the authored dialogue graph and the scoring logic that selects topics and branches.
@@ -107,6 +111,7 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 - `lurek.dialog.call(fn_name, opts?) -> table`: Creates a Call node (invokes a Lua function by name).
 - `lurek.dialog.choice(prompt, options, opts?) -> table`: Creates a Choice node with selectable options.
+- `lurek.dialog.compileStory(source, opts?) -> LDialogStory`: Compiles a safe Ink-subset story source into an `LDialogStory`.
 - `lurek.dialog.event(name, data?, opts?) -> table`: Creates an Event node (fires a named callback).
 - `lurek.dialog.jump(target, opts?) -> table`: Creates a Jump node (branches to a labeled position).
 - `lurek.dialog.label(name) -> table`: Creates a Label node used as a jump target marker.
@@ -165,6 +170,32 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - `LDialogSequencer:type() -> string`: Returns the Lua-visible type name.
 - `LDialogSequencer:typeOf(name) -> boolean`: Returns whether this handle matches a supported type name.
 - `LDialogSequencer:update(dt) -> nil`: Advances the sequencer by dt seconds, updating typewriter reveal.
+
+#### LDialogStory Type
+
+- Lua handle for a compiled safe Ink-subset story.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LDialogStory:canContinue() -> nil`: Returns whether the story can emit another line.
+- `LDialogStory:choose(index) -> nil`: Selects an available story choice by one-based choice index.
+- `LDialogStory:continue() -> nil`: Emits the next story line and tag array, or nil at choice/end.
+- `LDialogStory:continueAll(sep?) -> nil`: Drains story lines until a choice or end and joins them.
+- `LDialogStory:getChoices() -> nil`: Returns available choices as `{text, available, tags, index}` rows.
+- `LDialogStory:getVariable(name) -> nil`: Returns one story variable value, or nil when the story variable is not currently defined.
+- `LDialogStory:gotoKnot(name) -> nil`: Jumps immediately to a named story knot and resets the story position to that knot start.
+- `LDialogStory:listVariables() -> nil`: Lists story variable names.
+- `LDialogStory:restore(snapshot) -> nil`: Restores a snapshot returned by `snapshot`.
+- `LDialogStory:setVariable(name, value) -> nil`: Sets or replaces one story variable using a nil, boolean, number, or string value.
+- `LDialogStory:snapshot() -> nil`: Returns a serializable story runtime snapshot.
+- `LDialogStory:start(knot?) -> nil`: Starts the story at a named knot or at START/ENTRY/first knot.
+- `LDialogStory:type() -> nil`: Returns the Lua userdata type name for compiled dialog story handles.
+- `LDialogStory:typeOf(name) -> nil`: Returns true for `LDialogStory` and shared `LObject` runtime type checks.
+- `LDialogStory:visitCount(name) -> nil`: Returns how many times a knot has been entered.
 
 #### LDialogueAI Type
 

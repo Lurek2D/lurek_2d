@@ -12,7 +12,7 @@
 - Source path: `src/tilefield`
 - Binding: `src/lua_api/tilefield_api.rs`
 - Namespace: `lurek.tilefield`
-- Lua API surface: `6` functions, `2` types, `79` methods
+- Lua API surface: `6` functions, `2` types, `86` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
@@ -180,6 +180,7 @@ This module is mostly self-contained inside the Feature Systems group. Cross-mod
 - `LTileField:clearCell(x, y, z?) -> nil`: Clears gameplay state for one addressed cell.
 - `LTileField:clearLine(from_tbl, to_tbl, channel, opts?) -> boolean`: Returns true when the line between two cell tables has no blocker for a channel.
 - `LTileField:clearModifier(x, y, z?, modifier) -> boolean`: Removes one modifier from one cell.
+- `LTileField:clearOccupant(x, y, z?) -> boolean`: Clears any occupant id stored on one tile cell.
 - `LTileField:clearRef(x, y, z?, slot) -> nil`: Clears a named object/tile reference from one cell.
 - `LTileField:defineCategory(name, opts?) -> nil`: Defines or replaces a user category used by movement, awareness, light, sun, or custom systems.
 - `LTileField:defineSlot(slot) -> nil`: Defines a named object slot that cells may reference.
@@ -198,6 +199,7 @@ This module is mostly self-contained inside the Feature Systems group. Cross-mod
 - `LTileField:getModifier(name) -> table|nil`: Returns a named tile modifier table, or nil.
 - `LTileField:getModifiers(x, y, z?) -> string[]`: Returns active modifier names on one cell.
 - `LTileField:getNeighbors(x, y, z?) -> table`: Returns topology-aware same-level neighbours for one cell.
+- `LTileField:getOccupant(x, y, z?) -> integer`: Returns the occupant id stored on one tile cell.
 - `LTileField:getProfile(name) -> table|nil`: Returns a legacy profile table, or nil.
 - `LTileField:getRef(x, y, z?, slot) -> integer|table|nil`: Returns a named object/tile reference from one cell, or nil.
 - `LTileField:getRefProperties(x, y, z?, slot, tileset, opts?) -> table|nil`: Reads all tileset properties for a tile referenced from one cell.
@@ -209,12 +211,14 @@ This module is mostly self-contained inside the Feature Systems group. Cross-mod
 - `LTileField:getRegionNames() -> table`: Returns all region names in stable order.
 - `LTileField:getRegionProperties(name) -> table`: Returns all properties for a named region, or nil when the region does not exist.
 - `LTileField:getRegionProperty(name, key) -> string`: Returns one string property from a named region, or nil when absent.
+- `LTileField:getResource(x, y, z?) -> string`: Returns a resource label stored on one tile cell.
 - `LTileField:getSize() -> integer`: Returns field width, height, and level count.
 - `LTileField:getSunOcclusion(x, y, z?) -> number`: Returns top-light occlusion in the inclusive range 0..1.
 - `LTileField:getTopology() -> string`: Returns the field topology name used for coordinate interpretation.
 - `LTileField:getVersion() -> integer`: Returns the current tilefield data version.
 - `LTileField:hasSlot(slot) -> boolean`: Returns true when a named object slot is declared.
 - `LTileField:inBounds(x, y, z?) -> boolean`: Returns whether one-based coordinates are inside the field.
+- `LTileField:isBuildable(x, y, z?) -> boolean`: Returns whether one tile cell accepts build placement.
 - `LTileField:line(opts) -> nil`: Returns topology-aware one-based cells between `from` and `to` tables.
 - `LTileField:regionContains(name, x, y, z?) -> boolean`: Returns whether a named region contains a one-based tile cell.
 - `LTileField:regionsAt(x, y, z?) -> table`: Returns all region names that contain the addressed one-based tile cell.
@@ -223,6 +227,7 @@ This module is mostly self-contained inside the Feature Systems group. Cross-mod
 - `LTileField:removeRegion(name) -> boolean`: Removes a named region definition and its stored cell membership from this field.
 - `LTileField:removeSlot(slot) -> boolean`: Removes a named object slot and clears its references from the field.
 - `LTileField:setBlock(x, y, z?, channel, blocked) -> nil`: Sets whether a cell blocks a channel.
+- `LTileField:setBuildable(x, y, z?, buildable) -> nil`: Sets whether one tile cell accepts build placement.
 - `LTileField:setCategoryBlock(x, y, z?, category, blocked) -> nil`: Sets one category blocker on one cell.
 - `LTileField:setCategoryCost(x, y, z?, category, cost) -> nil`: Sets one movement-cost override for a category on one cell.
 - `LTileField:setCategoryFilter(x, y, z?, category, filter) -> nil`: Sets one RGB category filter on one cell.
@@ -230,11 +235,13 @@ This module is mostly self-contained inside the Feature Systems group. Cross-mod
 - `LTileField:setCell(x, y, z?, cell) -> nil`: Sets cell state from a table with optional `blocks`, `costs`, `sunOcclusion`, `refs`, and `modifiers`.
 - `LTileField:setCost(x, y, z?, channel, cost) -> nil`: Sets the cost for one cell/channel.
 - `LTileField:setModifier(name, modifier) -> nil`: Registers or replaces a named tile modifier.
+- `LTileField:setOccupant(x, y, z?, occupant) -> nil`: Stores an occupant id on one tile cell.
 - `LTileField:setProfile(name, profile) -> nil`: Registers or replaces a legacy tilefield profile.
 - `LTileField:setRef(x, y, z?, slot, value) -> nil`: Sets a named object/tile reference on one cell.
 - `LTileField:setRegionCells(name, cells) -> nil`: Defines or replaces a named region from explicit one-based tile cells.
 - `LTileField:setRegionProperty(name, key, value) -> nil`: Sets or clears one string property on a named region. Numbers and booleans are stringified; nil removes the property.
 - `LTileField:setRegionRect(name, x1, y1, x2, y2, z?) -> nil`: Defines or replaces a named region from an inclusive one-based tile rectangle.
+- `LTileField:setResource(x, y, z?, resource?) -> nil`: Sets or clears a resource label on one tile cell.
 - `LTileField:setSunOcclusion(x, y, z?, value) -> nil`: Sets top-light occlusion in the inclusive range 0..1.
 - `LTileField:type() -> string`: Returns the Lua-visible type name for this tilefield handle.
 - `LTileField:typeOf(name) -> boolean`: Returns whether this handle matches a supported type name.

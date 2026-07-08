@@ -528,4 +528,25 @@ end)
 end
 -- END test_parallax_core_unit.lua
 
+-- @describe parallax layer set helpers
+describe("parallax layer set helpers", function()
+    -- @covers lurek.parallax.newLayerSet
+    it("newLayerSet builds layers from definitions and presets", function()
+        local img = lurek.render.newImage("assets/icon.png")
+        local set = lurek.parallax.newLayerSet("shooter-bg", {
+            { texture = img, preset = "mid", z = -20 },
+            { texture = img, scroll_factor_x = 0.1, z = -100 },
+        })
+        expect_equal("LParallaxSet", set:type())
+        expect_equal(2, set:layerCount())
+        expect_equal(-100, set:getLayerZAt(1))
+
+        local unsorted = lurek.parallax.newLayerSet("manual-order", {
+            { texture = img, z = 10 },
+            { texture = img, z = -10 },
+        }, { sort = false })
+        expect_equal(10, unsorted:getLayerZAt(1))
+    end)
+end)
+
 test_summary()

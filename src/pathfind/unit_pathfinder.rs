@@ -10,7 +10,7 @@ use crate::runtime::log_messages::{UP01, UP02, UP03};
 use crate::log_msg;
 use crate::pathfind::{astar, nav_grid::NavGrid, FlowField, FootprintSpec};
 use std::cell::RefCell;
-use std::collections::{HashMap, VecDeque};
+use std::collections::{HashMap, HashSet, VecDeque};
 use std::rc::Rc;
 
 const DEFAULT_SHARED_GOAL_CACHE_MAX_SIZE: usize = 32;
@@ -71,6 +71,8 @@ pub struct UnitPathfinder {
     shared_goal_cache_hits: u64,
     /// Number of cache misses that rebuilt one shared-goal field.
     shared_goal_cache_misses: u64,
+    /// Caller-reserved cells used by RTS-style batch planners.
+    reserved_cells: HashSet<(u32, u32)>,
 }
 /// All public and private methods for `UnitPathfinder`.
 impl UnitPathfinder {
@@ -89,6 +91,7 @@ impl UnitPathfinder {
             shared_goal_cache_max_size: DEFAULT_SHARED_GOAL_CACHE_MAX_SIZE,
             shared_goal_cache_hits: 0,
             shared_goal_cache_misses: 0,
+            reserved_cells: HashSet::new(),
         }
     }
     /// Find a path from `(x1, y1)` to `(x2, y2)` for a unit of `unit_size`; return waypoints or `None`.
@@ -161,6 +164,56 @@ impl UnitPathfinder {
             FootprintSpec::new(unit_size, unit_size),
             max_steps,
         )
+    }
+    /// Find per-unit formation paths by spreading goal cells horizontally around a center.
+    pub fn find_formation_paths(
+        &mut self,
+        starts: &[(u32, u32)],
+        goal: (u32, u32),
+        unit_size: u32,
+        spacing: u32,
+    ) -> Vec<Option<Vec<Waypoint>>> {
+        let spacing = spacing.max(1);
+        let half = starts.len().saturating_sub(1) as i32 / 2;
+        starts
+            .iter()
+            .enumerate()
+            .map(|(index, start)| {
+                let offset = index as i32 - half;
+                let gx = if offset.is_negative() {
+                    goal.0.saturating_sub(offset.unsigned_abs() * spacing)
+                } else {
+                    goal.0.saturating_add(offset as u32 * spacing)
+                };
+                self.find_path(start.0, start.1, gx, goal.1, unit_size)
+            })
+            .collect()
+    }
+
+    /// Find attack-move paths using the shared-goal path surface.
+    pub fn find_attack_move_paths(
+        &mut self,
+        starts: &[(u32, u32)],
+        goal: (u32, u32),
+        unit_size: u32,
+        max_steps: u32,
+    ) -> Vec<Option<Vec<Waypoint>>> {
+        self.find_paths_to_goal(starts, goal, unit_size, max_steps)
+    }
+
+    /// Reserve caller-owned grid cells for later batch planning.
+    pub fn reserve_cells(&mut self, cells: &[(u32, u32)]) -> usize {
+        for cell in cells {
+            self.reserved_cells.insert(*cell);
+        }
+        self.reserved_cells.len()
+    }
+
+    /// Clear all caller-owned reserved cells.
+    pub fn clear_reservations(&mut self) -> usize {
+        let count = self.reserved_cells.len();
+        self.reserved_cells.clear();
+        count
     }
     /// Build or reuse one named-footprint shared-goal field, then reconstruct routes from `starts` to `goal`.
     pub fn find_paths_to_goal_for(
@@ -430,10 +483,7 @@ impl UnitPathfinder {
 
         let mut out = vec![None; pairs.len()];
         for (goal, entries) in grouped {
-            let starts = entries
-                .iter()
-                .map(|(_, start)| *start)
-                .collect::<Vec<_>>();
+            let starts = entries.iter().map(|(_, start)| *start).collect::<Vec<_>>();
             let paths = self.find_paths_to_goal_spec(&starts, goal, footprint, max_steps);
             for ((index, _), path) in entries.into_iter().zip(paths.into_iter()) {
                 out[index] = path;

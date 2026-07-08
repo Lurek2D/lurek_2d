@@ -1088,4 +1088,22 @@ end)
 end
 -- END test_input_unit.lua
 
+-- @describe input action batch helpers
+describe("input action batch helpers", function()
+    -- @covers lurek.input.defineActions
+    it("defineActions accepts simple and object action definitions", function()
+        lurek.input.reset()
+        local count = lurek.input.defineActions({
+            fire = { "space", "mouse1" },
+            boost = { bindings = { "lshift" }, category = "movement" },
+            brake = { bindings = { "s" } },
+        }, "combat")
+        expect_equal(3, count)
+        expect_equal(2, #lurek.input.getBindings().fire)
+        expect_equal(1, #lurek.input.getByCategory("movement"))
+        expect_equal(2, #lurek.input.getByCategory("combat"))
+        lurek.input.reset()
+    end)
+end)
+
 test_summary()

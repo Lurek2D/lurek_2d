@@ -13,7 +13,7 @@
 - Source path: `src/input`
 - Binding: `src/lua_api/input_api.rs`
 - Namespace: `lurek.input`
-- Lua API surface: `89` functions, `8` types, `18` methods
+- Lua API surface: `90` functions, `8` types, `18` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -137,6 +137,7 @@ This module primarily collaborates with `filesystem`, `runtime`. Its responsibil
 - `lurek.input.bind(action, keys) -> nil`: Adds one or more keyboard/gamepad bindings to an action.
 - `lurek.input.clearBindings() -> nil`: Removes all action bindings from the map.
 - `lurek.input.define(name, bindings, category?) -> nil`: Defines an action with a full set of bindings and an optional category, replacing any prior definition.
+- `lurek.input.defineActions(defs, defaultCategory?) -> integer`: Defines multiple named actions at once, replacing prior definitions.
 - `lurek.input.deserializeBindings(json) -> boolean`: Loads action definitions from a JSON string produced by serializeBindings, replacing all current definitions.
 - `lurek.input.gamepad.getAxis(id, axis) -> number`: Returns a gamepad axis value by index.
 - `lurek.input.gamepad.getAxisCount(id) -> integer`: Returns the axis count for a gamepad.

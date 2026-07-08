@@ -3251,3 +3251,59 @@ do
     local count = deck:count()
     lurek.log.info("deck count = " .. count)
 end
+
+--@api: lurek.patterns.groupBy
+do
+    local units = {
+        { name = "pike", role = "front" },
+        { name = "archer", role = "back" },
+        { name = "shield", role = "front" },
+    }
+    local groups = lurek.patterns.groupBy(units, "role")
+    lurek.log.info("front group size = " .. tostring(#groups.front))
+end
+
+--@api: lurek.patterns.countBy
+do
+    local items = {
+        { tier = "common" },
+        { tier = "rare" },
+        { tier = "common" },
+    }
+    local counts = lurek.patterns.countBy(items, "tier")
+    lurek.log.info("common count = " .. tostring(counts.common))
+end
+
+--@api: lurek.patterns.sortedIndices
+do
+    local scores = {
+        { id = "a", score = 12 },
+        { id = "b", score = 30 },
+        { id = "c", score = 18 },
+    }
+    local order = lurek.patterns.sortedIndices(scores, function(item) return item.score end, { desc = true })
+    lurek.log.info("highest score id = " .. tostring(scores[order[1]].id))
+end
+
+--@api: lurek.patterns.topN
+do
+    local threats = {
+        { name = "scout", weight = 1 },
+        { name = "tank", weight = 8 },
+        { name = "raider", weight = 4 },
+    }
+    local top = lurek.patterns.topN(threats, "weight", 2)
+    lurek.log.info("top threat = " .. tostring(top[1].name) .. " selected=" .. tostring(#top))
+end
+
+--@api: lurek.patterns.findSequences
+do
+    local tiles = {
+        { x = 1 },
+        { x = 2 },
+        { x = 3 },
+        { x = 7 },
+    }
+    local runs = lurek.patterns.findSequences(tiles, "x", { minLength = 3 })
+    lurek.log.info("sequence count = " .. tostring(#runs) .. " first_len=" .. tostring(#runs[1]))
+end

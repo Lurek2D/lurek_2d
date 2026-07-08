@@ -246,29 +246,20 @@ impl LuaUserData for LSceneObjectContainer {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         /// Adds an object table to the scene container.
         /// @param | obj | table | Object table to append to the scene container.
-        methods.add_method("add", |lua, this, obj: LuaTable| {
-            let container = this.get_container(lua)?;
-            let add_fn: LuaFunction = container.get("add")?;
-            add_fn.call::<_, ()>((container.clone(), obj))?;
-            Ok(())
-        });
+        methods.add_method_mut("add", |lua, this, obj: LuaTable| this.add(lua, obj));
 
         /// Define an object group and return its 0-based bit index.
         /// @param | name | string | Group name to define.
         /// @return | integer | Bit index from 0 to 15.
-        methods.add_method("defineGroup", |lua, this, name: String| {
-            let container = this.get_container(lua)?;
-            let define_fn: LuaFunction = container.get("defineGroup")?;
-            define_fn.call::<_, i32>((container.clone(), name))
+        methods.add_method_mut("defineGroup", |_, this, name: String| {
+            this.define_group(name)
         });
 
         /// Return the bit index assigned to a group name.
         /// @param | name | string | Group name to inspect.
         /// @return | integer | Bit index, or nil when undefined.
-        methods.add_method("getGroupBit", |lua, this, name: String| {
-            let container = this.get_container(lua)?;
-            let get_fn: LuaFunction = container.get("getGroupBit")?;
-            get_fn.call::<_, LuaValue>((container.clone(), name))
+        methods.add_method("getGroupBit", |_, this, name: String| {
+            Ok(this.get_group_bit(&name))
         });
 
         /// Enable or disable one object group for one pass.
@@ -276,12 +267,10 @@ impl LuaUserData for LSceneObjectContainer {
         /// @param | pass | string | Pass name: update, physics/process_physics, or draw.
         /// @param | enabled | boolean | True to include the group in the pass.
         /// @return | boolean | True when the group and pass were accepted.
-        methods.add_method(
+        methods.add_method_mut(
             "setGroupEnabled",
-            |lua, this, (group, pass, enabled): (LuaValue, String, bool)| {
-                let container = this.get_container(lua)?;
-                let set_fn: LuaFunction = container.get("setGroupEnabled")?;
-                set_fn.call::<_, bool>((container.clone(), group, pass, enabled))
+            |_, this, (group, pass, enabled): (LuaValue, String, bool)| {
+                Ok(this.set_group_enabled(group, pass, enabled))
             },
         );
 
@@ -291,88 +280,45 @@ impl LuaUserData for LSceneObjectContainer {
         /// @return | boolean | True when the group is enabled for that pass.
         methods.add_method(
             "isGroupEnabled",
-            |lua, this, (group, pass): (LuaValue, String)| {
-                let container = this.get_container(lua)?;
-                let is_fn: LuaFunction = container.get("isGroupEnabled")?;
-                is_fn.call::<_, bool>((container.clone(), group, pass))
-            },
+            |_, this, (group, pass): (LuaValue, String)| Ok(this.is_group_enabled(group, pass)),
         );
 
         /// Remove an object from the container (identity comparison).
         /// @param | obj | table | Object table reference to remove.
-        methods.add_method("remove", |lua, this, obj: LuaTable| {
-            let container = this.get_container(lua)?;
-            let remove_fn: LuaFunction = container.get("remove")?;
-            remove_fn.call::<_, ()>((container.clone(), obj))?;
-            Ok(())
-        });
+        methods.add_method_mut("remove", |lua, this, obj: LuaTable| this.remove(lua, obj));
 
         /// Remove all objects from the container.
-        methods.add_method("clear", |lua, this, ()| {
-            let container = this.get_container(lua)?;
-            let clear_fn: LuaFunction = container.get("clear")?;
-            clear_fn.call::<_, ()>(container.clone())?;
-            Ok(())
-        });
+        methods.add_method_mut("clear", |lua, this, ()| this.clear(lua));
 
         /// Call update(dt) on all objects that have an update method.
         /// @param | dt | number | Delta time in seconds for this frame.
-        methods.add_method("update", |lua, this, dt: f64| {
-            let container = this.get_container(lua)?;
-            let update_fn: LuaFunction = container.get("update")?;
-            update_fn.call::<_, ()>((container.clone(), dt))?;
-            Ok(())
-        });
+        methods.add_method("update", |lua, this, dt: f64| this.update(lua, dt));
 
         /// Call process_physics(dt) or physics(dt) on all physics-pass-enabled objects.
         /// @param | dt | number | Physics delta time in seconds.
         methods.add_method("processPhysics", |lua, this, dt: f64| {
-            let container = this.get_container(lua)?;
-            let physics_fn: LuaFunction = container.get("processPhysics")?;
-            physics_fn.call::<_, ()>((container.clone(), dt))?;
-            Ok(())
+            this.process_physics(lua, dt)
         });
 
         /// Call draw() on all objects that have a draw method, sorted by layer.
-        methods.add_method("draw", |lua, this, ()| {
-            let container = this.get_container(lua)?;
-            let draw_fn: LuaFunction = container.get("draw")?;
-            draw_fn.call::<_, ()>(container.clone())?;
-            Ok(())
-        });
+        methods.add_method("draw", |lua, this, ()| this.draw(lua));
 
         /// Get the number of objects currently in the container.
-        methods.add_method("getCount", |lua, this, ()| {
-            let container = this.get_container(lua)?;
-            let count_fn: LuaFunction = container.get("count")?;
-            count_fn.call::<_, i32>(container.clone())
-        });
+        methods.add_method("getCount", |_, this, ()| Ok(this.count()));
 
         /// Get all objects as an array (layer-sorted).
         /// @return | table | Sequential table containing current objects.
-        methods.add_method("getObjects", |lua, this, ()| {
-            let container = this.get_container(lua)?;
-            let objects_field: LuaValue = container.get("_objects")?;
-            Ok(objects_field)
-        });
+        methods.add_method("getObjects", |lua, this, ()| this.objects_table(lua));
 
         /// Get all objects whose layer equals `n`.
         /// @param | n | integer | Target layer value.
         /// @return | table | Sequential table of objects on the given layer.
-        methods.add_method("getByLayer", |lua, this, n: i32| {
-            let container = this.get_container(lua)?;
-            let get_by_layer_fn: LuaFunction = container.get("getByLayer")?;
-            get_by_layer_fn.call::<_, LuaValue>((container.clone(), n))
-        });
+        methods.add_method("getByLayer", |lua, this, n: i32| this.by_layer(lua, n));
 
         /// Check whether an object is present in the container.
         /// @param | obj | table | Object table to test.
         /// @return | boolean | True when the exact object exists in the container.
-        methods.add_method("has", |lua, this, obj: LuaTable| {
-            let container = this.get_container(lua)?;
-            let has_fn: LuaFunction = container.get("has")?;
-            has_fn.call::<_, bool>((container.clone(), obj))
-        });
+        methods.add_method("has", |lua, this, obj: LuaTable| this.has(lua, obj));
 
         /// Gets the Lua-visible type name of this userdata.
         /// @return | string | The literal `"LSceneObjectContainer"`.

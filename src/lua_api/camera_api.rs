@@ -668,6 +668,69 @@ impl LuaUserData for LuaCamera2D {
             this.inner.borrow_mut().preset_aggressive_follow();
             Ok(())
         });
+        // -- presetHorizontalFollow --
+        /// Applies a horizontal side-scroller follow preset with optional overrides.
+        /// @param | opts? | table | Options: { deadZoneW?, deadZoneH?, smooth?, lookAhead?, easing?, zoomDamping?, bounds? }.
+        methods.add_method(
+            "presetHorizontalFollow",
+            |_, this, opts: Option<LuaTable>| {
+                let dead_zone_w = opts
+                    .as_ref()
+                    .map(|tbl| tbl.get::<_, Option<f32>>("deadZoneW"))
+                    .transpose()?
+                    .flatten()
+                    .unwrap_or(220.0);
+                let dead_zone_h = opts
+                    .as_ref()
+                    .map(|tbl| tbl.get::<_, Option<f32>>("deadZoneH"))
+                    .transpose()?
+                    .flatten()
+                    .unwrap_or(96.0);
+                let smooth = opts
+                    .as_ref()
+                    .map(|tbl| tbl.get::<_, Option<f32>>("smooth"))
+                    .transpose()?
+                    .flatten()
+                    .unwrap_or(0.58);
+                let look_ahead = opts
+                    .as_ref()
+                    .map(|tbl| tbl.get::<_, Option<f32>>("lookAhead"))
+                    .transpose()?
+                    .flatten()
+                    .unwrap_or(0.35);
+                let easing = opts
+                    .as_ref()
+                    .map(|tbl| tbl.get::<_, Option<String>>("easing"))
+                    .transpose()?
+                    .flatten()
+                    .unwrap_or_else(|| "easeout".to_string());
+                let zoom_damping = opts
+                    .as_ref()
+                    .map(|tbl| tbl.get::<_, Option<f32>>("zoomDamping"))
+                    .transpose()?
+                    .flatten()
+                    .unwrap_or(0.18);
+                let mut camera = this.inner.borrow_mut();
+                camera.set_dead_zone(dead_zone_w, dead_zone_h);
+                camera.set_follow_smooth(smooth);
+                camera.set_look_ahead(look_ahead);
+                camera.set_follow_easing(parse_follow_easing(&easing));
+                camera.set_zoom_damping(zoom_damping);
+                if let Some(bounds_tbl) = opts
+                    .as_ref()
+                    .map(|tbl| tbl.get::<_, Option<LuaTable>>("bounds"))
+                    .transpose()?
+                    .flatten()
+                {
+                    let x: f32 = bounds_tbl.get("x")?;
+                    let y: f32 = bounds_tbl.get("y")?;
+                    let w: f32 = bounds_tbl.get("w")?;
+                    let h: f32 = bounds_tbl.get("h")?;
+                    camera.set_bounds(x, y, w, h);
+                }
+                Ok(())
+            },
+        );
         // -- type --
         /// Returns the Lua-visible type name for this camera handle.
         /// @return | string | The string `LCamera`.

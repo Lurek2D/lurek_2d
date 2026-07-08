@@ -297,7 +297,7 @@ describe("Evidence: lurek.minimap render output", function()
         save_png(mm:drawToImage(CELL), path)
     end)
 
-    -- Does: Uses `library.tilefield_minimap` to copy blocker, movement-cost, and tilelight exports into raw minimap layers.
+    -- Does: Uses LMinimap tilefield adapters to copy blocker, movement-cost, and tilelight exports into raw minimap layers.
     -- Shows: The PNG should show tilefield gameplay data rendered by minimap layer styling.
     -- Artifact: tests/artifacts/current/minimap/minimap_tilefield_layers.png
     -- Why: This proves tilefield remains the data owner while minimap owns compact layer rendering.
@@ -305,8 +305,6 @@ describe("Evidence: lurek.minimap render output", function()
     it("PNG: tilefield layers", function()
         ensure_evidence_dir("minimap")
         local path = OUT .. "minimap_tilefield_layers.png"
-        local TilefieldMinimap = require("library.tilefield_minimap")
-
         local W, H, CELL = 12, 9, 9
         local field = lurek.tilefield.new({ width = W, height = H, levels = 1 })
         for x = 4, 8 do
@@ -321,17 +319,15 @@ describe("Evidence: lurek.minimap render output", function()
 
         local mm = base_minimap(W, H, CELL)
         fill_terrain(mm, W, H, function() return 1 end)
-        local helper = TilefieldMinimap.new({ field = field, lightMap = light, width = W, height = H, minimap = mm })
-        helper:syncBlockLayer("move", 1, {
-            blocked_value = 9,
+        mm:syncTileFieldBlockLayer(field, "move", 1, {
             style = {
                 visible = true,
                 alpha = 1.0,
                 blend = "replace",
-                colors = { [9] = { 0.92, 0.12, 0.08, 1.0 } },
+                colors = { [255] = { 0.92, 0.12, 0.08, 1.0 } },
             },
         })
-        helper:syncCostLayer("move", 2, {
+        mm:syncTileFieldCostLayer(field, "move", 2, {
             scale = 2,
             style = {
                 visible = true,
@@ -343,7 +339,7 @@ describe("Evidence: lurek.minimap render output", function()
                 },
             },
         })
-        helper:syncLightLayer(3, {
+        mm:syncTileLightLayer(light, 3, {
             scale = 9,
             style = { visible = true, alpha = 0.75, blend = "add" },
         })
@@ -351,7 +347,7 @@ describe("Evidence: lurek.minimap render output", function()
         save_png(mm:drawToImage(CELL), path)
     end)
 
-    -- Does: Uses `library.awareness_minimap` to copy LTileAwareness visible/action masks into fog and raw minimap layers.
+    -- Does: Uses LMinimap awareness adapters to copy LTileAwareness visible/action masks into fog and raw minimap layers.
     -- Shows: The PNG should show fog-of-war plus an actionable overlay produced from visibility data.
     -- Artifact: tests/artifacts/current/minimap/minimap_visibility_fog_action.png
     -- Why: This proves visibility remains the mask authority while minimap owns fog and layer presentation.
@@ -359,8 +355,6 @@ describe("Evidence: lurek.minimap render output", function()
     it("PNG: visibility fog action", function()
         ensure_evidence_dir("minimap")
         local path = OUT .. "minimap_visibility_fog_action.png"
-        local AwarenessMinimap = require("library.awareness_minimap")
-
         local W, H, CELL = 14, 10, 9
         local field = lurek.tilefield.new({ width = W, height = H, levels = 1 })
         for y = 2, 9 do
@@ -386,10 +380,9 @@ describe("Evidence: lurek.minimap render output", function()
             return (x == 8 or y == 5) and 3 or 1
         end)
         mm:setFogColor(0.0, 0.0, 0.0, 0.78)
-        local helper = AwarenessMinimap.new({ visibility = awareness, width = W, height = H, minimap = mm })
-        helper:syncFog("scout")
-        helper:syncActionLayer("scout", 1, {
-            action_value = 8,
+        mm:syncTileAwarenessFog(awareness, "scout")
+        mm:syncTileAwarenessLayer(awareness, "scout", "action", 1, {
+            value = 8,
             style = {
                 visible = true,
                 alpha = 0.65,

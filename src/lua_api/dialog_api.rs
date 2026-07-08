@@ -1,8 +1,9 @@
 //! Registers the `lurek.dialog` Lua API for dialog userdata, action control, and script-managed dialog flows.
 
+use crate::dialog::story::StorySnapshot;
 use crate::dialog::{
     DialogHistoryEntry, DialogLineMeta, DialogSequencer, DialogSequencerSnapshot, DialogSignal,
-    DialogueAI, DialogueState, SequencerNode, Speaker, SpeakerRegistry,
+    DialogStory, DialogueAI, DialogueState, SequencerNode, Speaker, SpeakerRegistry, StoryValue,
 };
 use crate::runtime::SharedState;
 use mlua::prelude::*;
@@ -35,6 +36,100 @@ pub(crate) struct LuaSpeakerRegistry {
 pub(crate) struct LuaDialogSequencer {
     /// Sequencer managing node playback, choices, and typewriter effect.
     pub inner: Rc<RefCell<DialogSequencer>>,
+}
+
+/// Lua handle for a compiled safe Ink-subset story.
+#[derive(Clone)]
+pub(crate) struct LuaDialogStory {
+    inner: Rc<RefCell<DialogStory>>,
+}
+
+fn story_value_to_lua<'lua>(lua: &'lua Lua, value: &StoryValue) -> LuaResult<LuaValue<'lua>> {
+    Ok(match value {
+        StoryValue::Nil => LuaValue::Nil,
+        StoryValue::Bool(value) => LuaValue::Boolean(*value),
+        StoryValue::Number(value) => LuaValue::Number(*value),
+        StoryValue::String(value) => LuaValue::String(lua.create_string(value)?),
+    })
+}
+
+fn story_value_from_lua(value: LuaValue) -> LuaResult<StoryValue> {
+    Ok(match value {
+        LuaValue::Nil => StoryValue::Nil,
+        LuaValue::Boolean(value) => StoryValue::Bool(value),
+        LuaValue::Integer(value) => StoryValue::Number(value as f64),
+        LuaValue::Number(value) => StoryValue::Number(value),
+        LuaValue::String(value) => StoryValue::String(value.to_str()?.to_string()),
+        other => {
+            return Err(LuaError::RuntimeError(format!(
+                "LDialogStory variables support nil, boolean, number, and string, got {}",
+                other.type_name()
+            )));
+        }
+    })
+}
+
+fn story_snapshot_to_lua<'lua>(
+    lua: &'lua Lua,
+    snapshot: StorySnapshot,
+) -> LuaResult<LuaTable<'lua>> {
+    let table = lua.create_table()?;
+    let vars = lua.create_table()?;
+    for (name, value) in snapshot.vars.iter() {
+        vars.set(name.as_str(), story_value_to_lua(lua, value)?)?;
+    }
+    table.set("vars", vars)?;
+    let visits = lua.create_table()?;
+    for (name, count) in snapshot.visits.iter() {
+        visits.set(name.as_str(), *count)?;
+    }
+    table.set("visits", visits)?;
+    let chosen = lua.create_table()?;
+    for (index, key) in snapshot.chosen_once.iter().enumerate() {
+        chosen.set(index + 1, key.as_str())?;
+    }
+    table.set("chosenOnce", chosen)?;
+    table.set("knot", snapshot.knot)?;
+    table.set("pc", snapshot.pc + 1)?;
+    table.set("ended", snapshot.ended)?;
+    Ok(table)
+}
+
+fn story_snapshot_from_lua(table: LuaTable) -> LuaResult<StorySnapshot> {
+    let mut vars = std::collections::HashMap::new();
+    if let Some(vars_table) = table.get::<_, Option<LuaTable>>("vars")? {
+        for pair in vars_table.pairs::<String, LuaValue>() {
+            let (name, value) = pair?;
+            vars.insert(name, story_value_from_lua(value)?);
+        }
+    }
+    let mut visits = std::collections::HashMap::new();
+    if let Some(visits_table) = table.get::<_, Option<LuaTable>>("visits")? {
+        for pair in visits_table.pairs::<String, u32>() {
+            let (name, value) = pair?;
+            visits.insert(name, value);
+        }
+    }
+    let mut chosen_once = std::collections::HashSet::new();
+    if let Some(chosen_table) = table.get::<_, Option<LuaTable>>("chosenOnce")? {
+        for value in chosen_table.sequence_values::<String>() {
+            chosen_once.insert(value?);
+        }
+    }
+    let knot = table.get::<_, Option<String>>("knot")?;
+    let pc = table
+        .get::<_, Option<usize>>("pc")?
+        .unwrap_or(1)
+        .saturating_sub(1);
+    let ended = table.get::<_, Option<bool>>("ended")?.unwrap_or(false);
+    Ok(StorySnapshot {
+        vars,
+        visits,
+        chosen_once,
+        knot,
+        pc,
+        ended,
+    })
 }
 
 fn tags_from_opts(opts: &LuaTable, field: &str) -> LuaResult<Vec<String>> {
@@ -341,6 +436,144 @@ fn snapshot_from_lua(snapshot: LuaTable) -> LuaResult<DialogSequencerSnapshot> {
         history,
         pending_signals,
     })
+}
+
+impl LuaUserData for LuaDialogStory {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- start --
+        /// Starts the story at a named knot or at START/ENTRY/first knot.
+        methods.add_method("start", |_, this, knot: Option<String>| {
+            this.inner
+                .borrow_mut()
+                .start(knot)
+                .map_err(LuaError::RuntimeError)?;
+            Ok(())
+        });
+        // -- canContinue --
+        /// Returns whether the story can emit another line.
+        methods.add_method("canContinue", |_, this, ()| {
+            Ok(this.inner.borrow().can_continue())
+        });
+        // -- continue --
+        /// Emits the next story line and tag array, or nil at choice/end.
+        methods.add_method("continue", |lua, this, ()| {
+            match this
+                .inner
+                .borrow_mut()
+                .continue_line()
+                .map_err(LuaError::RuntimeError)?
+            {
+                Some((line, tags)) => {
+                    let tag_table = lua.create_table()?;
+                    for (index, tag) in tags.into_iter().enumerate() {
+                        tag_table.set(index + 1, tag)?;
+                    }
+                    Ok((Some(line), tag_table))
+                }
+                None => Ok((None, lua.create_table()?)),
+            }
+        });
+        // -- continueAll --
+        /// Drains story lines until a choice or end and joins them.
+        methods.add_method("continueAll", |_, this, sep: Option<String>| {
+            this.inner
+                .borrow_mut()
+                .continue_all(sep.as_deref().unwrap_or("\n"))
+                .map_err(LuaError::RuntimeError)
+        });
+        // -- getChoices --
+        /// Returns available choices as `{text, available, tags, index}` rows.
+        methods.add_method("getChoices", |lua, this, ()| {
+            let choices = this
+                .inner
+                .borrow_mut()
+                .choices()
+                .map_err(LuaError::RuntimeError)?;
+            let out = lua.create_table()?;
+            for choice in choices {
+                let row = lua.create_table()?;
+                row.set("text", choice.text)?;
+                row.set("available", true)?;
+                row.set("index", choice.index)?;
+                let tags = lua.create_table()?;
+                for (index, tag) in choice.tags.into_iter().enumerate() {
+                    tags.set(index + 1, tag)?;
+                }
+                row.set("tags", tags)?;
+                out.set(out.len()? + 1, row)?;
+            }
+            Ok(out)
+        });
+        // -- choose --
+        /// Selects an available story choice by one-based choice index.
+        methods.add_method("choose", |_, this, index: usize| {
+            this.inner
+                .borrow_mut()
+                .choose(index)
+                .map_err(LuaError::RuntimeError)?;
+            Ok(())
+        });
+        // -- gotoKnot --
+        /// Jumps immediately to a named story knot and resets the story position to that knot start.
+        methods.add_method("gotoKnot", |_, this, name: String| {
+            this.inner
+                .borrow_mut()
+                .goto_knot(name)
+                .map_err(LuaError::RuntimeError)?;
+            Ok(())
+        });
+        // -- setVariable --
+        /// Sets or replaces one story variable using a nil, boolean, number, or string value.
+        methods.add_method(
+            "setVariable",
+            |_, this, (name, value): (String, LuaValue)| {
+                this.inner
+                    .borrow_mut()
+                    .set_variable(name, story_value_from_lua(value)?);
+                Ok(())
+            },
+        );
+        // -- getVariable --
+        /// Returns one story variable value, or nil when the story variable is not currently defined.
+        methods.add_method("getVariable", |lua, this, name: String| {
+            story_value_to_lua(lua, &this.inner.borrow().get_variable(&name))
+        });
+        // -- listVariables --
+        /// Lists story variable names.
+        methods.add_method("listVariables", |lua, this, ()| {
+            let out = lua.create_table()?;
+            for (index, name) in this.inner.borrow().variable_names().into_iter().enumerate() {
+                out.set(index + 1, name)?;
+            }
+            Ok(out)
+        });
+        // -- visitCount --
+        /// Returns how many times a knot has been entered.
+        methods.add_method("visitCount", |_, this, name: String| {
+            Ok(this.inner.borrow().visit_count(&name))
+        });
+        // -- snapshot --
+        /// Returns a serializable story runtime snapshot.
+        methods.add_method("snapshot", |lua, this, ()| {
+            story_snapshot_to_lua(lua, this.inner.borrow().snapshot_state())
+        });
+        // -- restore --
+        /// Restores a snapshot returned by `snapshot`.
+        methods.add_method("restore", |_, this, snapshot: LuaTable| {
+            this.inner
+                .borrow_mut()
+                .restore_state(story_snapshot_from_lua(snapshot)?);
+            Ok(())
+        });
+        // -- type --
+        /// Returns the Lua userdata type name for compiled dialog story handles.
+        methods.add_method("type", |_, _, ()| Ok("LDialogStory"));
+        // -- typeOf --
+        /// Returns true for `LDialogStory` and shared `LObject` runtime type checks.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LDialogStory" || name == "LObject")
+        });
+    }
 }
 
 impl LuaUserData for LuaDialogueAI {
@@ -870,6 +1103,21 @@ impl LuaUserData for LuaDialogSequencer {
 /// Registers the `lurek.dialog` namespace on the given lurek table.
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let dialog_table = lua.create_table()?;
+
+    // -- compileStory --
+    /// Compiles a safe Ink-subset story source into an `LDialogStory`.
+    /// @param | source | string | Ink-subset source text.
+    /// @param | opts | table? | Reserved parser options.
+    /// @return | LDialogStory | Compiled story runtime.
+    dialog_table.set(
+        "compileStory",
+        lua.create_function(|_, (source, _opts): (String, Option<LuaTable>)| {
+            let story = DialogStory::compile(&source).map_err(LuaError::RuntimeError)?;
+            Ok(LuaDialogStory {
+                inner: Rc::new(RefCell::new(story)),
+            })
+        })?,
+    )?;
 
     // -- newAI --
     /// Creates an empty dialogue selector for weighted topics and branches.

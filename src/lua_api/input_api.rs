@@ -1361,6 +1361,72 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         )?,
     )?;
     let am = action_map.clone();
+    let rbc = rebind_callbacks.clone();
+    // -- defineActions --
+    /// Defines multiple named actions at once, replacing prior definitions.
+    /// @param | defs | table | Map of action name to binding array or { bindings = {...}, category? }.
+    /// @param | defaultCategory? | string | Category used when an action definition omits `category`.
+    /// @return | integer | Number of actions defined.
+    input_tbl.set(
+        "defineActions",
+        lua.create_function(
+            move |lua, (defs, default_category): (LuaTable, Option<String>)| {
+                let default_category = default_category.unwrap_or_default();
+                let mut updates: Vec<(String, Vec<String>, String)> = Vec::new();
+                for pair in defs.pairs::<String, LuaValue>() {
+                    let (name, value) = pair?;
+                    let (bindings_value, category) = match value {
+                        LuaValue::Table(tbl) => match tbl.get::<_, Option<LuaValue>>("bindings")? {
+                            Some(bindings) => (
+                                bindings,
+                                tbl.get::<_, Option<String>>("category")?
+                                    .unwrap_or_else(|| default_category.clone()),
+                            ),
+                            None => (LuaValue::Table(tbl), default_category.clone()),
+                        },
+                        other => (other, default_category.clone()),
+                    };
+                    let parsed = parse_binding_list("defineActions", bindings_value)?;
+                    updates.push((name, parsed, category));
+                }
+                let count = updates.len();
+                {
+                    let mut map = am.borrow_mut();
+                    for (name, bindings, category) in &updates {
+                        let def =
+                            ActionDef::new(bindings.clone(), category.clone()).map_err(|e| {
+                                LuaError::RuntimeError(format!("input.defineActions: {e}"))
+                            })?;
+                        map.insert(name.clone(), def);
+                    }
+                }
+                for (name, _, _) in &updates {
+                    let new_keys = am
+                        .borrow()
+                        .get(name)
+                        .map(|d| d.bindings.clone())
+                        .unwrap_or_default();
+                    let n = rbc.borrow().len();
+                    for i in 0..n {
+                        let cb = {
+                            let cbs = rbc.borrow();
+                            cbs.get(i)
+                                .and_then(|k| lua.registry_value::<LuaFunction>(k).ok())
+                        };
+                        if let Some(cb) = cb {
+                            let kt = lua.create_table()?;
+                            for (j, k) in new_keys.iter().enumerate() {
+                                kt.set(j + 1, k.clone())?;
+                            }
+                            cb.call::<_, ()>((name.clone(), kt))?;
+                        }
+                    }
+                }
+                Ok(count)
+            },
+        )?,
+    )?;
+    let am = action_map.clone();
     let s = state.clone();
     // -- getAxis --
     /// Returns -1.0, 0.0, or +1.0 for a named action; first binding is positive, second is negative.

@@ -107,6 +107,7 @@ The glossary collects terms that appear across module and API pages.
 - `LDepthSorter` ([lurek.scene](https://lurek2d.github.io/lurek_2d/modules/scene.html)) - Depth sorter exposed to Lua as `LDepthSorter`. Collects draw callbacks or drawable objects with numeric depth values and flushes them in back-to-front order for correct painter's-algorithm rendering. Ideal for sorting sprites, particles, and layered game objects within a single scene.
 - `LDialog` ([lurek.ui](https://lurek2d.github.io/lurek_2d/modules/ui.html)) - Adds dialog-specific methods to a dialog widget table.
 - `LDialogSequencer` ([lurek.dialog](https://lurek2d.github.io/lurek_2d/modules/dialog.html)) - Lua handle for a dialog sequencer with typewriter-reveal playback.
+- `LDialogStory` ([lurek.dialog](https://lurek2d.github.io/lurek_2d/modules/dialog.html)) - Lua handle for a compiled safe Ink-subset story.
 - `LDialogueAI` ([lurek.dialog](https://lurek2d.github.io/lurek_2d/modules/dialog.html)) - Lua handle for topic and branch selection driven by dialogue AI state.
 - `LDialogueState` ([lurek.dialog](https://lurek2d.github.io/lurek_2d/modules/dialog.html)) - Lua handle for dialog conversation state tracking.
 - `LDocEntry` ([lurek.docs](https://lurek2d.github.io/lurek_2d/modules/docs.html)) - Provides Lua accessors for documentation entry metadata.
@@ -143,4 +144,3 @@ The glossary collects terms that appear across module and API pages.
 - `LGrepEngine` ([lurek.grep](https://lurek2d.github.io/lurek_2d/modules/grep.html)) - Lua userdata that performs search operations across game content files.
 - `LGroupedFrame` ([lurek.dataframe](https://lurek2d.github.io/lurek_2d/modules/dataframe.html)) - Lua-side grouped dataframe object containing group keys and subframes.
 - `LGRU` ([lurek.learning](https://lurek2d.github.io/lurek_2d/modules/learning.html)) - Stateful Lua wrapper over `GruLayer` with a mutable recurrent hidden-state buffer.
-- `LGuiTable` ([lurek.ui](https://lurek2d.github.io/lurek_2d/modules/ui.html)) - Adds GUI-table-specific methods to a table widget.

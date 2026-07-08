@@ -867,7 +867,7 @@ Pico-8 and TIC-80 are popular for retro games but have artificial constraints (1
 
 A writer or small studio builds a dialogue-driven game: visual novel, courtroom drama, social deduction game, or narrative adventure. Use `content/examples/dialog.lua` and `content/examples/scene.lua` for API-level references, then promote complete playable work to `content/games/<name>/`.
 
-The `library/dialog` and `library/narrative` Lureksome modules provide pre-built conversation graph and story state management.
+The engine `lurek.dialog` module provides conversation graph, sequencer, and safe Ink-subset story state management.
 
 ### Build Variant
 
@@ -875,12 +875,11 @@ The `library/dialog` and `library/narrative` Lureksome modules provide pre-built
 
 ### Module Combination
 
-`render` · `ui` · `audio` · `tween` · `save` · `input` · `scene` · `i18n` + `dialog` (library) · `narrative` (library) + `agent` (optional: LLM-generated dialogue)
+`render` · `ui` · `audio` · `tween` · `save` · `input` · `scene` · `i18n` + `dialog` + `agent` (optional: LLM-generated dialogue)
 
 ### Benefits
 
-- `library/dialog` provides conversation graph, branching choices, and state tracking out of the box.
-- `library/narrative` handles story flags, chapter progression, and conditional scenes.
+- `lurek.dialog` provides conversation graph, branching choices, safe story compilation, and state tracking out of the box.
 - `lurek.ui.*` renders retained dialogue boxes and UI screens, with TOML layouts and UI evidence covering the durable artifact path.
 - `agent` module enables dynamic LLM dialogue — characters respond to player history.
 - `tween` handles smooth sprite slide-in, text fade, and background transitions.
@@ -2348,3 +2347,4 @@ That combination is Lurek2D's defensible position.
 
 *Document generated 2026-05-28. Sources: README.md, docs/lurek2d_positioning.md, docs/architecture/engine-architecture.md, Cargo.toml, src/agent/, ideas/, content/games/, content/examples/, library/.*
 *Update this file when a new module is added or a new use case is validated with a working demo.*
+

@@ -4,8 +4,103 @@ use crate::lua_api::lua_types::{add_type_methods, LurekType};
 use crate::runtime::SharedState;
 use mlua::prelude::*;
 use std::cell::RefCell;
+use std::cmp::Ordering;
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::rc::Rc;
+
+#[derive(Clone)]
+enum LuaSelector<'lua> {
+    Path(Vec<String>),
+    Callback(LuaFunction<'lua>),
+}
+
+fn parse_lua_selector<'lua>(selector: LuaValue<'lua>, api: &str) -> LuaResult<LuaSelector<'lua>> {
+    match selector {
+        LuaValue::String(path) => Ok(LuaSelector::Path(
+            path.to_str()?
+                .split('.')
+                .filter(|part| !part.is_empty())
+                .map(ToString::to_string)
+                .collect(),
+        )),
+        LuaValue::Function(callback) => Ok(LuaSelector::Callback(callback)),
+        other => Err(LuaError::RuntimeError(format!(
+            "lurek.patterns.{api}: selector must be field path string or callback, got {}",
+            other.type_name()
+        ))),
+    }
+}
+
+fn select_lua_value<'lua>(
+    item: LuaValue<'lua>,
+    index: usize,
+    selector: &LuaSelector<'lua>,
+) -> LuaResult<LuaValue<'lua>> {
+    match selector {
+        LuaSelector::Callback(callback) => callback.call((item, index)),
+        LuaSelector::Path(parts) => {
+            let mut current = item;
+            for part in parts {
+                current = match current {
+                    LuaValue::Table(table) => table.get(part.as_str())?,
+                    LuaValue::Nil => LuaValue::Nil,
+                    other => {
+                        return Err(LuaError::RuntimeError(format!(
+                            "lurek.patterns: cannot read field '{}' from {}",
+                            part,
+                            other.type_name()
+                        )));
+                    }
+                };
+            }
+            Ok(current)
+        }
+    }
+}
+
+fn lua_key(value: &LuaValue) -> LuaResult<String> {
+    Ok(match value {
+        LuaValue::Nil => "nil".to_string(),
+        LuaValue::Boolean(v) => v.to_string(),
+        LuaValue::Integer(v) => v.to_string(),
+        LuaValue::Number(v) => v.to_string(),
+        LuaValue::String(v) => v.to_str()?.to_string(),
+        other => {
+            return Err(LuaError::RuntimeError(format!(
+                "lurek.patterns: selector returned unsupported key type {}",
+                other.type_name()
+            )));
+        }
+    })
+}
+
+fn lua_sort_cmp(a: &LuaValue, b: &LuaValue) -> LuaResult<Ordering> {
+    Ok(match (a, b) {
+        (LuaValue::Nil, LuaValue::Nil) => Ordering::Equal,
+        (LuaValue::Nil, _) => Ordering::Greater,
+        (_, LuaValue::Nil) => Ordering::Less,
+        (LuaValue::Integer(a), LuaValue::Integer(b)) => a.cmp(b),
+        (LuaValue::Number(a), LuaValue::Number(b)) => a.partial_cmp(b).unwrap_or(Ordering::Equal),
+        (LuaValue::Integer(a), LuaValue::Number(b)) => {
+            (*a as f64).partial_cmp(b).unwrap_or(Ordering::Equal)
+        }
+        (LuaValue::Number(a), LuaValue::Integer(b)) => {
+            a.partial_cmp(&(*b as f64)).unwrap_or(Ordering::Equal)
+        }
+        (LuaValue::String(a), LuaValue::String(b)) => a.to_str()?.cmp(b.to_str()?),
+        (LuaValue::Boolean(a), LuaValue::Boolean(b)) => a.cmp(b),
+        _ => lua_key(a)?.cmp(&lua_key(b)?),
+    })
+}
+
+fn lua_sequence_items<'lua>(items: LuaTable<'lua>) -> LuaResult<Vec<LuaValue<'lua>>> {
+    let len = items.len()? as usize;
+    let mut out = Vec::with_capacity(len);
+    for index in 1..=len {
+        out.push(items.get(index)?);
+    }
+    Ok(out)
+}
 /// Lua-facing publish/subscribe event bus allowing decoupled communication between game systems.
 #[derive(Clone)]
 struct LuaEventBus {
@@ -3506,6 +3601,210 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                 edge_payloads: Rc::new(RefCell::new(HashMap::new())),
             })
         })?,
+    )?;
+    // -- groupBy --
+    /// Groups array items by a selector field path or callback.
+    /// @param | items | table | Sequence table.
+    /// @param | selector | string|function | Field path such as `"kind"` or callback `(item, index)`.
+    /// @return | table | String-keyed table of grouped item arrays.
+    patterns.set(
+        "groupBy",
+        lua.create_function(|lua, (items, selector): (LuaTable, LuaValue)| {
+            let selector = parse_lua_selector(selector, "groupBy")?;
+            let out = lua.create_table()?;
+            for (zero_index, item) in lua_sequence_items(items)?.into_iter().enumerate() {
+                let index = zero_index + 1;
+                let key = lua_key(&select_lua_value(item.clone(), index, &selector)?)?;
+                let group = match out.get::<_, Option<LuaTable>>(key.as_str())? {
+                    Some(group) => group,
+                    None => {
+                        let group = lua.create_table()?;
+                        out.set(key.as_str(), group.clone())?;
+                        group
+                    }
+                };
+                group.set(group.len()? + 1, item)?;
+            }
+            Ok(out)
+        })?,
+    )?;
+    // -- countBy --
+    /// Counts array items by a selector field path or callback.
+    patterns.set(
+        "countBy",
+        lua.create_function(|lua, (items, selector): (LuaTable, LuaValue)| {
+            let selector = parse_lua_selector(selector, "countBy")?;
+            let out = lua.create_table()?;
+            for (zero_index, item) in lua_sequence_items(items)?.into_iter().enumerate() {
+                let index = zero_index + 1;
+                let key = lua_key(&select_lua_value(item, index, &selector)?)?;
+                let count = out.get::<_, Option<i64>>(key.as_str())?.unwrap_or(0);
+                out.set(key.as_str(), count + 1)?;
+            }
+            Ok(out)
+        })?,
+    )?;
+    // -- sortedIndices --
+    /// Returns one-based item indices sorted by selector value.
+    patterns.set(
+        "sortedIndices",
+        lua.create_function(
+            |lua, (items, selector, opts): (LuaTable, LuaValue, Option<LuaTable>)| {
+                let selector = parse_lua_selector(selector, "sortedIndices")?;
+                let descending = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<bool>>("descending").ok().flatten())
+                    .or_else(|| {
+                        opts.as_ref()
+                            .and_then(|t| t.get::<_, Option<bool>>("desc").ok().flatten())
+                    })
+                    .unwrap_or(false);
+                let mut selected = Vec::new();
+                for (zero_index, item) in lua_sequence_items(items)?.into_iter().enumerate() {
+                    let index = zero_index + 1;
+                    selected.push((index, select_lua_value(item, index, &selector)?));
+                }
+                selected.sort_by(|a, b| {
+                    let ord = lua_sort_cmp(&a.1, &b.1).unwrap_or(Ordering::Equal);
+                    if descending {
+                        ord.reverse()
+                    } else {
+                        ord
+                    }
+                });
+                let out = lua.create_table()?;
+                for (index, (item_index, _)) in selected.into_iter().enumerate() {
+                    out.set(index + 1, item_index)?;
+                }
+                Ok(out)
+            },
+        )?,
+    )?;
+    // -- topN --
+    /// Returns the top `n` items by selector value, or indices when `opts.indices` is true.
+    patterns.set(
+        "topN",
+        lua.create_function(
+            |lua, (items, selector, n, opts): (LuaTable, LuaValue, usize, Option<LuaTable>)| {
+                let selector = parse_lua_selector(selector, "topN")?;
+                let indices_only = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<bool>>("indices").ok().flatten())
+                    .unwrap_or(false);
+                let descending = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<bool>>("descending").ok().flatten())
+                    .or_else(|| {
+                        opts.as_ref()
+                            .and_then(|t| t.get::<_, Option<bool>>("desc").ok().flatten())
+                    })
+                    .unwrap_or(true);
+                let source = lua_sequence_items(items)?;
+                let mut selected = Vec::new();
+                for (zero_index, item) in source.iter().cloned().enumerate() {
+                    let index = zero_index + 1;
+                    selected.push((
+                        index,
+                        item.clone(),
+                        select_lua_value(item, index, &selector)?,
+                    ));
+                }
+                selected.sort_by(|a, b| {
+                    let ord = lua_sort_cmp(&a.2, &b.2).unwrap_or(Ordering::Equal);
+                    if descending {
+                        ord.reverse()
+                    } else {
+                        ord
+                    }
+                });
+                let out = lua.create_table()?;
+                for (out_index, (item_index, item, _)) in selected.into_iter().take(n).enumerate() {
+                    if indices_only {
+                        out.set(out_index + 1, item_index)?;
+                    } else {
+                        out.set(out_index + 1, item)?;
+                    }
+                }
+                Ok(out)
+            },
+        )?,
+    )?;
+    // -- findSequences --
+    /// Finds numeric selector runs with a constant step.
+    patterns.set(
+        "findSequences",
+        lua.create_function(
+            |lua, (items, selector, opts): (LuaTable, LuaValue, Option<LuaTable>)| {
+                let selector = parse_lua_selector(selector, "findSequences")?;
+                let min_len = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<usize>>("minLength").ok().flatten())
+                    .or_else(|| {
+                        opts.as_ref()
+                            .and_then(|t| t.get::<_, Option<usize>>("min_length").ok().flatten())
+                    })
+                    .unwrap_or(2);
+                let step = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<f64>>("step").ok().flatten())
+                    .unwrap_or(1.0);
+                let mut values = Vec::new();
+                for (zero_index, item) in lua_sequence_items(items)?.into_iter().enumerate() {
+                    let index = zero_index + 1;
+                    let selected = select_lua_value(item, index, &selector)?;
+                    let number = match selected {
+                        LuaValue::Integer(v) => v as f64,
+                        LuaValue::Number(v) => v,
+                        LuaValue::Nil => continue,
+                        other => {
+                            return Err(LuaError::RuntimeError(format!(
+                            "lurek.patterns.findSequences: selector must return numbers, got {}",
+                            other.type_name()
+                        )));
+                        }
+                    };
+                    values.push((index, number));
+                }
+                values.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(Ordering::Equal));
+                let out = lua.create_table()?;
+                let mut run: Vec<(usize, f64)> = Vec::new();
+                for entry in values {
+                    let continues = run
+                        .last()
+                        .map(|last| (entry.1 - last.1 - step).abs() <= f64::EPSILON)
+                        .unwrap_or(true);
+                    if !continues {
+                        if run.len() >= min_len {
+                            let row = lua.create_table()?;
+                            row.set("startValue", run.first().unwrap().1)?;
+                            row.set("endValue", run.last().unwrap().1)?;
+                            row.set("length", run.len())?;
+                            let indices = lua.create_table()?;
+                            for (i, (item_index, _)) in run.iter().enumerate() {
+                                indices.set(i + 1, *item_index)?;
+                            }
+                            row.set("indices", indices)?;
+                            out.set(out.len()? + 1, row)?;
+                        }
+                        run.clear();
+                    }
+                    run.push(entry);
+                }
+                if run.len() >= min_len {
+                    let row = lua.create_table()?;
+                    row.set("startValue", run.first().unwrap().1)?;
+                    row.set("endValue", run.last().unwrap().1)?;
+                    row.set("length", run.len())?;
+                    let indices = lua.create_table()?;
+                    for (i, (item_index, _)) in run.iter().enumerate() {
+                        indices.set(i + 1, *item_index)?;
+                    }
+                    row.set("indices", indices)?;
+                    out.set(out.len()? + 1, row)?;
+                }
+                Ok(out)
+            },
+        )?,
     )?;
     /// Performs the 'patterns' operation.
     lurek.set("patterns", patterns)?;

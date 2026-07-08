@@ -15,7 +15,7 @@
 - Source path: `src/audio`
 - Binding: `src/lua_api/audio_api.rs`
 - Namespace: `lurek.audio`
-- Lua API surface: `90` functions, `6` types, `107` methods
+- Lua API surface: `90` functions, `6` types, `108` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -269,6 +269,7 @@ This module primarily collaborates with `dsp`, `image`, `runtime`. Its responsib
 - `LBeatClock:getPhase(division?) -> number`: Returns phase within the current division in [0, 1).
 - `LBeatClock:isOnBeat(division?, tolerance?) -> boolean`: Returns true when the clock is near a beat boundary.
 - `LBeatClock:isRunning() -> boolean`: Returns true when the clock is running.
+- `LBeatClock:judge(division?, hit_offset?, windows?) -> table`: Judges timing against the nearest beat grid and returns a detailed result table.
 - `LBeatClock:nearestBeat(division?) -> number, number`: Returns nearest beat and signed timing error in seconds.
 - `LBeatClock:pattern(pattern, fn) -> table`: Registers a repeating pattern callback where `x` triggers and `.` skips.
 - `LBeatClock:position() -> table`: Returns the current beat position.

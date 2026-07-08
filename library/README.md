@@ -38,7 +38,6 @@ The engine automatically adds the correct search paths so `require("library.*")`
 | library.audio_manager| High-level audio manager — crossfade, SFX pooling, volume groups, mute/pause | Full    |
 | `library.battle`       | Turn-based battle system â€” combatants, actions, and turn order                | Stub    |
 | library.camera_follow| Configurable camera follow — smoothing, deadzone, lookahead, shake, bounds   | Full    |
-| `library.cardgame`     | Cards, stacks, deck building, slots, and card pools                           | Stub    |
 | `library.combat`       | Vehicle combat â€” chassis, turrets, weapons, and projectiles                   | Stub    |
 | `library.crafting`     | Recipe system, ingredient matching, and crafting queues                       | Stub    |
 | `library.dialog`       | Typewriter dialog sequencer with choices, waits, and call nodes               | Full    |
@@ -50,9 +49,6 @@ The engine automatically adds the correct search paths so `require("library.*")`
 | `library.netstate`     | Authority-driven state replication & turn-based protocol on `lurek.network`   | Full    |
 | library.particle_presets| 12 pre-configured particle presets with override and custom registration    | Full    |
 | `library.patterns`     | **Deprecated 0.6.0** â€” proxy that forwards to `library.scheduler`             | Proxy   |
-| `library.province_map` | Province maps, Voronoi generation, map modes (wraps `lurek.image`)              | Full    |
-| `library.tilefield_minimap` | Syncs tilefield blocker, cost, and light exports into minimap raw layers    | Full    |
-| `library.awareness_minimap` | Syncs visibility masks into minimap fog and raw data layers                 | Full    |
 | `library.quest`        | Quest tracking, objectives, and branching completion states                   | Stub    |
 | `library.rpc`          | Remote procedure calls over `lurek.network`                                   | Full    |
 | `library.scheduler`    | Pure-Lua coroutine scheduler driven by `:update(dt)` (was `library.patterns`) | Full    |
@@ -60,10 +56,8 @@ The engine automatically adds the correct search paths so `require("library.*")`
 | library.window_config| Fluent window config builder — presets, serialization, scaling modes          | Full    |
 | library.tween_chain  | Chainable tween sequences — parallel groups, easing, looping, progress       | Full    |
 | `library.loot`         | Walkerâ€“Vose alias weighted RNG, drop DSL, and pity timers                     | Full    |
-| `library.narrative`    | Ink-flavoured branching narrative interpreter (knots, choices, variables)     | Partial |
 | `library.roguelike`    | Shadowcasting FOV, energy scheduler, and Dijkstra goal maps                   | Full    |
 | `library.cinematic`    | Multi-track scrubbable cutscene timeline (tween/camera/audio/dialog)          | Partial |
-| `library.rhythm`       | BPM-locked event sequencer and judgement scoring over `lurek.audio`           | Full    |
 
 ## Validation
 
@@ -133,13 +127,11 @@ The engine automatically adds the correct search paths so `require("library.*")`
 | `library.dialog`       | Typewriter dialog sequencer with choices, waits, and call nodes                                                                                                  | Ôťďż˝ Full   |
 | `library.item`         | Item type catalog, pools, stacks, builders, and history                                                                                                          | Ôťďż˝ Full   |
 | `library.inventory`    | Containers, weighted bags, slots, and inventories                                                                                                                | Ôťďż˝ Full   |
-| `library.province_map` | Pure-Lua province grid, adjacency graph, BFS routing, map modes, and event bus; uses `lurek.image.newProvinceGrid` only inside `M.newFromPng` for fast PNG loading | Full      |
 | `library.quest`        | Quest tracking, objectives, and branching completion states                                                                                                      | ďż˝ďż˝ďż˝ďż˝ Stub |
 | `library.battle`       | Turn-based battle system ďż˝ďż˝ďż˝ combatants, actions, and turn order                                                                                                 | ďż˝ďż˝ďż˝ďż˝ Stub |
 | `library.stats`        | Character attributes, derived stats, and modifiers                                                                                                               | ďż˝ďż˝ďż˝ďż˝ Stub |
 | `library.economy`      | Named resource economy with flow rates, decay, and conversions                                                                                                   | ďż˝ďż˝ďż˝ďż˝ Stub |
 | `library.crafting`     | Recipe system, ingredient matching, and crafting queues                                                                                                          | ďż˝ďż˝ďż˝ďż˝ Stub |
-| `library.cardgame`     | Cards, stacks, deck building, slots, and card pools                                                                                                              | ďż˝ďż˝ďż˝ďż˝ Stub |
 | `library.combat`       | Vehicle combat ďż˝ďż˝ďż˝ chassis, turrets, weapons, and projectiles                                                                                                    | ďż˝ďż˝ďż˝ďż˝ Stub |
 
 ## Validation

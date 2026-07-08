@@ -1,8 +1,8 @@
 use lurek2d::ai::{
-    AgentStance, AIWorld, BTNode, BehaviorTree, CommandQueue, DecisionBiasSet,
-    FormationFallbackMode, FormationSortMode, FormationType, GOAPPlanner, MCTSConfig,
-    MCTSEngine, PlanFailureReason, SpatialQueryOptions, Squad, SquadMemberProfile,
-    TraitArchetypes, TraitProfile, UtilityAI,
+    AIWorld, AgentStance, BTNode, BehaviorTree, CommandQueue, DecisionBiasSet,
+    FormationFallbackMode, FormationSortMode, FormationType, GOAPPlanner, MCTSConfig, MCTSEngine,
+    PlanFailureReason, SpatialQueryOptions, Squad, SquadMemberProfile, TraitArchetypes,
+    TraitProfile, UtilityAI,
 };
 use lurek2d::pathfind::SteeringManager;
 use mlua::Lua;
@@ -247,16 +247,22 @@ fn ai_world_agents_keep_independent_command_queues() {
     world.add_agent("alpha").unwrap();
     world.add_agent("beta").unwrap();
 
-    let alpha_id = world
-        .agent_mut("alpha")
-        .unwrap()
-        .command_queue
-        .enqueue_raw("move".to_string(), 1.0, 2.0, 1, true, Some(callback_a));
-    let beta_id = world
-        .agent_mut("beta")
-        .unwrap()
-        .command_queue
-        .enqueue_raw("guard".to_string(), 5.0, 6.0, 2, false, Some(callback_b));
+    let alpha_id = world.agent_mut("alpha").unwrap().command_queue.enqueue_raw(
+        "move".to_string(),
+        1.0,
+        2.0,
+        1,
+        true,
+        Some(callback_a),
+    );
+    let beta_id = world.agent_mut("beta").unwrap().command_queue.enqueue_raw(
+        "guard".to_string(),
+        5.0,
+        6.0,
+        2,
+        false,
+        Some(callback_b),
+    );
 
     assert_eq!(
         world.agent("alpha").unwrap().command_queue.current_id(),
@@ -267,19 +273,11 @@ fn ai_world_agents_keep_independent_command_queues() {
         Some(beta_id)
     );
     assert_eq!(
-        world
-            .agent("alpha")
-            .unwrap()
-            .command_queue
-            .current_type(),
+        world.agent("alpha").unwrap().command_queue.current_type(),
         Some("move")
     );
     assert_eq!(
-        world
-            .agent("beta")
-            .unwrap()
-            .command_queue
-            .current_type(),
+        world.agent("beta").unwrap().command_queue.current_type(),
         Some("guard")
     );
 }
@@ -352,7 +350,10 @@ fn stance_driven_acquisition_uses_built_in_profile_defaults() {
         enemy_far.position = (260.0, 0.0);
     }
     world.mark_spatial_dirty();
-    assert_eq!(world.acquire_target_for_agent("scout", None, Some(8), None, None), None);
+    assert_eq!(
+        world.acquire_target_for_agent("scout", None, Some(8), None, None),
+        None
+    );
 
     world.agent_mut("scout").unwrap().stance = AgentStance::Aggressive.default_profile();
     let aggressive_target = world.acquire_target_for_agent("scout", None, Some(8), None, None);
@@ -423,7 +424,11 @@ fn ai_world_soft_interrupts_and_resumes_move_orders_from_stance_updates() {
         hero.command_queue.current_id()
     );
     assert_eq!(world.order_runtime_stats().soft_interrupts, 1);
-    let events = world.agent_mut("hero").unwrap().command_queue.drain_events();
+    let events = world
+        .agent_mut("hero")
+        .unwrap()
+        .command_queue
+        .drain_events();
     assert!(events.iter().any(|event| event.event == "interrupted"));
 
     world.agent_mut("enemy").unwrap().position = (80.0, 0.0);
@@ -433,7 +438,11 @@ fn ai_world_soft_interrupts_and_resumes_move_orders_from_stance_updates() {
     let hero = world.agent("hero").unwrap();
     assert_eq!(hero.order_runtime.engage_target, None);
     assert_eq!(world.order_runtime_stats().resumed_orders, 1);
-    let events = world.agent_mut("hero").unwrap().command_queue.drain_events();
+    let events = world
+        .agent_mut("hero")
+        .unwrap()
+        .command_queue
+        .drain_events();
     assert!(events.iter().any(|event| event.event == "resumed"));
 }
 
@@ -477,7 +486,14 @@ fn ai_world_auto_acquire_budget_spreads_queries_across_updates() {
     assert_eq!(world.order_runtime_stats().budget_skips, 1);
     let engaged_after_first = ["alpha", "beta"]
         .into_iter()
-        .filter(|name| world.agent(name).unwrap().order_runtime.engage_target.is_some())
+        .filter(|name| {
+            world
+                .agent(name)
+                .unwrap()
+                .order_runtime
+                .engage_target
+                .is_some()
+        })
         .count();
     assert_eq!(engaged_after_first, 1);
 
@@ -485,7 +501,14 @@ fn ai_world_auto_acquire_budget_spreads_queries_across_updates() {
 
     let engaged_after_second = ["alpha", "beta"]
         .into_iter()
-        .filter(|name| world.agent(name).unwrap().order_runtime.engage_target.is_some())
+        .filter(|name| {
+            world
+                .agent(name)
+                .unwrap()
+                .order_runtime
+                .engage_target
+                .is_some()
+        })
         .count();
     assert_eq!(engaged_after_second, 2);
 }
@@ -508,6 +531,7 @@ fn squad_layout_falls_back_to_column_when_lane_is_too_narrow() {
             footprint_w: 4,
             footprint_h: 4,
             subgroup: None,
+            ..SquadMemberProfile::default()
         },
     );
 
@@ -539,6 +563,7 @@ fn squad_distance_sort_keeps_subgroups_clustered() {
             footprint_w: 1,
             footprint_h: 1,
             subgroup: Some("beta".to_string()),
+            ..SquadMemberProfile::default()
         },
     );
     squad.set_member_profile(
@@ -547,6 +572,7 @@ fn squad_distance_sort_keeps_subgroups_clustered() {
             footprint_w: 1,
             footprint_h: 1,
             subgroup: Some("beta".to_string()),
+            ..SquadMemberProfile::default()
         },
     );
     squad.set_member_profile(
@@ -555,6 +581,7 @@ fn squad_distance_sort_keeps_subgroups_clustered() {
             footprint_w: 1,
             footprint_h: 1,
             subgroup: Some("alpha".to_string()),
+            ..SquadMemberProfile::default()
         },
     );
     squad.set_member_profile(
@@ -563,6 +590,7 @@ fn squad_distance_sort_keeps_subgroups_clustered() {
             footprint_w: 1,
             footprint_h: 1,
             subgroup: Some("alpha".to_string()),
+            ..SquadMemberProfile::default()
         },
     );
     let positions = std::collections::HashMap::from([

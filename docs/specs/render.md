@@ -15,7 +15,7 @@
 - Source path: `src/render`
 - Binding: `src/lua_api/render_api.rs`
 - Namespace: `lurek.render`
-- Lua API surface: `123` functions, `14` types, `92` methods
+- Lua API surface: `123` functions, `14` types, `93` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -865,6 +865,7 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 ##### Methods
 
 - `LSpriteBatch:add(x, y, r?, sx?, sy?, ox?, oy?) -> number`: Adds a sprite entry to the batch at the given position with optional transform.
+- `LSpriteBatch:addComposite(parts) -> number`: Adds multiple part entries to the batch for one modular composite visual.
 - `LSpriteBatch:clear() -> nil`: Removes all entries from the sprite batch.
 - `LSpriteBatch:getBufferSize() -> number`: Returns the maximum number of entries this batch can hold.
 - `LSpriteBatch:getCount() -> number`: Returns the number of sprite entries currently in the batch.

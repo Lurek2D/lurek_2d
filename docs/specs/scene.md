@@ -83,9 +83,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 ### object_container.rs
 
-- `src/scene/object_container.rs` owns the Rust wrapper around the embedded Lua scene-object container library.
-- It defines `LSceneObjectContainer`, keeping registry-key lifetime management and Lua table retrieval in one owner.
-- Read this file when Rust-to-Lua container embedding or library bootstrap behavior for scene objects needs changes.
+- Native scene object container used by `lurek.scene.newObjectContainer`.
 
 ### render.rs
 

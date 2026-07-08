@@ -7907,6 +7907,22 @@ end
 
 ---
 
+#### `LUnitPathfinder:clearReservations`
+
+Clears all caller-owned reserved cells.
+
+```lua
+LUnitPathfinder:clearReservations()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Number of reservations cleared. |
+
+---
+
 #### `LUnitPathfinder:clearSharedGoalCache`
 
 Clears all cached shared-goal fields on this object.
@@ -7933,6 +7949,58 @@ do
     lurek.log.info("shared cache after = " .. tostring(pf:getSharedGoalCacheSize()))
 end
 ```
+
+---
+
+#### `LUnitPathfinder:findAttackMovePaths`
+
+Finds one path per start toward a shared attack-move goal.
+
+```lua
+LUnitPathfinder:findAttackMovePaths(starts, gx, gy, unit_size, max_steps)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `starts` | table | Array of `{x, y}` start tables. |
+| `gx` | number | One-based goal column. |
+| `gy` | number | One-based goal row. |
+| `unit_size?` | number | Unit footprint in cells (default 1). |
+| `max_steps?` | number | Maximum downhill steps to follow for each start. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of path arrays; unreachable entries are nil. |
+
+---
+
+#### `LUnitPathfinder:findFormationPaths`
+
+Finds one path per start toward formation slots around a shared goal.
+
+```lua
+LUnitPathfinder:findFormationPaths(starts, gx, gy, unit_size, spacing)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `starts` | table | Array of `{x, y}` start tables. |
+| `gx` | number | One-based formation center column. |
+| `gy` | number | One-based formation center row. |
+| `unit_size?` | number | Unit footprint in cells (default 1). |
+| `spacing?` | number | Slot spacing in cells (default 1). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of path arrays; unreachable entries are nil. |
 
 ---
 
@@ -8753,6 +8821,28 @@ do
     lurek.log.info("reachable_right = " .. tostring(pf:isReachable(1, 1, 20, 20)))
 end
 ```
+
+---
+
+#### `LUnitPathfinder:reserveCells`
+
+Records caller-owned cell reservations for batch planning.
+
+```lua
+LUnitPathfinder:reserveCells(cells)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `cells` | table | Array of `{x, y}` one-based cells. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Total reserved cell count after the update. |
 
 ---
 

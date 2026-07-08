@@ -2269,3 +2269,13 @@ do
     lurek.log.info(tostring("sfx type = " .. sfx:type()))
     lurek.log.info(tostring("volume = " .. tostring(sfx:getVolume())))
 end
+
+--@api: LBeatClock:judge
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    clock:start(0.0)
+    clock:update(0.5)
+    local result = clock:judge(4, 0.0, { perfect = 0.05, great = 0.1, good = 0.15 })
+    lurek.log.info("beat judge verdict = " .. tostring(result.verdict))
+    lurek.log.info("beat judge error = " .. tostring(result.errorSeconds))
+end

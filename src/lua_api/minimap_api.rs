@@ -1,8 +1,12 @@
 //! Registers the `lurek.minimap` Lua API for minimap userdata, icon parsing, colors, and minimap rendering.
 
+use super::awareness_api::LuaTileAwareness;
 use super::camera_api::LuaCamera2D;
 use super::province_api::LuaProvinceRegistry;
 use super::render_api::{ensure_shader_target, LuaImage, LuaShader};
+use super::tilefield_api::LuaTileField;
+use super::tilelight_api::LuaTileLightMap;
+use super::tilemap_api::LuaTileMap;
 use super::SharedState;
 use crate::minimap::province_adapter;
 use crate::minimap::{
@@ -11,6 +15,7 @@ use crate::minimap::{
 };
 use crate::render::renderer::RenderCommand;
 use crate::render::ShaderTarget;
+use crate::tilefield::TileChannel;
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -121,6 +126,102 @@ fn clamp_unit_color(field: &'static str, color: [f32; 4]) -> LuaResult<[f32; 4]>
         )));
     }
     Ok(color.map(|channel| channel.clamp(0.0, 1.0)))
+}
+
+fn minimap_set_raw_layer(
+    minimap: &mut Minimap,
+    layer: usize,
+    cells: Vec<u8>,
+) -> Result<(), MinimapError> {
+    let width = minimap.grid_width();
+    let height = minimap.grid_height();
+    minimap.try_set_layer_data(
+        layer,
+        LayerData {
+            cells,
+            width,
+            height,
+        },
+    )
+}
+
+fn minimap_cells_expected(minimap: &Minimap) -> usize {
+    minimap.grid_width() as usize * minimap.grid_height() as usize
+}
+
+fn minimap_world_to_tile_center(tilemap: &LuaTileMap, wx: f32, wy: f32) -> (f32, f32) {
+    let map = tilemap.inner.borrow();
+    let (tx, ty) = map.world_to_tile(wx, wy);
+    (tx as f32 + 1.0, ty as f32 + 1.0)
+}
+
+fn minimap_cells_to_lua<'lua>(lua: &'lua Lua, cells: &[u8]) -> LuaResult<LuaTable<'lua>> {
+    let table = lua.create_table()?;
+    for (index, value) in cells.iter().enumerate() {
+        table.set(index + 1, *value)?;
+    }
+    Ok(table)
+}
+
+fn minimap_apply_layer_style(
+    minimap: &mut Minimap,
+    layer: usize,
+    style: Option<LuaTable>,
+) -> LuaResult<()> {
+    let Some(style) = style else {
+        return Ok(());
+    };
+    if let Some(visible) = style.get::<_, Option<bool>>("visible")? {
+        minimap
+            .set_layer_visible(layer, visible)
+            .map_err(minimap_error)?;
+    }
+    if let Some(alpha) = style.get::<_, Option<f32>>("alpha")? {
+        minimap
+            .set_layer_alpha(layer, alpha)
+            .map_err(minimap_error)?;
+    }
+    if let Some(blend) = style.get::<_, Option<String>>("blend")? {
+        let Some(mode) = LayerBlendMode::parse_mode(blend.as_str()) else {
+            return Err(LuaError::RuntimeError(format!(
+                "lurek.minimap: unknown layer blend mode '{}'",
+                blend
+            )));
+        };
+        minimap
+            .set_layer_blend_mode(layer, mode)
+            .map_err(minimap_error)?;
+    }
+    if let Some(colors) = style.get::<_, Option<LuaTable>>("colors")? {
+        for pair in colors.pairs::<LuaValue, LuaTable>() {
+            let (key, color_table) = pair?;
+            let value = match key {
+                LuaValue::Integer(v) if (0..=u8::MAX as i64).contains(&v) => v as u8,
+                LuaValue::Number(v) if v.fract() == 0.0 && (0.0..=u8::MAX as f64).contains(&v) => {
+                    v as u8
+                }
+                other => {
+                    return Err(LuaError::RuntimeError(format!(
+                        "lurek.minimap: layer color key must be byte, got {}",
+                        other.type_name()
+                    )));
+                }
+            };
+            let color = clamp_unit_color(
+                "layer style color",
+                [
+                    color_table.get(1).unwrap_or(1.0),
+                    color_table.get(2).unwrap_or(1.0),
+                    color_table.get(3).unwrap_or(1.0),
+                    color_table.get(4).unwrap_or(1.0),
+                ],
+            )?;
+            minimap
+                .set_layer_color(layer, value, color)
+                .map_err(minimap_error)?;
+        }
+    }
+    Ok(())
 }
 /// Lua-side wrapper for a minimap instance and access to render command state.
 pub struct LuaMinimap {
@@ -419,6 +520,405 @@ impl LuaUserData for LuaMinimap {
                     }
                 })?;
                 Ok(())
+            },
+        );
+        // -- syncTileMapTerrain --
+        /// Copies tile GIDs from an `LTileMap` layer into minimap terrain cells.
+        /// @param | tilemap | LTileMap | Source tilemap.
+        /// @param | opts | table? | Optional `{layer=1, emptyTerrain=1, solidTerrain=2, terrainByGid?, blockedGids?}`.
+        methods.add_method_mut(
+            "syncTileMapTerrain",
+            |_, this, (tilemap_ud, opts): (LuaAnyUserData, Option<LuaTable>)| {
+                let tilemap = tilemap_ud.borrow::<LuaTileMap>().map_err(|_| {
+                    LuaError::RuntimeError(
+                        "lurek.minimap: syncTileMapTerrain expects an LTileMap".to_string(),
+                    )
+                })?;
+                let layer = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<usize>>("layer").ok().flatten())
+                    .unwrap_or(1)
+                    .saturating_sub(1);
+                let empty_terrain = opts
+                    .as_ref()
+                    .and_then(|t| {
+                        t.get::<_, Option<u32>>("emptyTerrain")
+                            .ok()
+                            .flatten()
+                            .or_else(|| t.get::<_, Option<u32>>("empty_terrain").ok().flatten())
+                    })
+                    .unwrap_or(1);
+                let solid_terrain = opts
+                    .as_ref()
+                    .and_then(|t| {
+                        t.get::<_, Option<u32>>("solidTerrain")
+                            .ok()
+                            .flatten()
+                            .or_else(|| t.get::<_, Option<u32>>("solid_terrain").ok().flatten())
+                    })
+                    .unwrap_or(2);
+                let terrain_by_gid = opts.as_ref().and_then(|t| {
+                    t.get::<_, Option<LuaTable>>("terrainByGid")
+                        .ok()
+                        .flatten()
+                        .or_else(|| {
+                            t.get::<_, Option<LuaTable>>("terrain_by_gid")
+                                .ok()
+                                .flatten()
+                        })
+                });
+                let blocked_gids = opts.as_ref().and_then(|t| {
+                    t.get::<_, Option<LuaTable>>("blockedGids")
+                        .ok()
+                        .flatten()
+                        .or_else(|| t.get::<_, Option<LuaTable>>("blocked_gids").ok().flatten())
+                });
+                let map = tilemap.inner.borrow();
+                for y in 0..this.inner.grid_height() {
+                    for x in 0..this.inner.grid_width() {
+                        let gid = map.get_tile(layer, x, y);
+                        let mut terrain = empty_terrain;
+                        if let Some(table) = terrain_by_gid.as_ref() {
+                            if let Some(value) = table.get::<_, Option<u32>>(gid).ok().flatten() {
+                                terrain = value;
+                            }
+                        } else if let Some(table) = blocked_gids.as_ref() {
+                            if table
+                                .get::<_, Option<bool>>(gid)
+                                .ok()
+                                .flatten()
+                                .unwrap_or(false)
+                            {
+                                terrain = solid_terrain;
+                            }
+                        } else if gid != 0 {
+                            terrain = gid;
+                        }
+                        this.inner.set_terrain(x, y, terrain);
+                    }
+                }
+                Ok(())
+            },
+        );
+        // -- setCenterFromTileMapWorld --
+        /// Converts tilemap world coordinates into one-based tile coordinates and centers this minimap.
+        methods.add_method_mut(
+            "setCenterFromTileMapWorld",
+            |_, this, (tilemap_ud, wx, wy): (LuaAnyUserData, f32, f32)| {
+                let tilemap = tilemap_ud.borrow::<LuaTileMap>().map_err(|_| {
+                    LuaError::RuntimeError(
+                        "lurek.minimap: setCenterFromTileMapWorld expects an LTileMap".to_string(),
+                    )
+                })?;
+                let (tx, ty) = minimap_world_to_tile_center(&tilemap, wx, wy);
+                this.inner.try_set_center(tx, ty).map_err(minimap_error)?;
+                Ok((tx, ty))
+            },
+        );
+        // -- setViewportFromTileMapWorld --
+        /// Converts a tilemap world rectangle into a minimap viewport rectangle.
+        methods.add_method_mut(
+            "setViewportFromTileMapWorld",
+            |_, this, (tilemap_ud, x, y, w, h): (LuaAnyUserData, f32, f32, f32, f32)| {
+                let tilemap = tilemap_ud.borrow::<LuaTileMap>().map_err(|_| {
+                    LuaError::RuntimeError(
+                        "lurek.minimap: setViewportFromTileMapWorld expects an LTileMap"
+                            .to_string(),
+                    )
+                })?;
+                let (tx1, ty1) = minimap_world_to_tile_center(&tilemap, x, y);
+                let (tx2, ty2) = minimap_world_to_tile_center(&tilemap, x + w, y + h);
+                let vw = (tx2 - tx1 + 1.0).max(1.0);
+                let vh = (ty2 - ty1 + 1.0).max(1.0);
+                this.inner
+                    .try_set_viewport_rect(tx1, ty1, vw, vh)
+                    .map_err(minimap_error)?;
+                Ok((tx1, ty1, vw, vh))
+            },
+        );
+        // -- setLayerStyle --
+        /// Applies common raw-layer style fields: visible, alpha, blend, and colors.
+        methods.add_method_mut(
+            "setLayerStyle",
+            |_, this, (layer, style): (usize, LuaTable)| {
+                minimap_apply_layer_style(&mut this.inner, layer, Some(style))
+            },
+        );
+        // -- syncTileFieldBlockLayer --
+        /// Copies one `LTileField` blocker channel layer into a minimap raw data layer.
+        methods.add_method_mut(
+            "syncTileFieldBlockLayer",
+            |lua,
+             this,
+             (field_ud, channel, layer, opts): (
+                LuaAnyUserData,
+                String,
+                usize,
+                Option<LuaTable>,
+            )| {
+                let field = field_ud.borrow::<LuaTileField>().map_err(|_| {
+                    LuaError::RuntimeError(
+                        "lurek.minimap: syncTileFieldBlockLayer expects an LTileField".to_string(),
+                    )
+                })?;
+                let channel = TileChannel::parse(&channel)
+                    .map_err(|e| LuaError::RuntimeError(format!("lurek.minimap: {e}")))?;
+                let z = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<u32>>("z").ok().flatten())
+                    .unwrap_or(1)
+                    .saturating_sub(1);
+                let values = field.inner.borrow().export_block_layer(channel, z);
+                let cells: Vec<u8> = values
+                    .into_iter()
+                    .map(|v| if v { 255 } else { 0 })
+                    .collect();
+                if cells.len() != minimap_cells_expected(&this.inner) {
+                    return Err(LuaError::RuntimeError(
+                        "lurek.minimap: tilefield layer size does not match minimap grid"
+                            .to_string(),
+                    ));
+                }
+                minimap_set_raw_layer(&mut this.inner, layer, cells.clone())
+                    .map_err(minimap_error)?;
+                let style = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<LuaTable>>("style").ok().flatten());
+                minimap_apply_layer_style(&mut this.inner, layer, style)?;
+                minimap_cells_to_lua(lua, &cells)
+            },
+        );
+        // -- syncTileFieldCostLayer --
+        /// Copies one `LTileField` cost channel layer into a minimap raw byte layer.
+        methods.add_method_mut(
+            "syncTileFieldCostLayer",
+            |lua,
+             this,
+             (field_ud, channel, layer, opts): (
+                LuaAnyUserData,
+                String,
+                usize,
+                Option<LuaTable>,
+            )| {
+                let field = field_ud.borrow::<LuaTileField>().map_err(|_| {
+                    LuaError::RuntimeError(
+                        "lurek.minimap: syncTileFieldCostLayer expects an LTileField".to_string(),
+                    )
+                })?;
+                let channel = TileChannel::parse(&channel)
+                    .map_err(|e| LuaError::RuntimeError(format!("lurek.minimap: {e}")))?;
+                let z = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<u32>>("z").ok().flatten())
+                    .unwrap_or(1)
+                    .saturating_sub(1);
+                let scale = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<f32>>("scale").ok().flatten())
+                    .unwrap_or(1.0);
+                let values = field.inner.borrow().export_cost_layer(channel, z);
+                let cells: Vec<u8> = values
+                    .into_iter()
+                    .map(|v| (v * scale).round().clamp(0.0, 255.0) as u8)
+                    .collect();
+                if cells.len() != minimap_cells_expected(&this.inner) {
+                    return Err(LuaError::RuntimeError(
+                        "lurek.minimap: tilefield layer size does not match minimap grid"
+                            .to_string(),
+                    ));
+                }
+                minimap_set_raw_layer(&mut this.inner, layer, cells.clone())
+                    .map_err(minimap_error)?;
+                let style = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<LuaTable>>("style").ok().flatten());
+                minimap_apply_layer_style(&mut this.inner, layer, style)?;
+                minimap_cells_to_lua(lua, &cells)
+            },
+        );
+        // -- syncTileLightLayer --
+        /// Copies computed tilelight luma into a minimap raw byte layer.
+        methods.add_method_mut(
+            "syncTileLightLayer",
+            |lua, this, (light_ud, layer, opts): (LuaAnyUserData, usize, Option<LuaTable>)| {
+                let light = light_ud.borrow::<LuaTileLightMap>().map_err(|_| {
+                    LuaError::RuntimeError(
+                        "lurek.minimap: syncTileLightLayer expects an LTileLightMap".to_string(),
+                    )
+                })?;
+                let z = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<u32>>("z").ok().flatten())
+                    .unwrap_or(1)
+                    .saturating_sub(1);
+                let scale = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<f32>>("scale").ok().flatten())
+                    .unwrap_or(255.0);
+                let values = light.inner.borrow().export_layer(z);
+                let cells: Vec<u8> = values
+                    .into_iter()
+                    .map(|v| (v.luma() * scale).round().clamp(0.0, 255.0) as u8)
+                    .collect();
+                if cells.len() != minimap_cells_expected(&this.inner) {
+                    return Err(LuaError::RuntimeError(
+                        "lurek.minimap: tilelight layer size does not match minimap grid"
+                            .to_string(),
+                    ));
+                }
+                minimap_set_raw_layer(&mut this.inner, layer, cells.clone())
+                    .map_err(minimap_error)?;
+                let style = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<LuaTable>>("style").ok().flatten());
+                minimap_apply_layer_style(&mut this.inner, layer, style)?;
+                minimap_cells_to_lua(lua, &cells)
+            },
+        );
+        // -- syncTileAwarenessFog --
+        /// Copies explored/visible masks from `LTileAwareness` into minimap fog data.
+        methods.add_method_mut(
+            "syncTileAwarenessFog",
+            |lua,
+             this,
+             (awareness_ud, player, opts): (LuaAnyUserData, String, Option<LuaTable>)| {
+                let awareness = awareness_ud.borrow::<LuaTileAwareness>().map_err(|_| {
+                    LuaError::RuntimeError(
+                        "lurek.minimap: syncTileAwarenessFog expects an LTileAwareness".to_string(),
+                    )
+                })?;
+                let hidden_value = opts
+                    .as_ref()
+                    .and_then(|t| {
+                        t.get::<_, Option<u8>>("hiddenValue")
+                            .ok()
+                            .flatten()
+                            .or_else(|| t.get::<_, Option<u8>>("hidden_value").ok().flatten())
+                    })
+                    .unwrap_or(0);
+                let explored_value = opts
+                    .as_ref()
+                    .and_then(|t| {
+                        t.get::<_, Option<u8>>("exploredValue")
+                            .ok()
+                            .flatten()
+                            .or_else(|| t.get::<_, Option<u8>>("explored_value").ok().flatten())
+                    })
+                    .unwrap_or(1);
+                let visible_value = opts
+                    .as_ref()
+                    .and_then(|t| {
+                        t.get::<_, Option<u8>>("visibleValue")
+                            .ok()
+                            .flatten()
+                            .or_else(|| t.get::<_, Option<u8>>("visible_value").ok().flatten())
+                    })
+                    .unwrap_or(2);
+                let include_explored = opts
+                    .as_ref()
+                    .and_then(|t| {
+                        t.get::<_, Option<bool>>("includeExplored")
+                            .ok()
+                            .flatten()
+                            .or_else(|| t.get::<_, Option<bool>>("include_explored").ok().flatten())
+                    })
+                    .unwrap_or(true);
+                let z = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<u32>>("z").ok().flatten())
+                    .unwrap_or(1)
+                    .saturating_sub(1);
+                let mut cells = vec![hidden_value; minimap_cells_expected(&this.inner)];
+                let width = this.inner.grid_width();
+                let height = this.inner.grid_height();
+                if include_explored {
+                    for y in 0..height {
+                        for x in 0..width {
+                            let coord = crate::tilefield::CellCoord { x, y, z };
+                            if awareness.inner.borrow().is_explored(&player, coord) {
+                                cells[(y * width + x) as usize] = explored_value;
+                            }
+                        }
+                    }
+                }
+                for coord in awareness.inner.borrow().visible_cells(&player, Some(z)) {
+                    if coord.x < width && coord.y < height {
+                        cells[(coord.y * width + coord.x) as usize] = visible_value;
+                    }
+                }
+                this.inner.try_set_fog_data(&cells).map_err(minimap_error)?;
+                if opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<bool>>("enable").ok().flatten())
+                    .unwrap_or(true)
+                {
+                    this.inner.set_fog_enabled(true);
+                }
+                minimap_cells_to_lua(lua, &cells)
+            },
+        );
+        // -- syncTileAwarenessLayer --
+        /// Copies visible or action masks from `LTileAwareness` into a minimap raw layer.
+        methods.add_method_mut(
+            "syncTileAwarenessLayer",
+            |lua,
+             this,
+             (awareness_ud, player, kind, layer, opts): (
+                LuaAnyUserData,
+                String,
+                String,
+                usize,
+                Option<LuaTable>,
+            )| {
+                let awareness = awareness_ud.borrow::<LuaTileAwareness>().map_err(|_| {
+                    LuaError::RuntimeError(
+                        "lurek.minimap: syncTileAwarenessLayer expects an LTileAwareness"
+                            .to_string(),
+                    )
+                })?;
+                let hidden_value = opts
+                    .as_ref()
+                    .and_then(|t| {
+                        t.get::<_, Option<u8>>("hiddenValue")
+                            .ok()
+                            .flatten()
+                            .or_else(|| t.get::<_, Option<u8>>("hidden_value").ok().flatten())
+                    })
+                    .unwrap_or(0);
+                let mark_value = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<u8>>("value").ok().flatten())
+                    .unwrap_or(1);
+                let z = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<u32>>("z").ok().flatten())
+                    .unwrap_or(1)
+                    .saturating_sub(1);
+                let cells_to_mark = match kind.as_str() {
+                    "visible" => awareness.inner.borrow().visible_cells(&player, Some(z)),
+                    "action" => awareness.inner.borrow().action_cells(&player, Some(z)),
+                    _ => {
+                        return Err(LuaError::RuntimeError(
+                            "lurek.minimap: awareness layer kind must be 'visible' or 'action'"
+                                .to_string(),
+                        ))
+                    }
+                };
+                let mut cells = vec![hidden_value; minimap_cells_expected(&this.inner)];
+                let width = this.inner.grid_width();
+                let height = this.inner.grid_height();
+                for coord in cells_to_mark {
+                    if coord.x < width && coord.y < height {
+                        cells[(coord.y * width + coord.x) as usize] = mark_value;
+                    }
+                }
+                minimap_set_raw_layer(&mut this.inner, layer, cells.clone())
+                    .map_err(minimap_error)?;
+                let style = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<LuaTable>>("style").ok().flatten());
+                minimap_apply_layer_style(&mut this.inner, layer, style)?;
+                minimap_cells_to_lua(lua, &cells)
             },
         );
         // -- addObjectType --

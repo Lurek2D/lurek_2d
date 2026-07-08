@@ -65,6 +65,45 @@ end
 
 ---
 
+### `lurek.parallax.newLayerSet`
+
+Creates a parallax layer set from an array of layer definition tables.
+
+```lua
+lurek.parallax.newLayerSet(name, layerDefs, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Set name. |
+| `layerDefs` | table|[LArray](compute.md#larray) | "fog"`. |
+| `opts?` | table | Options: { sort? = true }. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LParallaxSet](#lparallaxset) | New parallax set handle. |
+
+**Example**
+
+```lua
+do
+    local img = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local set = lurek.parallax.newLayerSet("horizontal_bg", {
+        { texture = img, preset = "far" },
+        { texture = img, preset = "mid" },
+        { texture = img, preset = "fog" },
+    })
+    set:update(0.016)
+    lurek.log.info("newLayerSet layers=" .. tostring(set:layerCount()))
+end
+```
+
+---
+
 ### `lurek.parallax.newPresetLayer`
 
 Creates a parallax layer from a named preset and texture image.

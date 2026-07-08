@@ -591,6 +591,12 @@ pub struct World {
     ballistic_projectiles: Vec<Option<BallisticProjectile>>,
     /// Buffered ballistic projectile hit events emitted during stepping.
     ballistic_projectile_hits: Vec<AltitudeHit>,
+    /// Optional toroidal wrap rectangle `(min_x, min_y, max_x, max_y)` for top-down arenas.
+    wrap_bounds: Option<(f32, f32, f32, f32)>,
+    /// Default linear damping assigned to new top-down bodies.
+    top_down_linear_damping: f32,
+    /// Default angular damping assigned to new top-down bodies.
+    top_down_angular_damping: f32,
     /// Active trigger zones.
     zones: Vec<PhysicsZone>,
     /// Additive world gravity vectors applied when no non-additive zone override is active.
@@ -1279,6 +1285,9 @@ impl World {
             body_altitudes: HashMap::new(),
             ballistic_projectiles: Vec::new(),
             ballistic_projectile_hits: Vec::new(),
+            wrap_bounds: None,
+            top_down_linear_damping: 0.0,
+            top_down_angular_damping: 0.0,
             zones: Vec::new(),
             gravity_vectors: Vec::new(),
             flow_fields: Vec::new(),

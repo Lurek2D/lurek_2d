@@ -1309,4 +1309,25 @@ end)
 end
 -- END test_particle_render_unit.lua
 
+-- @describe particle shooter helpers
+describe("particle shooter helpers", function()
+    -- @covers LParticleSystem:emitAt
+    it("emitAt moves, aims, and emits particles", function()
+        local ps = lurek.particle.newSystem({ maxParticles = 8 })
+        ps:emitAt(12, 18, 3, 0.75)
+        local x, y = ps:getPosition()
+        expect_near(12, x, 0.001)
+        expect_near(18, y, 0.001)
+        expect_near(0.75, ps:getDirection(), 0.001)
+        expect_equal(3, ps:getCount())
+    end)
+
+    -- @covers lurek.particle.newPreset
+    it("newPreset creates shooter effect presets", function()
+        expect_equal("LParticleSystem", lurek.particle.newPreset("explosion"):type())
+        expect_equal("LParticleSystem", lurek.particle.newPreset("muzzle"):type())
+        expect_equal("LParticleSystem", lurek.particle.newPreset("smoke_trail"):type())
+    end)
+end)
+
 test_summary()

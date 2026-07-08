@@ -229,6 +229,7 @@ impl TileAwareness {
                 facing: (1, 0),
                 blocker_category: channel.as_str().to_string(),
             },
+            true,
         )
     }
 
@@ -273,9 +274,56 @@ impl TileAwareness {
             origin,
             config.range,
             config,
+            true,
         )
     }
 
+    /// Adds one source to the current visible mask for one player and awareness category.
+    #[allow(clippy::too_many_arguments)]
+    pub fn add_category_visible(
+        &mut self,
+        field: &TileField,
+        player: &str,
+        category: &str,
+        origin: CellCoord,
+        range_override: Option<u32>,
+        mode_override: Option<AwarenessMode>,
+        arc_override: Option<f32>,
+        facing_override: Option<(i32, i32)>,
+        blocker_override: Option<String>,
+    ) -> Result<(), String> {
+        let mut config = self
+            .categories
+            .get(category)
+            .cloned()
+            .unwrap_or_else(|| AwarenessCategoryConfig::new(category));
+        if let Some(range) = range_override {
+            config.range = range;
+        }
+        if let Some(mode) = mode_override {
+            config.mode = mode;
+        }
+        if let Some(arc) = arc_override {
+            config.arc_degrees = arc;
+        }
+        if let Some(facing) = facing_override {
+            config.facing = facing;
+        }
+        if let Some(blocker) = blocker_override {
+            config.blocker_category = blocker;
+        }
+        self.compute_category_visible_with_config(
+            field,
+            player,
+            category,
+            origin,
+            config.range,
+            config,
+            false,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
     fn compute_category_visible_with_config(
         &mut self,
         field: &TileField,
@@ -284,6 +332,7 @@ impl TileAwareness {
         origin: CellCoord,
         range: u32,
         config: AwarenessCategoryConfig,
+        clear_visible: bool,
     ) -> Result<(), String> {
         if !field.in_bounds(origin) {
             return Err("awareness origin is out of bounds".to_string());
@@ -294,7 +343,9 @@ impl TileAwareness {
         let remember_explored = self.remember_explored;
         let masks = self.player_mut(player)?;
         let category_masks = masks.category_mut(category, len);
-        category_masks.visible.fill(false);
+        if clear_visible {
+            category_masks.visible.fill(false);
+        }
         for z in origin.z..=origin.z {
             for y in 0..height {
                 for x in 0..width {

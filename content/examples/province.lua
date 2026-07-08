@@ -1033,3 +1033,26 @@ fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0)
     local active = reg:getShader()
     lurek.log.info("active province mapviz shader=" .. tostring(active and active:getTarget() or "nil"))
 end
+
+--@api: LProvinceRegistry:resolveMapModeColors
+do
+
+    local reg = lurek.province.newFromPng("province_example_resolve_colors", "content/examples/assets/province/map.png")
+    local ids = reg:provinceIds()
+    local first = ids[1]
+    if first then reg:setPoliticalColor(first, 0.3, 0.6, 0.9, 1.0) end
+    local colors = reg:resolveMapModeColors(nil, { ids = { first } })
+    lurek.log.info("resolved province colors = " .. tostring(colors and #colors or 0))
+end
+
+--@api: LProvinceRegistry:borderSegmentsWhere
+do
+
+    local reg = lurek.province.newFromPng("province_example_border_filter", "content/examples/assets/province/map.png")
+    local ids = reg:provinceIds()
+    local first = ids[1]
+    local segments = reg:borderSegmentsWhere({ province = first })
+    local all_segments = reg:borderSegments()
+    lurek.log.info("filtered border segments = " .. tostring(#segments))
+    lurek.log.info("all border segments = " .. tostring(#all_segments))
+end

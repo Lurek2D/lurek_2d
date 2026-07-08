@@ -3943,3 +3943,44 @@ do
     world:step(0.1)
     lurek.log.info("[physics] setAltitudeCollision altitude=" .. tostring(body:getAltitude()))
 end
+
+--@api: lurek.physics.reflectVelocity
+do
+    local vx, vy = lurek.physics.reflectVelocity(120, 0, -1, 0, 0.75)
+    local speed = math.sqrt(vx * vx + vy * vy)
+    local default_vx, default_vy = lurek.physics.reflectVelocity(0, 80, 0, -1)
+    local bounced_down = default_vy < 0
+    lurek.log.info("[physics] reflectVelocity=" .. tostring(vx) .. "," .. tostring(vy))
+    lurek.log.info("[physics] reflected speed=" .. tostring(speed) .. " down=" .. tostring(bounced_down))
+end
+
+--@api: LWorld:configureCollisionGroups
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local groups = world:configureCollisionGroups({
+        projectile = { group = 0, collidesWith = { "enemy" } },
+        enemy = { group = 1, collidesWith = { "projectile", "terrain" } },
+        terrain = { group = 2, collidesWith = { "enemy" } },
+    })
+    lurek.log.info("[physics] projectile mask=" .. tostring(groups.projectile.mask))
+end
+
+--@api: LWorld:newProjectileBody
+do
+    local world = lurek.physics.newWorld(0, 100)
+    local projectile = world:newProjectileBody({
+        x = 12, y = 18, radius = 2, vx = 240, vy = 0,
+        group = 0, restitution = 0.2,
+    })
+    local vx, vy = projectile:getVelocity()
+    lurek.log.info("[physics] projectile velocity=" .. tostring(vx) .. "," .. tostring(vy))
+end
+
+--@api: LWorld:castProjectile
+do
+    local world = lurek.physics.newWorld(0, 0)
+    world:newCircleBody(64, 0, 8, "static")
+    world:step(1 / 60)
+    local result = world:castProjectile({ x = 0, y = 0, radius = 2, dx = 1, dy = 0, maxDist = 128 })
+    lurek.log.info("[physics] castProjectile hit=" .. tostring(result.hit) .. " travel=" .. tostring(result.travel))
+end

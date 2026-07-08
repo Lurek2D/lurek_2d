@@ -12,9 +12,9 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 /// Lua-side handle wrapping a tile light map tied to one shared tilefield.
-struct LuaTileLightMap {
-    field: Rc<RefCell<crate::tilefield::TileField>>,
-    inner: RefCell<TileLightMap>,
+pub(crate) struct LuaTileLightMap {
+    pub(crate) field: Rc<RefCell<crate::tilefield::TileField>>,
+    pub(crate) inner: RefCell<TileLightMap>,
 }
 
 fn lua_err(api: &str, err: impl std::fmt::Display) -> LuaError {

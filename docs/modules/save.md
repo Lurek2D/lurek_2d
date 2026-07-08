@@ -689,6 +689,24 @@ end
 
 ---
 
+#### `LSaveManager:registerSchema`
+
+Register a named schema section and optionally attach a migration into the requested version.
+
+```lua
+LSaveManager:registerSchema(name, version, migrator)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Unique schema section name. |
+| `version` | number | Current schema version for saves produced by this game build. |
+| `migrator?` | function | Optional migration function from version-1 into version. |
+
+---
+
 #### `LSaveManager:reset`
 
 Completely reset the save manager: unregister all sections, clear migrations, hooks, compression, and dirty state.

@@ -700,6 +700,46 @@ end
 
 ---
 
+### `lurek.physics.reflectVelocity`
+
+Reflects a velocity vector around a surface normal without mutating any body.
+
+```lua
+lurek.physics.reflectVelocity(vx, vy, nx, ny, coefficient)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `vx` | number | Velocity X component. |
+| `vy` | number | Velocity Y component. |
+| `nx` | number | Surface normal X component. |
+| `ny` | number | Surface normal Y component. |
+| `coefficient?` | number | Speed multiplier after reflection, defaults to 1.0. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Reflected velocity X component. |
+| number | Reflected velocity Y component. |
+
+**Example**
+
+```lua
+do
+    local vx, vy = lurek.physics.reflectVelocity(120, 0, -1, 0, 0.75)
+    local speed = math.sqrt(vx * vx + vy * vy)
+    local default_vx, default_vy = lurek.physics.reflectVelocity(0, 80, 0, -1)
+    local bounced_down = default_vy < 0
+    lurek.log.info("[physics] reflectVelocity=" .. tostring(vx) .. "," .. tostring(vy))
+    lurek.log.info("[physics] reflected speed=" .. tostring(speed) .. " down=" .. tostring(bounced_down))
+end
+```
+
+---
+
 ### `lurek.physics.setBodyVelocity`
 
 Sets a body's velocity (free-function variant).
@@ -1449,6 +1489,22 @@ end
 
 ---
 
+#### `LBody:applyThrust`
+
+Applies force in the body's current forward direction for top-down inertial movement.
+
+```lua
+LBody:applyThrust(amount)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `amount` | number | Force amount in world units. |
+
+---
+
 #### `LBody:applyTorque`
 
 Applies a rotational torque to the body.
@@ -1476,6 +1532,22 @@ do
     lurek.log.info("angle=" .. tostring(body:getAngle()))
 end
 ```
+
+---
+
+#### `LBody:applyTurn`
+
+Applies torque to the body for top-down turning.
+
+```lua
+LBody:applyTurn(torque)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `torque` | number | Torque amount. |
 
 ---
 
@@ -6660,6 +6732,40 @@ end
 
 ---
 
+#### `LWorld:castProjectile`
+
+Sweeps a projectile circle and returns a movement result with final position and hit data.
+
+```lua
+LWorld:castProjectile(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts` | table | Required { x, y, radius } plus either { vx, vy, dt } or { dx, dy, maxDist }; accepts filter/excludeBody/includeSensors/layer/mask/group/groups. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Result { hit, x, y, travel, remaining, hitBody, normalX, normalY, toi }. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    world:newCircleBody(64, 0, 8, "static")
+    world:step(1 / 60)
+    local result = world:castProjectile({ x = 0, y = 0, radius = 2, dx = 1, dy = 0, maxDist = 128 })
+    lurek.log.info("[physics] castProjectile hit=" .. tostring(result.hit) .. " travel=" .. tostring(result.travel))
+end
+```
+
+---
+
 #### `LWorld:clear`
 
 Removes bodies, joints, terrain colliders, and zones while preserving world-level settings.
@@ -6851,6 +6957,43 @@ do
     world:addGravityVector(0, -40)
     world:clearGravityVectors()
     lurek.log.info("active gravity vectors=" .. world:getStats().gravityVectors)
+end
+```
+
+---
+
+#### `LWorld:configureCollisionGroups`
+
+Configures named 0..15 collision-group roles and returns their layer/mask profile.
+
+```lua
+LWorld:configureCollisionGroups(spec, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `spec` | table | Map of role name to { group?, collidesWith? } definitions. |
+| `opts?` | table | Options: { reset? = true }. Reset clears all 16 group-pair rows before applying the spec. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Map of role name to { group, layer, mask }. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local groups = world:configureCollisionGroups({
+        projectile = { group = 0, collidesWith = { "enemy" } },
+        enemy = { group = 1, collidesWith = { "projectile", "terrain" } },
+        terrain = { group = 2, collidesWith = { "enemy" } },
+    })
+    lurek.log.info("[physics] projectile mask=" .. tostring(groups.projectile.mask))
 end
 ```
 
@@ -8625,6 +8768,42 @@ end
 
 ---
 
+#### `LWorld:newProjectileBody`
+
+Creates a small circle body with shooter-friendly projectile defaults.
+
+```lua
+LWorld:newProjectileBody(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts` | table | Required { x, y, radius, vx, vy }; optional { bodyType?, bullet?, fixedRotation?, gravityScale?, sensor?, material?, layer?, mask?, group?, density?, friction?, restitution? }. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LBody](#lbody) | The newly created projectile body. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 100)
+    local projectile = world:newProjectileBody({
+        x = 12, y = 18, radius = 2, vx = 240, vy = 0,
+        group = 0, restitution = 0.2,
+    })
+    local vx, vy = projectile:getVelocity()
+    lurek.log.info("[physics] projectile velocity=" .. tostring(vx) .. "," .. tostring(vy))
+end
+```
+
+---
+
 #### `LWorld:queryAABB`
 
 Returns all body IDs whose axis-aligned bounding boxes overlap the given rectangle.
@@ -9844,6 +10023,42 @@ end
 
 ---
 
+#### `LWorld:setTopDownDamping`
+
+Sets default linear and angular damping for top-down inertial bodies and applies it to existing bodies.
+
+```lua
+LWorld:setTopDownDamping(linear, angular)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `linear` | number | Linear damping coefficient, >= 0. |
+| `angular` | number | Angular damping coefficient, >= 0. |
+
+---
+
+#### `LWorld:setWrapBounds`
+
+Sets or clears toroidal wrap bounds for top-down arenas.
+
+```lua
+LWorld:setWrapBounds(minX, minY, maxX, maxY)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `minX?` | number | Minimum X bound; pass nil to clear wrap bounds. |
+| `minY?` | number | Minimum Y bound. |
+| `maxX?` | number | Maximum X bound. |
+| `maxY?` | number | Maximum Y bound. |
+
+---
+
 #### `LWorld:sleepBody`
 
 Forces a body into the sleeping state, pausing its simulation until disturbed.
@@ -10146,6 +10361,29 @@ do
     lurek.log.info("sleeping=" .. tostring(world:isBodySleeping(body:getId())))
 end
 ```
+
+---
+
+#### `LWorld:wrapBody`
+
+Wraps one body through the current toroidal bounds and returns its final position.
+
+```lua
+LWorld:wrapBody(bodyId)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `bodyId` | number | Body id to wrap. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Wrapped X coordinate. |
+| number | Wrapped Y coordinate. |
 
 ---
 

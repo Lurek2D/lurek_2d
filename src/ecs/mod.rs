@@ -7,6 +7,8 @@
 
 /// Entity id packing and unpacking helpers.
 pub mod generational_id;
+/// Generic modular loadout data for ECS-authored units.
+pub mod loadout;
 /// Lua table cloning helpers for ECS snapshots and blueprints.
 pub mod lua_table;
 /// Class metadata and object registry bookkeeping for the ECS object model.
@@ -20,6 +22,7 @@ pub mod types;
 /// Core ECS storage for entities, components, tags, and blueprints.
 pub mod universe;
 pub use generational_id::GenerationalId;
+pub use loadout::{Loadout, PartDef, SlotDef, StatBlock};
 pub use lua_table::deep_copy_table;
 pub use object_model::{ClassMeta, ObjectModel};
 pub use relationships::{RelationType, Relationship, RelationshipManager};

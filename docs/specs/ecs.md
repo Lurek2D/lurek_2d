@@ -15,7 +15,7 @@
 - Source path: `src/ecs`
 - Binding: `src/lua_api/ecs_api.rs`
 - Namespace: `lurek.ecs`
-- Lua API surface: `18` functions, `6` types, `88` methods
+- Lua API surface: `22` functions, `10` types, `119` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -58,6 +58,12 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - This file owns stateless packing of entity slot and generation into one compact handle used across ECS.
 - `GenerationalId` encodes a 24-bit slot plus 8-bit generation and exposes direct unpack helpers for both parts.
 - Open it when entity-id layout changes; typed wrappers, world storage, and queries live in sibling ECS files.
+
+### loadout.rs
+
+- Owns generic loadout, slot, part, and stat aggregation data for ECS-authored units.
+- This keeps modular unit composition inside the existing ECS feature boundary while
+- exposing deterministic validation and derived stats to Lua bindings and tests.
 
 ### lua_table.rs
 
@@ -153,8 +159,12 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `lurek.ecs.hasClass(name) -> boolean`: Returns whether a global ECS class name is defined.
 - `lurek.ecs.hasObject(id) -> boolean`: Returns whether a live ECS object id exists.
 - `lurek.ecs.isA(self, candidate) -> boolean`: Returns whether this object inherits from or matches the supplied ECS class name.
+- `lurek.ecs.newLoadout(opts?) -> LLoadout`: Creates a modular loadout from optional slot definitions and base stats.
 - `lurek.ecs.newObject(className, props?) -> table`: Creates a Lua table object from a registered ECS class.
+- `lurek.ecs.newPartDef(opts) -> LPartDef`: Creates a modular loadout part definition.
 - `lurek.ecs.newRelationshipManager() -> LRelationshipManager`: Creates a relationship manager for tracking numeric values and named levels between entity pairs.
+- `lurek.ecs.newSlotDef(name, opts?) -> LSlotDef`: Creates a modular loadout slot definition.
+- `lurek.ecs.newStatBlock(stats?) -> LStatBlock`: Creates a standalone stat block from a plain table.
 - `lurek.ecs.newUniverse() -> LUniverse`: Creates an empty ECS universe for entity, component, system, and relationship management.
 - `lurek.ecs.objectIds() -> integer[]`: Returns all live ECS object ids in ascending order.
 - `lurek.ecs.setProperty(self, name, value) -> nil`: Writes one object property, delegating to a registered setter override when the property defines one.
@@ -173,6 +183,47 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - No documented module-level enums/constants.
 
 ### Types
+
+#### LLoadout Type
+
+- Lua-side handle for one modular loadout.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LLoadout:addSlot(slot) -> nil`: Adds or replaces one slot definition on this loadout.
+- `LLoadout:computeStats() -> LStatBlock`: Computes final additive stats from base stats and equipped parts.
+- `LLoadout:equip(slot, part) -> nil`: Equips a part into a named slot after compatibility checks.
+- `LLoadout:getCost() -> number`: Returns total cost of equipped parts.
+- `LLoadout:getHardpoints() -> string[]`: Returns slot and part hardpoints exposed by this loadout.
+- `LLoadout:toComponent() -> table`: Returns a plain ECS component table with stats, hardpoints, cost, and equipped part ids.
+- `LLoadout:type() -> string`: Returns the Lua-visible type name for this loadout.
+- `LLoadout:typeOf(name) -> boolean`: Returns whether this handle matches a supported type name.
+- `LLoadout:unequip(slot) -> boolean`: Removes the part currently equipped in one slot.
+- `LLoadout:validate() -> string[]`: Returns validation errors for missing or incompatible equipment.
+
+#### LPartDef Type
+
+- Lua-side handle for one loadout part definition.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LPartDef:getCost() -> number`: Returns the part cost value.
+- `LPartDef:getHardpoints() -> string[]`: Returns hardpoints exposed by this part.
+- `LPartDef:getId() -> string`: Returns the stable part id.
+- `LPartDef:getSlot() -> string`: Returns the preferred slot name.
+- `LPartDef:getStats() -> table`: Returns additive stat modifiers as a plain table.
+- `LPartDef:getTags() -> string[]`: Returns compatibility tags.
+- `LPartDef:getVisuals() -> table`: Returns visual attachment mapping for this part.
+- `LPartDef:type() -> string`: Returns the Lua-visible type name for this part definition.
+- `LPartDef:typeOf(name) -> boolean`: Returns whether this handle matches a supported type name.
 
 #### LQueryView Type
 
@@ -211,6 +262,40 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `LRelationshipManager:type() -> string`: Returns the Lua-visible type name for this relationship manager handle.
 - `LRelationshipManager:typeNames() -> string[]`: Returns the defined relationship type names.
 - `LRelationshipManager:typeOf(name) -> boolean`: Returns whether this relationship manager handle matches a supported type name.
+
+#### LSlotDef Type
+
+- Lua-side handle for one loadout slot definition.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LSlotDef:getAccepts() -> string[]`: Returns accepted compatibility tags.
+- `LSlotDef:getHardpoint() -> string`: Returns the slot hardpoint name when one is configured.
+- `LSlotDef:getName() -> string`: Returns the slot name.
+- `LSlotDef:isRequired() -> boolean`: Returns whether this slot is required during loadout validation.
+- `LSlotDef:type() -> string`: Returns the Lua-visible type name for this slot definition.
+- `LSlotDef:typeOf(name) -> boolean`: Returns whether this handle matches a supported type name.
+
+#### LStatBlock Type
+
+- Lua-side handle for one additive stat block.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LStatBlock:add(name, value) -> nil`: Adds a numeric delta to one stat.
+- `LStatBlock:get(name) -> number`: Returns one stat value, or zero when the key is absent.
+- `LStatBlock:set(name, value) -> nil`: Replaces one stat value.
+- `LStatBlock:toTable() -> table`: Returns all stat values as a plain Lua table.
+- `LStatBlock:type() -> string`: Returns the Lua-visible type name for this stat block.
+- `LStatBlock:typeOf(name) -> boolean`: Returns whether this handle matches a supported type name.
 
 #### LUniverse Type
 

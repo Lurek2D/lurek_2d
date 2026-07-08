@@ -1199,3 +1199,15 @@ do
     lurek.log.info("onRebind key_count=" .. tostring(firedCount))
     lurek.input.reset()
 end
+
+--@api: lurek.input.defineActions
+do
+    local count = lurek.input.defineActions({
+        fire = { "space", "mouse1" },
+        thrust = { bindings = { "w", "up" }, category = "flight" },
+        brake = { bindings = { "s" } },
+    }, "combat")
+    lurek.log.info("defineActions count=" .. tostring(count))
+    lurek.log.info("combat actions=" .. tostring(#lurek.input.getByCategory("combat")))
+    lurek.input.reset()
+end

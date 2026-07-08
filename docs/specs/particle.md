@@ -13,7 +13,7 @@
 - Source path: `src/particle`
 - Binding: `src/lua_api/particle_api.rs`
 - Namespace: `lurek.particle`
-- Lua API surface: `5` functions, `3` types, `109` methods
+- Lua API surface: `5` functions, `3` types, `110` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
@@ -135,7 +135,7 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 
 ### presets.rs
 
-- This file owns ready-made `ParticleConfig` constructors for common effects such as fire, smoke, rain, snow, and sparks.
+- This file owns ready-made `ParticleConfig` constructors for common effects such as fire, smoke, rain, snow, sparks, explosion, muzzle, and smoke trails.
 - Each function returns a fully populated config with tuned lifetimes, speeds, colors, sizes, and emission shapes.
 - The presets are data-oriented so callers can clone them and override fields without touching emitter internals.
 - No live particle state is stored here; this file is the catalog layer for reusable effect starting points.
@@ -218,6 +218,7 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - `LParticleSystem:drawSparkTrailToImage(w, h) -> LImageData`: Draws particles as a spark-trail preview image.
 - `LParticleSystem:drawToImage(w, h) -> LImageData`: Draws particles to image data. This method is available to Lua scripts.
 - `LParticleSystem:emit(count) -> nil`: Emits particles immediately. This method is available to Lua scripts.
+- `LParticleSystem:emitAt(x, y, count?, direction?) -> nil`: Moves the emitter, optionally changes direction, and emits particles immediately.
 - `LParticleSystem:getAttractorCount() -> integer`: Returns attractor count. This method is available to Lua scripts.
 - `LParticleSystem:getBufferSize() -> integer`: Returns maximum particle buffer size.
 - `LParticleSystem:getColors() -> table`: Returns particle color keyframes.

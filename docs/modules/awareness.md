@@ -1675,6 +1675,29 @@ end
 
 ---
 
+#### `LTileAwareness:updateSightSources`
+
+Computes one player's current visible mask from multiple tilefield sight sources.
+
+```lua
+LTileAwareness:updateSightSources(player, sources)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `player` | string | Player identifier whose visibility mask should be computed. |
+| `sources` | table | Array of source tables with origin, range, category, mode, arc, facing, and blockerCategory. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Number of processed sight sources. |
+
+---
+
 #### `LTileAwareness:visibleCells`
 
 Returns all currently visible cells for a player, optionally filtered to a level.

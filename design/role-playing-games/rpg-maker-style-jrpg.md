@@ -215,7 +215,7 @@ Event = {
 | Tile world | `lurek.tilemap`, `lurek.tilefield`, `lurek.tileset`, `lurek.tilelight`, `lurek.pathfind` | Store visual layers in tilemap; passability/regions/costs in tilefield; routes through pathfind. |
 | RPG Maker assets | `lurek.sprite.newRPGMakerSheet`, `lurek.sprite.newAutoTileSheet(..., "rpgmaker48", ...)` | Support character sheets and RPG Maker-like autotile sheets. |
 | Player/NPC rendering | `lurek.sprite`, `lurek.animation`, `lurek.tween`, `lurek.camera` | Walk cycles, facing, camera follow, damage popups, transfer fades. |
-| Events/dialogue | `lurek.dialog`, `library.narrative`, `lurek.event` | Event commands call dialogue, choices, variables, and common events. |
+| Events/dialogue | `lurek.dialog`, `lurek.event` | Event commands call dialogue, choices, variables, and common events. |
 | Battle | `library.battle`, `library.stats`, `lurek.ui`, `lurek.audio` | Turn-based battle adapter with party/enemy combatants and UI panels. |
 | Party/items | `library.item`, `library.inventory`, `library.quest` | Inventory, equipment, rewards, quest objectives, journal. |
 | Database | `lurek.dataframe`, `lurek.serialize`, `lurek.filesystem` | Load JSON/TOML/CSV tables, validate schema, support balancing tools. |

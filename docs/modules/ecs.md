@@ -388,6 +388,28 @@ end
 
 ---
 
+### `lurek.ecs.newLoadout`
+
+Creates a modular loadout from optional slot definitions and base stats.
+
+```lua
+lurek.ecs.newLoadout(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts?` | table | Options: slots array of [LSlotDef](#lslotdef), baseStats table. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LLoadout](#lloadout) | New loadout handle. |
+
+---
+
 ### `lurek.ecs.newObject`
 
 Creates a Lua table object from a registered ECS class.
@@ -425,6 +447,28 @@ end
 
 ---
 
+### `lurek.ecs.newPartDef`
+
+Creates a modular loadout part definition.
+
+```lua
+lurek.ecs.newPartDef(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts` | table | Part options: id/name, slot, tags, stats, cost, mass, energy, heat, armor, hardpoints, visuals. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LPartDef](#lpartdef) | New part definition handle. |
+
+---
+
 ### `lurek.ecs.newRelationshipManager`
 
 Creates a relationship manager for tracking numeric values and named levels between entity pairs.
@@ -453,6 +497,51 @@ do
     lurek.log.info("relationship manager level=" .. tostring(level) .. " score=" .. tostring(score) .. " pairs=" .. tostring(rm:pairCount()))
 end
 ```
+
+---
+
+### `lurek.ecs.newSlotDef`
+
+Creates a modular loadout slot definition.
+
+```lua
+lurek.ecs.newSlotDef(name, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Slot name. |
+| `opts?` | table | Options: accepts string/string[], required boolean, hardpoint string. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LSlotDef](#lslotdef) | New slot definition handle. |
+
+---
+
+### `lurek.ecs.newStatBlock`
+
+Creates a standalone stat block from a plain table.
+
+```lua
+lurek.ecs.newStatBlock(stats)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `stats?` | table | Optional stat key-value table. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LStatBlock](#lstatblock) | New stat block handle. |
 
 ---
 
@@ -630,9 +719,352 @@ end
 
 ## Types
 
+- [LLoadout](#lloadout)
+- [LPartDef](#lpartdef)
 - [LQueryView](#lqueryview)
 - [LRelationshipManager](#lrelationshipmanager)
+- [LSlotDef](#lslotdef)
+- [LStatBlock](#lstatblock)
 - [LUniverse](#luniverse)
+
+## LLoadout
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LLoadout:addSlot`
+
+Adds or replaces one slot definition on this loadout.
+
+```lua
+LLoadout:addSlot(slot)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `slot` | [LSlotDef](#lslotdef) | Slot definition to add. |
+
+---
+
+#### `LLoadout:computeStats`
+
+Computes final additive stats from base stats and equipped parts.
+
+```lua
+LLoadout:computeStats()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LStatBlock](#lstatblock) | Derived stat block. |
+
+---
+
+#### `LLoadout:equip`
+
+Equips a part into a named slot after compatibility checks.
+
+```lua
+LLoadout:equip(slot, part)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `slot` | string | Slot name. |
+| `part` | [LPartDef](#lpartdef) | Part definition to equip. |
+
+---
+
+#### `LLoadout:getCost`
+
+Returns total cost of equipped parts.
+
+```lua
+LLoadout:getCost()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Total equipped cost. |
+
+---
+
+#### `LLoadout:getHardpoints`
+
+Returns slot and part hardpoints exposed by this loadout.
+
+```lua
+LLoadout:getHardpoints()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string[] | Hardpoint names. |
+
+---
+
+#### `LLoadout:toComponent`
+
+Returns a plain ECS component table with stats, hardpoints, cost, and equipped part ids.
+
+```lua
+LLoadout:toComponent()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Component table suitable for `[LUniverse](#luniverse):set`. |
+
+---
+
+#### `LLoadout:type`
+
+Returns the Lua-visible type name for this loadout.
+
+```lua
+LLoadout:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LLoadout](#lloadout)`. |
+
+---
+
+#### `LLoadout:typeOf`
+
+Returns whether this handle matches a supported type name.
+
+```lua
+LLoadout:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to compare. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True for `[LLoadout](#lloadout)` or `LObject`. |
+
+---
+
+#### `LLoadout:unequip`
+
+Removes the part currently equipped in one slot.
+
+```lua
+LLoadout:unequip(slot)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `slot` | string | Slot name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when a part was removed. |
+
+---
+
+#### `LLoadout:validate`
+
+Returns validation errors for missing or incompatible equipment.
+
+```lua
+LLoadout:validate()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string[] | Validation errors. Empty means the loadout is valid. |
+
+---
+
+## LPartDef
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LPartDef:getCost`
+
+Returns the part cost value.
+
+```lua
+LPartDef:getCost()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Part cost. |
+
+---
+
+#### `LPartDef:getHardpoints`
+
+Returns hardpoints exposed by this part.
+
+```lua
+LPartDef:getHardpoints()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string[] | Hardpoint names. |
+
+---
+
+#### `LPartDef:getId`
+
+Returns the stable part id.
+
+```lua
+LPartDef:getId()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Part id. |
+
+---
+
+#### `LPartDef:getSlot`
+
+Returns the preferred slot name.
+
+```lua
+LPartDef:getSlot()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Slot name, or empty string when unrestricted. |
+
+---
+
+#### `LPartDef:getStats`
+
+Returns additive stat modifiers as a plain table.
+
+```lua
+LPartDef:getStats()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Stat key-value table. |
+
+---
+
+#### `LPartDef:getTags`
+
+Returns compatibility tags.
+
+```lua
+LPartDef:getTags()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string[] | Part tags. |
+
+---
+
+#### `LPartDef:getVisuals`
+
+Returns visual attachment mapping for this part.
+
+```lua
+LPartDef:getVisuals()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Visual slot mapping. |
+
+---
+
+#### `LPartDef:type`
+
+Returns the Lua-visible type name for this part definition.
+
+```lua
+LPartDef:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LPartDef](#lpartdef)`. |
+
+---
+
+#### `LPartDef:typeOf`
+
+Returns whether this handle matches a supported type name.
+
+```lua
+LPartDef:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to compare. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True for `[LPartDef](#lpartdef)` or `LObject`. |
+
+---
 
 ## LQueryView
 
@@ -1163,6 +1595,234 @@ do
     lurek.log.info("relationship manager type guard rm=" .. tostring(is_relationship_manager) .. " object=" .. tostring(is_object) .. " universe=" .. tostring(is_universe))
 end
 ```
+
+---
+
+## LSlotDef
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LSlotDef:getAccepts`
+
+Returns accepted compatibility tags.
+
+```lua
+LSlotDef:getAccepts()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string[] | Accepted tags. |
+
+---
+
+#### `LSlotDef:getHardpoint`
+
+Returns the slot hardpoint name when one is configured.
+
+```lua
+LSlotDef:getHardpoint()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Hardpoint name, or nil. |
+
+---
+
+#### `LSlotDef:getName`
+
+Returns the slot name.
+
+```lua
+LSlotDef:getName()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Slot name. |
+
+---
+
+#### `LSlotDef:isRequired`
+
+Returns whether this slot is required during loadout validation.
+
+```lua
+LSlotDef:isRequired()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when required. |
+
+---
+
+#### `LSlotDef:type`
+
+Returns the Lua-visible type name for this slot definition.
+
+```lua
+LSlotDef:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LSlotDef](#lslotdef)`. |
+
+---
+
+#### `LSlotDef:typeOf`
+
+Returns whether this handle matches a supported type name.
+
+```lua
+LSlotDef:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to compare. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True for `[LSlotDef](#lslotdef)` or `LObject`. |
+
+---
+
+## LStatBlock
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LStatBlock:add`
+
+Adds a numeric delta to one stat.
+
+```lua
+LStatBlock:add(name, value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Stat key. |
+| `value` | number | Finite delta to add. |
+
+---
+
+#### `LStatBlock:get`
+
+Returns one stat value, or zero when the key is absent.
+
+```lua
+LStatBlock:get(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Stat key. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Stat value. |
+
+---
+
+#### `LStatBlock:set`
+
+Replaces one stat value.
+
+```lua
+LStatBlock:set(name, value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Stat key. |
+| `value` | number | Finite stat value. |
+
+---
+
+#### `LStatBlock:toTable`
+
+Returns all stat values as a plain Lua table.
+
+```lua
+LStatBlock:toTable()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Key-value stat table. |
+
+---
+
+#### `LStatBlock:type`
+
+Returns the Lua-visible type name for this stat block.
+
+```lua
+LStatBlock:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LStatBlock](#lstatblock)`. |
+
+---
+
+#### `LStatBlock:typeOf`
+
+Returns whether this handle matches a supported type name.
+
+```lua
+LStatBlock:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to compare. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True for `[LStatBlock](#lstatblock)` or `LObject`. |
 
 ---
 

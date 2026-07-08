@@ -16,7 +16,7 @@
 - Source path: `src/patterns`
 - Binding: `src/lua_api/patterns_api.rs`
 - Namespace: `lurek.patterns`
-- Lua API surface: `25` functions, `28` types, `228` methods
+- Lua API surface: `30` functions, `28` types, `228` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -245,6 +245,9 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ### Functions
 
+- `lurek.patterns.countBy(items, selector) -> nil`: Counts array items by a selector field path or callback.
+- `lurek.patterns.findSequences(items, selector, opts?) -> nil`: Finds numeric selector runs with a constant step.
+- `lurek.patterns.groupBy(items, selector) -> table`: Groups array items by a selector field path or callback.
 - `lurek.patterns.newBehaviorTree() -> LBehaviorTree`: Create a new behavior tree for AI decision-making with sequences, selectors, parallels, and leaf actions.
 - `lurek.patterns.newBlackboard(name?) -> LBlackboard`: Create a new shared key-value blackboard supporting reactive watchers for game logic variables.
 - `lurek.patterns.newCommandStack(maxSize?) -> LCommandStack`: Create a new undo/redo command stack for recording and reversing player or editor actions.
@@ -270,6 +273,8 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `lurek.patterns.newStrategy() -> LStrategy`: Create a new strategy pattern container for hot-swappable algorithm implementations.
 - `lurek.patterns.newThrottle(interval) -> LThrottle`: Create a new throttle that limits how often an action can fire, enforcing a minimum interval.
 - `lurek.patterns.newWeightedRandom() -> LWeightedRandom`: Create a new weighted random selection pool. Add items with weights and pick random selections.
+- `lurek.patterns.sortedIndices(items, selector, opts?) -> nil`: Returns one-based item indices sorted by selector value.
+- `lurek.patterns.topN(items, selector, n, opts?) -> nil`: Returns the top `n` items by selector value, or indices when `opts.indices` is true.
 
 ### Callbacks
 

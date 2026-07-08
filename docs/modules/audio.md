@@ -3347,6 +3347,43 @@ end
 
 ---
 
+#### `LBeatClock:judge`
+
+Judges timing against the nearest beat grid and returns a detailed result table.
+
+```lua
+LBeatClock:judge(division, hit_offset, windows)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `division?` | number | Beat division. |
+| `hit_offset?` | number | Signed hit offset in seconds. |
+| `windows?` | table | Optional `{perfect, great, good}` seconds for this call. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | `{verdict, label, error, errorSeconds, offset, division, nearestBeat}`. |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    clock:start(0.0)
+    clock:update(0.5)
+    local result = clock:judge(4, 0.0, { perfect = 0.05, great = 0.1, good = 0.15 })
+    lurek.log.info("beat judge verdict = " .. tostring(result.verdict))
+    lurek.log.info("beat judge error = " .. tostring(result.errorSeconds))
+end
+```
+
+---
+
 #### `LBeatClock:nearestBeat`
 
 Returns nearest beat and signed timing error in seconds.

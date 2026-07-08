@@ -141,7 +141,7 @@ surprised = "assets/characters/mio/surprised.png"
 
 ### Script format
 
-Use `library.narrative` Ink-flavoured scripts for route flow and tags, or raw `lurek.dialog` node tables for fully Lua-authored timelines. Tags should drive scene commands.
+Use `lurek.dialog.compileStory` Ink-subset scripts for route flow and tags, or raw `lurek.dialog` node tables for fully Lua-authored timelines. Tags should drive scene commands.
 
 ```ink
 === START ===
@@ -174,7 +174,7 @@ BacklogEntry = {
 
 | Need | Existing surface | Strategy |
 |---|---|---|
-| Dialogue reveal and choices | `lurek.dialog`, `library.dialog`, `library.narrative` | Use sequencer for line reveal and choices; use narrative scripts for route flow. |
+| Dialogue reveal and choices | `lurek.dialog`, `library.dialog` | Use sequencer for line reveal and choices; use compiled story scripts for route flow. |
 | Scene stack | `lurek.scene` | Title, load, gameplay, preferences, gallery, replay screens. |
 | UI | `lurek.ui` | Retained dialogue box, choice list, backlog scroll, save slots, preferences tabs. |
 | Presentation | `lurek.render`, `lurek.sprite`, `lurek.tween`, `lurek.cinematic` / `library.cinematic` | Backgrounds, CGs, character sprites, transitions, camera shake, timeline cues. |

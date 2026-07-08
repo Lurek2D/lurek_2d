@@ -42,6 +42,9 @@ pub struct TileField {
     modifiers: HashMap<String, TileModifier>,
     slots: BTreeSet<String>,
     regions: HashMap<String, TileRegion>,
+    occupants: HashMap<CellCoord, u64>,
+    resources: HashMap<CellCoord, String>,
+    buildable: HashMap<CellCoord, bool>,
     version: u64,
     dirty_rects: Vec<(u32, u32, u32, u32, u32)>,
 }
@@ -87,9 +90,80 @@ impl TileField {
             modifiers,
             slots: BTreeSet::new(),
             regions: HashMap::new(),
+            occupants: HashMap::new(),
+            resources: HashMap::new(),
+            buildable: HashMap::new(),
             version: 1,
             dirty_rects: Vec::new(),
         })
+    }
+
+    /// Set or replace the occupant id for one cell.
+    pub fn set_occupant(&mut self, coord: CellCoord, occupant: u64) -> Result<(), String> {
+        if !self.in_bounds(coord) {
+            return Err("tilefield occupant coordinate is out of bounds".to_string());
+        }
+        self.occupants.insert(coord, occupant);
+        self.mark_dirty_cell(coord);
+        Ok(())
+    }
+
+    /// Clear the occupant id for one cell.
+    pub fn clear_occupant(&mut self, coord: CellCoord) -> Result<bool, String> {
+        if !self.in_bounds(coord) {
+            return Err("tilefield occupant coordinate is out of bounds".to_string());
+        }
+        let removed = self.occupants.remove(&coord).is_some();
+        if removed {
+            self.mark_dirty_cell(coord);
+        }
+        Ok(removed)
+    }
+
+    /// Return the occupant id for one cell.
+    pub fn occupant(&self, coord: CellCoord) -> Option<u64> {
+        self.occupants.get(&coord).copied()
+    }
+
+    /// Set or clear the resource label for one cell.
+    pub fn set_resource(
+        &mut self,
+        coord: CellCoord,
+        resource: Option<String>,
+    ) -> Result<(), String> {
+        if !self.in_bounds(coord) {
+            return Err("tilefield resource coordinate is out of bounds".to_string());
+        }
+        match resource {
+            Some(resource) if !resource.trim().is_empty() => {
+                self.resources.insert(coord, resource);
+            }
+            _ => {
+                self.resources.remove(&coord);
+            }
+        }
+        self.mark_dirty_cell(coord);
+        Ok(())
+    }
+
+    /// Return the resource label for one cell.
+    pub fn resource(&self, coord: CellCoord) -> Option<&str> {
+        self.resources.get(&coord).map(String::as_str)
+    }
+
+    /// Set whether one cell accepts build placement.
+    pub fn set_buildable(&mut self, coord: CellCoord, value: bool) -> Result<(), String> {
+        if !self.in_bounds(coord) {
+            return Err("tilefield buildable coordinate is out of bounds".to_string());
+        }
+        self.buildable.insert(coord, value);
+        self.mark_dirty_cell(coord);
+        Ok(())
+    }
+
+    /// Return whether one cell accepts build placement.
+    pub fn is_buildable(&self, coord: CellCoord) -> bool {
+        self.in_bounds(coord) && *self.buildable.get(&coord).unwrap_or(&true)
     }
 
     /// Return field dimensions.

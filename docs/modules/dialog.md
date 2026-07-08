@@ -96,6 +96,41 @@ end
 
 ---
 
+### `lurek.dialog.compileStory`
+
+Compiles a safe Ink-subset story source into an `[LDialogStory](#ldialogstory)`.
+
+```lua
+lurek.dialog.compileStory(source, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `source` | string | Ink-subset source text. |
+| `opts?` | table | Reserved parser options. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LDialogStory](#ldialogstory) | Compiled story runtime. |
+
+**Example**
+
+```lua
+do
+    local story = lurek.dialog.compileStory("=== START ===\nHello, {hero}.\n-> END")
+    story:setVariable("hero", "Ada")
+    story:start()
+    local line = story:continue()
+    lurek.log.info("compiled story line = " .. tostring(line))
+end
+```
+
+---
+
 ### `lurek.dialog.event`
 
 Creates an Event node (fires a named callback).
@@ -413,6 +448,7 @@ end
 ## Types
 
 - [LDialogSequencer](#ldialogsequencer)
+- [LDialogStory](#ldialogstory)
 - [LDialogueAI](#ldialogueai)
 - [LDialogueState](#ldialoguestate)
 - [LSpeakerRegistry](#lspeakerregistry)
@@ -1254,6 +1290,409 @@ do
     seq:start()
     seq:update(0.15)
     lurek.log.info("LDialogSequencer:update revealed=" .. seq:revealedText())
+end
+```
+
+---
+
+## LDialogStory
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LDialogStory:canContinue`
+
+Returns whether the story can emit another line.
+
+```lua
+LDialogStory:canContinue()
+```
+
+**Example**
+
+```lua
+do
+    local story = lurek.dialog.compileStory("=== START ===\nLine one.\nLine two.")
+    story:start()
+    local before = story:canContinue()
+    local first = story:continue()
+    local after = story:canContinue()
+    lurek.log.info("story canContinue before=" .. tostring(before) .. " after=" .. tostring(after) .. " first=" .. tostring(first))
+end
+```
+
+---
+
+#### `LDialogStory:choose`
+
+Selects an available story choice by one-based choice index.
+
+```lua
+LDialogStory:choose(index)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `index` | any |  |
+
+**Example**
+
+```lua
+do
+    local story = lurek.dialog.compileStory("=== START ===\n* Continue | -> NEXT\n=== NEXT ===\nDone.")
+    story:start()
+    story:choose(1)
+    local line = story:continue()
+    lurek.log.info("chosen story line = " .. tostring(line))
+end
+```
+
+---
+
+#### `LDialogStory:continue`
+
+Emits the next story line and tag array, or nil at choice/end.
+
+```lua
+LDialogStory:continue()
+```
+
+**Example**
+
+```lua
+do
+    local story = lurek.dialog.compileStory("=== START ===\nTagged line. #mood:calm")
+    story:start()
+    local line, tags = story:continue()
+    local tag = tags[1]
+    lurek.log.info("story continue line = " .. tostring(line))
+    lurek.log.info("story continue tag = " .. tostring(tag))
+end
+```
+
+---
+
+#### `LDialogStory:continueAll`
+
+Drains story lines until a choice or end and joins them.
+
+```lua
+LDialogStory:continueAll(sep)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `sep?` | any |  |
+
+**Example**
+
+```lua
+do
+    local story = lurek.dialog.compileStory("=== START ===\nOne.\nTwo.")
+    story:start()
+    local text = story:continueAll(" / ")
+    local ended = not story:canContinue()
+    lurek.log.info("story continueAll text = " .. tostring(text))
+    lurek.log.info("story continueAll ended = " .. tostring(ended))
+end
+```
+
+---
+
+#### `LDialogStory:getChoices`
+
+Returns available choices as `{text, available, tags, index}` rows.
+
+```lua
+LDialogStory:getChoices()
+```
+
+**Example**
+
+```lua
+do
+    local story = lurek.dialog.compileStory("=== START ===\n* Open door | -> OPEN\n=== OPEN ===\nOpened.")
+    story:start()
+    local choices = story:getChoices()
+    local choice = choices[1]
+    lurek.log.info("choice count = " .. tostring(#choices))
+    lurek.log.info("first choice = " .. tostring(choice and choice.text))
+end
+```
+
+---
+
+#### `LDialogStory:getVariable`
+
+Returns one story variable value, or nil when the story variable is not currently defined.
+
+```lua
+LDialogStory:getVariable(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | any |  |
+
+**Example**
+
+```lua
+do
+    local story = lurek.dialog.compileStory("VAR score = 3\n=== START ===\nScore.")
+    story:start()
+    local score = story:getVariable("score")
+    story:setVariable("score", score + 2)
+    lurek.log.info("story variable score = " .. tostring(story:getVariable("score")))
+end
+```
+
+---
+
+#### `LDialogStory:gotoKnot`
+
+Jumps immediately to a named story knot and resets the story position to that knot start.
+
+```lua
+LDialogStory:gotoKnot(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | any |  |
+
+**Example**
+
+```lua
+do
+    local story = lurek.dialog.compileStory("=== START ===\nStart.\n=== SECRET ===\nSecret.")
+    story:start()
+    story:gotoKnot("SECRET")
+    local line = story:continue()
+    lurek.log.info("goto knot line = " .. tostring(line))
+end
+```
+
+---
+
+#### `LDialogStory:listVariables`
+
+Lists story variable names.
+
+```lua
+LDialogStory:listVariables()
+```
+
+**Example**
+
+```lua
+do
+    local story = lurek.dialog.compileStory("VAR route = \"common\"\n=== START ===\nRoute.")
+    story:setVariable("flag", true)
+    local vars = story:listVariables()
+    table.sort(vars)
+    lurek.log.info("story variable count = " .. tostring(#vars))
+    lurek.log.info("first variable = " .. tostring(vars[1]))
+end
+```
+
+---
+
+#### `LDialogStory:restore`
+
+Restores a snapshot returned by `snapshot`.
+
+```lua
+LDialogStory:restore(snapshot)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `snapshot` | any |  |
+
+**Example**
+
+```lua
+do
+    local story = lurek.dialog.compileStory("VAR flag = \"before\"\n=== START ===\n{flag}")
+    story:start()
+    local snapshot = story:snapshot()
+    story:setVariable("flag", "after")
+    story:restore(snapshot)
+    lurek.log.info("restored story flag = " .. tostring(story:getVariable("flag")))
+end
+```
+
+---
+
+#### `LDialogStory:setVariable`
+
+Sets or replaces one story variable using a nil, boolean, number, or string value.
+
+```lua
+LDialogStory:setVariable(name, value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | any |  |
+| `value` | any |  |
+
+**Example**
+
+```lua
+do
+    local story = lurek.dialog.compileStory("=== START ===\n{hero} enters.")
+    story:setVariable("hero", "Mira")
+    story:start()
+    local line = story:continue()
+    lurek.log.info("story variable line = " .. tostring(line))
+end
+```
+
+---
+
+#### `LDialogStory:snapshot`
+
+Returns a serializable story runtime snapshot.
+
+```lua
+LDialogStory:snapshot()
+```
+
+**Example**
+
+```lua
+do
+    local story = lurek.dialog.compileStory("VAR flag = \"before\"\n=== START ===\n{flag}")
+    story:start()
+    local snapshot = story:snapshot()
+    story:setVariable("flag", "after")
+    lurek.log.info("story snapshot knot = " .. tostring(snapshot.knot))
+    lurek.log.info("story value after snapshot = " .. tostring(story:getVariable("flag")))
+end
+```
+
+---
+
+#### `LDialogStory:start`
+
+Starts the story at a named knot or at START/ENTRY/first knot.
+
+```lua
+LDialogStory:start(knot)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `knot?` | any |  |
+
+**Example**
+
+```lua
+do
+    local story = lurek.dialog.compileStory("=== START ===\nIntro.\n=== LATER ===\nLater.")
+    story:start("LATER")
+    local line = story:continue()
+    local can_continue = story:canContinue()
+    lurek.log.info("started knot line = " .. tostring(line))
+    lurek.log.info("can continue after one line = " .. tostring(can_continue))
+end
+```
+
+---
+
+#### `LDialogStory:type`
+
+Returns the Lua userdata type name for compiled dialog story handles.
+
+```lua
+LDialogStory:type()
+```
+
+**Example**
+
+```lua
+do
+    local story = lurek.dialog.compileStory("=== START ===\nType.")
+    story:start()
+    local type_name = story:type()
+    local line = story:continue()
+    lurek.log.info("story type = " .. tostring(type_name))
+    lurek.log.info("story type line = " .. tostring(line))
+end
+```
+
+---
+
+#### `LDialogStory:typeOf`
+
+Returns true for `[LDialogStory](#ldialogstory)` and shared `LObject` runtime type checks.
+
+```lua
+LDialogStory:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | any |  |
+
+**Example**
+
+```lua
+do
+    local story = lurek.dialog.compileStory("=== START ===\nType check.")
+    local is_story = story:typeOf("LDialogStory")
+    local is_object = story:typeOf("LObject")
+    local is_seq = story:typeOf("LDialogSequencer")
+    lurek.log.info("story typeOf story=" .. tostring(is_story) .. " object=" .. tostring(is_object) .. " seq=" .. tostring(is_seq))
+end
+```
+
+---
+
+#### `LDialogStory:visitCount`
+
+Returns how many times a knot has been entered.
+
+```lua
+LDialogStory:visitCount(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | any |  |
+
+**Example**
+
+```lua
+do
+    local story = lurek.dialog.compileStory("=== START ===\nIntro.")
+    story:start()
+    local first = story:visitCount("START")
+    story:start()
+    local second = story:visitCount("START")
+    lurek.log.info("story visits " .. tostring(first) .. " -> " .. tostring(second))
 end
 ```
 

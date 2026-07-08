@@ -88,7 +88,9 @@ pub mod simulation {
         DecisionBiasMode, DecisionBiasRule, DecisionBiasSet, TraitArchetypes, TraitModifier,
         TraitProfile, BUILTIN_TRAITS,
     };
-    pub use super::world::{AIOrderRuntimeStats, AISpatialQueryStats, AIWorld, SpatialQueryOptions};
+    pub use super::world::{
+        AIOrderRuntimeStats, AISpatialQueryStats, AIWorld, SpatialQueryOptions,
+    };
 }
 
 /// Grouped debug and diagnostics APIs for AI inspection.

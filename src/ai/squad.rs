@@ -6,8 +6,8 @@
 
 use crate::patterns::Blackboard;
 use std::cell::{Cell, RefCell};
-use std::collections::HashMap;
 use std::collections::hash_map::DefaultHasher;
+use std::collections::HashMap;
 use std::hash::{Hash, Hasher};
 /// Supported squad formation shapes.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -94,7 +94,7 @@ impl FormationFallbackMode {
     }
 }
 /// Footprint and subgroup metadata stored for one squad member name.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct SquadMemberProfile {
     /// Footprint width in grid-style cells or logical slot units.
     pub footprint_w: u32,
@@ -102,6 +102,12 @@ pub struct SquadMemberProfile {
     pub footprint_h: u32,
     /// Optional subgroup label used to keep nearby members clustered together.
     pub subgroup: Option<String>,
+    /// Optional tactical role label such as `assault`, `support`, or `builder`.
+    pub role: Option<String>,
+    /// Weapon range hint in world units used by RTS order planners.
+    pub weapon_range: f32,
+    /// Optional speed-class label used by higher-level movement grouping.
+    pub speed_class: Option<String>,
 }
 impl Default for SquadMemberProfile {
     fn default() -> Self {
@@ -109,6 +115,9 @@ impl Default for SquadMemberProfile {
             footprint_w: 1,
             footprint_h: 1,
             subgroup: None,
+            role: None,
+            weapon_range: 0.0,
+            speed_class: None,
         }
     }
 }
@@ -151,7 +160,7 @@ pub struct FormationLayout {
     pub slots: Vec<FormationSlotAssignment>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq)]
 struct LayoutCacheKey {
     leader_x_bits: u32,
     leader_y_bits: u32,
@@ -315,7 +324,8 @@ impl Squad {
         let requested_formation = self.formation.clone();
         let active_formation = self.resolve_active_formation(lane_width);
         let slots = self.build_slots(&active_formation, leader_pos);
-        let assignments = self.assign_members_to_slots(&active_formation, slots, leader_pos, member_positions);
+        let assignments =
+            self.assign_members_to_slots(&active_formation, slots, leader_pos, member_positions);
         let (width, height) = formation_bounds(&assignments, self.formation_spacing);
         let layout = FormationLayout {
             requested_formation: requested_formation.clone(),
@@ -429,7 +439,9 @@ impl Squad {
         match formation {
             FormationType::None => 0.0,
             FormationType::Line => (count.max(1.0) - 1.0) * stride_x,
-            FormationType::Column => self.max_footprint_w() as f32 * self.formation_spacing.max(0.0),
+            FormationType::Column => {
+                self.max_footprint_w() as f32 * self.formation_spacing.max(0.0)
+            }
             FormationType::Wedge => {
                 let rows = if self.members.len() <= 1 {
                     0.0
@@ -438,7 +450,9 @@ impl Squad {
                 };
                 rows * stride_x * 2.0
             }
-            FormationType::Circle => self.formation_spacing.max(0.0) * self.max_footprint_dim() * 2.0,
+            FormationType::Circle => {
+                self.formation_spacing.max(0.0) * self.max_footprint_dim() * 2.0
+            }
         }
     }
 
@@ -524,7 +538,10 @@ impl Squad {
         member_positions: Option<&HashMap<String, (f32, f32)>>,
     ) -> Vec<FormationSlotAssignment> {
         if self.sort_mode == FormationSortMode::Distance && member_positions.is_some() {
-            slots.sort_by(|a, b| slot_sort_key(formation, leader_pos, a).total_cmp(&slot_sort_key(formation, leader_pos, b)));
+            slots.sort_by(|a, b| {
+                slot_sort_key(formation, leader_pos, a)
+                    .total_cmp(&slot_sort_key(formation, leader_pos, b))
+            });
         }
 
         let grouped_members = self.assignment_groups(formation, leader_pos, member_positions);
@@ -590,8 +607,9 @@ impl Squad {
         } else {
             let mut members = members;
             members.sort_by(|a, b| {
-                member_sort_key(formation, leader_pos, positions.get(&a.name), a)
-                    .total_cmp(&member_sort_key(formation, leader_pos, positions.get(&b.name), b))
+                member_sort_key(formation, leader_pos, positions.get(&a.name), a).total_cmp(
+                    &member_sort_key(formation, leader_pos, positions.get(&b.name), b),
+                )
             });
             vec![members]
         }

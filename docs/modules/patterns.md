@@ -38,6 +38,107 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ## Functions
 
+### `lurek.patterns.countBy`
+
+Counts array items by a selector field path or callback.
+
+```lua
+lurek.patterns.countBy(items, selector)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `items` | any |  |
+| `selector` | any |  |
+
+**Example**
+
+```lua
+do
+    local items = {
+        { tier = "common" },
+        { tier = "rare" },
+        { tier = "common" },
+    }
+    local counts = lurek.patterns.countBy(items, "tier")
+    lurek.log.info("common count = " .. tostring(counts.common))
+end
+```
+
+---
+
+### `lurek.patterns.findSequences`
+
+Finds numeric selector runs with a constant step.
+
+```lua
+lurek.patterns.findSequences(items, selector, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `items` | any |  |
+| `selector` | any |  |
+| `opts?` | any |  |
+
+**Example**
+
+```lua
+do
+    local tiles = {
+        { x = 1 },
+        { x = 2 },
+        { x = 3 },
+        { x = 7 },
+    }
+    local runs = lurek.patterns.findSequences(tiles, "x", { minLength = 3 })
+    lurek.log.info("sequence count = " .. tostring(#runs) .. " first_len=" .. tostring(#runs[1]))
+end
+```
+
+---
+
+### `lurek.patterns.groupBy`
+
+Groups array items by a selector field path or callback.
+
+```lua
+lurek.patterns.groupBy(items, selector)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `items` | table | Sequence table. |
+| `selector` | string|function | Field path such as `"kind"` or callback `(item, index)`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | String-keyed table of grouped item arrays. |
+
+**Example**
+
+```lua
+do
+    local units = {
+        { name = "pike", role = "front" },
+        { name = "archer", role = "back" },
+        { name = "shield", role = "front" },
+    }
+    local groups = lurek.patterns.groupBy(units, "role")
+    lurek.log.info("front group size = " .. tostring(#groups.front))
+end
+```
+
+---
+
 ### `lurek.patterns.newBehaviorTree`
 
 Create a new behavior tree for AI decision-making with sequences, selectors, parallels, and leaf actions.
@@ -927,9 +1028,78 @@ end
 
 ---
 
+### `lurek.patterns.sortedIndices`
+
+Returns one-based item indices sorted by selector value.
+
+```lua
+lurek.patterns.sortedIndices(items, selector, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `items` | any |  |
+| `selector` | any |  |
+| `opts?` | any |  |
+
+**Example**
+
+```lua
+do
+    local scores = {
+        { id = "a", score = 12 },
+        { id = "b", score = 30 },
+        { id = "c", score = 18 },
+    }
+    local order = lurek.patterns.sortedIndices(scores, function(item) return item.score end, { desc = true })
+    lurek.log.info("highest score id = " .. tostring(scores[order[1]].id))
+end
+```
+
+---
+
+### `lurek.patterns.topN`
+
+Returns the top `n` items by selector value, or indices when `opts.indices` is true.
+
+```lua
+lurek.patterns.topN(items, selector, n, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `items` | any |  |
+| `selector` | any |  |
+| `n` | any |  |
+| `opts?` | any |  |
+
+**Example**
+
+```lua
+do
+    local threats = {
+        { name = "scout", weight = 1 },
+        { name = "tank", weight = 8 },
+        { name = "raider", weight = 4 },
+    }
+    local top = lurek.patterns.topN(threats, "weight", 2)
+    lurek.log.info("top threat = " .. tostring(top[1].name) .. " selected=" .. tostring(#top))
+end
+```
+
+---
+
 ## Module Fields
 
 *No module-level fields documented.*
+
+## Callback Parameters
+
+- `lurek.patterns.groupBy` param `selector` (`string|function`): Field path such as `"kind"` or callback `(item, index)`.
 
 ## Enums
 

@@ -121,9 +121,9 @@ struct LuaAwarenessGrid {
 }
 
 /// Lua-side wrapper for per-player tile visibility/action masks.
-struct LuaTileAwareness {
-    field: Rc<RefCell<crate::tilefield::TileField>>,
-    inner: RefCell<TileAwareness>,
+pub(crate) struct LuaTileAwareness {
+    pub(crate) field: Rc<RefCell<crate::tilefield::TileField>>,
+    pub(crate) inner: RefCell<TileAwareness>,
 }
 
 impl LuaUserData for LuaTileAwareness {
@@ -250,6 +250,73 @@ impl LuaUserData for LuaTileAwareness {
                         &field, &player, &category, origin, range, mode, arc, facing, blocker,
                     )
                     .map_err(|e| awareness_lua_err("LTileAwareness.computeVisible", e))
+            },
+        );
+
+        // -- updateSightSources --
+        /// Computes one player's current visible mask from multiple tilefield sight sources.
+        /// @param | player | string | Player identifier whose visibility mask should be computed.
+        /// @param | sources | table | Array of source tables with origin, range, category, mode, arc, facing, and blockerCategory.
+        /// @return | integer | Number of processed sight sources.
+        methods.add_method(
+            "updateSightSources",
+            |_, this, (player, sources): (String, LuaTable)| {
+                let field = this.field.borrow();
+                let mut count = 0usize;
+                for source in sources.sequence_values::<LuaTable>() {
+                    let opts = source?;
+                    let origin_table = opts
+                        .get::<_, Option<LuaTable>>("origin")?
+                        .unwrap_or_else(|| opts.clone());
+                    let origin = awareness_coord_from_table(
+                        origin_table,
+                        "LTileAwareness.updateSightSources",
+                    )?;
+                    let range = opts
+                        .get::<_, Option<u32>>("range")
+                        .map_err(|e| awareness_lua_err("LTileAwareness.updateSightSources", e))?;
+                    let category = awareness_category(
+                        &opts,
+                        "vision",
+                        "channel",
+                        "LTileAwareness.updateSightSources",
+                    )?;
+                    let mode =
+                        awareness_mode_from_opts(&opts, "LTileAwareness.updateSightSources")?;
+                    let arc = opts
+                        .get::<_, Option<f32>>("arc")
+                        .map_err(|e| awareness_lua_err("LTileAwareness.updateSightSources", e))?
+                        .or_else(|| opts.get::<_, Option<f32>>("arcDegrees").ok().flatten());
+                    let facing =
+                        awareness_facing_from_opts(&opts, "LTileAwareness.updateSightSources")?;
+                    let blocker = opts
+                        .get::<_, Option<String>>("blockerCategory")
+                        .map_err(|e| awareness_lua_err("LTileAwareness.updateSightSources", e))?
+                        .or_else(|| opts.get::<_, Option<String>>("blocker").ok().flatten());
+                    if count == 0 {
+                        this.inner
+                            .borrow_mut()
+                            .compute_category_visible(
+                                &field, &player, &category, origin, range, mode, arc, facing,
+                                blocker,
+                            )
+                            .map_err(|e| {
+                                awareness_lua_err("LTileAwareness.updateSightSources", e)
+                            })?;
+                    } else {
+                        this.inner
+                            .borrow_mut()
+                            .add_category_visible(
+                                &field, &player, &category, origin, range, mode, arc, facing,
+                                blocker,
+                            )
+                            .map_err(|e| {
+                                awareness_lua_err("LTileAwareness.updateSightSources", e)
+                            })?;
+                    }
+                    count += 1;
+                }
+                Ok(count)
             },
         );
 

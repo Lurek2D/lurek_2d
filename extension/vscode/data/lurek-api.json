@@ -7003,6 +7003,30 @@
       "description": "Registers the `lurek.dialog` Lua API for dialog userdata, action control, and script-managed dialog flows.",
       "functions": [
         {
+          "name": "compileStory",
+          "fullPath": "lurek.dialog.compileStory",
+          "signature": "(source, [opts])",
+          "description": "Compiles a safe Ink-subset story source into an `LDialogStory`.",
+          "parameters": [
+            {
+              "name": "source",
+              "type": "string",
+              "description": "Ink-subset source text.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved parser options.",
+              "optional": true
+            }
+          ],
+          "returns": "LDialogStory",
+          "returnType": "LDialogStory",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "newAI",
           "fullPath": "lurek.dialog.newAI",
           "signature": "()",
@@ -8757,6 +8781,84 @@
           "parameters": [],
           "returns": "LRelationshipManager",
           "returnType": "LRelationshipManager",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newSlotDef",
+          "fullPath": "lurek.ecs.newSlotDef",
+          "signature": "(name, [opts])",
+          "description": "Creates a modular loadout slot definition.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Slot name.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Options: accepts string/string[], required boolean, hardpoint string.",
+              "optional": true
+            }
+          ],
+          "returns": "LSlotDef",
+          "returnType": "LSlotDef",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newPartDef",
+          "fullPath": "lurek.ecs.newPartDef",
+          "signature": "(opts)",
+          "description": "Creates a modular loadout part definition.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Part options: id/name, slot, tags, stats, cost, mass, energy, heat, armor, hardpoints, visuals.",
+              "optional": false
+            }
+          ],
+          "returns": "LPartDef",
+          "returnType": "LPartDef",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newLoadout",
+          "fullPath": "lurek.ecs.newLoadout",
+          "signature": "([opts])",
+          "description": "Creates a modular loadout from optional slot definitions and base stats.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Options: slots array of LSlotDef, baseStats table.",
+              "optional": true
+            }
+          ],
+          "returns": "LLoadout",
+          "returnType": "LLoadout",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newStatBlock",
+          "fullPath": "lurek.ecs.newStatBlock",
+          "signature": "([stats])",
+          "description": "Creates a standalone stat block from a plain table.",
+          "parameters": [
+            {
+              "name": "stats",
+              "type": "table",
+              "description": "Optional stat key-value table.",
+              "optional": true
+            }
+          ],
+          "returns": "LStatBlock",
+          "returnType": "LStatBlock",
           "isMethod": false,
           "objectType": null
         },
@@ -13442,6 +13544,30 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "defineActions",
+          "fullPath": "lurek.input.defineActions",
+          "signature": "(defs, [default_category])",
+          "description": "Defines multiple named actions at once, replacing prior definitions.",
+          "parameters": [
+            {
+              "name": "defs",
+              "type": "table",
+              "description": "Map of action name to binding array or { bindings = {...}, category? }.",
+              "optional": false
+            },
+            {
+              "name": "defaultCategory",
+              "type": "string",
+              "description": "Category used when an action definition omits `category`.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": false,
           "objectType": null
         },
@@ -18907,6 +19033,36 @@
           "objectType": null
         },
         {
+          "name": "newLayerSet",
+          "fullPath": "lurek.parallax.newLayerSet",
+          "signature": "(name, layer_defs, [opts])",
+          "description": "Creates a parallax layer set from an array of layer definition tables.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Set name.",
+              "optional": false
+            },
+            {
+              "name": "layerDefs",
+              "type": "table|Array of `newLayer` option tables; each may include `preset = \"far\"|\"mid\"",
+              "description": "\"fog\"`.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Options: { sort? = true }.",
+              "optional": true
+            }
+          ],
+          "returns": "LParallaxSet",
+          "returnType": "LParallaxSet",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "newPresetLayer",
           "fullPath": "lurek.parallax.newPresetLayer",
           "signature": "(preset_name, img_ud)",
@@ -19006,7 +19162,7 @@
             {
               "name": "name",
               "type": "string",
-              "description": "Preset name: `fire`, `smoke`, `rain`, `snow`, or `sparks`.",
+              "description": "Preset name: `fire`, `smoke`, `rain`, `snow`, `sparks`, `explosion`, `muzzle`, or `smoke_trail`.",
               "optional": false
             }
           ],
@@ -20210,6 +20366,150 @@
           "returnType": "LPatternGraph",
           "isMethod": false,
           "objectType": null
+        },
+        {
+          "name": "groupBy",
+          "fullPath": "lurek.patterns.groupBy",
+          "signature": "(items, selector)",
+          "description": "Groups array items by a selector field path or callback.",
+          "parameters": [
+            {
+              "name": "items",
+              "type": "table",
+              "description": "Sequence table.",
+              "optional": false
+            },
+            {
+              "name": "selector",
+              "type": "string|function",
+              "description": "Field path such as `\"kind\"` or callback `(item, index)`.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "countBy",
+          "fullPath": "lurek.patterns.countBy",
+          "signature": "(items, selector)",
+          "description": "Counts array items by a selector field path or callback.",
+          "parameters": [
+            {
+              "name": "items",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "selector",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "sortedIndices",
+          "fullPath": "lurek.patterns.sortedIndices",
+          "signature": "(items, selector, [opts])",
+          "description": "Returns one-based item indices sorted by selector value.",
+          "parameters": [
+            {
+              "name": "items",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "selector",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "topN",
+          "fullPath": "lurek.patterns.topN",
+          "signature": "(items, selector, n, [opts])",
+          "description": "Returns the top `n` items by selector value, or indices when `opts.indices` is true.",
+          "parameters": [
+            {
+              "name": "items",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "selector",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "n",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "findSequences",
+          "fullPath": "lurek.patterns.findSequences",
+          "signature": "(items, selector, [opts])",
+          "description": "Finds numeric selector runs with a constant step.",
+          "parameters": [
+            {
+              "name": "items",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "selector",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
         }
       ],
       "methods": []
@@ -20299,6 +20599,48 @@
           ],
           "returns": "table",
           "returnType": "table",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "reflectVelocity",
+          "fullPath": "lurek.physics.reflectVelocity",
+          "signature": "(vx, vy, nx, ny, [coefficient])",
+          "description": "Reflects a velocity vector around a surface normal without mutating any body.",
+          "parameters": [
+            {
+              "name": "vx",
+              "type": "number",
+              "description": "Velocity X component.",
+              "optional": false
+            },
+            {
+              "name": "vy",
+              "type": "number",
+              "description": "Velocity Y component.",
+              "optional": false
+            },
+            {
+              "name": "nx",
+              "type": "number",
+              "description": "Surface normal X component.",
+              "optional": false
+            },
+            {
+              "name": "ny",
+              "type": "number",
+              "description": "Surface normal Y component.",
+              "optional": false
+            },
+            {
+              "name": "coefficient",
+              "type": "number",
+              "description": "Speed multiplier after reflection, defaults to 1.0.",
+              "optional": true
+            }
+          ],
+          "returns": "number",
+          "returnType": "number",
           "isMethod": false,
           "objectType": null
         },
@@ -31377,6 +31719,78 @@
               "type": "integer",
               "description": "Number of columns; defaults to 1.",
               "optional": true
+            }
+          ],
+          "returns": "LLayout",
+          "returnType": "LLayout",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newStatPanel",
+          "fullPath": "lurek.ui.newStatPanel",
+          "signature": "(stats)",
+          "description": "Creates a compact stat panel from a table of numeric values.",
+          "parameters": [
+            {
+              "name": "stats",
+              "type": "table",
+              "description": "Numeric stat map, typically produced by ecs loadout computeStats():toTable().",
+              "optional": false
+            }
+          ],
+          "returns": "LLayout",
+          "returnType": "LLayout",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newSlotGrid",
+          "fullPath": "lurek.ui.newSlotGrid",
+          "signature": "(slots, [columns])",
+          "description": "Creates a grid layout for unit slots or equipped parts.",
+          "parameters": [
+            {
+              "name": "slots",
+              "type": "table",
+              "description": "Array of slot names or tables with name/slot and optional part/partId fields.",
+              "optional": false
+            },
+            {
+              "name": "columns",
+              "type": "integer",
+              "description": "Number of grid columns; defaults to 2.",
+              "optional": true
+            }
+          ],
+          "returns": "LLayout",
+          "returnType": "LLayout",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newComparisonBar",
+          "fullPath": "lurek.ui.newComparisonBar",
+          "signature": "(label, current, target)",
+          "description": "Creates a horizontal comparison row from a label, current value, and target value.",
+          "parameters": [
+            {
+              "name": "label",
+              "type": "string",
+              "description": "Stat label shown before the bars.",
+              "optional": false
+            },
+            {
+              "name": "current",
+              "type": "number",
+              "description": "Current value.",
+              "optional": false
+            },
+            {
+              "name": "target",
+              "type": "number",
+              "description": "Compared value.",
+              "optional": false
             }
           ],
           "returns": "LLayout",
@@ -44290,6 +44704,36 @@
           "objectType": "LBeatClock"
         },
         {
+          "name": "judge",
+          "fullPath": "LBeatClock:judge",
+          "signature": "([division], [hit_offset], [windows])",
+          "description": "Judges timing against the nearest beat grid and returns a detailed result table.",
+          "parameters": [
+            {
+              "name": "division",
+              "type": "integer",
+              "description": "Beat division.",
+              "optional": true
+            },
+            {
+              "name": "hit_offset",
+              "type": "number",
+              "description": "Signed hit offset in seconds.",
+              "optional": true
+            },
+            {
+              "name": "windows",
+              "type": "table",
+              "description": "Optional `{perfect, great, good}` seconds for this call.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
           "name": "tap",
           "fullPath": "LBeatClock:tap",
           "signature": "(t)",
@@ -45737,6 +46181,42 @@
               "name": "vy",
               "type": "number",
               "description": "Velocity Y component.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBody"
+        },
+        {
+          "name": "applyThrust",
+          "fullPath": "LBody:applyThrust",
+          "signature": "(amount)",
+          "description": "Applies force in the body's current forward direction for top-down inertial movement.",
+          "parameters": [
+            {
+              "name": "amount",
+              "type": "number",
+              "description": "Force amount in world units.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBody"
+        },
+        {
+          "name": "applyTurn",
+          "fullPath": "LBody:applyTurn",
+          "signature": "(torque)",
+          "description": "Applies torque to the body for top-down turning.",
+          "parameters": [
+            {
+              "name": "torque",
+              "type": "number",
+              "description": "Torque amount.",
               "optional": false
             }
           ],
@@ -50917,6 +51397,24 @@
           "signature": "()",
           "description": "Applies the aggressive follow camera preset.",
           "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LCamera"
+        },
+        {
+          "name": "presetHorizontalFollow",
+          "fullPath": "LCamera:presetHorizontalFollow",
+          "signature": "([opts])",
+          "description": "Applies a horizontal side-scroller follow preset with optional overrides.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Options: { deadZoneW?, deadZoneH?, smooth?, lookAhead?, easing?, zoomDamping?, bounds? }.",
+              "optional": true
+            }
+          ],
           "returns": "nil",
           "returnType": "nil",
           "isMethod": true,
@@ -58222,6 +58720,82 @@
           "objectType": "LCommandQueue"
         },
         {
+          "name": "pushOrder",
+          "fullPath": "LCommandQueue:pushOrder",
+          "signature": "(order)",
+          "description": "Adds a data-only RTS order to the back of the queue.",
+          "parameters": [
+            {
+              "name": "order",
+              "type": "table",
+              "description": "Order table with kind/type, targetX/x, targetY/y, priority?, and interruptible?.",
+              "optional": false
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LCommandQueue"
+        },
+        {
+          "name": "peekOrder",
+          "fullPath": "LCommandQueue:peekOrder",
+          "signature": "()",
+          "description": "Returns the current order snapshot without advancing the queue.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LCommandQueue"
+        },
+        {
+          "name": "replaceOrders",
+          "fullPath": "LCommandQueue:replaceOrders",
+          "signature": "(orders)",
+          "description": "Replaces the queue with an array of data-only orders.",
+          "parameters": [
+            {
+              "name": "orders",
+              "type": "table",
+              "description": "Array of order tables.",
+              "optional": false
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LCommandQueue"
+        },
+        {
+          "name": "cancelByTag",
+          "fullPath": "LCommandQueue:cancelByTag",
+          "signature": "(tag)",
+          "description": "Cancels all queued orders whose kind matches `tag`.",
+          "parameters": [
+            {
+              "name": "tag",
+              "type": "string",
+              "description": "Order kind to cancel.",
+              "optional": false
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LCommandQueue"
+        },
+        {
+          "name": "getOrderSnapshot",
+          "fullPath": "LCommandQueue:getOrderSnapshot",
+          "signature": "()",
+          "description": "Returns every pending order snapshot in queue order.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LCommandQueue"
+        },
+        {
           "name": "cancelCurrent",
           "fullPath": "LCommandQueue:cancelCurrent",
           "signature": "([reason])",
@@ -65200,6 +65774,246 @@
           "returnType": "boolean",
           "isMethod": true,
           "objectType": "LDialogSequencer"
+        }
+      ]
+    },
+    {
+      "name": "LDialogStory",
+      "description": "Lua handle for a compiled safe Ink-subset story.",
+      "methods": [
+        {
+          "name": "start",
+          "fullPath": "LDialogStory:start",
+          "signature": "([knot])",
+          "description": "Starts the story at a named knot or at START/ENTRY/first knot.",
+          "parameters": [
+            {
+              "name": "knot",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDialogStory"
+        },
+        {
+          "name": "canContinue",
+          "fullPath": "LDialogStory:canContinue",
+          "signature": "()",
+          "description": "Returns whether the story can emit another line.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDialogStory"
+        },
+        {
+          "name": "continue",
+          "fullPath": "LDialogStory:continue",
+          "signature": "()",
+          "description": "Emits the next story line and tag array, or nil at choice/end.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDialogStory"
+        },
+        {
+          "name": "continueAll",
+          "fullPath": "LDialogStory:continueAll",
+          "signature": "([sep])",
+          "description": "Drains story lines until a choice or end and joins them.",
+          "parameters": [
+            {
+              "name": "sep",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDialogStory"
+        },
+        {
+          "name": "getChoices",
+          "fullPath": "LDialogStory:getChoices",
+          "signature": "()",
+          "description": "Returns available choices as `{text, available, tags, index}` rows.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDialogStory"
+        },
+        {
+          "name": "choose",
+          "fullPath": "LDialogStory:choose",
+          "signature": "(index)",
+          "description": "Selects an available story choice by one-based choice index.",
+          "parameters": [
+            {
+              "name": "index",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDialogStory"
+        },
+        {
+          "name": "gotoKnot",
+          "fullPath": "LDialogStory:gotoKnot",
+          "signature": "(name)",
+          "description": "Jumps immediately to a named story knot and resets the story position to that knot start.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDialogStory"
+        },
+        {
+          "name": "setVariable",
+          "fullPath": "LDialogStory:setVariable",
+          "signature": "(name, value)",
+          "description": "Sets or replaces one story variable using a nil, boolean, number, or string value.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDialogStory"
+        },
+        {
+          "name": "getVariable",
+          "fullPath": "LDialogStory:getVariable",
+          "signature": "(name)",
+          "description": "Returns one story variable value, or nil when the story variable is not currently defined.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDialogStory"
+        },
+        {
+          "name": "listVariables",
+          "fullPath": "LDialogStory:listVariables",
+          "signature": "()",
+          "description": "Lists story variable names.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDialogStory"
+        },
+        {
+          "name": "visitCount",
+          "fullPath": "LDialogStory:visitCount",
+          "signature": "(name)",
+          "description": "Returns how many times a knot has been entered.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDialogStory"
+        },
+        {
+          "name": "snapshot",
+          "fullPath": "LDialogStory:snapshot",
+          "signature": "()",
+          "description": "Returns a serializable story runtime snapshot.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDialogStory"
+        },
+        {
+          "name": "restore",
+          "fullPath": "LDialogStory:restore",
+          "signature": "(snapshot)",
+          "description": "Restores a snapshot returned by `snapshot`.",
+          "parameters": [
+            {
+              "name": "snapshot",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDialogStory"
+        },
+        {
+          "name": "type",
+          "fullPath": "LDialogStory:type",
+          "signature": "()",
+          "description": "Returns the Lua userdata type name for compiled dialog story handles.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDialogStory"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LDialogStory:typeOf",
+          "signature": "(name)",
+          "description": "Returns true for `LDialogStory` and shared `LObject` runtime type checks.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDialogStory"
         }
       ]
     },
@@ -97360,6 +98174,156 @@
       ]
     },
     {
+      "name": "LLoadout",
+      "description": "Lua-side handle for one modular loadout.",
+      "methods": [
+        {
+          "name": "addSlot",
+          "fullPath": "LLoadout:addSlot",
+          "signature": "(slot_ud)",
+          "description": "Adds or replaces one slot definition on this loadout.",
+          "parameters": [
+            {
+              "name": "slot",
+              "type": "LSlotDef",
+              "description": "Slot definition to add.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLoadout"
+        },
+        {
+          "name": "equip",
+          "fullPath": "LLoadout:equip",
+          "signature": "(...)",
+          "description": "Equips a part into a named slot after compatibility checks.",
+          "parameters": [
+            {
+              "name": "slot",
+              "type": "string",
+              "description": "Slot name.",
+              "optional": false
+            },
+            {
+              "name": "part",
+              "type": "LPartDef",
+              "description": "Part definition to equip.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLoadout"
+        },
+        {
+          "name": "unequip",
+          "fullPath": "LLoadout:unequip",
+          "signature": "(slot)",
+          "description": "Removes the part currently equipped in one slot.",
+          "parameters": [
+            {
+              "name": "slot",
+              "type": "string",
+              "description": "Slot name.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LLoadout"
+        },
+        {
+          "name": "validate",
+          "fullPath": "LLoadout:validate",
+          "signature": "()",
+          "description": "Returns validation errors for missing or incompatible equipment.",
+          "parameters": [],
+          "returns": "string[]",
+          "returnType": "string[]",
+          "isMethod": true,
+          "objectType": "LLoadout"
+        },
+        {
+          "name": "computeStats",
+          "fullPath": "LLoadout:computeStats",
+          "signature": "()",
+          "description": "Computes final additive stats from base stats and equipped parts.",
+          "parameters": [],
+          "returns": "LStatBlock",
+          "returnType": "LStatBlock",
+          "isMethod": true,
+          "objectType": "LLoadout"
+        },
+        {
+          "name": "getHardpoints",
+          "fullPath": "LLoadout:getHardpoints",
+          "signature": "()",
+          "description": "Returns slot and part hardpoints exposed by this loadout.",
+          "parameters": [],
+          "returns": "string[]",
+          "returnType": "string[]",
+          "isMethod": true,
+          "objectType": "LLoadout"
+        },
+        {
+          "name": "getCost",
+          "fullPath": "LLoadout:getCost",
+          "signature": "()",
+          "description": "Returns total cost of equipped parts.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LLoadout"
+        },
+        {
+          "name": "toComponent",
+          "fullPath": "LLoadout:toComponent",
+          "signature": "()",
+          "description": "Returns a plain ECS component table with stats, hardpoints, cost, and equipped part ids.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LLoadout"
+        },
+        {
+          "name": "type",
+          "fullPath": "LLoadout:type",
+          "signature": "()",
+          "description": "Returns the Lua-visible type name for this loadout.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LLoadout"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LLoadout:typeOf",
+          "signature": "(name)",
+          "description": "Returns whether this handle matches a supported type name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to compare.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LLoadout"
+        }
+      ]
+    },
+    {
       "name": "LLootTable",
       "description": "Lua-side wrapper for a Walker-Vose alias-method loot table.",
       "methods": [
@@ -102801,6 +103765,219 @@
               "optional": true
             }
           ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMinimap"
+        },
+        {
+          "name": "syncTileMapTerrain",
+          "fullPath": "LMinimap:syncTileMapTerrain",
+          "signature": "(tilemap_ud, [opts])",
+          "description": "Copies tile GIDs from an `LTileMap` layer into minimap terrain cells.",
+          "parameters": [
+            {
+              "name": "tilemap",
+              "type": "LTileMap",
+              "description": "Source tilemap.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional `{layer=1, emptyTerrain=1, solidTerrain=2, terrainByGid?, blockedGids?}`.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMinimap"
+        },
+        {
+          "name": "setCenterFromTileMapWorld",
+          "fullPath": "LMinimap:setCenterFromTileMapWorld",
+          "signature": "(tilemap_ud, wx, wy)",
+          "description": "Converts tilemap world coordinates into one-based tile coordinates and centers this minimap.",
+          "parameters": [
+            {
+              "name": "tilemap_ud",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "wx",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "wy",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMinimap"
+        },
+        {
+          "name": "setViewportFromTileMapWorld",
+          "fullPath": "LMinimap:setViewportFromTileMapWorld",
+          "signature": "(tilemap_ud, x, y, w, h)",
+          "description": "Converts a tilemap world rectangle into a minimap viewport rectangle.",
+          "parameters": [
+            {
+              "name": "tilemap_ud",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "w",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "h",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMinimap"
+        },
+        {
+          "name": "setLayerStyle",
+          "fullPath": "LMinimap:setLayerStyle",
+          "signature": "(layer, style)",
+          "description": "Applies common raw-layer style fields: visible, alpha, blend, and colors.",
+          "parameters": [
+            {
+              "name": "layer",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "style",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMinimap"
+        },
+        {
+          "name": "syncTileFieldBlockLayer",
+          "fullPath": "LMinimap:syncTileFieldBlockLayer",
+          "signature": "LMinimap:syncTileFieldBlockLayer()",
+          "description": "Copies one `LTileField` blocker channel layer into a minimap raw data layer.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMinimap"
+        },
+        {
+          "name": "syncTileFieldCostLayer",
+          "fullPath": "LMinimap:syncTileFieldCostLayer",
+          "signature": "LMinimap:syncTileFieldCostLayer()",
+          "description": "Copies one `LTileField` cost channel layer into a minimap raw byte layer.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMinimap"
+        },
+        {
+          "name": "syncTileLightLayer",
+          "fullPath": "LMinimap:syncTileLightLayer",
+          "signature": "(light_ud, layer, [opts])",
+          "description": "Copies computed tilelight luma into a minimap raw byte layer.",
+          "parameters": [
+            {
+              "name": "light_ud",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "layer",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMinimap"
+        },
+        {
+          "name": "syncTileAwarenessFog",
+          "fullPath": "LMinimap:syncTileAwarenessFog",
+          "signature": "(awareness_ud, player, [opts])",
+          "description": "Copies explored/visible masks from `LTileAwareness` into minimap fog data.",
+          "parameters": [
+            {
+              "name": "awareness_ud",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "player",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMinimap"
+        },
+        {
+          "name": "syncTileAwarenessLayer",
+          "fullPath": "LMinimap:syncTileAwarenessLayer",
+          "signature": "LMinimap:syncTileAwarenessLayer()",
+          "description": "Copies visible or action masks from `LTileAwareness` into a minimap raw layer.",
+          "parameters": [],
           "returns": "nil",
           "returnType": "nil",
           "isMethod": true,
@@ -115624,6 +116801,118 @@
       ]
     },
     {
+      "name": "LPartDef",
+      "description": "Lua-side handle for one loadout part definition.",
+      "methods": [
+        {
+          "name": "getId",
+          "fullPath": "LPartDef:getId",
+          "signature": "()",
+          "description": "Returns the stable part id.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LPartDef"
+        },
+        {
+          "name": "getSlot",
+          "fullPath": "LPartDef:getSlot",
+          "signature": "()",
+          "description": "Returns the preferred slot name.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LPartDef"
+        },
+        {
+          "name": "getTags",
+          "fullPath": "LPartDef:getTags",
+          "signature": "()",
+          "description": "Returns compatibility tags.",
+          "parameters": [],
+          "returns": "string[]",
+          "returnType": "string[]",
+          "isMethod": true,
+          "objectType": "LPartDef"
+        },
+        {
+          "name": "getStats",
+          "fullPath": "LPartDef:getStats",
+          "signature": "()",
+          "description": "Returns additive stat modifiers as a plain table.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LPartDef"
+        },
+        {
+          "name": "getCost",
+          "fullPath": "LPartDef:getCost",
+          "signature": "()",
+          "description": "Returns the part cost value.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LPartDef"
+        },
+        {
+          "name": "getHardpoints",
+          "fullPath": "LPartDef:getHardpoints",
+          "signature": "()",
+          "description": "Returns hardpoints exposed by this part.",
+          "parameters": [],
+          "returns": "string[]",
+          "returnType": "string[]",
+          "isMethod": true,
+          "objectType": "LPartDef"
+        },
+        {
+          "name": "getVisuals",
+          "fullPath": "LPartDef:getVisuals",
+          "signature": "()",
+          "description": "Returns visual attachment mapping for this part.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LPartDef"
+        },
+        {
+          "name": "type",
+          "fullPath": "LPartDef:type",
+          "signature": "()",
+          "description": "Returns the Lua-visible type name for this part definition.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LPartDef"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LPartDef:typeOf",
+          "signature": "(name)",
+          "description": "Returns whether this handle matches a supported type name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to compare.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LPartDef"
+        }
+      ]
+    },
+    {
       "name": "LParticleSystem",
       "description": "Lua-side handle for a particle system stored in shared runtime state.",
       "methods": [
@@ -115709,6 +116998,42 @@
               "type": "integer",
               "description": "Number of particles to emit.",
               "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LParticleSystem"
+        },
+        {
+          "name": "emitAt",
+          "fullPath": "LParticleSystem:emitAt",
+          "signature": "(x, y, [count], [direction])",
+          "description": "Moves the emitter, optionally changes direction, and emits particles immediately.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "Emitter x coordinate.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Emitter y coordinate.",
+              "optional": false
+            },
+            {
+              "name": "count",
+              "type": "integer",
+              "description": "Number of particles to emit; defaults to 1.",
+              "optional": true
+            },
+            {
+              "name": "direction",
+              "type": "number",
+              "description": "Optional emission direction in radians.",
+              "optional": true
             }
           ],
           "returns": "nil",
@@ -124552,6 +125877,24 @@
           "objectType": "LProvinceRegistry"
         },
         {
+          "name": "borderSegmentsWhere",
+          "fullPath": "LProvinceRegistry:borderSegmentsWhere",
+          "signature": "([opts])",
+          "description": "Returns border segments filtered by province id and/or border type.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional `{province, province_a, province_b, border_type}` filters.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LProvinceRegistry"
+        },
+        {
           "name": "getRevision",
           "fullPath": "LProvinceRegistry:getRevision",
           "signature": "()",
@@ -125337,6 +126680,30 @@
           "parameters": [],
           "returns": "string",
           "returnType": "string",
+          "isMethod": true,
+          "objectType": "LProvinceRegistry"
+        },
+        {
+          "name": "resolveMapModeColors",
+          "fullPath": "LProvinceRegistry:resolveMapModeColors",
+          "signature": "([mode_or_name], [opts])",
+          "description": "Resolves effective province fill colors for a map mode without rendering.",
+          "parameters": [
+            {
+              "name": "modeOrName",
+              "type": "string|nil",
+              "description": "Mode name, defaults to active mode.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional `{ids={...}}` province id filter.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LProvinceRegistry"
         },
@@ -131018,6 +132385,36 @@
               "type": "integer",
               "description": "Integer schema version (must increase with each breaking data format change).",
               "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSaveManager"
+        },
+        {
+          "name": "registerSchema",
+          "fullPath": "LSaveManager:registerSchema",
+          "signature": "(name, version, [migrator])",
+          "description": "Register a named schema section and optionally attach a migration into the requested version.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Unique schema section name.",
+              "optional": false
+            },
+            {
+              "name": "version",
+              "type": "integer",
+              "description": "Current schema version for saves produced by this game build.",
+              "optional": false
+            },
+            {
+              "name": "migrator",
+              "type": "function",
+              "description": "Optional migration function from version-1 into version.",
+              "optional": true
             }
           ],
           "returns": "nil",
@@ -139893,6 +141290,24 @@
           "objectType": "LSkeleton"
         },
         {
+          "name": "applyLoadoutVisuals",
+          "fullPath": "LSkeleton:applyLoadoutVisuals",
+          "signature": "(loadout_ud)",
+          "description": "Applies visual attachment mappings from an ECS loadout to matching skeleton slots.",
+          "parameters": [
+            {
+              "name": "loadout",
+              "type": "LLoadout",
+              "description": "Loadout whose equipped parts provide visual slot mappings.",
+              "optional": false
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LSkeleton"
+        },
+        {
           "name": "blendAnimation",
           "fullPath": "LSkeleton:blendAnimation",
           "signature": "(anim_ud, time, [blend_weight])",
@@ -141772,6 +143187,85 @@
           "returnType": "nil",
           "isMethod": true,
           "objectType": "LSlider"
+        }
+      ]
+    },
+    {
+      "name": "LSlotDef",
+      "description": "Lua-side handle for one loadout slot definition.",
+      "methods": [
+        {
+          "name": "getName",
+          "fullPath": "LSlotDef:getName",
+          "signature": "()",
+          "description": "Returns the slot name.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LSlotDef"
+        },
+        {
+          "name": "getAccepts",
+          "fullPath": "LSlotDef:getAccepts",
+          "signature": "()",
+          "description": "Returns accepted compatibility tags.",
+          "parameters": [],
+          "returns": "string[]",
+          "returnType": "string[]",
+          "isMethod": true,
+          "objectType": "LSlotDef"
+        },
+        {
+          "name": "isRequired",
+          "fullPath": "LSlotDef:isRequired",
+          "signature": "()",
+          "description": "Returns whether this slot is required during loadout validation.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LSlotDef"
+        },
+        {
+          "name": "getHardpoint",
+          "fullPath": "LSlotDef:getHardpoint",
+          "signature": "()",
+          "description": "Returns the slot hardpoint name when one is configured.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LSlotDef"
+        },
+        {
+          "name": "type",
+          "fullPath": "LSlotDef:type",
+          "signature": "()",
+          "description": "Returns the Lua-visible type name for this slot definition.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LSlotDef"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LSlotDef:typeOf",
+          "signature": "(name)",
+          "description": "Returns whether this handle matches a supported type name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to compare.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LSlotDef"
         }
       ]
     },
@@ -148472,6 +149966,24 @@
           "objectType": "LSpriteBatch"
         },
         {
+          "name": "addComposite",
+          "fullPath": "LSpriteBatch:addComposite",
+          "signature": "(parts)",
+          "description": "Adds multiple part entries to the batch for one modular composite visual.",
+          "parameters": [
+            {
+              "name": "parts",
+              "type": "table",
+              "description": "Array of part tables with x, y, r, sx, sy, ox, oy, and optional quad fields.",
+              "optional": false
+            }
+          ],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LSpriteBatch"
+        },
+        {
           "name": "clear",
           "fullPath": "LSpriteBatch:clear",
           "signature": "()",
@@ -149440,7 +150952,7 @@
         {
           "name": "setFormationBehavior",
           "fullPath": "LSquad:setFormationBehavior",
-          "signature": "(sort_mode, [fallback_mode], [preserve_subgroups])",
+          "signature": "LSquad:setFormationBehavior(sort_mode, [fallback_mode], [preserve_subgroups])",
           "description": "Sets formation assignment behavior knobs used for slot ordering and chokepoint fallback.",
           "parameters": [
             {
@@ -151448,6 +152960,118 @@
           "returnType": "nil",
           "isMethod": true,
           "objectType": "LStackContainer"
+        }
+      ]
+    },
+    {
+      "name": "LStatBlock",
+      "description": "Lua-side handle for one additive stat block.",
+      "methods": [
+        {
+          "name": "get",
+          "fullPath": "LStatBlock:get",
+          "signature": "(name)",
+          "description": "Returns one stat value, or zero when the key is absent.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Stat key.",
+              "optional": false
+            }
+          ],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LStatBlock"
+        },
+        {
+          "name": "set",
+          "fullPath": "LStatBlock:set",
+          "signature": "(name, value)",
+          "description": "Replaces one stat value.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Stat key.",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "number",
+              "description": "Finite stat value.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LStatBlock"
+        },
+        {
+          "name": "add",
+          "fullPath": "LStatBlock:add",
+          "signature": "(name, value)",
+          "description": "Adds a numeric delta to one stat.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Stat key.",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "number",
+              "description": "Finite delta to add.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LStatBlock"
+        },
+        {
+          "name": "toTable",
+          "fullPath": "LStatBlock:toTable",
+          "signature": "()",
+          "description": "Returns all stat values as a plain Lua table.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LStatBlock"
+        },
+        {
+          "name": "type",
+          "fullPath": "LStatBlock:type",
+          "signature": "()",
+          "description": "Returns the Lua-visible type name for this stat block.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LStatBlock"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LStatBlock:typeOf",
+          "signature": "(name)",
+          "description": "Returns whether this handle matches a supported type name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to compare.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LStatBlock"
         }
       ]
     },
@@ -162744,6 +164368,30 @@
           "objectType": "LTileAwareness"
         },
         {
+          "name": "updateSightSources",
+          "fullPath": "LTileAwareness:updateSightSources",
+          "signature": "(player, sources)",
+          "description": "Computes one player's current visible mask from multiple tilefield sight sources.",
+          "parameters": [
+            {
+              "name": "player",
+              "type": "string",
+              "description": "Player identifier whose visibility mask should be computed.",
+              "optional": false
+            },
+            {
+              "name": "sources",
+              "type": "table",
+              "description": "Array of source tables with origin, range, category, mode, arc, facing, and blockerCategory.",
+              "optional": false
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LTileAwareness"
+        },
+        {
           "name": "computeAction",
           "fullPath": "LTileAwareness:computeAction",
           "signature": "(player, opts)",
@@ -163233,6 +164881,234 @@
           "fullPath": "LTileField:inBounds",
           "signature": "(x, y, [z])",
           "description": "Returns whether one-based coordinates are inside the field.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "One-based column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "One-based row.",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "integer",
+              "description": "One-based level, default 1.",
+              "optional": true
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "setOccupant",
+          "fullPath": "LTileField:setOccupant",
+          "signature": "(...)",
+          "description": "Stores an occupant id on one tile cell.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "One-based column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "One-based row.",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "integer",
+              "description": "One-based level, default 1.",
+              "optional": true
+            },
+            {
+              "name": "occupant",
+              "type": "integer",
+              "description": "Occupant id, usually an ECS entity id.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "clearOccupant",
+          "fullPath": "LTileField:clearOccupant",
+          "signature": "(x, y, [z])",
+          "description": "Clears any occupant id stored on one tile cell.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "One-based column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "One-based row.",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "integer",
+              "description": "One-based level, default 1.",
+              "optional": true
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "getOccupant",
+          "fullPath": "LTileField:getOccupant",
+          "signature": "(x, y, [z])",
+          "description": "Returns the occupant id stored on one tile cell.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "One-based column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "One-based row.",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "integer",
+              "description": "One-based level, default 1.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "setResource",
+          "fullPath": "LTileField:setResource",
+          "signature": "(x, y, [z], [resource])",
+          "description": "Sets or clears a resource label on one tile cell.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "One-based column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "One-based row.",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "integer",
+              "description": "One-based level, default 1.",
+              "optional": true
+            },
+            {
+              "name": "resource",
+              "type": "string",
+              "description": "Resource label, or nil to clear.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "getResource",
+          "fullPath": "LTileField:getResource",
+          "signature": "(x, y, [z])",
+          "description": "Returns a resource label stored on one tile cell.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "One-based column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "One-based row.",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "integer",
+              "description": "One-based level, default 1.",
+              "optional": true
+            }
+          ],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "setBuildable",
+          "fullPath": "LTileField:setBuildable",
+          "signature": "(x, y, [z], buildable)",
+          "description": "Sets whether one tile cell accepts build placement.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "One-based column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "One-based row.",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "integer",
+              "description": "One-based level, default 1.",
+              "optional": true
+            },
+            {
+              "name": "buildable",
+              "type": "boolean",
+              "description": "True when build placement is allowed.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "isBuildable",
+          "fullPath": "LTileField:isBuildable",
+          "signature": "(x, y, [z])",
+          "description": "Returns whether one tile cell accepts build placement.",
           "parameters": [
             {
               "name": "x",
@@ -178833,6 +180709,119 @@
           "objectType": "LUnitPathfinder"
         },
         {
+          "name": "findFormationPaths",
+          "fullPath": "LUnitPathfinder:findFormationPaths",
+          "signature": "LUnitPathfinder:findFormationPaths(starts, gx, gy, [unit_size], [spacing])",
+          "description": "Finds one path per start toward formation slots around a shared goal.",
+          "parameters": [
+            {
+              "name": "starts",
+              "type": "table",
+              "description": "Array of `{x, y}` start tables.",
+              "optional": false
+            },
+            {
+              "name": "gx",
+              "type": "integer",
+              "description": "One-based formation center column.",
+              "optional": false
+            },
+            {
+              "name": "gy",
+              "type": "integer",
+              "description": "One-based formation center row.",
+              "optional": false
+            },
+            {
+              "name": "unit_size",
+              "type": "integer",
+              "description": "Unit footprint in cells (default 1).",
+              "optional": true
+            },
+            {
+              "name": "spacing",
+              "type": "integer",
+              "description": "Slot spacing in cells (default 1).",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LUnitPathfinder"
+        },
+        {
+          "name": "findAttackMovePaths",
+          "fullPath": "LUnitPathfinder:findAttackMovePaths",
+          "signature": "LUnitPathfinder:findAttackMovePaths(starts, gx, gy, [unit_size], [max_steps])",
+          "description": "Finds one path per start toward a shared attack-move goal.",
+          "parameters": [
+            {
+              "name": "starts",
+              "type": "table",
+              "description": "Array of `{x, y}` start tables.",
+              "optional": false
+            },
+            {
+              "name": "gx",
+              "type": "integer",
+              "description": "One-based goal column.",
+              "optional": false
+            },
+            {
+              "name": "gy",
+              "type": "integer",
+              "description": "One-based goal row.",
+              "optional": false
+            },
+            {
+              "name": "unit_size",
+              "type": "integer",
+              "description": "Unit footprint in cells (default 1).",
+              "optional": true
+            },
+            {
+              "name": "max_steps",
+              "type": "integer",
+              "description": "Maximum downhill steps to follow for each start.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LUnitPathfinder"
+        },
+        {
+          "name": "reserveCells",
+          "fullPath": "LUnitPathfinder:reserveCells",
+          "signature": "(cells)",
+          "description": "Records caller-owned cell reservations for batch planning.",
+          "parameters": [
+            {
+              "name": "cells",
+              "type": "table",
+              "description": "Array of `{x, y}` one-based cells.",
+              "optional": false
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LUnitPathfinder"
+        },
+        {
+          "name": "clearReservations",
+          "fullPath": "LUnitPathfinder:clearReservations",
+          "signature": "()",
+          "description": "Clears all caller-owned reserved cells.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LUnitPathfinder"
+        },
+        {
           "name": "getSharedFlowField",
           "fullPath": "LUnitPathfinder:getSharedFlowField",
           "signature": "(gx, gy, [unit_size])",
@@ -183317,6 +185306,30 @@
           "objectType": "LWorld"
         },
         {
+          "name": "configureCollisionGroups",
+          "fullPath": "LWorld:configureCollisionGroups",
+          "signature": "(spec, [opts])",
+          "description": "Configures named 0..15 collision-group roles and returns their layer/mask profile.",
+          "parameters": [
+            {
+              "name": "spec",
+              "type": "table",
+              "description": "Map of role name to { group?, collidesWith? } definitions.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Options: { reset? = true }. Reset clears all 16 group-pair rows before applying the spec.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
           "name": "getGravity",
           "fullPath": "LWorld:getGravity",
           "signature": "()",
@@ -183343,6 +185356,84 @@
               "name": "gy",
               "type": "number",
               "description": "Vertical gravity component (positive = down in screen space).",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "setWrapBounds",
+          "fullPath": "LWorld:setWrapBounds",
+          "signature": "([min_x], [min_y], [max_x], [max_y])",
+          "description": "Sets or clears toroidal wrap bounds for top-down arenas.",
+          "parameters": [
+            {
+              "name": "minX",
+              "type": "number",
+              "description": "Minimum X bound; pass nil to clear wrap bounds.",
+              "optional": true
+            },
+            {
+              "name": "minY",
+              "type": "number",
+              "description": "Minimum Y bound.",
+              "optional": true
+            },
+            {
+              "name": "maxX",
+              "type": "number",
+              "description": "Maximum X bound.",
+              "optional": true
+            },
+            {
+              "name": "maxY",
+              "type": "number",
+              "description": "Maximum Y bound.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "wrapBody",
+          "fullPath": "LWorld:wrapBody",
+          "signature": "(body)",
+          "description": "Wraps one body through the current toroidal bounds and returns its final position.",
+          "parameters": [
+            {
+              "name": "bodyId",
+              "type": "integer",
+              "description": "Body id to wrap.",
+              "optional": false
+            }
+          ],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "setTopDownDamping",
+          "fullPath": "LWorld:setTopDownDamping",
+          "signature": "(linear, angular)",
+          "description": "Sets default linear and angular damping for top-down inertial bodies and applies it to existing bodies.",
+          "parameters": [
+            {
+              "name": "linear",
+              "type": "number",
+              "description": "Linear damping coefficient, >= 0.",
+              "optional": false
+            },
+            {
+              "name": "angular",
+              "type": "number",
+              "description": "Angular damping coefficient, >= 0.",
               "optional": false
             }
           ],
@@ -183848,6 +185939,24 @@
               "type": "table",
               "description": "Optional body options: { material?, bullet?, layer?, mask? }.",
               "optional": true
+            }
+          ],
+          "returns": "LBody",
+          "returnType": "LBody",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "newProjectileBody",
+          "fullPath": "LWorld:newProjectileBody",
+          "signature": "(opts)",
+          "description": "Creates a small circle body with shooter-friendly projectile defaults.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Required { x, y, radius, vx, vy }; optional { bodyType?, bullet?, fixedRotation?, gravityScale?, sensor?, material?, layer?, mask?, group?, density?, friction?, restitution? }.",
+              "optional": false
             }
           ],
           "returns": "LBody",
@@ -185338,6 +187447,24 @@
               "type": "table",
               "description": "Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}.",
               "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "castProjectile",
+          "fullPath": "LWorld:castProjectile",
+          "signature": "(opts)",
+          "description": "Sweeps a projectile circle and returns a movement result with final position and hit data.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Required { x, y, radius } plus either { vx, vy, dt } or { dx, dy, maxDist }; accepts filter/excludeBody/includeSensors/layer/mask/group/groups.",
+              "optional": false
             }
           ],
           "returns": "table",

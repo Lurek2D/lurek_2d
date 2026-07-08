@@ -592,6 +592,37 @@ impl LuaUserData for LuaSpriteBatch {
                 Ok(batch.add(entry))
             },
         );
+        // -- addComposite --
+        /// Adds multiple part entries to the batch for one modular composite visual.
+        /// @param | parts | table | Array of part tables with x, y, r, sx, sy, ox, oy, and optional quad fields.
+        /// @return | number | Number of entries added.
+        methods.add_method("addComposite", |_, this, parts: LuaTable| {
+            let mut st = this.state.borrow_mut();
+            let batch = st.sprite_batches.get_mut(this.key).ok_or_else(|| {
+                LuaError::RuntimeError("SpriteBatch handle is not valid or was released".into())
+            })?;
+            let mut added = 0usize;
+            for part in parts.sequence_values::<LuaTable>() {
+                let part = part?;
+                let entry = BatchEntry {
+                    x: part.get::<_, Option<f32>>("x")?.unwrap_or(0.0),
+                    y: part.get::<_, Option<f32>>("y")?.unwrap_or(0.0),
+                    quad_x: part.get::<_, Option<f32>>("quadX")?.unwrap_or(0.0),
+                    quad_y: part.get::<_, Option<f32>>("quadY")?.unwrap_or(0.0),
+                    quad_w: part.get::<_, Option<f32>>("quadW")?.unwrap_or(0.0),
+                    quad_h: part.get::<_, Option<f32>>("quadH")?.unwrap_or(0.0),
+                    rotation: part.get::<_, Option<f32>>("r")?.unwrap_or(0.0),
+                    sx: part.get::<_, Option<f32>>("sx")?.unwrap_or(1.0),
+                    sy: part.get::<_, Option<f32>>("sy")?.unwrap_or(1.0),
+                    ox: part.get::<_, Option<f32>>("ox")?.unwrap_or(0.0),
+                    oy: part.get::<_, Option<f32>>("oy")?.unwrap_or(0.0),
+                };
+                if batch.add(entry).is_some() {
+                    added += 1;
+                }
+            }
+            Ok(added)
+        });
         // -- clear --
         /// Removes all entries from the sprite batch.
         methods.add_method("clear", |_, this, ()| {

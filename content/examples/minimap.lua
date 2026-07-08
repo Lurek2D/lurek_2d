@@ -1172,3 +1172,93 @@ fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0)
     local active = mm:getShader()
     lurek.log.info("active minimap mapviz shader=" .. tostring(active and active:getTarget() or "nil"))
 end
+
+--@api: LMinimap:syncTileMapTerrain
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    map:addLayer("ground", 4, 4)
+    map:setTile(1, 2, 2, 7)
+    local mm = lurek.minimap.newMinimap(4, 4)
+    mm:syncTileMapTerrain(map, { terrainByGid = { [7] = 3 } })
+    lurek.log.info("tilemap terrain at 2,2 = " .. tostring(mm:getTerrain(2, 2)))
+end
+
+--@api: LMinimap:setCenterFromTileMapWorld
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local mm = lurek.minimap.newMinimap(8, 8)
+    local tx, ty = mm:setCenterFromTileMapWorld(map, 32, 48)
+    local cx, cy = mm:getCenter()
+    lurek.log.info("tilemap world center tile=" .. tostring(tx) .. "," .. tostring(ty))
+    lurek.log.info("minimap center=" .. tostring(cx) .. "," .. tostring(cy))
+end
+
+--@api: LMinimap:setViewportFromTileMapWorld
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local mm = lurek.minimap.newMinimap(8, 8)
+    local x, y, w, h = mm:setViewportFromTileMapWorld(map, 16, 16, 48, 32)
+    local vx, vy, vw, vh = mm:getViewportRect()
+    lurek.log.info("tilemap viewport=" .. tostring(x) .. "," .. tostring(y) .. "," .. tostring(w) .. "," .. tostring(h))
+    lurek.log.info("stored viewport=" .. tostring(vx) .. "," .. tostring(vy) .. "," .. tostring(vw) .. "," .. tostring(vh))
+end
+
+--@api: LMinimap:setLayerStyle
+do
+    local mm = lurek.minimap.newMinimap(4, 4)
+    local data = {}
+    for i = 1, 16 do data[i] = i % 2 end
+    mm:setLayerData(1, data)
+    mm:setLayerStyle(1, { visible = true, alpha = 0.6, blend = "add", colors = { [1] = { 1, 0.4, 0.1, 1 } } })
+    lurek.log.info("styled layer alpha=" .. tostring(mm:getLayerAlpha(1)) .. " blend=" .. tostring(mm:getLayerBlendMode(1)))
+end
+
+--@api: LMinimap:syncTileFieldBlockLayer
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    field:setBlock(2, 2, 1, "move", true)
+    local mm = lurek.minimap.newMinimap(4, 4)
+    local cells = mm:syncTileFieldBlockLayer(field, "move", 1)
+    local layer = mm:getLayerData(1)
+    lurek.log.info("block layer cell=" .. tostring(cells[6]) .. " stored=" .. tostring(layer[6]))
+end
+
+--@api: LMinimap:syncTileFieldCostLayer
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    field:setCost(3, 2, 1, "move", 2.5)
+    local mm = lurek.minimap.newMinimap(4, 4)
+    local cells = mm:syncTileFieldCostLayer(field, "move", 2, { scale = 10 })
+    local layer = mm:getLayerData(2)
+    lurek.log.info("cost layer cell=" .. tostring(cells[7]) .. " stored=" .. tostring(layer[7]))
+end
+
+--@api: LMinimap:syncTileLightLayer
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    local light = lurek.tilelight.compute(field, { ambient = { r = 0.2, g = 0.2, b = 0.2 } })
+    local mm = lurek.minimap.newMinimap(4, 4)
+    local cells = mm:syncTileLightLayer(light, 3, { scale = 100 })
+    local layer = mm:getLayerData(3)
+    lurek.log.info("light layer cell=" .. tostring(cells[1]) .. " stored=" .. tostring(layer[1]))
+end
+
+--@api: LMinimap:syncTileAwarenessFog
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    local awareness = lurek.awareness.newTileAwareness(field, { players = { "p1" }, rememberExplored = true })
+    awareness:computeVisible("p1", { origin = { x = 2, y = 2, z = 1 }, range = 1 })
+    local mm = lurek.minimap.newMinimap(4, 4)
+    local cells = mm:syncTileAwarenessFog(awareness, "p1", { visibleValue = 2, exploredValue = 1 })
+    lurek.log.info("awareness fog center=" .. tostring(cells[6]) .. " enabled=" .. tostring(mm:isFogEnabled()))
+end
+
+--@api: LMinimap:syncTileAwarenessLayer
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    local awareness = lurek.awareness.newTileAwareness(field, { players = { "p1" } })
+    awareness:computeAction("p1", { origin = { x = 2, y = 2, z = 1 }, range = 1 })
+    local mm = lurek.minimap.newMinimap(4, 4)
+    local cells = mm:syncTileAwarenessLayer(awareness, "p1", "action", 4, { value = 9 })
+    lurek.log.info("awareness action center=" .. tostring(cells[6]) .. " stored=" .. tostring(mm:getLayerData(4)[6]))
+end

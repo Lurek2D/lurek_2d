@@ -518,6 +518,27 @@ impl LuaUserData for LuaSaveManager {
             this.manager.set_schema_version(version);
             Ok(())
         });
+        // -- registerSchema --
+        /// Register a named schema section and optionally attach a migration into the requested version.
+        /// This is a convenience wrapper over register/setSchemaVersion/addMigration for save payloads such as ECS loadouts.
+        /// @param | name | string | Unique schema section name.
+        /// @param | version | integer | Current schema version for saves produced by this game build.
+        /// @param | migrator | function? | Optional migration function from version-1 into version.
+        methods.add_method_mut(
+            "registerSchema",
+            |lua, this, (name, version, migrator): (String, i32, Option<LuaFunction>)| {
+                this.manager.register(&name);
+                this.manager.set_schema_version(version);
+                if let Some(func) = migrator {
+                    let from_ver = version.saturating_sub(1);
+                    Self::remove_key(lua, &mut this.migrations, &from_ver)?;
+                    this.migrations
+                        .insert(from_ver, lua.create_registry_value(func)?);
+                    this.manager.add_migration(from_ver);
+                }
+                Ok(())
+            },
+        );
         // -- getSchemaVersion --
         /// Return the current schema version number set for this save manager.
         /// @return | integer | The active schema version.

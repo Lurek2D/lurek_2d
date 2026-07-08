@@ -7768,6 +7768,28 @@ end
 
 ---
 
+#### `LSpriteBatch:addComposite`
+
+Adds multiple part entries to the batch for one modular composite visual.
+
+```lua
+LSpriteBatch:addComposite(parts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `parts` | table | Array of part tables with x, y, r, sx, sy, ox, oy, and optional quad fields. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Number of entries added. |
+
+---
+
 #### `LSpriteBatch:clear`
 
 Removes all entries from the sprite batch.

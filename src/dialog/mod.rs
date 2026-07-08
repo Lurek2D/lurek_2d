@@ -15,6 +15,8 @@ pub mod sequencer;
 pub mod speaker;
 /// Dialog FSM state tracking current node and conversation progress.
 pub mod state;
+/// Safe Ink-subset story compiler and runtime.
+pub mod story;
 /// Dialog tree engine: nodes, weighted branches, and topic selection.
 pub mod tree;
 
@@ -26,4 +28,5 @@ pub use sequencer::{
 };
 pub use speaker::{Speaker, SpeakerRegistry};
 pub use state::DialogueState;
+pub use story::{DialogStory, StoryValue};
 pub use tree::{DialogueAI, DialogueBranch, DialogueNode, DialogueTopic};

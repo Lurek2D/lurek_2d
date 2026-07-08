@@ -21,7 +21,7 @@
 - Source path: `src/physics`
 - Binding: `src/lua_api/physics_api.rs`
 - Namespace: `lurek.physics`
-- Lua API surface: `26` functions, `26` types, `288` methods
+- Lua API surface: `27` functions, `26` types, `296` methods
 - User-facing: `true`
 - Plugin tier: `tier_2_plugin`
 
@@ -159,6 +159,11 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `flow.rs` owns path and volume flow-field definitions sampled by `world.rs` during stepping.
 - `liquid.rs` owns separate grid liquids used for leaking tanks, simple buoyancy sampling, and conservative flow.
 - Change this file when the public physics symbol map moves; change siblings when simulation data rules change.
+
+### projectile.rs
+
+- Small projectile-oriented math helpers shared by physics queries and Lua bindings.
+- This file stays stateless: live projectile ownership belongs to Lua scripts or `World`.
 
 ### render.rs
 
@@ -307,6 +312,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `lurek.physics.newRectangleShape(w, h) -> LPhysicsShape`: Creates a rectangle collision shape with the given dimensions.
 - `lurek.physics.newTerrain(width, height, cellSize, world) -> LTerrain`: Creates a destructible terrain grid linked to a physics world for automatic collider generation.
 - `lurek.physics.newWorld(gx, gy) -> LWorld`: Creates a new physics world with the given gravity vector.
+- `lurek.physics.reflectVelocity(vx, vy, nx, ny, coefficient?) -> number`: Reflects a velocity vector around a surface normal without mutating any body.
 - `lurek.physics.setBodyVelocity(world, body, vx, vy) -> nil`: Sets a body's velocity (free-function variant).
 - `lurek.physics.setSleepingAllowed(world, body, allowed) -> nil`: Sets whether a body is allowed to sleep (free-function variant).
 - `lurek.physics.shapeFromImage(image, opts?) -> LPhysicsShape`: Builds an approximate collision shape from an image alpha mask.
@@ -361,7 +367,9 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LBody:applyForce(fx, fy) -> nil`: Applies a continuous force to the body's center of mass (accumulates over the step).
 - `LBody:applyForceAtPoint(fx, fy, px, py) -> nil`: Applies a force at a specific world point, generating both linear and angular acceleration.
 - `LBody:applyImpulse(ix, iy) -> nil`: Applies an instantaneous linear impulse to the body's center of mass.
+- `LBody:applyThrust(amount) -> nil`: Applies force in the body's current forward direction for top-down inertial movement.
 - `LBody:applyTorque(torque) -> nil`: Applies a rotational torque to the body.
+- `LBody:applyTurn(torque) -> nil`: Applies torque to the body for top-down turning.
 - `LBody:destroy() -> nil`: Destroys this body, removing it from the world along with all fixtures and joints.
 - `LBody:getAltitude() -> number`: Returns this body's authored altitude value.
 - `LBody:getAltitudeMode() -> string`: Returns this body's current altitude mode.
@@ -642,6 +650,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:castBeam(x, y, dx, dy, range, opts?) -> table`: Casts an instant beam and returns hit plus segment data for gameplay or rendering.
 - `LWorld:castCircle(x, y, radius, dx, dy, maxDist, filter?) -> table`: Sweeps a circle along a direction and returns the first collider hit.
 - `LWorld:castCircle2_5d(opts) -> table`: Sweeps a 2.5D circle and vertical interval, returning the earliest body or terrain hit.
+- `LWorld:castProjectile(opts) -> table`: Sweeps a projectile circle and returns a movement result with final position and hit data.
 - `LWorld:clear() -> nil`: Removes bodies, joints, terrain colliders, and zones while preserving world-level settings.
 - `LWorld:clearBeginContact() -> nil`: Removes the begin-contact callback so it is no longer called.
 - `LWorld:clearBodyData(id) -> nil`: Removes and releases the Lua data attached to a body.
@@ -649,6 +658,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:clearEndContact() -> nil`: Removes the end-contact callback so it is no longer called.
 - `LWorld:clearFlowFields() -> nil`: Disables every authored flow field in the world.
 - `LWorld:clearGravityVectors() -> nil`: Removes all additive gravity vectors from the world.
+- `LWorld:configureCollisionGroups(spec, opts?) -> table`: Configures named 0..15 collision-group roles and returns their layer/mask profile.
 - `LWorld:destroyBody(id) -> nil`: Removes a body from the world by its ID, along with all attached fixtures and joints.
 - `LWorld:destroyJoint(jointId) -> nil`: Removes a joint from the world, disconnecting the two bodies it linked.
 - `LWorld:drawAltitudeDebug(target, opts?) -> nil`: Draws altitude-layer cells, body vertical ranges, and ballistic arcs into an ImageData target.
@@ -697,6 +707,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:newCircleBody(x, y, radius, bodyType, opts?) -> LBody`: Creates a new body with a circle collider already attached.
 - `LWorld:newEdgeBody(x, y, x1, y1, x2, y2, bodyType, opts?) -> LBody`: Creates a new body with an edge (line segment) collider between two local points.
 - `LWorld:newPolygonBody(x, y, vertices, bodyType, opts?) -> LBody`: Creates a new body with a convex polygon collider defined by vertex pairs.
+- `LWorld:newProjectileBody(opts) -> LBody`: Creates a small circle body with shooter-friendly projectile defaults.
 - `LWorld:queryAABB(x, y, w, h, filter?) -> integer[]`: Returns all body IDs whose axis-aligned bounding boxes overlap the given rectangle.
 - `LWorld:queryAltitudeOverlap(x, y, radius, zMin, zMax, filter?) -> table`: Returns all 2.5D overlaps whose XY footprint and world-space Z interval match the query.
 - `LWorld:raycast(x1, y1, x2, y2, filter?) -> table`: Casts a ray from point (x1,y1) to (x2,y2) and returns the first body hit, or nil.
@@ -732,6 +743,8 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:setMeter(ppm) -> nil`: Sets the pixels-per-meter scale used to convert between pixel coordinates and physics units.
 - `LWorld:setMouseJointTarget(jointId, x, y) -> nil`: Moves the target position of a mouse joint, causing the attached body to follow.
 - `LWorld:setSolverIterations(n) -> nil`: Sets the number of velocity solver iterations. Higher values improve stability at the cost of performance.
+- `LWorld:setTopDownDamping(linear, angular) -> nil`: Sets default linear and angular damping for top-down inertial bodies and applies it to existing bodies.
+- `LWorld:setWrapBounds(minX?, minY?, maxX?, maxY?) -> nil`: Sets or clears toroidal wrap bounds for top-down arenas.
 - `LWorld:sleepBody(id) -> nil`: Forces a body into the sleeping state, pausing its simulation until disturbed.
 - `LWorld:spawnBallisticProjectile(opts) -> integer`: Spawns a deterministic engine-owned ballistic projectile and returns its stable id.
 - `LWorld:step(dt) -> nil`: Advances the physics simulation by a time delta and fires any registered contact callbacks.
@@ -741,6 +754,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:type() -> string`: Returns the type name of this object ("LWorld").
 - `LWorld:typeOf(name) -> boolean`: Checks if this object is of a given type name. Supports inheritance (always matches "Object").
 - `LWorld:wakeUpBody(id) -> nil`: Forces a sleeping body to wake up and participate in simulation again.
+- `LWorld:wrapBody(bodyId) -> number`: Wraps one body through the current toroidal bounds and returns its final position.
 
 #### LWorldBeamAllResult Type
 

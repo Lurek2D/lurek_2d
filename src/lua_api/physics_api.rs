@@ -5,8 +5,8 @@ use crate::image::ImageData;
 use crate::math::Vec2;
 use crate::physics::world::{BodyContact, COLLISION_GROUP_COUNT};
 use crate::physics::{
-    AlphaShapeOptions, AltitudeCollisionOptions, AltitudeHit, AltitudeHitKind, AltitudeLayer,
-    AltitudeLayerData, AltitudeMode, AltitudeSampleMode, BallisticArcOptions,
+    reflect_velocity, AlphaShapeOptions, AltitudeCollisionOptions, AltitudeHit, AltitudeHitKind,
+    AltitudeLayer, AltitudeLayerData, AltitudeMode, AltitudeSampleMode, BallisticArcOptions,
     BallisticProjectileOptions, BallisticTrace, BeamHit, BeamHitMode, BeamOptions, BeamSegment,
     BeamTrace, Body, BodyId, BodyType, CircleCast25DOptions, FlowApplicationMode, FlowCombineMode,
     FlowDirectionMode, FlowFalloff, FlowField, FlowGeometry, FlowMedium, FlowSample,
@@ -270,6 +270,28 @@ struct LuaBodyCreateOptions {
     bullet: Option<bool>,
     layer: Option<u32>,
     mask: Option<u32>,
+    group: Option<usize>,
+    fixed_rotation: Option<bool>,
+    gravity_scale: Option<f32>,
+    sensor: Option<bool>,
+}
+
+fn has_inline_material_fields(opts: &LuaTable) -> LuaResult<bool> {
+    Ok(opts.get::<_, Option<f32>>("density")?.is_some()
+        || opts.get::<_, Option<f32>>("friction")?.is_some()
+        || opts.get::<_, Option<f32>>("restitution")?.is_some()
+        || opts.get::<_, Option<f32>>("linearDamping")?.is_some()
+        || opts.get::<_, Option<f32>>("angularDamping")?.is_some()
+        || opts.get::<_, Option<f32>>("massOverride")?.is_some()
+        || opts.get::<_, Option<f32>>("stickiness")?.is_some()
+        || opts.get::<_, Option<f32>>("adhesion")?.is_some()
+        || opts.get::<_, Option<f32>>("beamReflectivity")?.is_some()
+        || opts
+            .get::<_, Option<f32>>("projectileReflectivity")?
+            .is_some()
+        || opts.get::<_, Option<f32>>("beamAbsorption")?.is_some()
+        || opts.get::<_, Option<f32>>("buoyancy")?.is_some()
+        || opts.get::<_, Option<String>>("surfaceType")?.is_some())
 }
 
 fn parse_body_create_options(
@@ -281,6 +303,7 @@ fn parse_body_create_options(
     };
     let material = match opts.get::<_, Option<LuaTable>>("material")? {
         Some(tbl) => Some(physics_material_from_lua(method, &tbl)?),
+        None if has_inline_material_fields(opts)? => Some(physics_material_from_lua(method, opts)?),
         None => None,
     };
     Ok(LuaBodyCreateOptions {
@@ -288,6 +311,13 @@ fn parse_body_create_options(
         bullet: opts.get::<_, Option<bool>>("bullet")?,
         layer: opts.get::<_, Option<u32>>("layer")?,
         mask: opts.get::<_, Option<u32>>("mask")?,
+        group: opts
+            .get::<_, Option<i64>>("group")?
+            .map(|group| lua_collision_group(method, group))
+            .transpose()?,
+        fixed_rotation: opts.get::<_, Option<bool>>("fixedRotation")?,
+        gravity_scale: opts.get::<_, Option<f32>>("gravityScale")?,
+        sensor: opts.get::<_, Option<bool>>("sensor")?,
     })
 }
 
@@ -306,11 +336,27 @@ fn apply_body_create_options(
     if let Some(enabled) = options.bullet {
         world_ref.set_bullet(id.0, enabled);
     }
+    if let Some(group) = options.group {
+        world_ref
+            .try_set_body_collision_group(id.0, group)
+            .map_err(|err| physics_runtime_error(method, err))?;
+    }
     if let Some(layer) = options.layer {
         world_ref.set_body_layer(id.0, layer);
     }
     if let Some(mask) = options.mask {
         world_ref.set_body_mask(id.0, mask);
+    }
+    if let Some(fixed) = options.fixed_rotation {
+        world_ref.set_fixed_rotation(id.0, fixed);
+    }
+    if let Some(scale) = options.gravity_scale {
+        world_ref.set_gravity_scale(id.0, scale);
+    }
+    if let Some(sensor) = options.sensor {
+        world_ref
+            .try_set_fixture_sensor(id.0, 0, sensor)
+            .map_err(|err| physics_runtime_error(method, err))?;
     }
     Ok(())
 }
@@ -812,6 +858,68 @@ fn query_filter_from_lua(method: &str, value: Option<LuaValue>) -> LuaResult<Phy
     Ok(filter)
 }
 
+fn collision_role_names(method: &str, value: Option<LuaValue>) -> LuaResult<Vec<String>> {
+    let Some(value) = value else {
+        return Ok(Vec::new());
+    };
+    if matches!(value, LuaValue::Nil) {
+        return Ok(Vec::new());
+    }
+    let LuaValue::Table(tbl) = value else {
+        return Err(physics_runtime_error(
+            method,
+            "collidesWith expects an array of role names",
+        ));
+    };
+    let mut names = Vec::new();
+    for index in 1..=tbl.raw_len() {
+        names.push(tbl.raw_get::<_, String>(index)?);
+    }
+    Ok(names)
+}
+
+fn projectile_result_to_table<'lua>(
+    lua: &'lua Lua,
+    origin_x: f32,
+    origin_y: f32,
+    dir_x: f32,
+    dir_y: f32,
+    max_dist: f32,
+    hit: Option<ShapeSweepHit>,
+) -> LuaResult<LuaTable<'lua>> {
+    let tbl = lua.create_table()?;
+    match hit {
+        Some(hit) => {
+            let travel = hit.toi.clamp(0.0, max_dist);
+            tbl.set("hit", true)?;
+            tbl.set("x", origin_x + dir_x * travel)?;
+            tbl.set("y", origin_y + dir_y * travel)?;
+            tbl.set("travel", travel)?;
+            tbl.set("remaining", (max_dist - travel).max(0.0))?;
+            tbl.set("hitBody", hit.body_id)?;
+            tbl.set("bodyId", hit.body_id)?;
+            tbl.set("normalX", hit.normal.0)?;
+            tbl.set("normalY", hit.normal.1)?;
+            tbl.set("toi", hit.toi)?;
+            tbl.set("safeFraction", hit.safe_fraction)?;
+        }
+        None => {
+            tbl.set("hit", false)?;
+            tbl.set("x", origin_x + dir_x * max_dist)?;
+            tbl.set("y", origin_y + dir_y * max_dist)?;
+            tbl.set("travel", max_dist)?;
+            tbl.set("remaining", 0.0f32)?;
+            tbl.set("hitBody", LuaValue::Nil)?;
+            tbl.set("bodyId", LuaValue::Nil)?;
+            tbl.set("normalX", LuaValue::Nil)?;
+            tbl.set("normalY", LuaValue::Nil)?;
+            tbl.set("toi", LuaValue::Nil)?;
+            tbl.set("safeFraction", LuaValue::Nil)?;
+        }
+    }
+    Ok(tbl)
+}
+
 fn parse_altitude_sample_mode(
     method: &str,
     value: Option<String>,
@@ -1011,6 +1119,11 @@ fn ballistic_projectile_options_from_lua(
     let arc = ballistic_arc_options_from_lua(method, tbl)?;
     Ok(BallisticProjectileOptions {
         owner: tbl.get::<_, Option<usize>>("owner")?,
+        homing_target: lua_body_id_value(tbl.get::<_, LuaValue>("homingTarget")?)?
+            .or(lua_body_id_value(tbl.get::<_, LuaValue>("targetBody")?)?),
+        faction_mask: tbl.get::<_, Option<u32>>("factionMask")?.unwrap_or(0),
+        pierce_count: tbl.get::<_, Option<u32>>("pierceCount")?.unwrap_or(0),
+        impact_metadata: tbl.get::<_, Option<String>>("impact")?,
         from: arc.from,
         to: arc.to,
         speed: arc.speed,
@@ -1022,6 +1135,19 @@ fn ballistic_projectile_options_from_lua(
     })
 }
 
+fn lua_body_id_value(value: LuaValue<'_>) -> LuaResult<Option<usize>> {
+    match value {
+        LuaValue::Nil => Ok(None),
+        LuaValue::Integer(id) if id >= 0 => Ok(Some(id as usize)),
+        LuaValue::Number(id) if id.is_finite() && id >= 0.0 => Ok(Some(id as usize)),
+        LuaValue::UserData(ud) => Ok(Some(ud.borrow::<LuaBody>()?.body_id())),
+        _ => Err(physics_runtime_error(
+            "body id",
+            "expected a body id number or LBody userdata",
+        )),
+    }
+}
+
 fn ballistic_projectile_to_table<'lua>(
     lua: &'lua Lua,
     projectile: &crate::physics::BallisticProjectile,
@@ -1029,6 +1155,10 @@ fn ballistic_projectile_to_table<'lua>(
     let tbl = lua.create_table()?;
     tbl.set("id", projectile.id)?;
     tbl.set("owner", projectile.owner)?;
+    tbl.set("homingTarget", projectile.homing_target)?;
+    tbl.set("factionMask", projectile.faction_mask)?;
+    tbl.set("pierceCount", projectile.pierce_count)?;
+    tbl.set("impact", projectile.impact_metadata.clone())?;
     tbl.set("x", projectile.position.0)?;
     tbl.set("y", projectile.position.1)?;
     tbl.set("z", projectile.position.2)?;
@@ -1676,6 +1806,113 @@ impl LuaUserData for LuaWorld {
             this.world.borrow_mut().reset_collision_groups();
             Ok(())
         });
+        // -- configureCollisionGroups --
+        /// Configures named 0..15 collision-group roles and returns their layer/mask profile.
+        /// @param | spec | table | Map of role name to { group?, collidesWith? } definitions.
+        /// @param | opts? | table | Options: { reset? = true }. Reset clears all 16 group-pair rows before applying the spec.
+        /// @return | table | Map of role name to { group, layer, mask }.
+        methods.add_method(
+            "configureCollisionGroups",
+            |lua, this, (spec, opts): (LuaTable, Option<LuaTable>)| {
+                let reset = opts
+                    .as_ref()
+                    .map(|tbl| tbl.get::<_, Option<bool>>("reset"))
+                    .transpose()?
+                    .flatten()
+                    .unwrap_or(true);
+                let mut role_groups: HashMap<String, usize> = HashMap::new();
+                let mut role_collisions: HashMap<String, Vec<String>> = HashMap::new();
+                let mut used_groups = [false; COLLISION_GROUP_COUNT];
+                let mut next_group = 0usize;
+                for pair in spec.pairs::<String, LuaTable>() {
+                    let (role, role_spec) = pair?;
+                    if role.trim().is_empty() {
+                        return Err(physics_runtime_error(
+                            "configureCollisionGroups",
+                            "role names must be non-empty",
+                        ));
+                    }
+                    let group = match role_spec.get::<_, Option<i64>>("group")? {
+                        Some(value) => lua_collision_group("configureCollisionGroups", value)?,
+                        None => {
+                            while next_group < COLLISION_GROUP_COUNT && used_groups[next_group] {
+                                next_group += 1;
+                            }
+                            if next_group >= COLLISION_GROUP_COUNT {
+                                return Err(physics_runtime_error(
+                                    "configureCollisionGroups",
+                                    "at most 16 collision roles can be configured",
+                                ));
+                            }
+                            next_group
+                        }
+                    };
+                    if used_groups[group] {
+                        return Err(physics_runtime_error(
+                            "configureCollisionGroups",
+                            format!("collision group {} is assigned more than once", group),
+                        ));
+                    }
+                    used_groups[group] = true;
+                    role_groups.insert(role.clone(), group);
+                    role_collisions.insert(
+                        role,
+                        collision_role_names(
+                            "configureCollisionGroups",
+                            role_spec.get::<_, Option<LuaValue>>("collidesWith")?,
+                        )?,
+                    );
+                }
+                let mut masks: HashMap<String, u32> = role_groups
+                    .keys()
+                    .map(|name| (name.clone(), 0u32))
+                    .collect();
+                for (role, targets) in &role_collisions {
+                    let group = role_groups[role];
+                    for target in targets {
+                        let Some(target_group) = role_groups.get(target).copied() else {
+                            return Err(physics_runtime_error(
+                                "configureCollisionGroups",
+                                format!("unknown collidesWith role '{}'", target),
+                            ));
+                        };
+                        *masks.get_mut(role).expect("role mask exists") |= 1u32 << target_group;
+                        if let Some(target_mask) = masks.get_mut(target) {
+                            *target_mask |= 1u32 << group;
+                        }
+                    }
+                }
+                {
+                    let mut world = this.world.borrow_mut();
+                    if reset {
+                        for group in 0..COLLISION_GROUP_COUNT {
+                            world
+                                .try_set_collision_group_mask(group, 0)
+                                .map_err(|err| {
+                                    physics_runtime_error("configureCollisionGroups", err)
+                                })?;
+                        }
+                    }
+                    for (role, group) in &role_groups {
+                        world
+                            .try_set_collision_group_mask(*group, masks[role])
+                            .map_err(|err| {
+                                physics_runtime_error("configureCollisionGroups", err)
+                            })?;
+                    }
+                }
+                let result = lua.create_table()?;
+                for (role, group) in role_groups {
+                    let row = lua.create_table()?;
+                    let layer = 1u32 << group;
+                    row.set("group", group)?;
+                    row.set("layer", layer)?;
+                    row.set("mask", masks[&role])?;
+                    result.set(role, row)?;
+                }
+                Ok(result)
+            },
+        );
         // -- getGravity --
         /// Returns the current world gravity vector.
         /// @return | number | Gravity X component in world units per second squared.
@@ -1691,6 +1928,51 @@ impl LuaUserData for LuaWorld {
             this.world.borrow_mut().set_gravity(gx, gy);
             Ok(())
         });
+        // -- setWrapBounds --
+        /// Sets or clears toroidal wrap bounds for top-down arenas.
+        /// @param | minX | number? | Minimum X bound; pass nil to clear wrap bounds.
+        /// @param | minY | number? | Minimum Y bound.
+        /// @param | maxX | number? | Maximum X bound.
+        /// @param | maxY | number? | Maximum Y bound.
+        methods.add_method(
+            "setWrapBounds",
+            |_, this, (min_x, min_y, max_x, max_y): (Option<f32>, Option<f32>, Option<f32>, Option<f32>)| {
+                let bounds = match (min_x, min_y, max_x, max_y) {
+                    (Some(a), Some(b), Some(c), Some(d)) => Some((a, b, c, d)),
+                    _ => None,
+                };
+                this.world.borrow_mut().set_wrap_bounds(bounds);
+                Ok(())
+            },
+        );
+        // -- wrapBody --
+        /// Wraps one body through the current toroidal bounds and returns its final position.
+        /// @param | bodyId | integer | Body id to wrap.
+        /// @return | number | Wrapped X coordinate.
+        /// @return | number | Wrapped Y coordinate.
+        methods.add_method("wrapBody", |_, this, body: LuaValue| {
+            let body_id = lua_body_id_value(body)?.ok_or_else(|| {
+                physics_runtime_error("wrapBody", "expected a body id number or LBody userdata")
+            })?;
+            Ok(this
+                .world
+                .borrow_mut()
+                .wrap_body(body_id)
+                .unwrap_or((0.0, 0.0)))
+        });
+        // -- setTopDownDamping --
+        /// Sets default linear and angular damping for top-down inertial bodies and applies it to existing bodies.
+        /// @param | linear | number | Linear damping coefficient, >= 0.
+        /// @param | angular | number | Angular damping coefficient, >= 0.
+        methods.add_method(
+            "setTopDownDamping",
+            |_, this, (linear, angular): (f32, f32)| {
+                this.world
+                    .borrow_mut()
+                    .set_top_down_damping(linear, angular);
+                Ok(())
+            },
+        );
         // -- addGravityVector --
         /// Adds an extra directional gravity vector that is summed with world gravity when no non-additive zone override is active.
         /// @param | gx | number | Horizontal acceleration in world units per second squared.
@@ -2027,6 +2309,54 @@ impl LuaUserData for LuaWorld {
                 })
             },
         );
+        // -- newProjectileBody --
+        /// Creates a small circle body with shooter-friendly projectile defaults.
+        /// @param | opts | table | Required { x, y, radius, vx, vy }; optional { bodyType?, bullet?, fixedRotation?, gravityScale?, sensor?, material?, layer?, mask?, group?, density?, friction?, restitution? }.
+        /// @return | LBody | The newly created projectile body.
+        methods.add_method("newProjectileBody", |_, this, opts: LuaTable| {
+            let x: f32 = opts
+                .get("x")
+                .map_err(|_| physics_runtime_error("newProjectileBody", "x is required"))?;
+            let y: f32 = opts
+                .get("y")
+                .map_err(|_| physics_runtime_error("newProjectileBody", "y is required"))?;
+            let radius: f32 = opts
+                .get("radius")
+                .map_err(|_| physics_runtime_error("newProjectileBody", "radius is required"))?;
+            let vx: f32 = opts
+                .get("vx")
+                .map_err(|_| physics_runtime_error("newProjectileBody", "vx is required"))?;
+            let vy: f32 = opts
+                .get("vy")
+                .map_err(|_| physics_runtime_error("newProjectileBody", "vy is required"))?;
+            let body_type = parse_body_type(
+                opts.get::<_, Option<String>>("bodyType")?
+                    .as_deref()
+                    .unwrap_or("dynamic"),
+            )?;
+            let mut options = parse_body_create_options("newProjectileBody", Some(&opts))?;
+            if options.bullet.is_none() {
+                options.bullet = Some(true);
+            }
+            if options.fixed_rotation.is_none() {
+                options.fixed_rotation = Some(true);
+            }
+            if options.gravity_scale.is_none() {
+                options.gravity_scale = Some(0.0);
+            }
+            if options.sensor.is_none() {
+                options.sensor = Some(false);
+            }
+            let body = Body::try_new_circle(x, y, radius, body_type)
+                .map_err(|err| physics_runtime_error("newProjectileBody", err))?;
+            let id = this.world.borrow_mut().add_body(body);
+            apply_body_create_options("newProjectileBody", &this.world, id, &options)?;
+            this.world.borrow_mut().set_body_velocity(id.0, vx, vy);
+            Ok(LuaBody {
+                world: Rc::clone(&this.world),
+                id,
+            })
+        });
         // -- newPolygonBody --
         /// Creates a new body with a convex polygon collider defined by vertex pairs.
         /// @param | x | number | Initial X position in world coordinates.
@@ -2845,6 +3175,78 @@ impl LuaUserData for LuaWorld {
                 Some(hit) => Ok(LuaValue::Table(shape_sweep_hit_to_table(lua, &hit)?)),
                 None => Ok(LuaValue::Nil),
             }
+        });
+        // -- castProjectile --
+        /// Sweeps a projectile circle and returns a movement result with final position and hit data.
+        /// @param | opts | table | Required { x, y, radius } plus either { vx, vy, dt } or { dx, dy, maxDist }; accepts filter/excludeBody/includeSensors/layer/mask/group/groups.
+        /// @return | table | Result { hit, x, y, travel, remaining, hitBody, normalX, normalY, toi }.
+        methods.add_method("castProjectile", |lua, this, opts: LuaTable| {
+            let x: f32 = opts
+                .get("x")
+                .map_err(|_| physics_runtime_error("castProjectile", "x is required"))?;
+            let y: f32 = opts
+                .get("y")
+                .map_err(|_| physics_runtime_error("castProjectile", "y is required"))?;
+            let radius: f32 = opts
+                .get("radius")
+                .map_err(|_| physics_runtime_error("castProjectile", "radius is required"))?;
+            let velocity_path = opts.get::<_, Option<f32>>("vx")?.is_some()
+                || opts.get::<_, Option<f32>>("vy")?.is_some()
+                || opts.get::<_, Option<f32>>("dt")?.is_some();
+            let (dx, dy, max_dist) = if velocity_path {
+                let vx: f32 = opts
+                    .get("vx")
+                    .map_err(|_| physics_runtime_error("castProjectile", "vx is required"))?;
+                let vy: f32 = opts
+                    .get("vy")
+                    .map_err(|_| physics_runtime_error("castProjectile", "vy is required"))?;
+                let dt: f32 = opts
+                    .get("dt")
+                    .map_err(|_| physics_runtime_error("castProjectile", "dt is required"))?;
+                if !dt.is_finite() || dt < 0.0 {
+                    return Err(physics_runtime_error(
+                        "castProjectile",
+                        "dt must be finite and >= 0",
+                    ));
+                }
+                let dx = vx * dt;
+                let dy = vy * dt;
+                (dx, dy, (dx * dx + dy * dy).sqrt())
+            } else {
+                let dx: f32 = opts
+                    .get("dx")
+                    .map_err(|_| physics_runtime_error("castProjectile", "dx is required"))?;
+                let dy: f32 = opts
+                    .get("dy")
+                    .map_err(|_| physics_runtime_error("castProjectile", "dy is required"))?;
+                let max_dist: f32 = opts
+                    .get("maxDist")
+                    .map_err(|_| physics_runtime_error("castProjectile", "maxDist is required"))?;
+                (dx, dy, max_dist)
+            };
+            if !dx.is_finite() || !dy.is_finite() || !max_dist.is_finite() || max_dist < 0.0 {
+                return Err(physics_runtime_error(
+                    "castProjectile",
+                    "direction and distance must be finite, with maxDist >= 0",
+                ));
+            }
+            let dir_len = (dx * dx + dy * dy).sqrt();
+            if max_dist == 0.0 || dir_len <= 1e-6 {
+                return projectile_result_to_table(lua, x, y, 0.0, 0.0, 0.0, None);
+            }
+            let unit_x = dx / dir_len;
+            let unit_y = dy / dir_len;
+            let filter_value = opts.get::<_, Option<LuaValue>>("filter")?;
+            let filter = query_filter_from_lua(
+                "castProjectile",
+                filter_value.or(Some(LuaValue::Table(opts.clone()))),
+            )?;
+            let hit = this
+                .world
+                .borrow()
+                .try_cast_circle_filtered(x, y, radius, unit_x, unit_y, max_dist, filter)
+                .map_err(|err| physics_runtime_error("castProjectile", err))?;
+            projectile_result_to_table(lua, x, y, unit_x, unit_y, max_dist, hit)
         });
         // -- castBeam --
         /// Casts an instant beam and returns hit plus segment data for gameplay or rendering.
@@ -4488,6 +4890,20 @@ impl LuaUserData for LuaBody {
             this.world.borrow_mut().set_body_velocity(this.id.0, vx, vy);
             Ok(())
         });
+        // -- applyThrust --
+        /// Applies force in the body's current forward direction for top-down inertial movement.
+        /// @param | amount | number | Force amount in world units.
+        methods.add_method("applyThrust", |_, this, amount: f32| {
+            this.world.borrow_mut().apply_thrust(this.id.0, amount);
+            Ok(())
+        });
+        // -- applyTurn --
+        /// Applies torque to the body for top-down turning.
+        /// @param | torque | number | Torque amount.
+        methods.add_method("applyTurn", |_, this, torque: f32| {
+            this.world.borrow_mut().apply_turn(this.id.0, torque);
+            Ok(())
+        });
         // -- setAltitude --
         /// Sets this body's terrain-relative or fixed-world altitude value.
         /// @param | z | number | Altitude in world units.
@@ -5342,6 +5758,24 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             let material = physics_material_from_lua("newMaterial", &opts)?;
             physics_material_to_table(lua, &material)
         })?,
+    )?;
+    // -- reflectVelocity --
+    /// Reflects a velocity vector around a surface normal without mutating any body.
+    /// @param | vx | number | Velocity X component.
+    /// @param | vy | number | Velocity Y component.
+    /// @param | nx | number | Surface normal X component.
+    /// @param | ny | number | Surface normal Y component.
+    /// @param | coefficient? | number | Speed multiplier after reflection, defaults to 1.0.
+    /// @return | number | Reflected velocity X component.
+    /// @return | number | Reflected velocity Y component.
+    tbl.set(
+        "reflectVelocity",
+        lua.create_function(
+            |_, (vx, vy, nx, ny, coefficient): (f32, f32, f32, f32, Option<f32>)| {
+                reflect_velocity(vx, vy, nx, ny, coefficient.unwrap_or(1.0))
+                    .map_err(|err| physics_runtime_error("reflectVelocity", err))
+            },
+        )?,
     )?;
     // -- newAltitudeLayer --
     /// Creates a deterministic altitude-layer grid for 2.5D terrain height and clearance sampling.

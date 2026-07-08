@@ -175,7 +175,8 @@ impl ORCASolver {
     }
     /// Return an immutable agent reference addressed by stable ID or direct index.
     pub fn agent_for_key(&self, key: usize) -> Option<&ORCAAgent> {
-        self.resolve_index(key).and_then(|index| self.agents.get(index))
+        self.resolve_index(key)
+            .and_then(|index| self.agents.get(index))
     }
     /// Return a mutable agent reference addressed by stable ID or direct index.
     pub fn agent_for_key_mut(&mut self, key: usize) -> Option<&mut ORCAAgent> {
@@ -241,8 +242,7 @@ impl ORCASolver {
             } else {
                 (max_spd * self.time_horizon + ri * 2.0).max(self.spatial_cell_size)
             };
-            let retained =
-                self.collect_neighbors(i, (px, py), query_radius, &snapshot, &mut stats);
+            let retained = self.collect_neighbors(i, (px, py), query_radius, &snapshot, &mut stats);
             let mut planes: Vec<HalfPlane> = Vec::with_capacity(retained.len());
             for (j, _) in &retained {
                 let other = snapshot[*j];
@@ -299,11 +299,10 @@ impl ORCASolver {
     fn linear_program(preferred: (f32, f32), max_speed: f32, planes: &[HalfPlane]) -> (f32, f32) {
         let (mut vx, mut vy) = Self::clamp_speed(preferred, max_speed);
         for plane in planes {
-            let dot =
-                (vx - plane.point.0) * plane.normal.0 + (vy - plane.point.1) * plane.normal.1;
+            let dot = (vx - plane.point.0) * plane.normal.0 + (vy - plane.point.1) * plane.normal.1;
             if dot < 0.0 {
-                let proj_len = dot
-                    / (plane.normal.0 * plane.normal.0 + plane.normal.1 * plane.normal.1);
+                let proj_len =
+                    dot / (plane.normal.0 * plane.normal.0 + plane.normal.1 * plane.normal.1);
                 vx -= proj_len * plane.normal.0;
                 vy -= proj_len * plane.normal.1;
                 (vx, vy) = Self::clamp_speed((vx, vy), max_speed);

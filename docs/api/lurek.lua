@@ -2246,6 +2246,10 @@ LReplConsole = {}
 ---@class LDialogSequencer
 LDialogSequencer = {}
 
+--- Lua handle for a compiled safe Ink-subset story.
+---@class LDialogStory
+LDialogStory = {}
+
 --- Lua handle for topic and branch selection driven by dialogue AI state.
 ---@class LDialogueAI
 LDialogueAI = {}
@@ -2306,6 +2310,14 @@ LSynthesizer = {}
 ---@class LWaveform
 LWaveform = {}
 
+--- Lua-side handle for one modular loadout.
+---@class LLoadout
+LLoadout = {}
+
+--- Lua-side handle for one loadout part definition.
+---@class LPartDef
+LPartDef = {}
+
 --- Lua-side cached ECS query view handle owned by one universe.
 ---@class LQueryView
 LQueryView = {}
@@ -2313,6 +2325,14 @@ LQueryView = {}
 --- Lua-side relationship manager handle owned by `lurek.ecs`.
 ---@class LRelationshipManager
 LRelationshipManager = {}
+
+--- Lua-side handle for one loadout slot definition.
+---@class LSlotDef
+LSlotDef = {}
+
+--- Lua-side handle for one additive stat block.
+---@class LStatBlock
+LStatBlock = {}
 
 --- Lua-side handle for one ECS universe.
 ---@class LUniverse
@@ -4216,6 +4236,11 @@ function LBot:type() end
 ---@return boolean True when the supplied type name matches this handle.
 function LBot:typeOf(name) end
 
+--- Cancels all queued orders whose kind matches `tag`.
+---@param tag string Order kind to cancel.
+---@return number Number of cancelled orders.
+function LCommandQueue:cancelByTag(tag) end
+
 --- Cancels the currently active command when one exists.
 ---@param reason? string Optional lifecycle detail string recorded on cancellation events.
 ---@return boolean True when a current command was cancelled.
@@ -4264,6 +4289,10 @@ function LCommandQueue:getCurrentTarget() end
 ---@return LuaValue Current command type label, or nil when no command is active.
 function LCommandQueue:getCurrentType() end
 
+--- Returns every pending order snapshot in queue order.
+---@return table Array of order snapshot tables.
+function LCommandQueue:getOrderSnapshot() end
+
 --- Returns every pending command snapshot in queue order.
 ---@return table Array of `{ id, kind, targetX, targetY, priority, interruptible }` tables.
 function LCommandQueue:getPending() end
@@ -4272,6 +4301,10 @@ function LCommandQueue:getPending() end
 ---@return boolean True when the queue is empty.
 function LCommandQueue:isEmpty() end
 
+--- Returns the current order snapshot without advancing the queue.
+---@return table Current order snapshot, or nil.
+function LCommandQueue:peekOrder() end
+
 --- Adds a command callback to the front of the queue.
 ---@param kind string Command type label stored for inspection.
 ---@param callback function Callback invoked by command execution logic outside this wrapper.
@@ -4279,12 +4312,22 @@ function LCommandQueue:isEmpty() end
 ---@return number Stable command id assigned by this queue.
 function LCommandQueue:pushFront(kind, callback, opts) end
 
+--- Adds a data-only RTS order to the back of the queue.
+---@param order table Order table with kind/type, targetX/x, targetY/y, priority?, and interruptible?.
+---@return number Stable command id assigned by this queue.
+function LCommandQueue:pushOrder(order) end
+
 --- Replaces the queue contents with one command callback.
 ---@param kind string Command type label stored for inspection.
 ---@param callback function Callback invoked by command execution logic outside this wrapper.
 ---@param opts? table Optional table with `targetX`, `targetY`, `priority`, and `interruptible` fields.
 ---@return number Stable command id assigned to the replacement command.
 function LCommandQueue:replace(kind, callback, opts) end
+
+--- Replaces the queue with an array of data-only orders.
+---@param orders table Array of order tables.
+---@return number Number of enqueued replacement orders.
+function LCommandQueue:replaceOrders(orders) end
 
 --- Returns the Lua-visible type name for this command queue handle.
 ---@return string The string `LCommandQueue`.
@@ -5623,6 +5666,13 @@ function LBeatClock:isOnBeat(division, tolerance) end
 ---@return boolean Running state.
 function LBeatClock:isRunning() end
 
+--- Judges timing against the nearest beat grid and returns a detailed result table.
+---@param division? number Beat division.
+---@param hit_offset? number Signed hit offset in seconds.
+---@param windows? table Optional `{perfect, great, good}` seconds for this call.
+---@return table `{verdict, label, error, errorSeconds, offset, division, nearestBeat}`.
+function LBeatClock:judge(division, hit_offset, windows) end
+
 --- Returns nearest beat and signed timing error in seconds.
 ---@param division? number Beat division.
 ---@return number Nearest beat and signed error in seconds. (value 1).
@@ -6816,6 +6866,12 @@ function LTileAwareness:type() end
 ---@return boolean True for `LTileAwareness` or `LObject`.
 function LTileAwareness:typeOf(name) end
 
+--- Computes one player's current visible mask from multiple tilefield sight sources.
+---@param player string Player identifier whose visibility mask should be computed.
+---@param sources table Array of source tables with origin, range, category, mode, arc, facing, and blockerCategory.
+---@return number Number of processed sight sources.
+function LTileAwareness:updateSightSources(player, sources) end
+
 --- Returns all currently visible cells for a player, optionally filtered to a level.
 ---@param player string Player identifier to query.
 ---@param categoryOrZ? string|number Optional category name or one-based level filter when no separate `z` argument is supplied.
@@ -7355,6 +7411,10 @@ function LCamera:presetBalancedFollow() end
 
 --- Applies the cinematic follow camera preset.
 function LCamera:presetCinematicFollow() end
+
+--- Applies a horizontal side-scroller follow preset with optional overrides.
+---@param opts? table Options: { deadZoneW?, deadZoneH?, smooth?, lookAhead?, easing?, zoomDamping?, bounds? }.
+function LCamera:presetHorizontalFollow(opts) end
 
 --- Applies the tight follow camera preset.
 function LCamera:presetTightFollow() end
@@ -10906,6 +10966,61 @@ function LDialogSequencer:typeOf(name) end
 ---@param dt number Delta time in seconds.
 function LDialogSequencer:update(dt) end
 
+--- Returns whether the story can emit another line.
+function LDialogStory:canContinue() end
+
+--- Selects an available story choice by one-based choice index.
+---@param index any
+function LDialogStory:choose(index) end
+
+--- Emits the next story line and tag array, or nil at choice/end.
+function LDialogStory:continue() end
+
+--- Drains story lines until a choice or end and joins them.
+---@param sep? any
+function LDialogStory:continueAll(sep) end
+
+--- Returns available choices as `{text, available, tags, index}` rows.
+function LDialogStory:getChoices() end
+
+--- Returns one story variable value, or nil when the story variable is not currently defined.
+---@param name any
+function LDialogStory:getVariable(name) end
+
+--- Jumps immediately to a named story knot and resets the story position to that knot start.
+---@param name any
+function LDialogStory:gotoKnot(name) end
+
+--- Lists story variable names.
+function LDialogStory:listVariables() end
+
+--- Restores a snapshot returned by `snapshot`.
+---@param snapshot any
+function LDialogStory:restore(snapshot) end
+
+--- Sets or replaces one story variable using a nil, boolean, number, or string value.
+---@param name any
+---@param value any
+function LDialogStory:setVariable(name, value) end
+
+--- Returns a serializable story runtime snapshot.
+function LDialogStory:snapshot() end
+
+--- Starts the story at a named knot or at START/ENTRY/first knot.
+---@param knot? any
+function LDialogStory:start(knot) end
+
+--- Returns the Lua userdata type name for compiled dialog story handles.
+function LDialogStory:type() end
+
+--- Returns true for `LDialogStory` and shared `LObject` runtime type checks.
+---@param name any
+function LDialogStory:typeOf(name) end
+
+--- Returns how many times a knot has been entered.
+---@param name any
+function LDialogStory:visitCount(name) end
+
 --- Adds a selectable branch under an existing dialogue topic.
 ---@param topic_id string Topic identifier that receives the branch.
 ---@param branch_id string Unique branch identifier within the topic.
@@ -11059,6 +11174,12 @@ lurek.dialog.call = function(fn_name, opts) end
 ---@param opts? table Optional table (reserved for future use).
 ---@return table Choice node table for sequencer.load().
 lurek.dialog.choice = function(prompt, options, opts) end
+
+--- Compiles a safe Ink-subset story source into an `LDialogStory`.
+---@param source string Ink-subset source text.
+---@param opts? table Reserved parser options.
+---@return LDialogStory Compiled story runtime.
+lurek.dialog.compileStory = function(source, opts) end
 
 --- Creates an Event node (fires a named callback).
 ---@param name string Event name.
@@ -11837,6 +11958,86 @@ lurek.dsp.spectrogramToPng = function(input, output, width, height, options) end
 ---@return boolean True when the output image was written successfully.
 lurek.dsp.waveformToPng = function(input, output, width, height) end
 
+--- Adds or replaces one slot definition on this loadout.
+---@param slot LSlotDef Slot definition to add.
+function LLoadout:addSlot(slot) end
+
+--- Computes final additive stats from base stats and equipped parts.
+---@return LStatBlock Derived stat block.
+function LLoadout:computeStats() end
+
+--- Equips a part into a named slot after compatibility checks.
+---@param slot string Slot name.
+---@param part LPartDef Part definition to equip.
+function LLoadout:equip(slot, part) end
+
+--- Returns total cost of equipped parts.
+---@return number Total equipped cost.
+function LLoadout:getCost() end
+
+--- Returns slot and part hardpoints exposed by this loadout.
+---@return string[] Hardpoint names.
+function LLoadout:getHardpoints() end
+
+--- Returns a plain ECS component table with stats, hardpoints, cost, and equipped part ids.
+---@return table Component table suitable for `LUniverse:set`.
+function LLoadout:toComponent() end
+
+--- Returns the Lua-visible type name for this loadout.
+---@return string The string `LLoadout`.
+function LLoadout:type() end
+
+--- Returns whether this handle matches a supported type name.
+---@param name string Type name to compare.
+---@return boolean True for `LLoadout` or `LObject`.
+function LLoadout:typeOf(name) end
+
+--- Removes the part currently equipped in one slot.
+---@param slot string Slot name.
+---@return boolean True when a part was removed.
+function LLoadout:unequip(slot) end
+
+--- Returns validation errors for missing or incompatible equipment.
+---@return string[] Validation errors. Empty means the loadout is valid.
+function LLoadout:validate() end
+
+--- Returns the part cost value.
+---@return number Part cost.
+function LPartDef:getCost() end
+
+--- Returns hardpoints exposed by this part.
+---@return string[] Hardpoint names.
+function LPartDef:getHardpoints() end
+
+--- Returns the stable part id.
+---@return string Part id.
+function LPartDef:getId() end
+
+--- Returns the preferred slot name.
+---@return string Slot name, or empty string when unrestricted.
+function LPartDef:getSlot() end
+
+--- Returns additive stat modifiers as a plain table.
+---@return table Stat key-value table.
+function LPartDef:getStats() end
+
+--- Returns compatibility tags.
+---@return string[] Part tags.
+function LPartDef:getTags() end
+
+--- Returns visual attachment mapping for this part.
+---@return table Visual slot mapping.
+function LPartDef:getVisuals() end
+
+--- Returns the Lua-visible type name for this part definition.
+---@return string The string `LPartDef`.
+function LPartDef:type() end
+
+--- Returns whether this handle matches a supported type name.
+---@param name string Type name to compare.
+---@return boolean True for `LPartDef` or `LObject`.
+function LPartDef:typeOf(name) end
+
 --- Returns cached query results, refreshing when the owning universe query tick changed.
 ---@return number[] Array table of matching entity ids.
 function LQueryView:ids() end
@@ -11918,6 +12119,59 @@ function LRelationshipManager:typeNames() end
 ---@param name string Type name to compare against `LRelationshipManager` and `LObject`.
 ---@return boolean True when the supplied type name matches this handle.
 function LRelationshipManager:typeOf(name) end
+
+--- Returns accepted compatibility tags.
+---@return string[] Accepted tags.
+function LSlotDef:getAccepts() end
+
+--- Returns the slot hardpoint name when one is configured.
+---@return string Hardpoint name, or nil.
+function LSlotDef:getHardpoint() end
+
+--- Returns the slot name.
+---@return string Slot name.
+function LSlotDef:getName() end
+
+--- Returns whether this slot is required during loadout validation.
+---@return boolean True when required.
+function LSlotDef:isRequired() end
+
+--- Returns the Lua-visible type name for this slot definition.
+---@return string The string `LSlotDef`.
+function LSlotDef:type() end
+
+--- Returns whether this handle matches a supported type name.
+---@param name string Type name to compare.
+---@return boolean True for `LSlotDef` or `LObject`.
+function LSlotDef:typeOf(name) end
+
+--- Adds a numeric delta to one stat.
+---@param name string Stat key.
+---@param value number Finite delta to add.
+function LStatBlock:add(name, value) end
+
+--- Returns one stat value, or zero when the key is absent.
+---@param name string Stat key.
+---@return number Stat value.
+function LStatBlock:get(name) end
+
+--- Replaces one stat value.
+---@param name string Stat key.
+---@param value number Finite stat value.
+function LStatBlock:set(name, value) end
+
+--- Returns all stat values as a plain Lua table.
+---@return table Key-value stat table.
+function LStatBlock:toTable() end
+
+--- Returns the Lua-visible type name for this stat block.
+---@return string The string `LStatBlock`.
+function LStatBlock:type() end
+
+--- Returns whether this handle matches a supported type name.
+---@param name string Type name to compare.
+---@return boolean True for `LStatBlock` or `LObject`.
+function LStatBlock:typeOf(name) end
 
 --- Adds a named directed relation from one entity to another.
 ---@param from number Source entity id.
@@ -12323,15 +12577,36 @@ lurek.ecs.hasObject = function(id) end
 ---@return boolean True when the object class matches or extends the supplied class.
 lurek.ecs.isA = function(self, candidate) end
 
+--- Creates a modular loadout from optional slot definitions and base stats.
+---@param opts? table Options: slots array of LSlotDef, baseStats table.
+---@return LLoadout New loadout handle.
+lurek.ecs.newLoadout = function(opts) end
+
 --- Creates a Lua table object from a registered ECS class.
 ---@param className string Registered class name.
 ---@param props? table Optional property overrides.
 ---@return table Object table with type, typeOf, isA, getProperty, and setProperty methods.
 lurek.ecs.newObject = function(className, props) end
 
+--- Creates a modular loadout part definition.
+---@param opts table Part options: id/name, slot, tags, stats, cost, mass, energy, heat, armor, hardpoints, visuals.
+---@return LPartDef New part definition handle.
+lurek.ecs.newPartDef = function(opts) end
+
 --- Creates a relationship manager for tracking numeric values and named levels between entity pairs.
 ---@return LRelationshipManager New relationship manager handle owned by `lurek.ecs`.
 lurek.ecs.newRelationshipManager = function() end
+
+--- Creates a modular loadout slot definition.
+---@param name string Slot name.
+---@param opts? table Options: accepts string/string[], required boolean, hardpoint string.
+---@return LSlotDef New slot definition handle.
+lurek.ecs.newSlotDef = function(name, opts) end
+
+--- Creates a standalone stat block from a plain table.
+---@param stats? table Optional stat key-value table.
+---@return LStatBlock New stat block handle.
+lurek.ecs.newStatBlock = function(stats) end
 
 --- Creates an empty ECS universe for entity, component, system, and relationship management.
 ---@return LUniverse New universe handle.
@@ -15604,6 +15879,12 @@ lurek.input.clearBindings = function() end
 ---@param bindings any Binding string or array of binding strings.
 ---@param category? string Category label for grouping (default empty string).
 lurek.input.define = function(name, bindings, category) end
+
+--- Defines multiple named actions at once, replacing prior definitions.
+---@param defs table Map of action name to binding array or { bindings = {...}, category? }.
+---@param defaultCategory? string Category used when an action definition omits `category`.
+---@return number Number of actions defined.
+lurek.input.defineActions = function(defs, defaultCategory) end
 
 --- Loads action definitions from a JSON string produced by serializeBindings, replacing all current definitions.
 ---@param json string JSON string with action definitions.
@@ -19496,6 +19777,12 @@ function LMinimap:setAntiAlias(enabled) end
 ---@param y number Center y coordinate.
 function LMinimap:setCenter(x, y) end
 
+--- Converts tilemap world coordinates into one-based tile coordinates and centers this minimap.
+---@param tilemap_ud any
+---@param wx any
+---@param wy any
+function LMinimap:setCenterFromTileMapWorld(tilemap_ud, wx, wy) end
+
 --- Enables or disables minimap click handling.
 ---@param enabled boolean Clickable flag.
 function LMinimap:setClickable(enabled) end
@@ -19557,6 +19844,11 @@ function LMinimap:setLayerColor(layer, value, r, g, b, a) end
 ---@param layer number Layer index.
 ---@param data_tbl table Array table of cell bytes.
 function LMinimap:setLayerData(layer, data_tbl) end
+
+--- Applies common raw-layer style fields: visible, alpha, blend, and colors.
+---@param layer any
+---@param style any
+function LMinimap:setLayerStyle(layer, style) end
 
 --- Sets whether a minimap data layer is drawn even when it is not the active layer.
 ---@param layer number Layer index.
@@ -19638,6 +19930,14 @@ function LMinimap:setTileDescription(type_id, desc) end
 ---@param a? number Alpha channel, defaults to 0.8.
 function LMinimap:setViewportColor(r, g, b, a) end
 
+--- Converts a tilemap world rectangle into a minimap viewport rectangle.
+---@param tilemap_ud any
+---@param x any
+---@param y any
+---@param w any
+---@param h any
+function LMinimap:setViewportFromTileMapWorld(tilemap_ud, x, y, w, h) end
+
 --- Sets the visible viewport rectangle shown on the minimap.
 ---@param x number Viewport x coordinate.
 ---@param y number Viewport y coordinate.
@@ -19663,6 +19963,32 @@ function LMinimap:showPath(points_tbl, color_tbl) end
 ---@param registry LProvinceRegistry Province registry handle.
 ---@param opts? table Optional `{terrain?, visibility?, palette?}` booleans, all default true.
 function LMinimap:syncProvinceRegistry(registry, opts) end
+
+--- Copies explored/visible masks from `LTileAwareness` into minimap fog data.
+---@param awareness_ud any
+---@param player any
+---@param opts? any
+function LMinimap:syncTileAwarenessFog(awareness_ud, player, opts) end
+
+--- Copies visible or action masks from `LTileAwareness` into a minimap raw layer.
+function LMinimap:syncTileAwarenessLayer() end
+
+--- Copies one `LTileField` blocker channel layer into a minimap raw data layer.
+function LMinimap:syncTileFieldBlockLayer() end
+
+--- Copies one `LTileField` cost channel layer into a minimap raw byte layer.
+function LMinimap:syncTileFieldCostLayer() end
+
+--- Copies computed tilelight luma into a minimap raw byte layer.
+---@param light_ud any
+---@param layer any
+---@param opts? any
+function LMinimap:syncTileLightLayer(light_ud, layer, opts) end
+
+--- Copies tile GIDs from an `LTileMap` layer into minimap terrain cells.
+---@param tilemap LTileMap Source tilemap.
+---@param opts? table Optional `{layer=1, emptyTerrain=1, solidTerrain=2, terrainByGid?, blockedGids?}`.
+function LMinimap:syncTileMapTerrain(tilemap, opts) end
 
 --- Centers the minimap and viewport rectangle from a camera handle.
 ---@param camera_ud LCamera Camera handle from `lurek.camera.newCamera`.
@@ -20966,6 +21292,13 @@ function LParallaxSet:update(dt) end
 ---@return LParallaxLayer New parallax layer handle.
 lurek.parallax.newLayer = function(opts) end
 
+--- Creates a parallax layer set from an array of layer definition tables.
+---@param name string Set name.
+---@param layerDefs table|LArray "fog"`.
+---@param opts? table Options: { sort? = true }.
+---@return LParallaxSet New parallax set handle.
+lurek.parallax.newLayerSet = function(name, layerDefs, opts) end
+
 --- Creates a parallax layer from a named preset and texture image.
 ---@param preset_name string Preset name: `far`, `mid`, or `fog`.
 ---@param img_ud LImage Image handle from `lurek.render.newImage`.
@@ -21043,6 +21376,13 @@ function LParticleSystem:drawToImage(w, h) end
 --- Emits particles immediately. This method is available to Lua scripts.
 ---@param count number Number of particles to emit.
 function LParticleSystem:emit(count) end
+
+--- Moves the emitter, optionally changes direction, and emits particles immediately.
+---@param x number Emitter x coordinate.
+---@param y number Emitter y coordinate.
+---@param count? number Number of particles to emit; defaults to 1.
+---@param direction? number Optional emission direction in radians.
+function LParticleSystem:emitAt(x, y, count, direction) end
 
 --- Returns attractor count. This method is available to Lua scripts.
 ---@return number Attractor count.
@@ -21492,7 +21832,7 @@ lurek.particle.drawLifecycleToImage = function(snapshots, max_particles, w, h) e
 lurek.particle.fromTOML = function(path) end
 
 --- Creates a particle system from a named preset.
----@param name string Preset name: `fire`, `smoke`, `rain`, `snow`, or `sparks`.
+---@param name string Preset name: `fire`, `smoke`, `rain`, `snow`, `sparks`, `explosion`, `muzzle`, or `smoke_trail`.
 ---@return LParticleSystem New particle system handle.
 lurek.particle.newPreset = function(name) end
 
@@ -22483,8 +22823,30 @@ function LSteeringManager:typeOf(name) end
 --- Clears all cached paths on this object.
 function LUnitPathfinder:clearCache() end
 
+--- Clears all caller-owned reserved cells.
+---@return number Number of reservations cleared.
+function LUnitPathfinder:clearReservations() end
+
 --- Clears all cached shared-goal fields on this object.
 function LUnitPathfinder:clearSharedGoalCache() end
+
+--- Finds one path per start toward a shared attack-move goal.
+---@param starts table Array of `{x, y}` start tables.
+---@param gx number One-based goal column.
+---@param gy number One-based goal row.
+---@param unit_size? number Unit footprint in cells (default 1).
+---@param max_steps? number Maximum downhill steps to follow for each start.
+---@return table Array of path arrays; unreachable entries are nil.
+function LUnitPathfinder:findAttackMovePaths(starts, gx, gy, unit_size, max_steps) end
+
+--- Finds one path per start toward formation slots around a shared goal.
+---@param starts table Array of `{x, y}` start tables.
+---@param gx number One-based formation center column.
+---@param gy number One-based formation center row.
+---@param unit_size? number Unit footprint in cells (default 1).
+---@param spacing? number Slot spacing in cells (default 1).
+---@return table Array of path arrays; unreachable entries are nil.
+function LUnitPathfinder:findFormationPaths(starts, gx, gy, unit_size, spacing) end
 
 --- Finds nearest walkable one-based grid cell within a radius.
 ---@param x number One-based column of the search origin.
@@ -22621,6 +22983,11 @@ function LUnitPathfinder:isCacheEnabled() end
 ---@param unit_size? number Unit footprint in cells (default 1).
 ---@return boolean True when reachable.
 function LUnitPathfinder:isReachable(x1, y1, x2, y2, unit_size) end
+
+--- Records caller-owned cell reservations for batch planning.
+---@param cells table Array of `{x, y}` one-based cells.
+---@return number Total reserved cell count after the update.
+function LUnitPathfinder:reserveCells(cells) end
 
 --- Enables or disables the pathfinder's internal route and shared-goal caches on this object.
 ---@param enabled boolean True to enable caching.
@@ -23882,6 +24249,23 @@ function LWeightedRandom:setWeight(id, weight) end
 ---@return number Total weight.
 function LWeightedRandom:totalWeight() end
 
+--- Counts array items by a selector field path or callback.
+---@param items any
+---@param selector any
+lurek.patterns.countBy = function(items, selector) end
+
+--- Finds numeric selector runs with a constant step.
+---@param items any
+---@param selector any
+---@param opts? any
+lurek.patterns.findSequences = function(items, selector, opts) end
+
+--- Groups array items by a selector field path or callback.
+---@param items table Sequence table.
+---@param selector string|function Field path such as `"kind"` or callback `(item, index)`.
+---@return table String-keyed table of grouped item arrays.
+lurek.patterns.groupBy = function(items, selector) end
+
 --- Create a new behavior tree for AI decision-making with sequences, selectors, parallels, and leaf actions.
 ---@return LBehaviorTree A new behavior tree instance.
 lurek.patterns.newBehaviorTree = function() end
@@ -23998,6 +24382,19 @@ lurek.patterns.newThrottle = function(interval) end
 ---@return LWeightedRandom A new weighted random pool instance.
 lurek.patterns.newWeightedRandom = function() end
 
+--- Returns one-based item indices sorted by selector value.
+---@param items any
+---@param selector any
+---@param opts? any
+lurek.patterns.sortedIndices = function(items, selector, opts) end
+
+--- Returns the top `n` items by selector value, or indices when `opts.indices` is true.
+---@param items any
+---@param selector any
+---@param n any
+---@param opts? any
+lurek.patterns.topN = function(items, selector, n, opts) end
+
 --- Returns one terrain-height cell from the altitude layer.
 ---@param cx number Cell column (0-based).
 ---@param cy number Cell row (0-based).
@@ -24066,9 +24463,17 @@ function LBody:applyForceAtPoint(fx, fy, px, py) end
 ---@param iy number Impulse Y component.
 function LBody:applyImpulse(ix, iy) end
 
+--- Applies force in the body's current forward direction for top-down inertial movement.
+---@param amount number Force amount in world units.
+function LBody:applyThrust(amount) end
+
 --- Applies a rotational torque to the body.
 ---@param torque number Torque value (positive = counter-clockwise).
 function LBody:applyTorque(torque) end
+
+--- Applies torque to the body for top-down turning.
+---@param torque number Torque amount.
+function LBody:applyTurn(torque) end
 
 --- Destroys this body, removing it from the world along with all fixtures and joints.
 function LBody:destroy() end
@@ -24847,6 +25252,11 @@ function LWorld:castCircle(x, y, radius, dx, dy, maxDist, filter) end
 ---@return table Altitude hit table, or nil when no body or terrain was reached.
 function LWorld:castCircle2_5d(opts) end
 
+--- Sweeps a projectile circle and returns a movement result with final position and hit data.
+---@param opts table Required { x, y, radius } plus either { vx, vy, dt } or { dx, dy, maxDist }; accepts filter/excludeBody/includeSensors/layer/mask/group/groups.
+---@return table Result { hit, x, y, travel, remaining, hitBody, normalX, normalY, toi }.
+function LWorld:castProjectile(opts) end
+
 --- Removes bodies, joints, terrain colliders, and zones while preserving world-level settings.
 function LWorld:clear() end
 
@@ -24869,6 +25279,12 @@ function LWorld:clearFlowFields() end
 
 --- Removes all additive gravity vectors from the world.
 function LWorld:clearGravityVectors() end
+
+--- Configures named 0..15 collision-group roles and returns their layer/mask profile.
+---@param spec table Map of role name to { group?, collidesWith? } definitions.
+---@param opts? table Options: { reset? = true }. Reset clears all 16 group-pair rows before applying the spec.
+---@return table Map of role name to { group, layer, mask }.
+function LWorld:configureCollisionGroups(spec, opts) end
 
 --- Removes a body from the world by its ID, along with all attached fixtures and joints.
 ---@param id number The body ID to destroy.
@@ -25126,6 +25542,11 @@ function LWorld:newEdgeBody(x, y, x1, y1, x2, y2, bodyType, opts) end
 ---@return LBody The newly created body handle.
 function LWorld:newPolygonBody(x, y, vertices, bodyType, opts) end
 
+--- Creates a small circle body with shooter-friendly projectile defaults.
+---@param opts table Required { x, y, radius, vx, vy }; optional { bodyType?, bullet?, fixedRotation?, gravityScale?, sensor?, material?, layer?, mask?, group?, density?, friction?, restitution? }.
+---@return LBody The newly created projectile body.
+function LWorld:newProjectileBody(opts) end
+
 --- Returns all body IDs whose axis-aligned bounding boxes overlap the given rectangle.
 ---@param x number Query rectangle left X.
 ---@param y number Query rectangle top Y.
@@ -25329,6 +25750,18 @@ function LWorld:setMouseJointTarget(jointId, x, y) end
 ---@param n number Number of iterations (default is typically 4Ä‚ËĂ˘â€šÂ¬Ă˘â‚¬Ĺ›8).
 function LWorld:setSolverIterations(n) end
 
+--- Sets default linear and angular damping for top-down inertial bodies and applies it to existing bodies.
+---@param linear number Linear damping coefficient, >= 0.
+---@param angular number Angular damping coefficient, >= 0.
+function LWorld:setTopDownDamping(linear, angular) end
+
+--- Sets or clears toroidal wrap bounds for top-down arenas.
+---@param minX? number Minimum X bound; pass nil to clear wrap bounds.
+---@param minY? number Minimum Y bound.
+---@param maxX? number Maximum X bound.
+---@param maxY? number Maximum Y bound.
+function LWorld:setWrapBounds(minX, minY, maxX, maxY) end
+
 --- Forces a body into the sleeping state, pausing its simulation until disturbed.
 ---@param id number The body ID.
 function LWorld:sleepBody(id) end
@@ -25371,6 +25804,12 @@ function LWorld:typeOf(name) end
 --- Forces a sleeping body to wake up and participate in simulation again.
 ---@param id number The body ID.
 function LWorld:wakeUpBody(id) end
+
+--- Wraps one body through the current toroidal bounds and returns its final position.
+---@param bodyId number Body id to wrap.
+---@return number Wrapped X coordinate.
+---@return number Wrapped Y coordinate.
+function LWorld:wrapBody(bodyId) end
 
 --- Removes this zone from the world. Bodies will no longer be affected by it.
 function LZone:destroy() end
@@ -25577,6 +26016,16 @@ lurek.physics.newTerrain = function(width, height, cellSize, world) end
 ---@param gy number Gravity Y component (positive = down).
 ---@return LWorld The new physics world.
 lurek.physics.newWorld = function(gx, gy) end
+
+--- Reflects a velocity vector around a surface normal without mutating any body.
+---@param vx number Velocity X component.
+---@param vy number Velocity Y component.
+---@param nx number Surface normal X component.
+---@param ny number Surface normal Y component.
+---@param coefficient? number Speed multiplier after reflection, defaults to 1.0.
+---@return number Reflected velocity X component.
+---@return number Reflected velocity Y component.
+lurek.physics.reflectVelocity = function(vx, vy, nx, ny, coefficient) end
 
 --- Sets a body's velocity (free-function variant).
 ---@param world LWorld The world.
@@ -26607,6 +27056,11 @@ function LProvinceRegistry:adjacencies() end
 ---@return LProvinceRegistryBorderSegmentsResult Array of tables with fields: province_a (number), province_b (number), x0 (number), y0 (number), x1 (number), y1 (number).
 function LProvinceRegistry:borderSegments() end
 
+--- Returns border segments filtered by province id and/or border type.
+---@param opts? table Optional `{province, province_a, province_b, border_type}` filters.
+---@return table Array of border segment tables.
+function LProvinceRegistry:borderSegmentsWhere(opts) end
+
 --- Emits render commands for a route by connecting consecutive province capitals. Pass the route table returned by `findRoute`; pathfinding itself stays in the routing helpers. Options: mode ("line"|"bezier"), color ({r,g,b,a?} in 0..1), width, pixel_size, curve_offset, and segments.
 ---@param route number[] Array of province ids whose capitals should be connected in order.
 ---@param opts? table?|Draw "bezier", color={r,g,b,a?}, width=number, pixel_size=number, curve_offset=number, segments=integer.
@@ -26743,6 +27197,12 @@ function LProvinceRegistry:registerMapMode(name, config) end
 --- Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options. Optional `tint` multiplies all province fill colours for this render only, while `province_tints` supplies render-time fill colour overrides keyed by province id without mutating the registry.
 ---@param opts? table?|Render "tactical"), tactical_zoom_threshold (number?), hovered_id/selected_id (integer?).
 function LProvinceRegistry:render(opts) end
+
+--- Resolves effective province fill colors for a map mode without rendering.
+---@param modeOrName? string Mode name, defaults to active mode.
+---@param opts? table Optional `{ids={...}}` province id filter.
+---@return table Table keyed by province id with `{r,g,b,a}` color arrays.
+function LProvinceRegistry:resolveMapModeColors(modeOrName, opts) end
 
 --- Converts screen-space pixel coordinates to map-space floating-point coordinates using the current camera transform.
 ---@param screen_x number Screen x in pixels.
@@ -28304,6 +28764,11 @@ function LShape:typeOf(name) end
 ---@return number Index of the added entry.
 function LSpriteBatch:add(x, y, r, sx, sy, ox, oy) end
 
+--- Adds multiple part entries to the batch for one modular composite visual.
+---@param parts table Array of part tables with x, y, r, sx, sy, ox, oy, and optional quad fields.
+---@return number Number of entries added.
+function LSpriteBatch:addComposite(parts) end
+
 --- Removes all entries from the sprite batch.
 function LSpriteBatch:clear() end
 
@@ -29162,6 +29627,12 @@ function LSaveManager:onBeforeSave(func) end
 ---@param restoreFn function Called with the saved value during load; responsible for applying it back to game state.
 function LSaveManager:register(name, collectFn, restoreFn) end
 
+--- Register a named schema section and optionally attach a migration into the requested version.
+---@param name string Unique schema section name.
+---@param version number Current schema version for saves produced by this game build.
+---@param migrator? function Optional migration function from version-1 into version.
+function LSaveManager:registerSchema(name, version, migrator) end
+
 --- Completely reset the save manager: unregister all sections, clear migrations, hooks, compression, and dirty state.
 function LSaveManager:reset() end
 
@@ -29763,6 +30234,11 @@ function LSkeleton:addSkin(name) end
 ---@param attachment? string Optional default attachment name for this slot.
 ---@return number Zero-based index of the newly added slot.
 function LSkeleton:addSlot(name, bone_idx, attachment) end
+
+--- Applies visual attachment mappings from an ECS loadout to matching skeleton slots.
+---@param loadout LLoadout Loadout whose equipped parts provide visual slot mappings.
+---@return number Number of slot attachments changed.
+function LSkeleton:applyLoadoutVisuals(loadout) end
 
 --- Binds all atlas entries as sprite-region attachment sources by name.
 ---@param atlas LSpriteAtlas Sprite atlas containing named attachment regions.
@@ -31355,6 +31831,13 @@ function LTileField:clearLine(from_tbl, to_tbl, channel, opts) end
 ---@return boolean True when the cell had the modifier.
 function LTileField:clearModifier(x, y, z, modifier) end
 
+--- Clears any occupant id stored on one tile cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@return boolean True when an occupant was removed.
+function LTileField:clearOccupant(x, y, z) end
+
 --- Clears a named object/tile reference from one cell.
 ---@param x number One-based column.
 ---@param y number One-based row.
@@ -31473,6 +31956,13 @@ function LTileField:getModifiers(x, y, z) end
 ---@return table Array of one-based coordinate tables.
 function LTileField:getNeighbors(x, y, z) end
 
+--- Returns the occupant id stored on one tile cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@return number Occupant id, or nil.
+function LTileField:getOccupant(x, y, z) end
+
 --- Returns a legacy profile table, or nil.
 ---@param name string Profile name.
 ---@return table nil | Profile table.
@@ -31553,6 +32043,13 @@ function LTileField:getRegionProperties(name) end
 ---@return string Stored property value, or nil.
 function LTileField:getRegionProperty(name, key) end
 
+--- Returns a resource label stored on one tile cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@return string Resource label, or nil.
+function LTileField:getResource(x, y, z) end
+
 --- Returns field width, height, and level count.
 ---@return number Field width in cells.
 ---@return number Field height in cells.
@@ -31585,6 +32082,13 @@ function LTileField:hasSlot(slot) end
 ---@param z? number One-based level, default 1.
 ---@return boolean True when coordinates are in bounds.
 function LTileField:inBounds(x, y, z) end
+
+--- Returns whether one tile cell accepts build placement.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@return boolean True when build placement is allowed.
+function LTileField:isBuildable(x, y, z) end
 
 --- Returns topology-aware one-based cells between `from` and `to` tables.
 ---@param opts table `{from={x,y,z?}, to={x,y,z?}, includeEndpoints?}`.
@@ -31632,6 +32136,13 @@ function LTileField:removeSlot(slot) end
 ---@param channel string Blocker channel name to update.
 ---@param blocked boolean True when the channel should be blocked.
 function LTileField:setBlock(x, y, z, channel, blocked) end
+
+--- Sets whether one tile cell accepts build placement.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param buildable boolean True when build placement is allowed.
+function LTileField:setBuildable(x, y, z, buildable) end
 
 --- Sets one category blocker on one cell.
 ---@param x number One-based cell column.
@@ -31685,6 +32196,13 @@ function LTileField:setCost(x, y, z, channel, cost) end
 ---@param modifier table Modifier table with blocks, costAdd, costMul, sunOcclusionAdd, light, properties.
 function LTileField:setModifier(name, modifier) end
 
+--- Stores an occupant id on one tile cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param occupant number Occupant id, usually an ECS entity id.
+function LTileField:setOccupant(x, y, z, occupant) end
+
 --- Registers or replaces a legacy tilefield profile.
 ---@param name string Profile name.
 ---@param profile table Profile table with blocks, costs, sunOcclusion, light, or properties.
@@ -31717,6 +32235,13 @@ function LTileField:setRegionProperty(name, key, value) end
 ---@param y2 number Second one-based row.
 ---@param z? number One-based level, default 1.
 function LTileField:setRegionRect(name, x1, y1, x2, y2, z) end
+
+--- Sets or clears a resource label on one tile cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param resource? string Resource label, or nil to clear.
+function LTileField:setResource(x, y, z, resource) end
 
 --- Sets top-light occlusion in the inclusive range 0..1.
 ---@param x number One-based column.
@@ -35460,6 +35985,13 @@ lurek.ui.newColorPicker = function() end
 ---@return LComboBox The new combo box widget table.
 lurek.ui.newComboBox = function() end
 
+--- Creates a horizontal comparison row from a label, current value, and target value.
+---@param label string Stat label shown before the bars.
+---@param current number Current value.
+---@param target number Compared value.
+---@return LLayout Horizontal layout with a label and two progress bars.
+lurek.ui.newComparisonBar = function(label, current, target) end
+
 --- Creates a new custom widget with optional initial configuration.
 ---@param config? table Optional table with x, y, width, height, id, visible, enabled fields.
 ---@return LUiWidget The new custom widget table.
@@ -35571,6 +36103,12 @@ lurek.ui.newSeparator = function(vertical) end
 ---@return LSlider The new slider widget table.
 lurek.ui.newSlider = function(min, max) end
 
+--- Creates a grid layout for unit slots or equipped parts.
+---@param slots table Array of slot names or tables with name/slot and optional part/partId fields.
+---@param columns? number Number of grid columns; defaults to 2.
+---@return LLayout Grid layout containing one label per slot.
+lurek.ui.newSlotGrid = function(slots, columns) end
+
 --- Creates a new spacer widget for spacing between other widgets.
 ---@param w? number The width.
 ---@param h? number The height.
@@ -35596,6 +36134,11 @@ lurek.ui.newSplitPanel = function(orientation) end
 --- Creates a stack container that lays out all children in one rectangle and shows one active child.
 ---@return LStackContainer The new stack container widget table.
 lurek.ui.newStackContainer = function() end
+
+--- Creates a compact stat panel from a table of numeric values.
+---@param stats table Numeric stat map, typically produced by ecs loadout computeStats():toTable().
+---@return LLayout Vertical layout containing one label per stat.
+lurek.ui.newStatPanel = function(stats) end
 
 --- Creates a new status bar widget for app-level info.
 ---@return LStatusBar The new status bar widget table.

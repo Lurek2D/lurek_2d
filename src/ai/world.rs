@@ -210,7 +210,9 @@ impl AIWorld {
         let origin = Self::cell_for(center, cell_size);
         let cell_range = (radius / cell_size).ceil() as i32;
         let radius_sq = radius * radius;
-        let exclude_index = options.exclude_name.and_then(|name| self.get_agent_index(name));
+        let exclude_index = options
+            .exclude_name
+            .and_then(|name| self.get_agent_index(name));
         let mut matches: Vec<(usize, f32)> = Vec::new();
         self.spatial_query_stats.active_agents = self.agents.len();
         self.spatial_query_stats.spatial_cells = self.spatial_buckets.len();
@@ -320,16 +322,7 @@ impl AIWorld {
         let mut remaining_budget = self.auto_acquire_budget;
         for offset in 0..agent_count {
             let idx = (start + offset) % agent_count;
-            let (
-                name,
-                position,
-                velocity,
-                max_speed,
-                team,
-                stance,
-                current_order,
-                runtime_state,
-            ) = {
+            let (name, position, velocity, max_speed, team, stance, current_order, runtime_state) = {
                 let agent = &self.agents[idx];
                 (
                     agent.name.clone(),
@@ -385,10 +378,8 @@ impl AIWorld {
                                 self.order_runtime_stats.move_orders_completed += 1;
                             }
                             current_after = None;
-                            desired_velocity = (
-                                (target.0 - position.0) / dt,
-                                (target.1 - position.1) / dt,
-                            );
+                            desired_velocity =
+                                ((target.0 - position.0) / dt, (target.1 - position.1) / dt);
                         } else {
                             desired_velocity = Self::seek_velocity(position, target, max_speed);
                             self.order_runtime_stats.move_orders_steered += 1;
@@ -399,13 +390,11 @@ impl AIWorld {
                 let may_query = stance.acquire_enabled
                     && !stance.hold_fire
                     && (current_after.is_none()
-                        || current_after
-                            .as_ref()
-                            .is_some_and(|current| {
-                                current.kind == "move"
-                                    && current.interruptible
-                                    && stance.interrupts_move
-                            }));
+                        || current_after.as_ref().is_some_and(|current| {
+                            current.kind == "move"
+                                && current.interruptible
+                                && stance.interrupts_move
+                        }));
                 if may_query {
                     if remaining_budget > 0 {
                         remaining_budget -= 1;
@@ -420,7 +409,9 @@ impl AIWorld {
                                 agent.order_runtime = OrderRuntimeState {
                                     engage_target: Some(target_name.clone()),
                                     engage_origin: Some(position),
-                                    suspended_order_id: current_after.as_ref().map(|order| order.id),
+                                    suspended_order_id: current_after
+                                        .as_ref()
+                                        .map(|order| order.id),
                                     formation_abandoned: stance.abandon_formation,
                                 };
                                 if let Some(current) = current_after.as_ref() {

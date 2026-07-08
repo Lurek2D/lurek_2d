@@ -136,6 +136,72 @@ fn ui_binding_values_from_lua_table(
     Ok(values)
 }
 
+fn stat_pairs_from_lua_table(data: LuaTable<'_>) -> LuaResult<Vec<(String, f64)>> {
+    let mut pairs = Vec::new();
+    for pair in data.pairs::<LuaValue, LuaValue>() {
+        let (key_value, value) = pair?;
+        let key = match key_value {
+            LuaValue::String(s) => s.to_str()?.to_string(),
+            LuaValue::Integer(n) => n.to_string(),
+            LuaValue::Number(n) => n.to_string(),
+            _ => continue,
+        };
+        let value = match value {
+            LuaValue::Integer(n) => n as f64,
+            LuaValue::Number(n) if n.is_finite() => n,
+            _ => continue,
+        };
+        pairs.push((key, value));
+    }
+    pairs.sort_by(|a, b| a.0.cmp(&b.0));
+    Ok(pairs)
+}
+
+fn slot_label_from_lua(value: LuaValue<'_>) -> LuaResult<Option<String>> {
+    match value {
+        LuaValue::String(s) => Ok(Some(s.to_str()?.to_string())),
+        LuaValue::Table(t) => {
+            let name = t
+                .get::<_, Option<String>>("name")?
+                .or(t.get::<_, Option<String>>("slot")?)
+                .unwrap_or_else(|| "slot".to_string());
+            let part = t
+                .get::<_, Option<String>>("part")?
+                .or(t.get::<_, Option<String>>("partId")?);
+            Ok(Some(match part {
+                Some(part) if !part.is_empty() => format!("{name}: {part}"),
+                _ => name,
+            }))
+        }
+        _ => Ok(None),
+    }
+}
+
+fn create_labeled_layout<'a>(
+    lua: &'a Lua,
+    ctx: &Rc<RefCell<GuiContext>>,
+    callbacks: &Rc<RefCell<GuiCallbacks>>,
+    labels: impl IntoIterator<Item = String>,
+    direction: LayoutDirection,
+    columns: Option<usize>,
+) -> LuaResult<LuaTable<'a>> {
+    let mut g = ctx.borrow_mut();
+    let root_idx = g.add_layout(direction);
+    if let Some(cols) = columns {
+        if let Some(WidgetKind::Layout(layout)) = g.widgets.get_mut(root_idx) {
+            layout.columns = cols.max(1);
+        }
+    }
+    for label in labels {
+        let child_idx = g.add_label(label);
+        g.add_child(root_idx, child_idx);
+    }
+    drop(g);
+    let table = create_widget_table(lua, ctx, root_idx, callbacks, "LLayout")?;
+    add_layout_methods(lua, &table, ctx, root_idx)?;
+    Ok(table)
+}
+
 /// Creates a Lua table representing a widget with all shared base methods common to every widget type.
 fn create_widget_table<'a>(
     lua: &'a Lua,
@@ -7425,6 +7491,80 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             let t = create_widget_table(lua, &c, idx, &cbs, "LLayout")?;
             add_layout_methods(lua, &t, &c, idx)?;
             Ok(t)
+        })?,
+    )?;
+    let c = ctx.clone();
+    let cbs = callbacks.clone();
+    // -- newStatPanel --
+    /// Creates a compact stat panel from a table of numeric values.
+    /// @param | stats | table | Numeric stat map, typically produced by ecs loadout computeStats():toTable().
+    /// @return | LLayout | Vertical layout containing one label per stat.
+    tbl.set(
+        "newStatPanel",
+        lua.create_function(move |lua, stats: LuaTable| {
+            let labels = stat_pairs_from_lua_table(stats)?
+                .into_iter()
+                .map(|(name, value)| format!("{name}: {value}"))
+                .collect::<Vec<_>>();
+            create_labeled_layout(lua, &c, &cbs, labels, LayoutDirection::Vertical, None)
+        })?,
+    )?;
+    let c = ctx.clone();
+    let cbs = callbacks.clone();
+    // -- newSlotGrid --
+    /// Creates a grid layout for unit slots or equipped parts.
+    /// @param | slots | table | Array of slot names or tables with name/slot and optional part/partId fields.
+    /// @param | columns | integer? | Number of grid columns; defaults to 2.
+    /// @return | LLayout | Grid layout containing one label per slot.
+    tbl.set(
+        "newSlotGrid",
+        lua.create_function(move |lua, (slots, columns): (LuaTable, Option<usize>)| {
+            let mut labels = Vec::new();
+            for value in slots.sequence_values::<LuaValue>() {
+                if let Some(label) = slot_label_from_lua(value?)? {
+                    labels.push(label);
+                }
+            }
+            create_labeled_layout(
+                lua,
+                &c,
+                &cbs,
+                labels,
+                LayoutDirection::Grid,
+                Some(columns.unwrap_or(2)),
+            )
+        })?,
+    )?;
+    let c = ctx.clone();
+    let cbs = callbacks.clone();
+    // -- newComparisonBar --
+    /// Creates a horizontal comparison row from a label, current value, and target value.
+    /// @param | label | string | Stat label shown before the bars.
+    /// @param | current | number | Current value.
+    /// @param | target | number | Compared value.
+    /// @return | LLayout | Horizontal layout with a label and two progress bars.
+    tbl.set(
+        "newComparisonBar",
+        lua.create_function(move |lua, (label, current, target): (String, f64, f64)| {
+            let max_value = current.abs().max(target.abs()).max(1.0);
+            let mut g = c.borrow_mut();
+            let root_idx = g.add_layout(LayoutDirection::Horizontal);
+            let label_idx = g.add_label(label);
+            let current_idx = g.add_progress_bar(0.0, max_value);
+            if let Some(WidgetKind::ProgressBar(pb)) = g.widgets.get_mut(current_idx) {
+                pb.set_value(current.max(0.0));
+            }
+            let target_idx = g.add_progress_bar(0.0, max_value);
+            if let Some(WidgetKind::ProgressBar(pb)) = g.widgets.get_mut(target_idx) {
+                pb.set_value(target.max(0.0));
+            }
+            g.add_child(root_idx, label_idx);
+            g.add_child(root_idx, current_idx);
+            g.add_child(root_idx, target_idx);
+            drop(g);
+            let table = create_widget_table(lua, &c, root_idx, &cbs, "LLayout")?;
+            add_layout_methods(lua, &table, &c, root_idx)?;
+            Ok(table)
         })?,
     )?;
     let c = ctx.clone();

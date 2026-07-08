@@ -12,7 +12,7 @@
 - Source path: `src/save`
 - Binding: `src/lua_api/save_api.rs`
 - Namespace: `lurek.save`
-- Lua API surface: `2` functions, `3` types, `29` methods
+- Lua API surface: `2` functions, `3` types, `30` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -80,6 +80,7 @@ This module primarily collaborates with `binary`, `runtime`. Its responsibility 
 - `LSaveManager:onBeforeSave` param `func` (`function?`): Callback receiving the slot name as its argument, or nil to clear.
 - `LSaveManager:register` param `collectFn` (`function`): Called with no arguments during save; must return the data to persist for this section.
 - `LSaveManager:register` param `restoreFn` (`function`): Called with the saved value during load; responsible for applying it back to game state.
+- `LSaveManager:registerSchema` param `migrator` (`function?`): Optional migration function from version-1 into version.
 
 ### Enums
 
@@ -115,6 +116,7 @@ This module primarily collaborates with `binary`, `runtime`. Its responsibility 
 - `LSaveManager:onAfterLoad(func?) -> nil`: Set a hook function called immediately after a save file is successfully loaded and all restorers have run.
 - `LSaveManager:onBeforeSave(func?) -> nil`: Set a hook function called immediately before each save operation begins.
 - `LSaveManager:register(name, collectFn, restoreFn) -> nil`: Register a named data section with a collector and restorer function pair.
+- `LSaveManager:registerSchema(name, version, migrator?) -> nil`: Register a named schema section and optionally attach a migration into the requested version.
 - `LSaveManager:reset() -> nil`: Completely reset the save manager: unregister all sections, clear migrations, hooks, compression, and dirty state.
 - `LSaveManager:restore(data) -> nil`: Apply a previously collected save-data table back into game state by invoking all registered restorers.
 - `LSaveManager:save(slot) -> nil`: Persist all registered data sections to the named slot file on disk.

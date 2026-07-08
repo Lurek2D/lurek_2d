@@ -1178,6 +1178,134 @@ describe("minimap missing explicit coverage", function()
         expect_false(mm:typeOf("LImage"))
     end)
 end)
+
+-- @describe minimap migrated adapters
+describe("minimap migrated adapters", function()
+    -- @covers LMinimap:syncTileMapTerrain
+    it("syncs tilemap gids into minimap terrain cells", function()
+        local map = lurek.tilemap.newTileMap(16, 16)
+        map:addLayer("ground", 3, 2)
+        map:setTile(1, 2, 1, 7)
+        local mm = lurek.minimap.newMinimap(3, 2)
+        mm:syncTileMapTerrain(map, {
+            terrainByGid = {
+                [7] = 4,
+            },
+        })
+        expect_equal(4, mm:getTerrain(2, 1))
+    end)
+
+    -- @covers LMinimap:setCenterFromTileMapWorld
+    it("centers from tilemap world coordinates", function()
+        local map = lurek.tilemap.newTileMap(16, 16)
+        local mm = lurek.minimap.newMinimap(8, 8)
+        local tx, ty = mm:setCenterFromTileMapWorld(map, 24, 40)
+        local cx, cy = mm:getCenter()
+        expect_near(tx, cx, 0.001)
+        expect_near(ty, cy, 0.001)
+        expect_near(2, cx, 0.001)
+        expect_near(3, cy, 0.001)
+    end)
+
+    -- @covers LMinimap:setViewportFromTileMapWorld
+    it("sets viewport from tilemap world rectangles", function()
+        local map = lurek.tilemap.newTileMap(16, 16)
+        local mm = lurek.minimap.newMinimap(8, 8)
+        local tx, ty, tw, th = mm:setViewportFromTileMapWorld(map, 16, 16, 32, 16)
+        local x, y, w, h = mm:getViewportRect()
+        expect_near(tx, x, 0.001)
+        expect_near(ty, y, 0.001)
+        expect_near(tw, w, 0.001)
+        expect_near(th, h, 0.001)
+    end)
+
+    -- @covers LMinimap:setLayerStyle
+    it("applies raw layer style from a config table", function()
+        local mm = lurek.minimap.newMinimap(16, 12)
+        local data = {}
+        for i = 1, 16 * 12 do
+            data[i] = i % 2
+        end
+        mm:setLayerData(3, data)
+        mm:setLayerStyle(3, {
+            visible = true,
+            alpha = 0.5,
+            blend = "add",
+            colors = {
+                [1] = { 1.0, 0.0, 0.0, 0.75 },
+            },
+        })
+        expect_true(mm:isLayerVisible(3))
+        expect_near(0.5, mm:getLayerAlpha(3), 0.001)
+        expect_equal("add", mm:getLayerBlendMode(3))
+        local r, g, b, a = mm:getLayerColor(3, 1)
+        expect_near(1.0, r, 0.001)
+        expect_near(0.0, g, 0.001)
+        expect_near(0.0, b, 0.001)
+        expect_near(0.75, a, 0.001)
+    end)
+
+    -- @covers LMinimap:syncTileFieldBlockLayer
+    it("syncs tilefield blockers into a raw layer", function()
+        local field = lurek.tilefield.new({ width = 3, height = 2 })
+        field:setBlock(2, 1, 1, "move", true)
+        local mm = lurek.minimap.newMinimap(3, 2)
+        local cells = mm:syncTileFieldBlockLayer(field, "move", 1)
+        expect_equal(255, cells[2])
+        expect_equal(255, mm:getLayerData(1)[2])
+    end)
+
+    -- @covers LMinimap:syncTileFieldCostLayer
+    it("syncs tilefield costs into a scaled raw layer", function()
+        local field = lurek.tilefield.new({ width = 3, height = 2 })
+        field:setCost(3, 2, 1, "move", 2.5)
+        local mm = lurek.minimap.newMinimap(3, 2)
+        local cells = mm:syncTileFieldCostLayer(field, "move", 2, { scale = 10 })
+        expect_equal(25, cells[6])
+        expect_equal(25, mm:getLayerData(2)[6])
+    end)
+
+    -- @covers LMinimap:syncTileLightLayer
+    it("syncs computed tilelight luma into a raw layer", function()
+        local field = lurek.tilefield.new({ width = 3, height = 2 })
+        local light = lurek.tilelight.compute(field, {
+            ambient = { r = 0.2, g = 0.2, b = 0.2 },
+        })
+        local mm = lurek.minimap.newMinimap(3, 2)
+        local cells = mm:syncTileLightLayer(light, 3, { scale = 100 })
+        expect_equal(20, cells[1])
+        expect_equal(20, mm:getLayerData(3)[1])
+    end)
+
+    -- @covers LMinimap:syncTileAwarenessFog
+    it("syncs tile awareness into minimap fog data", function()
+        local field = lurek.tilefield.new({ width = 3, height = 2 })
+        local awareness = lurek.awareness.newTileAwareness(field, {
+            players = { "p1" },
+            rememberExplored = true,
+        })
+        awareness:computeVisible("p1", { origin = { x = 2, y = 1, z = 1 }, range = 0 })
+        local mm = lurek.minimap.newMinimap(3, 2)
+        local cells = mm:syncTileAwarenessFog(awareness, "p1", {
+            hiddenValue = 0,
+            exploredValue = 3,
+            visibleValue = 2,
+        })
+        expect_equal(2, cells[2])
+        expect_true(mm:isFogEnabled())
+    end)
+
+    -- @covers LMinimap:syncTileAwarenessLayer
+    it("syncs tile awareness masks into a raw layer", function()
+        local field = lurek.tilefield.new({ width = 3, height = 2 })
+        local awareness = lurek.awareness.newTileAwareness(field, { players = { "p1" } })
+        awareness:computeAction("p1", { origin = { x = 2, y = 1, z = 1 }, range = 0 })
+        local mm = lurek.minimap.newMinimap(3, 2)
+        local cells = mm:syncTileAwarenessLayer(awareness, "p1", "action", 4, { value = 8 })
+        expect_equal(8, cells[2])
+        expect_equal(8, mm:getLayerData(4)[2])
+    end)
+end)
 end
 -- END test_minimap_core_unit.lua
 

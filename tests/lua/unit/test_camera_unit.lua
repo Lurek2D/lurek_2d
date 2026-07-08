@@ -882,4 +882,29 @@ describe("camera explicit owner coverage", function()
 end)
 end
 
+-- @describe horizontal follow camera preset
+describe("horizontal follow camera preset", function()
+    -- @covers LCamera:presetHorizontalFollow
+    it("presetHorizontalFollow sets defaults and accepts overrides", function()
+        local cam = lurek.camera.new(320, 240)
+        cam:presetHorizontalFollow({
+            deadZoneW = 180,
+            deadZoneH = 70,
+            smooth = 0.7,
+            lookAhead = 0.5,
+            easing = "easeout",
+            zoomDamping = 0.25,
+            bounds = { x = -100, y = -50, w = 1000, h = 400 },
+        })
+        local has_dead_zone, dead_w, dead_h = cam:getDeadZone()
+        expect_true(has_dead_zone)
+        expect_near(180, dead_w, 0.001)
+        expect_near(70, dead_h, 0.001)
+        expect_near(0.7, cam:getFollowSmooth(), 0.001)
+        expect_near(0.5, cam:getLookAhead(), 0.001)
+        expect_near(0.25, cam:getZoomDamping(), 0.001)
+        expect_true(cam:hasBounds())
+    end)
+end)
+
 test_summary()

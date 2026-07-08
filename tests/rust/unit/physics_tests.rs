@@ -419,6 +419,10 @@ mod altitude_tests {
                 height: 2.0,
                 max_time: 2.0,
                 sample_dt: 0.25,
+                homing_target: None,
+                faction_mask: 0,
+                pierce_count: 0,
+                impact_metadata: None,
             })
             .unwrap();
         assert!(world.get_ballistic_projectile(projectile_id).is_some());

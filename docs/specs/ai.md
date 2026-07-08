@@ -18,7 +18,7 @@
 - Source path: `src/ai`
 - Binding: `src/lua_api/ai_api.rs`
 - Namespace: `lurek.ai`
-- Lua API surface: `29` functions, `22` types, `237` methods
+- Lua API surface: `29` functions, `22` types, `242` methods
 - User-facing: `true`
 - Plugin tier: `tier_1_plugin`
 
@@ -523,6 +523,7 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 
 ##### Methods
 
+- `LCommandQueue:cancelByTag(tag) -> integer`: Cancels all queued orders whose kind matches `tag`.
 - `LCommandQueue:cancelCurrent(reason?) -> boolean`: Cancels the currently active command when one exists.
 - `LCommandQueue:clear(reason?) -> integer`: Removes every queued command. This method is available to Lua scripts.
 - `LCommandQueue:completeCurrent(reason?) -> LuaValue`: Marks the current command as completed and advances the queue.
@@ -533,10 +534,14 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 - `LCommandQueue:getCurrent() -> LuaValue`: Returns the full current command snapshot when one exists.
 - `LCommandQueue:getCurrentTarget() -> number, number`: Returns the current command target coordinates.
 - `LCommandQueue:getCurrentType() -> LuaValue`: Returns the type label of the current command when one exists.
+- `LCommandQueue:getOrderSnapshot() -> table`: Returns every pending order snapshot in queue order.
 - `LCommandQueue:getPending() -> table`: Returns every pending command snapshot in queue order.
 - `LCommandQueue:isEmpty() -> boolean`: Returns whether the command queue has no commands.
+- `LCommandQueue:peekOrder() -> table`: Returns the current order snapshot without advancing the queue.
 - `LCommandQueue:pushFront(kind, callback, opts?) -> integer`: Adds a command callback to the front of the queue.
+- `LCommandQueue:pushOrder(order) -> integer`: Adds a data-only RTS order to the back of the queue.
 - `LCommandQueue:replace(kind, callback, opts?) -> integer`: Replaces the queue contents with one command callback.
+- `LCommandQueue:replaceOrders(orders) -> integer`: Replaces the queue with an array of data-only orders.
 - `LCommandQueue:type() -> string`: Returns the Lua-visible type name for this command queue handle.
 - `LCommandQueue:typeOf(name) -> boolean`: Returns whether this command queue handle matches a supported type name.
 

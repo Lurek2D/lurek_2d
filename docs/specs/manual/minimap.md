@@ -27,15 +27,15 @@ The broader integration map is split by role:
 ## Notes
 
 - `minimap` is a passive compact visualization layer. It should not compute movement, line-of-sight, line-of-action, or tile lighting.
-- For tilefield-driven games, feed minimap terrain/fog/overlay data from `LTileField:exportProfileLayer`, `LTileField:exportBlockLayer`, `LTileField:exportRefLayer`, `LTileLightMap:exportLayer`, and `LTileAwareness:*` outputs.
+- For tilefield-driven games, feed minimap terrain/fog/overlay data through `LMinimap:syncTileFieldBlockLayer`, `LMinimap:syncTileFieldCostLayer`, `LMinimap:syncTileLightLayer`, `LMinimap:syncTileAwarenessFog`, and `LMinimap:syncTileAwarenessLayer`.
 - Existing raycaster or tilemap helpers are passive adapters; they should not become gameplay authorities for blockers, visibility, or lighting.
 - Construction is strict: zero grid dimensions, zero display dimensions, overflowed cell counts, and oversized display buffers are rejected before the minimap is created.
 - Bulk terrain and fog loads use exact-length validation on the Lua-facing API so stale cells are not silently mixed with fresh data.
 - Grid/display transforms require finite coordinates, a finite positive zoom, and positive display dimensions; invalid transform state returns nils for `screenToGrid` and `gridToScreen` instead of leaking NaN or Inf into callers.
 - Layer payloads are grid-shaped contracts: `width` and `height` must match the minimap grid, cell payload length must match `width * height`, and active-layer switches are only valid for populated layers.
 - Layer presentation belongs to `minimap`: raw layer values can be recolored, alpha-blended, hidden, shown, and composed through explicit blend modes without forcing producer modules to duplicate minimap rendering policy.
-- `library.tilefield_minimap` is the reference adapter for tilefield and tilelight exports: it copies blocker, cost, ref, and computed-light layers into minimap raw data layers while keeping producers independent from minimap and leaving visual policy on `LMinimap`.
-- `library.awareness_minimap` is the reference adapter for `LTileAwareness`: it copies visible/explored masks into minimap fog data and actionable or visible masks into styled raw layers without making minimap compute line-of-sight.
+- Native `LMinimap` tilefield/tilelight adapters copy blocker, cost, and computed-light layers into minimap raw data layers while keeping producer modules independent from minimap and leaving visual policy on `LMinimap`.
+- Native `LMinimap` awareness adapters copy visible/explored masks into minimap fog data and actionable or visible masks into styled raw layers without making minimap compute line-of-sight.
 - `drawToImage(pixel_size)` now honors `pixel_size` when provided, falls back to the configured display size when `pixel_size == 0`, and covers the full output image even when display pixels do not divide evenly by grid size.
 - Render-command generation batches adjacent same-color cells into horizontal runs and exposes debug stats through `Minimap::render_stats(screen_x, screen_y)` for tooling and regression tests.
 - `LMinimap:setShader(shaderOrNil)` accepts only `mapviz` shaders created by `lurek.render.newShader`. The minimap stores only the shader handle and wraps command-rendered output in render-owned shader state. `drawToImage` remains deterministic CPU export and does not execute the shader; callers that need offline GPU bitmap processing should apply an `image` shader to the returned `ImageData`.

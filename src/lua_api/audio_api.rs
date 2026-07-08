@@ -2529,6 +2529,52 @@ impl LuaUserData for LuaBeatClock {
             let inner = this.inner.borrow();
             Ok(inner.nearest_beat(division.unwrap_or(inner.subdivision())))
         });
+        // -- judge --
+        /// Judges timing against the nearest beat grid and returns a detailed result table.
+        /// @param | division | integer? | Beat division.
+        /// @param | hit_offset | number? | Signed hit offset in seconds.
+        /// @param | windows | table? | Optional `{perfect, great, good}` seconds for this call.
+        /// @return | table | `{verdict, label, error, errorSeconds, offset, division, nearestBeat}`.
+        methods.add_method(
+            "judge",
+            |lua,
+             this,
+             (division, hit_offset, windows): (Option<u32>, Option<f64>, Option<LuaTable>)| {
+                let inner = this.inner.borrow();
+                let div = division.unwrap_or(inner.subdivision());
+                let offset = hit_offset.unwrap_or(0.0);
+                let (nearest, err_seconds) = inner.nearest_beat(div);
+                let total = err_seconds + offset;
+                let windows = if let Some(table) = windows {
+                    JudgementWindows {
+                        perfect: table.get::<_, Option<f64>>("perfect")?.unwrap_or(0.030),
+                        great: table.get::<_, Option<f64>>("great")?.unwrap_or(0.060),
+                        good: table.get::<_, Option<f64>>("good")?.unwrap_or(0.100),
+                    }
+                } else {
+                    inner.judgement_windows()
+                };
+                let abs = total.abs();
+                let verdict = if abs <= windows.perfect {
+                    "perfect"
+                } else if abs <= windows.great {
+                    "great"
+                } else if abs <= windows.good {
+                    "good"
+                } else {
+                    "miss"
+                };
+                let out = lua.create_table()?;
+                out.set("verdict", verdict)?;
+                out.set("label", verdict)?;
+                out.set("error", total)?;
+                out.set("errorSeconds", total)?;
+                out.set("offset", offset)?;
+                out.set("division", div)?;
+                out.set("nearestBeat", nearest)?;
+                Ok(out)
+            },
+        );
         // -- tap --
         /// Records a tap-tempo tap at `wall_time_secs`. Returns the estimated BPM (0.0 when fewer than 2 taps).
         /// @param | wall_time_secs | number | Current real-world time in seconds.

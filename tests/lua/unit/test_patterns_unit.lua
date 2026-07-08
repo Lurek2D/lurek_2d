@@ -2124,6 +2124,56 @@ describe("graph structures", function()
         expect_equal(0, graph:edgeCount())
     end)
 end)
+
+-- @describe table query helpers
+describe("table query helpers", function()
+    -- @covers lurek.patterns.groupBy
+    -- @covers lurek.patterns.countBy
+    it("groups and counts sequence items by field path", function()
+        local items = {
+            { kind = "unit", stats = { power = 3 } },
+            { kind = "spell", stats = { power = 5 } },
+            { kind = "unit", stats = { power = 7 } },
+        }
+        local groups = lurek.patterns.groupBy(items, "kind")
+        expect_equal(2, #groups.unit)
+        expect_equal(1, #groups.spell)
+        local counts = lurek.patterns.countBy(items, "kind")
+        expect_equal(2, counts.unit)
+        expect_equal(1, counts.spell)
+    end)
+
+    -- @covers lurek.patterns.sortedIndices
+    -- @covers lurek.patterns.topN
+    it("sorts indices and returns top items by callback selector", function()
+        local items = {
+            { name = "a", score = 4 },
+            { name = "b", score = 9 },
+            { name = "c", score = 6 },
+        }
+        local indices = lurek.patterns.sortedIndices(items, function(item) return item.score end, { desc = true })
+        expect_equal(2, indices[1])
+        expect_equal(3, indices[2])
+        local top = lurek.patterns.topN(items, "score", 2)
+        expect_equal("b", top[1].name)
+        expect_equal("c", top[2].name)
+    end)
+
+    -- @covers lurek.patterns.findSequences
+    it("finds numeric selector sequences", function()
+        local items = {
+            { value = 4 },
+            { value = 2 },
+            { value = 3 },
+            { value = 9 },
+        }
+        local runs = lurek.patterns.findSequences(items, "value", { minLength = 3 })
+        expect_equal(1, #runs)
+        expect_equal(2, runs[1].startValue)
+        expect_equal(4, runs[1].endValue)
+        expect_equal(3, runs[1].length)
+    end)
+end)
 end
 -- END test_patterns_core_unit.lua
 

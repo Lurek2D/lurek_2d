@@ -674,6 +674,43 @@ end
 
 ---
 
+#### `LProvinceRegistry:borderSegmentsWhere`
+
+Returns border segments filtered by province id and/or border type.
+
+```lua
+LProvinceRegistry:borderSegmentsWhere(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts?` | table | Optional `{province, province_a, province_b, border_type}` filters. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of border segment tables. |
+
+**Example**
+
+```lua
+do
+
+    local reg = lurek.province.newFromPng("province_example_border_filter", "content/examples/assets/province/map.png")
+    local ids = reg:provinceIds()
+    local first = ids[1]
+    local segments = reg:borderSegmentsWhere({ province = first })
+    local all_segments = reg:borderSegments()
+    lurek.log.info("filtered border segments = " .. tostring(#segments))
+    lurek.log.info("all border segments = " .. tostring(#all_segments))
+end
+```
+
+---
+
 #### `LProvinceRegistry:drawCapitalPath`
 
 Emits render commands for a route by connecting consecutive province capitals. Pass the route table returned by `findRoute`; pathfinding itself stays in the routing helpers. Options: mode ("line"|"bezier"), color ({r,g,b,a?} in 0..1), width, pixel_size, curve_offset, and segments.
@@ -1753,6 +1790,43 @@ do
 
     lurek.log.info("rendered registry = " .. reg:getName())
     lurek.log.info("zoom = " .. tostring(zoom))
+end
+```
+
+---
+
+#### `LProvinceRegistry:resolveMapModeColors`
+
+Resolves effective province fill colors for a map mode without rendering.
+
+```lua
+LProvinceRegistry:resolveMapModeColors(modeOrName, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `modeOrName?` | string | Mode name, defaults to active mode. |
+| `opts?` | table | Optional `{ids={...}}` province id filter. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Table keyed by province id with `{r,g,b,a}` color arrays. |
+
+**Example**
+
+```lua
+do
+
+    local reg = lurek.province.newFromPng("province_example_resolve_colors", "content/examples/assets/province/map.png")
+    local ids = reg:provinceIds()
+    local first = ids[1]
+    if first then reg:setPoliticalColor(first, 0.3, 0.6, 0.9, 1.0) end
+    local colors = reg:resolveMapModeColors(nil, { ids = { first } })
+    lurek.log.info("resolved province colors = " .. tostring(colors and #colors or 0))
 end
 ```
 

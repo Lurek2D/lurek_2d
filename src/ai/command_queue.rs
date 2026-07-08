@@ -16,6 +16,8 @@ pub struct CommandSnapshot {
     pub id: u64,
     /// String tag identifying the action type, e.g. `"move"` or `"attack"`.
     pub kind: String,
+    /// Optional caller-owned order tag for grouping and cancellation.
+    pub tag: Option<String>,
     /// World-space X target coordinate in pixels.
     pub target_x: f32,
     /// World-space Y target coordinate in pixels.
@@ -33,6 +35,8 @@ pub struct CommandEvent {
     pub command_id: u64,
     /// String tag identifying the command type.
     pub kind: String,
+    /// Optional caller-owned order tag for grouping and cancellation.
+    pub tag: Option<String>,
     /// Lifecycle event label such as `"enqueued"` or `"completed"`.
     pub event: String,
     /// World-space X target coordinate in pixels.
@@ -53,6 +57,8 @@ pub struct Command {
     pub id: u64,
     /// String tag identifying the action type, e.g. `"move"` or `"attack"`.
     pub kind: String,
+    /// Optional caller-owned order tag for grouping and cancellation.
+    pub tag: Option<String>,
     /// Optional registry key of the Lua callback invoked when this command completes.
     pub callback: Option<RegistryKey>,
     /// World-space X target coordinate in pixels.
@@ -169,6 +175,21 @@ impl CommandQueue {
     pub fn pending(&self) -> Vec<CommandSnapshot> {
         self.commands.iter().map(Command::snapshot).collect()
     }
+    /// Remove all commands whose order tag or kind matches `tag`, returning the number removed.
+    pub fn cancel_by_tag(&mut self, tag: &str) -> usize {
+        let mut kept = VecDeque::new();
+        let mut removed = 0;
+        while let Some(cmd) = self.commands.pop_front() {
+            if cmd.tag.as_deref() == Some(tag) || cmd.kind == tag {
+                removed += 1;
+                self.push_event_for(&cmd, "cancelled", Some(format!("tag:{tag}")));
+            } else {
+                kept.push_back(cmd);
+            }
+        }
+        self.commands = kept;
+        removed
+    }
     /// Remove the front command as completed and expose the next one.
     pub fn advance(&mut self) -> Option<u64> {
         self.complete_current(None)
@@ -203,6 +224,7 @@ impl CommandQueue {
         self.events.push_back(CommandEvent {
             command_id: snapshot.id,
             kind: snapshot.kind.clone(),
+            tag: snapshot.tag.clone(),
             event: event.to_string(),
             target_x: snapshot.target_x,
             target_y: snapshot.target_y,
@@ -224,6 +246,7 @@ impl CommandQueue {
         self.enqueue(Command {
             id: 0,
             kind,
+            tag: None,
             target_x: tx,
             target_y: ty,
             priority,
@@ -244,6 +267,7 @@ impl CommandQueue {
         self.push_front(Command {
             id: 0,
             kind,
+            tag: None,
             target_x: tx,
             target_y: ty,
             priority,
@@ -264,6 +288,7 @@ impl CommandQueue {
         self.replace(Command {
             id: 0,
             kind,
+            tag: None,
             target_x: tx,
             target_y: ty,
             priority,
@@ -285,6 +310,7 @@ impl CommandQueue {
         self.events.push_back(CommandEvent {
             command_id: cmd.id,
             kind: cmd.kind.clone(),
+            tag: cmd.tag.clone(),
             event: event.to_string(),
             target_x: cmd.target_x,
             target_y: cmd.target_y,
@@ -308,6 +334,7 @@ impl Command {
         CommandSnapshot {
             id: self.id,
             kind: self.kind.clone(),
+            tag: self.tag.clone(),
             target_x: self.target_x,
             target_y: self.target_y,
             priority: self.priority,

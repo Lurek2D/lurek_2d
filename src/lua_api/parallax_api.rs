@@ -540,6 +540,127 @@ impl LuaParallaxSet {
         self.layers.sort_by_key(|l| l.layer.borrow().z);
     }
 }
+
+fn parallax_texture_info(
+    api: &str,
+    state: &Rc<RefCell<SharedState>>,
+    img_ud: LuaAnyUserData,
+) -> LuaResult<(crate::runtime::resource_keys::TextureKey, f32, f32)> {
+    let img = img_ud.borrow::<LuaImage>().map_err(|_| {
+        LuaError::RuntimeError(format!("{api}: 'texture' must be a valid LuaImage"))
+    })?;
+    let st = state.borrow();
+    let tex_data = st.textures.get(img.key).ok_or_else(|| {
+        LuaError::RuntimeError(format!("{api}: texture handle is stale or released"))
+    })?;
+    Ok((img.key, tex_data.width as f32, tex_data.height as f32))
+}
+
+fn parallax_preset_layer_from_lua(
+    api: &str,
+    state: &Rc<RefCell<SharedState>>,
+    preset_name: &str,
+    img_ud: LuaAnyUserData,
+) -> LuaResult<ParallaxLayer> {
+    let (tex_key, tex_w, tex_h) = parallax_texture_info(api, state, img_ud)?;
+    match preset_name {
+        "far" => Ok(presets::far_background(tex_key, tex_w, tex_h)),
+        "mid" => Ok(presets::mid_background(tex_key, tex_w, tex_h)),
+        "fog" => Ok(presets::foreground_fog(tex_key, tex_w, tex_h)),
+        other => Err(LuaError::RuntimeError(format!(
+            "{api}: unknown preset '{}'; expected: far, mid, fog",
+            other
+        ))),
+    }
+}
+
+fn parallax_layer_from_lua_options(
+    api: &str,
+    state: &Rc<RefCell<SharedState>>,
+    opts: LuaTable,
+) -> LuaResult<ParallaxLayer> {
+    if let Some(preset) = opts.get::<_, Option<String>>("preset")? {
+        let img_ud: LuaAnyUserData = opts.get("texture")?;
+        return parallax_preset_layer_from_lua(api, state, &preset, img_ud);
+    }
+    let img_ud: LuaAnyUserData = opts.get("texture")?;
+    let (tex_key, tex_w, tex_h) = parallax_texture_info(api, state, img_ud)?;
+    let mut layer = ParallaxLayer::new(tex_key, tex_w, tex_h);
+    if let Ok(v) = opts.get::<_, f32>("scroll_factor_x") {
+        layer.scroll_factor[0] = finite_f32(api, "scroll_factor_x", v)?;
+    }
+    if let Ok(v) = opts.get::<_, f32>("scroll_factor_y") {
+        layer.scroll_factor[1] = finite_f32(api, "scroll_factor_y", v)?;
+    }
+    if let Ok(v) = opts.get::<_, f32>("offset_x") {
+        layer.offset[0] = finite_f32(api, "offset_x", v)?;
+    }
+    if let Ok(v) = opts.get::<_, f32>("offset_y") {
+        layer.offset[1] = finite_f32(api, "offset_y", v)?;
+    }
+    if let Ok(v) = opts.get::<_, f32>("autoscroll_x") {
+        layer.autoscroll[0] = finite_f32(api, "autoscroll_x", v)?;
+    }
+    if let Ok(v) = opts.get::<_, f32>("autoscroll_y") {
+        layer.autoscroll[1] = finite_f32(api, "autoscroll_y", v)?;
+    }
+    if let Ok(Some(v)) = opts.get::<_, Option<bool>>("repeat_x") {
+        layer.repeat_x = v;
+    }
+    if let Ok(Some(v)) = opts.get::<_, Option<bool>>("repeat_y") {
+        layer.repeat_y = v;
+    }
+    if let Ok(v) = opts.get::<_, i32>("z") {
+        layer.z = v;
+    }
+    if let Ok(v) = opts.get::<_, f32>("opacity") {
+        layer.opacity = unit_f32(api, "opacity", v)?;
+    }
+    if let Ok(r) = opts.get::<_, f32>("tint_r") {
+        layer.tint[0] = unit_f32(api, "tint_r", r)?;
+    }
+    if let Ok(g) = opts.get::<_, f32>("tint_g") {
+        layer.tint[1] = unit_f32(api, "tint_g", g)?;
+    }
+    if let Ok(b) = opts.get::<_, f32>("tint_b") {
+        layer.tint[2] = unit_f32(api, "tint_b", b)?;
+    }
+    if let Ok(a) = opts.get::<_, f32>("tint_a") {
+        layer.tint[3] = unit_f32(api, "tint_a", a)?;
+    }
+    if let Ok(v) = opts.get::<_, String>("blend_mode") {
+        layer.blend_mode = blend_from_str(&v)?;
+    }
+    if let Ok(Some(v)) = opts.get::<_, Option<bool>>("visible") {
+        layer.visible = v;
+    }
+    if let Ok(v) = opts.get::<_, f32>("scale_x") {
+        layer.scale[0] = positive_f32(api, "scale_x", v)?;
+    }
+    if let Ok(v) = opts.get::<_, f32>("scale_y") {
+        layer.scale[1] = positive_f32(api, "scale_y", v)?;
+    }
+    if let Ok(Some(v)) = opts.get::<_, Option<bool>>("tiling") {
+        layer.set_tiling(v);
+    }
+    if let Ok(v) = opts.get::<_, f32>("depth") {
+        layer.set_depth(finite_f32(api, "depth", v)?);
+    }
+    if let (Ok(w), Ok(h)) = (opts.get::<_, f32>("tile_w"), opts.get::<_, f32>("tile_h")) {
+        layer.set_tile_size(finite_f32(api, "tile_w", w)?, finite_f32(api, "tile_h", h)?);
+    }
+    if let Ok(Some(v)) = opts.get::<_, Option<bool>>("motion_stretch") {
+        layer.motion_stretch_enabled = v;
+    }
+    if let Ok(v) = opts.get::<_, f32>("motion_stretch_strength") {
+        layer.motion_stretch_strength = non_negative_f32(api, "motion_stretch_strength", v)?;
+    }
+    if let Ok(v) = opts.get::<_, f32>("motion_stretch_max") {
+        layer.motion_stretch_max_scale = positive_f32(api, "motion_stretch_max", v)?.max(1.0);
+    }
+    Ok(layer)
+}
+
 /// Provides Lua methods for parallax set layer management, visibility, update, render, and naming.
 impl LuaUserData for LuaParallaxSet {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -837,6 +958,37 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     parallax.set(
         "newSet",
         lua.create_function(move |_, name: String| Ok(LuaParallaxSet::new(name, s.clone())))?,
+    )?;
+    let s = state.clone();
+    // -- newLayerSet --
+    /// Creates a parallax layer set from an array of layer definition tables.
+    /// @param | name | string | Set name.
+    /// @param | layerDefs | table | Array of `newLayer` option tables; each may include `preset = "far"|"mid"|"fog"`.
+    /// @param | opts? | table | Options: { sort? = true }.
+    /// @return | LParallaxSet | New parallax set handle.
+    parallax.set(
+        "newLayerSet",
+        lua.create_function(
+            move |_, (name, layer_defs, opts): (String, LuaTable, Option<LuaTable>)| {
+                let sort = opts
+                    .as_ref()
+                    .map(|tbl| tbl.get::<_, Option<bool>>("sort"))
+                    .transpose()?
+                    .flatten()
+                    .unwrap_or(true);
+                let mut set = LuaParallaxSet::new(name, s.clone());
+                for index in 1..=layer_defs.raw_len() {
+                    let def: LuaTable = layer_defs.raw_get(index)?;
+                    let layer =
+                        parallax_layer_from_lua_options("lurek.parallax.newLayerSet", &s, def)?;
+                    set.layers.push(LuaParallaxLayer::new(layer, s.clone()));
+                }
+                if sort {
+                    set.sort_by_z();
+                }
+                Ok(set)
+            },
+        )?,
     )?;
     let s = state.clone();
     // -- newPresetLayer --

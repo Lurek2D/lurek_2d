@@ -1161,6 +1161,88 @@ impl World {
             }
         }
     }
+    /// Set or clear toroidal wrap bounds for top-down arenas.
+    pub fn set_wrap_bounds(&mut self, bounds: Option<(f32, f32, f32, f32)>) {
+        let Some((min_x, min_y, max_x, max_y)) = bounds else {
+            self.wrap_bounds = None;
+            return;
+        };
+        if !min_x.is_finite()
+            || !min_y.is_finite()
+            || !max_x.is_finite()
+            || !max_y.is_finite()
+            || max_x <= min_x
+            || max_y <= min_y
+        {
+            self.record_invalid_operation();
+            return;
+        }
+        self.wrap_bounds = Some((min_x, min_y, max_x, max_y));
+    }
+
+    /// Return current toroidal wrap bounds.
+    pub fn get_wrap_bounds(&self) -> Option<(f32, f32, f32, f32)> {
+        self.wrap_bounds
+    }
+
+    /// Wrap one body through the current toroidal bounds and return its position.
+    pub fn wrap_body(&mut self, id: usize) -> Option<(f32, f32)> {
+        let (min_x, min_y, max_x, max_y) = self.wrap_bounds?;
+        let body = self.get_body(id)?;
+        let width = max_x - min_x;
+        let height = max_y - min_y;
+        let mut x = body.position.x;
+        let mut y = body.position.y;
+        while x < min_x {
+            x += width;
+        }
+        while x > max_x {
+            x -= width;
+        }
+        while y < min_y {
+            y += height;
+        }
+        while y > max_y {
+            y -= height;
+        }
+        self.set_body_position(id, x, y);
+        Some((x, y))
+    }
+
+    /// Set top-down damping defaults and apply them to all current active bodies.
+    pub fn set_top_down_damping(&mut self, linear: f32, angular: f32) {
+        if !linear.is_finite() || !angular.is_finite() || linear < 0.0 || angular < 0.0 {
+            self.record_invalid_operation();
+            return;
+        }
+        self.top_down_linear_damping = linear;
+        self.top_down_angular_damping = angular;
+        for id in 0..self.bodies.len() {
+            if self.has_body(id) {
+                self.set_linear_damping(id, linear);
+                self.set_angular_damping(id, angular);
+            }
+        }
+    }
+
+    /// Apply force in the body's forward direction using its current angle.
+    pub fn apply_thrust(&mut self, id: usize, amount: f32) {
+        if !amount.is_finite() {
+            self.record_invalid_operation();
+            return;
+        }
+        let angle = self.get_body_angle(id);
+        self.apply_force(id, angle.cos() * amount, angle.sin() * amount);
+    }
+
+    /// Apply a torque impulse-style helper for top-down steering.
+    pub fn apply_turn(&mut self, id: usize, torque: f32) {
+        if !torque.is_finite() {
+            self.record_invalid_operation();
+            return;
+        }
+        self.apply_torque(id, torque);
+    }
     /// Reflect body `id` velocity around the supplied world-space surface normal.
     ///
     /// Returns `true` when the velocity was updated, or `false` when the body has no

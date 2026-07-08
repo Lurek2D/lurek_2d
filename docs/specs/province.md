@@ -15,7 +15,7 @@
 - Source path: `src/province`
 - Binding: `src/lua_api/province_api.rs`
 - Namespace: `lurek.province`
-- Lua API surface: `15` functions, `8` types, `50` methods
+- Lua API surface: `15` functions, `8` types, `52` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
@@ -262,6 +262,7 @@ This module primarily collaborates with `camera`, `image`, `pathfind`, `render`,
 
 - `LProvinceRegistry:adjacencies() -> table`: Returns all adjacency pairs in the registry. Each entry has `province_a` and `province_b` fields representing two neighboring provinces.
 - `LProvinceRegistry:borderSegments() -> table`: Returns all border line segments between adjacent provinces. Each segment is a line from (x0,y0) to (x1,y1) separating province_a from province_b.
+- `LProvinceRegistry:borderSegmentsWhere(opts?) -> table`: Returns border segments filtered by province id and/or border type.
 - `LProvinceRegistry:drawCapitalPath(route, opts?) -> integer`: Emits render commands for a route by connecting consecutive province capitals. Pass the route table returned by `findRoute`; pathfinding itself stays in the routing helpers. Options: mode ("line"|"bezier"), color ({r,g,b,a?} in 0..1), width, pixel_size, curve_offset, and segments.
 - `LProvinceRegistry:findIsolatedProvinces(owner_attr) -> integer[]`: Returns provinces that have no adjacent province with the same owner attribute.
 - `LProvinceRegistry:findRoute(from_id, to_id, cost_fn?) -> table`: Finds a route between two provinces by adapting registry adjacency to pathfind graph routing. Uses BFS by default or Dijkstra when `cost_fn` is supplied.
@@ -289,6 +290,7 @@ This module primarily collaborates with `camera`, `image`, `pathfind`, `render`,
 - `LProvinceRegistry:registerBorderType(type_id, config) -> nil`: Registers a border type config by ID. Defines visual appearance for borders of this type.
 - `LProvinceRegistry:registerMapMode(name, config) -> nil`: Registers a named map mode with display configuration. Overwrites if name exists.
 - `LProvinceRegistry:render(opts?) -> nil`: Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options. Optional `tint` multiplies all province fill colours for this render only, while `province_tints` supplies render-time fill colour overrides keyed by province id without mutating the registry.
+- `LProvinceRegistry:resolveMapModeColors(modeOrName?, opts?) -> table`: Resolves effective province fill colors for a map mode without rendering.
 - `LProvinceRegistry:screenToMap(screen_x, screen_y, cam_x, cam_y, zoom, pixel_size?) -> number, number`: Converts screen-space pixel coordinates to map-space floating-point coordinates using the current camera transform.
 - `LProvinceRegistry:screenToProvince(screen_x, screen_y, cam_x, cam_y, zoom, pixel_size?) -> integer`: Converts screen-space coordinates directly to a province ID. Returns nil if the cursor is outside the map or over an unowned cell.
 - `LProvinceRegistry:setAttr(id, key, value) -> boolean`: Sets a custom string attribute on a province. Attributes are returned in the `attrs` table of `getProvince` and can store arbitrary game metadata.

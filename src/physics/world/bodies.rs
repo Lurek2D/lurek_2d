@@ -38,8 +38,20 @@ impl World {
         self.one_way_normals.push(None);
         self.body_dirty_sync.push(false);
         self.body_base_gravity_scales.push(1.0);
-        self.body_base_linear_damping.push(0.0);
-        self.body_base_angular_damping.push(0.0);
+        self.body_base_linear_damping
+            .push(self.top_down_linear_damping);
+        self.body_base_angular_damping
+            .push(self.top_down_angular_damping);
+        if self.top_down_linear_damping > 0.0 {
+            if let Some(rb) = self.rbodies.get_mut(body_handle) {
+                rb.set_linear_damping(self.top_down_linear_damping);
+            }
+        }
+        if self.top_down_angular_damping > 0.0 {
+            if let Some(rb) = self.rbodies.get_mut(body_handle) {
+                rb.set_angular_damping(self.top_down_angular_damping);
+            }
+        }
         self.body_mass_overrides.push(None);
         self.body_materials.push(material);
         BodyId(id)

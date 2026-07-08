@@ -1604,6 +1604,30 @@ end
 
 ---
 
+### `lurek.ui.newComparisonBar`
+
+Creates a horizontal comparison row from a label, current value, and target value.
+
+```lua
+lurek.ui.newComparisonBar(label, current, target)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `label` | string | Stat label shown before the bars. |
+| `current` | number | Current value. |
+| `target` | number | Compared value. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LLayout](#llayout) | Horizontal layout with a label and two progress bars. |
+
+---
+
 ### `lurek.ui.newCustomWidget`
 
 Creates a new custom widget with optional initial configuration.
@@ -2424,6 +2448,29 @@ end
 
 ---
 
+### `lurek.ui.newSlotGrid`
+
+Creates a grid layout for unit slots or equipped parts.
+
+```lua
+lurek.ui.newSlotGrid(slots, columns)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `slots` | table | Array of slot names or tables with name/slot and optional part/partId fields. |
+| `columns?` | number | Number of grid columns; defaults to 2. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LLayout](#llayout) | Grid layout containing one label per slot. |
+
+---
+
 ### `lurek.ui.newSpacer`
 
 Creates a new spacer widget for spacing between other widgets.
@@ -2599,6 +2646,28 @@ do
     lurek.log.info(tostring("stack active = " .. stack:getActiveIndex()))
 end
 ```
+
+---
+
+### `lurek.ui.newStatPanel`
+
+Creates a compact stat panel from a table of numeric values.
+
+```lua
+lurek.ui.newStatPanel(stats)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `stats` | table | Numeric stat map, typically produced by ecs loadout computeStats():toTable(). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LLayout](#llayout) | Vertical layout containing one label per stat. |
 
 ---
 

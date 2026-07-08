@@ -326,6 +326,16 @@ describe("Audio BeatClock additional methods", function()
     it("BeatClock:syncToSource is callable", function()
         T.assert_true(true)
     end)
+
+    -- @covers LBeatClock:judge
+    it("BeatClock:judge returns detailed judgement table", function()
+        local bc = audio.newBeatClock(120.0)
+        local result = bc:judge(4, 0.0, { perfect = 1.0, great = 1.0, good = 1.0 })
+        T.assert_equal(result.verdict, "perfect")
+        T.assert_equal(result.label, "perfect")
+        T.assert_equal(type(result.errorSeconds), "number")
+        T.assert_equal(result.division, 4)
+    end)
 end)
 end
 -- END test_beat_clock_unit.lua

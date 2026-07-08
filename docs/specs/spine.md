@@ -13,7 +13,7 @@
 - Source path: `src/spine`
 - Binding: `src/lua_api/spine_api.rs`
 - Namespace: `lurek.spine`
-- Lua API surface: `4` functions, `5` types, `40` methods
+- Lua API surface: `4` functions, `5` types, `41` methods
 - User-facing: `true`
 - Plugin tier: `tier_1_plugin`
 
@@ -160,6 +160,7 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LSkeleton:addIKConstraint(name, chain, bend_positive?) -> integer`: Adds an inverse-kinematics constraint that controls a chain of bones to reach a target position.
 - `LSkeleton:addSkin(name) -> nil`: Registers a new named skin on this skeleton. Skins remap slot attachments for visual variants.
 - `LSkeleton:addSlot(name, bone_idx, attachment?) -> integer`: Adds a slot attached to a specific bone, optionally assigning a default attachment name.
+- `LSkeleton:applyLoadoutVisuals(loadout) -> integer`: Applies visual attachment mappings from an ECS loadout to matching skeleton slots.
 - `LSkeleton:bindAtlas(atlas) -> integer`: Binds all atlas entries as sprite-region attachment sources by name.
 - `LSkeleton:bindPhysics(world, parts, opts?) -> table`: Creates physics bodies for skeleton parts and connects child parts to parent parts with joints.
 - `LSkeleton:blendAnimation(anim, time, blend_weight?) -> nil`: Blends an animation pose onto the skeleton at a given time with a weight factor for smooth transitions.

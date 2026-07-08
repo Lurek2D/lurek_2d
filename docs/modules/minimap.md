@@ -2189,6 +2189,37 @@ end
 
 ---
 
+#### `LMinimap:setCenterFromTileMapWorld`
+
+Converts tilemap world coordinates into one-based tile coordinates and centers this minimap.
+
+```lua
+LMinimap:setCenterFromTileMapWorld(tilemap_ud, wx, wy)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tilemap_ud` | any |  |
+| `wx` | any |  |
+| `wy` | any |  |
+
+**Example**
+
+```lua
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local mm = lurek.minimap.newMinimap(8, 8)
+    local tx, ty = mm:setCenterFromTileMapWorld(map, 32, 48)
+    local cx, cy = mm:getCenter()
+    lurek.log.info("tilemap world center tile=" .. tostring(tx) .. "," .. tostring(ty))
+    lurek.log.info("minimap center=" .. tostring(cx) .. "," .. tostring(cy))
+end
+```
+
+---
+
 #### `LMinimap:setClickable`
 
 Enables or disables minimap click handling.
@@ -2573,6 +2604,36 @@ do
     local out = mm:getLayerData(0)
     lurek.log.info("layer 0 size = " .. #(out or {}))
     lurek.log.info("layer 0 first = " .. (out and out[1] or -1))
+end
+```
+
+---
+
+#### `LMinimap:setLayerStyle`
+
+Applies common raw-layer style fields: visible, alpha, blend, and colors.
+
+```lua
+LMinimap:setLayerStyle(layer, style)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | any |  |
+| `style` | any |  |
+
+**Example**
+
+```lua
+do
+    local mm = lurek.minimap.newMinimap(4, 4)
+    local data = {}
+    for i = 1, 16 do data[i] = i % 2 end
+    mm:setLayerData(1, data)
+    mm:setLayerStyle(1, { visible = true, alpha = 0.6, blend = "add", colors = { [1] = { 1, 0.4, 0.1, 1 } } })
+    lurek.log.info("styled layer alpha=" .. tostring(mm:getLayerAlpha(1)) .. " blend=" .. tostring(mm:getLayerBlendMode(1)))
 end
 ```
 
@@ -3013,6 +3074,39 @@ end
 
 ---
 
+#### `LMinimap:setViewportFromTileMapWorld`
+
+Converts a tilemap world rectangle into a minimap viewport rectangle.
+
+```lua
+LMinimap:setViewportFromTileMapWorld(tilemap_ud, x, y, w, h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tilemap_ud` | any |  |
+| `x` | any |  |
+| `y` | any |  |
+| `w` | any |  |
+| `h` | any |  |
+
+**Example**
+
+```lua
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local mm = lurek.minimap.newMinimap(8, 8)
+    local x, y, w, h = mm:setViewportFromTileMapWorld(map, 16, 16, 48, 32)
+    local vx, vy, vw, vh = mm:getViewportRect()
+    lurek.log.info("tilemap viewport=" .. tostring(x) .. "," .. tostring(y) .. "," .. tostring(w) .. "," .. tostring(h))
+    lurek.log.info("stored viewport=" .. tostring(vx) .. "," .. tostring(vy) .. "," .. tostring(vw) .. "," .. tostring(vh))
+end
+```
+
+---
+
 #### `LMinimap:setViewportRect`
 
 Sets the visible viewport rectangle shown on the minimap.
@@ -3177,6 +3271,167 @@ do
     local mm = lurek.minimap.newMinimap(reg:getWidth(), reg:getHeight())
     mm:syncProvinceRegistry(reg)
     lurek.log.info("province minimap terrain color blue = " .. tostring(select(3, mm:getTerrainColor(6))))
+end
+```
+
+---
+
+#### `LMinimap:syncTileAwarenessFog`
+
+Copies explored/visible masks from `[LTileAwareness](awareness.md#ltileawareness)` into minimap fog data.
+
+```lua
+LMinimap:syncTileAwarenessFog(awareness_ud, player, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `awareness_ud` | any |  |
+| `player` | any |  |
+| `opts?` | any |  |
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    local awareness = lurek.awareness.newTileAwareness(field, { players = { "p1" }, rememberExplored = true })
+    awareness:computeVisible("p1", { origin = { x = 2, y = 2, z = 1 }, range = 1 })
+    local mm = lurek.minimap.newMinimap(4, 4)
+    local cells = mm:syncTileAwarenessFog(awareness, "p1", { visibleValue = 2, exploredValue = 1 })
+    lurek.log.info("awareness fog center=" .. tostring(cells[6]) .. " enabled=" .. tostring(mm:isFogEnabled()))
+end
+```
+
+---
+
+#### `LMinimap:syncTileAwarenessLayer`
+
+Copies visible or action masks from `[LTileAwareness](awareness.md#ltileawareness)` into a minimap raw layer.
+
+```lua
+LMinimap:syncTileAwarenessLayer()
+```
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    local awareness = lurek.awareness.newTileAwareness(field, { players = { "p1" } })
+    awareness:computeAction("p1", { origin = { x = 2, y = 2, z = 1 }, range = 1 })
+    local mm = lurek.minimap.newMinimap(4, 4)
+    local cells = mm:syncTileAwarenessLayer(awareness, "p1", "action", 4, { value = 9 })
+    lurek.log.info("awareness action center=" .. tostring(cells[6]) .. " stored=" .. tostring(mm:getLayerData(4)[6]))
+end
+```
+
+---
+
+#### `LMinimap:syncTileFieldBlockLayer`
+
+Copies one `[LTileField](tilefield.md#ltilefield)` blocker channel layer into a minimap raw data layer.
+
+```lua
+LMinimap:syncTileFieldBlockLayer()
+```
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    field:setBlock(2, 2, 1, "move", true)
+    local mm = lurek.minimap.newMinimap(4, 4)
+    local cells = mm:syncTileFieldBlockLayer(field, "move", 1)
+    local layer = mm:getLayerData(1)
+    lurek.log.info("block layer cell=" .. tostring(cells[6]) .. " stored=" .. tostring(layer[6]))
+end
+```
+
+---
+
+#### `LMinimap:syncTileFieldCostLayer`
+
+Copies one `[LTileField](tilefield.md#ltilefield)` cost channel layer into a minimap raw byte layer.
+
+```lua
+LMinimap:syncTileFieldCostLayer()
+```
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    field:setCost(3, 2, 1, "move", 2.5)
+    local mm = lurek.minimap.newMinimap(4, 4)
+    local cells = mm:syncTileFieldCostLayer(field, "move", 2, { scale = 10 })
+    local layer = mm:getLayerData(2)
+    lurek.log.info("cost layer cell=" .. tostring(cells[7]) .. " stored=" .. tostring(layer[7]))
+end
+```
+
+---
+
+#### `LMinimap:syncTileLightLayer`
+
+Copies computed tilelight luma into a minimap raw byte layer.
+
+```lua
+LMinimap:syncTileLightLayer(light_ud, layer, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `light_ud` | any |  |
+| `layer` | any |  |
+| `opts?` | any |  |
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    local light = lurek.tilelight.compute(field, { ambient = { r = 0.2, g = 0.2, b = 0.2 } })
+    local mm = lurek.minimap.newMinimap(4, 4)
+    local cells = mm:syncTileLightLayer(light, 3, { scale = 100 })
+    local layer = mm:getLayerData(3)
+    lurek.log.info("light layer cell=" .. tostring(cells[1]) .. " stored=" .. tostring(layer[1]))
+end
+```
+
+---
+
+#### `LMinimap:syncTileMapTerrain`
+
+Copies tile GIDs from an `[LTileMap](tilemap.md#ltilemap)` layer into minimap terrain cells.
+
+```lua
+LMinimap:syncTileMapTerrain(tilemap, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tilemap` | [LTileMap](tilemap.md#ltilemap) | Source tilemap. |
+| `opts?` | table | Optional `{layer=1, emptyTerrain=1, solidTerrain=2, terrainByGid?, blockedGids?}`. |
+
+**Example**
+
+```lua
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    map:addLayer("ground", 4, 4)
+    map:setTile(1, 2, 2, 7)
+    local mm = lurek.minimap.newMinimap(4, 4)
+    mm:syncTileMapTerrain(map, { terrainByGid = { [7] = 3 } })
+    lurek.log.info("tilemap terrain at 2,2 = " .. tostring(mm:getTerrain(2, 2)))
 end
 ```
 

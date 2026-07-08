@@ -152,6 +152,44 @@ end
 
 ---
 
+### `lurek.input.defineActions`
+
+Defines multiple named actions at once, replacing prior definitions.
+
+```lua
+lurek.input.defineActions(defs, defaultCategory)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `defs` | table | Map of action name to binding array or { bindings = {...}, category? }. |
+| `defaultCategory?` | string | Category used when an action definition omits `category`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Number of actions defined. |
+
+**Example**
+
+```lua
+do
+    local count = lurek.input.defineActions({
+        fire = { "space", "mouse1" },
+        thrust = { bindings = { "w", "up" }, category = "flight" },
+        brake = { bindings = { "s" } },
+    }, "combat")
+    lurek.log.info("defineActions count=" .. tostring(count))
+    lurek.log.info("combat actions=" .. tostring(#lurek.input.getByCategory("combat")))
+    lurek.input.reset()
+end
+```
+
+---
+
 ### `lurek.input.deserializeBindings`
 
 Loads action definitions from a JSON string produced by serializeBindings, replacing all current definitions.

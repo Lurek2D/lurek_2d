@@ -925,6 +925,11 @@ fn lua_integration_particle_timer_integration() {
 }
 
 #[test]
+fn lua_integration_shooter_helpers_integration() {
+    run_lua_test("integration/test_shooter_helpers_integration.lua");
+}
+
+#[test]
 fn lua_integration_pathfind_ecs_integration() {
     run_lua_test("integration/test_pathfind_ecs_integration.lua");
 }
@@ -1030,8 +1035,8 @@ fn lua_integration_tilefield_raycaster_integration() {
 }
 
 #[test]
-fn lua_integration_tilefield_minimap_integration() {
-    run_lua_test("integration/test_tilefield_minimap_integration.lua");
+fn lua_integration_minimap_tilefield_integration() {
+    run_lua_test("integration/test_minimap_tilefield_integration.lua");
 }
 
 #[test]
@@ -1085,11 +1090,6 @@ fn lua_library_battle_library() {
 }
 
 #[test]
-fn lua_library_cardgame_library() {
-    run_lua_test("library/test_cardgame_library.lua");
-}
-
-#[test]
 fn lua_library_combat_library() {
     run_lua_test("library/test_combat_library.lua");
 }
@@ -1125,23 +1125,8 @@ fn lua_library_loot_library() {
 }
 
 #[test]
-fn lua_library_narrative_library() {
-    run_lua_test("library/test_narrative_library.lua");
-}
-
-#[test]
-fn lua_library_province_map_library() {
-    run_lua_test("library/test_province_map_library.lua");
-}
-
-#[test]
 fn lua_library_quest_library() {
     run_lua_test("library/test_quest_library.lua");
-}
-
-#[test]
-fn lua_library_rhythm_library() {
-    run_lua_test("library/test_rhythm_library.lua");
 }
 
 #[test]
@@ -1150,28 +1135,8 @@ fn lua_library_roguelike_library() {
 }
 
 #[test]
-fn lua_library_scene_objects_library() {
-    run_lua_test("library/test_scene_objects_library.lua");
-}
-
-#[test]
 fn lua_library_stats_library() {
     run_lua_test("library/test_stats_library.lua");
-}
-
-#[test]
-fn lua_library_tilemap_minimap_library() {
-    run_lua_test("library/test_tilemap_minimap_library.lua");
-}
-
-#[test]
-fn lua_library_tilefield_minimap_library() {
-    run_lua_test("library/test_tilefield_minimap_library.lua");
-}
-
-#[test]
-fn lua_library_awareness_minimap_library() {
-    run_lua_test("library/test_awareness_minimap_library.lua");
 }
 
 #[test]
@@ -1542,6 +1507,11 @@ fn lua_unit_minimap_unit() {
 #[test]
 fn lua_unit_mods_unit() {
     run_lua_test("unit/test_mods_unit.lua");
+}
+
+#[test]
+fn lua_unit_modular_topdown_api_unit() {
+    run_lua_test("unit/test_modular_topdown_api_unit.lua");
 }
 
 #[test]

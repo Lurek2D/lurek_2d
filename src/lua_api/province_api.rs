@@ -5,7 +5,7 @@ use super::SharedState;
 use crate::image::ProvinceGrid;
 use crate::image::TextureColorSpace;
 use crate::province::events::ProvinceChange;
-use crate::province::map_modes::MapModeConfig;
+use crate::province::map_modes::{resolve_color_fallback, MapModeConfig};
 use crate::province::registry::ProvinceRegistry;
 use crate::province::render::{
     generate_capital_path_commands, generate_render_commands, render_segment_raster,
@@ -1087,6 +1087,69 @@ impl LuaUserData for LuaProvinceRegistry {
             }
             Ok(out)
         });
+        // -- borderSegmentsWhere --
+        /// Returns border segments filtered by province id and/or border type.
+        /// @param | opts | table? | Optional `{province, province_a, province_b, border_type}` filters.
+        /// @return | table | Array of border segment tables.
+        methods.add_method(
+            "borderSegmentsWhere",
+            |lua, this, opts: Option<LuaTable>| {
+                let province = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<u32>>("province").ok().flatten());
+                let province_a = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<u32>>("province_a").ok().flatten())
+                    .or_else(|| {
+                        opts.as_ref()
+                            .and_then(|t| t.get::<_, Option<u32>>("a").ok().flatten())
+                    });
+                let province_b = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<u32>>("province_b").ok().flatten())
+                    .or_else(|| {
+                        opts.as_ref()
+                            .and_then(|t| t.get::<_, Option<u32>>("b").ok().flatten())
+                    });
+                let border_type = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<u8>>("border_type").ok().flatten())
+                    .or_else(|| {
+                        opts.as_ref()
+                            .and_then(|t| t.get::<_, Option<u8>>("borderType").ok().flatten())
+                    });
+                let rows = this.with_registry(|r| {
+                    r.border_segments()
+                        .iter()
+                        .copied()
+                        .filter(|(a, b, _, _, _, _)| {
+                            province.map(|id| *a == id || *b == id).unwrap_or(true)
+                                && province_a.map(|id| *a == id).unwrap_or(true)
+                                && province_b.map(|id| *b == id).unwrap_or(true)
+                                && border_type
+                                    .map(|kind| {
+                                        r.get_border_type(ProvinceId(*a), ProvinceId(*b))
+                                            .unwrap_or(0)
+                                            == kind
+                                    })
+                                    .unwrap_or(true)
+                        })
+                        .collect::<Vec<_>>()
+                })?;
+                let out = lua.create_table()?;
+                for (i, (a, b, x0, y0, x1, y1)) in rows.into_iter().enumerate() {
+                    let seg = lua.create_table()?;
+                    seg.set("province_a", a)?;
+                    seg.set("province_b", b)?;
+                    seg.set("x0", x0)?;
+                    seg.set("y0", y0)?;
+                    seg.set("x1", x1)?;
+                    seg.set("y1", y1)?;
+                    out.set(i + 1, seg)?;
+                }
+                Ok(out)
+            },
+        );
         // -- getRevision --
         /// Returns the current change revision counter. Incremented on every mutation (color, terrain, border, fog changes). Use with `getChangesSince` for incremental updates.
         /// @return | integer | Current revision number.
@@ -2227,6 +2290,62 @@ impl LuaUserData for LuaProvinceRegistry {
             let name = this.with_registry(|r| r.active_map_mode().to_string())?;
             Ok(name)
         });
+        // -- resolveMapModeColors --
+        /// Resolves effective province fill colors for a map mode without rendering.
+        /// @param | modeOrName | string|nil | Mode name, defaults to active mode.
+        /// @param | opts | table? | Optional `{ids={...}}` province id filter.
+        /// @return | table | Table keyed by province id with `{r,g,b,a}` color arrays.
+        methods.add_method(
+            "resolveMapModeColors",
+            |lua, this, (mode_or_name, opts): (Option<LuaValue>, Option<LuaTable>)| {
+                let mode_name = match mode_or_name {
+                    Some(LuaValue::String(name)) => Some(name.to_str()?.to_string()),
+                    Some(LuaValue::Nil) | None => None,
+                    Some(other) => {
+                        return Err(LuaError::RuntimeError(format!(
+                            "LProvinceRegistry:resolveMapModeColors expects string or nil mode, got {}",
+                            other.type_name()
+                        )));
+                    }
+                };
+                let requested_ids = if let Some(opts) = opts.as_ref() {
+                    if let Some(ids_table) = opts.get::<_, Option<LuaTable>>("ids")? {
+                        let mut ids = Vec::new();
+                        for index in 1..=ids_table.len()? {
+                            ids.push(ProvinceId(ids_table.get(index)?));
+                        }
+                        Some(ids)
+                    } else {
+                        None
+                    }
+                } else {
+                    None
+                };
+                let rows = this.with_registry(|r| {
+                    let config = mode_name
+                        .as_deref()
+                        .and_then(|name| r.get_map_mode_config(name))
+                        .unwrap_or_else(|| r.map_mode_config());
+                    let ids = requested_ids.clone().unwrap_or_else(|| r.province_ids());
+                    ids.into_iter()
+                        .filter_map(|id| {
+                            r.style_for(id)
+                                .map(|style| (id.0, resolve_color_fallback(config, style)))
+                        })
+                        .collect::<Vec<_>>()
+                })?;
+                let out = lua.create_table()?;
+                for (id, color) in rows {
+                    let color_table = lua.create_table()?;
+                    color_table.set(1, color[0])?;
+                    color_table.set(2, color[1])?;
+                    color_table.set(3, color[2])?;
+                    color_table.set(4, color[3])?;
+                    out.set(id, color_table)?;
+                }
+                Ok(out)
+            },
+        );
         // -- type --
         /// Returns the type name string for this userdata object.
         /// @return | string | Always "LProvinceRegistry".

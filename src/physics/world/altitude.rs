@@ -311,6 +311,10 @@ impl World {
         self.ballistic_projectiles.push(Some(BallisticProjectile {
             id,
             owner: options.owner,
+            homing_target: options.homing_target,
+            faction_mask: options.faction_mask,
+            pierce_count: options.pierce_count,
+            impact_metadata: options.impact_metadata.clone(),
             position: options.from,
             velocity,
             radius: options.radius,

@@ -40,7 +40,11 @@ do
     fire:setEmissionRate(48)
     local x, y = fire:getPosition()
     local rate = fire:getEmissionRate()
+    local explosion = lurek.particle.newPreset("explosion")
+    local muzzle = lurek.particle.newPreset("muzzle")
+    local trail = lurek.particle.newPreset("smoke_trail")
     lurek.log.info("campfire preset at " .. x .. "," .. y .. " emits " .. rate)
+    lurek.log.info("shooter presets = " .. explosion:type() .. "," .. muzzle:type() .. "," .. trail:type())
 end
 
 --@api: lurek.particle.fromTOML
@@ -1411,3 +1415,13 @@ fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
     lurek.log.info("[particle.example] uniform=" .. tostring(shader:hasUniform("glow_amount")))
 end
 
+--@api: LParticleSystem:emitAt
+do
+    local ps = lurek.particle.newPreset("muzzle")
+    ps:emitAt(48, 32, 6, 0)
+    local x, y = ps:getPosition()
+    local direction = ps:getDirection()
+    ps:emitAt(x + 8, y, 2, direction)
+    lurek.log.info("[particle.example] emitAt count=" .. tostring(ps:getCount()))
+    lurek.log.info("[particle.example] emitAt pos=" .. tostring(x) .. "," .. tostring(y))
+end

@@ -18,7 +18,7 @@
 - Source path: `src/ui`
 - Binding: `src/lua_api/ui_api.rs`
 - Namespace: `lurek.ui`
-- Lua API surface: `106` functions, `42` types, `372` methods
+- Lua API surface: `109` functions, `42` types, `372` methods
 - User-facing: `true`
 - Plugin tier: `tier_1_plugin`
 
@@ -349,6 +349,7 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `lurek.ui.newCheckbox(text?) -> LCheckbox`: Creates a new checkbox widget with optional label.
 - `lurek.ui.newColorPicker() -> LColorPicker`: Creates a new color picker widget for color selection.
 - `lurek.ui.newComboBox() -> LComboBox`: Creates a new combo box (drop-down) widget.
+- `lurek.ui.newComparisonBar(label, current, target) -> LLayout`: Creates a horizontal comparison row from a label, current value, and target value.
 - `lurek.ui.newCustomWidget(config?) -> LUiWidget`: Creates a new custom widget with optional initial configuration.
 - `lurek.ui.newDialog(title?) -> LDialog`: Creates a new dialog widget with an optional title.
 - `lurek.ui.newDockPanel() -> LDockPanel`: Creates a new dock panel widget for docking child widgets to sides.
@@ -372,11 +373,13 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `lurek.ui.newScrollPanel() -> LScrollPanel`: Creates a new scrollable panel widget.
 - `lurek.ui.newSeparator(vertical?) -> LSeparator`: Creates a new separator widget for visual division.
 - `lurek.ui.newSlider(min?, max?) -> LSlider`: Creates a new slider widget with adjustable range.
+- `lurek.ui.newSlotGrid(slots, columns?) -> LLayout`: Creates a grid layout for unit slots or equipped parts.
 - `lurek.ui.newSpacer(w?, h?) -> LSpacer`: Creates a new spacer widget for spacing between other widgets.
 - `lurek.ui.newSpinBox(min?, max?) -> LSpinBox`: Creates a new spin box (numeric stepper) widget.
 - `lurek.ui.newSplitContainer(orientation?) -> LSplitPanel`: Creates a split container alias for `newSplitPanel`.
 - `lurek.ui.newSplitPanel(orientation?) -> LSplitPanel`: Creates a new split panel widget with two resizable sub-panels.
 - `lurek.ui.newStackContainer() -> LStackContainer`: Creates a stack container that lays out all children in one rectangle and shows one active child.
+- `lurek.ui.newStatPanel(stats) -> LLayout`: Creates a compact stat panel from a table of numeric values.
 - `lurek.ui.newStatusBar() -> LStatusBar`: Creates a new status bar widget for app-level info.
 - `lurek.ui.newSwitch(on?) -> LSwitch`: Creates a new toggle switch widget.
 - `lurek.ui.newTabBar() -> LTabBar`: Creates a new tab bar widget for tabbed navigation.

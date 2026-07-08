@@ -12,7 +12,7 @@
 - Source path: `src/awareness`
 - Binding: `src/lua_api/awareness_api.rs`
 - Namespace: `lurek.awareness`
-- Lua API surface: `5` functions, `3` types, `45` methods
+- Lua API surface: `5` functions, `3` types, `46` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
@@ -225,6 +225,7 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - `LTileAwareness:share(from, to, category, opts?) -> nil`: Adds a directed awareness share edge for one category.
 - `LTileAwareness:type() -> string`: Returns the Lua-visible type name for this tile visibility handle.
 - `LTileAwareness:typeOf(name) -> boolean`: Returns whether this handle matches a supported type name.
+- `LTileAwareness:updateSightSources(player, sources) -> integer`: Computes one player's current visible mask from multiple tilefield sight sources.
 - `LTileAwareness:visibleCells(player, categoryOrZ?, z?) -> table`: Returns all currently visible cells for a player, optionally filtered to a level.
 
 ## Examples

@@ -1,10 +1,9 @@
 //! Registers the `lurek.ai` Lua API for AI command helpers, option parsing, and thin bindings over engine logic.
 
 use super::SharedState;
-use crate::lua_api::pathfind_api::{next_async_path_request_id, submit_async_query, LuaNavGrid};
 use crate::ai::validation::{finite_f32, finite_f64, non_negative, positive_nonzero};
 use crate::ai::{
-    AIOrderRuntimeStats, AIDirector, AILod, AISpatialQueryStats, AIWorld, AgentStance,
+    AIDirector, AILod, AIOrderRuntimeStats, AISpatialQueryStats, AIWorld, AgentStance,
     AiValidationLimits, BTNode, BehaviorTree, Blackboard, CallbackErrorTrace, CommandEvent,
     CommandQueue, CommandSnapshot, Consideration, DecisionBiasSet, DecisionModel, DialogueAI,
     Emotion, EmotionModel, FormationFallbackMode, FormationLayout, FormationSortMode,
@@ -14,6 +13,7 @@ use crate::ai::{
     UtilityAI, WorldState,
 };
 use crate::lua_api::callback_registry::CallbackRegistry;
+use crate::lua_api::pathfind_api::{next_async_path_request_id, submit_async_query, LuaNavGrid};
 use crate::pathfind::{AsyncPathRequest, FootprintSpec};
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -72,6 +72,7 @@ fn command_snapshot_to_lua<'lua>(
     let out = lua.create_table()?;
     out.set("id", snapshot.id)?;
     out.set("kind", snapshot.kind.as_str())?;
+    out.set("tag", snapshot.tag.clone())?;
     out.set("targetX", snapshot.target_x)?;
     out.set("targetY", snapshot.target_y)?;
     out.set("priority", snapshot.priority)?;
@@ -90,12 +91,16 @@ fn command_snapshots_to_lua<'lua>(
     Ok(out)
 }
 
-fn command_events_to_lua<'lua>(lua: &'lua Lua, events: &[CommandEvent]) -> LuaResult<LuaTable<'lua>> {
+fn command_events_to_lua<'lua>(
+    lua: &'lua Lua,
+    events: &[CommandEvent],
+) -> LuaResult<LuaTable<'lua>> {
     let out = lua.create_table()?;
     for (i, event) in events.iter().enumerate() {
         let entry = lua.create_table()?;
         entry.set("id", event.command_id)?;
         entry.set("kind", event.kind.as_str())?;
+        entry.set("tag", event.tag.clone())?;
         entry.set("event", event.event.as_str())?;
         entry.set("targetX", event.target_x)?;
         entry.set("targetY", event.target_y)?;
@@ -111,10 +116,16 @@ fn squad_member_profile_from_lua(table: &LuaTable) -> LuaResult<SquadMemberProfi
     let footprint_w: u32 = table.get("footprintW").unwrap_or(1);
     let footprint_h: u32 = table.get("footprintH").unwrap_or(1);
     let subgroup: Option<String> = table.get("subgroup").ok();
+    let role: Option<String> = table.get("role").ok();
+    let weapon_range: f32 = table.get("weaponRange").unwrap_or(0.0);
+    let speed_class: Option<String> = table.get("speedClass").ok();
     Ok(SquadMemberProfile {
         footprint_w: footprint_w.max(1),
         footprint_h: footprint_h.max(1),
         subgroup,
+        role,
+        weapon_range: weapon_range.max(0.0),
+        speed_class,
     })
 }
 
@@ -126,6 +137,9 @@ fn squad_member_profile_to_lua<'lua>(
     out.set("footprintW", profile.footprint_w)?;
     out.set("footprintH", profile.footprint_h)?;
     out.set("subgroup", profile.subgroup.clone())?;
+    out.set("role", profile.role.clone())?;
+    out.set("weaponRange", profile.weapon_range)?;
+    out.set("speedClass", profile.speed_class.clone())?;
     Ok(out)
 }
 
@@ -138,8 +152,10 @@ fn squad_member_positions_from_lua(
     let mut out = HashMap::new();
     for pair in table.pairs::<String, LuaTable>() {
         let (name, position) = pair?;
-        let x: f32 = lua_require_finite_f32("squad member position.x", position.get("x").unwrap_or(0.0))?;
-        let y: f32 = lua_require_finite_f32("squad member position.y", position.get("y").unwrap_or(0.0))?;
+        let x: f32 =
+            lua_require_finite_f32("squad member position.x", position.get("x").unwrap_or(0.0))?;
+        let y: f32 =
+            lua_require_finite_f32("squad member position.y", position.get("y").unwrap_or(0.0))?;
         out.insert(name, (x, y));
     }
     Ok(Some(out))
@@ -265,14 +281,8 @@ fn order_runtime_state_to_lua<'lua>(
     out.set("engageTarget", state.engage_target.clone())?;
     out.set("suspendedOrderId", state.suspended_order_id)?;
     out.set("formationAbandoned", state.formation_abandoned)?;
-    out.set(
-        "engageOriginX",
-        state.engage_origin.map(|origin| origin.0),
-    )?;
-    out.set(
-        "engageOriginY",
-        state.engage_origin.map(|origin| origin.1),
-    )?;
+    out.set("engageOriginX", state.engage_origin.map(|origin| origin.0))?;
+    out.set("engageOriginY", state.engage_origin.map(|origin| origin.1))?;
     Ok(out)
 }
 
@@ -529,48 +539,56 @@ impl LuaUserData for LuaAIWorld {
         /// @param | radius | number | Query radius in world units.
         /// @param | opts | table? | Optional table with `limit`, `exclude`, `team`, `hostileTo`, `tag`, and `notTag`.
         /// @return | table | Array of nearest-first `LBot` handles.
-        methods.add_method("queryAgentsInRadius", |lua, this, (x, y, radius, opts): (f32, f32, f32, Option<LuaTable>)| {
-            let x = lua_require_finite_f32("ai world query x", x)?;
-            let y = lua_require_finite_f32("ai world query y", y)?;
-            let radius = lua_require_finite_f32("ai world query radius", radius)?.max(0.0);
-            let exclude = match &opts {
-                Some(opts) => opts.get::<_, Option<String>>("exclude")?,
-                None => None,
-            };
-            let team = match &opts {
-                Some(opts) => opts.get::<_, Option<i32>>("team")?,
-                None => None,
-            };
-            let hostile_to = match &opts {
-                Some(opts) => opts.get::<_, Option<i32>>("hostileTo")?,
-                None => None,
-            };
-            let limit = match &opts {
-                Some(opts) => opts.get::<_, Option<usize>>("limit")?,
-                None => None,
-            };
-            let tag = match &opts {
-                Some(opts) => opts.get::<_, Option<String>>("tag")?,
-                None => None,
-            };
-            let not_tag = match &opts {
-                Some(opts) => opts.get::<_, Option<String>>("notTag")?,
-                None => None,
-            };
-            let names = this.inner.borrow_mut().query_agents_in_radius(
-                (x, y),
-                radius,
-                SpatialQueryOptions {
-                    exclude_name: exclude.as_deref(),
-                    team_filter: team,
-                    hostile_to_team: hostile_to,
-                    limit,
-                    required_tag: tag.as_deref(),
-                    blocked_tag: not_tag.as_deref(),
-                },
-            );
-            bot_names_to_lua(lua, this.inner.clone(), this.custom_callbacks.clone(), &names)
-        });
+        methods.add_method(
+            "queryAgentsInRadius",
+            |lua, this, (x, y, radius, opts): (f32, f32, f32, Option<LuaTable>)| {
+                let x = lua_require_finite_f32("ai world query x", x)?;
+                let y = lua_require_finite_f32("ai world query y", y)?;
+                let radius = lua_require_finite_f32("ai world query radius", radius)?.max(0.0);
+                let exclude = match &opts {
+                    Some(opts) => opts.get::<_, Option<String>>("exclude")?,
+                    None => None,
+                };
+                let team = match &opts {
+                    Some(opts) => opts.get::<_, Option<i32>>("team")?,
+                    None => None,
+                };
+                let hostile_to = match &opts {
+                    Some(opts) => opts.get::<_, Option<i32>>("hostileTo")?,
+                    None => None,
+                };
+                let limit = match &opts {
+                    Some(opts) => opts.get::<_, Option<usize>>("limit")?,
+                    None => None,
+                };
+                let tag = match &opts {
+                    Some(opts) => opts.get::<_, Option<String>>("tag")?,
+                    None => None,
+                };
+                let not_tag = match &opts {
+                    Some(opts) => opts.get::<_, Option<String>>("notTag")?,
+                    None => None,
+                };
+                let names = this.inner.borrow_mut().query_agents_in_radius(
+                    (x, y),
+                    radius,
+                    SpatialQueryOptions {
+                        exclude_name: exclude.as_deref(),
+                        team_filter: team,
+                        hostile_to_team: hostile_to,
+                        limit,
+                        required_tag: tag.as_deref(),
+                        blocked_tag: not_tag.as_deref(),
+                    },
+                );
+                bot_names_to_lua(
+                    lua,
+                    this.inner.clone(),
+                    this.custom_callbacks.clone(),
+                    &names,
+                )
+            },
+        );
         // -- update --
         /// Advances the world simulation and invokes custom decision callbacks for agents that use a custom model.
         /// @param | dt | number | Elapsed simulation time in seconds for this update step.
@@ -799,17 +817,22 @@ impl LuaUserData for LuaAgent {
         /// Sets this agent's built-in RTS stance and optionally overrides its acquisition settings.
         /// @param | stance | string | Built-in stance name such as `passive`, `hold_fire`, `defensive`, `aggressive`, or `berserk`.
         /// @param | opts | table? | Optional overrides for `acquireEnabled`, `holdFire`, `acquireRadius`, `guardRadius`, `chaseRadius`, `interruptsMove`, and `abandonFormation`.
-        methods.add_method("setStance", |_, this, (stance, opts): (String, Option<LuaTable>)| {
-            let stance = AgentStance::parse_str(&stance).ok_or_else(|| {
-                lua_ai_runtime_error(format!("lurek.ai.LBot:setStance: unknown stance '{stance}'"))
-            })?;
-            let mut profile = stance.default_profile();
-            apply_stance_overrides(&mut profile, opts.as_ref())?;
-            if let Some(agent) = this.world.borrow_mut().agent_mut(&this.name) {
-                agent.stance = profile;
-            }
-            Ok(())
-        });
+        methods.add_method(
+            "setStance",
+            |_, this, (stance, opts): (String, Option<LuaTable>)| {
+                let stance = AgentStance::parse_str(&stance).ok_or_else(|| {
+                    lua_ai_runtime_error(format!(
+                        "lurek.ai.LBot:setStance: unknown stance '{stance}'"
+                    ))
+                })?;
+                let mut profile = stance.default_profile();
+                apply_stance_overrides(&mut profile, opts.as_ref())?;
+                if let Some(agent) = this.world.borrow_mut().agent_mut(&this.name) {
+                    agent.stance = profile;
+                }
+                Ok(())
+            },
+        );
         // -- getStance --
         /// Returns this agent's current stance profile, including built-in name and effective override values.
         /// @return | table | Table containing `stance`, acquisition radii, and interruption flags.
@@ -967,51 +990,54 @@ impl LuaUserData for LuaAgent {
         /// @param | radius | number? | Optional explicit acquisition radius in world units; defaults to the stance profile radius.
         /// @param | opts | table? | Optional table with `limit`, `tag`, and `notTag`.
         /// @return | table | Array of nearest-first hostile `LBot` handles.
-        methods.add_method("findHostilesInRange", |lua, this, (radius, opts): (Option<f32>, Option<LuaTable>)| {
-            let radius = radius
-                .map(|value| lua_require_finite_f32("agent hostile query radius", value))
-                .transpose()?;
-            let limit = match &opts {
-                Some(opts) => opts.get::<_, Option<usize>>("limit")?,
-                None => None,
-            };
-            let tag = match &opts {
-                Some(opts) => opts.get::<_, Option<String>>("tag")?,
-                None => None,
-            };
-            let not_tag = match &opts {
-                Some(opts) => opts.get::<_, Option<String>>("notTag")?,
-                None => None,
-            };
-            let (position, team, stance_radius) = {
-                let world = this.world.borrow();
-                let Some(agent) = world.agent(&this.name) else {
-                    return lua.create_table();
+        methods.add_method(
+            "findHostilesInRange",
+            |lua, this, (radius, opts): (Option<f32>, Option<LuaTable>)| {
+                let radius = radius
+                    .map(|value| lua_require_finite_f32("agent hostile query radius", value))
+                    .transpose()?;
+                let limit = match &opts {
+                    Some(opts) => opts.get::<_, Option<usize>>("limit")?,
+                    None => None,
                 };
-                (
-                    agent.position,
-                    agent.team,
-                    agent
-                        .stance
-                        .acquire_radius
-                        .max(agent.stance.guard_radius)
-                        .max(agent.stance.chase_radius),
-                )
-            };
-            let names = this.world.borrow_mut().query_agents_in_radius(
-                position,
-                radius.unwrap_or(stance_radius),
-                SpatialQueryOptions {
-                    exclude_name: Some(&this.name),
-                    hostile_to_team: Some(team),
-                    limit,
-                    required_tag: tag.as_deref(),
-                    blocked_tag: not_tag.as_deref(),
-                    ..SpatialQueryOptions::default()
-                },
-            );
-            bot_names_to_lua(lua, this.world.clone(), this.callbacks.clone(), &names)
-        });
+                let tag = match &opts {
+                    Some(opts) => opts.get::<_, Option<String>>("tag")?,
+                    None => None,
+                };
+                let not_tag = match &opts {
+                    Some(opts) => opts.get::<_, Option<String>>("notTag")?,
+                    None => None,
+                };
+                let (position, team, stance_radius) = {
+                    let world = this.world.borrow();
+                    let Some(agent) = world.agent(&this.name) else {
+                        return lua.create_table();
+                    };
+                    (
+                        agent.position,
+                        agent.team,
+                        agent
+                            .stance
+                            .acquire_radius
+                            .max(agent.stance.guard_radius)
+                            .max(agent.stance.chase_radius),
+                    )
+                };
+                let names = this.world.borrow_mut().query_agents_in_radius(
+                    position,
+                    radius.unwrap_or(stance_radius),
+                    SpatialQueryOptions {
+                        exclude_name: Some(&this.name),
+                        hostile_to_team: Some(team),
+                        limit,
+                        required_tag: tag.as_deref(),
+                        blocked_tag: not_tag.as_deref(),
+                        ..SpatialQueryOptions::default()
+                    },
+                );
+                bot_names_to_lua(lua, this.world.clone(), this.callbacks.clone(), &names)
+            },
+        );
         // -- acquireTarget --
         /// Returns the nearest target selected from this agent's stance-driven hostile-acquisition query.
         /// @param | opts | table? | Optional table with `radius`, `limit`, `tag`, and `notTag`.
@@ -2012,11 +2038,14 @@ impl LuaUserData for LuaSquad {
         /// Stores footprint and subgroup metadata used during formation slot assignment.
         /// @param | name | string | Member name whose formation profile should be stored.
         /// @param | opts | table | Table with `footprintW`, `footprintH`, and optional `subgroup`.
-        methods.add_method("setMemberProfile", |_, this, (name, opts): (String, LuaTable)| {
-            let profile = squad_member_profile_from_lua(&opts)?;
-            this.inner.borrow_mut().set_member_profile(&name, profile);
-            Ok(())
-        });
+        methods.add_method(
+            "setMemberProfile",
+            |_, this, (name, opts): (String, LuaTable)| {
+                let profile = squad_member_profile_from_lua(&opts)?;
+                this.inner.borrow_mut().set_member_profile(&name, profile);
+                Ok(())
+            },
+        );
         // -- getMemberProfile --
         /// Returns the stored footprint and subgroup metadata for one member.
         /// @param | name | string | Member name to inspect.
@@ -2032,12 +2061,16 @@ impl LuaUserData for LuaSquad {
         /// @param | preserve_subgroups | boolean? | Whether subgroup labels should stay clustered; defaults to false.
         methods.add_method(
             "setFormationBehavior",
-            |_, this, (sort_mode, fallback_mode, preserve_subgroups): (String, Option<String>, Option<bool>)| {
+            |_,
+             this,
+             (sort_mode, fallback_mode, preserve_subgroups): (
+                String,
+                Option<String>,
+                Option<bool>,
+            )| {
                 this.inner.borrow_mut().set_formation_behavior(
                     FormationSortMode::parse_str(&sort_mode),
-                    FormationFallbackMode::parse_str(
-                        fallback_mode.as_deref().unwrap_or("keep"),
-                    ),
+                    FormationFallbackMode::parse_str(fallback_mode.as_deref().unwrap_or("keep")),
                     preserve_subgroups.unwrap_or(false),
                 );
                 Ok(())
@@ -2512,7 +2545,9 @@ impl LuaCommandQueue {
             CommandQueueBinding::Standalone(inner) => Some(f(&mut inner.borrow_mut())),
             CommandQueueBinding::Agent { world, name } => {
                 let mut world = world.borrow_mut();
-                world.agent_mut(name).map(|agent| f(&mut agent.command_queue))
+                world
+                    .agent_mut(name)
+                    .map(|agent| f(&mut agent.command_queue))
             }
         }
     }
@@ -2530,6 +2565,37 @@ fn parse_command_opts(opts: &Option<LuaTable>) -> LuaResult<(f32, f32, i32, bool
         None => Ok((0.0, 0.0, 0, true)),
     }
 }
+
+fn parse_order_table(order: LuaTable) -> LuaResult<(String, Option<String>, f32, f32, i32, bool)> {
+    let kind: String = order
+        .get::<_, Option<String>>("kind")?
+        .or_else(|| order.get::<_, Option<String>>("type").ok().flatten())
+        .ok_or_else(|| lua_ai_runtime_error("LCommandQueue:pushOrder requires kind"))?;
+    match kind.as_str() {
+        "move" | "attackMove" | "attackTarget" | "guard" | "patrol" | "hold" | "stop" | "build" => {
+        }
+        _ => {
+            return Err(lua_ai_runtime_error(format!(
+                "LCommandQueue:pushOrder unsupported order kind '{kind}'"
+            )));
+        }
+    }
+    let tx: f32 = order
+        .get::<_, Option<f32>>("targetX")?
+        .or_else(|| order.get::<_, Option<f32>>("x").ok().flatten())
+        .unwrap_or(0.0);
+    let ty: f32 = order
+        .get::<_, Option<f32>>("targetY")?
+        .or_else(|| order.get::<_, Option<f32>>("y").ok().flatten())
+        .unwrap_or(0.0);
+    let priority: i32 = order.get::<_, Option<i32>>("priority")?.unwrap_or(0);
+    let interruptible: bool = order
+        .get::<_, Option<bool>>("interruptible")?
+        .unwrap_or(true);
+    let tag = order.get::<_, Option<String>>("tag")?;
+    Ok((kind, tag, tx, ty, priority, interruptible))
+}
+
 impl LuaUserData for LuaCommandQueue {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- enqueue --
@@ -2589,6 +2655,83 @@ impl LuaUserData for LuaCommandQueue {
                 Ok(id as i64)
             },
         );
+        // -- pushOrder --
+        /// Adds a data-only RTS order to the back of the queue.
+        /// @param | order | table | Order table with kind/type, targetX/x, targetY/y, priority?, and interruptible?.
+        /// @return | integer | Stable command id assigned by this queue.
+        methods.add_method("pushOrder", |_, this, order: LuaTable| {
+            let (kind, tag, tx, ty, priority, interruptible) = parse_order_table(order)?;
+            let id = this
+                .with_queue_mut(|queue| {
+                    queue.enqueue(crate::ai::Command {
+                        id: 0,
+                        kind,
+                        tag,
+                        callback: None,
+                        target_x: tx,
+                        target_y: ty,
+                        priority,
+                        interruptible,
+                    })
+                })
+                .unwrap_or(0);
+            Ok(id as i64)
+        });
+        // -- peekOrder --
+        /// Returns the current order snapshot without advancing the queue.
+        /// @return | table | Current order snapshot, or nil.
+        methods.add_method("peekOrder", |lua, this, ()| {
+            let snapshot = this.with_queue(|queue| queue.current()).flatten();
+            snapshot
+                .as_ref()
+                .map(|snapshot| command_snapshot_to_lua(lua, snapshot))
+                .transpose()
+        });
+        // -- replaceOrders --
+        /// Replaces the queue with an array of data-only orders.
+        /// @param | orders | table | Array of order tables.
+        /// @return | integer | Number of enqueued replacement orders.
+        methods.add_method("replaceOrders", |_, this, orders: LuaTable| {
+            let mut parsed = Vec::new();
+            for order in orders.sequence_values::<LuaTable>() {
+                parsed.push(parse_order_table(order?)?);
+            }
+            let count = this
+                .with_queue_mut(|queue| {
+                    queue.clear_with_reason(Some("replaceOrders".to_string()));
+                    for (kind, tag, tx, ty, priority, interruptible) in parsed {
+                        queue.enqueue(crate::ai::Command {
+                            id: 0,
+                            kind,
+                            tag,
+                            callback: None,
+                            target_x: tx,
+                            target_y: ty,
+                            priority,
+                            interruptible,
+                        });
+                    }
+                    queue.count()
+                })
+                .unwrap_or(0);
+            Ok(count)
+        });
+        // -- cancelByTag --
+        /// Cancels all queued orders whose kind matches `tag`.
+        /// @param | tag | string | Order kind to cancel.
+        /// @return | integer | Number of cancelled orders.
+        methods.add_method("cancelByTag", |_, this, tag: String| {
+            Ok(this
+                .with_queue_mut(|queue| queue.cancel_by_tag(&tag))
+                .unwrap_or(0))
+        });
+        // -- getOrderSnapshot --
+        /// Returns every pending order snapshot in queue order.
+        /// @return | table | Array of order snapshot tables.
+        methods.add_method("getOrderSnapshot", |lua, this, ()| {
+            let snapshots = this.with_queue(|queue| queue.pending()).unwrap_or_default();
+            command_snapshots_to_lua(lua, &snapshots)
+        });
         // -- cancelCurrent --
         /// Cancels the currently active command when one exists.
         /// @param | reason | string? | Optional lifecycle detail string recorded on cancellation events.

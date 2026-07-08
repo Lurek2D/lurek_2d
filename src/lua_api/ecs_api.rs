@@ -1,13 +1,14 @@
 //! Registers the `lurek.ecs` Lua API for ECS userdata, entity access, and thin binding helpers over ECS state.
 
 use super::SharedState;
+use crate::ecs::loadout::{Loadout, PartDef, SlotDef, StatBlock};
 use crate::ecs::lua_table::deep_copy_table;
 use crate::ecs::object_model::{ClassMeta, ObjectModel};
 use crate::ecs::query_view::QueryView;
 use crate::ecs::Universe;
 use mlua::prelude::*;
 use std::cell::RefCell;
-use std::collections::HashMap;
+use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::rc::Rc;
 #[derive(Clone, Default)]
 /// Shared Lua-facing ECS class and object registry for one Lua VM.
@@ -47,6 +48,156 @@ pub struct LuaQueryView {
     world: LuaUniverse,
     /// Shared query-view cache state.
     inner: Rc<RefCell<QueryView>>,
+}
+
+#[derive(Clone)]
+/// Lua-side handle for one additive stat block.
+pub struct LuaStatBlock {
+    /// Shared stat storage.
+    inner: Rc<RefCell<StatBlock>>,
+}
+
+#[derive(Clone)]
+/// Lua-side handle for one loadout slot definition.
+pub struct LuaSlotDef {
+    /// Slot definition.
+    inner: Rc<RefCell<SlotDef>>,
+}
+
+#[derive(Clone)]
+/// Lua-side handle for one loadout part definition.
+pub struct LuaPartDef {
+    /// Part definition.
+    inner: Rc<RefCell<PartDef>>,
+}
+
+#[derive(Clone)]
+/// Lua-side handle for one modular loadout.
+pub struct LuaLoadout {
+    /// Shared loadout storage.
+    pub(crate) inner: Rc<RefCell<Loadout>>,
+}
+
+fn lua_table_to_string_set(value: LuaValue) -> LuaResult<BTreeSet<String>> {
+    let mut out = BTreeSet::new();
+    match value {
+        LuaValue::Nil => {}
+        LuaValue::String(s) => {
+            out.insert(s.to_str()?.to_string());
+        }
+        LuaValue::Table(t) => {
+            for value in t.sequence_values::<String>() {
+                out.insert(value?);
+            }
+        }
+        _ => {
+            return Err(LuaError::runtime(
+                "lurek.ecs loadout tags must be a string or string array",
+            ));
+        }
+    }
+    Ok(out)
+}
+
+fn lua_table_to_string_vec(value: LuaValue) -> LuaResult<Vec<String>> {
+    let mut out = Vec::new();
+    match value {
+        LuaValue::Nil => {}
+        LuaValue::String(s) => out.push(s.to_str()?.to_string()),
+        LuaValue::Table(t) => {
+            for value in t.sequence_values::<String>() {
+                out.push(value?);
+            }
+        }
+        _ => {
+            return Err(LuaError::runtime(
+                "lurek.ecs loadout hardpoints must be a string or string array",
+            ));
+        }
+    }
+    Ok(out)
+}
+
+fn stat_block_from_lua(table: Option<LuaTable>) -> LuaResult<StatBlock> {
+    let mut stats = StatBlock::new();
+    if let Some(table) = table {
+        for pair in table.pairs::<String, f64>() {
+            let (key, value) = pair?;
+            if !value.is_finite() {
+                return Err(LuaError::runtime(format!(
+                    "lurek.ecs.newPartDef stat '{key}' must be finite"
+                )));
+            }
+            stats.add(key, value);
+        }
+    }
+    Ok(stats)
+}
+
+fn stat_block_from_lua_value(value: LuaValue<'_>) -> LuaResult<StatBlock> {
+    match value {
+        LuaValue::Nil => Ok(StatBlock::new()),
+        LuaValue::Table(table) => stat_block_from_lua(Some(table)),
+        LuaValue::UserData(ud) => Ok(ud.borrow::<LuaStatBlock>()?.inner.borrow().clone()),
+        _ => Err(LuaError::runtime(
+            "stat block must be a plain table or LStatBlock userdata",
+        )),
+    }
+}
+
+fn stat_block_to_lua<'lua>(lua: &'lua Lua, stats: &StatBlock) -> LuaResult<LuaTable<'lua>> {
+    let out = lua.create_table()?;
+    for (key, value) in &stats.values {
+        out.set(key.as_str(), *value)?;
+    }
+    Ok(out)
+}
+
+fn string_vec_to_lua<'lua>(
+    lua: &'lua Lua,
+    values: impl IntoIterator<Item = String>,
+) -> LuaResult<LuaTable<'lua>> {
+    let out = lua.create_table()?;
+    for (i, value) in values.into_iter().enumerate() {
+        out.set(i + 1, value)?;
+    }
+    Ok(out)
+}
+
+fn part_from_lua_table(opts: LuaTable) -> LuaResult<PartDef> {
+    let id: String = opts
+        .get::<_, Option<String>>("id")?
+        .or_else(|| opts.get::<_, Option<String>>("name").ok().flatten())
+        .ok_or_else(|| LuaError::runtime("lurek.ecs.newPartDef requires id or name"))?;
+    let slot: String = opts.get::<_, Option<String>>("slot")?.unwrap_or_default();
+    let mut part = PartDef::new(id, slot);
+    part.tags = lua_table_to_string_set(opts.get::<_, LuaValue>("tags")?)?;
+    part.stats = stat_block_from_lua(opts.get::<_, Option<LuaTable>>("stats")?)?;
+    part.cost = opts.get::<_, Option<f64>>("cost")?.unwrap_or(0.0);
+    part.mass = opts.get::<_, Option<f64>>("mass")?.unwrap_or(0.0);
+    part.energy = opts.get::<_, Option<f64>>("energy")?.unwrap_or(0.0);
+    part.heat = opts.get::<_, Option<f64>>("heat")?.unwrap_or(0.0);
+    part.armor = opts.get::<_, Option<f64>>("armor")?.unwrap_or(0.0);
+    part.hardpoints = lua_table_to_string_vec(opts.get::<_, LuaValue>("hardpoints")?)?;
+    if let Some(visuals) = opts.get::<_, Option<LuaTable>>("visuals")? {
+        let mut map = BTreeMap::new();
+        for pair in visuals.pairs::<String, String>() {
+            let (key, value) = pair?;
+            map.insert(key, value);
+        }
+        part.visuals = map;
+    }
+    Ok(part)
+}
+
+fn slot_from_lua(name: String, opts: Option<LuaTable>) -> LuaResult<SlotDef> {
+    let mut slot = SlotDef::new(name);
+    if let Some(opts) = opts {
+        slot.accepts = lua_table_to_string_set(opts.get::<_, LuaValue>("accepts")?)?;
+        slot.required = opts.get::<_, Option<bool>>("required")?.unwrap_or(false);
+        slot.hardpoint = opts.get::<_, Option<String>>("hardpoint")?;
+    }
+    Ok(slot)
 }
 
 fn parse_string_or_sequence(value: LuaValue) -> LuaResult<Vec<String>> {
@@ -1274,6 +1425,264 @@ impl LuaUserData for LuaUniverse {
         });
     }
 }
+
+impl LuaUserData for LuaStatBlock {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- get --
+        /// Returns one stat value, or zero when the key is absent.
+        /// @param | name | string | Stat key.
+        /// @return | number | Stat value.
+        methods.add_method("get", |_, this, name: String| {
+            Ok(this.inner.borrow().get(&name))
+        });
+        // -- set --
+        /// Replaces one stat value.
+        /// @param | name | string | Stat key.
+        /// @param | value | number | Finite stat value.
+        methods.add_method("set", |_, this, (name, value): (String, f64)| {
+            if !value.is_finite() {
+                return Err(LuaError::runtime("LStatBlock:set value must be finite"));
+            }
+            this.inner.borrow_mut().values.insert(name, value);
+            Ok(())
+        });
+        // -- add --
+        /// Adds a numeric delta to one stat.
+        /// @param | name | string | Stat key.
+        /// @param | value | number | Finite delta to add.
+        methods.add_method("add", |_, this, (name, value): (String, f64)| {
+            if !value.is_finite() {
+                return Err(LuaError::runtime("LStatBlock:add value must be finite"));
+            }
+            this.inner.borrow_mut().add(name, value);
+            Ok(())
+        });
+        // -- toTable --
+        /// Returns all stat values as a plain Lua table.
+        /// @return | table | Key-value stat table.
+        methods.add_method("toTable", |lua, this, ()| {
+            stat_block_to_lua(lua, &this.inner.borrow())
+        });
+        // -- type --
+        /// Returns the Lua-visible type name for this stat block.
+        /// @return | string | The string `LStatBlock`.
+        methods.add_method("type", |_, _, ()| Ok("LStatBlock"));
+        // -- typeOf --
+        /// Returns whether this handle matches a supported type name.
+        /// @param | name | string | Type name to compare.
+        /// @return | boolean | True for `LStatBlock` or `LObject`.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LStatBlock" || name == "LObject")
+        });
+    }
+}
+
+impl LuaUserData for LuaSlotDef {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- getName --
+        /// Returns the slot name.
+        /// @return | string | Slot name.
+        methods.add_method("getName", |_, this, ()| {
+            Ok(this.inner.borrow().name.clone())
+        });
+        // -- getAccepts --
+        /// Returns accepted compatibility tags.
+        /// @return | string[] | Accepted tags.
+        methods.add_method("getAccepts", |lua, this, ()| {
+            string_vec_to_lua(lua, this.inner.borrow().accepts.iter().cloned())
+        });
+        // -- isRequired --
+        /// Returns whether this slot is required during loadout validation.
+        /// @return | boolean | True when required.
+        methods.add_method("isRequired", |_, this, ()| Ok(this.inner.borrow().required));
+        // -- getHardpoint --
+        /// Returns the slot hardpoint name when one is configured.
+        /// @return | string | Hardpoint name, or nil.
+        methods.add_method("getHardpoint", |_, this, ()| {
+            Ok(this.inner.borrow().hardpoint.clone())
+        });
+        // -- type --
+        /// Returns the Lua-visible type name for this slot definition.
+        /// @return | string | The string `LSlotDef`.
+        methods.add_method("type", |_, _, ()| Ok("LSlotDef"));
+        // -- typeOf --
+        /// Returns whether this handle matches a supported type name.
+        /// @param | name | string | Type name to compare.
+        /// @return | boolean | True for `LSlotDef` or `LObject`.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LSlotDef" || name == "LObject")
+        });
+    }
+}
+
+impl LuaUserData for LuaPartDef {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- getId --
+        /// Returns the stable part id.
+        /// @return | string | Part id.
+        methods.add_method("getId", |_, this, ()| Ok(this.inner.borrow().id.clone()));
+        // -- getSlot --
+        /// Returns the preferred slot name.
+        /// @return | string | Slot name, or empty string when unrestricted.
+        methods.add_method("getSlot", |_, this, ()| {
+            Ok(this.inner.borrow().slot.clone())
+        });
+        // -- getTags --
+        /// Returns compatibility tags.
+        /// @return | string[] | Part tags.
+        methods.add_method("getTags", |lua, this, ()| {
+            string_vec_to_lua(lua, this.inner.borrow().tags.iter().cloned())
+        });
+        // -- getStats --
+        /// Returns additive stat modifiers as a plain table.
+        /// @return | table | Stat key-value table.
+        methods.add_method("getStats", |lua, this, ()| {
+            stat_block_to_lua(lua, &this.inner.borrow().stats)
+        });
+        // -- getCost --
+        /// Returns the part cost value.
+        /// @return | number | Part cost.
+        methods.add_method("getCost", |_, this, ()| Ok(this.inner.borrow().cost));
+        // -- getHardpoints --
+        /// Returns hardpoints exposed by this part.
+        /// @return | string[] | Hardpoint names.
+        methods.add_method("getHardpoints", |lua, this, ()| {
+            string_vec_to_lua(lua, this.inner.borrow().hardpoints.clone())
+        });
+        // -- getVisuals --
+        /// Returns visual attachment mapping for this part.
+        /// @return | table | Visual slot mapping.
+        methods.add_method("getVisuals", |lua, this, ()| {
+            let out = lua.create_table()?;
+            for (key, value) in &this.inner.borrow().visuals {
+                out.set(key.as_str(), value.as_str())?;
+            }
+            Ok(out)
+        });
+        // -- type --
+        /// Returns the Lua-visible type name for this part definition.
+        /// @return | string | The string `LPartDef`.
+        methods.add_method("type", |_, _, ()| Ok("LPartDef"));
+        // -- typeOf --
+        /// Returns whether this handle matches a supported type name.
+        /// @param | name | string | Type name to compare.
+        /// @return | boolean | True for `LPartDef` or `LObject`.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LPartDef" || name == "LObject")
+        });
+    }
+}
+
+impl LuaUserData for LuaLoadout {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- addSlot --
+        /// Adds or replaces one slot definition on this loadout.
+        /// @param | slot | LSlotDef | Slot definition to add.
+        methods.add_method("addSlot", |_, this, slot_ud: LuaAnyUserData| {
+            let slot = slot_ud.borrow::<LuaSlotDef>()?.inner.borrow().clone();
+            this.inner.borrow_mut().add_slot(slot);
+            Ok(())
+        });
+        // -- equip --
+        /// Equips a part into a named slot after compatibility checks.
+        /// @param | slot | string | Slot name.
+        /// @param | part | LPartDef | Part definition to equip.
+        methods.add_method("equip", |_, this, args: LuaMultiValue| {
+            let mut values = args.into_iter();
+            let first = values.next().unwrap_or(LuaValue::Nil);
+            let second = values.next().unwrap_or(LuaValue::Nil);
+            let (slot, part_ud) = match (first, second) {
+                (LuaValue::UserData(part_ud), LuaValue::Nil) => {
+                    let part = part_ud.borrow::<LuaPartDef>()?.inner.borrow().clone();
+                    (part.slot.clone(), part)
+                }
+                (LuaValue::String(slot), LuaValue::UserData(part_ud)) => {
+                    let part = part_ud.borrow::<LuaPartDef>()?.inner.borrow().clone();
+                    (slot.to_str()?.to_string(), part)
+                }
+                _ => {
+                    return Err(LuaError::runtime(
+                        "LLoadout:equip expects (part) or (slot, part)",
+                    ));
+                }
+            };
+            this.inner
+                .borrow_mut()
+                .equip(&slot, part_ud)
+                .map_err(LuaError::runtime)?;
+            Ok(true)
+        });
+        // -- unequip --
+        /// Removes the part currently equipped in one slot.
+        /// @param | slot | string | Slot name.
+        /// @return | boolean | True when a part was removed.
+        methods.add_method("unequip", |_, this, slot: String| {
+            Ok(this.inner.borrow_mut().unequip(&slot).is_some())
+        });
+        // -- validate --
+        /// Returns validation errors for missing or incompatible equipment.
+        /// @return | string[] | Validation errors. Empty means the loadout is valid.
+        methods.add_method("validate", |lua, this, ()| {
+            let errors = this.inner.borrow().validate();
+            let out = lua.create_table()?;
+            out.set("valid", errors.is_empty())?;
+            out.set("errors", string_vec_to_lua(lua, errors.clone())?)?;
+            for (i, error) in errors.into_iter().enumerate() {
+                out.set(i + 1, error)?;
+            }
+            Ok(out)
+        });
+        // -- computeStats --
+        /// Computes final additive stats from base stats and equipped parts.
+        /// @return | LStatBlock | Derived stat block.
+        methods.add_method("computeStats", |_, this, ()| {
+            Ok(LuaStatBlock {
+                inner: Rc::new(RefCell::new(this.inner.borrow().compute_stats())),
+            })
+        });
+        // -- getHardpoints --
+        /// Returns slot and part hardpoints exposed by this loadout.
+        /// @return | string[] | Hardpoint names.
+        methods.add_method("getHardpoints", |lua, this, ()| {
+            string_vec_to_lua(lua, this.inner.borrow().get_hardpoints())
+        });
+        // -- getCost --
+        /// Returns total cost of equipped parts.
+        /// @return | number | Total equipped cost.
+        methods.add_method("getCost", |_, this, ()| Ok(this.inner.borrow().get_cost()));
+        // -- toComponent --
+        /// Returns a plain ECS component table with stats, hardpoints, cost, and equipped part ids.
+        /// @return | table | Component table suitable for `LUniverse:set`.
+        methods.add_method("toComponent", |lua, this, ()| {
+            let loadout = this.inner.borrow();
+            let out = lua.create_table()?;
+            out.set("stats", stat_block_to_lua(lua, &loadout.compute_stats())?)?;
+            out.set("cost", loadout.get_cost())?;
+            out.set(
+                "hardpoints",
+                string_vec_to_lua(lua, loadout.get_hardpoints())?,
+            )?;
+            let equipped = lua.create_table()?;
+            for (slot, part) in &loadout.equipped {
+                equipped.set(slot.as_str(), part.id.as_str())?;
+            }
+            out.set("equipped", equipped)?;
+            Ok(out)
+        });
+        // -- type --
+        /// Returns the Lua-visible type name for this loadout.
+        /// @return | string | The string `LLoadout`.
+        methods.add_method("type", |_, _, ()| Ok("LLoadout"));
+        // -- typeOf --
+        /// Returns whether this handle matches a supported type name.
+        /// @param | name | string | Type name to compare.
+        /// @return | boolean | True for `LLoadout` or `LObject`.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LLoadout" || name == "LObject")
+        });
+    }
+}
+
 /// Registers the `lurek.ecs` API table with the Lua VM.
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
@@ -1301,6 +1710,65 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         lua.create_function(|_, ()| {
             Ok(LuaRelationshipManager {
                 inner: Rc::new(RefCell::new(crate::ecs::RelationshipManager::new())),
+            })
+        })?,
+    )?;
+    // -- newSlotDef --
+    /// Creates a modular loadout slot definition.
+    /// @param | name | string | Slot name.
+    /// @param | opts | table? | Options: accepts string/string[], required boolean, hardpoint string.
+    /// @return | LSlotDef | New slot definition handle.
+    tbl.set(
+        "newSlotDef",
+        lua.create_function(|_, (name, opts): (String, Option<LuaTable>)| {
+            Ok(LuaSlotDef {
+                inner: Rc::new(RefCell::new(slot_from_lua(name, opts)?)),
+            })
+        })?,
+    )?;
+    // -- newPartDef --
+    /// Creates a modular loadout part definition.
+    /// @param | opts | table | Part options: id/name, slot, tags, stats, cost, mass, energy, heat, armor, hardpoints, visuals.
+    /// @return | LPartDef | New part definition handle.
+    tbl.set(
+        "newPartDef",
+        lua.create_function(|_, opts: LuaTable| {
+            Ok(LuaPartDef {
+                inner: Rc::new(RefCell::new(part_from_lua_table(opts)?)),
+            })
+        })?,
+    )?;
+    // -- newLoadout --
+    /// Creates a modular loadout from optional slot definitions and base stats.
+    /// @param | opts | table? | Options: slots array of LSlotDef, baseStats table.
+    /// @return | LLoadout | New loadout handle.
+    tbl.set(
+        "newLoadout",
+        lua.create_function(|_, opts: Option<LuaTable>| {
+            let mut loadout = Loadout::new();
+            if let Some(opts) = opts {
+                loadout.base_stats = stat_block_from_lua_value(opts.get("baseStats")?)?;
+                if let Some(slots) = opts.get::<_, Option<LuaTable>>("slots")? {
+                    for slot_ud in slots.sequence_values::<LuaAnyUserData>() {
+                        let slot = slot_ud?.borrow::<LuaSlotDef>()?.inner.borrow().clone();
+                        loadout.add_slot(slot);
+                    }
+                }
+            }
+            Ok(LuaLoadout {
+                inner: Rc::new(RefCell::new(loadout)),
+            })
+        })?,
+    )?;
+    // -- newStatBlock --
+    /// Creates a standalone stat block from a plain table.
+    /// @param | stats | table? | Optional stat key-value table.
+    /// @return | LStatBlock | New stat block handle.
+    tbl.set(
+        "newStatBlock",
+        lua.create_function(|_, stats: Option<LuaTable>| {
+            Ok(LuaStatBlock {
+                inner: Rc::new(RefCell::new(stat_block_from_lua(stats)?)),
             })
         })?,
     )?;

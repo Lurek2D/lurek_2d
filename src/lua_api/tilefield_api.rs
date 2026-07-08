@@ -59,6 +59,82 @@ fn coord_from_table(table: LuaTable, api: &str) -> LuaResult<CellCoord> {
     coord_from_values(x, y, z).map_err(|e| lua_err(api, e))
 }
 
+fn lua_u32_arg(value: LuaValue, api: &str, label: &str) -> LuaResult<u32> {
+    match value {
+        LuaValue::Integer(value) if value >= 0 && value <= u32::MAX as i64 => Ok(value as u32),
+        LuaValue::Number(value)
+            if value.is_finite()
+                && value.fract() == 0.0
+                && value >= 0.0
+                && value <= u32::MAX as f64 =>
+        {
+            Ok(value as u32)
+        }
+        other => Err(lua_err(
+            api,
+            format!(
+                "{label} must be a non-negative integer, got {}",
+                other.type_name()
+            ),
+        )),
+    }
+}
+
+fn lua_u64_arg(value: LuaValue, api: &str, label: &str) -> LuaResult<u64> {
+    match value {
+        LuaValue::Integer(value) if value >= 0 => Ok(value as u64),
+        LuaValue::Number(value)
+            if value.is_finite()
+                && value.fract() == 0.0
+                && value >= 0.0
+                && value <= u64::MAX as f64 =>
+        {
+            Ok(value as u64)
+        }
+        other => Err(lua_err(
+            api,
+            format!(
+                "{label} must be a non-negative integer, got {}",
+                other.type_name()
+            ),
+        )),
+    }
+}
+
+fn coord_occupant_from_args(args: LuaMultiValue, api: &str) -> LuaResult<(CellCoord, u64)> {
+    let mut iter = args.into_iter();
+    let x = lua_u32_arg(
+        iter.next()
+            .ok_or_else(|| lua_err(api, "missing x coordinate"))?,
+        api,
+        "x",
+    )?;
+    let y = lua_u32_arg(
+        iter.next()
+            .ok_or_else(|| lua_err(api, "missing y coordinate"))?,
+        api,
+        "y",
+    )?;
+    let third = iter
+        .next()
+        .ok_or_else(|| lua_err(api, "missing occupant id"))?;
+    let fourth = iter.next();
+    if iter.next().is_some() {
+        return Err(lua_err(api, "expected x, y, occupant or x, y, z, occupant"));
+    }
+    let (z, occupant) = match fourth {
+        Some(value) => {
+            let z = match third {
+                LuaValue::Nil => None,
+                value => Some(lua_u32_arg(value, api, "z")?),
+            };
+            (z, lua_u64_arg(value, api, "occupant")?)
+        }
+        None => (None, lua_u64_arg(third, api, "occupant")?),
+    };
+    Ok((coord_from_values(x, y, z)?, occupant))
+}
+
 fn channel_from_str(value: String, api: &str) -> LuaResult<TileChannel> {
     TileChannel::parse(&value).map_err(|err| lua_err(api, err))
 }
@@ -1306,6 +1382,113 @@ impl LuaUserData for LuaTileField {
                 .map(|coord| this.inner.borrow().in_bounds(coord))
                 .unwrap_or(false))
         });
+
+        // -- setOccupant --
+        /// Stores an occupant id on one tile cell.
+        /// @param | x | integer | One-based column.
+        /// @param | y | integer | One-based row.
+        /// @param | z | integer? | One-based level, default 1.
+        /// @param | occupant | integer | Occupant id, usually an ECS entity id.
+        methods.add_method("setOccupant", |_, this, args: LuaMultiValue| {
+            let (coord, occupant) = coord_occupant_from_args(args, "setOccupant")?;
+            this.inner
+                .borrow_mut()
+                .set_occupant(coord, occupant)
+                .map_err(|e| lua_err("setOccupant", e))
+        });
+
+        // -- clearOccupant --
+        /// Clears any occupant id stored on one tile cell.
+        /// @param | x | integer | One-based column.
+        /// @param | y | integer | One-based row.
+        /// @param | z | integer? | One-based level, default 1.
+        /// @return | boolean | True when an occupant was removed.
+        methods.add_method(
+            "clearOccupant",
+            |_, this, (x, y, z): (u32, u32, Option<u32>)| {
+                let coord = coord_from_values(x, y, z)?;
+                this.inner
+                    .borrow_mut()
+                    .clear_occupant(coord)
+                    .map_err(|e| lua_err("clearOccupant", e))
+            },
+        );
+
+        // -- getOccupant --
+        /// Returns the occupant id stored on one tile cell.
+        /// @param | x | integer | One-based column.
+        /// @param | y | integer | One-based row.
+        /// @param | z | integer? | One-based level, default 1.
+        /// @return | integer | Occupant id, or nil.
+        methods.add_method(
+            "getOccupant",
+            |_, this, (x, y, z): (u32, u32, Option<u32>)| {
+                let coord = coord_from_values(x, y, z)?;
+                Ok(this.inner.borrow().occupant(coord))
+            },
+        );
+
+        // -- setResource --
+        /// Sets or clears a resource label on one tile cell.
+        /// @param | x | integer | One-based column.
+        /// @param | y | integer | One-based row.
+        /// @param | z | integer? | One-based level, default 1.
+        /// @param | resource | string? | Resource label, or nil to clear.
+        methods.add_method(
+            "setResource",
+            |_, this, (x, y, z, resource): (u32, u32, Option<u32>, Option<String>)| {
+                let coord = coord_from_values(x, y, z)?;
+                this.inner
+                    .borrow_mut()
+                    .set_resource(coord, resource)
+                    .map_err(|e| lua_err("setResource", e))
+            },
+        );
+
+        // -- getResource --
+        /// Returns a resource label stored on one tile cell.
+        /// @param | x | integer | One-based column.
+        /// @param | y | integer | One-based row.
+        /// @param | z | integer? | One-based level, default 1.
+        /// @return | string | Resource label, or nil.
+        methods.add_method(
+            "getResource",
+            |_, this, (x, y, z): (u32, u32, Option<u32>)| {
+                let coord = coord_from_values(x, y, z)?;
+                Ok(this.inner.borrow().resource(coord).map(str::to_string))
+            },
+        );
+
+        // -- setBuildable --
+        /// Sets whether one tile cell accepts build placement.
+        /// @param | x | integer | One-based column.
+        /// @param | y | integer | One-based row.
+        /// @param | z | integer? | One-based level, default 1.
+        /// @param | buildable | boolean | True when build placement is allowed.
+        methods.add_method(
+            "setBuildable",
+            |_, this, (x, y, z, buildable): (u32, u32, Option<u32>, bool)| {
+                let coord = coord_from_values(x, y, z)?;
+                this.inner
+                    .borrow_mut()
+                    .set_buildable(coord, buildable)
+                    .map_err(|e| lua_err("setBuildable", e))
+            },
+        );
+
+        // -- isBuildable --
+        /// Returns whether one tile cell accepts build placement.
+        /// @param | x | integer | One-based column.
+        /// @param | y | integer | One-based row.
+        /// @param | z | integer? | One-based level, default 1.
+        /// @return | boolean | True when build placement is allowed.
+        methods.add_method(
+            "isBuildable",
+            |_, this, (x, y, z): (u32, u32, Option<u32>)| {
+                let coord = coord_from_values(x, y, z)?;
+                Ok(this.inner.borrow().is_buildable(coord))
+            },
+        );
 
         // -- getNeighbors --
         /// Returns topology-aware same-level neighbours for one cell.

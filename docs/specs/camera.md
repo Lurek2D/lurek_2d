@@ -13,7 +13,7 @@
 - Source path: `src/camera`
 - Binding: `src/lua_api/camera_api.rs`
 - Namespace: `lurek.camera`
-- Lua API surface: `4` functions, `3` types, `97` methods
+- Lua API surface: `4` functions, `3` types, `98` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -194,6 +194,7 @@ This module primarily collaborates with `math`, `render`, `tilemap`. Its respons
 - `LCamera:presetAggressiveFollow() -> nil`: Applies the aggressive follow camera preset.
 - `LCamera:presetBalancedFollow() -> nil`: Applies the balanced follow camera preset.
 - `LCamera:presetCinematicFollow() -> nil`: Applies the cinematic follow camera preset.
+- `LCamera:presetHorizontalFollow(opts?) -> nil`: Applies a horizontal side-scroller follow preset with optional overrides.
 - `LCamera:presetTightFollow() -> nil`: Applies the tight follow camera preset.
 - `LCamera:removeBounds() -> nil`: Removes active camera bounds. This method is available to Lua scripts.
 - `LCamera:reset() -> nil`: Appends a render command that removes the active camera transform.

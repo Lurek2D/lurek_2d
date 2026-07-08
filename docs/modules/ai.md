@@ -4433,6 +4433,28 @@ end
 
 ### Type Methods
 
+#### `LCommandQueue:cancelByTag`
+
+Cancels all queued orders whose kind matches `tag`.
+
+```lua
+LCommandQueue:cancelByTag(tag)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tag` | string | Order kind to cancel. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Number of cancelled orders. |
+
+---
+
 #### `LCommandQueue:cancelCurrent`
 
 Cancels the currently active command when one exists.
@@ -4761,6 +4783,22 @@ end
 
 ---
 
+#### `LCommandQueue:getOrderSnapshot`
+
+Returns every pending order snapshot in queue order.
+
+```lua
+LCommandQueue:getOrderSnapshot()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of order snapshot tables. |
+
+---
+
 #### `LCommandQueue:getPending`
 
 Returns every pending command snapshot in queue order.
@@ -4820,6 +4858,22 @@ end
 
 ---
 
+#### `LCommandQueue:peekOrder`
+
+Returns the current order snapshot without advancing the queue.
+
+```lua
+LCommandQueue:peekOrder()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Current order snapshot, or nil. |
+
+---
+
 #### `LCommandQueue:pushFront`
 
 Adds a command callback to the front of the queue.
@@ -4854,6 +4908,28 @@ do
     lurek.log.info(tostring("next type = " .. cq:getCurrentType()))
 end
 ```
+
+---
+
+#### `LCommandQueue:pushOrder`
+
+Adds a data-only RTS order to the back of the queue.
+
+```lua
+LCommandQueue:pushOrder(order)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `order` | table | Order table with kind/type, targetX/x, targetY/y, priority?, and interruptible?. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Stable command id assigned by this queue. |
 
 ---
 
@@ -4892,6 +4968,28 @@ do
     lurek.log.info(tostring("after replace count = " .. cq:getCount()))
 end
 ```
+
+---
+
+#### `LCommandQueue:replaceOrders`
+
+Replaces the queue with an array of data-only orders.
+
+```lua
+LCommandQueue:replaceOrders(orders)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `orders` | table | Array of order tables. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Number of enqueued replacement orders. |
 
 ---
 

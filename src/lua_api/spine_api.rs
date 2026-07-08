@@ -1,5 +1,6 @@
 //! Registers the `lurek.spine` Lua API for Spine animation userdata, bone options, and validated playback.
 
+use super::ecs_api::LuaLoadout;
 use super::physics_api::{lua_body_from_body, LuaPhysicsShape, LuaWorld};
 use super::sprite_api::LuaSpriteAtlas;
 use super::SharedState;
@@ -637,6 +638,32 @@ impl LuaUserData for LuaSkeleton {
             |_, this, (skin, slot, attachment): (String, String, String)| {
                 this.inner.set_skin_mapping(&skin, &slot, &attachment);
                 Ok(())
+            },
+        );
+        // -- applyLoadoutVisuals --
+        /// Applies visual attachment mappings from an ECS loadout to matching skeleton slots.
+        /// @param | loadout | LLoadout | Loadout whose equipped parts provide visual slot mappings.
+        /// @return | integer | Number of slot attachments changed.
+        methods.add_method_mut(
+            "applyLoadoutVisuals",
+            |_, this, loadout_ud: LuaAnyUserData| {
+                let loadout = loadout_ud.borrow::<LuaLoadout>()?;
+                let loadout = loadout.inner.borrow();
+                let mut changed = 0usize;
+                for part in loadout.equipped.values() {
+                    for (slot_name, attachment) in &part.visuals {
+                        if let Some(slot) = this
+                            .inner
+                            .slots
+                            .iter_mut()
+                            .find(|slot| slot.name == *slot_name)
+                        {
+                            slot.attachment_name = Some(attachment.clone());
+                            changed += 1;
+                        }
+                    }
+                }
+                Ok(changed)
             },
         );
         // -- blendAnimation --

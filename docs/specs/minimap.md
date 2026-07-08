@@ -12,7 +12,7 @@
 - Source path: `src/minimap`
 - Binding: `src/lua_api/minimap_api.rs`
 - Namespace: `lurek.minimap`
-- Lua API surface: `1` functions, `1` types, `97` methods
+- Lua API surface: `1` functions, `1` types, `106` methods
 - User-facing: `true`
 - Plugin tier: `tier_2_plugin`
 
@@ -197,6 +197,7 @@ The broader integration map is split by role:
 - `LMinimap:screenToGrid(sx, sy, mx, my) -> number`: Converts a screen position to grid coordinates.
 - `LMinimap:setAntiAlias(enabled) -> nil`: Enables or disables minimap anti-aliasing.
 - `LMinimap:setCenter(x, y) -> nil`: Sets the minimap world-space center position.
+- `LMinimap:setCenterFromTileMapWorld(tilemap_ud, wx, wy) -> nil`: Converts tilemap world coordinates into one-based tile coordinates and centers this minimap.
 - `LMinimap:setClickable(enabled) -> nil`: Enables or disables minimap click handling.
 - `LMinimap:setColorMode(mode) -> nil`: Sets the minimap color mode to terrain or political.
 - `LMinimap:setDisplaySize(w, h) -> nil`: Sets the minimap display width and height in pixels.
@@ -209,6 +210,7 @@ The broader integration map is split by role:
 - `LMinimap:setLayerBlendMode(layer, mode) -> nil`: Sets how a minimap data layer is blended over the base terrain.
 - `LMinimap:setLayerColor(layer, value, r, g, b, a?) -> nil`: Sets a palette color for one raw value in a minimap data layer.
 - `LMinimap:setLayerData(layer, data_tbl) -> nil`: Sets raw cell data for a minimap layer.
+- `LMinimap:setLayerStyle(layer, style) -> nil`: Applies common raw-layer style fields: visible, alpha, blend, and colors.
 - `LMinimap:setLayerVisible(layer, visible) -> nil`: Sets whether a minimap data layer is drawn even when it is not the active layer.
 - `LMinimap:setMarkerAnimation(id, anim_type, speed) -> nil`: Sets marker animation by type name.
 - `LMinimap:setMarkerTexture(id, image_ud, width?, height?) -> nil`: Assigns an image texture to a marker.
@@ -222,11 +224,18 @@ The broader integration map is split by role:
 - `LMinimap:setTerrainData(data) -> nil`: Replaces terrain data from a flat array table.
 - `LMinimap:setTileDescription(type_id, desc) -> nil`: Sets text description for a tile type.
 - `LMinimap:setViewportColor(r, g, b, a?) -> nil`: Sets the viewport rectangle color.
+- `LMinimap:setViewportFromTileMapWorld(tilemap_ud, x, y, w, h) -> nil`: Converts a tilemap world rectangle into a minimap viewport rectangle.
 - `LMinimap:setViewportRect(x, y, w, h) -> nil`: Sets the visible viewport rectangle shown on the minimap.
 - `LMinimap:setViewportVisible(visible) -> nil`: Sets whether the viewport rectangle is visible.
 - `LMinimap:setZoom(zoom) -> nil`: Sets the minimap zoom magnification level.
 - `LMinimap:showPath(points_tbl, color_tbl) -> integer`: Adds a colored path overlay and returns its id.
 - `LMinimap:syncProvinceRegistry(registry, opts?) -> nil`: Copies province registry terrain, visibility, and palette data into this minimap.
+- `LMinimap:syncTileAwarenessFog(awareness_ud, player, opts?) -> nil`: Copies explored/visible masks from `LTileAwareness` into minimap fog data.
+- `LMinimap:syncTileAwarenessLayer() -> nil`: Copies visible or action masks from `LTileAwareness` into a minimap raw layer.
+- `LMinimap:syncTileFieldBlockLayer() -> nil`: Copies one `LTileField` blocker channel layer into a minimap raw data layer.
+- `LMinimap:syncTileFieldCostLayer() -> nil`: Copies one `LTileField` cost channel layer into a minimap raw byte layer.
+- `LMinimap:syncTileLightLayer(light_ud, layer, opts?) -> nil`: Copies computed tilelight luma into a minimap raw byte layer.
+- `LMinimap:syncTileMapTerrain(tilemap, opts?) -> nil`: Copies tile GIDs from an `LTileMap` layer into minimap terrain cells.
 - `LMinimap:trackCamera(camera_ud) -> nil`: Centers the minimap and viewport rectangle from a camera handle.
 - `LMinimap:type() -> string`: Returns the Lua-visible type name for this minimap handle.
 - `LMinimap:typeOf(name) -> boolean`: Returns whether this minimap handle matches a supported type name.
@@ -243,15 +252,15 @@ The broader integration map is split by role:
 ## Notes
 
 - `minimap` is a passive compact visualization layer. It should not compute movement, line-of-sight, line-of-action, or tile lighting.
-- For tilefield-driven games, feed minimap terrain/fog/overlay data from `LTileField:exportProfileLayer`, `LTileField:exportBlockLayer`, `LTileField:exportRefLayer`, `LTileLightMap:exportLayer`, and `LTileAwareness:*` outputs.
+- For tilefield-driven games, feed minimap terrain/fog/overlay data through `LMinimap:syncTileFieldBlockLayer`, `LMinimap:syncTileFieldCostLayer`, `LMinimap:syncTileLightLayer`, `LMinimap:syncTileAwarenessFog`, and `LMinimap:syncTileAwarenessLayer`.
 - Existing raycaster or tilemap helpers are passive adapters; they should not become gameplay authorities for blockers, visibility, or lighting.
 - Construction is strict: zero grid dimensions, zero display dimensions, overflowed cell counts, and oversized display buffers are rejected before the minimap is created.
 - Bulk terrain and fog loads use exact-length validation on the Lua-facing API so stale cells are not silently mixed with fresh data.
 - Grid/display transforms require finite coordinates, a finite positive zoom, and positive display dimensions; invalid transform state returns nils for `screenToGrid` and `gridToScreen` instead of leaking NaN or Inf into callers.
 - Layer payloads are grid-shaped contracts: `width` and `height` must match the minimap grid, cell payload length must match `width * height`, and active-layer switches are only valid for populated layers.
 - Layer presentation belongs to `minimap`: raw layer values can be recolored, alpha-blended, hidden, shown, and composed through explicit blend modes without forcing producer modules to duplicate minimap rendering policy.
-- `library.tilefield_minimap` is the reference adapter for tilefield and tilelight exports: it copies blocker, cost, ref, and computed-light layers into minimap raw data layers while keeping producers independent from minimap and leaving visual policy on `LMinimap`.
-- `library.awareness_minimap` is the reference adapter for `LTileAwareness`: it copies visible/explored masks into minimap fog data and actionable or visible masks into styled raw layers without making minimap compute line-of-sight.
+- Native `LMinimap` tilefield/tilelight adapters copy blocker, cost, and computed-light layers into minimap raw data layers while keeping producer modules independent from minimap and leaving visual policy on `LMinimap`.
+- Native `LMinimap` awareness adapters copy visible/explored masks into minimap fog data and actionable or visible masks into styled raw layers without making minimap compute line-of-sight.
 - `drawToImage(pixel_size)` now honors `pixel_size` when provided, falls back to the configured display size when `pixel_size == 0`, and covers the full output image even when display pixels do not divide evenly by grid size.
 - Render-command generation batches adjacent same-color cells into horizontal runs and exposes debug stats through `Minimap::render_stats(screen_x, screen_y)` for tooling and regression tests.
 - `LMinimap:setShader(shaderOrNil)` accepts only `mapviz` shaders created by `lurek.render.newShader`. The minimap stores only the shader handle and wraps command-rendered output in render-owned shader state. `drawToImage` remains deterministic CPU export and does not execute the shader; callers that need offline GPU bitmap processing should apply an `image` shader to the returned `ImageData`.

@@ -13,7 +13,7 @@
 - Source path: `src/parallax`
 - Binding: `src/lua_api/parallax_api.rs`
 - Namespace: `lurek.parallax`
-- Lua API surface: `3` functions, `2` types, `52` methods
+- Lua API surface: `4` functions, `2` types, `52` methods
 - User-facing: `true`
 - Plugin tier: `tier_2_plugin`
 
@@ -97,6 +97,7 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 ### Functions
 
 - `lurek.parallax.newLayer(opts) -> LParallaxLayer`: Creates a parallax layer from an options table.
+- `lurek.parallax.newLayerSet(name, layerDefs, opts?) -> LParallaxSet`: Creates a parallax layer set from an array of layer definition tables.
 - `lurek.parallax.newPresetLayer(preset_name, img_ud) -> LParallaxLayer`: Creates a parallax layer from a named preset and texture image.
 - `lurek.parallax.newSet(name) -> LParallaxSet`: Creates an empty parallax layer set.
 

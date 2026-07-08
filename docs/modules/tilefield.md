@@ -661,6 +661,30 @@ end
 
 ---
 
+#### `LTileField:clearOccupant`
+
+Clears any occupant id stored on one tile cell.
+
+```lua
+LTileField:clearOccupant(x, y, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when an occupant was removed. |
+
+---
+
 #### `LTileField:clearRef`
 
 Clears a named object/tile reference from one cell.
@@ -1356,6 +1380,30 @@ end
 
 ---
 
+#### `LTileField:getOccupant`
+
+Returns the occupant id stored on one tile cell.
+
+```lua
+LTileField:getOccupant(x, y, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Occupant id, or nil. |
+
+---
+
 #### `LTileField:getProfile`
 
 Returns a legacy profile table, or nil.
@@ -1790,6 +1838,30 @@ end
 
 ---
 
+#### `LTileField:getResource`
+
+Returns a resource label stored on one tile cell.
+
+```lua
+LTileField:getResource(x, y, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Resource label, or nil. |
+
+---
+
 #### `LTileField:getSize`
 
 Returns field width, height, and level count.
@@ -1996,6 +2068,30 @@ do
     lurek.log.info("bounds " .. tostring(a) .. "," .. tostring(b) .. "," .. tostring(c))
 end
 ```
+
+---
+
+#### `LTileField:isBuildable`
+
+Returns whether one tile cell accepts build placement.
+
+```lua
+LTileField:isBuildable(x, y, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when build placement is allowed. |
 
 ---
 
@@ -2296,6 +2392,25 @@ end
 
 ---
 
+#### `LTileField:setBuildable`
+
+Sets whether one tile cell accepts build placement.
+
+```lua
+LTileField:setBuildable(x, y, z, buildable)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+| `buildable` | boolean | True when build placement is allowed. |
+
+---
+
 #### `LTileField:setCategoryBlock`
 
 Sets one category blocker on one cell.
@@ -2548,6 +2663,25 @@ end
 
 ---
 
+#### `LTileField:setOccupant`
+
+Stores an occupant id on one tile cell.
+
+```lua
+LTileField:setOccupant(x, y, z, occupant)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+| `occupant` | number | Occupant id, usually an ECS entity id. |
+
+---
+
 #### `LTileField:setProfile`
 
 Registers or replaces a legacy tilefield profile.
@@ -2705,6 +2839,25 @@ do
     lurek.log.info(status .. " " .. tostring(value))
 end
 ```
+
+---
+
+#### `LTileField:setResource`
+
+Sets or clears a resource label on one tile cell.
+
+```lua
+LTileField:setResource(x, y, z, resource)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+| `resource?` | string | Resource label, or nil to clear. |
 
 ---
 

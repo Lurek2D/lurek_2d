@@ -1026,3 +1026,17 @@ do
     lurek.log.info("is Object=" .. tostring(rig:typeOf("Object")))
     lurek.log.info("rig has debug=" .. tostring(rig:has("debug")))
 end
+
+--@api: LCamera:presetHorizontalFollow
+do
+    local cam = lurek.camera.new(320, 180)
+    cam:presetHorizontalFollow({
+        deadZoneW = 180,
+        deadZoneH = 70,
+        lookAhead = 0.45,
+        bounds = { x = 0, y = 0, w = 2000, h = 480 },
+    })
+    local has_dead_zone, dead_w, dead_h = cam:getDeadZone()
+    lurek.log.info("horizontal follow has dead zone=" .. tostring(has_dead_zone))
+    lurek.log.info("horizontal follow dead zone=" .. tostring(dead_w) .. "," .. tostring(dead_h))
+end
