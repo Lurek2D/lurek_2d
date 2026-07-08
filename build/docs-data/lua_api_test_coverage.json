@@ -1,14 +1,14 @@
 {
   "meta": {
-    "generated": "2026-07-08T19:48:30.086592+00:00",
+    "generated": "2026-07-08T21:18:22.917081+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
     "total_api_functions": 6713,
-    "marker_covered": 6674,
+    "marker_covered": 6688,
     "describe_covered": 150,
     "describe_coverage_pct": 2.2,
-    "heuristic_covered": 14,
+    "heuristic_covered": 0,
     "total_covered": 6713,
     "coverage_pct": 100.0
   },
@@ -14592,9 +14592,9 @@
     },
     "dialog": {
       "total": 85,
-      "marker_covered": 84,
+      "marker_covered": 85,
       "describe_covered": 0,
-      "heuristic_covered": 1,
+      "heuristic_covered": 0,
       "covered": 85,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
@@ -14725,9 +14725,9 @@
         {
           "lua_name": "LDialogStory:canContinue",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
@@ -16724,9 +16724,9 @@
     },
     "ecs": {
       "total": 141,
-      "marker_covered": 131,
+      "marker_covered": 141,
       "describe_covered": 0,
-      "heuristic_covered": 10,
+      "heuristic_covered": 0,
       "covered": 141,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
@@ -17768,18 +17768,18 @@
         {
           "lua_name": "LStatBlock:type",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LStatBlock:typeOf",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
@@ -17822,18 +17822,18 @@
         {
           "lua_name": "LSlotDef:type",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LSlotDef:typeOf",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
@@ -17903,27 +17903,27 @@
         {
           "lua_name": "LPartDef:type",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LPartDef:typeOf",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LLoadout:addSlot",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
@@ -17984,27 +17984,27 @@
         {
           "lua_name": "LLoadout:toComponent",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LLoadout:type",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LLoadout:typeOf",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         }
@@ -52659,9 +52659,9 @@
     },
     "tilefield": {
       "total": 92,
-      "marker_covered": 89,
+      "marker_covered": 92,
       "describe_covered": 0,
-      "heuristic_covered": 3,
+      "heuristic_covered": 0,
       "covered": 92,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
@@ -52776,9 +52776,9 @@
         {
           "lua_name": "LTileField:getOccupant",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
@@ -52794,18 +52794,18 @@
         {
           "lua_name": "LTileField:getResource",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LTileField:setBuildable",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },

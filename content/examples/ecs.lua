@@ -1181,3 +1181,323 @@ do
     local alive = u:isAlive(entity)
     lurek.log.info("release world before=" .. tostring(before) .. " after=" .. tostring(after) .. " old_entity_alive=" .. tostring(alive))
 end
+
+--@api: lurek.ecs.newSlotDef
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" }, required = true, hardpoint = "left" })
+    local accepts = slot:getAccepts()
+    local required = slot:isRequired()
+    local hardpoint = slot:getHardpoint()
+    lurek.log.info("slot=" .. slot:getName() .. " accepts=" .. tostring(accepts[1]) .. " required=" .. tostring(required) .. " hardpoint=" .. tostring(hardpoint))
+end
+
+--@api: lurek.ecs.newPartDef
+do
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm", tags = { "weapon" }, stats = { firepower = 4 }, cost = 25 })
+    local tags = part:getTags()
+    local stats = part:getStats()
+    local cost = part:getCost()
+    lurek.log.info("part=" .. part:getId() .. " slot=" .. part:getSlot() .. " tag=" .. tostring(tags[1]) .. " firepower=" .. tostring(stats.firepower) .. " cost=" .. tostring(cost))
+end
+
+--@api: lurek.ecs.newLoadout
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" } })
+    local loadout = lurek.ecs.newLoadout({ slots = { slot } })
+    local component = loadout:toComponent()
+    local valid = loadout:validate()
+    local slots = component.slots or {}
+    lurek.log.info("loadout type=" .. loadout:type() .. " slots=" .. tostring(#slots) .. " valid=" .. tostring(valid.valid))
+end
+
+--@api: lurek.ecs.newStatBlock
+do
+    local stats = lurek.ecs.newStatBlock({ speed = 10 })
+    stats:add("speed", 2)
+    local value = stats:get("speed")
+    local table_value = stats:toTable().speed
+    lurek.log.info("stat block speed=" .. tostring(value) .. " table=" .. tostring(table_value))
+end
+
+--@api: LStatBlock:get
+do
+    local stats = lurek.ecs.newStatBlock({ armor = 3 })
+    local armor = stats:get("armor")
+    local missing = stats:get("missing")
+    local table_value = stats:toTable().armor
+    lurek.log.info("armor=" .. tostring(armor) .. " missing=" .. tostring(missing) .. " table=" .. tostring(table_value))
+end
+
+--@api: LStatBlock:set
+do
+    local stats = lurek.ecs.newStatBlock()
+    stats:set("armor", 2)
+    local armor = stats:get("armor")
+    stats:set("speed", 10)
+    lurek.log.info("set armor=" .. tostring(armor) .. " speed=" .. tostring(stats:get("speed")))
+end
+
+--@api: LStatBlock:add
+do
+    local stats = lurek.ecs.newStatBlock({ armor = 2 })
+    stats:add("armor", 1)
+    stats:add("speed", 4)
+    local armor = stats:get("armor")
+    lurek.log.info("added armor=" .. tostring(armor) .. " speed=" .. tostring(stats:get("speed")))
+end
+
+--@api: LStatBlock:toTable
+do
+    local stats = lurek.ecs.newStatBlock({ firepower = 4, speed = 9 })
+    local values = stats:toTable()
+    local firepower = values.firepower
+    local speed = values.speed
+    lurek.log.info("stat table firepower=" .. tostring(firepower) .. " speed=" .. tostring(speed))
+end
+
+--@api: LStatBlock:type
+do
+    local stats = lurek.ecs.newStatBlock()
+    local type_name = stats:type()
+    local value = stats:get("missing")
+    local table_values = stats:toTable()
+    lurek.log.info("stat type=" .. tostring(type_name) .. " missing=" .. tostring(value) .. " size=" .. tostring(#table_values))
+end
+
+--@api: LStatBlock:typeOf
+do
+    local stats = lurek.ecs.newStatBlock()
+    local exact = stats:typeOf("LStatBlock")
+    local base = stats:typeOf("LObject")
+    local miss = stats:typeOf("LLoadout")
+    lurek.log.info("stat typeOf exact=" .. tostring(exact) .. " base=" .. tostring(base) .. " miss=" .. tostring(miss))
+end
+
+--@api: LSlotDef:getName
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" }, required = true, hardpoint = "left" })
+    local name = slot:getName()
+    local accepts = slot:getAccepts()
+    local required = slot:isRequired()
+    lurek.log.info("slot name=" .. tostring(name) .. " accepts=" .. tostring(accepts[1]) .. " required=" .. tostring(required))
+end
+
+--@api: LSlotDef:getAccepts
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon", "tool" }, required = true })
+    local accepts = slot:getAccepts()
+    local first = accepts[1]
+    local second = accepts[2]
+    lurek.log.info("slot accepts first=" .. tostring(first) .. " second=" .. tostring(second))
+end
+
+--@api: LSlotDef:isRequired
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" }, required = true })
+    local required = slot:isRequired()
+    local name = slot:getName()
+    local accepts = slot:getAccepts()
+    lurek.log.info("slot required=" .. tostring(required) .. " name=" .. tostring(name) .. " accepts=" .. tostring(accepts[1]))
+end
+
+--@api: LSlotDef:getHardpoint
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" }, hardpoint = "left" })
+    local hardpoint = slot:getHardpoint()
+    local name = slot:getName()
+    local required = slot:isRequired()
+    lurek.log.info("slot hardpoint=" .. tostring(hardpoint) .. " name=" .. tostring(name) .. " required=" .. tostring(required))
+end
+
+--@api: LSlotDef:type
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" } })
+    local type_name = slot:type()
+    local name = slot:getName()
+    local accepts = slot:getAccepts()
+    lurek.log.info("slot type=" .. tostring(type_name) .. " name=" .. tostring(name) .. " accepts=" .. tostring(accepts[1]))
+end
+
+--@api: LSlotDef:typeOf
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" } })
+    local exact = slot:typeOf("LSlotDef")
+    local base = slot:typeOf("LObject")
+    local miss = slot:typeOf("LPartDef")
+    lurek.log.info("slot typeOf exact=" .. tostring(exact) .. " base=" .. tostring(base) .. " miss=" .. tostring(miss))
+end
+
+--@api: LPartDef:getId
+do
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm", tags = { "weapon" } })
+    local id = part:getId()
+    local slot = part:getSlot()
+    local tags = part:getTags()
+    lurek.log.info("part id=" .. tostring(id) .. " slot=" .. tostring(slot) .. " tag=" .. tostring(tags[1]))
+end
+
+--@api: LPartDef:getSlot
+do
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm", tags = { "weapon" } })
+    local slot = part:getSlot()
+    local id = part:getId()
+    local tags = part:getTags()
+    lurek.log.info("part slot=" .. tostring(slot) .. " id=" .. tostring(id) .. " tag=" .. tostring(tags[1]))
+end
+
+--@api: LPartDef:getTags
+do
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm", tags = { "weapon", "energy" } })
+    local tags = part:getTags()
+    local first = tags[1]
+    local second = tags[2]
+    lurek.log.info("part tags first=" .. tostring(first) .. " second=" .. tostring(second))
+end
+
+--@api: LPartDef:getStats
+do
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm", stats = { firepower = 4, speed = -1 } })
+    local stats = part:getStats()
+    local firepower = stats.firepower
+    local speed = stats.speed
+    lurek.log.info("part stats firepower=" .. tostring(firepower) .. " speed=" .. tostring(speed))
+end
+
+--@api: LPartDef:getCost
+do
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm", cost = 25 })
+    local cost = part:getCost()
+    local id = part:getId()
+    local slot = part:getSlot()
+    lurek.log.info("part cost=" .. tostring(cost) .. " id=" .. tostring(id) .. " slot=" .. tostring(slot))
+end
+
+--@api: LPartDef:getHardpoints
+do
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm", hardpoints = { "muzzle" } })
+    local hardpoints = part:getHardpoints()
+    local first = hardpoints[1]
+    local id = part:getId()
+    lurek.log.info("part hardpoint=" .. tostring(first) .. " id=" .. tostring(id))
+end
+
+--@api: LPartDef:getVisuals
+do
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm", visuals = { arm = "laser_sprite" } })
+    local visuals = part:getVisuals()
+    local sprite = visuals.arm
+    local id = part:getId()
+    lurek.log.info("part visual=" .. tostring(sprite) .. " id=" .. tostring(id))
+end
+
+--@api: LPartDef:type
+do
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm" })
+    local type_name = part:type()
+    local id = part:getId()
+    local slot = part:getSlot()
+    lurek.log.info("part type=" .. tostring(type_name) .. " id=" .. tostring(id) .. " slot=" .. tostring(slot))
+end
+
+--@api: LPartDef:typeOf
+do
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm" })
+    local exact = part:typeOf("LPartDef")
+    local base = part:typeOf("LObject")
+    local miss = part:typeOf("LSlotDef")
+    lurek.log.info("part typeOf exact=" .. tostring(exact) .. " base=" .. tostring(base) .. " miss=" .. tostring(miss))
+end
+
+--@api: LLoadout:addSlot
+do
+    local loadout = lurek.ecs.newLoadout()
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" } })
+    loadout:addSlot(slot)
+    local component = loadout:toComponent()
+    local slots = component.slots or {}
+    lurek.log.info("loadout slots after add=" .. tostring(#slots))
+end
+
+--@api: LLoadout:equip
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" } })
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm", tags = { "weapon" } })
+    local loadout = lurek.ecs.newLoadout({ slots = { slot } })
+    local equipped = loadout:equip(part)
+    lurek.log.info("loadout equipped=" .. tostring(equipped) .. " cost=" .. tostring(loadout:getCost()))
+end
+
+--@api: LLoadout:unequip
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" } })
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm", tags = { "weapon" } })
+    local loadout = lurek.ecs.newLoadout({ slots = { slot } })
+    loadout:equip(part)
+    lurek.log.info("loadout unequipped=" .. tostring(loadout:unequip("arm")))
+end
+
+--@api: LLoadout:validate
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" }, required = true })
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm", tags = { "weapon" } })
+    local loadout = lurek.ecs.newLoadout({ slots = { slot } })
+    loadout:equip(part)
+    lurek.log.info("loadout valid=" .. tostring(loadout:validate().valid))
+end
+
+--@api: LLoadout:computeStats
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" } })
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm", tags = { "weapon" }, stats = { firepower = 4, speed = -1 } })
+    local loadout = lurek.ecs.newLoadout({ slots = { slot }, baseStats = lurek.ecs.newStatBlock({ speed = 10 }) })
+    loadout:equip(part)
+    lurek.log.info("loadout speed=" .. tostring(loadout:computeStats():get("speed")))
+end
+
+--@api: LLoadout:getHardpoints
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" } })
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm", tags = { "weapon" }, hardpoints = { "muzzle" } })
+    local loadout = lurek.ecs.newLoadout({ slots = { slot } })
+    loadout:equip(part)
+    lurek.log.info("loadout hardpoint=" .. tostring(loadout:getHardpoints()[1]))
+end
+
+--@api: LLoadout:getCost
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" } })
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm", tags = { "weapon" }, cost = 25 })
+    local loadout = lurek.ecs.newLoadout({ slots = { slot } })
+    loadout:equip(part)
+    lurek.log.info("loadout cost=" .. tostring(loadout:getCost()))
+end
+
+--@api: LLoadout:toComponent
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" } })
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm", tags = { "weapon" } })
+    local loadout = lurek.ecs.newLoadout({ slots = { slot } })
+    loadout:equip(part)
+    local component = loadout:toComponent()
+    local slots = component.slots or {}
+    lurek.log.info("loadout component slots=" .. tostring(#slots))
+end
+
+--@api: LLoadout:type
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" } })
+    local loadout = lurek.ecs.newLoadout({ slots = { slot } })
+    local type_name = loadout:type()
+    local component = loadout:toComponent()
+    local slots = component.slots or {}
+    lurek.log.info("loadout type=" .. tostring(type_name) .. " slots=" .. tostring(#slots))
+end
+
+--@api: LLoadout:typeOf
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" } })
+    local loadout = lurek.ecs.newLoadout({ slots = { slot } })
+    local exact = loadout:typeOf("LLoadout")
+    local base = loadout:typeOf("LObject")
+    lurek.log.info("loadout typeOf exact=" .. tostring(exact) .. " base=" .. tostring(base))
+end

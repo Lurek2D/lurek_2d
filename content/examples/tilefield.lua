@@ -521,7 +521,8 @@ do
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     field:setRegionCells("exit", { { x = 5, y = 2, z = 1 } })
     field:setRegionProperty("exit", "targetScene", "town_square")
-    lurek.log.info("region property set = " .. tostring(field:getRegionProperty("exit", "targetScene")))
+    local target = field:getRegionProperty("exit", "targetScene")
+    lurek.log.info("region property set = " .. tostring(target))
 end
 
 --@api: LTileField:getRegionProperty
@@ -529,7 +530,8 @@ do
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     field:setRegionCells("inn", { { x = 2, y = 2, z = 1 } })
     field:setRegionProperty("inn", "music", "inn_theme")
-    lurek.log.info("region property = " .. tostring(field:getRegionProperty("inn", "music")))
+    local music = field:getRegionProperty("inn", "music")
+    lurek.log.info("region property = " .. tostring(music))
 end
 
 --@api: LTileField:getRegionProperties
@@ -1083,4 +1085,67 @@ do
     end)
     local status = ok and "ok" or "error"
     lurek.log.info(status .. " " .. tostring(value))
+end
+
+--@api: LTileField:setOccupant
+do
+    local field = lurek.tilefield.new({ width = 8, height = 8 })
+    field:setOccupant(2, 3, 1, 99)
+    local occupant = field:getOccupant(2, 3, 1)
+    local occupied = occupant ~= nil
+    lurek.log.info("occupant set=" .. tostring(occupant) .. " occupied=" .. tostring(occupied))
+end
+
+--@api: LTileField:clearOccupant
+do
+    local field = lurek.tilefield.new({ width = 8, height = 8 })
+    field:setOccupant(2, 3, 1, 99)
+    field:clearOccupant(2, 3, 1)
+    local occupant = field:getOccupant(2, 3, 1)
+    lurek.log.info("occupant after clear=" .. tostring(occupant))
+end
+
+--@api: LTileField:getOccupant
+do
+    local field = lurek.tilefield.new({ width = 8, height = 8 })
+    field:setOccupant(1, 1, 77)
+    local occupant = field:getOccupant(1, 1, 1)
+    local same = occupant == 77
+    lurek.log.info("occupant read=" .. tostring(occupant) .. " same=" .. tostring(same))
+end
+
+--@api: LTileField:setResource
+do
+    local field = lurek.tilefield.new({ width = 8, height = 8 })
+    field:setResource(2, 3, 1, "ore")
+    local resource = field:getResource(2, 3, 1)
+    local has_resource = resource ~= nil
+    lurek.log.info("resource set=" .. tostring(resource) .. " present=" .. tostring(has_resource))
+end
+
+--@api: LTileField:getResource
+do
+    local field = lurek.tilefield.new({ width = 8, height = 8 })
+    field:setResource(2, 3, 1, "ore")
+    local resource = field:getResource(2, 3, 1)
+    local same = resource == "ore"
+    lurek.log.info("resource read=" .. tostring(resource) .. " same=" .. tostring(same))
+end
+
+--@api: LTileField:setBuildable
+do
+    local field = lurek.tilefield.new({ width = 8, height = 8 })
+    field:setBuildable(2, 3, 1, true)
+    local buildable = field:isBuildable(2, 3, 1)
+    local status = buildable and "allowed" or "blocked"
+    lurek.log.info("buildability set=" .. status)
+end
+
+--@api: LTileField:isBuildable
+do
+    local field = lurek.tilefield.new({ width = 8, height = 8 })
+    field:setBuildable(2, 3, 1, true)
+    local buildable = field:isBuildable(2, 3, 1)
+    local status = buildable and "allowed" or "blocked"
+    lurek.log.info("buildability read=" .. status)
 end

@@ -17,6 +17,15 @@ do
     lurek.log.info("printed plain text")
 end
 
+--@api: LSpriteBatch:addComposite
+do
+    local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local batch = lurek.render.newSpriteBatch(image, 8)
+    local parts = { { x = 0, y = 0, quadX = 0, quadY = 0, quadW = 8, quadH = 8 }, { x = 8, y = 0, quadX = 0, quadY = 0, quadW = 8, quadH = 8 } }
+    local count = batch:addComposite(parts)
+    lurek.log.info("composite parts added=" .. tostring(count) .. " total=" .. tostring(batch:getCount()))
+end
+
 --@api: lurek.render.printf
 do
 

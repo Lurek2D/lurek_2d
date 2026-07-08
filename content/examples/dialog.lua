@@ -432,8 +432,10 @@ end
 --@api: lurek.dialog.label
 do
     local node = lurek.dialog.label("branch_a")
+    local same = node.name == "branch_a"
     lurek.log.info("label node type = " .. node.type)
     lurek.log.info("label name = " .. node.name)
+    lurek.log.info("label matched = " .. tostring(same))
 end
 
 --@api: LDialogSequencer:load

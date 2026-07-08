@@ -16,6 +16,33 @@ do
     lurek.log.info(tostring("button width = " .. select(3, btn:getRect())))
 end
 
+--@api: lurek.ui.newStatPanel
+do
+    local panel = lurek.ui.newStatPanel({ speed = 10, armor = 3 })
+    local children = panel:getChildCount()
+    local kind = panel:type()
+    local has_rows = children >= 2
+    lurek.log.info("stat panel type=" .. tostring(kind) .. " rows=" .. tostring(children) .. " ok=" .. tostring(has_rows))
+end
+
+--@api: lurek.ui.newSlotGrid
+do
+    local grid = lurek.ui.newSlotGrid({ { name = "torso", part = "medium" }, "weapon" }, 2)
+    local children = grid:getChildCount()
+    local kind = grid:type()
+    local has_slots = children >= 2
+    lurek.log.info("slot grid type=" .. tostring(kind) .. " slots=" .. tostring(children) .. " ok=" .. tostring(has_slots))
+end
+
+--@api: lurek.ui.newComparisonBar
+do
+    local bar = lurek.ui.newComparisonBar("speed", 10, 12)
+    local children = bar:getChildCount()
+    local kind = bar:type()
+    local improved = children >= 3
+    lurek.log.info("comparison bar type=" .. tostring(kind) .. " children=" .. tostring(children) .. " ok=" .. tostring(improved))
+end
+
 --@api: LButton:setOnClick
 do
 

@@ -408,6 +408,19 @@ lurek.ecs.newLoadout(opts)
 |------|-------------|
 | [LLoadout](#lloadout) | New loadout handle. |
 
+**Example**
+
+```lua
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" } })
+    local loadout = lurek.ecs.newLoadout({ slots = { slot } })
+    local component = loadout:toComponent()
+    local valid = loadout:validate()
+    local slots = component.slots or {}
+    lurek.log.info("loadout type=" .. loadout:type() .. " slots=" .. tostring(#slots) .. " valid=" .. tostring(valid.valid))
+end
+```
+
 ---
 
 ### `lurek.ecs.newObject`
@@ -467,6 +480,18 @@ lurek.ecs.newPartDef(opts)
 |------|-------------|
 | [LPartDef](#lpartdef) | New part definition handle. |
 
+**Example**
+
+```lua
+do
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm", tags = { "weapon" }, stats = { firepower = 4 }, cost = 25 })
+    local tags = part:getTags()
+    local stats = part:getStats()
+    local cost = part:getCost()
+    lurek.log.info("part=" .. part:getId() .. " slot=" .. part:getSlot() .. " tag=" .. tostring(tags[1]) .. " firepower=" .. tostring(stats.firepower) .. " cost=" .. tostring(cost))
+end
+```
+
 ---
 
 ### `lurek.ecs.newRelationshipManager`
@@ -521,6 +546,18 @@ lurek.ecs.newSlotDef(name, opts)
 |------|-------------|
 | [LSlotDef](#lslotdef) | New slot definition handle. |
 
+**Example**
+
+```lua
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" }, required = true, hardpoint = "left" })
+    local accepts = slot:getAccepts()
+    local required = slot:isRequired()
+    local hardpoint = slot:getHardpoint()
+    lurek.log.info("slot=" .. slot:getName() .. " accepts=" .. tostring(accepts[1]) .. " required=" .. tostring(required) .. " hardpoint=" .. tostring(hardpoint))
+end
+```
+
 ---
 
 ### `lurek.ecs.newStatBlock`
@@ -542,6 +579,18 @@ lurek.ecs.newStatBlock(stats)
 | Type | Description |
 |------|-------------|
 | [LStatBlock](#lstatblock) | New stat block handle. |
+
+**Example**
+
+```lua
+do
+    local stats = lurek.ecs.newStatBlock({ speed = 10 })
+    stats:add("speed", 2)
+    local value = stats:get("speed")
+    local table_value = stats:toTable().speed
+    lurek.log.info("stat block speed=" .. tostring(value) .. " table=" .. tostring(table_value))
+end
+```
 
 ---
 
@@ -749,6 +798,19 @@ LLoadout:addSlot(slot)
 |------|------|-------------|
 | `slot` | [LSlotDef](#lslotdef) | Slot definition to add. |
 
+**Example**
+
+```lua
+do
+    local loadout = lurek.ecs.newLoadout()
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" } })
+    loadout:addSlot(slot)
+    local component = loadout:toComponent()
+    local slots = component.slots or {}
+    lurek.log.info("loadout slots after add=" .. tostring(#slots))
+end
+```
+
 ---
 
 #### `LLoadout:computeStats`
@@ -764,6 +826,18 @@ LLoadout:computeStats()
 | Type | Description |
 |------|-------------|
 | [LStatBlock](#lstatblock) | Derived stat block. |
+
+**Example**
+
+```lua
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" } })
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm", tags = { "weapon" }, stats = { firepower = 4, speed = -1 } })
+    local loadout = lurek.ecs.newLoadout({ slots = { slot }, baseStats = lurek.ecs.newStatBlock({ speed = 10 }) })
+    loadout:equip(part)
+    lurek.log.info("loadout speed=" .. tostring(loadout:computeStats():get("speed")))
+end
+```
 
 ---
 
@@ -782,6 +856,18 @@ LLoadout:equip(slot, part)
 | `slot` | string | Slot name. |
 | `part` | [LPartDef](#lpartdef) | Part definition to equip. |
 
+**Example**
+
+```lua
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" } })
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm", tags = { "weapon" } })
+    local loadout = lurek.ecs.newLoadout({ slots = { slot } })
+    local equipped = loadout:equip(part)
+    lurek.log.info("loadout equipped=" .. tostring(equipped) .. " cost=" .. tostring(loadout:getCost()))
+end
+```
+
 ---
 
 #### `LLoadout:getCost`
@@ -797,6 +883,18 @@ LLoadout:getCost()
 | Type | Description |
 |------|-------------|
 | number | Total equipped cost. |
+
+**Example**
+
+```lua
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" } })
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm", tags = { "weapon" }, cost = 25 })
+    local loadout = lurek.ecs.newLoadout({ slots = { slot } })
+    loadout:equip(part)
+    lurek.log.info("loadout cost=" .. tostring(loadout:getCost()))
+end
+```
 
 ---
 
@@ -814,6 +912,18 @@ LLoadout:getHardpoints()
 |------|-------------|
 | string[] | Hardpoint names. |
 
+**Example**
+
+```lua
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" } })
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm", tags = { "weapon" }, hardpoints = { "muzzle" } })
+    local loadout = lurek.ecs.newLoadout({ slots = { slot } })
+    loadout:equip(part)
+    lurek.log.info("loadout hardpoint=" .. tostring(loadout:getHardpoints()[1]))
+end
+```
+
 ---
 
 #### `LLoadout:toComponent`
@@ -830,6 +940,20 @@ LLoadout:toComponent()
 |------|-------------|
 | table | Component table suitable for `[LUniverse](#luniverse):set`. |
 
+**Example**
+
+```lua
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" } })
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm", tags = { "weapon" } })
+    local loadout = lurek.ecs.newLoadout({ slots = { slot } })
+    loadout:equip(part)
+    local component = loadout:toComponent()
+    local slots = component.slots or {}
+    lurek.log.info("loadout component slots=" .. tostring(#slots))
+end
+```
+
 ---
 
 #### `LLoadout:type`
@@ -845,6 +969,19 @@ LLoadout:type()
 | Type | Description |
 |------|-------------|
 | string | The string `[LLoadout](#lloadout)`. |
+
+**Example**
+
+```lua
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" } })
+    local loadout = lurek.ecs.newLoadout({ slots = { slot } })
+    local type_name = loadout:type()
+    local component = loadout:toComponent()
+    local slots = component.slots or {}
+    lurek.log.info("loadout type=" .. tostring(type_name) .. " slots=" .. tostring(#slots))
+end
+```
 
 ---
 
@@ -868,6 +1005,18 @@ LLoadout:typeOf(name)
 |------|-------------|
 | boolean | True for `[LLoadout](#lloadout)` or `LObject`. |
 
+**Example**
+
+```lua
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" } })
+    local loadout = lurek.ecs.newLoadout({ slots = { slot } })
+    local exact = loadout:typeOf("LLoadout")
+    local base = loadout:typeOf("LObject")
+    lurek.log.info("loadout typeOf exact=" .. tostring(exact) .. " base=" .. tostring(base))
+end
+```
+
 ---
 
 #### `LLoadout:unequip`
@@ -890,6 +1039,18 @@ LLoadout:unequip(slot)
 |------|-------------|
 | boolean | True when a part was removed. |
 
+**Example**
+
+```lua
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" } })
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm", tags = { "weapon" } })
+    local loadout = lurek.ecs.newLoadout({ slots = { slot } })
+    loadout:equip(part)
+    lurek.log.info("loadout unequipped=" .. tostring(loadout:unequip("arm")))
+end
+```
+
 ---
 
 #### `LLoadout:validate`
@@ -905,6 +1066,18 @@ LLoadout:validate()
 | Type | Description |
 |------|-------------|
 | string[] | Validation errors. Empty means the loadout is valid. |
+
+**Example**
+
+```lua
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" }, required = true })
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm", tags = { "weapon" } })
+    local loadout = lurek.ecs.newLoadout({ slots = { slot } })
+    loadout:equip(part)
+    lurek.log.info("loadout valid=" .. tostring(loadout:validate().valid))
+end
+```
 
 ---
 
@@ -930,6 +1103,18 @@ LPartDef:getCost()
 |------|-------------|
 | number | Part cost. |
 
+**Example**
+
+```lua
+do
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm", cost = 25 })
+    local cost = part:getCost()
+    local id = part:getId()
+    local slot = part:getSlot()
+    lurek.log.info("part cost=" .. tostring(cost) .. " id=" .. tostring(id) .. " slot=" .. tostring(slot))
+end
+```
+
 ---
 
 #### `LPartDef:getHardpoints`
@@ -945,6 +1130,18 @@ LPartDef:getHardpoints()
 | Type | Description |
 |------|-------------|
 | string[] | Hardpoint names. |
+
+**Example**
+
+```lua
+do
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm", hardpoints = { "muzzle" } })
+    local hardpoints = part:getHardpoints()
+    local first = hardpoints[1]
+    local id = part:getId()
+    lurek.log.info("part hardpoint=" .. tostring(first) .. " id=" .. tostring(id))
+end
+```
 
 ---
 
@@ -962,6 +1159,18 @@ LPartDef:getId()
 |------|-------------|
 | string | Part id. |
 
+**Example**
+
+```lua
+do
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm", tags = { "weapon" } })
+    local id = part:getId()
+    local slot = part:getSlot()
+    local tags = part:getTags()
+    lurek.log.info("part id=" .. tostring(id) .. " slot=" .. tostring(slot) .. " tag=" .. tostring(tags[1]))
+end
+```
+
 ---
 
 #### `LPartDef:getSlot`
@@ -977,6 +1186,18 @@ LPartDef:getSlot()
 | Type | Description |
 |------|-------------|
 | string | Slot name, or empty string when unrestricted. |
+
+**Example**
+
+```lua
+do
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm", tags = { "weapon" } })
+    local slot = part:getSlot()
+    local id = part:getId()
+    local tags = part:getTags()
+    lurek.log.info("part slot=" .. tostring(slot) .. " id=" .. tostring(id) .. " tag=" .. tostring(tags[1]))
+end
+```
 
 ---
 
@@ -994,6 +1215,18 @@ LPartDef:getStats()
 |------|-------------|
 | table | Stat key-value table. |
 
+**Example**
+
+```lua
+do
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm", stats = { firepower = 4, speed = -1 } })
+    local stats = part:getStats()
+    local firepower = stats.firepower
+    local speed = stats.speed
+    lurek.log.info("part stats firepower=" .. tostring(firepower) .. " speed=" .. tostring(speed))
+end
+```
+
 ---
 
 #### `LPartDef:getTags`
@@ -1009,6 +1242,18 @@ LPartDef:getTags()
 | Type | Description |
 |------|-------------|
 | string[] | Part tags. |
+
+**Example**
+
+```lua
+do
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm", tags = { "weapon", "energy" } })
+    local tags = part:getTags()
+    local first = tags[1]
+    local second = tags[2]
+    lurek.log.info("part tags first=" .. tostring(first) .. " second=" .. tostring(second))
+end
+```
 
 ---
 
@@ -1026,6 +1271,18 @@ LPartDef:getVisuals()
 |------|-------------|
 | table | Visual slot mapping. |
 
+**Example**
+
+```lua
+do
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm", visuals = { arm = "laser_sprite" } })
+    local visuals = part:getVisuals()
+    local sprite = visuals.arm
+    local id = part:getId()
+    lurek.log.info("part visual=" .. tostring(sprite) .. " id=" .. tostring(id))
+end
+```
+
 ---
 
 #### `LPartDef:type`
@@ -1041,6 +1298,18 @@ LPartDef:type()
 | Type | Description |
 |------|-------------|
 | string | The string `[LPartDef](#lpartdef)`. |
+
+**Example**
+
+```lua
+do
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm" })
+    local type_name = part:type()
+    local id = part:getId()
+    local slot = part:getSlot()
+    lurek.log.info("part type=" .. tostring(type_name) .. " id=" .. tostring(id) .. " slot=" .. tostring(slot))
+end
+```
 
 ---
 
@@ -1063,6 +1332,18 @@ LPartDef:typeOf(name)
 | Type | Description |
 |------|-------------|
 | boolean | True for `[LPartDef](#lpartdef)` or `LObject`. |
+
+**Example**
+
+```lua
+do
+    local part = lurek.ecs.newPartDef({ id = "laser_arm", slot = "arm" })
+    local exact = part:typeOf("LPartDef")
+    local base = part:typeOf("LObject")
+    local miss = part:typeOf("LSlotDef")
+    lurek.log.info("part typeOf exact=" .. tostring(exact) .. " base=" .. tostring(base) .. " miss=" .. tostring(miss))
+end
+```
 
 ---
 
@@ -1620,6 +1901,18 @@ LSlotDef:getAccepts()
 |------|-------------|
 | string[] | Accepted tags. |
 
+**Example**
+
+```lua
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon", "tool" }, required = true })
+    local accepts = slot:getAccepts()
+    local first = accepts[1]
+    local second = accepts[2]
+    lurek.log.info("slot accepts first=" .. tostring(first) .. " second=" .. tostring(second))
+end
+```
+
 ---
 
 #### `LSlotDef:getHardpoint`
@@ -1635,6 +1928,18 @@ LSlotDef:getHardpoint()
 | Type | Description |
 |------|-------------|
 | string | Hardpoint name, or nil. |
+
+**Example**
+
+```lua
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" }, hardpoint = "left" })
+    local hardpoint = slot:getHardpoint()
+    local name = slot:getName()
+    local required = slot:isRequired()
+    lurek.log.info("slot hardpoint=" .. tostring(hardpoint) .. " name=" .. tostring(name) .. " required=" .. tostring(required))
+end
+```
 
 ---
 
@@ -1652,6 +1957,18 @@ LSlotDef:getName()
 |------|-------------|
 | string | Slot name. |
 
+**Example**
+
+```lua
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" }, required = true, hardpoint = "left" })
+    local name = slot:getName()
+    local accepts = slot:getAccepts()
+    local required = slot:isRequired()
+    lurek.log.info("slot name=" .. tostring(name) .. " accepts=" .. tostring(accepts[1]) .. " required=" .. tostring(required))
+end
+```
+
 ---
 
 #### `LSlotDef:isRequired`
@@ -1668,6 +1985,18 @@ LSlotDef:isRequired()
 |------|-------------|
 | boolean | True when required. |
 
+**Example**
+
+```lua
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" }, required = true })
+    local required = slot:isRequired()
+    local name = slot:getName()
+    local accepts = slot:getAccepts()
+    lurek.log.info("slot required=" .. tostring(required) .. " name=" .. tostring(name) .. " accepts=" .. tostring(accepts[1]))
+end
+```
+
 ---
 
 #### `LSlotDef:type`
@@ -1683,6 +2012,18 @@ LSlotDef:type()
 | Type | Description |
 |------|-------------|
 | string | The string `[LSlotDef](#lslotdef)`. |
+
+**Example**
+
+```lua
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" } })
+    local type_name = slot:type()
+    local name = slot:getName()
+    local accepts = slot:getAccepts()
+    lurek.log.info("slot type=" .. tostring(type_name) .. " name=" .. tostring(name) .. " accepts=" .. tostring(accepts[1]))
+end
+```
 
 ---
 
@@ -1705,6 +2046,18 @@ LSlotDef:typeOf(name)
 | Type | Description |
 |------|-------------|
 | boolean | True for `[LSlotDef](#lslotdef)` or `LObject`. |
+
+**Example**
+
+```lua
+do
+    local slot = lurek.ecs.newSlotDef("arm", { accepts = { "weapon" } })
+    local exact = slot:typeOf("LSlotDef")
+    local base = slot:typeOf("LObject")
+    local miss = slot:typeOf("LPartDef")
+    lurek.log.info("slot typeOf exact=" .. tostring(exact) .. " base=" .. tostring(base) .. " miss=" .. tostring(miss))
+end
+```
 
 ---
 
@@ -1731,6 +2084,18 @@ LStatBlock:add(name, value)
 | `name` | string | Stat key. |
 | `value` | number | Finite delta to add. |
 
+**Example**
+
+```lua
+do
+    local stats = lurek.ecs.newStatBlock({ armor = 2 })
+    stats:add("armor", 1)
+    stats:add("speed", 4)
+    local armor = stats:get("armor")
+    lurek.log.info("added armor=" .. tostring(armor) .. " speed=" .. tostring(stats:get("speed")))
+end
+```
+
 ---
 
 #### `LStatBlock:get`
@@ -1753,6 +2118,18 @@ LStatBlock:get(name)
 |------|-------------|
 | number | Stat value. |
 
+**Example**
+
+```lua
+do
+    local stats = lurek.ecs.newStatBlock({ armor = 3 })
+    local armor = stats:get("armor")
+    local missing = stats:get("missing")
+    local table_value = stats:toTable().armor
+    lurek.log.info("armor=" .. tostring(armor) .. " missing=" .. tostring(missing) .. " table=" .. tostring(table_value))
+end
+```
+
 ---
 
 #### `LStatBlock:set`
@@ -1770,6 +2147,18 @@ LStatBlock:set(name, value)
 | `name` | string | Stat key. |
 | `value` | number | Finite stat value. |
 
+**Example**
+
+```lua
+do
+    local stats = lurek.ecs.newStatBlock()
+    stats:set("armor", 2)
+    local armor = stats:get("armor")
+    stats:set("speed", 10)
+    lurek.log.info("set armor=" .. tostring(armor) .. " speed=" .. tostring(stats:get("speed")))
+end
+```
+
 ---
 
 #### `LStatBlock:toTable`
@@ -1786,6 +2175,18 @@ LStatBlock:toTable()
 |------|-------------|
 | table | Key-value stat table. |
 
+**Example**
+
+```lua
+do
+    local stats = lurek.ecs.newStatBlock({ firepower = 4, speed = 9 })
+    local values = stats:toTable()
+    local firepower = values.firepower
+    local speed = values.speed
+    lurek.log.info("stat table firepower=" .. tostring(firepower) .. " speed=" .. tostring(speed))
+end
+```
+
 ---
 
 #### `LStatBlock:type`
@@ -1801,6 +2202,18 @@ LStatBlock:type()
 | Type | Description |
 |------|-------------|
 | string | The string `[LStatBlock](#lstatblock)`. |
+
+**Example**
+
+```lua
+do
+    local stats = lurek.ecs.newStatBlock()
+    local type_name = stats:type()
+    local value = stats:get("missing")
+    local table_values = stats:toTable()
+    lurek.log.info("stat type=" .. tostring(type_name) .. " missing=" .. tostring(value) .. " size=" .. tostring(#table_values))
+end
+```
 
 ---
 
@@ -1823,6 +2236,18 @@ LStatBlock:typeOf(name)
 | Type | Description |
 |------|-------------|
 | boolean | True for `[LStatBlock](#lstatblock)` or `LObject`. |
+
+**Example**
+
+```lua
+do
+    local stats = lurek.ecs.newStatBlock()
+    local exact = stats:typeOf("LStatBlock")
+    local base = stats:typeOf("LObject")
+    local miss = stats:typeOf("LLoadout")
+    lurek.log.info("stat typeOf exact=" .. tostring(exact) .. " base=" .. tostring(base) .. " miss=" .. tostring(miss))
+end
+```
 
 ---
 

@@ -1696,6 +1696,19 @@ LTileAwareness:updateSightSources(player, sources)
 |------|-------------|
 | number | Number of processed sight sources. |
 
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 8, height = 8 })
+    local awareness = lurek.awareness.newTileAwareness(field, { players = { "blue" } })
+    awareness:updateSightSources("blue", { { x = 2, y = 2, z = 1, range = 2 }, { x = 6, y = 6, z = 1, range = 1 } })
+    local near = awareness:isVisible("blue", 2, 2, 1)
+    local far = awareness:isVisible("blue", 6, 6, 1)
+    lurek.log.info("updated sight near=" .. tostring(near) .. " far=" .. tostring(far))
+end
+```
+
 ---
 
 #### `LTileAwareness:visibleCells`

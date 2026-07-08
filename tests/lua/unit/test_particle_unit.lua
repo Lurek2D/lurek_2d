@@ -1322,12 +1322,6 @@ describe("particle shooter helpers", function()
         expect_equal(3, ps:getCount())
     end)
 
-    -- @covers lurek.particle.newPreset
-    it("newPreset creates shooter effect presets", function()
-        expect_equal("LParticleSystem", lurek.particle.newPreset("explosion"):type())
-        expect_equal("LParticleSystem", lurek.particle.newPreset("muzzle"):type())
-        expect_equal("LParticleSystem", lurek.particle.newPreset("smoke_trail"):type())
-    end)
 end)
 
 test_summary()

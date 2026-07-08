@@ -705,6 +705,18 @@ LSaveManager:registerSchema(name, version, migrator)
 | `version` | number | Current schema version for saves produced by this game build. |
 | `migrator?` | function | Optional migration function from version-1 into version. |
 
+**Example**
+
+```lua
+do
+    local manager = lurek.save.newSaveManager()
+    manager:registerSchema("ecs_loadout", 2, function(data) data.migrated = true return data end)
+    local version = manager:getSchemaVersion()
+    local format = manager:getFormat()
+    lurek.log.info("registered schema version=" .. tostring(version) .. " format=" .. tostring(format))
+end
+```
+
 ---
 
 #### `LSaveManager:reset`

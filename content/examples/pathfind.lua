@@ -3322,6 +3322,42 @@ end
 
 --- Added coverage examples for newer API owners.
 
+--@api: LUnitPathfinder:findFormationPaths
+do
+  local grid = lurek.pathfind.newNavGrid(8, 8)
+  local pathfinder = lurek.pathfind.newPathfinder(grid)
+  local starts = { { x = 1, y = 1 }, { x = 2, y = 1 } }
+  local paths = pathfinder:findFormationPaths(starts, 8, 8, 1, 1)
+  lurek.log.info("formation paths=" .. tostring(#paths))
+end
+
+--@api: LUnitPathfinder:findAttackMovePaths
+do
+  local grid = lurek.pathfind.newNavGrid(8, 8)
+  local pathfinder = lurek.pathfind.newPathfinder(grid)
+  local starts = { { x = 1, y = 1 }, { x = 2, y = 1 } }
+  local paths = pathfinder:findAttackMovePaths(starts, 8, 8, 1, 16)
+  lurek.log.info("attack-move paths=" .. tostring(#paths))
+end
+
+--@api: LUnitPathfinder:reserveCells
+do
+  local grid = lurek.pathfind.newNavGrid(8, 8)
+  local pathfinder = lurek.pathfind.newPathfinder(grid)
+  local starts = { { x = 1, y = 1 }, { x = 2, y = 1 } }
+  local reserved = pathfinder:reserveCells(starts)
+  lurek.log.info("reserved cells=" .. tostring(reserved))
+end
+
+--@api: LUnitPathfinder:clearReservations
+do
+  local grid = lurek.pathfind.newNavGrid(8, 8)
+  local pathfinder = lurek.pathfind.newPathfinder(grid)
+  pathfinder:reserveCells({ { x = 1, y = 1 }, { x = 2, y = 1 } })
+  local cleared = pathfinder:clearReservations()
+  lurek.log.info("cleared reservations=" .. tostring(cleared))
+end
+
 --@api: lurek.pathfind.newNavGridFromProvider
 do
     local provider = { width = 3, height = 2, blocked = { false, true, false, false, false, false }, costs = { 1, 4, 1, 1, 1, 1 } }

@@ -7,6 +7,7 @@ the preceding /// docstring contains:
   1. A description (at least one non-blank /// line before any @tag)
   2. @param name : type  for each non-trivial Rust parameter
   3. @return type        for methods that return a non-unit value
+  4. No bare @return any tags; use a concrete type, union, or manual docs
 
 Writes:
   logs/data/docstring_audit.json  -- machine-readable report for docstring_fix.py
@@ -105,6 +106,9 @@ def _has_param_tags(docstring: str) -> bool:
 
 def _has_return_tag(docstring: str) -> bool:
     return bool(re.search(r"^@return\b", docstring, re.MULTILINE))
+
+def _has_bare_any_return(docstring: str) -> bool:
+    return bool(re.search(r"^@return\s+any\s*$", docstring, re.MULTILINE))
 
 def _get_param_tag_names(docstring: str) -> List[str]:
     return re.findall(r"^@param\s+(\w+)", docstring, re.MULTILINE)
@@ -264,6 +268,7 @@ class Violation:
     MISSING_DESCRIPTION = "missing_description"
     MISSING_PARAM = "missing_param"
     MISSING_RETURN = "missing_return"
+    IMPRECISE_RETURN_ANY = "imprecise_return_any"
     EXTRA_PARAM = "extra_param_tag"  # @param tag but no such Rust param (typo risk)
 
 
@@ -326,6 +331,16 @@ def _audit_file(rs_file: Path) -> List[dict]:
             if ret and ret != "":
                 record(line_num, kind, name, owner, violations, Violation.MISSING_RETURN,
                        f"Rust return: {ret}")
+        elif _has_bare_any_return(docstring):
+            record(
+                line_num,
+                kind,
+                name,
+                owner,
+                violations,
+                Violation.IMPRECISE_RETURN_ANY,
+                "Use a concrete return type, a union, or richer manual docs.",
+            )
 
     i = 0
     while i < len(lines):
@@ -394,7 +409,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         return 2
 
     if args.file:
-        files = [Path(args.file)]
+        file_arg = Path(args.file)
+        files = [file_arg if file_arg.is_absolute() else WORKSPACE_ROOT / file_arg]
     else:
         files = sorted(src_dir.glob("*_api.rs"))
 
@@ -435,6 +451,7 @@ def main(argv: Optional[List[str]] = None) -> int:
             Violation.MISSING_DESCRIPTION: "Missing description",
             Violation.MISSING_PARAM:       "Missing @param tag(s)",
             Violation.MISSING_RETURN:      "Missing @return tag",
+            Violation.IMPRECISE_RETURN_ANY: "Imprecise @return any tag",
         }.get(vtype, vtype)
         print(f"  {label}: {count}")
     print()

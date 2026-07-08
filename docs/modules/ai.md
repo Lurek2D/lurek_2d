@@ -4453,6 +4453,19 @@ LCommandQueue:cancelByTag(tag)
 |------|-------------|
 | number | Number of cancelled orders. |
 
+**Example**
+
+```lua
+do
+  local queue = lurek.ai.newCommandQueue()
+  queue:pushOrder({ kind = "attackMove", targetX = 16, targetY = 8, tag = "combat" })
+  local removed = queue:cancelByTag("combat")
+  local snapshot = queue:getOrderSnapshot()
+  lurek.log.info("cancelled orders=" .. tostring(removed))
+  lurek.log.info("remaining orders=" .. tostring(#snapshot))
+end
+```
+
 ---
 
 #### `LCommandQueue:cancelCurrent`
@@ -4797,6 +4810,18 @@ LCommandQueue:getOrderSnapshot()
 |------|-------------|
 | table | Array of order snapshot tables. |
 
+**Example**
+
+```lua
+do
+  local queue = lurek.ai.newCommandQueue()
+  queue:pushOrder({ kind = "move", x = 8, y = 4, tag = "path" })
+  local snapshot = queue:getOrderSnapshot()
+  lurek.log.info("snapshot orders=" .. tostring(#snapshot))
+  lurek.log.info("snapshot first=" .. tostring(snapshot[1].kind))
+end
+```
+
 ---
 
 #### `LCommandQueue:getPending`
@@ -4872,6 +4897,18 @@ LCommandQueue:peekOrder()
 |------|-------------|
 | table | Current order snapshot, or nil. |
 
+**Example**
+
+```lua
+do
+  local queue = lurek.ai.newCommandQueue()
+  queue:pushOrder({ kind = "move", x = 8, y = 4, tag = "path" })
+  local order = queue:peekOrder()
+  lurek.log.info("peeked order kind=" .. tostring(order.kind))
+  lurek.log.info("peeked order x=" .. tostring(order.x))
+end
+```
+
 ---
 
 #### `LCommandQueue:pushFront`
@@ -4930,6 +4967,18 @@ LCommandQueue:pushOrder(order)
 | Type | Description |
 |------|-------------|
 | number | Stable command id assigned by this queue. |
+
+**Example**
+
+```lua
+do
+  local queue = lurek.ai.newCommandQueue()
+  queue:pushOrder({ kind = "move", x = 8, y = 4, tag = "path" })
+  local order = queue:peekOrder()
+  lurek.log.info("queued order kind=" .. tostring(order.kind))
+  lurek.log.info("queued order tag=" .. tostring(order.tag))
+end
+```
 
 ---
 
@@ -4990,6 +5039,18 @@ LCommandQueue:replaceOrders(orders)
 | Type | Description |
 |------|-------------|
 | number | Number of enqueued replacement orders. |
+
+**Example**
+
+```lua
+do
+  local queue = lurek.ai.newCommandQueue()
+  queue:replaceOrders({ { kind = "attackMove", targetX = 16, targetY = 8, tag = "combat" } })
+  local snapshot = queue:getOrderSnapshot()
+  lurek.log.info("replacement count=" .. tostring(#snapshot))
+  lurek.log.info("replacement kind=" .. tostring(snapshot[1].kind))
+end
+```
 
 ---
 

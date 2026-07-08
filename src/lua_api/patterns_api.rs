@@ -3630,6 +3630,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     )?;
     // -- countBy --
     /// Counts array items by a selector field path or callback.
+    /// @param | items | table | Sequence table.
+    /// @param | selector | string|function | Field path or callback `(item, index)`.
+    /// @return | table | String-keyed counts by selected value.
     patterns.set(
         "countBy",
         lua.create_function(|lua, (items, selector): (LuaTable, LuaValue)| {
@@ -3646,6 +3649,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     )?;
     // -- sortedIndices --
     /// Returns one-based item indices sorted by selector value.
+    /// @param | items | table | Sequence table.
+    /// @param | selector | string|function | Field path or callback `(item, index)`.
+    /// @param | opts | table? | Optional sort flags such as `descending` or `desc`.
+    /// @return | table | One-based item indices sorted by selected value.
     patterns.set(
         "sortedIndices",
         lua.create_function(
@@ -3682,6 +3689,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     )?;
     // -- topN --
     /// Returns the top `n` items by selector value, or indices when `opts.indices` is true.
+    /// @param | items | table | Sequence table.
+    /// @param | selector | string|function | Field path or callback `(item, index)`.
+    /// @param | n | integer | Maximum number of results.
+    /// @param | opts | table? | Optional flags such as `indices`, `descending`, or `desc`.
+    /// @return | table | Top item values, or one-based indices when `opts.indices` is true.
     patterns.set(
         "topN",
         lua.create_function(
@@ -3731,6 +3743,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     )?;
     // -- findSequences --
     /// Finds numeric selector runs with a constant step.
+    /// @param | items | table | Sequence table.
+    /// @param | selector | string|function | Field path or callback `(item, index)`.
+    /// @param | opts | table? | Optional `minLength`, `min_length`, and `step` settings.
+    /// @return | table | Runs of one-based indices and numeric values.
     patterns.set(
         "findSequences",
         lua.create_function(

@@ -669,13 +669,8 @@ end)
 
 -- @describe dialog story compiler
 describe("dialog story compiler", function()
-    -- @covers lurek.dialog.compileStory
-    -- @covers LDialogStory:start
-    -- @covers LDialogStory:continue
-    -- @covers LDialogStory:getChoices
-    -- @covers LDialogStory:choose
-    it("runs safe Ink-subset lines, choices, variables, and diverts", function()
-        local story = lurek.dialog.compileStory([[
+    local function branch_story()
+        return lurek.dialog.compileStory([[
             VAR hero = "Ada"
             === START ===
             Hello, {hero}. #greeting
@@ -684,58 +679,144 @@ describe("dialog story compiler", function()
             Done.
             -> END
         ]])
-        story:start()
-        local line, tags = story:continue()
-        expect_equal("Hello, Ada.", line)
-        expect_equal("greeting", tags[1])
-        local choices = story:getChoices()
-        expect_equal(1, #choices)
-        expect_equal("Continue", choices[1].text)
-        story:choose(1)
-        expect_equal("Done.", story:continue())
-        expect_equal(nil, story:continue())
-        expect_false(story:canContinue())
-    end)
+    end
 
-    -- @covers LDialogStory:setVariable
-    -- @covers LDialogStory:getVariable
-    -- @covers LDialogStory:listVariables
-    -- @covers LDialogStory:visitCount
-    -- @covers LDialogStory:snapshot
-    -- @covers LDialogStory:restore
-    it("stores variables and restores snapshots", function()
-        local story = lurek.dialog.compileStory([[
+    local function variable_story()
+        return lurek.dialog.compileStory([[
             === START ===
             {flag}
         ]])
-        story:setVariable("flag", "before")
-        story:start()
-        local snapshot = story:snapshot()
-        story:setVariable("flag", "after")
-        expect_equal("after", story:getVariable("flag"))
-        story:restore(snapshot)
-        expect_equal("before", story:getVariable("flag"))
-        expect_equal(1, story:visitCount("START"))
-        expect_true(#story:listVariables() >= 1)
-    end)
+    end
 
-    -- @covers LDialogStory:continueAll
-    -- @covers LDialogStory:gotoKnot
-    -- @covers LDialogStory:type
-    -- @covers LDialogStory:typeOf
-    it("supports draining lines, jumping knots, and runtime type checks", function()
-        local story = lurek.dialog.compileStory([[
+    local function multi_line_story()
+        return lurek.dialog.compileStory([[
             === START ===
             One.
             Two.
             === LATER ===
             Later.
         ]])
+    end
+
+    -- @covers lurek.dialog.compileStory
+    it("compiles safe Ink-subset stories", function()
+        local story = branch_story()
+        expect_equal("LDialogStory", story:type())
+    end)
+
+    -- @covers LDialogStory:start
+    it("starts compiled stories", function()
+        local story = branch_story()
+        story:start()
+        expect_true(story:canContinue())
+    end)
+
+    -- @covers LDialogStory:canContinue
+    it("reports whether compiled stories can continue", function()
+        local story = branch_story()
+        story:start()
+        expect_true(story:canContinue())
+    end)
+
+    -- @covers LDialogStory:continue
+    it("continues compiled stories one line at a time", function()
+        local story = branch_story()
+        story:start()
+        local line, tags = story:continue()
+        expect_equal("Hello, Ada.", line)
+        expect_equal("greeting", tags[1])
+    end)
+
+    -- @covers LDialogStory:getChoices
+    it("returns visible compiled story choices", function()
+        local story = branch_story()
+        story:start()
+        story:continue()
+        local choices = story:getChoices()
+        expect_equal(1, #choices)
+        expect_equal("Continue", choices[1].text)
+    end)
+
+    -- @covers LDialogStory:choose
+    it("selects compiled story choices", function()
+        local story = branch_story()
+        story:start()
+        story:continue()
+        story:choose(1)
+        expect_equal("Done.", story:continue())
+    end)
+
+    -- @covers LDialogStory:setVariable
+    it("stores compiled story variables", function()
+        local story = variable_story()
+        story:setVariable("flag", "before")
+        expect_equal("before", story:getVariable("flag"))
+    end)
+
+    -- @covers LDialogStory:getVariable
+    it("retrieves compiled story variables", function()
+        local story = variable_story()
+        story:setVariable("flag", "before")
+        expect_equal("before", story:getVariable("flag"))
+    end)
+
+    -- @covers LDialogStory:listVariables
+    it("lists compiled story variables", function()
+        local story = variable_story()
+        story:setVariable("flag", "before")
+        expect_true(#story:listVariables() >= 1)
+    end)
+
+    -- @covers LDialogStory:visitCount
+    it("tracks compiled story visits", function()
+        local story = variable_story()
+        story:start()
+        expect_equal(1, story:visitCount("START"))
+    end)
+
+    -- @covers LDialogStory:snapshot
+    it("captures compiled story snapshots", function()
+        local story = variable_story()
+        story:setVariable("flag", "before")
+        story:start()
+        expect_type("table", story:snapshot())
+    end)
+
+    -- @covers LDialogStory:restore
+    it("restores compiled story snapshots", function()
+        local story = variable_story()
+        story:setVariable("flag", "before")
+        story:start()
+        local snapshot = story:snapshot()
+        story:setVariable("flag", "after")
+        story:restore(snapshot)
+        expect_equal("before", story:getVariable("flag"))
+    end)
+
+    -- @covers LDialogStory:continueAll
+    it("drains compiled story lines", function()
+        local story = multi_line_story()
         story:start()
         expect_equal("One.\nTwo.", story:continueAll())
+    end)
+
+    -- @covers LDialogStory:gotoKnot
+    it("jumps compiled stories to knots", function()
+        local story = multi_line_story()
+        story:start()
         story:gotoKnot("LATER")
         expect_equal("Later.", story:continueAll())
+    end)
+
+    -- @covers LDialogStory:type
+    it("returns compiled story type names", function()
+        local story = multi_line_story()
         expect_equal("LDialogStory", story:type())
+    end)
+
+    -- @covers LDialogStory:typeOf
+    it("recognizes compiled story types", function()
+        local story = multi_line_story()
         expect_true(story:typeOf("LDialogStory"))
         expect_true(story:typeOf("LObject"))
         expect_false(story:typeOf("LDialogSequencer"))

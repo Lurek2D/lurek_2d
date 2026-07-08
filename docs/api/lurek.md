@@ -3275,21 +3275,21 @@ LDialogSequencer:update( dt : number )  -- Advances the sequencer by dt seconds,
 Lua handle for a compiled safe Ink-subset story.
 
 ```lua
-LDialogStory:canContinue()  -- Returns whether the story can emit another line
-LDialogStory:choose( index : any )  -- Selects an available story choice by one-based choice index
-LDialogStory:continue()  -- Emits the next story line and tag array, or nil at choice/end
-LDialogStory:continueAll( sep : any )  -- Drains story lines until a choice or end and joins them
-LDialogStory:getChoices()  -- Returns available choices as `{text, available, tags, index}` rows
-LDialogStory:getVariable( name : any )  -- Returns one story variable value, or nil when the story variable is not currently defined
-LDialogStory:gotoKnot( name : any )  -- Jumps immediately to a named story knot and resets the story position to that knot start
-LDialogStory:listVariables()  -- Lists story variable names
-LDialogStory:restore( snapshot : any )  -- Restores a snapshot returned by `snapshot`
+LDialogStory:canContinue() -> boolean  -- Returns whether the story can emit another line
+LDialogStory:choose( index : integer )  -- Selects an available story choice by one-based choice index
+LDialogStory:continue() -> string?, table  -- Emits the next story line and tag array, or nil at choice/end
+LDialogStory:continueAll( sep : string? )  -- Drains story lines until a choice or end and joins them
+LDialogStory:getChoices() -> table  -- Returns available choices as `{text, available, tags, index}` rows
+LDialogStory:getVariable( name : string ) -> nil|boolean|number|string  -- Returns one story variable value, or nil when the story variable is not currently defined
+LDialogStory:gotoKnot( name : string )  -- Jumps immediately to a named story knot and resets the story position to that knot start
+LDialogStory:listVariables() -> table  -- Lists story variable names
+LDialogStory:restore( snapshot : table )  -- Restores a snapshot returned by `snapshot`
 LDialogStory:setVariable( name : any, value : any )  -- Sets or replaces one story variable using a nil, boolean, number, or string value
 LDialogStory:snapshot()  -- Returns a serializable story runtime snapshot
-LDialogStory:start( knot : any )  -- Starts the story at a named knot or at START/ENTRY/first knot
-LDialogStory:type()  -- Returns the Lua userdata type name for compiled dialog story handles
-LDialogStory:typeOf( name : any )  -- Returns true for `LDialogStory` and shared `LObject` runtime type checks
-LDialogStory:visitCount( name : any )  -- Returns how many times a knot has been entered
+LDialogStory:start( knot : string? )  -- Starts the story at a named knot or at START/ENTRY/first knot
+LDialogStory:type() -> string  -- Returns the Lua userdata type name for compiled dialog story handles
+LDialogStory:typeOf( name : string ) -> boolean  -- Returns true for `LDialogStory` and shared `LObject` runtime type checks
+LDialogStory:visitCount( name : string ) -> integer  -- Returns how many times a knot has been entered
 ```
 
 ### `LDialogueAI`
@@ -4525,8 +4525,8 @@ LValidationReport:typeOf( name : string ) -> boolean  -- Returns whether this va
 *Coverage: 258/258 items documented (100%)*
 
 ```lua
-lurek.patterns.countBy( items : any, selector : any )  -- Counts array items by a selector field path or callback
-lurek.patterns.findSequences( items : any, selector : any, opts : any )  -- Finds numeric selector runs with a constant step
+lurek.patterns.countBy( items : table, selector : string|function ) -> table  -- Counts array items by a selector field path or callback
+lurek.patterns.findSequences( items : table, selector : string|function, opts : table? ) -> table  -- Finds numeric selector runs with a constant step
 lurek.patterns.groupBy( items : table, selector : string|function ) -> table  -- Groups array items by a selector field path or callback
 lurek.patterns.newBehaviorTree() -> LBehaviorTree  -- Create a new behavior tree for AI decision-making with sequences, selectors, parallels, and leaf actions
 lurek.patterns.newBlackboard( name : string? ) -> LBlackboard  -- Create a new shared key-value blackboard supporting reactive watchers for game logic variables
@@ -4553,8 +4553,8 @@ lurek.patterns.newStack( capacity : integer? ) -> LStack  -- Create a new LIFO s
 lurek.patterns.newStrategy() -> LStrategy  -- Create a new strategy pattern container for hot-swappable algorithm implementations
 lurek.patterns.newThrottle( interval : number ) -> LThrottle  -- Create a new throttle that limits how often an action can fire, enforcing a minimum interval
 lurek.patterns.newWeightedRandom() -> LWeightedRandom  -- Create a new weighted random selection pool. Add items with weights and pick random selections
-lurek.patterns.sortedIndices( items : any, selector : any, opts : any )  -- Returns one-based item indices sorted by selector value
-lurek.patterns.topN( items : any, selector : any, n : any, opts : any )  -- Returns the top `n` items by selector value, or indices when `opts.indices` is true
+lurek.patterns.sortedIndices( items : table, selector : string|function, opts : table? ) -> table  -- Returns one-based item indices sorted by selector value
+lurek.patterns.topN( items : table, selector : string|function, n : integer, opts : table? ) -> table  -- Returns the top `n` items by selector value, or indices when `opts.indices` is true
 ```
 
 ### `LBehaviorTree`

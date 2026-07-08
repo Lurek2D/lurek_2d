@@ -10967,35 +10967,41 @@ function LDialogSequencer:typeOf(name) end
 function LDialogSequencer:update(dt) end
 
 --- Returns whether the story can emit another line.
+---@return boolean True when another story line can be emitted.
 function LDialogStory:canContinue() end
 
 --- Selects an available story choice by one-based choice index.
----@param index any
+---@param index number One-based choice index.
 function LDialogStory:choose(index) end
 
 --- Emits the next story line and tag array, or nil at choice/end.
+---@return string? Next line plus tag array; or nil plus an empty tag table. (value 1).
+---@return table Next line plus tag array; or nil plus an empty tag table. (value 2).
 function LDialogStory:continue() end
 
 --- Drains story lines until a choice or end and joins them.
----@param sep? any
+---@param sep? string Separator used between lines, default newline.
 function LDialogStory:continueAll(sep) end
 
 --- Returns available choices as `{text, available, tags, index}` rows.
+---@return table Choice rows with text, availability, tags, and one-based index.
 function LDialogStory:getChoices() end
 
 --- Returns one story variable value, or nil when the story variable is not currently defined.
----@param name any
+---@param name string Story variable name.
+---@return nil boolean|number|string | Story variable value, or nil when undefined.
 function LDialogStory:getVariable(name) end
 
 --- Jumps immediately to a named story knot and resets the story position to that knot start.
----@param name any
+---@param name string Knot name.
 function LDialogStory:gotoKnot(name) end
 
 --- Lists story variable names.
+---@return table Array of story variable names.
 function LDialogStory:listVariables() end
 
 --- Restores a snapshot returned by `snapshot`.
----@param snapshot any
+---@param snapshot table Snapshot table previously returned by `snapshot`.
 function LDialogStory:restore(snapshot) end
 
 --- Sets or replaces one story variable using a nil, boolean, number, or string value.
@@ -11007,18 +11013,21 @@ function LDialogStory:setVariable(name, value) end
 function LDialogStory:snapshot() end
 
 --- Starts the story at a named knot or at START/ENTRY/first knot.
----@param knot? any
+---@param knot? string Knot name, or nil to use START/ENTRY/first knot.
 function LDialogStory:start(knot) end
 
 --- Returns the Lua userdata type name for compiled dialog story handles.
+---@return string Lua userdata type name.
 function LDialogStory:type() end
 
 --- Returns true for `LDialogStory` and shared `LObject` runtime type checks.
----@param name any
+---@param name string Type name to test.
+---@return boolean True for `LDialogStory` or shared `LObject`.
 function LDialogStory:typeOf(name) end
 
 --- Returns how many times a knot has been entered.
----@param name any
+---@param name string Knot name.
+---@return number Number of visits recorded for the knot.
 function LDialogStory:visitCount(name) end
 
 --- Adds a selectable branch under an existing dialogue topic.
@@ -24250,14 +24259,16 @@ function LWeightedRandom:setWeight(id, weight) end
 function LWeightedRandom:totalWeight() end
 
 --- Counts array items by a selector field path or callback.
----@param items any
----@param selector any
+---@param items table Sequence table.
+---@param selector string|function Field path or callback `(item, index)`.
+---@return table String-keyed counts by selected value.
 lurek.patterns.countBy = function(items, selector) end
 
 --- Finds numeric selector runs with a constant step.
----@param items any
----@param selector any
----@param opts? any
+---@param items table Sequence table.
+---@param selector string|function Field path or callback `(item, index)`.
+---@param opts? table Optional `minLength`, `min_length`, and `step` settings.
+---@return table Runs of one-based indices and numeric values.
 lurek.patterns.findSequences = function(items, selector, opts) end
 
 --- Groups array items by a selector field path or callback.
@@ -24383,16 +24394,18 @@ lurek.patterns.newThrottle = function(interval) end
 lurek.patterns.newWeightedRandom = function() end
 
 --- Returns one-based item indices sorted by selector value.
----@param items any
----@param selector any
----@param opts? any
+---@param items table Sequence table.
+---@param selector string|function Field path or callback `(item, index)`.
+---@param opts? table Optional sort flags such as `descending` or `desc`.
+---@return table One-based item indices sorted by selected value.
 lurek.patterns.sortedIndices = function(items, selector, opts) end
 
 --- Returns the top `n` items by selector value, or indices when `opts.indices` is true.
----@param items any
----@param selector any
----@param n any
----@param opts? any
+---@param items table Sequence table.
+---@param selector string|function Field path or callback `(item, index)`.
+---@param n number Maximum number of results.
+---@param opts? table Optional flags such as `indices`, `descending`, or `desc`.
+---@return table Top item values, or one-based indices when `opts.indices` is true.
 lurek.patterns.topN = function(items, selector, n, opts) end
 
 --- Returns one terrain-height cell from the altitude layer.

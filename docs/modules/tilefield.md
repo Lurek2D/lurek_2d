@@ -683,6 +683,18 @@ LTileField:clearOccupant(x, y, z)
 |------|-------------|
 | boolean | True when an occupant was removed. |
 
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 8, height = 8 })
+    field:setOccupant(2, 3, 1, 99)
+    field:clearOccupant(2, 3, 1)
+    local occupant = field:getOccupant(2, 3, 1)
+    lurek.log.info("occupant after clear=" .. tostring(occupant))
+end
+```
+
 ---
 
 #### `LTileField:clearRef`
@@ -1402,6 +1414,18 @@ LTileField:getOccupant(x, y, z)
 |------|-------------|
 | number | Occupant id, or nil. |
 
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 8, height = 8 })
+    field:setOccupant(1, 1, 77)
+    local occupant = field:getOccupant(1, 1, 1)
+    local same = occupant == 77
+    lurek.log.info("occupant read=" .. tostring(occupant) .. " same=" .. tostring(same))
+end
+```
+
 ---
 
 #### `LTileField:getProfile`
@@ -1832,7 +1856,8 @@ do
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     field:setRegionCells("inn", { { x = 2, y = 2, z = 1 } })
     field:setRegionProperty("inn", "music", "inn_theme")
-    lurek.log.info("region property = " .. tostring(field:getRegionProperty("inn", "music")))
+    local music = field:getRegionProperty("inn", "music")
+    lurek.log.info("region property = " .. tostring(music))
 end
 ```
 
@@ -1859,6 +1884,18 @@ LTileField:getResource(x, y, z)
 | Type | Description |
 |------|-------------|
 | string | Resource label, or nil. |
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 8, height = 8 })
+    field:setResource(2, 3, 1, "ore")
+    local resource = field:getResource(2, 3, 1)
+    local same = resource == "ore"
+    lurek.log.info("resource read=" .. tostring(resource) .. " same=" .. tostring(same))
+end
+```
 
 ---
 
@@ -2092,6 +2129,18 @@ LTileField:isBuildable(x, y, z)
 | Type | Description |
 |------|-------------|
 | boolean | True when build placement is allowed. |
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 8, height = 8 })
+    field:setBuildable(2, 3, 1, true)
+    local buildable = field:isBuildable(2, 3, 1)
+    local status = buildable and "allowed" or "blocked"
+    lurek.log.info("buildability read=" .. status)
+end
+```
 
 ---
 
@@ -2409,6 +2458,18 @@ LTileField:setBuildable(x, y, z, buildable)
 | `z?` | number | One-based level, default 1. |
 | `buildable` | boolean | True when build placement is allowed. |
 
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 8, height = 8 })
+    field:setBuildable(2, 3, 1, true)
+    local buildable = field:isBuildable(2, 3, 1)
+    local status = buildable and "allowed" or "blocked"
+    lurek.log.info("buildability set=" .. status)
+end
+```
+
 ---
 
 #### `LTileField:setCategoryBlock`
@@ -2680,6 +2741,18 @@ LTileField:setOccupant(x, y, z, occupant)
 | `z?` | number | One-based level, default 1. |
 | `occupant` | number | Occupant id, usually an ECS entity id. |
 
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 8, height = 8 })
+    field:setOccupant(2, 3, 1, 99)
+    local occupant = field:getOccupant(2, 3, 1)
+    local occupied = occupant ~= nil
+    lurek.log.info("occupant set=" .. tostring(occupant) .. " occupied=" .. tostring(occupied))
+end
+```
+
 ---
 
 #### `LTileField:setProfile`
@@ -2797,7 +2870,8 @@ do
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
     field:setRegionCells("exit", { { x = 5, y = 2, z = 1 } })
     field:setRegionProperty("exit", "targetScene", "town_square")
-    lurek.log.info("region property set = " .. tostring(field:getRegionProperty("exit", "targetScene")))
+    local target = field:getRegionProperty("exit", "targetScene")
+    lurek.log.info("region property set = " .. tostring(target))
 end
 ```
 
@@ -2858,6 +2932,18 @@ LTileField:setResource(x, y, z, resource)
 | `y` | number | One-based row. |
 | `z?` | number | One-based level, default 1. |
 | `resource?` | string | Resource label, or nil to clear. |
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 8, height = 8 })
+    field:setResource(2, 3, 1, "ore")
+    local resource = field:getResource(2, 3, 1)
+    local has_resource = resource ~= nil
+    lurek.log.info("resource set=" .. tostring(resource) .. " present=" .. tostring(has_resource))
+end
+```
 
 ---
 

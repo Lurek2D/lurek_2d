@@ -50,8 +50,14 @@ lurek.patterns.countBy(items, selector)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `items` | any |  |
-| `selector` | any |  |
+| `items` | table | Sequence table. |
+| `selector` | string|function | Field path or callback `(item, index)`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | String-keyed counts by selected value. |
 
 **Example**
 
@@ -81,9 +87,15 @@ lurek.patterns.findSequences(items, selector, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `items` | any |  |
-| `selector` | any |  |
-| `opts?` | any |  |
+| `items` | table | Sequence table. |
+| `selector` | string|function | Field path or callback `(item, index)`. |
+| `opts?` | table | Optional `minLength`, `min_length`, and `step` settings. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Runs of one-based indices and numeric values. |
 
 **Example**
 
@@ -1040,9 +1052,15 @@ lurek.patterns.sortedIndices(items, selector, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `items` | any |  |
-| `selector` | any |  |
-| `opts?` | any |  |
+| `items` | table | Sequence table. |
+| `selector` | string|function | Field path or callback `(item, index)`. |
+| `opts?` | table | Optional sort flags such as `descending` or `desc`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | One-based item indices sorted by selected value. |
 
 **Example**
 
@@ -1072,10 +1090,16 @@ lurek.patterns.topN(items, selector, n, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `items` | any |  |
-| `selector` | any |  |
-| `n` | any |  |
-| `opts?` | any |  |
+| `items` | table | Sequence table. |
+| `selector` | string|function | Field path or callback `(item, index)`. |
+| `n` | number | Maximum number of results. |
+| `opts?` | table | Optional flags such as `indices`, `descending`, or `desc`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Top item values, or one-based indices when `opts.indices` is true. |
 
 **Example**
 
@@ -1099,7 +1123,11 @@ end
 
 ## Callback Parameters
 
+- `lurek.patterns.countBy` param `selector` (`string|function`): Field path or callback `(item, index)`.
+- `lurek.patterns.findSequences` param `selector` (`string|function`): Field path or callback `(item, index)`.
 - `lurek.patterns.groupBy` param `selector` (`string|function`): Field path such as `"kind"` or callback `(item, index)`.
+- `lurek.patterns.sortedIndices` param `selector` (`string|function`): Field path or callback `(item, index)`.
+- `lurek.patterns.topN` param `selector` (`string|function`): Field path or callback `(item, index)`.
 
 ## Enums
 

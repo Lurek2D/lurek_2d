@@ -442,6 +442,7 @@ impl LuaUserData for LuaDialogStory {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- start --
         /// Starts the story at a named knot or at START/ENTRY/first knot.
+        /// @param | knot | string? | Knot name, or nil to use START/ENTRY/first knot.
         methods.add_method("start", |_, this, knot: Option<String>| {
             this.inner
                 .borrow_mut()
@@ -451,11 +452,13 @@ impl LuaUserData for LuaDialogStory {
         });
         // -- canContinue --
         /// Returns whether the story can emit another line.
+        /// @return | boolean | True when another story line can be emitted.
         methods.add_method("canContinue", |_, this, ()| {
             Ok(this.inner.borrow().can_continue())
         });
         // -- continue --
         /// Emits the next story line and tag array, or nil at choice/end.
+        /// @return | string?, table | Next line plus tag array, or nil plus an empty tag table.
         methods.add_method("continue", |lua, this, ()| {
             match this
                 .inner
@@ -475,6 +478,7 @@ impl LuaUserData for LuaDialogStory {
         });
         // -- continueAll --
         /// Drains story lines until a choice or end and joins them.
+        /// @param | sep | string? | Separator used between lines, default newline.
         methods.add_method("continueAll", |_, this, sep: Option<String>| {
             this.inner
                 .borrow_mut()
@@ -483,6 +487,7 @@ impl LuaUserData for LuaDialogStory {
         });
         // -- getChoices --
         /// Returns available choices as `{text, available, tags, index}` rows.
+        /// @return | table | Choice rows with text, availability, tags, and one-based index.
         methods.add_method("getChoices", |lua, this, ()| {
             let choices = this
                 .inner
@@ -506,6 +511,7 @@ impl LuaUserData for LuaDialogStory {
         });
         // -- choose --
         /// Selects an available story choice by one-based choice index.
+        /// @param | index | integer | One-based choice index.
         methods.add_method("choose", |_, this, index: usize| {
             this.inner
                 .borrow_mut()
@@ -515,6 +521,7 @@ impl LuaUserData for LuaDialogStory {
         });
         // -- gotoKnot --
         /// Jumps immediately to a named story knot and resets the story position to that knot start.
+        /// @param | name | string | Knot name.
         methods.add_method("gotoKnot", |_, this, name: String| {
             this.inner
                 .borrow_mut()
@@ -535,11 +542,14 @@ impl LuaUserData for LuaDialogStory {
         );
         // -- getVariable --
         /// Returns one story variable value, or nil when the story variable is not currently defined.
+        /// @param | name | string | Story variable name.
+        /// @return | nil|boolean|number|string | Story variable value, or nil when undefined.
         methods.add_method("getVariable", |lua, this, name: String| {
             story_value_to_lua(lua, &this.inner.borrow().get_variable(&name))
         });
         // -- listVariables --
         /// Lists story variable names.
+        /// @return | table | Array of story variable names.
         methods.add_method("listVariables", |lua, this, ()| {
             let out = lua.create_table()?;
             for (index, name) in this.inner.borrow().variable_names().into_iter().enumerate() {
@@ -549,6 +559,8 @@ impl LuaUserData for LuaDialogStory {
         });
         // -- visitCount --
         /// Returns how many times a knot has been entered.
+        /// @param | name | string | Knot name.
+        /// @return | integer | Number of visits recorded for the knot.
         methods.add_method("visitCount", |_, this, name: String| {
             Ok(this.inner.borrow().visit_count(&name))
         });
@@ -559,6 +571,7 @@ impl LuaUserData for LuaDialogStory {
         });
         // -- restore --
         /// Restores a snapshot returned by `snapshot`.
+        /// @param | snapshot | table | Snapshot table previously returned by `snapshot`.
         methods.add_method("restore", |_, this, snapshot: LuaTable| {
             this.inner
                 .borrow_mut()
@@ -567,9 +580,12 @@ impl LuaUserData for LuaDialogStory {
         });
         // -- type --
         /// Returns the Lua userdata type name for compiled dialog story handles.
+        /// @return | string | Lua userdata type name.
         methods.add_method("type", |_, _, ()| Ok("LDialogStory"));
         // -- typeOf --
         /// Returns true for `LDialogStory` and shared `LObject` runtime type checks.
+        /// @param | name | string | Type name to test.
+        /// @return | boolean | True for `LDialogStory` or shared `LObject`.
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LDialogStory" || name == "LObject")
         });

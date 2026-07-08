@@ -1503,6 +1503,18 @@ LBody:applyThrust(amount)
 |------|------|-------------|
 | `amount` | number | Force amount in world units. |
 
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newBody(16, 16, "dynamic")
+    body:applyThrust(10)
+    world:step(1 / 60)
+    lurek.log.info("[physics] thrust body x=" .. tostring(body:getX()))
+end
+```
+
 ---
 
 #### `LBody:applyTorque`
@@ -1548,6 +1560,18 @@ LBody:applyTurn(torque)
 | Name | Type | Description |
 |------|------|-------------|
 | `torque` | number | Torque amount. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newBody(16, 16, "dynamic")
+    body:applyTurn(1)
+    world:step(1 / 60)
+    lurek.log.info("[physics] turn body id=" .. tostring(body:getId()))
+end
+```
 
 ---
 
@@ -10038,6 +10062,18 @@ LWorld:setTopDownDamping(linear, angular)
 | `linear` | number | Linear damping coefficient, >= 0. |
 | `angular` | number | Angular damping coefficient, >= 0. |
 
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    world:setTopDownDamping(0.2, 0.3)
+    local body = world:newBody(16, 16, "dynamic")
+    world:step(1 / 60)
+    lurek.log.info("[physics] damping body id=" .. tostring(body:getId()))
+end
+```
+
 ---
 
 #### `LWorld:setWrapBounds`
@@ -10056,6 +10092,18 @@ LWorld:setWrapBounds(minX, minY, maxX, maxY)
 | `minY?` | number | Minimum Y bound. |
 | `maxX?` | number | Maximum X bound. |
 | `maxY?` | number | Maximum Y bound. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    world:setWrapBounds(0, 0, 100, 100)
+    local body = world:newBody(120, 50, "dynamic")
+    world:wrapBody(body)
+    lurek.log.info("[physics] wrapped x=" .. tostring(body:getX()))
+end
+```
 
 ---
 
@@ -10384,6 +10432,18 @@ LWorld:wrapBody(bodyId)
 |------|-------------|
 | number | Wrapped X coordinate. |
 | number | Wrapped Y coordinate. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    world:setWrapBounds(0, 0, 100, 100)
+    local body = world:newBody(120, 50, "dynamic")
+    world:wrapBody(body)
+    lurek.log.info("[physics] wrapBody x=" .. tostring(body:getX()))
+end
+```
 
 ---
 

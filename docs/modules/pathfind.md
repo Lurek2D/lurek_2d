@@ -7921,6 +7921,18 @@ LUnitPathfinder:clearReservations()
 |------|-------------|
 | number | Number of reservations cleared. |
 
+**Example**
+
+```lua
+do
+  local grid = lurek.pathfind.newNavGrid(8, 8)
+  local pathfinder = lurek.pathfind.newPathfinder(grid)
+  pathfinder:reserveCells({ { x = 1, y = 1 }, { x = 2, y = 1 } })
+  local cleared = pathfinder:clearReservations()
+  lurek.log.info("cleared reservations=" .. tostring(cleared))
+end
+```
+
 ---
 
 #### `LUnitPathfinder:clearSharedGoalCache`
@@ -7976,6 +7988,18 @@ LUnitPathfinder:findAttackMovePaths(starts, gx, gy, unit_size, max_steps)
 |------|-------------|
 | table | Array of path arrays; unreachable entries are nil. |
 
+**Example**
+
+```lua
+do
+  local grid = lurek.pathfind.newNavGrid(8, 8)
+  local pathfinder = lurek.pathfind.newPathfinder(grid)
+  local starts = { { x = 1, y = 1 }, { x = 2, y = 1 } }
+  local paths = pathfinder:findAttackMovePaths(starts, 8, 8, 1, 16)
+  lurek.log.info("attack-move paths=" .. tostring(#paths))
+end
+```
+
 ---
 
 #### `LUnitPathfinder:findFormationPaths`
@@ -8001,6 +8025,18 @@ LUnitPathfinder:findFormationPaths(starts, gx, gy, unit_size, spacing)
 | Type | Description |
 |------|-------------|
 | table | Array of path arrays; unreachable entries are nil. |
+
+**Example**
+
+```lua
+do
+  local grid = lurek.pathfind.newNavGrid(8, 8)
+  local pathfinder = lurek.pathfind.newPathfinder(grid)
+  local starts = { { x = 1, y = 1 }, { x = 2, y = 1 } }
+  local paths = pathfinder:findFormationPaths(starts, 8, 8, 1, 1)
+  lurek.log.info("formation paths=" .. tostring(#paths))
+end
+```
 
 ---
 
@@ -8843,6 +8879,18 @@ LUnitPathfinder:reserveCells(cells)
 | Type | Description |
 |------|-------------|
 | number | Total reserved cell count after the update. |
+
+**Example**
+
+```lua
+do
+  local grid = lurek.pathfind.newNavGrid(8, 8)
+  local pathfinder = lurek.pathfind.newPathfinder(grid)
+  local starts = { { x = 1, y = 1 }, { x = 2, y = 1 } }
+  local reserved = pathfinder:reserveCells(starts)
+  lurek.log.info("reserved cells=" .. tostring(reserved))
+end
+```
 
 ---
 

@@ -2843,3 +2843,49 @@ do
   local trace = mcts:getLastTrace()
   lurek.log.info(tostring("LMCTSEngine:getLastTrace: invalid_scores=" .. tostring(trace.invalid_score_count)))
 end
+
+--@api: LCommandQueue:pushOrder
+do
+  local queue = lurek.ai.newCommandQueue()
+  queue:pushOrder({ kind = "move", x = 8, y = 4, tag = "path" })
+  local order = queue:peekOrder()
+  lurek.log.info("queued order kind=" .. tostring(order.kind))
+  lurek.log.info("queued order tag=" .. tostring(order.tag))
+end
+
+--@api: LCommandQueue:peekOrder
+do
+  local queue = lurek.ai.newCommandQueue()
+  queue:pushOrder({ kind = "move", x = 8, y = 4, tag = "path" })
+  local order = queue:peekOrder()
+  lurek.log.info("peeked order kind=" .. tostring(order.kind))
+  lurek.log.info("peeked order x=" .. tostring(order.x))
+end
+
+--@api: LCommandQueue:replaceOrders
+do
+  local queue = lurek.ai.newCommandQueue()
+  queue:replaceOrders({ { kind = "attackMove", targetX = 16, targetY = 8, tag = "combat" } })
+  local snapshot = queue:getOrderSnapshot()
+  lurek.log.info("replacement count=" .. tostring(#snapshot))
+  lurek.log.info("replacement kind=" .. tostring(snapshot[1].kind))
+end
+
+--@api: LCommandQueue:cancelByTag
+do
+  local queue = lurek.ai.newCommandQueue()
+  queue:pushOrder({ kind = "attackMove", targetX = 16, targetY = 8, tag = "combat" })
+  local removed = queue:cancelByTag("combat")
+  local snapshot = queue:getOrderSnapshot()
+  lurek.log.info("cancelled orders=" .. tostring(removed))
+  lurek.log.info("remaining orders=" .. tostring(#snapshot))
+end
+
+--@api: LCommandQueue:getOrderSnapshot
+do
+  local queue = lurek.ai.newCommandQueue()
+  queue:pushOrder({ kind = "move", x = 8, y = 4, tag = "path" })
+  local snapshot = queue:getOrderSnapshot()
+  lurek.log.info("snapshot orders=" .. tostring(#snapshot))
+  lurek.log.info("snapshot first=" .. tostring(snapshot[1].kind))
+end

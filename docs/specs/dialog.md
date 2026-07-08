@@ -181,21 +181,21 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 ##### Methods
 
-- `LDialogStory:canContinue() -> nil`: Returns whether the story can emit another line.
+- `LDialogStory:canContinue() -> boolean`: Returns whether the story can emit another line.
 - `LDialogStory:choose(index) -> nil`: Selects an available story choice by one-based choice index.
-- `LDialogStory:continue() -> nil`: Emits the next story line and tag array, or nil at choice/end.
+- `LDialogStory:continue() -> string?, table`: Emits the next story line and tag array, or nil at choice/end.
 - `LDialogStory:continueAll(sep?) -> nil`: Drains story lines until a choice or end and joins them.
-- `LDialogStory:getChoices() -> nil`: Returns available choices as `{text, available, tags, index}` rows.
-- `LDialogStory:getVariable(name) -> nil`: Returns one story variable value, or nil when the story variable is not currently defined.
+- `LDialogStory:getChoices() -> table`: Returns available choices as `{text, available, tags, index}` rows.
+- `LDialogStory:getVariable(name) -> nil|boolean|number|string`: Returns one story variable value, or nil when the story variable is not currently defined.
 - `LDialogStory:gotoKnot(name) -> nil`: Jumps immediately to a named story knot and resets the story position to that knot start.
-- `LDialogStory:listVariables() -> nil`: Lists story variable names.
+- `LDialogStory:listVariables() -> table`: Lists story variable names.
 - `LDialogStory:restore(snapshot) -> nil`: Restores a snapshot returned by `snapshot`.
 - `LDialogStory:setVariable(name, value) -> nil`: Sets or replaces one story variable using a nil, boolean, number, or string value.
 - `LDialogStory:snapshot() -> nil`: Returns a serializable story runtime snapshot.
 - `LDialogStory:start(knot?) -> nil`: Starts the story at a named knot or at START/ENTRY/first knot.
-- `LDialogStory:type() -> nil`: Returns the Lua userdata type name for compiled dialog story handles.
-- `LDialogStory:typeOf(name) -> nil`: Returns true for `LDialogStory` and shared `LObject` runtime type checks.
-- `LDialogStory:visitCount(name) -> nil`: Returns how many times a knot has been entered.
+- `LDialogStory:type() -> string`: Returns the Lua userdata type name for compiled dialog story handles.
+- `LDialogStory:typeOf(name) -> boolean`: Returns true for `LDialogStory` and shared `LObject` runtime type checks.
+- `LDialogStory:visitCount(name) -> integer`: Returns how many times a knot has been entered.
 
 #### LDialogueAI Type
 

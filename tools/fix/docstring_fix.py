@@ -58,7 +58,7 @@ def _rust_to_lua(t: str) -> str:
     m = re.match(r"Option<(.+)>", t)
     if m:
         inner = _rust_to_lua(m.group(1))
-        return inner + "?" if inner else "any?"
+        return inner + "?" if inner else ""
     m = re.match(r"Vec<.+>", t)
     if m:
         return "table"
@@ -184,7 +184,7 @@ def _extract_rust_return(lines: List[str], decl_line: int) -> str:
         mb = re.search(r"borrow::<(Lua\w+)>", m.group(1))
         if mb:
             return mb.group(1)[3:]
-        return "any"
+        return ""
 
     return ""
 
@@ -277,7 +277,9 @@ def _build_param_lines(
     for name, rtype in rust_params:
         if name in existing_params:
             continue
-        lua_type = userdata_map.get(name) or _rust_to_lua(rtype) or "any"
+        lua_type = userdata_map.get(name) or _rust_to_lua(rtype)
+        if not lua_type:
+            continue
         result.append(f"{indent}/// @param {name} : {lua_type}")
     return result
 

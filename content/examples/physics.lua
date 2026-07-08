@@ -3984,3 +3984,48 @@ do
     local result = world:castProjectile({ x = 0, y = 0, radius = 2, dx = 1, dy = 0, maxDist = 128 })
     lurek.log.info("[physics] castProjectile hit=" .. tostring(result.hit) .. " travel=" .. tostring(result.travel))
 end
+
+--@api: LWorld:setWrapBounds
+do
+    local world = lurek.physics.newWorld(0, 0)
+    world:setWrapBounds(0, 0, 100, 100)
+    local body = world:newBody(120, 50, "dynamic")
+    world:wrapBody(body)
+    lurek.log.info("[physics] wrapped x=" .. tostring(body:getX()))
+end
+
+--@api: LWorld:wrapBody
+do
+    local world = lurek.physics.newWorld(0, 0)
+    world:setWrapBounds(0, 0, 100, 100)
+    local body = world:newBody(120, 50, "dynamic")
+    world:wrapBody(body)
+    lurek.log.info("[physics] wrapBody x=" .. tostring(body:getX()))
+end
+
+--@api: LWorld:setTopDownDamping
+do
+    local world = lurek.physics.newWorld(0, 0)
+    world:setTopDownDamping(0.2, 0.3)
+    local body = world:newBody(16, 16, "dynamic")
+    world:step(1 / 60)
+    lurek.log.info("[physics] damping body id=" .. tostring(body:getId()))
+end
+
+--@api: LBody:applyThrust
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newBody(16, 16, "dynamic")
+    body:applyThrust(10)
+    world:step(1 / 60)
+    lurek.log.info("[physics] thrust body x=" .. tostring(body:getX()))
+end
+
+--@api: LBody:applyTurn
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newBody(16, 16, "dynamic")
+    body:applyTurn(1)
+    world:step(1 / 60)
+    lurek.log.info("[physics] turn body id=" .. tostring(body:getId()))
+end

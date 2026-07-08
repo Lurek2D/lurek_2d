@@ -16,6 +16,15 @@ do
     lurek.log.info(tostring("summary = " .. summary))
 end
 
+--@api: LSaveManager:registerSchema
+do
+    local manager = lurek.save.newSaveManager()
+    manager:registerSchema("ecs_loadout", 2, function(data) data.migrated = true return data end)
+    local version = manager:getSchemaVersion()
+    local format = manager:getFormat()
+    lurek.log.info("registered schema version=" .. tostring(version) .. " format=" .. tostring(format))
+end
+
 --@api: LSaveManager:setFormat
 do
 

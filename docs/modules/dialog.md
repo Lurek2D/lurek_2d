@@ -231,8 +231,10 @@ lurek.dialog.label(name)
 ```lua
 do
     local node = lurek.dialog.label("branch_a")
+    local same = node.name == "branch_a"
     lurek.log.info("label node type = " .. node.type)
     lurek.log.info("label name = " .. node.name)
+    lurek.log.info("label matched = " .. tostring(same))
 end
 ```
 
@@ -1311,6 +1313,12 @@ Returns whether the story can emit another line.
 LDialogStory:canContinue()
 ```
 
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when another story line can be emitted. |
+
 **Example**
 
 ```lua
@@ -1338,7 +1346,7 @@ LDialogStory:choose(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | any |  |
+| `index` | number | One-based choice index. |
 
 **Example**
 
@@ -1361,6 +1369,13 @@ Emits the next story line and tag array, or nil at choice/end.
 ```lua
 LDialogStory:continue()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string? | Next line plus tag array; or nil plus an empty tag table. (value 1). |
+| table | Next line plus tag array; or nil plus an empty tag table. (value 2). |
 
 **Example**
 
@@ -1389,7 +1404,7 @@ LDialogStory:continueAll(sep)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sep?` | any |  |
+| `sep?` | string | Separator used between lines, default newline. |
 
 **Example**
 
@@ -1413,6 +1428,12 @@ Returns available choices as `{text, available, tags, index}` rows.
 ```lua
 LDialogStory:getChoices()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Choice rows with text, availability, tags, and one-based index. |
 
 **Example**
 
@@ -1441,7 +1462,13 @@ LDialogStory:getVariable(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
+| `name` | string | Story variable name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | boolean|number|string | Story variable value, or nil when undefined. |
 
 **Example**
 
@@ -1469,7 +1496,7 @@ LDialogStory:gotoKnot(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
+| `name` | string | Knot name. |
 
 **Example**
 
@@ -1492,6 +1519,12 @@ Lists story variable names.
 ```lua
 LDialogStory:listVariables()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of story variable names. |
 
 **Example**
 
@@ -1520,7 +1553,7 @@ LDialogStory:restore(snapshot)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `snapshot` | any |  |
+| `snapshot` | table | Snapshot table previously returned by `snapshot`. |
 
 **Example**
 
@@ -1601,7 +1634,7 @@ LDialogStory:start(knot)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `knot?` | any |  |
+| `knot?` | string | Knot name, or nil to use START/ENTRY/first knot. |
 
 **Example**
 
@@ -1625,6 +1658,12 @@ Returns the Lua userdata type name for compiled dialog story handles.
 ```lua
 LDialogStory:type()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Lua userdata type name. |
 
 **Example**
 
@@ -1653,7 +1692,13 @@ LDialogStory:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
+| `name` | string | Type name to test. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True for `[LDialogStory](#ldialogstory)` or shared `LObject`. |
 
 **Example**
 
@@ -1681,7 +1726,13 @@ LDialogStory:visitCount(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
+| `name` | string | Knot name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Number of visits recorded for the knot. |
 
 **Example**
 

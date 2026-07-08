@@ -20399,19 +20399,19 @@
           "parameters": [
             {
               "name": "items",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Sequence table.",
               "optional": false
             },
             {
               "name": "selector",
-              "type": "any",
-              "description": "",
+              "type": "string|function",
+              "description": "Field path or callback `(item, index)`.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": false,
           "objectType": null
         },
@@ -20423,25 +20423,25 @@
           "parameters": [
             {
               "name": "items",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Sequence table.",
               "optional": false
             },
             {
               "name": "selector",
-              "type": "any",
-              "description": "",
+              "type": "string|function",
+              "description": "Field path or callback `(item, index)`.",
               "optional": false
             },
             {
               "name": "opts",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Optional sort flags such as `descending` or `desc`.",
               "optional": true
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": false,
           "objectType": null
         },
@@ -20453,31 +20453,31 @@
           "parameters": [
             {
               "name": "items",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Sequence table.",
               "optional": false
             },
             {
               "name": "selector",
-              "type": "any",
-              "description": "",
+              "type": "string|function",
+              "description": "Field path or callback `(item, index)`.",
               "optional": false
             },
             {
               "name": "n",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Maximum number of results.",
               "optional": false
             },
             {
               "name": "opts",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Optional flags such as `indices`, `descending`, or `desc`.",
               "optional": true
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": false,
           "objectType": null
         },
@@ -20489,25 +20489,25 @@
           "parameters": [
             {
               "name": "items",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Sequence table.",
               "optional": false
             },
             {
               "name": "selector",
-              "type": "any",
-              "description": "",
+              "type": "string|function",
+              "description": "Field path or callback `(item, index)`.",
               "optional": false
             },
             {
               "name": "opts",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Optional `minLength`, `min_length`, and `step` settings.",
               "optional": true
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": false,
           "objectType": null
         }
@@ -65789,8 +65789,8 @@
           "parameters": [
             {
               "name": "knot",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Knot name, or nil to use START/ENTRY/first knot.",
               "optional": true
             }
           ],
@@ -65805,8 +65805,8 @@
           "signature": "()",
           "description": "Returns whether the story can emit another line.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LDialogStory"
         },
@@ -65816,8 +65816,8 @@
           "signature": "()",
           "description": "Emits the next story line and tag array, or nil at choice/end.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "string?, table",
+          "returnType": "string?, table",
           "isMethod": true,
           "objectType": "LDialogStory"
         },
@@ -65829,8 +65829,8 @@
           "parameters": [
             {
               "name": "sep",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Separator used between lines, default newline.",
               "optional": true
             }
           ],
@@ -65845,8 +65845,8 @@
           "signature": "()",
           "description": "Returns available choices as `{text, available, tags, index}` rows.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LDialogStory"
         },
@@ -65858,8 +65858,8 @@
           "parameters": [
             {
               "name": "index",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based choice index.",
               "optional": false
             }
           ],
@@ -65876,8 +65876,8 @@
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Knot name.",
               "optional": false
             }
           ],
@@ -65918,13 +65918,13 @@
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Story variable name.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "nil|boolean|number|string",
+          "returnType": "nil|boolean|number|string",
           "isMethod": true,
           "objectType": "LDialogStory"
         },
@@ -65934,8 +65934,8 @@
           "signature": "()",
           "description": "Lists story variable names.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LDialogStory"
         },
@@ -65947,13 +65947,13 @@
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Knot name.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LDialogStory"
         },
@@ -65976,8 +65976,8 @@
           "parameters": [
             {
               "name": "snapshot",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Snapshot table previously returned by `snapshot`.",
               "optional": false
             }
           ],
@@ -65992,8 +65992,8 @@
           "signature": "()",
           "description": "Returns the Lua userdata type name for compiled dialog story handles.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LDialogStory"
         },
@@ -66005,13 +66005,13 @@
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Type name to test.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LDialogStory"
         }

@@ -1585,6 +1585,7 @@ impl LuaUserData for LuaLoadout {
         });
         // -- equip --
         /// Equips a part into a named slot after compatibility checks.
+        /// @return boolean
         /// @param | slot | string | Slot name.
         /// @param | part | LPartDef | Part definition to equip.
         methods.add_method("equip", |_, this, args: LuaMultiValue| {

@@ -459,6 +459,21 @@ LSkeleton:applyLoadoutVisuals(loadout)
 |------|-------------|
 | number | Number of slot attachments changed. |
 
+**Example**
+
+```lua
+do
+    local slot = lurek.ecs.newSlotDef("weapon", { accepts = { "gun" } })
+    local part = lurek.ecs.newPartDef({ id = "railgun", slot = "weapon", tags = { "gun" }, visuals = { weapon_slot = "railgun_attachment" } })
+    local loadout = lurek.ecs.newLoadout({ slots = { slot } })
+    loadout:equip(part)
+    local skeleton = lurek.spine.newSkeleton("mech")
+    local root = skeleton:addBone("root")
+    skeleton:addSlot("weapon_slot", root, "empty")
+    lurek.log.info("loadout visuals applied=" .. tostring(skeleton:applyLoadoutVisuals(loadout)))
+end
+```
+
 ---
 
 #### `LSkeleton:bindAtlas`

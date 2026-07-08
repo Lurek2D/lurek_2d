@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-07-08T19:47:31.227319+00:00",
+    "generated": "2026-07-08T21:16:58.749561+00:00",
     "generator": "tools/gen_lua_api_data.py",
     "version": "1.1.0",
     "stats": {
@@ -37013,7 +37013,7 @@
             ],
             "inferred_return": "LDialogStory",
             "return_description": "Compiled story runtime.",
-            "line": 1112,
+            "line": 1128,
             "file": "src/lua_api/dialog_api.rs"
           },
           {
@@ -37029,7 +37029,7 @@
             "typed_params": [],
             "inferred_return": "LDialogueAI",
             "return_description": "New dialogue AI handle.",
-            "line": 1125,
+            "line": 1141,
             "file": "src/lua_api/dialog_api.rs"
           },
           {
@@ -37045,7 +37045,7 @@
             "typed_params": [],
             "inferred_return": "LDialogueState",
             "return_description": "New dialogue state handle.",
-            "line": 1137,
+            "line": 1153,
             "file": "src/lua_api/dialog_api.rs"
           },
           {
@@ -37061,7 +37061,7 @@
             "typed_params": [],
             "inferred_return": "LSpeakerRegistry",
             "return_description": "New speaker registry handle.",
-            "line": 1149,
+            "line": 1165,
             "file": "src/lua_api/dialog_api.rs"
           },
           {
@@ -37077,7 +37077,7 @@
             "typed_params": [],
             "inferred_return": "LDialogSequencer",
             "return_description": "New sequencer handle.",
-            "line": 1161,
+            "line": 1177,
             "file": "src/lua_api/dialog_api.rs"
           },
           {
@@ -37112,7 +37112,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Say node table for sequencer.load().",
-            "line": 1176,
+            "line": 1192,
             "file": "src/lua_api/dialog_api.rs"
           },
           {
@@ -37147,7 +37147,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Choice node table for sequencer.load().",
-            "line": 1201,
+            "line": 1217,
             "file": "src/lua_api/dialog_api.rs"
           },
           {
@@ -37176,7 +37176,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Wait node table for sequencer.load().",
-            "line": 1219,
+            "line": 1235,
             "file": "src/lua_api/dialog_api.rs"
           },
           {
@@ -37211,7 +37211,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Event node table for sequencer.load().",
-            "line": 1235,
+            "line": 1251,
             "file": "src/lua_api/dialog_api.rs"
           },
           {
@@ -37240,7 +37240,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Call node table for sequencer.load().",
-            "line": 1255,
+            "line": 1271,
             "file": "src/lua_api/dialog_api.rs"
           },
           {
@@ -37263,7 +37263,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Label node table for sequencer.load().",
-            "line": 1269,
+            "line": 1285,
             "file": "src/lua_api/dialog_api.rs"
           },
           {
@@ -37292,7 +37292,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Jump node table for sequencer.load().",
-            "line": 1284,
+            "line": 1300,
             "file": "src/lua_api/dialog_api.rs"
           }
         ],
@@ -37307,21 +37307,21 @@
                 "kind": "method",
                 "owner_type": "LDialogStory",
                 "description": "Starts the story at a named knot or at START/ENTRY/first knot.",
-                "full_doc": "Starts the story at a named knot or at START/ENTRY/first knot.",
-                "params_doc": "",
+                "full_doc": "Starts the story at a named knot or at START/ENTRY/first knot.\n@param | knot | string? | Knot name, or nil to use START/ENTRY/first knot.",
+                "params_doc": "- `knot` â€” `string?`: Knot name, or nil to use START/ENTRY/first knot.",
                 "returns_doc": "",
                 "inferred_sig": "([knot])",
                 "typed_params": [
                   [
                     "knot",
-                    "any",
+                    "string?",
                     true,
-                    ""
+                    "Knot name, or nil to use START/ENTRY/first knot."
                   ]
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 445,
+                "line": 446,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -37330,14 +37330,14 @@
                 "kind": "method",
                 "owner_type": "LDialogStory",
                 "description": "Returns whether the story can emit another line.",
-                "full_doc": "Returns whether the story can emit another line.",
+                "full_doc": "Returns whether the story can emit another line.\n@return | boolean | True when another story line can be emitted.",
                 "params_doc": "",
-                "returns_doc": "",
+                "returns_doc": "boolean",
                 "inferred_sig": "()",
                 "typed_params": [],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 454,
+                "inferred_return": "boolean",
+                "return_description": "True when another story line can be emitted.",
+                "line": 456,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -37346,14 +37346,14 @@
                 "kind": "method",
                 "owner_type": "LDialogStory",
                 "description": "Emits the next story line and tag array, or nil at choice/end.",
-                "full_doc": "Emits the next story line and tag array, or nil at choice/end.",
+                "full_doc": "Emits the next story line and tag array, or nil at choice/end.\n@return | string?, table | Next line plus tag array, or nil plus an empty tag table.",
                 "params_doc": "",
-                "returns_doc": "",
+                "returns_doc": "string?, table",
                 "inferred_sig": "()",
                 "typed_params": [],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 459,
+                "inferred_return": "string?, table",
+                "return_description": "Next line plus tag array, or nil plus an empty tag table.",
+                "line": 462,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -37362,21 +37362,21 @@
                 "kind": "method",
                 "owner_type": "LDialogStory",
                 "description": "Drains story lines until a choice or end and joins them.",
-                "full_doc": "Drains story lines until a choice or end and joins them.",
-                "params_doc": "",
+                "full_doc": "Drains story lines until a choice or end and joins them.\n@param | sep | string? | Separator used between lines, default newline.",
+                "params_doc": "- `sep` â€” `string?`: Separator used between lines, default newline.",
                 "returns_doc": "",
                 "inferred_sig": "([sep])",
                 "typed_params": [
                   [
                     "sep",
-                    "any",
+                    "string?",
                     true,
-                    ""
+                    "Separator used between lines, default newline."
                   ]
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 478,
+                "line": 482,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -37385,14 +37385,14 @@
                 "kind": "method",
                 "owner_type": "LDialogStory",
                 "description": "Returns available choices as `{text, available, tags, index}` rows.",
-                "full_doc": "Returns available choices as `{text, available, tags, index}` rows.",
+                "full_doc": "Returns available choices as `{text, available, tags, index}` rows.\n@return | table | Choice rows with text, availability, tags, and one-based index.",
                 "params_doc": "",
-                "returns_doc": "",
+                "returns_doc": "table",
                 "inferred_sig": "()",
                 "typed_params": [],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 486,
+                "inferred_return": "table",
+                "return_description": "Choice rows with text, availability, tags, and one-based index.",
+                "line": 491,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -37401,21 +37401,21 @@
                 "kind": "method",
                 "owner_type": "LDialogStory",
                 "description": "Selects an available story choice by one-based choice index.",
-                "full_doc": "Selects an available story choice by one-based choice index.",
-                "params_doc": "",
+                "full_doc": "Selects an available story choice by one-based choice index.\n@param | index | integer | One-based choice index.",
+                "params_doc": "- `index` â€” `integer`: One-based choice index.",
                 "returns_doc": "",
                 "inferred_sig": "(index)",
                 "typed_params": [
                   [
                     "index",
-                    "any",
+                    "integer",
                     false,
-                    ""
+                    "One-based choice index."
                   ]
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 509,
+                "line": 515,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -37424,21 +37424,21 @@
                 "kind": "method",
                 "owner_type": "LDialogStory",
                 "description": "Jumps immediately to a named story knot and resets the story position to that knot start.",
-                "full_doc": "Jumps immediately to a named story knot and resets the story position to that knot start.",
-                "params_doc": "",
+                "full_doc": "Jumps immediately to a named story knot and resets the story position to that knot start.\n@param | name | string | Knot name.",
+                "params_doc": "- `name` â€” `string`: Knot name.",
                 "returns_doc": "",
                 "inferred_sig": "(name)",
                 "typed_params": [
                   [
                     "name",
-                    "any",
+                    "string",
                     false,
-                    ""
+                    "Knot name."
                   ]
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 518,
+                "line": 525,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -37467,7 +37467,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 527,
+                "line": 534,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -37476,21 +37476,21 @@
                 "kind": "method",
                 "owner_type": "LDialogStory",
                 "description": "Returns one story variable value, or nil when the story variable is not currently defined.",
-                "full_doc": "Returns one story variable value, or nil when the story variable is not currently defined.",
-                "params_doc": "",
-                "returns_doc": "",
+                "full_doc": "Returns one story variable value, or nil when the story variable is not currently defined.\n@param | name | string | Story variable name.\n@return | nil|boolean|number|string | Story variable value, or nil when undefined.",
+                "params_doc": "- `name` â€” `string`: Story variable name.",
+                "returns_doc": "nil|boolean|number|string",
                 "inferred_sig": "(name)",
                 "typed_params": [
                   [
                     "name",
-                    "any",
+                    "string",
                     false,
-                    ""
+                    "Story variable name."
                   ]
                 ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 538,
+                "inferred_return": "nil|boolean|number|string",
+                "return_description": "Story variable value, or nil when undefined.",
+                "line": 547,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -37499,14 +37499,14 @@
                 "kind": "method",
                 "owner_type": "LDialogStory",
                 "description": "Lists story variable names.",
-                "full_doc": "Lists story variable names.",
+                "full_doc": "Lists story variable names.\n@return | table | Array of story variable names.",
                 "params_doc": "",
-                "returns_doc": "",
+                "returns_doc": "table",
                 "inferred_sig": "()",
                 "typed_params": [],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 543,
+                "inferred_return": "table",
+                "return_description": "Array of story variable names.",
+                "line": 553,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -37515,21 +37515,21 @@
                 "kind": "method",
                 "owner_type": "LDialogStory",
                 "description": "Returns how many times a knot has been entered.",
-                "full_doc": "Returns how many times a knot has been entered.",
-                "params_doc": "",
-                "returns_doc": "",
+                "full_doc": "Returns how many times a knot has been entered.\n@param | name | string | Knot name.\n@return | integer | Number of visits recorded for the knot.",
+                "params_doc": "- `name` â€” `string`: Knot name.",
+                "returns_doc": "integer",
                 "inferred_sig": "(name)",
                 "typed_params": [
                   [
                     "name",
-                    "any",
+                    "string",
                     false,
-                    ""
+                    "Knot name."
                   ]
                 ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 552,
+                "inferred_return": "integer",
+                "return_description": "Number of visits recorded for the knot.",
+                "line": 564,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -37545,7 +37545,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 557,
+                "line": 569,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -37554,21 +37554,21 @@
                 "kind": "method",
                 "owner_type": "LDialogStory",
                 "description": "Restores a snapshot returned by `snapshot`.",
-                "full_doc": "Restores a snapshot returned by `snapshot`.",
-                "params_doc": "",
+                "full_doc": "Restores a snapshot returned by `snapshot`.\n@param | snapshot | table | Snapshot table previously returned by `snapshot`.",
+                "params_doc": "- `snapshot` â€” `table`: Snapshot table previously returned by `snapshot`.",
                 "returns_doc": "",
                 "inferred_sig": "(snapshot)",
                 "typed_params": [
                   [
                     "snapshot",
-                    "any",
+                    "table",
                     false,
-                    ""
+                    "Snapshot table previously returned by `snapshot`."
                   ]
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 562,
+                "line": 575,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -37577,14 +37577,14 @@
                 "kind": "method",
                 "owner_type": "LDialogStory",
                 "description": "Returns the Lua userdata type name for compiled dialog story handles.",
-                "full_doc": "Returns the Lua userdata type name for compiled dialog story handles.",
+                "full_doc": "Returns the Lua userdata type name for compiled dialog story handles.\n@return | string | Lua userdata type name.",
                 "params_doc": "",
-                "returns_doc": "",
+                "returns_doc": "string",
                 "inferred_sig": "()",
                 "typed_params": [],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 570,
+                "inferred_return": "string",
+                "return_description": "Lua userdata type name.",
+                "line": 584,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -37593,21 +37593,21 @@
                 "kind": "method",
                 "owner_type": "LDialogStory",
                 "description": "Returns true for `LDialogStory` and shared `LObject` runtime type checks.",
-                "full_doc": "Returns true for `LDialogStory` and shared `LObject` runtime type checks.",
-                "params_doc": "",
-                "returns_doc": "",
+                "full_doc": "Returns true for `LDialogStory` and shared `LObject` runtime type checks.\n@param | name | string | Type name to test.\n@return | boolean | True for `LDialogStory` or shared `LObject`.",
+                "params_doc": "- `name` â€” `string`: Type name to test.",
+                "returns_doc": "boolean",
                 "inferred_sig": "(name)",
                 "typed_params": [
                   [
                     "name",
-                    "any",
+                    "string",
                     false,
-                    ""
+                    "Type name to test."
                   ]
                 ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 573,
+                "inferred_return": "boolean",
+                "return_description": "True for `LDialogStory` or shared `LObject`.",
+                "line": 589,
                 "file": "src/lua_api/dialog_api.rs"
               }
             ]
@@ -37636,7 +37636,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 584,
+                "line": 600,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -37659,7 +37659,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 591,
+                "line": 607,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -37688,7 +37688,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 599,
+                "line": 615,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -37704,7 +37704,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 605,
+                "line": 621,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -37751,7 +37751,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 616,
+                "line": 632,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -37804,7 +37804,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the branch was added to an existing topic.",
-                "line": 646,
+                "line": 662,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -37820,7 +37820,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Selected topic identifier, or nil when no topic is available.",
-                "line": 671,
+                "line": 687,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -37843,7 +37843,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Selected branch identifier, or nil when no branch is available.",
-                "line": 678,
+                "line": 694,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -37859,7 +37859,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Current topic count.",
-                "line": 684,
+                "line": 700,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -37875,7 +37875,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LDialogueAI`.",
-                "line": 690,
+                "line": 706,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -37898,7 +37898,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 695,
+                "line": 711,
                 "file": "src/lua_api/dialog_api.rs"
               }
             ]
@@ -37927,7 +37927,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 706,
+                "line": 722,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -37950,7 +37950,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 713,
+                "line": 729,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -37966,7 +37966,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 719,
+                "line": 735,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -37982,7 +37982,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Current node identifier, or nil when no node is active.",
-                "line": 726,
+                "line": 742,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38005,7 +38005,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the node has been visited.",
-                "line": 733,
+                "line": 749,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38021,7 +38021,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Count of visited nodes.",
-                "line": 739,
+                "line": 755,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38037,7 +38037,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True when conversation is active.",
-                "line": 745,
+                "line": 761,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38066,7 +38066,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 752,
+                "line": 768,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38089,7 +38089,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Variable value, or nil when the variable is not set.",
-                "line": 760,
+                "line": 776,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38105,7 +38105,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 769,
+                "line": 785,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38121,7 +38121,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LDialogueState`.",
-                "line": 776,
+                "line": 792,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38144,7 +38144,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the type name matches.",
-                "line": 781,
+                "line": 797,
                 "file": "src/lua_api/dialog_api.rs"
               }
             ]
@@ -38191,7 +38191,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 795,
+                "line": 811,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38214,7 +38214,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Speaker info table, or nil when the speaker ID is not found.",
-                "line": 820,
+                "line": 836,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38237,7 +38237,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the speaker was found and removed.",
-                "line": 842,
+                "line": 858,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38253,7 +38253,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Speaker count.",
-                "line": 848,
+                "line": 864,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38276,7 +38276,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the speaker exists.",
-                "line": 853,
+                "line": 869,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38292,7 +38292,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LSpeakerRegistry`.",
-                "line": 859,
+                "line": 875,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38315,7 +38315,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the type name matches.",
-                "line": 864,
+                "line": 880,
                 "file": "src/lua_api/dialog_api.rs"
               }
             ]
@@ -38344,7 +38344,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 875,
+                "line": 891,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38360,7 +38360,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 887,
+                "line": 903,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38383,7 +38383,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 895,
+                "line": 911,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38399,7 +38399,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 902,
+                "line": 918,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38415,7 +38415,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 909,
+                "line": 925,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38438,7 +38438,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 917,
+                "line": 933,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38461,7 +38461,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 927,
+                "line": 943,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38477,7 +38477,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Characters per second.",
-                "line": 935,
+                "line": 951,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38493,7 +38493,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "One of: \"idle\", \"typing\", \"waiting\", \"choice\", \"done\".",
-                "line": 942,
+                "line": 958,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38509,7 +38509,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True when not idle or done.",
-                "line": 949,
+                "line": 965,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38525,7 +38525,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True when waiting for player choice.",
-                "line": 956,
+                "line": 972,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38541,7 +38541,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Actor name, or nil.",
-                "line": 963,
+                "line": 979,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38557,7 +38557,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Full line text.",
-                "line": 970,
+                "line": 986,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38573,7 +38573,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Current line id, or nil.",
-                "line": 977,
+                "line": 993,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38589,7 +38589,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Current voice id, or nil.",
-                "line": 984,
+                "line": 1000,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38605,7 +38605,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Current route marker, or nil.",
-                "line": 991,
+                "line": 1007,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38621,7 +38621,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of current line tags.",
-                "line": 998,
+                "line": 1014,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38637,7 +38637,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Revealed text.",
-                "line": 1009,
+                "line": 1025,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38653,7 +38653,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Choice prompt, or nil.",
-                "line": 1016,
+                "line": 1032,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38669,7 +38669,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of choice strings.",
-                "line": 1023,
+                "line": 1039,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38685,7 +38685,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of `{speaker,text,id?,voice?,route?,tags?}` entries.",
-                "line": 1036,
+                "line": 1052,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38701,7 +38701,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1046,
+                "line": 1062,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38717,7 +38717,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "`{kind,name,data?}`, or nil when no signal is pending.",
-                "line": 1054,
+                "line": 1070,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38733,7 +38733,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "`{kind,name,data?}`, or nil when no signal is pending.",
-                "line": 1064,
+                "line": 1080,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38749,7 +38749,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Serializable snapshot table.",
-                "line": 1074,
+                "line": 1090,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38772,7 +38772,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1081,
+                "line": 1097,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38788,7 +38788,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LDialogSequencer`.",
-                "line": 1091,
+                "line": 1107,
                 "file": "src/lua_api/dialog_api.rs"
               },
               {
@@ -38811,7 +38811,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the type name matches.",
-                "line": 1097,
+                "line": 1113,
                 "file": "src/lua_api/dialog_api.rs"
               }
             ]
@@ -42500,7 +42500,7 @@
             "typed_params": [],
             "inferred_return": "LUniverse",
             "return_description": "New universe handle.",
-            "line": 1694,
+            "line": 1695,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -42516,7 +42516,7 @@
             "typed_params": [],
             "inferred_return": "LRelationshipManager",
             "return_description": "New relationship manager handle owned by `lurek.ecs`.",
-            "line": 1708,
+            "line": 1709,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -42545,7 +42545,7 @@
             ],
             "inferred_return": "LSlotDef",
             "return_description": "New slot definition handle.",
-            "line": 1721,
+            "line": 1722,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -42568,7 +42568,7 @@
             ],
             "inferred_return": "LPartDef",
             "return_description": "New part definition handle.",
-            "line": 1733,
+            "line": 1734,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -42591,7 +42591,7 @@
             ],
             "inferred_return": "LLoadout",
             "return_description": "New loadout handle.",
-            "line": 1745,
+            "line": 1746,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -42614,7 +42614,7 @@
             ],
             "inferred_return": "LStatBlock",
             "return_description": "New stat block handle.",
-            "line": 1767,
+            "line": 1768,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -42643,7 +42643,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1780,
+            "line": 1781,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -42666,7 +42666,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when the class exists.",
-            "line": 1802,
+            "line": 1803,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -42689,7 +42689,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Metadata table with name, extends, and tags; nil when unknown.",
-            "line": 1813,
+            "line": 1814,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -42705,7 +42705,7 @@
             "typed_params": [],
             "inferred_return": "string[]",
             "return_description": "Registered class names.",
-            "line": 1827,
+            "line": 1828,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -42721,7 +42721,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 1834,
+            "line": 1835,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -42750,7 +42750,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Object table with type, typeOf, isA, getProperty, and setProperty methods.",
-            "line": 1856,
+            "line": 1857,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -42773,7 +42773,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Object table, or nil when not found.",
-            "line": 1869,
+            "line": 1870,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -42796,7 +42796,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when the object id is live.",
-            "line": 1886,
+            "line": 1887,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -42812,7 +42812,7 @@
             "typed_params": [],
             "inferred_return": "integer[]",
             "return_description": "Object ids.",
-            "line": 1894,
+            "line": 1895,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -42835,7 +42835,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when an object was removed.",
-            "line": 1903,
+            "line": 1904,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -42851,7 +42851,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 1916,
+            "line": 1917,
             "file": "src/lua_api/ecs_api.rs"
           }
         ],
@@ -45491,7 +45491,7 @@
                 "kind": "method",
                 "owner_type": "LLoadout",
                 "description": "Equips a part into a named slot after compatibility checks.",
-                "full_doc": "Equips a part into a named slot after compatibility checks.\n@param | slot | string | Slot name.\n@param | part | LPartDef | Part definition to equip.",
+                "full_doc": "Equips a part into a named slot after compatibility checks.\n@return boolean\n@param | slot | string | Slot name.\n@param | part | LPartDef | Part definition to equip.",
                 "params_doc": "- `slot` â€” `string`: Slot name.\n- `part` â€” `LPartDef`: Part definition to equip.",
                 "returns_doc": "",
                 "inferred_sig": "(...)",
@@ -45511,7 +45511,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1590,
+                "line": 1591,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -45534,7 +45534,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when a part was removed.",
-                "line": 1619,
+                "line": 1620,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -45550,7 +45550,7 @@
                 "typed_params": [],
                 "inferred_return": "string[]",
                 "return_description": "Validation errors. Empty means the loadout is valid.",
-                "line": 1625,
+                "line": 1626,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -45566,7 +45566,7 @@
                 "typed_params": [],
                 "inferred_return": "LStatBlock",
                 "return_description": "Derived stat block.",
-                "line": 1638,
+                "line": 1639,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -45582,7 +45582,7 @@
                 "typed_params": [],
                 "inferred_return": "string[]",
                 "return_description": "Hardpoint names.",
-                "line": 1646,
+                "line": 1647,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -45598,7 +45598,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Total equipped cost.",
-                "line": 1652,
+                "line": 1653,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -45614,7 +45614,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Component table suitable for `LUniverse:set`.",
-                "line": 1656,
+                "line": 1657,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -45630,7 +45630,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LLoadout`.",
-                "line": 1675,
+                "line": 1676,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -45653,7 +45653,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True for `LLoadout` or `LObject`.",
-                "line": 1680,
+                "line": 1681,
                 "file": "src/lua_api/ecs_api.rs"
               }
             ]
@@ -97566,27 +97566,27 @@
             "kind": "function",
             "owner_type": "",
             "description": "Counts array items by a selector field path or callback.",
-            "full_doc": "Counts array items by a selector field path or callback.",
-            "params_doc": "",
-            "returns_doc": "",
+            "full_doc": "Counts array items by a selector field path or callback.\n@param | items | table | Sequence table.\n@param | selector | string|function | Field path or callback `(item, index)`.\n@return | table | String-keyed counts by selected value.",
+            "params_doc": "- `items` â€” `table`: Sequence table.\n- `selector` â€” `string|function`: Field path or callback `(item, index)`.",
+            "returns_doc": "table",
             "inferred_sig": "(items, selector)",
             "typed_params": [
               [
                 "items",
-                "any",
+                "table",
                 false,
-                ""
+                "Sequence table."
               ],
               [
                 "selector",
-                "any",
+                "string|function",
                 false,
-                ""
+                "Field path or callback `(item, index)`."
               ]
             ],
-            "inferred_return": "",
-            "return_description": "",
-            "line": 3633,
+            "inferred_return": "table",
+            "return_description": "String-keyed counts by selected value.",
+            "line": 3636,
             "file": "src/lua_api/patterns_api.rs"
           },
           {
@@ -97595,33 +97595,33 @@
             "kind": "function",
             "owner_type": "",
             "description": "Returns one-based item indices sorted by selector value.",
-            "full_doc": "Returns one-based item indices sorted by selector value.",
-            "params_doc": "",
-            "returns_doc": "",
+            "full_doc": "Returns one-based item indices sorted by selector value.\n@param | items | table | Sequence table.\n@param | selector | string|function | Field path or callback `(item, index)`.\n@param | opts | table? | Optional sort flags such as `descending` or `desc`.\n@return | table | One-based item indices sorted by selected value.",
+            "params_doc": "- `items` â€” `table`: Sequence table.\n- `selector` â€” `string|function`: Field path or callback `(item, index)`.\n- `opts` â€” `table?`: Optional sort flags such as `descending` or `desc`.",
+            "returns_doc": "table",
             "inferred_sig": "(items, selector, [opts])",
             "typed_params": [
               [
                 "items",
-                "any",
+                "table",
                 false,
-                ""
+                "Sequence table."
               ],
               [
                 "selector",
-                "any",
+                "string|function",
                 false,
-                ""
+                "Field path or callback `(item, index)`."
               ],
               [
                 "opts",
-                "any",
+                "table?",
                 true,
-                ""
+                "Optional sort flags such as `descending` or `desc`."
               ]
             ],
-            "inferred_return": "",
-            "return_description": "",
-            "line": 3649,
+            "inferred_return": "table",
+            "return_description": "One-based item indices sorted by selected value.",
+            "line": 3656,
             "file": "src/lua_api/patterns_api.rs"
           },
           {
@@ -97630,39 +97630,39 @@
             "kind": "function",
             "owner_type": "",
             "description": "Returns the top `n` items by selector value, or indices when `opts.indices` is true.",
-            "full_doc": "Returns the top `n` items by selector value, or indices when `opts.indices` is true.",
-            "params_doc": "",
-            "returns_doc": "",
+            "full_doc": "Returns the top `n` items by selector value, or indices when `opts.indices` is true.\n@param | items | table | Sequence table.\n@param | selector | string|function | Field path or callback `(item, index)`.\n@param | n | integer | Maximum number of results.\n@param | opts | table? | Optional flags such as `indices`, `descending`, or `desc`.\n@return | table | Top item values, or one-based indices when `opts.indices` is true.",
+            "params_doc": "- `items` â€” `table`: Sequence table.\n- `selector` â€” `string|function`: Field path or callback `(item, index)`.\n- `n` â€” `integer`: Maximum number of results.\n- `opts` â€” `table?`: Optional flags such as `indices`, `descending`, or `desc`.",
+            "returns_doc": "table",
             "inferred_sig": "(items, selector, n, [opts])",
             "typed_params": [
               [
                 "items",
-                "any",
+                "table",
                 false,
-                ""
+                "Sequence table."
               ],
               [
                 "selector",
-                "any",
+                "string|function",
                 false,
-                ""
+                "Field path or callback `(item, index)`."
               ],
               [
                 "n",
-                "any",
+                "integer",
                 false,
-                ""
+                "Maximum number of results."
               ],
               [
                 "opts",
-                "any",
+                "table?",
                 true,
-                ""
+                "Optional flags such as `indices`, `descending`, or `desc`."
               ]
             ],
-            "inferred_return": "",
-            "return_description": "",
-            "line": 3685,
+            "inferred_return": "table",
+            "return_description": "Top item values, or one-based indices when `opts.indices` is true.",
+            "line": 3697,
             "file": "src/lua_api/patterns_api.rs"
           },
           {
@@ -97671,33 +97671,33 @@
             "kind": "function",
             "owner_type": "",
             "description": "Finds numeric selector runs with a constant step.",
-            "full_doc": "Finds numeric selector runs with a constant step.",
-            "params_doc": "",
-            "returns_doc": "",
+            "full_doc": "Finds numeric selector runs with a constant step.\n@param | items | table | Sequence table.\n@param | selector | string|function | Field path or callback `(item, index)`.\n@param | opts | table? | Optional `minLength`, `min_length`, and `step` settings.\n@return | table | Runs of one-based indices and numeric values.",
+            "params_doc": "- `items` â€” `table`: Sequence table.\n- `selector` â€” `string|function`: Field path or callback `(item, index)`.\n- `opts` â€” `table?`: Optional `minLength`, `min_length`, and `step` settings.",
+            "returns_doc": "table",
             "inferred_sig": "(items, selector, [opts])",
             "typed_params": [
               [
                 "items",
-                "any",
+                "table",
                 false,
-                ""
+                "Sequence table."
               ],
               [
                 "selector",
-                "any",
+                "string|function",
                 false,
-                ""
+                "Field path or callback `(item, index)`."
               ],
               [
                 "opts",
-                "any",
+                "table?",
                 true,
-                ""
+                "Optional `minLength`, `min_length`, and `step` settings."
               ]
             ],
-            "inferred_return": "",
-            "return_description": "",
-            "line": 3734,
+            "inferred_return": "table",
+            "return_description": "Runs of one-based indices and numeric values.",
+            "line": 3750,
             "file": "src/lua_api/patterns_api.rs"
           }
         ],
@@ -129378,7 +129378,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 358,
+            "line": 360,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -129413,7 +129413,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 424,
+            "line": 426,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -129460,7 +129460,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 484,
+            "line": 486,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -129476,7 +129476,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 552,
+            "line": 554,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -129499,7 +129499,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the named scene was found and is now the active top scene, false if the name was not found.",
-            "line": 578,
+            "line": 580,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -129522,7 +129522,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 620,
+            "line": 622,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -129545,7 +129545,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 651,
+            "line": 653,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -129568,7 +129568,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 696,
+            "line": 698,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -129591,7 +129591,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 726,
+            "line": 728,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -129607,7 +129607,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 756,
+            "line": 758,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -129623,7 +129623,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 786,
+            "line": 788,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -129639,7 +129639,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 816,
+            "line": 818,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -129655,7 +129655,7 @@
             "typed_params": [],
             "inferred_return": "number",
             "return_description": "The current stack depth (0 when empty).",
-            "line": 845,
+            "line": 847,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -129671,7 +129671,7 @@
             "typed_params": [],
             "inferred_return": "number",
             "return_description": "The current stack depth (0 when empty).",
-            "line": 853,
+            "line": 855,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -129687,7 +129687,7 @@
             "typed_params": [],
             "inferred_return": "boolean",
             "return_description": "True when the stack is empty (depth == 0).",
-            "line": 861,
+            "line": 863,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -129703,7 +129703,7 @@
             "typed_params": [],
             "inferred_return": "table|nil",
             "return_description": "The active top scene table, or nil if no scene is on the stack.",
-            "line": 869,
+            "line": 871,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -129726,7 +129726,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if a scene was on top and the layer was set, false if the stack is empty.",
-            "line": 886,
+            "line": 888,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -129742,7 +129742,7 @@
             "typed_params": [],
             "inferred_return": "number",
             "return_description": "The integer layer value of the top scene, or 0 if empty.",
-            "line": 901,
+            "line": 903,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -129758,7 +129758,7 @@
             "typed_params": [],
             "inferred_return": "boolean",
             "return_description": "True while a transition animation is in progress.",
-            "line": 915,
+            "line": 917,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -129774,7 +129774,7 @@
             "typed_params": [],
             "inferred_return": "number",
             "return_description": "Linear progress from 0 (start) to 1 (complete).",
-            "line": 923,
+            "line": 925,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -129809,7 +129809,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 933,
+            "line": 935,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -129825,7 +129825,7 @@
             "typed_params": [],
             "inferred_return": "number",
             "return_description": "Number of queued (not yet started) transitions.",
-            "line": 951,
+            "line": 953,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -129841,7 +129841,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 958,
+            "line": 960,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -129876,7 +129876,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 971,
+            "line": 973,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -129899,7 +129899,7 @@
             ],
             "inferred_return": "table|nil",
             "return_description": "The scene table, or nil if not found.",
-            "line": 1013,
+            "line": 1015,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -129946,7 +129946,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when the scene existed and was pushed.",
-            "line": 1036,
+            "line": 1038,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -129969,7 +129969,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if a scene is registered with that name.",
-            "line": 1131,
+            "line": 1133,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -129992,7 +129992,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1139,
+            "line": 1141,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130008,7 +130008,7 @@
             "typed_params": [],
             "inferred_return": "string[]",
             "return_description": "Lua array of registered name strings.",
-            "line": 1153,
+            "line": 1155,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130037,7 +130037,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1162,
+            "line": 1164,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130060,7 +130060,7 @@
             ],
             "inferred_return": "LuaValue",
             "return_description": "The stored value, or nil if the key does not exist.",
-            "line": 1178,
+            "line": 1180,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130083,7 +130083,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if a value is stored under this key.",
-            "line": 1194,
+            "line": 1196,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130106,7 +130106,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1202,
+            "line": 1204,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130122,7 +130122,7 @@
             "typed_params": [],
             "inferred_return": "LDepthSorter",
             "return_description": "A fresh depth sorter with no queued entries.",
-            "line": 1215,
+            "line": 1217,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130145,7 +130145,7 @@
             ],
             "inferred_return": "table",
             "return_description": "A new instance table with `def` as its metatable `__index`.",
-            "line": 1224,
+            "line": 1226,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130168,7 +130168,7 @@
             ],
             "inferred_return": "table",
             "return_description": "A new instance table with `def` as its metatable `__index`.",
-            "line": 1243,
+            "line": 1245,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130191,7 +130191,7 @@
             ],
             "inferred_return": "function",
             "return_description": "A zero-argument factory function that creates new instances inheriting from `def`.",
-            "line": 1261,
+            "line": 1263,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130207,7 +130207,7 @@
             "typed_params": [],
             "inferred_return": "number",
             "return_description": "Eased progress from 0 (start) to 1 (complete).",
-            "line": 1284,
+            "line": 1286,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130254,7 +130254,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1296,
+            "line": 1298,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130270,7 +130270,7 @@
             "typed_params": [],
             "inferred_return": "boolean",
             "return_description": "True if the top scene is an overlay, false otherwise.",
-            "line": 1346,
+            "line": 1348,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130286,7 +130286,7 @@
             "typed_params": [],
             "inferred_return": "table",
             "return_description": "Lua array of active scene tables sorted by layer.",
-            "line": 1363,
+            "line": 1365,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130302,7 +130302,7 @@
             "typed_params": [],
             "inferred_return": "table",
             "return_description": "Lua array of render-active scene tables.",
-            "line": 1388,
+            "line": 1390,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130331,7 +130331,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when target scene was resolved and updated.",
-            "line": 1411,
+            "line": 1413,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130354,7 +130354,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when the scene is active; false when inactive or target not found.",
-            "line": 1429,
+            "line": 1431,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130383,7 +130383,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when target scene was resolved and updated.",
-            "line": 1447,
+            "line": 1449,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130412,7 +130412,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when target scene was resolved and updated.",
-            "line": 1466,
+            "line": 1468,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130441,7 +130441,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when target scene was resolved and updated.",
-            "line": 1485,
+            "line": 1487,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130470,7 +130470,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when target scene was resolved and updated.",
-            "line": 1504,
+            "line": 1506,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130493,7 +130493,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when enabled, false when frozen or target not found.",
-            "line": 1522,
+            "line": 1524,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130516,7 +130516,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when enabled, false when frozen or target not found.",
-            "line": 1539,
+            "line": 1541,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130539,7 +130539,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when enabled, false when frozen or target not found.",
-            "line": 1556,
+            "line": 1558,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130562,7 +130562,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when enabled, false when frozen or target not found.",
-            "line": 1573,
+            "line": 1575,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130591,7 +130591,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1588,
+            "line": 1590,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130614,7 +130614,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the loader has already executed.",
-            "line": 1602,
+            "line": 1604,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130661,7 +130661,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1616,
+            "line": 1618,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130677,7 +130677,7 @@
             "typed_params": [],
             "inferred_return": "string[]",
             "return_description": "Lua array of strings: `\"none\"`, `\"fade\"`, `\"slideleft\"`, `\"slideright\"`, `\"slideup\"`, `\"slidedown\"`, `\"wipe\"`, `\"iris\"`, `\"zoom\"`, `\"crossfade\"`.",
-            "line": 1699,
+            "line": 1701,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130693,7 +130693,7 @@
             "typed_params": [],
             "inferred_return": "table",
             "return_description": "A snapshot table with `stack` (array of scene name strings) and `data` (key-value map) fields.",
-            "line": 1727,
+            "line": 1729,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130716,7 +130716,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1755,
+            "line": 1757,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130745,7 +130745,7 @@
             ],
             "inferred_return": "integer",
             "return_description": "Number of scenes restored onto the stack.",
-            "line": 1779,
+            "line": 1781,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130768,7 +130768,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Transition descriptor `{type=\"fade\", duration=...}` for use with scene functions.",
-            "line": 1930,
+            "line": 1932,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130797,7 +130797,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Transition descriptor `{type=\"slide...\", duration=...}` for use with scene functions.",
-            "line": 1948,
+            "line": 1950,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130820,7 +130820,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Transition descriptor `{type=\"wipe\", duration=...}` for use with scene functions.",
-            "line": 1974,
+            "line": 1976,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130843,7 +130843,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Transition descriptor `{type=\"iris\", duration=...}` for use with scene functions.",
-            "line": 1991,
+            "line": 1993,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -130859,7 +130859,7 @@
             "typed_params": [],
             "inferred_return": "LSceneObjectContainer",
             "return_description": "New container handle.",
-            "line": 2005,
+            "line": 2007,
             "file": "src/lua_api/scene_api.rs"
           }
         ],
@@ -131292,14 +131292,14 @@
                 "kind": "method",
                 "owner_type": "LSceneObjectContainer",
                 "description": "Call draw() on all objects that have a draw method, sorted by layer.",
-                "full_doc": "Call draw() on all objects that have a draw method, sorted by layer.",
+                "full_doc": "Call draw() on all objects that have a draw method, sorted by layer.\n@return integer",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 304,
+                "line": 305,
                 "file": "src/lua_api/scene_api.rs"
               },
               {
@@ -131308,14 +131308,14 @@
                 "kind": "method",
                 "owner_type": "LSceneObjectContainer",
                 "description": "Get the number of objects currently in the container.",
-                "full_doc": "Get the number of objects currently in the container.",
+                "full_doc": "Get the number of objects currently in the container.\n@return integer",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 307,
+                "line": 309,
                 "file": "src/lua_api/scene_api.rs"
               },
               {
@@ -131331,7 +131331,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Sequential table containing current objects.",
-                "line": 311,
+                "line": 313,
                 "file": "src/lua_api/scene_api.rs"
               },
               {
@@ -131354,7 +131354,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Sequential table of objects on the given layer.",
-                "line": 316,
+                "line": 318,
                 "file": "src/lua_api/scene_api.rs"
               },
               {
@@ -131377,7 +131377,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the exact object exists in the container.",
-                "line": 321,
+                "line": 323,
                 "file": "src/lua_api/scene_api.rs"
               },
               {
@@ -131393,7 +131393,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The literal `\"LSceneObjectContainer\"`.",
-                "line": 325,
+                "line": 327,
                 "file": "src/lua_api/scene_api.rs"
               },
               {
@@ -131416,7 +131416,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when `name` matches `\"LSceneObjectContainer\"`.",
-                "line": 330,
+                "line": 332,
                 "file": "src/lua_api/scene_api.rs"
               }
             ]

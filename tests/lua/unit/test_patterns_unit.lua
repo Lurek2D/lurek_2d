@@ -2128,8 +2128,7 @@ end)
 -- @describe table query helpers
 describe("table query helpers", function()
     -- @covers lurek.patterns.groupBy
-    -- @covers lurek.patterns.countBy
-    it("groups and counts sequence items by field path", function()
+    it("groups sequence items by field path", function()
         local items = {
             { kind = "unit", stats = { power = 3 } },
             { kind = "spell", stats = { power = 5 } },
@@ -2138,14 +2137,22 @@ describe("table query helpers", function()
         local groups = lurek.patterns.groupBy(items, "kind")
         expect_equal(2, #groups.unit)
         expect_equal(1, #groups.spell)
+    end)
+
+    -- @covers lurek.patterns.countBy
+    it("counts sequence items by field path", function()
+        local items = {
+            { kind = "unit", stats = { power = 3 } },
+            { kind = "spell", stats = { power = 5 } },
+            { kind = "unit", stats = { power = 7 } },
+        }
         local counts = lurek.patterns.countBy(items, "kind")
         expect_equal(2, counts.unit)
         expect_equal(1, counts.spell)
     end)
 
     -- @covers lurek.patterns.sortedIndices
-    -- @covers lurek.patterns.topN
-    it("sorts indices and returns top items by callback selector", function()
+    it("sorts indices by callback selector", function()
         local items = {
             { name = "a", score = 4 },
             { name = "b", score = 9 },
@@ -2154,6 +2161,15 @@ describe("table query helpers", function()
         local indices = lurek.patterns.sortedIndices(items, function(item) return item.score end, { desc = true })
         expect_equal(2, indices[1])
         expect_equal(3, indices[2])
+    end)
+
+    -- @covers lurek.patterns.topN
+    it("returns top items by field selector", function()
+        local items = {
+            { name = "a", score = 4 },
+            { name = "b", score = 9 },
+            { name = "c", score = 6 },
+        }
         local top = lurek.patterns.topN(items, "score", 2)
         expect_equal("b", top[1].name)
         expect_equal("c", top[2].name)

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-08T19:48:13.674252+00:00",
+  "generated_at": "2026-07-08T21:17:57.734349+00:00",
   "summary": {
     "rust": {
       "total": 9515,
@@ -37593,7 +37593,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/dialog_api.rs",
-      "line": 1104,
+      "line": 1120,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -37683,7 +37683,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/ecs_api.rs",
-      "line": 1687,
+      "line": 1688,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -39348,7 +39348,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/scene_api.rs",
-      "line": 337,
+      "line": 339,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -88290,7 +88290,7 @@
       "source": "lua_api",
       "module": "scene_api",
       "file": "src/lua_api/scene_api.rs",
-      "line": 424,
+      "line": 426,
       "kind": "fn",
       "name": "pop",
       "has_doc": true
@@ -88299,7 +88299,7 @@
       "source": "lua_api",
       "module": "scene_api",
       "file": "src/lua_api/scene_api.rs",
-      "line": 2011,
+      "line": 2013,
       "kind": "fn",
       "name": "transitions",
       "has_doc": true
