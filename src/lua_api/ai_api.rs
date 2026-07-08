@@ -1,15 +1,20 @@
 //! Registers the `lurek.ai` Lua API for AI command helpers, option parsing, and thin bindings over engine logic.
 
 use super::SharedState;
+use crate::lua_api::pathfind_api::{next_async_path_request_id, submit_async_query, LuaNavGrid};
 use crate::ai::validation::{finite_f32, finite_f64, non_negative, positive_nonzero};
 use crate::ai::{
-    AIDirector, AILod, AIWorld, AiValidationLimits, BTNode, BehaviorTree, Blackboard,
-    CallbackErrorTrace, CommandQueue, Consideration, DecisionBiasSet, DecisionModel, DialogueAI,
-    Emotion, EmotionModel, FormationType, GOAPPlanner, HTNDomain, HTNMethod, HTNPlanner,
-    MCTSConfig, MCTSEngine, Need, NeedSystem, ParallelPolicy, ResponseCurve, Squad, StimulusWorld,
-    StrategyAI, TraitArchetypes, TraitProfile, UtilityAI, WorldState,
+    AIOrderRuntimeStats, AIDirector, AILod, AISpatialQueryStats, AIWorld, AgentStance,
+    AiValidationLimits, BTNode, BehaviorTree, Blackboard, CallbackErrorTrace, CommandEvent,
+    CommandQueue, CommandSnapshot, Consideration, DecisionBiasSet, DecisionModel, DialogueAI,
+    Emotion, EmotionModel, FormationFallbackMode, FormationLayout, FormationSortMode,
+    FormationType, GOAPPlanner, HTNDomain, HTNMethod, HTNPlanner, MCTSConfig, MCTSEngine, Need,
+    NeedSystem, OrderRuntimeState, ParallelPolicy, ResponseCurve, SpatialQueryOptions, Squad,
+    SquadMemberProfile, StanceProfile, StimulusWorld, StrategyAI, TraitArchetypes, TraitProfile,
+    UtilityAI, WorldState,
 };
 use crate::lua_api::callback_registry::CallbackRegistry;
+use crate::pathfind::{AsyncPathRequest, FootprintSpec};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::collections::HashMap;
@@ -58,6 +63,274 @@ fn callback_errors_to_lua<'lua>(
         out.set(i + 1, entry)?;
     }
     Ok(out)
+}
+
+fn command_snapshot_to_lua<'lua>(
+    lua: &'lua Lua,
+    snapshot: &CommandSnapshot,
+) -> LuaResult<LuaTable<'lua>> {
+    let out = lua.create_table()?;
+    out.set("id", snapshot.id)?;
+    out.set("kind", snapshot.kind.as_str())?;
+    out.set("targetX", snapshot.target_x)?;
+    out.set("targetY", snapshot.target_y)?;
+    out.set("priority", snapshot.priority)?;
+    out.set("interruptible", snapshot.interruptible)?;
+    Ok(out)
+}
+
+fn command_snapshots_to_lua<'lua>(
+    lua: &'lua Lua,
+    snapshots: &[CommandSnapshot],
+) -> LuaResult<LuaTable<'lua>> {
+    let out = lua.create_table()?;
+    for (i, snapshot) in snapshots.iter().enumerate() {
+        out.set(i + 1, command_snapshot_to_lua(lua, snapshot)?)?;
+    }
+    Ok(out)
+}
+
+fn command_events_to_lua<'lua>(lua: &'lua Lua, events: &[CommandEvent]) -> LuaResult<LuaTable<'lua>> {
+    let out = lua.create_table()?;
+    for (i, event) in events.iter().enumerate() {
+        let entry = lua.create_table()?;
+        entry.set("id", event.command_id)?;
+        entry.set("kind", event.kind.as_str())?;
+        entry.set("event", event.event.as_str())?;
+        entry.set("targetX", event.target_x)?;
+        entry.set("targetY", event.target_y)?;
+        entry.set("priority", event.priority)?;
+        entry.set("interruptible", event.interruptible)?;
+        entry.set("detail", event.detail.clone())?;
+        out.set(i + 1, entry)?;
+    }
+    Ok(out)
+}
+
+fn squad_member_profile_from_lua(table: &LuaTable) -> LuaResult<SquadMemberProfile> {
+    let footprint_w: u32 = table.get("footprintW").unwrap_or(1);
+    let footprint_h: u32 = table.get("footprintH").unwrap_or(1);
+    let subgroup: Option<String> = table.get("subgroup").ok();
+    Ok(SquadMemberProfile {
+        footprint_w: footprint_w.max(1),
+        footprint_h: footprint_h.max(1),
+        subgroup,
+    })
+}
+
+fn squad_member_profile_to_lua<'lua>(
+    lua: &'lua Lua,
+    profile: &SquadMemberProfile,
+) -> LuaResult<LuaTable<'lua>> {
+    let out = lua.create_table()?;
+    out.set("footprintW", profile.footprint_w)?;
+    out.set("footprintH", profile.footprint_h)?;
+    out.set("subgroup", profile.subgroup.clone())?;
+    Ok(out)
+}
+
+fn squad_member_positions_from_lua(
+    table: Option<LuaTable>,
+) -> LuaResult<Option<HashMap<String, (f32, f32)>>> {
+    let Some(table) = table else {
+        return Ok(None);
+    };
+    let mut out = HashMap::new();
+    for pair in table.pairs::<String, LuaTable>() {
+        let (name, position) = pair?;
+        let x: f32 = lua_require_finite_f32("squad member position.x", position.get("x").unwrap_or(0.0))?;
+        let y: f32 = lua_require_finite_f32("squad member position.y", position.get("y").unwrap_or(0.0))?;
+        out.insert(name, (x, y));
+    }
+    Ok(Some(out))
+}
+
+fn formation_layout_slots_to_lua<'lua>(
+    lua: &'lua Lua,
+    layout: &FormationLayout,
+) -> LuaResult<LuaTable<'lua>> {
+    let out = lua.create_table()?;
+    for (i, slot) in layout.slots.iter().enumerate() {
+        let entry = lua.create_table()?;
+        entry.set("member", slot.member.as_str())?;
+        entry.set("slotIndex", slot.slot_index as u32)?;
+        entry.set("x", slot.x)?;
+        entry.set("y", slot.y)?;
+        entry.set("row", slot.row)?;
+        entry.set("col", slot.col)?;
+        entry.set("footprintW", slot.footprint_w)?;
+        entry.set("footprintH", slot.footprint_h)?;
+        entry.set("subgroup", slot.subgroup.clone())?;
+        out.set(i + 1, entry)?;
+    }
+    Ok(out)
+}
+
+fn formation_layout_summary_to_lua<'lua>(
+    lua: &'lua Lua,
+    layout: &FormationLayout,
+) -> LuaResult<LuaTable<'lua>> {
+    let out = lua.create_table()?;
+    out.set("requestedFormation", layout.requested_formation.as_str())?;
+    out.set("activeFormation", layout.active_formation.as_str())?;
+    out.set("fallbackApplied", layout.fallback_applied)?;
+    out.set("width", layout.width)?;
+    out.set("height", layout.height)?;
+    out.set("slotCount", layout.slots.len() as u32)?;
+    Ok(out)
+}
+
+fn stance_profile_to_lua<'lua>(
+    lua: &'lua Lua,
+    profile: &StanceProfile,
+) -> LuaResult<LuaTable<'lua>> {
+    let out = lua.create_table()?;
+    out.set("stance", profile.stance.as_str())?;
+    out.set("acquireEnabled", profile.acquire_enabled)?;
+    out.set("holdFire", profile.hold_fire)?;
+    out.set("acquireRadius", profile.acquire_radius)?;
+    out.set("guardRadius", profile.guard_radius)?;
+    out.set("chaseRadius", profile.chase_radius)?;
+    out.set("interruptsMove", profile.interrupts_move)?;
+    out.set("abandonFormation", profile.abandon_formation)?;
+    Ok(out)
+}
+
+fn apply_stance_overrides(profile: &mut StanceProfile, opts: Option<&LuaTable>) -> LuaResult<()> {
+    let Some(opts) = opts else {
+        return Ok(());
+    };
+    if let Some(value) = opts.get::<_, Option<bool>>("acquireEnabled")? {
+        profile.acquire_enabled = value;
+    }
+    if let Some(value) = opts.get::<_, Option<bool>>("holdFire")? {
+        profile.hold_fire = value;
+    }
+    if let Some(value) = opts.get::<_, Option<f32>>("acquireRadius")? {
+        profile.acquire_radius = lua_require_finite_f32("stance acquireRadius", value)?.max(0.0);
+    }
+    if let Some(value) = opts.get::<_, Option<f32>>("guardRadius")? {
+        profile.guard_radius = lua_require_finite_f32("stance guardRadius", value)?.max(0.0);
+    }
+    if let Some(value) = opts.get::<_, Option<f32>>("chaseRadius")? {
+        profile.chase_radius = lua_require_finite_f32("stance chaseRadius", value)?.max(0.0);
+    }
+    if let Some(value) = opts.get::<_, Option<bool>>("interruptsMove")? {
+        profile.interrupts_move = value;
+    }
+    if let Some(value) = opts.get::<_, Option<bool>>("abandonFormation")? {
+        profile.abandon_formation = value;
+    }
+    Ok(())
+}
+
+fn spatial_query_stats_to_lua<'lua>(
+    lua: &'lua Lua,
+    stats: &AISpatialQueryStats,
+) -> LuaResult<LuaTable<'lua>> {
+    let out = lua.create_table()?;
+    out.set("activeAgents", stats.active_agents as i64)?;
+    out.set("spatialCells", stats.spatial_cells as i64)?;
+    out.set("queryCount", stats.query_count as i64)?;
+    out.set("candidateChecks", stats.candidate_checks as i64)?;
+    out.set("returnedAgents", stats.returned_agents as i64)?;
+    out.set("lastRadius", stats.last_radius)?;
+    Ok(out)
+}
+
+fn order_runtime_stats_to_lua<'lua>(
+    lua: &'lua Lua,
+    stats: &AIOrderRuntimeStats,
+) -> LuaResult<LuaTable<'lua>> {
+    let out = lua.create_table()?;
+    out.set("activeAgents", stats.active_agents as i64)?;
+    out.set("moveOrdersSteered", stats.move_orders_steered as i64)?;
+    out.set("moveOrdersCompleted", stats.move_orders_completed as i64)?;
+    out.set("acquireQueries", stats.acquire_queries as i64)?;
+    out.set("targetsAcquired", stats.targets_acquired as i64)?;
+    out.set("softInterrupts", stats.soft_interrupts as i64)?;
+    out.set("resumedOrders", stats.resumed_orders as i64)?;
+    out.set("activeEngagements", stats.active_engagements as i64)?;
+    out.set("formationBreaks", stats.formation_breaks as i64)?;
+    out.set("budgetSkips", stats.budget_skips as i64)?;
+    Ok(out)
+}
+
+fn order_runtime_state_to_lua<'lua>(
+    lua: &'lua Lua,
+    state: &OrderRuntimeState,
+) -> LuaResult<LuaTable<'lua>> {
+    let out = lua.create_table()?;
+    out.set("active", state.engage_target.is_some())?;
+    out.set("engageTarget", state.engage_target.clone())?;
+    out.set("suspendedOrderId", state.suspended_order_id)?;
+    out.set("formationAbandoned", state.formation_abandoned)?;
+    out.set(
+        "engageOriginX",
+        state.engage_origin.map(|origin| origin.0),
+    )?;
+    out.set(
+        "engageOriginY",
+        state.engage_origin.map(|origin| origin.1),
+    )?;
+    Ok(out)
+}
+
+fn bot_names_to_lua<'lua>(
+    lua: &'lua Lua,
+    world: Rc<RefCell<AIWorld>>,
+    callbacks: Rc<RefCell<CallbackRegistry>>,
+    names: &[String],
+) -> LuaResult<LuaTable<'lua>> {
+    let out = lua.create_table()?;
+    for (i, name) in names.iter().enumerate() {
+        out.set(
+            i + 1,
+            LuaAgent {
+                world: world.clone(),
+                name: name.clone(),
+                callbacks: callbacks.clone(),
+            },
+        )?;
+    }
+    Ok(out)
+}
+
+fn squad_member_positions_from_world(
+    squad: &Squad,
+    world: &AIWorld,
+) -> HashMap<String, (f32, f32)> {
+    let mut out = HashMap::new();
+    for member in &squad.members {
+        if let Some(agent) = world.agent(member) {
+            out.insert(member.clone(), agent.position);
+        }
+    }
+    out
+}
+
+fn world_point_to_nav_cell(
+    position: (f32, f32),
+    origin: (f32, f32),
+    cell_size: f32,
+    dims: (u32, u32),
+) -> Option<(u32, u32)> {
+    let local_x = position.0 - origin.0;
+    let local_y = position.1 - origin.1;
+    if !local_x.is_finite() || !local_y.is_finite() || cell_size <= 0.0 {
+        return None;
+    }
+    let cell_x = (local_x / cell_size).floor();
+    let cell_y = (local_y / cell_size).floor();
+    if cell_x < 0.0 || cell_y < 0.0 {
+        return None;
+    }
+    let cell = (cell_x as u32, cell_y as u32);
+    if cell.0 >= dims.0 || cell.1 >= dims.1 {
+        None
+    } else {
+        Some(cell)
+    }
 }
 
 fn utility_trace_to_lua<'lua>(
@@ -194,6 +467,110 @@ impl LuaUserData for LuaAIWorld {
                 inner: Rc::new(RefCell::new(w.global_blackboard().clone())),
             })
         });
+        // -- setSpatialCellSize --
+        /// Sets the spatial-hash cell size used by nearby-agent queries in this world.
+        /// @param | size | number | Spatial-hash cell size in world units.
+        methods.add_method("setSpatialCellSize", |_, this, size: f32| {
+            let size = lua_require_positive_f32("ai world spatial cell size", size)?;
+            this.inner.borrow_mut().set_spatial_cell_size(size);
+            Ok(())
+        });
+        // -- getSpatialCellSize --
+        /// Returns the spatial-hash cell size used by nearby-agent queries in this world.
+        /// @return | number | Spatial-hash cell size in world units.
+        methods.add_method("getSpatialCellSize", |_, this, ()| {
+            Ok(this.inner.borrow().spatial_cell_size())
+        });
+        // -- getSpatialQueryStats --
+        /// Returns statistics from the most recent nearby-agent query.
+        /// @return | table | Table with active-agent, cell, candidate-check, and returned-agent counters.
+        methods.add_method("getSpatialQueryStats", |lua, this, ()| {
+            let world = this.inner.borrow();
+            spatial_query_stats_to_lua(lua, world.spatial_query_stats())
+        });
+        // -- setOrderArrivalRadius --
+        /// Sets the move-order arrival threshold used by world update when completing queued move orders.
+        /// @param | radius | number | Arrival threshold in world units.
+        methods.add_method("setOrderArrivalRadius", |_, this, radius: f32| {
+            let radius = lua_require_finite_f32("ai world order arrival radius", radius)?.max(0.0);
+            this.inner.borrow_mut().set_order_arrival_radius(radius);
+            Ok(())
+        });
+        // -- getOrderArrivalRadius --
+        /// Returns the move-order arrival threshold used by world update.
+        /// @return | number | Arrival threshold in world units.
+        methods.add_method("getOrderArrivalRadius", |_, this, ()| {
+            Ok(this.inner.borrow().order_arrival_radius())
+        });
+        // -- setAutoAcquireBudget --
+        /// Sets the maximum number of stance-driven hostile-acquisition queries attempted in one update.
+        /// @param | budget | integer | Per-update auto-acquisition query budget; zero disables new acquisition work.
+        methods.add_method("setAutoAcquireBudget", |_, this, budget: usize| {
+            this.inner.borrow_mut().set_auto_acquire_budget(budget);
+            Ok(())
+        });
+        // -- getAutoAcquireBudget --
+        /// Returns the per-update budget used for stance-driven hostile-acquisition queries.
+        /// @return | integer | Current auto-acquisition query budget.
+        methods.add_method("getAutoAcquireBudget", |_, this, ()| {
+            Ok(this.inner.borrow().auto_acquire_budget() as i64)
+        });
+        // -- getOrderRuntimeStats --
+        /// Returns statistics from the most recent world update's order execution and acquisition work.
+        /// @return | table | Table with move-order, acquisition, interruption, and budget counters.
+        methods.add_method("getOrderRuntimeStats", |lua, this, ()| {
+            let world = this.inner.borrow();
+            order_runtime_stats_to_lua(lua, world.order_runtime_stats())
+        });
+        // -- queryAgentsInRadius --
+        /// Returns nearby agents by using the world's persistent spatial index instead of a full Lua scan.
+        /// @param | x | number | Query center X position in world units.
+        /// @param | y | number | Query center Y position in world units.
+        /// @param | radius | number | Query radius in world units.
+        /// @param | opts | table? | Optional table with `limit`, `exclude`, `team`, `hostileTo`, `tag`, and `notTag`.
+        /// @return | table | Array of nearest-first `LBot` handles.
+        methods.add_method("queryAgentsInRadius", |lua, this, (x, y, radius, opts): (f32, f32, f32, Option<LuaTable>)| {
+            let x = lua_require_finite_f32("ai world query x", x)?;
+            let y = lua_require_finite_f32("ai world query y", y)?;
+            let radius = lua_require_finite_f32("ai world query radius", radius)?.max(0.0);
+            let exclude = match &opts {
+                Some(opts) => opts.get::<_, Option<String>>("exclude")?,
+                None => None,
+            };
+            let team = match &opts {
+                Some(opts) => opts.get::<_, Option<i32>>("team")?,
+                None => None,
+            };
+            let hostile_to = match &opts {
+                Some(opts) => opts.get::<_, Option<i32>>("hostileTo")?,
+                None => None,
+            };
+            let limit = match &opts {
+                Some(opts) => opts.get::<_, Option<usize>>("limit")?,
+                None => None,
+            };
+            let tag = match &opts {
+                Some(opts) => opts.get::<_, Option<String>>("tag")?,
+                None => None,
+            };
+            let not_tag = match &opts {
+                Some(opts) => opts.get::<_, Option<String>>("notTag")?,
+                None => None,
+            };
+            let names = this.inner.borrow_mut().query_agents_in_radius(
+                (x, y),
+                radius,
+                SpatialQueryOptions {
+                    exclude_name: exclude.as_deref(),
+                    team_filter: team,
+                    hostile_to_team: hostile_to,
+                    limit,
+                    required_tag: tag.as_deref(),
+                    blocked_tag: not_tag.as_deref(),
+                },
+            );
+            bot_names_to_lua(lua, this.inner.clone(), this.custom_callbacks.clone(), &names)
+        });
         // -- update --
         /// Advances the world simulation and invokes custom decision callbacks for agents that use a custom model.
         /// @param | dt | number | Elapsed simulation time in seconds for this update step.
@@ -296,8 +673,15 @@ impl LuaUserData for LuaAgent {
         methods.add_method("setPosition", |_, this, (x, y): (f32, f32)| {
             let x = lua_require_finite_f32("agent position.x", x)?;
             let y = lua_require_finite_f32("agent position.y", y)?;
-            if let Some(agent) = this.world.borrow_mut().agent_mut(&this.name) {
+            let mut world = this.world.borrow_mut();
+            let updated = if let Some(agent) = world.agent_mut(&this.name) {
                 agent.position = (x, y);
+                true
+            } else {
+                false
+            };
+            if updated {
+                world.mark_spatial_dirty();
             }
             Ok(())
         });
@@ -390,6 +774,50 @@ impl LuaUserData for LuaAgent {
                 Ok(agent.priority)
             } else {
                 Ok(0)
+            }
+        });
+        // -- setTeam --
+        /// Sets this agent's integer team identifier used by hostile-acquisition queries.
+        /// @param | team | integer | Team identifier compared by world-backed hostile queries.
+        methods.add_method("setTeam", |_, this, team: i32| {
+            if let Some(agent) = this.world.borrow_mut().agent_mut(&this.name) {
+                agent.team = team;
+            }
+            Ok(())
+        });
+        // -- getTeam --
+        /// Returns this agent's integer team identifier or zero when the agent has been removed.
+        /// @return | integer | Current team identifier.
+        methods.add_method("getTeam", |_, this, ()| {
+            if let Some(agent) = this.world.borrow().agent(&this.name) {
+                Ok(agent.team)
+            } else {
+                Ok(0)
+            }
+        });
+        // -- setStance --
+        /// Sets this agent's built-in RTS stance and optionally overrides its acquisition settings.
+        /// @param | stance | string | Built-in stance name such as `passive`, `hold_fire`, `defensive`, `aggressive`, or `berserk`.
+        /// @param | opts | table? | Optional overrides for `acquireEnabled`, `holdFire`, `acquireRadius`, `guardRadius`, `chaseRadius`, `interruptsMove`, and `abandonFormation`.
+        methods.add_method("setStance", |_, this, (stance, opts): (String, Option<LuaTable>)| {
+            let stance = AgentStance::parse_str(&stance).ok_or_else(|| {
+                lua_ai_runtime_error(format!("lurek.ai.LBot:setStance: unknown stance '{stance}'"))
+            })?;
+            let mut profile = stance.default_profile();
+            apply_stance_overrides(&mut profile, opts.as_ref())?;
+            if let Some(agent) = this.world.borrow_mut().agent_mut(&this.name) {
+                agent.stance = profile;
+            }
+            Ok(())
+        });
+        // -- getStance --
+        /// Returns this agent's current stance profile, including built-in name and effective override values.
+        /// @return | table | Table containing `stance`, acquisition radii, and interruption flags.
+        methods.add_method("getStance", |lua, this, ()| {
+            if let Some(agent) = this.world.borrow().agent(&this.name) {
+                stance_profile_to_lua(lua, &agent.stance)
+            } else {
+                stance_profile_to_lua(lua, &AgentStance::Aggressive.default_profile())
             }
         });
         // -- setDecisionModel --
@@ -534,6 +962,93 @@ impl LuaUserData for LuaAgent {
                 Ok(false)
             }
         });
+        // -- findHostilesInRange --
+        /// Returns nearby hostile agents by using the world's spatial index and this agent's team as the hostile reference.
+        /// @param | radius | number? | Optional explicit acquisition radius in world units; defaults to the stance profile radius.
+        /// @param | opts | table? | Optional table with `limit`, `tag`, and `notTag`.
+        /// @return | table | Array of nearest-first hostile `LBot` handles.
+        methods.add_method("findHostilesInRange", |lua, this, (radius, opts): (Option<f32>, Option<LuaTable>)| {
+            let radius = radius
+                .map(|value| lua_require_finite_f32("agent hostile query radius", value))
+                .transpose()?;
+            let limit = match &opts {
+                Some(opts) => opts.get::<_, Option<usize>>("limit")?,
+                None => None,
+            };
+            let tag = match &opts {
+                Some(opts) => opts.get::<_, Option<String>>("tag")?,
+                None => None,
+            };
+            let not_tag = match &opts {
+                Some(opts) => opts.get::<_, Option<String>>("notTag")?,
+                None => None,
+            };
+            let (position, team, stance_radius) = {
+                let world = this.world.borrow();
+                let Some(agent) = world.agent(&this.name) else {
+                    return lua.create_table();
+                };
+                (
+                    agent.position,
+                    agent.team,
+                    agent
+                        .stance
+                        .acquire_radius
+                        .max(agent.stance.guard_radius)
+                        .max(agent.stance.chase_radius),
+                )
+            };
+            let names = this.world.borrow_mut().query_agents_in_radius(
+                position,
+                radius.unwrap_or(stance_radius),
+                SpatialQueryOptions {
+                    exclude_name: Some(&this.name),
+                    hostile_to_team: Some(team),
+                    limit,
+                    required_tag: tag.as_deref(),
+                    blocked_tag: not_tag.as_deref(),
+                    ..SpatialQueryOptions::default()
+                },
+            );
+            bot_names_to_lua(lua, this.world.clone(), this.callbacks.clone(), &names)
+        });
+        // -- acquireTarget --
+        /// Returns the nearest target selected from this agent's stance-driven hostile-acquisition query.
+        /// @param | opts | table? | Optional table with `radius`, `limit`, `tag`, and `notTag`.
+        /// @return | LuaValue | Nearest hostile `LBot` handle, or nil when no target matches the query.
+        methods.add_method("acquireTarget", |_, this, opts: Option<LuaTable>| {
+            let radius = match &opts {
+                Some(opts) => opts.get::<_, Option<f32>>("radius")?,
+                None => None,
+            };
+            let radius = radius
+                .map(|value| lua_require_finite_f32("agent acquireTarget radius", value))
+                .transpose()?;
+            let limit = match &opts {
+                Some(opts) => opts.get::<_, Option<usize>>("limit")?,
+                None => None,
+            };
+            let tag = match &opts {
+                Some(opts) => opts.get::<_, Option<String>>("tag")?,
+                None => None,
+            };
+            let not_tag = match &opts {
+                Some(opts) => opts.get::<_, Option<String>>("notTag")?,
+                None => None,
+            };
+            let target = this.world.borrow_mut().acquire_target_for_agent(
+                &this.name,
+                radius,
+                limit,
+                tag.as_deref(),
+                not_tag.as_deref(),
+            );
+            Ok(target.map(|name| LuaAgent {
+                world: this.world.clone(),
+                name,
+                callbacks: this.callbacks.clone(),
+            }))
+        });
         // -- getBlackboard --
         /// Returns a blackboard snapshot for this agent or an empty blackboard when the agent has been removed.
         /// @return | LAIBlackboard | Blackboard handle initialized from the agent's local blackboard values at call time.
@@ -548,6 +1063,65 @@ impl LuaUserData for LuaAgent {
                     inner: Rc::new(RefCell::new(Blackboard::default())),
                 })
             }
+        });
+        // -- getCommandQueue --
+        /// Returns this agent's owned command queue handle for order staging and inspection.
+        /// @return | LCommandQueue | Queue handle bound to the current agent entry inside its AI world.
+        methods.add_method("getCommandQueue", |_, this, ()| {
+            Ok(LuaCommandQueue {
+                inner: CommandQueueBinding::Agent {
+                    world: this.world.clone(),
+                    name: this.name.clone(),
+                },
+            })
+        });
+        // -- getCurrentOrder --
+        /// Returns the current queued order snapshot for this agent when one exists.
+        /// @return | LuaValue | Table with `id`, `kind`, `targetX`, `targetY`, `priority`, and `interruptible`, or nil when this agent has no pending order.
+        methods.add_method("getCurrentOrder", |lua, this, ()| {
+            let snapshot = this
+                .world
+                .borrow()
+                .agent(&this.name)
+                .and_then(|agent| agent.command_queue.current());
+            snapshot
+                .as_ref()
+                .map(|snapshot| command_snapshot_to_lua(lua, snapshot))
+                .transpose()
+        });
+        // -- getOrderRuntimeState --
+        /// Returns the live soft-interruption state used by world update for temporary engagement overrides.
+        /// @return | table | Table with `active`, `engageTarget`, `engageOriginX`, `engageOriginY`, `suspendedOrderId`, and `formationAbandoned`.
+        methods.add_method("getOrderRuntimeState", |lua, this, ()| {
+            let state = this
+                .world
+                .borrow()
+                .agent(&this.name)
+                .map(|agent| agent.order_runtime.clone())
+                .unwrap_or_default();
+            order_runtime_state_to_lua(lua, &state)
+        });
+        // -- clearOrders --
+        /// Clears every queued order owned by this agent.
+        /// @param | reason | string? | Optional lifecycle detail string recorded on emitted clear events.
+        /// @return | integer | Number of cleared orders.
+        methods.add_method("clearOrders", |_, this, reason: Option<String>| {
+            if let Some(agent) = this.world.borrow_mut().agent_mut(&this.name) {
+                Ok(agent.command_queue.clear_with_reason(reason))
+            } else {
+                Ok(0)
+            }
+        });
+        // -- drainCommandEvents --
+        /// Returns and clears queued order lifecycle events for this agent.
+        /// @return | table | Array of `{ id, kind, event, targetX, targetY, priority, interruptible, detail }` tables in emit order.
+        methods.add_method("drainCommandEvents", |lua, this, ()| {
+            let events = if let Some(agent) = this.world.borrow_mut().agent_mut(&this.name) {
+                agent.command_queue.drain_events()
+            } else {
+                Vec::new()
+            };
+            command_events_to_lua(lua, &events)
         });
         // -- type --
         /// Returns the Lua-visible type name for this agent handle.
@@ -1354,14 +1928,14 @@ impl LuaUserData for LuaSquad {
         /// Adds a member name to the squad member list.
         /// @param | name | string | Agent or game object name to append as a squad member.
         methods.add_method("addMember", |_, this, name: String| {
-            this.inner.borrow_mut().members.push(name);
+            this.inner.borrow_mut().add_member(&name);
             Ok(())
         });
         // -- removeMember --
         /// Removes every member entry with the given name.
         /// @param | name | string | Member name to remove.
         methods.add_method("removeMember", |_, this, name: String| {
-            this.inner.borrow_mut().members.retain(|m| m != &name);
+            this.inner.borrow_mut().remove_member(&name);
             Ok(())
         });
         // -- getMemberCount --
@@ -1385,7 +1959,7 @@ impl LuaUserData for LuaSquad {
         /// Sets the squad leader name. This method is available to Lua scripts.
         /// @param | name | string | Member or agent name to store as leader.
         methods.add_method("setLeader", |_, this, name: String| {
-            this.inner.borrow_mut().leader = Some(name);
+            this.inner.borrow_mut().set_leader(Some(name));
             Ok(())
         });
         // -- getLeader --
@@ -1401,11 +1975,9 @@ impl LuaUserData for LuaSquad {
         methods.add_method(
             "setFormation",
             |_, this, (ftype, spacing): (String, Option<f32>)| {
-                let mut sq = this.inner.borrow_mut();
-                sq.formation = FormationType::parse_str(&ftype);
-                if let Some(s) = spacing {
-                    sq.formation_spacing = s;
-                }
+                this.inner
+                    .borrow_mut()
+                    .set_formation(FormationType::parse_str(&ftype), spacing);
                 Ok(())
             },
         );
@@ -1436,6 +2008,451 @@ impl LuaUserData for LuaSquad {
                     .get_formation_position(member_idx.saturating_sub(1), (leader_x, leader_y)))
             },
         );
+        // -- setMemberProfile --
+        /// Stores footprint and subgroup metadata used during formation slot assignment.
+        /// @param | name | string | Member name whose formation profile should be stored.
+        /// @param | opts | table | Table with `footprintW`, `footprintH`, and optional `subgroup`.
+        methods.add_method("setMemberProfile", |_, this, (name, opts): (String, LuaTable)| {
+            let profile = squad_member_profile_from_lua(&opts)?;
+            this.inner.borrow_mut().set_member_profile(&name, profile);
+            Ok(())
+        });
+        // -- getMemberProfile --
+        /// Returns the stored footprint and subgroup metadata for one member.
+        /// @param | name | string | Member name to inspect.
+        /// @return | table | Table containing `footprintW`, `footprintH`, and optional `subgroup`.
+        methods.add_method("getMemberProfile", |lua, this, name: String| {
+            let profile = this.inner.borrow().member_profile(&name);
+            squad_member_profile_to_lua(lua, &profile)
+        });
+        // -- setFormationBehavior --
+        /// Sets formation assignment behavior knobs used for slot ordering and chokepoint fallback.
+        /// @param | sort_mode | string | Ordering strategy such as `roster` or `distance`.
+        /// @param | fallback_mode | string? | Fallback strategy such as `keep` or `column`; defaults to `keep`.
+        /// @param | preserve_subgroups | boolean? | Whether subgroup labels should stay clustered; defaults to false.
+        methods.add_method(
+            "setFormationBehavior",
+            |_, this, (sort_mode, fallback_mode, preserve_subgroups): (String, Option<String>, Option<bool>)| {
+                this.inner.borrow_mut().set_formation_behavior(
+                    FormationSortMode::parse_str(&sort_mode),
+                    FormationFallbackMode::parse_str(
+                        fallback_mode.as_deref().unwrap_or("keep"),
+                    ),
+                    preserve_subgroups.unwrap_or(false),
+                );
+                Ok(())
+            },
+        );
+        // -- getFormationBehavior --
+        /// Returns the current formation assignment behavior settings.
+        /// @return | table | Table containing `sortMode`, `fallbackMode`, and `preserveSubgroups`.
+        methods.add_method("getFormationBehavior", |lua, this, ()| {
+            let squad = this.inner.borrow();
+            let out = lua.create_table()?;
+            out.set("sortMode", squad.sort_mode.as_str())?;
+            out.set("fallbackMode", squad.fallback_mode.as_str())?;
+            out.set("preserveSubgroups", squad.preserve_subgroups)?;
+            Ok(out)
+        });
+        // -- getFormationSlots --
+        /// Returns resolved formation slot assignments for every member, optionally using current member positions and lane width.
+        /// @param | leader_x | number | Leader X position in world units.
+        /// @param | leader_y | number | Leader Y position in world units.
+        /// @param | opts | table? | Optional table with `laneWidth` and `positions = { member = { x = ..., y = ... } }`.
+        /// @return | table | Array of slot tables containing `member`, `slotIndex`, `x`, `y`, `row`, `col`, `footprintW`, `footprintH`, and `subgroup`.
+        methods.add_method(
+            "getFormationSlots",
+            |lua, this, (leader_x, leader_y, opts): (f32, f32, Option<LuaTable>)| {
+                let leader_x = lua_require_finite_f32("squad leader_x", leader_x)?;
+                let leader_y = lua_require_finite_f32("squad leader_y", leader_y)?;
+                let lane_width = match &opts {
+                    Some(opts) => opts
+                        .get::<_, Option<f32>>("laneWidth")?
+                        .map(|value| lua_require_finite_f32("squad laneWidth", value))
+                        .transpose()?,
+                    None => None,
+                };
+                let member_positions = match opts {
+                    Some(opts) => squad_member_positions_from_lua(opts.get("positions").ok())?,
+                    None => None,
+                };
+                let layout = this.inner.borrow().get_formation_layout(
+                    (leader_x, leader_y),
+                    lane_width,
+                    member_positions.as_ref(),
+                );
+                formation_layout_slots_to_lua(lua, &layout)
+            },
+        );
+        // -- getFormationSummary --
+        /// Returns formation layout metadata after slot assignment and fallback policy are resolved.
+        /// @param | leader_x | number | Leader X position in world units.
+        /// @param | leader_y | number | Leader Y position in world units.
+        /// @param | opts | table? | Optional table with `laneWidth` and `positions = { member = { x = ..., y = ... } }`.
+        /// @return | table | Table containing `requestedFormation`, `activeFormation`, `fallbackApplied`, `width`, `height`, and `slotCount`.
+        methods.add_method(
+            "getFormationSummary",
+            |lua, this, (leader_x, leader_y, opts): (f32, f32, Option<LuaTable>)| {
+                let leader_x = lua_require_finite_f32("squad leader_x", leader_x)?;
+                let leader_y = lua_require_finite_f32("squad leader_y", leader_y)?;
+                let lane_width = match &opts {
+                    Some(opts) => opts
+                        .get::<_, Option<f32>>("laneWidth")?
+                        .map(|value| lua_require_finite_f32("squad laneWidth", value))
+                        .transpose()?,
+                    None => None,
+                };
+                let member_positions = match opts {
+                    Some(opts) => squad_member_positions_from_lua(opts.get("positions").ok())?,
+                    None => None,
+                };
+                let layout = this.inner.borrow().get_formation_layout(
+                    (leader_x, leader_y),
+                    lane_width,
+                    member_positions.as_ref(),
+                );
+                formation_layout_summary_to_lua(lua, &layout)
+            },
+        );
+        // -- assignFormationMove --
+        /// Resolves formation slots and applies queued `move` orders to matching agents in the supplied world.
+        /// @param | world | LAIWorld | AI world whose agent names are matched against squad members.
+        /// @param | leader_x | number | Leader or anchor X position in world units.
+        /// @param | leader_y | number | Leader or anchor Y position in world units.
+        /// @param | opts | table? | Optional table with `laneWidth`, `positions`, `mode = replace|push_front|enqueue`, `priority`, and `interruptible`.
+        /// @return | table | Table with formation summary fields plus `assignedCount`, `missingMembers`, and `slots` that include `commandId` and `applied`.
+        methods.add_method(
+            "assignFormationMove",
+            |lua, this, (world_ud, leader_x, leader_y, opts): (LuaAnyUserData, f32, f32, Option<LuaTable>)| {
+                let leader_x = lua_require_finite_f32("squad leader_x", leader_x)?;
+                let leader_y = lua_require_finite_f32("squad leader_y", leader_y)?;
+                let lane_width = match &opts {
+                    Some(opts) => opts
+                        .get::<_, Option<f32>>("laneWidth")?
+                        .map(|value| lua_require_finite_f32("squad laneWidth", value))
+                        .transpose()?,
+                    None => None,
+                };
+                let mode = match &opts {
+                    Some(opts) => {
+                        let mode = opts
+                            .get::<_, Option<String>>("mode")?
+                            .unwrap_or_else(|| "replace".to_string());
+                        match mode.as_str() {
+                            "replace" | "push_front" | "enqueue" => mode,
+                            _ => {
+                                return Err(lua_ai_runtime_error(format!(
+                                    "lurek.ai.LSquad:assignFormationMove invalid mode '{mode}'"
+                                )))
+                            }
+                        }
+                    }
+                    None => "replace".to_string(),
+                };
+                let priority = match &opts {
+                    Some(opts) => opts.get::<_, Option<i32>>("priority")?.unwrap_or(0),
+                    None => 0,
+                };
+                let interruptible = match &opts {
+                    Some(opts) => opts.get::<_, Option<bool>>("interruptible")?.unwrap_or(true),
+                    None => true,
+                };
+                let world_handle = {
+                    let world = world_ud.borrow::<LuaAIWorld>()?;
+                    world.inner.clone()
+                };
+                let member_positions = match opts {
+                    Some(opts) => match opts
+                        .get::<_, Option<LuaTable>>("positions")
+                        .map_err(|err| {
+                            lua_ai_runtime_error(format!(
+                                "lurek.ai.LSquad:assignFormationMove positions must be a table: {err}"
+                            ))
+                        })? {
+                        Some(table) => squad_member_positions_from_lua(Some(table))?,
+                        None => {
+                            let squad = this.inner.borrow();
+                            let world = world_handle.borrow();
+                            Some(squad_member_positions_from_world(&squad, &world))
+                        }
+                    },
+                    None => {
+                        let squad = this.inner.borrow();
+                        let world = world_handle.borrow();
+                        Some(squad_member_positions_from_world(&squad, &world))
+                    }
+                };
+                let layout = this.inner.borrow().get_formation_layout(
+                    (leader_x, leader_y),
+                    lane_width,
+                    member_positions.as_ref(),
+                );
+                let mut command_ids: HashMap<String, u64> = HashMap::new();
+                let mut missing_members: Vec<String> = Vec::new();
+                {
+                    let mut world = world_handle.borrow_mut();
+                    for slot in &layout.slots {
+                        let Some(agent) = world.agent_mut(&slot.member) else {
+                            missing_members.push(slot.member.clone());
+                            continue;
+                        };
+                        let queue = &mut agent.command_queue;
+                        let id = match mode.as_str() {
+                            "enqueue" => {
+                                queue.enqueue_raw(
+                                    "move".to_string(),
+                                    slot.x,
+                                    slot.y,
+                                    priority,
+                                    interruptible,
+                                    None,
+                                )
+                            }
+                            "push_front" => {
+                                queue.push_front_raw(
+                                    "move".to_string(),
+                                    slot.x,
+                                    slot.y,
+                                    priority,
+                                    interruptible,
+                                    None,
+                                )
+                            }
+                            _ => {
+                                queue.replace_raw(
+                                    "move".to_string(),
+                                    slot.x,
+                                    slot.y,
+                                    priority,
+                                    interruptible,
+                                    None,
+                                )
+                            }
+                        };
+                        command_ids.insert(slot.member.clone(), id);
+                    }
+                }
+                let out = formation_layout_summary_to_lua(lua, &layout)?;
+                out.set("assignedCount", command_ids.len() as i64)?;
+                let missing_tbl = lua.create_table()?;
+                for (i, member) in missing_members.iter().enumerate() {
+                    missing_tbl.set(i + 1, member.as_str())?;
+                }
+                out.set("missingMembers", missing_tbl)?;
+                let slots_tbl = lua.create_table()?;
+                for (i, slot) in layout.slots.iter().enumerate() {
+                    let entry = lua.create_table()?;
+                    entry.set("member", slot.member.as_str())?;
+                    entry.set("slotIndex", slot.slot_index as u32)?;
+                    entry.set("x", slot.x)?;
+                    entry.set("y", slot.y)?;
+                    entry.set("row", slot.row)?;
+                    entry.set("col", slot.col)?;
+                    entry.set("footprintW", slot.footprint_w)?;
+                    entry.set("footprintH", slot.footprint_h)?;
+                    entry.set("subgroup", slot.subgroup.clone())?;
+                    entry.set("commandId", command_ids.get(&slot.member).copied())?;
+                    entry.set("applied", command_ids.contains_key(&slot.member))?;
+                    slots_tbl.set(i + 1, entry)?;
+                }
+                out.set("slots", slots_tbl)?;
+                Ok(out)
+            },
+        );
+        // -- submitFormationPaths --
+        /// Resolves formation slots, converts world positions into navigation cells, and submits one async paired path batch.
+        /// @param | world | LAIWorld | AI world whose agent positions provide the path start cells.
+        /// @param | grid | LNavGrid | Navigation grid cloned for the async worker.
+        /// @param | leader_x | number | Leader or anchor X position in world units.
+        /// @param | leader_y | number | Leader or anchor Y position in world units.
+        /// @param | opts | table | Options with `cellSize`, optional `originX`,`originY`,`laneWidth`,`positions`,`requestId`,`ownerId`,`version`,`priority`,`footprint`,`unitSize`, and `maxSteps`.
+        /// @return | table | Table with formation summary fields plus async request metadata, slot-cell mappings, and skipped-member diagnostics.
+        methods.add_method(
+            "submitFormationPaths",
+            |lua, this, (world_ud, grid_ud, leader_x, leader_y, opts): (LuaAnyUserData, LuaAnyUserData, f32, f32, LuaTable)| {
+                let leader_x = lua_require_finite_f32("squad leader_x", leader_x)?;
+                let leader_y = lua_require_finite_f32("squad leader_y", leader_y)?;
+                let cell_size = lua_require_positive_f32(
+                    "squad submitFormationPaths cellSize",
+                    opts.get::<_, f32>("cellSize")?,
+                )?;
+                let origin_x = lua_require_finite_f32(
+                    "squad submitFormationPaths originX",
+                    opts.get::<_, Option<f32>>("originX")?.unwrap_or(0.0),
+                )?;
+                let origin_y = lua_require_finite_f32(
+                    "squad submitFormationPaths originY",
+                    opts.get::<_, Option<f32>>("originY")?.unwrap_or(0.0),
+                )?;
+                let lane_width = opts
+                    .get::<_, Option<f32>>("laneWidth")?
+                    .map(|value| lua_require_finite_f32("squad laneWidth", value))
+                    .transpose()?;
+                let priority = opts.get::<_, Option<i32>>("priority")?.unwrap_or(0);
+                let max_steps = opts.get::<_, Option<u32>>("maxSteps")?.unwrap_or(0);
+                let request_id = opts
+                    .get::<_, Option<u64>>("requestId")?
+                    .unwrap_or_else(next_async_path_request_id);
+                let (owner_id, version) = {
+                    let squad = this.inner.borrow();
+                    let owner_id = opts
+                        .get::<_, Option<u64>>("ownerId")?
+                        .unwrap_or_else(|| squad.default_path_request_owner_id());
+                    let version = opts
+                        .get::<_, Option<u64>>("version")?
+                        .unwrap_or_else(|| squad.next_path_request_version());
+                    (owner_id, version)
+                };
+                let (grid_snapshot, dims, footprint) = {
+                    let grid = grid_ud.borrow::<LuaNavGrid>()?;
+                    let footprint =
+                        if let Some(name) = opts.get::<_, Option<String>>("footprint")? {
+                            grid.footprint(&name).ok_or_else(|| {
+                                lua_ai_runtime_error(format!(
+                                    "lurek.ai.LSquad:submitFormationPaths unknown footprint '{name}'"
+                                ))
+                            })?
+                        } else {
+                            let unit_size = opts.get::<_, Option<u32>>("unitSize")?.unwrap_or(1);
+                            FootprintSpec::new(unit_size, unit_size)
+                        };
+                    (grid.cloned_grid(), grid.dimensions(), footprint)
+                };
+                let world_handle = {
+                    let world = world_ud.borrow::<LuaAIWorld>()?;
+                    world.inner.clone()
+                };
+                let member_positions = match opts
+                    .get::<_, Option<LuaTable>>("positions")
+                    .map_err(|err| {
+                        lua_ai_runtime_error(format!(
+                            "lurek.ai.LSquad:submitFormationPaths positions must be a table: {err}"
+                        ))
+                    })? {
+                    Some(table) => squad_member_positions_from_lua(Some(table))?,
+                    None => {
+                        let squad = this.inner.borrow();
+                        let world = world_handle.borrow();
+                        Some(squad_member_positions_from_world(&squad, &world))
+                    }
+                };
+                let layout = this.inner.borrow().get_formation_layout(
+                    (leader_x, leader_y),
+                    lane_width,
+                    member_positions.as_ref(),
+                );
+                let mut pairs = Vec::new();
+                let mut slot_cells = Vec::with_capacity(layout.slots.len());
+                let mut missing_members: Vec<String> = Vec::new();
+                let mut out_of_bounds = Vec::new();
+                {
+                    let world = world_handle.borrow();
+                    for slot in &layout.slots {
+                        let Some(agent) = world.agent(&slot.member) else {
+                            missing_members.push(slot.member.clone());
+                            continue;
+                        };
+                        let start_cell = world_point_to_nav_cell(
+                            agent.position,
+                            (origin_x, origin_y),
+                            cell_size,
+                            dims,
+                        );
+                        let target_cell = world_point_to_nav_cell(
+                            (slot.x, slot.y),
+                            (origin_x, origin_y),
+                            cell_size,
+                            dims,
+                        );
+                        if start_cell.is_none() {
+                            out_of_bounds.push((slot.member.clone(), "start".to_string(), agent.position));
+                        }
+                        if target_cell.is_none() {
+                            out_of_bounds.push((slot.member.clone(), "target".to_string(), (slot.x, slot.y)));
+                        }
+                        if let (Some(start_cell), Some(target_cell)) = (start_cell, target_cell) {
+                            pairs.push((start_cell, target_cell));
+                            slot_cells.push((slot, Some(start_cell), Some(target_cell), true));
+                        } else {
+                            slot_cells.push((slot, start_cell, target_cell, false));
+                        }
+                    }
+                }
+                if pairs.is_empty() {
+                    return Err(lua_ai_runtime_error(
+                        "lurek.ai.LSquad:submitFormationPaths produced no valid start/target cell pairs",
+                    ));
+                }
+
+                submit_async_query(AsyncPathRequest {
+                    id: request_id,
+                    owner_id,
+                    version,
+                    priority,
+                    grid: grid_snapshot,
+                    start: (0, 0),
+                    goal: (0, 0),
+                    unit_size: footprint.width.max(footprint.height),
+                    stream_budget: 0,
+                    batch_starts: None,
+                    batch_targets: None,
+                    batch_pairs: Some(pairs),
+                    batch_footprint: Some(footprint),
+                    batch_max_steps: max_steps,
+                });
+
+                let out = formation_layout_summary_to_lua(lua, &layout)?;
+                out.set("requestId", request_id)?;
+                out.set("ownerId", owner_id)?;
+                out.set("version", version)?;
+                out.set(
+                    "submittedCount",
+                    slot_cells
+                        .iter()
+                        .filter(|(_, _, _, submitted)| *submitted)
+                        .count() as i64,
+                )?;
+                out.set("cellSize", cell_size)?;
+                out.set("originX", origin_x)?;
+                out.set("originY", origin_y)?;
+                let missing_tbl = lua.create_table()?;
+                for (i, member) in missing_members.iter().enumerate() {
+                    missing_tbl.set(i + 1, member.as_str())?;
+                }
+                out.set("missingMembers", missing_tbl)?;
+                let out_of_bounds_tbl = lua.create_table()?;
+                for (i, (member, which, position)) in out_of_bounds.iter().enumerate() {
+                    let entry = lua.create_table()?;
+                    entry.set("member", member.as_str())?;
+                    entry.set("which", which.as_str())?;
+                    entry.set("x", position.0)?;
+                    entry.set("y", position.1)?;
+                    out_of_bounds_tbl.set(i + 1, entry)?;
+                }
+                out.set("outOfBoundsMembers", out_of_bounds_tbl)?;
+                let slots_tbl = lua.create_table()?;
+                for (i, (slot, start_cell, target_cell, submitted)) in slot_cells.iter().enumerate() {
+                    let entry = lua.create_table()?;
+                    entry.set("member", slot.member.as_str())?;
+                    entry.set("slotIndex", slot.slot_index as u32)?;
+                    entry.set("x", slot.x)?;
+                    entry.set("y", slot.y)?;
+                    entry.set("row", slot.row)?;
+                    entry.set("col", slot.col)?;
+                    entry.set("footprintW", slot.footprint_w)?;
+                    entry.set("footprintH", slot.footprint_h)?;
+                    entry.set("subgroup", slot.subgroup.clone())?;
+                    entry.set("submitted", *submitted)?;
+                    entry.set("startCellX", start_cell.map(|cell| cell.0 + 1))?;
+                    entry.set("startCellY", start_cell.map(|cell| cell.1 + 1))?;
+                    entry.set("targetCellX", target_cell.map(|cell| cell.0 + 1))?;
+                    entry.set("targetCellY", target_cell.map(|cell| cell.1 + 1))?;
+                    slots_tbl.set(i + 1, entry)?;
+                }
+                out.set("slots", slots_tbl)?;
+                Ok(out)
+            },
+        );
         // -- getBlackboard --
         /// Returns a blackboard snapshot for this squad.
         /// @return | LAIBlackboard | Blackboard handle initialized from the squad blackboard values at call time.
@@ -1458,11 +2475,47 @@ impl LuaUserData for LuaSquad {
         });
     }
 }
+/// Storage variants for standalone and agent-owned command queues exposed to Lua.
+#[derive(Clone)]
+enum CommandQueueBinding {
+    /// Standalone queue created through `lurek.ai.newCommandQueue()`.
+    Standalone(Rc<RefCell<CommandQueue>>),
+    /// Queue owned by one agent in an AI world.
+    Agent {
+        /// Shared AI world storing the referenced agent.
+        world: Rc<RefCell<AIWorld>>,
+        /// Stable agent name used for lookup on each command-queue operation.
+        name: String,
+    },
+}
+
 /// Lua handle for a command queue that stores ordered callback-backed commands.
 #[derive(Clone)]
 struct LuaCommandQueue {
-    /// Shared command queue state exposed to Lua.
-    inner: Rc<RefCell<CommandQueue>>,
+    /// Queue binding that resolves either to a standalone queue or an agent-owned queue.
+    inner: CommandQueueBinding,
+}
+
+impl LuaCommandQueue {
+    fn with_queue<R>(&self, f: impl FnOnce(&CommandQueue) -> R) -> Option<R> {
+        match &self.inner {
+            CommandQueueBinding::Standalone(inner) => Some(f(&inner.borrow())),
+            CommandQueueBinding::Agent { world, name } => {
+                let world = world.borrow();
+                world.agent(name).map(|agent| f(&agent.command_queue))
+            }
+        }
+    }
+
+    fn with_queue_mut<R>(&self, f: impl FnOnce(&mut CommandQueue) -> R) -> Option<R> {
+        match &self.inner {
+            CommandQueueBinding::Standalone(inner) => Some(f(&mut inner.borrow_mut())),
+            CommandQueueBinding::Agent { world, name } => {
+                let mut world = world.borrow_mut();
+                world.agent_mut(name).map(|agent| f(&mut agent.command_queue))
+            }
+        }
+    }
 }
 /// Parses command option tables and returns target coordinates, priority, and interruptibility defaults.
 fn parse_command_opts(opts: &Option<LuaTable>) -> LuaResult<(f32, f32, i32, bool)> {
@@ -1484,15 +2537,18 @@ impl LuaUserData for LuaCommandQueue {
         /// @param | kind | string | Command type label stored for inspection.
         /// @param | callback | function | Callback invoked by command execution logic outside this wrapper.
         /// @param | opts | table? | Optional table with `targetX`, `targetY`, `priority`, and `interruptible` fields.
+        /// @return | integer | Stable command id assigned by this queue.
         methods.add_method(
             "enqueue",
             |lua, this, (kind, callback, opts): (String, LuaFunction, Option<LuaTable>)| {
                 let key = lua.create_registry_value(callback)?;
                 let (tx, ty, priority, interruptible) = parse_command_opts(&opts)?;
-                this.inner
-                    .borrow_mut()
-                    .enqueue_raw(kind, tx, ty, priority, interruptible, key);
-                Ok(())
+                let id = this
+                    .with_queue_mut(|queue| {
+                        queue.enqueue_raw(kind, tx, ty, priority, interruptible, Some(key))
+                    })
+                    .unwrap_or(0);
+                Ok(id as i64)
             },
         );
         // -- pushFront --
@@ -1500,15 +2556,18 @@ impl LuaUserData for LuaCommandQueue {
         /// @param | kind | string | Command type label stored for inspection.
         /// @param | callback | function | Callback invoked by command execution logic outside this wrapper.
         /// @param | opts | table? | Optional table with `targetX`, `targetY`, `priority`, and `interruptible` fields.
+        /// @return | integer | Stable command id assigned by this queue.
         methods.add_method(
             "pushFront",
             |lua, this, (kind, callback, opts): (String, LuaFunction, Option<LuaTable>)| {
                 let key = lua.create_registry_value(callback)?;
                 let (tx, ty, priority, interruptible) = parse_command_opts(&opts)?;
-                this.inner
-                    .borrow_mut()
-                    .push_front_raw(kind, tx, ty, priority, interruptible, key);
-                Ok(())
+                let id = this
+                    .with_queue_mut(|queue| {
+                        queue.push_front_raw(kind, tx, ty, priority, interruptible, Some(key))
+                    })
+                    .unwrap_or(0);
+                Ok(id as i64)
             },
         );
         // -- replace --
@@ -1516,48 +2575,110 @@ impl LuaUserData for LuaCommandQueue {
         /// @param | kind | string | Command type label stored for inspection.
         /// @param | callback | function | Callback invoked by command execution logic outside this wrapper.
         /// @param | opts | table? | Optional table with `targetX`, `targetY`, `priority`, and `interruptible` fields.
+        /// @return | integer | Stable command id assigned to the replacement command.
         methods.add_method(
             "replace",
             |lua, this, (kind, callback, opts): (String, LuaFunction, Option<LuaTable>)| {
                 let key = lua.create_registry_value(callback)?;
                 let (tx, ty, priority, interruptible) = parse_command_opts(&opts)?;
-                this.inner
-                    .borrow_mut()
-                    .replace_raw(kind, tx, ty, priority, interruptible, key);
-                Ok(())
+                let id = this
+                    .with_queue_mut(|queue| {
+                        queue.replace_raw(kind, tx, ty, priority, interruptible, Some(key))
+                    })
+                    .unwrap_or(0);
+                Ok(id as i64)
             },
         );
         // -- cancelCurrent --
         /// Cancels the currently active command when one exists.
+        /// @param | reason | string? | Optional lifecycle detail string recorded on cancellation events.
         /// @return | boolean | True when a current command was cancelled.
-        methods.add_method("cancelCurrent", |_, this, ()| {
-            Ok(this.inner.borrow_mut().cancel_current())
+        methods.add_method("cancelCurrent", |_, this, reason: Option<String>| {
+            Ok(this
+                .with_queue_mut(|queue| queue.cancel_current_with_reason(reason))
+                .unwrap_or(false))
         });
         // -- clear --
         /// Removes every queued command. This method is available to Lua scripts.
-        methods.add_method("clear", |_, this, ()| {
-            this.inner.borrow_mut().clear();
-            Ok(())
+        /// @param | reason | string? | Optional lifecycle detail string recorded on clear events.
+        /// @return | integer | Number of cleared commands.
+        methods.add_method("clear", |_, this, reason: Option<String>| {
+            Ok(this
+                .with_queue_mut(|queue| queue.clear_with_reason(reason))
+                .unwrap_or(0))
         });
         // -- getCount --
         /// Returns the number of commands currently queued.
         /// @return | integer | Current queue length.
-        methods.add_method("getCount", |_, this, ()| Ok(this.inner.borrow().count()));
+        methods.add_method("getCount", |_, this, ()| {
+            Ok(this.with_queue(|queue| queue.count()).unwrap_or(0))
+        });
         // -- isEmpty --
         /// Returns whether the command queue has no commands.
         /// @return | boolean | True when the queue is empty.
-        methods.add_method("isEmpty", |_, this, ()| Ok(this.inner.borrow().is_empty()));
+        methods.add_method("isEmpty", |_, this, ()| {
+            Ok(this.with_queue(|queue| queue.is_empty()).unwrap_or(true))
+        });
         // -- getCurrentType --
         /// Returns the type label of the current command when one exists.
         /// @return | LuaValue | Current command type label, or nil when no command is active.
         methods.add_method("getCurrentType", |_, this, ()| {
-            Ok(this.inner.borrow().current_type().map(|s| s.to_string()))
+            Ok(this
+                .with_queue(|queue| queue.current_type().map(str::to_string))
+                .flatten())
         });
         // -- getCurrentTarget --
         /// Returns the current command target coordinates.
         /// @return | number, number | Target X and Y coordinates for the current command, or queue defaults.
         methods.add_method("getCurrentTarget", |_, this, ()| {
-            Ok(this.inner.borrow().current_target())
+            Ok(this
+                .with_queue(|queue| queue.current_target())
+                .unwrap_or((0.0, 0.0)))
+        });
+        // -- getCurrent --
+        /// Returns the full current command snapshot when one exists.
+        /// @return | LuaValue | Table with `id`, `kind`, `targetX`, `targetY`, `priority`, and `interruptible`, or nil when no command is active.
+        methods.add_method("getCurrent", |lua, this, ()| {
+            let snapshot = this.with_queue(|queue| queue.current()).flatten();
+            snapshot
+                .as_ref()
+                .map(|snapshot| command_snapshot_to_lua(lua, snapshot))
+                .transpose()
+        });
+        // -- getPending --
+        /// Returns every pending command snapshot in queue order.
+        /// @return | table | Array of `{ id, kind, targetX, targetY, priority, interruptible }` tables.
+        methods.add_method("getPending", |lua, this, ()| {
+            let snapshots = this.with_queue(|queue| queue.pending()).unwrap_or_default();
+            command_snapshots_to_lua(lua, &snapshots)
+        });
+        // -- completeCurrent --
+        /// Marks the current command as completed and advances the queue.
+        /// @param | reason | string? | Optional lifecycle detail string recorded on the completion event.
+        /// @return | LuaValue | Completed command id, or nil when the queue is empty.
+        methods.add_method("completeCurrent", |_, this, reason: Option<String>| {
+            Ok(this
+                .with_queue_mut(|queue| queue.complete_current(reason))
+                .flatten()
+                .map(|id| id as i64))
+        });
+        // -- failCurrent --
+        /// Marks the current command as failed and advances the queue.
+        /// @param | reason | string? | Optional lifecycle detail string recorded on the failure event.
+        /// @return | boolean | True when a command was marked failed.
+        methods.add_method("failCurrent", |_, this, reason: Option<String>| {
+            Ok(this
+                .with_queue_mut(|queue| queue.fail_current(reason))
+                .unwrap_or(false))
+        });
+        // -- drainEvents --
+        /// Returns and clears queued lifecycle events.
+        /// @return | table | Array of `{ id, kind, event, targetX, targetY, priority, interruptible, detail }` tables in emit order.
+        methods.add_method("drainEvents", |lua, this, ()| {
+            let events = this
+                .with_queue_mut(|queue| queue.drain_events())
+                .unwrap_or_default();
+            command_events_to_lua(lua, &events)
         });
         // -- type --
         /// Returns the Lua-visible type name for this command queue handle.
@@ -2703,7 +3824,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         "newCommandQueue",
         lua.create_function(|_, ()| {
             Ok(LuaCommandQueue {
-                inner: Rc::new(RefCell::new(CommandQueue::new())),
+                inner: CommandQueueBinding::Standalone(Rc::new(RefCell::new(CommandQueue::new()))),
             })
         })?,
     )?;

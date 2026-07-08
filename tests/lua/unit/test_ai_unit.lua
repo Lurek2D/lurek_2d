@@ -199,8 +199,106 @@ describe("ai world", function()
         expect_equal("LAIBlackboard", lurek.ai.newWorld():getGlobalBlackboard():type())
     end)
 
+    -- @covers LAIWorld:setSpatialCellSize
+    it("setSpatialCellSize updates the world spatial query cell size", function()
+        local world = lurek.ai.newWorld()
+        world:setSpatialCellSize(24.0)
+        expect_near(24.0, world:getSpatialCellSize(), 0.01)
+    end)
+
+    -- @covers LAIWorld:getSpatialCellSize
+    it("getSpatialCellSize returns a number", function()
+        expect_type("number", lurek.ai.newWorld():getSpatialCellSize())
+    end)
+
+    -- @covers LAIWorld:getSpatialQueryStats
+    it("getSpatialQueryStats reports candidate and result counters", function()
+        local world = lurek.ai.newWorld()
+        world:setSpatialCellSize(16.0)
+        local alpha = world:addAgent("alpha")
+        local beta = world:addAgent("beta")
+        alpha:setPosition(0.0, 0.0)
+        alpha:setTeam(1)
+        beta:setPosition(10.0, 0.0)
+        beta:setTeam(2)
+        world:queryAgentsInRadius(0.0, 0.0, 32.0, { exclude = "alpha", hostileTo = 1 })
+        local stats = world:getSpatialQueryStats()
+        expect_true(stats.activeAgents >= 2)
+        expect_true(stats.candidateChecks >= 1)
+    end)
+
+    -- @covers LAIWorld:setOrderArrivalRadius
+    it("setOrderArrivalRadius updates the move arrival threshold", function()
+        local world = lurek.ai.newWorld()
+        world:setOrderArrivalRadius(2.5)
+        expect_near(2.5, world:getOrderArrivalRadius(), 0.01)
+    end)
+
+    -- @covers LAIWorld:getOrderArrivalRadius
+    it("getOrderArrivalRadius returns a number", function()
+        expect_type("number", lurek.ai.newWorld():getOrderArrivalRadius())
+    end)
+
+    -- @covers LAIWorld:setAutoAcquireBudget
+    it("setAutoAcquireBudget updates the query budget used by world update", function()
+        local world = lurek.ai.newWorld()
+        world:setAutoAcquireBudget(3)
+        expect_equal(3, world:getAutoAcquireBudget())
+    end)
+
+    -- @covers LAIWorld:getAutoAcquireBudget
+    it("getAutoAcquireBudget returns a number", function()
+        expect_type("number", lurek.ai.newWorld():getAutoAcquireBudget())
+    end)
+
+    -- @covers LAIWorld:getOrderRuntimeStats
+    it("getOrderRuntimeStats reports move completions and acquisition work", function()
+        local world = lurek.ai.newWorld()
+        world:setSpatialCellSize(16.0)
+        world:setOrderArrivalRadius(0.5)
+        local hero = world:addAgent("hero")
+        local enemy = world:addAgent("enemy")
+        hero:setTeam(1)
+        hero:setPosition(0.0, 0.0)
+        hero:setStance("aggressive", { acquireRadius = 64.0, chaseRadius = 24.0 })
+        hero:getCommandQueue():enqueue("move", function() end, { targetX = 32.0, targetY = 0.0 })
+        enemy:setTeam(2)
+        enemy:setPosition(8.0, 0.0)
+        world:update(0.1)
+        local stats = world:getOrderRuntimeStats()
+        expect_true(stats.acquireQueries >= 1)
+        expect_true(stats.targetsAcquired >= 1)
+        expect_true(stats.activeEngagements >= 1)
+    end)
+
+    -- @covers LAIWorld:queryAgentsInRadius
+    it("queryAgentsInRadius returns nearest filtered agents", function()
+        local world = lurek.ai.newWorld()
+        world:setSpatialCellSize(16.0)
+        local alpha = world:addAgent("alpha")
+        local beta = world:addAgent("beta")
+        local gamma = world:addAgent("gamma")
+        alpha:setPosition(0.0, 0.0)
+        alpha:setTeam(1)
+        beta:setPosition(8.0, 0.0)
+        beta:setTeam(2)
+        beta:addTag("hostile")
+        gamma:setPosition(12.0, 0.0)
+        gamma:setTeam(2)
+        gamma:addTag("hidden")
+        local found = world:queryAgentsInRadius(0.0, 0.0, 32.0, {
+            exclude = "alpha",
+            hostileTo = 1,
+            limit = 1,
+            tag = "hostile",
+            notTag = "hidden",
+        })
+        expect_equal(1, #found)
+        expect_equal("beta", found[1]:getName())
+    end)
+
     -- @covers LAIWorld:update
-    it("update moves agents by velocity", function()
+    it("update integrates velocity and executes queued move orders", function()
         local world, agent = new_world_agent("mover")
         agent:setPosition(0, 0)
         agent:setVelocity(10, 20)
@@ -208,6 +306,18 @@ describe("ai world", function()
         local x, y = agent:getPosition()
         expect_near(5.0, x, 0.01)
         expect_near(10.0, y, 0.01)
+
+        local order_world, runner = new_world_agent("runner")
+        order_world:setOrderArrivalRadius(0.5)
+        local queue = runner:getCommandQueue()
+        queue:enqueue("move", function() end, { targetX = 10.0, targetY = 0.0 })
+        order_world:update(1.0)
+        local rx, ry = runner:getPosition()
+        local stats = order_world:getOrderRuntimeStats()
+        expect_near(10.0, rx, 0.01)
+        expect_near(0.0, ry, 0.01)
+        expect_nil(runner:getCurrentOrder())
+        expect_true(stats.moveOrdersCompleted >= 1)
     end)
 
     -- @covers LAIWorld:getLastCallbackErrors
@@ -315,6 +425,37 @@ describe("ai bot", function()
         expect_type("number", agent:getPriority())
     end)
 
+    -- @covers LBot:setTeam
+    it("setTeam updates the bot team id", function()
+        local _, agent = new_world_agent("hero")
+        agent:setTeam(3)
+        expect_equal(3, agent:getTeam())
+    end)
+
+    -- @covers LBot:getTeam
+    it("getTeam returns a number", function()
+        local _, agent = new_world_agent("hero")
+        expect_type("number", agent:getTeam())
+    end)
+
+    -- @covers LBot:setStance
+    it("setStance applies built-in stance values and overrides", function()
+        local _, agent = new_world_agent("hero")
+        agent:setStance("defensive", { chaseRadius = 48.0, interruptsMove = true })
+        local stance = agent:getStance()
+        expect_equal("defensive", stance.stance)
+        expect_near(48.0, stance.chaseRadius, 0.01)
+        expect_true(stance.interruptsMove)
+    end)
+
+    -- @covers LBot:getStance
+    it("getStance returns a stance profile table", function()
+        local _, agent = new_world_agent("hero")
+        local stance = agent:getStance()
+        expect_equal("aggressive", stance.stance)
+        expect_type("number", stance.acquireRadius)
+    end)
+
     -- @covers LBot:setDecisionModel
     it("setDecisionModel updates valid decision models", function()
         local _, agent = new_world_agent("hero")
@@ -409,10 +550,120 @@ describe("ai bot", function()
         expect_false(agent:hasTag("unknown"))
     end)
 
+    -- @covers LBot:findHostilesInRange
+    it("findHostilesInRange uses the world spatial index and team filtering", function()
+        local world = lurek.ai.newWorld()
+        world:setSpatialCellSize(16.0)
+        local hero = world:addAgent("hero")
+        local enemy = world:addAgent("enemy")
+        local ally = world:addAgent("ally")
+        hero:setTeam(1)
+        hero:setPosition(0.0, 0.0)
+        enemy:setTeam(2)
+        enemy:setPosition(20.0, 0.0)
+        enemy:addTag("visible")
+        ally:setTeam(1)
+        ally:setPosition(10.0, 0.0)
+        local found = hero:findHostilesInRange(64.0, { tag = "visible", limit = 4 })
+        expect_equal(1, #found)
+        expect_equal("enemy", found[1]:getName())
+    end)
+
+    -- @covers LBot:acquireTarget
+    it("acquireTarget returns the nearest target allowed by the stance profile", function()
+        local world = lurek.ai.newWorld()
+        world:setSpatialCellSize(16.0)
+        local hero = world:addAgent("hero")
+        local near_enemy = world:addAgent("near_enemy")
+        local far_enemy = world:addAgent("far_enemy")
+        hero:setTeam(1)
+        hero:setPosition(0.0, 0.0)
+        hero:setStance("aggressive", { acquireRadius = 80.0 })
+        near_enemy:setTeam(2)
+        near_enemy:setPosition(24.0, 0.0)
+        far_enemy:setTeam(2)
+        far_enemy:setPosition(120.0, 0.0)
+        local target = hero:acquireTarget()
+        expect_equal("near_enemy", target:getName())
+    end)
+
     -- @covers LBot:getBlackboard
     it("getBlackboard returns a blackboard", function()
         local _, agent = new_world_agent("hero")
         expect_equal("LAIBlackboard", agent:getBlackboard():type())
+    end)
+
+    -- @covers LBot:getCommandQueue
+    it("getCommandQueue returns a live queue bound to the agent", function()
+        local _, agent = new_world_agent("hero")
+        local queue = agent:getCommandQueue()
+        local id = queue:enqueue("move", function() end, { targetX = 8, targetY = 12 })
+        expect_type("userdata", queue)
+        expect_true(id > 0)
+        expect_equal("move", agent:getCurrentOrder().kind)
+    end)
+
+    -- @covers LBot:getCurrentOrder
+    it("getCurrentOrder returns nil when the agent has no orders", function()
+        local _, agent = new_world_agent("hero")
+        expect_nil(agent:getCurrentOrder())
+    end)
+
+    -- @covers LBot:getOrderRuntimeState
+    it("getOrderRuntimeState reports soft interruptions and later clears them", function()
+        local world = lurek.ai.newWorld()
+        world:setSpatialCellSize(16.0)
+        local hero = world:addAgent("hero")
+        local enemy = world:addAgent("enemy")
+        hero:setTeam(1)
+        hero:setPosition(0.0, 0.0)
+        hero:setStance("aggressive", {
+            acquireRadius = 64.0,
+            chaseRadius = 24.0,
+            abandonFormation = true,
+        })
+        hero:getCommandQueue():enqueue("move", function() end, {
+            targetX = 100.0,
+            targetY = 0.0,
+            interruptible = true,
+        })
+        enemy:setTeam(2)
+        enemy:setPosition(8.0, 0.0)
+        world:update(0.1)
+        local state = hero:getOrderRuntimeState()
+        expect_true(state.active)
+        expect_equal("enemy", state.engageTarget)
+        expect_true(state.formationAbandoned)
+        expect_equal(hero:getCurrentOrder().id, state.suspendedOrderId)
+
+        enemy:setPosition(80.0, 0.0)
+        world:update(0.1)
+        local cleared = hero:getOrderRuntimeState()
+        expect_false(cleared.active)
+        expect_nil(cleared.engageTarget)
+    end)
+
+    -- @covers LBot:clearOrders
+    it("clearOrders empties the agent queue and returns the cleared count", function()
+        local _, agent = new_world_agent("hero")
+        local queue = agent:getCommandQueue()
+        queue:enqueue("move", function() end)
+        queue:enqueue("guard", function() end)
+        expect_equal(2, agent:clearOrders("stop"))
+        expect_true(queue:isEmpty())
+    end)
+
+    -- @covers LBot:drainCommandEvents
+    it("drainCommandEvents returns and clears lifecycle events", function()
+        local _, agent = new_world_agent("hero")
+        local queue = agent:getCommandQueue()
+        queue:enqueue("move", function() end, { targetX = 5, targetY = 7 })
+        queue:completeCurrent("arrived")
+        local events = agent:drainCommandEvents()
+        expect_equal(2, #events)
+        expect_equal("enqueued", events[1].event)
+        expect_equal("completed", events[2].event)
+        expect_equal(0, #agent:drainCommandEvents())
     end)
 
     -- @covers LBot:type
@@ -803,41 +1054,45 @@ end)
 -- @describe command queue
 describe("ai command queue", function()
     -- @covers LCommandQueue:enqueue
-    it("enqueue adds one command", function()
+    it("enqueue adds one command and returns a stable id", function()
         local queue = lurek.ai.newCommandQueue()
-        queue:enqueue("move", function() end)
+        local id = queue:enqueue("move", function() end)
+        expect_true(id > 0)
         expect_equal(1, queue:getCount())
     end)
 
     -- @covers LCommandQueue:pushFront
-    it("pushFront adds one command", function()
+    it("pushFront adds one command and returns a stable id", function()
         local queue = lurek.ai.newCommandQueue()
-        queue:pushFront("move", function() end)
+        local id = queue:pushFront("move", function() end)
+        expect_true(id > 0)
         expect_equal(1, queue:getCount())
     end)
 
     -- @covers LCommandQueue:replace
-    it("replace resets queue contents", function()
+    it("replace resets queue contents and returns a stable id", function()
         local queue = lurek.ai.newCommandQueue()
         queue:enqueue("move", function() end)
-        queue:replace("attack", function() end)
+        local id = queue:replace("attack", function() end)
+        expect_true(id > 0)
         expect_equal(1, queue:getCount())
     end)
 
     -- @covers LCommandQueue:cancelCurrent
-    it("cancelCurrent is callable", function()
+    it("cancelCurrent removes the current interruptible command and emits an event", function()
         local queue = lurek.ai.newCommandQueue()
         queue:enqueue("move", function() end)
-        expect_no_error(function()
-            queue:cancelCurrent()
-        end)
+        expect_true(queue:cancelCurrent("manual"))
+        expect_true(queue:isEmpty())
+        local events = queue:drainEvents()
+        expect_equal("cancelled", events[#events].event)
     end)
 
     -- @covers LCommandQueue:clear
-    it("clear removes queued commands", function()
+    it("clear removes queued commands and returns the cleared count", function()
         local queue = lurek.ai.newCommandQueue()
         queue:enqueue("move", function() end)
-        queue:clear()
+        expect_equal(1, queue:clear("reset"))
         expect_true(queue:isEmpty())
     end)
 
@@ -861,6 +1116,62 @@ describe("ai command queue", function()
         local x, y = lurek.ai.newCommandQueue():getCurrentTarget()
         expect_type("number", x)
         expect_type("number", y)
+    end)
+
+    -- @covers LCommandQueue:getCurrent
+    it("getCurrent returns a snapshot for the active command", function()
+        local queue = lurek.ai.newCommandQueue()
+        local id = queue:enqueue("move", function() end, { targetX = 4, targetY = 9, priority = 3, interruptible = false })
+        local current = queue:getCurrent()
+        expect_equal(id, current.id)
+        expect_equal("move", current.kind)
+        expect_equal(3, current.priority)
+        expect_false(current.interruptible)
+    end)
+
+    -- @covers LCommandQueue:getPending
+    it("getPending returns snapshots in queue order", function()
+        local queue = lurek.ai.newCommandQueue()
+        queue:enqueue("move", function() end)
+        queue:enqueue("guard", function() end)
+        local pending = queue:getPending()
+        expect_equal(2, #pending)
+        expect_equal("move", pending[1].kind)
+        expect_equal("guard", pending[2].kind)
+    end)
+
+    -- @covers LCommandQueue:completeCurrent
+    it("completeCurrent advances the queue and records a completion event", function()
+        local queue = lurek.ai.newCommandQueue()
+        local id = queue:enqueue("move", function() end)
+        queue:enqueue("guard", function() end)
+        expect_equal(id, queue:completeCurrent("arrived"))
+        expect_equal("guard", queue:getCurrentType())
+        local events = queue:drainEvents()
+        expect_equal("completed", events[#events].event)
+    end)
+
+    -- @covers LCommandQueue:failCurrent
+    it("failCurrent removes the current command and records a failure event", function()
+        local queue = lurek.ai.newCommandQueue()
+        queue:enqueue("move", function() end)
+        expect_true(queue:failCurrent("blocked"))
+        expect_true(queue:isEmpty())
+        local events = queue:drainEvents()
+        expect_equal("failed", events[#events].event)
+        expect_equal("blocked", events[#events].detail)
+    end)
+
+    -- @covers LCommandQueue:drainEvents
+    it("drainEvents returns emitted lifecycle events in order", function()
+        local queue = lurek.ai.newCommandQueue()
+        queue:enqueue("move", function() end)
+        queue:completeCurrent("done")
+        local events = queue:drainEvents()
+        expect_equal(2, #events)
+        expect_equal("enqueued", events[1].event)
+        expect_equal("completed", events[2].event)
+        expect_equal(0, #queue:drainEvents())
     end)
 
     -- @covers LCommandQueue:type
@@ -1070,6 +1381,171 @@ describe("ai squad", function()
         local x, y = squad:getFormationPosition(2, 100.0, 50.0)
         expect_type("number", x)
         expect_type("number", y)
+    end)
+
+    -- @covers LSquad:setMemberProfile
+    it("setMemberProfile stores footprint and subgroup metadata", function()
+        local squad = lurek.ai.newSquad("armor")
+        squad:setMemberProfile("tank", { footprintW = 4, footprintH = 3, subgroup = "heavy" })
+        local profile = squad:getMemberProfile("tank")
+        expect_equal(4, profile.footprintW)
+        expect_equal(3, profile.footprintH)
+        expect_equal("heavy", profile.subgroup)
+    end)
+
+    -- @covers LSquad:getMemberProfile
+    it("getMemberProfile returns default metadata for an unconfigured member", function()
+        local squad = lurek.ai.newSquad("defaults")
+        local profile = squad:getMemberProfile("scout")
+        expect_equal(1, profile.footprintW)
+        expect_equal(1, profile.footprintH)
+        expect_nil(profile.subgroup)
+    end)
+
+    -- @covers LSquad:setFormationBehavior
+    it("setFormationBehavior stores sort, fallback, and subgroup preservation settings", function()
+        local squad = lurek.ai.newSquad("behavior")
+        squad:setFormationBehavior("distance", "column", true)
+        local behavior = squad:getFormationBehavior()
+        expect_equal("distance", behavior.sortMode)
+        expect_equal("column", behavior.fallbackMode)
+        expect_true(behavior.preserveSubgroups)
+    end)
+
+    -- @covers LSquad:getFormationBehavior
+    it("getFormationBehavior returns default squad layout behavior", function()
+        local behavior = lurek.ai.newSquad("behavior_defaults"):getFormationBehavior()
+        expect_equal("roster", behavior.sortMode)
+        expect_equal("keep", behavior.fallbackMode)
+        expect_false(behavior.preserveSubgroups)
+    end)
+
+    -- @covers LSquad:getFormationSlots
+    it("getFormationSlots returns slot tables and uses lane fallback when needed", function()
+        local squad = lurek.ai.newSquad("slots")
+        squad:addMember("tank_1")
+        squad:addMember("tank_2")
+        squad:addMember("tank_3")
+        squad:setFormation("line", 10.0)
+        squad:setFormationBehavior("roster", "column", false)
+        squad:setMemberProfile("tank_1", { footprintW = 4, footprintH = 4 })
+        local slots = squad:getFormationSlots(100.0, 50.0, { laneWidth = 20.0 })
+        local summary = squad:getFormationSummary(100.0, 50.0, { laneWidth = 20.0 })
+        expect_equal(3, #slots)
+        expect_equal("column", summary.activeFormation)
+        expect_true(summary.fallbackApplied)
+        expect_type("string", slots[1].member)
+    end)
+
+    -- @covers LSquad:getFormationSummary
+    it("getFormationSummary reports subgroup-preserving distance assignment", function()
+        local squad = lurek.ai.newSquad("summary")
+        squad:addMember("beta_1")
+        squad:addMember("alpha_1")
+        squad:addMember("beta_2")
+        squad:addMember("alpha_2")
+        squad:setFormation("line", 8.0)
+        squad:setFormationBehavior("distance", "keep", true)
+        squad:setMemberProfile("beta_1", { subgroup = "beta" })
+        squad:setMemberProfile("beta_2", { subgroup = "beta" })
+        squad:setMemberProfile("alpha_1", { subgroup = "alpha" })
+        squad:setMemberProfile("alpha_2", { subgroup = "alpha" })
+        local slots = squad:getFormationSlots(0.0, 0.0, {
+            positions = {
+                beta_1 = { x = -40.0, y = 0.0 },
+                beta_2 = { x = -30.0, y = 0.0 },
+                alpha_1 = { x = 30.0, y = 0.0 },
+                alpha_2 = { x = 40.0, y = 0.0 },
+            },
+        })
+        local summary = squad:getFormationSummary(0.0, 0.0)
+        expect_equal("line", summary.activeFormation)
+        expect_equal("beta", slots[1].subgroup)
+        expect_equal("beta", slots[2].subgroup)
+        expect_equal("alpha", slots[3].subgroup)
+        expect_equal("alpha", slots[4].subgroup)
+    end)
+
+    -- @covers LSquad:assignFormationMove
+    it("assignFormationMove resolves slots and replaces member move orders in one call", function()
+        local world = lurek.ai.newWorld()
+        local squad = lurek.ai.newSquad("summary_apply")
+        local alpha = world:addAgent("alpha")
+        local beta = world:addAgent("beta")
+        alpha:setPosition(0.0, 0.0)
+        beta:setPosition(10.0, 0.0)
+        squad:addMember("alpha")
+        squad:addMember("beta")
+        squad:setFormation("line", 10.0)
+        local applied = squad:assignFormationMove(world, 100.0, 50.0, {
+            mode = "replace",
+            priority = 3,
+            interruptible = false,
+        })
+        local alpha_order = alpha:getCurrentOrder()
+        local beta_order = beta:getCurrentOrder()
+        expect_equal(2, applied.assignedCount)
+        expect_equal(0, #applied.missingMembers)
+        expect_equal("line", applied.activeFormation)
+        expect_equal("move", alpha_order.kind)
+        expect_equal("move", beta_order.kind)
+        expect_equal(3, alpha_order.priority)
+        expect_false(alpha_order.interruptible)
+        expect_true(math.abs(alpha_order.targetX - beta_order.targetX) >= 10.0)
+        local err = expect_error(function()
+            squad:assignFormationMove(world, 100.0, 50.0, { mode = "bad_mode" })
+        end)
+        expect_true(string.find(tostring(err), "invalid mode") ~= nil)
+    end)
+
+    -- @covers LSquad:submitFormationPaths
+    it("submitFormationPaths batches formation slot pairs through async pathfinding", function()
+        lurek.pathfind.setThreadCount(1)
+        lurek.pathfind.clearAsyncPaths()
+        local world = lurek.ai.newWorld()
+        local grid = lurek.pathfind.newNavGrid(32, 32)
+        local squad = lurek.ai.newSquad("summary_paths")
+        local alpha = world:addAgent("alpha")
+        local beta = world:addAgent("beta")
+        alpha:setPosition(0.0, 0.0)
+        beta:setPosition(10.0, 0.0)
+        squad:addMember("alpha")
+        squad:addMember("beta")
+        squad:setFormation("line", 10.0)
+        local submitted = squad:submitFormationPaths(world, grid, 100.0, 50.0, {
+            cellSize = 10.0,
+            priority = 2,
+        })
+        expect_true(submitted.requestId > 0)
+        expect_true(submitted.ownerId > 0)
+        expect_equal(1, submitted.version)
+        expect_equal(2, submitted.submittedCount)
+        expect_equal(0, #submitted.missingMembers)
+        expect_equal(0, #submitted.outOfBoundsMembers)
+        expect_equal(1, submitted.slots[1].startCellX)
+        expect_equal(10, submitted.slots[1].targetCellX)
+        expect_equal(11, submitted.slots[2].targetCellX)
+
+        local final_event = nil
+        for _ = 1, 256 do
+            local events = lurek.pathfind.pollAsyncPaths()
+            for i = 1, #events do
+                if events[i].id == submitted.requestId and events[i].final then
+                    final_event = events[i]
+                    break
+                end
+            end
+            if final_event ~= nil then
+                break
+            end
+            lurek.timer.sleep(0.001)
+        end
+
+        expect_not_nil(final_event)
+        expect_equal("complete", final_event.status)
+        expect_equal(2, #final_event.paths)
+        expect_equal(10, final_event.paths[1][#final_event.paths[1]].x)
+        expect_equal(11, final_event.paths[2][#final_event.paths[2]].x)
     end)
 
     -- @covers LSquad:getBlackboard

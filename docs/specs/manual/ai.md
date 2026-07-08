@@ -5,6 +5,8 @@
 - Orchestrates agent choices via behavior trees, FSMs, GOAP, HTN, and utility AI.
 - Interprets sensory perception, internal state, goals, plans, and action-selection models.
 - Tracks squad coordination, trait-driven emotional motives, needs, and dramatic pacing.
+- Exposes agent-owned command queues with inspectable order snapshots and drainable lifecycle events.
+- Adds footprint-aware squad slot planning with distance-based ordering, subgroup preservation, and lane-width fallback.
 - Consumes learned policies only through explicit `learning` integration points; ML/RL constructors live under the `learning` module.
 - Controls dramatic pacing waves and optimizes runtime budgets with distance-based LOD tiers.
 
@@ -21,7 +23,9 @@
 - Blackboard-style context storage and shared decision data matter because larger AI systems usually need stable intermediate state. Several subsystems may contribute facts, priorities, or targets, and the module provides a shared surface for that internal coordination.
 - Movement-side helpers are deliberately owned by `pathfind`. Steering stacks, context steering, ORCA-style local avoidance, flow fields, and influence maps live there so navigation and tactical space analysis have one public owner.
 - Squad support extends the module from isolated actors to coordinated groups. Shared group state and coordinated command handling make it possible to express teams or patrols, while pure movement and local-avoidance execution stays in `pathfind`.
+- Formation planning on the squad surface now goes beyond simple offsets. Member footprint metadata, subgroup clustering, and lane-width fallback give Lua enough engine support to express useful RTS-style group movement without re-implementing slot ordering or chokepoint degradation in scripts.
 - Command queues are important because AI output is often not the final physical action. A stable queue boundary separates “what the AI wants next” from “what the actor is currently doing,” which helps with interruption, inspection, and synchronization with animation or movement systems.
+- Agent-owned queues also make RTS-style control practical because Lua can inspect current and pending orders, drain lifecycle events, and clear orders per actor without rebuilding queue state on the script side.
 - Director-style pacing support shows that the module also thinks beyond single actors. Encounter rhythm, phase pressure, tension, spawn pacing, and other orchestration behavior can be represented here when the “agent” is really the game experience itself.
 - Level-of-detail and update-policy support matter for scale. Large groups of intelligent actors can become expensive quickly, so the module includes ways to throttle, schedule, or simplify updates without abandoning the common behavior vocabulary.
 - Debug rendering and inspection support are essential for real use. Visualizing state machines, behavior trees, perception ranges, chosen targets, or queue contents shortens the path from “the agent behaved strangely” to “here is the exact internal reason.”

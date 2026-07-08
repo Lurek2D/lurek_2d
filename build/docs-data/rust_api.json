@@ -1,10 +1,10 @@
 {
   "meta": {
-    "generated": "2026-07-07T07:44:35.991812+00:00",
+    "generated": "2026-07-08T17:28:35.885443+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "rust_items": 3234,
+      "rust_items": 3253,
       "rust_modules": 765,
       "rust_tests": 502,
       "lua_tests": 286
@@ -12,8 +12,8 @@
   },
   "rust_api": {
     "summary": {
-      "total_items": 3234,
-      "documented": 3234,
+      "total_items": 3253,
+      "documented": 3253,
       "modules": 765
     },
     "modules": {
@@ -514,14 +514,35 @@
             "kind": "enum",
             "description": "Active AI decision strategy assigned to an `Agent`.",
             "file": "src/ai/agent.rs",
-            "line": 15
+            "line": 16
+          },
+          {
+            "name": "AgentStance",
+            "kind": "enum",
+            "description": "Built-in stance presets used for RTS-style target acquisition and movement interruption policy.",
+            "file": "src/ai/agent.rs",
+            "line": 59
+          },
+          {
+            "name": "StanceProfile",
+            "kind": "struct",
+            "description": "Runtime stance settings copied onto one agent and optionally overridden by gameplay code.",
+            "file": "src/ai/agent.rs",
+            "line": 151
+          },
+          {
+            "name": "OrderRuntimeState",
+            "kind": "struct",
+            "description": "Per-agent runtime state that tracks soft order interruption and auto-engagement.",
+            "file": "src/ai/agent.rs",
+            "line": 171
           },
           {
             "name": "Agent",
             "kind": "struct",
             "description": "Runtime state for one AI-controlled entity in the world.",
             "file": "src/ai/agent.rs",
-            "line": 57
+            "line": 182
           }
         ]
       },
@@ -571,18 +592,32 @@
         "source_file": "src/ai/command_queue.rs",
         "items": [
           {
+            "name": "CommandSnapshot",
+            "kind": "struct",
+            "description": "Immutable view of one queued command exposed to diagnostics, tests, and Lua wrappers.",
+            "file": "src/ai/command_queue.rs",
+            "line": 14
+          },
+          {
+            "name": "CommandEvent",
+            "kind": "struct",
+            "description": "Lifecycle event emitted by a command queue when commands are added, removed, or completed.",
+            "file": "src/ai/command_queue.rs",
+            "line": 31
+          },
+          {
             "name": "Command",
             "kind": "struct",
             "description": "Pending AI action with target data and an optional completion callback.",
             "file": "src/ai/command_queue.rs",
-            "line": 12
+            "line": 51
           },
           {
             "name": "CommandQueue",
             "kind": "struct",
             "description": "FIFO queue of pending AI commands for one actor.",
             "file": "src/ai/command_queue.rs",
-            "line": 27
+            "line": 68
           }
         ]
       },
@@ -1106,14 +1141,49 @@
             "kind": "enum",
             "description": "Supported squad formation shapes.",
             "file": "src/ai/squad.rs",
-            "line": 10
+            "line": 14
+          },
+          {
+            "name": "FormationSortMode",
+            "kind": "enum",
+            "description": "Member ordering strategy used when assigning members to formation slots.",
+            "file": "src/ai/squad.rs",
+            "line": 50
+          },
+          {
+            "name": "FormationFallbackMode",
+            "kind": "enum",
+            "description": "Fallback strategy used when a formation is wider than an available lane.",
+            "file": "src/ai/squad.rs",
+            "line": 74
+          },
+          {
+            "name": "SquadMemberProfile",
+            "kind": "struct",
+            "description": "Footprint and subgroup metadata stored for one squad member name.",
+            "file": "src/ai/squad.rs",
+            "line": 98
+          },
+          {
+            "name": "FormationSlotAssignment",
+            "kind": "struct",
+            "description": "One resolved formation slot assignment for a squad member.",
+            "file": "src/ai/squad.rs",
+            "line": 117
+          },
+          {
+            "name": "FormationLayout",
+            "kind": "struct",
+            "description": "Summary of one resolved formation layout request.",
+            "file": "src/ai/squad.rs",
+            "line": 139
           },
           {
             "name": "Squad",
             "kind": "struct",
             "description": "Squad membership, formation state, and local blackboard.",
             "file": "src/ai/squad.rs",
-            "line": 45
+            "line": 175
           }
         ]
       },
@@ -1286,11 +1356,32 @@
         "source_file": "src/ai/world.rs",
         "items": [
           {
+            "name": "AISpatialQueryStats",
+            "kind": "struct",
+            "description": "Summary of the most recent spatial agent query run through `AIWorld`.",
+            "file": "src/ai/world.rs",
+            "line": 11
+          },
+          {
+            "name": "AIOrderRuntimeStats",
+            "kind": "struct",
+            "description": "Summary of command-execution and auto-acquisition work completed during the most recent world update.",
+            "file": "src/ai/world.rs",
+            "line": 27
+          },
+          {
+            "name": "SpatialQueryOptions",
+            "kind": "struct",
+            "description": "Filter options applied to one nearby-agent spatial query.",
+            "file": "src/ai/world.rs",
+            "line": 51
+          },
+          {
             "name": "AIWorld",
             "kind": "struct",
             "description": "World-level AI registry and update surface.",
             "file": "src/ai/world.rs",
-            "line": 10
+            "line": 66
           }
         ]
       },
@@ -14155,32 +14246,46 @@
             "line": 21
           },
           {
+            "name": "GroupedPathResult",
+            "kind": "type",
+            "description": "Grouped route payload returned by shared-goal async batch requests.",
+            "file": "src/pathfind/async_pool.rs",
+            "line": 23
+          },
+          {
+            "name": "PathPair",
+            "kind": "type",
+            "description": "One explicit start-goal pair for a batched path request.",
+            "file": "src/pathfind/async_pool.rs",
+            "line": 25
+          },
+          {
             "name": "PathEventStatus",
             "kind": "enum",
             "description": "Streaming/final state emitted for an async path request.",
             "file": "src/pathfind/async_pool.rs",
-            "line": 25
+            "line": 29
           },
           {
             "name": "AsyncPathEvent",
             "kind": "struct",
             "description": "One event emitted by the async path-query service.",
             "file": "src/pathfind/async_pool.rs",
-            "line": 40
+            "line": 44
           },
           {
             "name": "AsyncPathRequest",
             "kind": "struct",
             "description": "Caller-specified request metadata and search parameters.",
             "file": "src/pathfind/async_pool.rs",
-            "line": 94
+            "line": 121
           },
           {
             "name": "PathThreadPool",
             "kind": "struct",
             "description": "Fixed-size worker pool that runs prioritized path queries off the game thread.",
             "file": "src/pathfind/async_pool.rs",
-            "line": 231
+            "line": 277
           }
         ]
       },
@@ -14233,7 +14338,7 @@
             "kind": "struct",
             "description": "Grid-resident flow field pointing each reachable cell toward one or more goal cells.",
             "file": "src/pathfind/flow_field.rs",
-            "line": 16
+            "line": 55
           }
         ]
       },
@@ -14458,42 +14563,49 @@
             "kind": "struct",
             "description": "Directed edge in the abstract graph between two entrance nodes.",
             "file": "src/pathfind/hpa.rs",
-            "line": 18
+            "line": 47
           },
           {
             "name": "AbstractNode",
             "kind": "struct",
             "description": "Abstract graph node positioned at a chunk entrance cell.",
             "file": "src/pathfind/hpa.rs",
-            "line": 26
+            "line": 55
           },
           {
             "name": "Chunk",
             "kind": "struct",
             "description": "A rectangular region of the grid used as the unit of the abstract hierarchy.",
             "file": "src/pathfind/hpa.rs",
-            "line": 36
+            "line": 65
           },
           {
             "name": "AbstractGraph",
             "kind": "struct",
             "description": "Full hierarchical graph: entrance nodes, inter-chunk edges, and chunk metadata.",
             "file": "src/pathfind/hpa.rs",
-            "line": 54
+            "line": 83
           },
           {
             "name": "build_abstract",
             "kind": "fn",
             "description": "Build an `AbstractGraph` from `grid` by partitioning into chunks of `chunk_size` and computing entrance nodes.",
             "file": "src/pathfind/hpa.rs",
-            "line": 101
+            "line": 130
           },
           {
             "name": "is_reachable",
             "kind": "fn",
             "description": "Return true when `goal` is reachable from `start` via the abstract chunk graph (BFS over chunks).",
             "file": "src/pathfind/hpa.rs",
-            "line": 420
+            "line": 528
+          },
+          {
+            "name": "hpa_paths_to_goal",
+            "kind": "fn",
+            "description": "Run one shared-goal hierarchical search setup, then return refined grid-level paths from every start to `goal`.",
+            "file": "src/pathfind/hpa.rs",
+            "line": 622
           }
         ]
       },
@@ -14719,14 +14831,28 @@
             "kind": "enum",
             "description": "Controls which diagonal moves are permitted during pathfinding.",
             "file": "src/pathfind/nav_grid.rs",
-            "line": 13
+            "line": 14
+          },
+          {
+            "name": "UpdateRebuildMode",
+            "kind": "enum",
+            "description": "Rebuild policy used when committing a batched grid update.",
+            "file": "src/pathfind/nav_grid.rs",
+            "line": 44
+          },
+          {
+            "name": "FootprintSpec",
+            "kind": "struct",
+            "description": "Rectangle footprint measured in grid cells.",
+            "file": "src/pathfind/nav_grid.rs",
+            "line": 75
           },
           {
             "name": "NavGrid",
             "kind": "struct",
             "description": "Runtime walkability grid: integer movement costs, dirty tracking, and snapshot support.",
             "file": "src/pathfind/nav_grid.rs",
-            "line": 43
+            "line": 112
           }
         ]
       },
@@ -14744,7 +14870,7 @@
         ]
       },
       "pathfind::orca": {
-        "module_doc": "Implements ORCA-style local collision avoidance that projects preferred motion into safe velocity choices. Owns solver agents, pairwise half-plane constraints, time horizon tuning, and the linear projection step. Computes a safe velocity for every registered agent while respecting radius and max-speed bounds. Provides the crowd-avoidance boundary between desired steering intent and collision-safe local movement output. Open this owner when avoidance stability, neighbor constraints, or safe-velocity projection needs adjustment.",
+        "module_doc": "Implements ORCA-style local collision avoidance that projects preferred motion into safe velocity choices. Owns solver agents, pairwise half-plane constraints, time horizon tuning, spatial neighbor filtering, and the linear projection step used to produce collision-safe motion. Computes a safe velocity for every registered agent while respecting radius and max-speed bounds. Provides the crowd-avoidance boundary between desired steering intent and collision-safe local movement output. Open this owner when avoidance stability, neighbor constraints, safe-velocity projection, or crowd-scale performance behavior needs adjustment.",
         "source_file": "src/pathfind/orca.rs",
         "items": [
           {
@@ -14752,14 +14878,21 @@
             "kind": "struct",
             "description": "One agent used by the ORCA solver.",
             "file": "src/pathfind/orca.rs",
-            "line": 9
+            "line": 14
+          },
+          {
+            "name": "ORCAComputeStats",
+            "kind": "struct",
+            "description": "One summary of the most recent crowd-solver step.",
+            "file": "src/pathfind/orca.rs",
+            "line": 44
           },
           {
             "name": "ORCASolver",
             "kind": "struct",
             "description": "Solver that computes collision-free velocities for all registered agents.",
             "file": "src/pathfind/orca.rs",
-            "line": 45
+            "line": 87
           }
         ]
       },
@@ -14850,7 +14983,7 @@
         ]
       },
       "pathfind::unit_pathfinder": {
-        "module_doc": "Wraps a shared NavGrid in a stateful per-unit pathfinding service with cache-aware route and utility queries. Owns Waypoint output records, cache keys, cached path storage, and optional LRU-style eviction behavior. Calls baseline A* for full, smoothed, or partial routes, then exposes length, cost, LOS, and reachability helpers. Also searches for the nearest walkable fallback cell, keeping per-unit recovery logic close to shared grid access. Provides the boundary between raw navigation algorithms and gameplay units that need repeated path requests. Open this owner when route caching, per-unit helper semantics, or fallback walkability behavior needs changes.",
+        "module_doc": "Wraps a shared NavGrid in a stateful per-unit pathfinding service with cache-aware route and utility queries. Owns Waypoint output records, cache keys, cached path storage, shared-goal field caches, and optional LRU-style eviction behavior. Calls baseline A* for full, smoothed, or partial routes, then exposes length, cost, LOS, and reachability helpers. Also searches for the nearest walkable fallback cell and shared-goal route batches, keeping per-unit recovery logic close to shared grid access. Provides the boundary between raw navigation algorithms and gameplay units that need repeated path requests. Open this owner when route caching, per-unit helper semantics, or fallback walkability behavior needs changes.",
         "source_file": "src/pathfind/unit_pathfinder.rs",
         "items": [
           {
@@ -14858,14 +14991,14 @@
             "kind": "struct",
             "description": "Grid cell coordinate returned as a path waypoint.",
             "file": "src/pathfind/unit_pathfinder.rs",
-            "line": 17
+            "line": 21
           },
           {
             "name": "UnitPathfinder",
             "kind": "struct",
             "description": "Stateful pathfinder for one unit type sharing a grid reference.",
             "file": "src/pathfind/unit_pathfinder.rs",
-            "line": 38
+            "line": 51
           }
         ]
       },

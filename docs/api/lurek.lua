@@ -499,6 +499,11 @@ LFilesystemStatResult = {}
 ---@field y number Y.
 LFlowFieldGetTargetsResult = {}
 
+---@class LFlowFieldPathFromResult
+---@field x number X.
+---@field y number Y.
+LFlowFieldPathFromResult = {}
+
 ---@class LGamepadVirtualDpadResult
 ---@field direction string Direction name.
 ---@field down boolean Down pressed.
@@ -707,6 +712,11 @@ LMultiLevelGridGetWallFeatureCellResult = {}
 ---@field feature table Optional wall feature table mirroring `getWallFeatureCell()` plus `section` for the solid band or door panel that was hit.
 ---@field wall_height number Local wall height in cell units for wall hits against partial-height features.
 LMultiLevelGridPickScreenResult = {}
+
+---@class LNavGridDefineFootprintResult
+---@field h number Height in cells.
+---@field w number Width in cells.
+LNavGridDefineFootprintResult = {}
 
 ---@class LNavMeshFindPathResult
 ---@field x number X.
@@ -1503,6 +1513,12 @@ LUnitPathfinderFindPathResult = {}
 ---@field x number X.
 ---@field y number Y.
 LUnitPathfinderFindPathSmoothResult = {}
+
+---@class LUnitPathfinderGetSharedGoalCacheStatsResult
+---@field hits number Cache hits since the last cache reset.
+---@field misses number Cache misses since the last cache reset.
+---@field size number Current number of cached shared-goal fields.
+LUnitPathfinderGetSharedGoalCacheStatsResult = {}
 
 ---@class LUniverseSerializeResult
 ---@field components table Map of entity id to component data tables.
@@ -2659,7 +2675,7 @@ LIsoGrid = {}
 ---@class LJpsGrid
 LJpsGrid = {}
 
---- Lua-side wrapper for a navigation grid and optional abstract graph cache.
+--- Provides Lua methods for navigation grid dimensions, costs, blocking, serialization, dirty regions, and diagonal mode.
 ---@class LNavGrid
 LNavGrid = {}
 
@@ -3906,6 +3922,10 @@ function LAIWorld:getAgent(name) end
 ---@return number Current agent count.
 function LAIWorld:getAgentCount() end
 
+--- Returns the per-update budget used for stance-driven hostile-acquisition queries.
+---@return number Current auto-acquisition query budget.
+function LAIWorld:getAutoAcquireBudget() end
+
 --- Returns a blackboard snapshot containing the world's shared AI facts.
 ---@return LAIBlackboard Blackboard handle initialized from the world's global blackboard values at call time.
 function LAIWorld:getGlobalBlackboard() end
@@ -3914,9 +3934,45 @@ function LAIWorld:getGlobalBlackboard() end
 ---@return table Array of `{ context, message }` tables.
 function LAIWorld:getLastCallbackErrors() end
 
+--- Returns the move-order arrival threshold used by world update.
+---@return number Arrival threshold in world units.
+function LAIWorld:getOrderArrivalRadius() end
+
+--- Returns statistics from the most recent world update's order execution and acquisition work.
+---@return table Table with move-order, acquisition, interruption, and budget counters.
+function LAIWorld:getOrderRuntimeStats() end
+
+--- Returns the spatial-hash cell size used by nearby-agent queries in this world.
+---@return number Spatial-hash cell size in world units.
+function LAIWorld:getSpatialCellSize() end
+
+--- Returns statistics from the most recent nearby-agent query.
+---@return table Table with active-agent, cell, candidate-check, and returned-agent counters.
+function LAIWorld:getSpatialQueryStats() end
+
+--- Returns nearby agents by using the world's persistent spatial index instead of a full Lua scan.
+---@param x number Query center X position in world units.
+---@param y number Query center Y position in world units.
+---@param radius number Query radius in world units.
+---@param opts? table Optional table with `limit`, `exclude`, `team`, `hostileTo`, `tag`, and `notTag`.
+---@return table Array of nearest-first `LBot` handles.
+function LAIWorld:queryAgentsInRadius(x, y, radius, opts) end
+
 --- Removes an agent from this world by using an existing agent handle.
 ---@param agent LBot Bot handle whose stored name identifies the world entry to remove.
 function LAIWorld:removeAgent(agent) end
+
+--- Sets the maximum number of stance-driven hostile-acquisition queries attempted in one update.
+---@param budget number Per-update auto-acquisition query budget; zero disables new acquisition work.
+function LAIWorld:setAutoAcquireBudget(budget) end
+
+--- Sets the move-order arrival threshold used by world update when completing queued move orders.
+---@param radius number Arrival threshold in world units.
+function LAIWorld:setOrderArrivalRadius(radius) end
+
+--- Sets the spatial-hash cell size used by nearby-agent queries in this world.
+---@param size number Spatial-hash cell size in world units.
+function LAIWorld:setSpatialCellSize(size) end
 
 --- Returns the Lua-visible type name for this AI world handle.
 ---@return string The string `LAIWorld`.
@@ -3996,6 +4052,11 @@ function LBehaviorTree:type() end
 ---@return boolean True when the supplied type name matches this handle.
 function LBehaviorTree:typeOf(name) end
 
+--- Returns the nearest target selected from this agent's stance-driven hostile-acquisition query.
+---@param opts? table Optional table with `radius`, `limit`, `tag`, and `notTag`.
+---@return LuaValue Nearest hostile `LBot` handle, or nil when no target matches the query.
+function LBot:acquireTarget(opts) end
+
 --- Adds a tag string to this agent when the agent still exists in its world.
 ---@param tag string Tag name to insert into the agent tag set.
 function LBot:addTag(tag) end
@@ -4007,9 +4068,32 @@ function LBot:addTag(tag) end
 ---@param source string Source label used for later removal.
 function LBot:addTraitModifier(trait_name, delta, duration, source) end
 
+--- Clears every queued order owned by this agent.
+---@param reason? string Optional lifecycle detail string recorded on emitted clear events.
+---@return number Number of cleared orders.
+function LBot:clearOrders(reason) end
+
+--- Returns and clears queued order lifecycle events for this agent.
+---@return table Array of `{ id, kind, event, targetX, targetY, priority, interruptible, detail }` tables in emit order.
+function LBot:drainCommandEvents() end
+
+--- Returns nearby hostile agents by using the world's spatial index and this agent's team as the hostile reference.
+---@param radius? number Optional explicit acquisition radius in world units; defaults to the stance profile radius.
+---@param opts? table Optional table with `limit`, `tag`, and `notTag`.
+---@return table Array of nearest-first hostile `LBot` handles.
+function LBot:findHostilesInRange(radius, opts) end
+
 --- Returns a blackboard snapshot for this agent or an empty blackboard when the agent has been removed.
 ---@return LAIBlackboard Blackboard handle initialized from the agent's local blackboard values at call time.
 function LBot:getBlackboard() end
+
+--- Returns this agent's owned command queue handle for order staging and inspection.
+---@return LCommandQueue Queue handle bound to the current agent entry inside its AI world.
+function LBot:getCommandQueue() end
+
+--- Returns the current queued order snapshot for this agent when one exists.
+---@return LuaValue Table with `id`, `kind`, `targetX`, `targetY`, `priority`, and `interruptible`, or nil when this agent has no pending order.
+function LBot:getCurrentOrder() end
 
 --- Returns this agent's decision model name or the default model name for a missing agent.
 ---@return string Current decision model name.
@@ -4027,6 +4111,10 @@ function LBot:getMaxSpeed() end
 ---@return string Agent name stored in the handle.
 function LBot:getName() end
 
+--- Returns the live soft-interruption state used by world update for temporary engagement overrides.
+---@return table Table with `active`, `engageTarget`, `engageOriginX`, `engageOriginY`, `suspendedOrderId`, and `formationAbandoned`.
+function LBot:getOrderRuntimeState() end
+
 --- Returns this agent's world position or the origin when the agent has been removed.
 ---@return number X and Y position in world units. (value 1).
 ---@return number X and Y position in world units. (value 2).
@@ -4035,6 +4123,14 @@ function LBot:getPosition() end
 --- Returns this agent's integer priority or zero when the agent has been removed.
 ---@return number Current priority value.
 function LBot:getPriority() end
+
+--- Returns this agent's current stance profile, including built-in name and effective override values.
+---@return table Table containing `stance`, acquisition radii, and interruption flags.
+function LBot:getStance() end
+
+--- Returns this agent's integer team identifier or zero when the agent has been removed.
+---@return number Current team identifier.
+function LBot:getTeam() end
 
 --- Returns one effective trait value from this agent's profile.
 ---@param name string Trait key to read.
@@ -4088,6 +4184,15 @@ function LBot:setPosition(x, y) end
 ---@param p number Priority value used by game-side AI scheduling or ordering logic.
 function LBot:setPriority(p) end
 
+--- Sets this agent's built-in RTS stance and optionally overrides its acquisition settings.
+---@param stance string Built-in stance name such as `passive`, `hold_fire`, `defensive`, `aggressive`, or `berserk`.
+---@param opts? table Optional overrides for `acquireEnabled`, `holdFire`, `acquireRadius`, `guardRadius`, `chaseRadius`, `interruptsMove`, and `abandonFormation`.
+function LBot:setStance(stance, opts) end
+
+--- Sets this agent's integer team identifier used by hostile-acquisition queries.
+---@param team number Team identifier compared by world-backed hostile queries.
+function LBot:setTeam(team) end
+
 --- Sets one trait on this agent, creating an empty profile first when needed.
 ---@param name string Trait key to create or update.
 ---@param value number Base trait value clamped by the engine to `[0, 1]`.
@@ -4112,21 +4217,43 @@ function LBot:type() end
 function LBot:typeOf(name) end
 
 --- Cancels the currently active command when one exists.
+---@param reason? string Optional lifecycle detail string recorded on cancellation events.
 ---@return boolean True when a current command was cancelled.
-function LCommandQueue:cancelCurrent() end
+function LCommandQueue:cancelCurrent(reason) end
 
 --- Removes every queued command. This method is available to Lua scripts.
-function LCommandQueue:clear() end
+---@param reason? string Optional lifecycle detail string recorded on clear events.
+---@return number Number of cleared commands.
+function LCommandQueue:clear(reason) end
+
+--- Marks the current command as completed and advances the queue.
+---@param reason? string Optional lifecycle detail string recorded on the completion event.
+---@return LuaValue Completed command id, or nil when the queue is empty.
+function LCommandQueue:completeCurrent(reason) end
+
+--- Returns and clears queued lifecycle events.
+---@return table Array of `{ id, kind, event, targetX, targetY, priority, interruptible, detail }` tables in emit order.
+function LCommandQueue:drainEvents() end
 
 --- Adds a command callback to the back of the queue.
 ---@param kind string Command type label stored for inspection.
 ---@param callback function Callback invoked by command execution logic outside this wrapper.
 ---@param opts? table Optional table with `targetX`, `targetY`, `priority`, and `interruptible` fields.
+---@return number Stable command id assigned by this queue.
 function LCommandQueue:enqueue(kind, callback, opts) end
+
+--- Marks the current command as failed and advances the queue.
+---@param reason? string Optional lifecycle detail string recorded on the failure event.
+---@return boolean True when a command was marked failed.
+function LCommandQueue:failCurrent(reason) end
 
 --- Returns the number of commands currently queued.
 ---@return number Current queue length.
 function LCommandQueue:getCount() end
+
+--- Returns the full current command snapshot when one exists.
+---@return LuaValue Table with `id`, `kind`, `targetX`, `targetY`, `priority`, and `interruptible`, or nil when no command is active.
+function LCommandQueue:getCurrent() end
 
 --- Returns the current command target coordinates.
 ---@return number Target X and Y coordinates for the current command; or queue defaults. (value 1).
@@ -4137,6 +4264,10 @@ function LCommandQueue:getCurrentTarget() end
 ---@return LuaValue Current command type label, or nil when no command is active.
 function LCommandQueue:getCurrentType() end
 
+--- Returns every pending command snapshot in queue order.
+---@return table Array of `{ id, kind, targetX, targetY, priority, interruptible }` tables.
+function LCommandQueue:getPending() end
+
 --- Returns whether the command queue has no commands.
 ---@return boolean True when the queue is empty.
 function LCommandQueue:isEmpty() end
@@ -4145,12 +4276,14 @@ function LCommandQueue:isEmpty() end
 ---@param kind string Command type label stored for inspection.
 ---@param callback function Callback invoked by command execution logic outside this wrapper.
 ---@param opts? table Optional table with `targetX`, `targetY`, `priority`, and `interruptible` fields.
+---@return number Stable command id assigned by this queue.
 function LCommandQueue:pushFront(kind, callback, opts) end
 
 --- Replaces the queue contents with one command callback.
 ---@param kind string Command type label stored for inspection.
 ---@param callback function Callback invoked by command execution logic outside this wrapper.
 ---@param opts? table Optional table with `targetX`, `targetY`, `priority`, and `interruptible` fields.
+---@return number Stable command id assigned to the replacement command.
 function LCommandQueue:replace(kind, callback, opts) end
 
 --- Returns the Lua-visible type name for this command queue handle.
@@ -4389,6 +4522,14 @@ function LNeedSystem:valueOf(name) end
 ---@param name string Agent or game object name to append as a squad member.
 function LSquad:addMember(name) end
 
+--- Resolves formation slots and applies queued `move` orders to matching agents in the supplied world.
+---@param world LAIWorld AI world whose agent names are matched against squad members.
+---@param leader_x number Leader or anchor X position in world units.
+---@param leader_y number Leader or anchor Y position in world units.
+---@param opts? table?|Optional enqueue`, `priority`, and `interruptible`.
+---@return table Table with formation summary fields plus `assignedCount`, `missingMembers`, and `slots` that include `commandId` and `applied`.
+function LSquad:assignFormationMove(world, leader_x, leader_y, opts) end
+
 --- Returns a blackboard snapshot for this squad.
 ---@return LAIBlackboard Blackboard handle initialized from the squad blackboard values at call time.
 function LSquad:getBlackboard() end
@@ -4396,6 +4537,10 @@ function LSquad:getBlackboard() end
 --- Returns the current squad formation type name.
 ---@return string Formation type name.
 function LSquad:getFormation() end
+
+--- Returns the current formation assignment behavior settings.
+---@return table Table containing `sortMode`, `fallbackMode`, and `preserveSubgroups`.
+function LSquad:getFormationBehavior() end
 
 --- Returns a member's target formation position relative to the leader position.
 ---@param member_idx number One-based member index in the squad.
@@ -4405,9 +4550,23 @@ function LSquad:getFormation() end
 ---@return number X and Y formation target position. (value 2).
 function LSquad:getFormationPosition(member_idx, leader_x, leader_y) end
 
+--- Returns resolved formation slot assignments for every member, optionally using current member positions and lane width.
+---@param leader_x number Leader X position in world units.
+---@param leader_y number Leader Y position in world units.
+---@param opts? table Optional table with `laneWidth` and `positions = { member = { x = ..., y = ... } }`.
+---@return table Array of slot tables containing `member`, `slotIndex`, `x`, `y`, `row`, `col`, `footprintW`, `footprintH`, and `subgroup`.
+function LSquad:getFormationSlots(leader_x, leader_y, opts) end
+
 --- Returns the spacing used by squad formation positioning.
 ---@return number Formation spacing in world units.
 function LSquad:getFormationSpacing() end
+
+--- Returns formation layout metadata after slot assignment and fallback policy are resolved.
+---@param leader_x number Leader X position in world units.
+---@param leader_y number Leader Y position in world units.
+---@param opts? table Optional table with `laneWidth` and `positions = { member = { x = ..., y = ... } }`.
+---@return table Table containing `requestedFormation`, `activeFormation`, `fallbackApplied`, `width`, `height`, and `slotCount`.
+function LSquad:getFormationSummary(leader_x, leader_y, opts) end
 
 --- Returns the squad leader name when one is assigned.
 ---@return LuaValue Leader name, or nil when no leader is assigned.
@@ -4416,6 +4575,11 @@ function LSquad:getLeader() end
 --- Returns the number of members in this squad.
 ---@return number Current member count.
 function LSquad:getMemberCount() end
+
+--- Returns the stored footprint and subgroup metadata for one member.
+---@param name string Member name to inspect.
+---@return table Table containing `footprintW`, `footprintH`, and optional `subgroup`.
+function LSquad:getMemberProfile(name) end
 
 --- Returns all squad members in an array-style Lua table.
 ---@return string[] Member names.
@@ -4434,9 +4598,29 @@ function LSquad:removeMember(name) end
 ---@param spacing? number Optional spacing between formation slots.
 function LSquad:setFormation(ftype, spacing) end
 
+--- Sets formation assignment behavior knobs used for slot ordering and chokepoint fallback.
+---@param sort_mode string Ordering strategy such as `roster` or `distance`.
+---@param fallback_mode? string Fallback strategy such as `keep` or `column`; defaults to `keep`.
+---@param preserve_subgroups? boolean Whether subgroup labels should stay clustered; defaults to false.
+function LSquad:setFormationBehavior(sort_mode, fallback_mode, preserve_subgroups) end
+
 --- Sets the squad leader name. This method is available to Lua scripts.
 ---@param name string Member or agent name to store as leader.
 function LSquad:setLeader(name) end
+
+--- Stores footprint and subgroup metadata used during formation slot assignment.
+---@param name string Member name whose formation profile should be stored.
+---@param opts table Table with `footprintW`, `footprintH`, and optional `subgroup`.
+function LSquad:setMemberProfile(name, opts) end
+
+--- Resolves formation slots, converts world positions into navigation cells, and submits one async paired path batch.
+---@param world LAIWorld AI world whose agent positions provide the path start cells.
+---@param grid LNavGrid Navigation grid cloned for the async worker.
+---@param leader_x number Leader or anchor X position in world units.
+---@param leader_y number Leader or anchor Y position in world units.
+---@param opts table Options with `cellSize`, optional `originX`,`originY`,`laneWidth`,`positions`,`requestId`,`ownerId`,`version`,`priority`,`footprint`,`unitSize`, and `maxSteps`.
+---@return table Table with formation summary fields plus async request metadata, slot-cell mappings, and skipped-member diagnostics.
+function LSquad:submitFormationPaths(world, grid, leader_x, leader_y, opts) end
 
 --- Returns the Lua-visible type name for this squad handle.
 ---@return string The string `LSquad`.
@@ -21429,10 +21613,25 @@ function LContextSteering:typeOf(name) end
 ---@param unit_size? number Unit footprint in cells (default 1).
 function LFlowField:calculate(tx, ty, unit_size) end
 
+--- Calculates a flow field toward one target cell using a named navigation footprint.
+---@param name string Stable footprint name defined on the backing navigation grid.
+---@param tx number One-based target column.
+---@param ty number One-based target row.
+function LFlowField:calculateFor(name, tx, ty) end
+
 --- Calculates a flow field toward multiple target cells.
 ---@param targets table Array of `{x, y}` target tables.
 ---@param unit_size? number Unit footprint in cells (default 1).
 function LFlowField:calculateMulti(targets, unit_size) end
+
+--- Calculates a flow field toward multiple target cells using a named navigation footprint.
+---@param name string Stable footprint name defined on the backing navigation grid.
+---@param targets table Array of `{x, y}` target tables.
+function LFlowField:calculateMultiFor(name, targets) end
+
+--- Returns how many full flow-field builds have actually run on this object.
+---@return number Number of full rebuilds.
+function LFlowField:getBuildCount() end
 
 --- Returns integration cost to the target from a one-based grid cell.
 ---@param x number One-based column.
@@ -21453,6 +21652,10 @@ function LFlowField:getDirection(x, y) end
 ---@return number Direction angle in radians.
 function LFlowField:getDirectionAngle(x, y) end
 
+--- Returns the navigation-grid generation that produced the current flow field, or nil before the first build.
+---@return number Monotonic navigation-grid generation, or nil.
+function LFlowField:getGeneration() end
+
 --- Returns target cells for this flow field.
 ---@return LFlowFieldGetTargetsResult Array table of target point tables.
 function LFlowField:getTargets() end
@@ -21460,6 +21663,19 @@ function LFlowField:getTargets() end
 --- Returns whether the flow field has been calculated.
 ---@return boolean True when calculated.
 function LFlowField:isCalculated() end
+
+--- Reconstructs a downhill route from one start cell to the nearest active target in the current flow field.
+---@param x number One-based start column.
+---@param y number One-based start row.
+---@param max_steps? number Maximum downhill steps to follow before aborting; 0 or nil uses a grid-sized default.
+---@return LFlowFieldPathFromResult Array of `{x, y}` path tables, or nil when the cell is unreachable or the field is unbuilt.
+function LFlowField:pathFrom(x, y, max_steps) end
+
+--- Reconstructs downhill routes from many start cells to the nearest active target using one shared flow field.
+---@param starts table Array of `{x, y}` start tables.
+---@param max_steps? number Maximum downhill steps to follow for each start; 0 or nil uses a grid-sized default.
+---@return table Array of path arrays; unreachable entries are nil.
+function LFlowField:pathsFrom(starts, max_steps) end
 
 --- Returns a steering velocity for a world position using the flow field.
 ---@param wx number World X position.
@@ -21775,8 +21991,21 @@ function LJpsGrid:type() end
 ---@return boolean True when the supplied type name matches this handle.
 function LJpsGrid:typeOf(name) end
 
+--- Starts a batched navigation edit that is finalized by `commitUpdate`.
+function LNavGrid:beginUpdate() end
+
 --- Clears all dirty region markers from the grid.
 function LNavGrid:clearDirty() end
+
+--- Finalizes a batched navigation edit and refreshes clearance caches according to `opts.rebuild`.
+---@param opts? table?|Optional "full"`.
+---@return number Number of dirty rectangles committed by this batch.
+function LNavGrid:commitUpdate(opts) end
+
+--- Stores or replaces a named rectangular footprint for clearance caching.
+---@param name string Stable footprint name.
+---@param footprint table Footprint table with positive `w` and `h` cell dimensions.
+function LNavGrid:defineFootprint(name, footprint) end
 
 --- Fills the entire grid with a uniform movement cost.
 ---@param cost number Movement cost (0â€“255).
@@ -21799,6 +22028,14 @@ function LNavGrid:fillRect(x, y, w, h, cost) end
 ---@return table Array of `{x, y}` waypoint tables, or nil when no path exists.
 function LNavGrid:findHpaPath(sx, sy, gx, gy, unit_size) end
 
+--- Finds hierarchical paths from many one-based start cells to one goal while sharing one abstract-goal search setup.
+---@param starts table Array of `{x, y}` start tables.
+---@param gx number One-based goal column.
+---@param gy number One-based goal row.
+---@param unit_size? number Optional unit footprint in cells, default 1.
+---@return table Array of `{x, y}` waypoint-table arrays, or nil entries when no path exists.
+function LNavGrid:findHpaPathsToGoal(starts, gx, gy, unit_size) end
+
 --- Returns the hierarchical chunk size in cells.
 ---@return number Chunk size.
 function LNavGrid:getChunkSize() end
@@ -21817,6 +22054,19 @@ function LNavGrid:getDiagonalMode() end
 ---@return number Grid width.
 ---@return number Grid height.
 function LNavGrid:getDimensions() end
+
+--- Returns the committed dirty rectangles recorded on this grid.
+---@return table Array of `{x, y, w, h}` tables using one-based positions.
+function LNavGrid:getDirtyRects() end
+
+--- Returns the stored width and height for a named footprint when it exists.
+---@param name string Footprint name.
+---@return table Table with `w` and `h`, or nil when the name is unknown.
+function LNavGrid:getFootprint(name) end
+
+--- Returns the current navigation-grid generation used for cache invalidation.
+---@return number Monotonic generation counter.
+function LNavGrid:getGeneration() end
 
 --- Returns grid height from this object.
 ---@return number Grid height.
@@ -21839,12 +22089,24 @@ function LNavGrid:isBlocked(x, y) end
 ---@return boolean True when walkable.
 function LNavGrid:isWalkable(x, y, unit_size) end
 
+--- Returns whether a one-based grid cell is walkable for a named footprint.
+---@param name string Footprint name registered on this grid.
+---@param x number One-based column.
+---@param y number One-based row.
+---@return boolean True when the full footprint fits and is passable.
+function LNavGrid:isWalkableFor(name, x, y) end
+
 --- Loads grid data from a serialized binary string.
 ---@param data string Serialized grid bytes.
 function LNavGrid:loadFromString(data) end
 
 --- Rebuilds the cached abstract graph for this grid.
 function LNavGrid:rebuildAbstract() end
+
+--- Rebuilds clearance caches for all defined footprints or the supplied named subset.
+---@param opts? table Optional table with `profiles = { "name" }`.
+---@return number Number of unique footprint dimensions rebuilt.
+function LNavGrid:rebuildClearance(opts) end
 
 --- Saves grid data to a serialized binary string.
 ---@return string Serialized grid bytes.
@@ -21856,6 +22118,15 @@ function LNavGrid:saveToString() end
 ---@param blocked boolean True to block the cell.
 function LNavGrid:setBlocked(x, y, blocked) end
 
+--- Applies one blocked or passable rectangle in batch-edit style.
+---@param x number One-based top-left column.
+---@param y number One-based top-left row.
+---@param w number Rectangle width in cells.
+---@param h number Rectangle height in cells.
+---@param blocked boolean True to block the rectangle.
+---@param opts? table Optional metadata reserved for future use.
+function LNavGrid:setBlockedRect(x, y, w, h, blocked, opts) end
+
 --- Sets hierarchical chunk size for abstract graph partitioning.
 ---@param size number Chunk side length in cells.
 function LNavGrid:setChunkSize(size) end
@@ -21865,6 +22136,15 @@ function LNavGrid:setChunkSize(size) end
 ---@param y number One-based row.
 ---@param cost number Movement cost (0â€“255).
 function LNavGrid:setCost(x, y, cost) end
+
+--- Applies one cost rectangle in batch-edit style.
+---@param x number One-based top-left column.
+---@param y number One-based top-left row.
+---@param w number Rectangle width in cells.
+---@param h number Rectangle height in cells.
+---@param cost number Movement cost (0-255).
+---@param opts? table Optional metadata reserved for future use.
+function LNavGrid:setCostRect(x, y, w, h, cost, opts) end
 
 --- Sets diagonal movement mode for this object.
 ---@param mode string Mode name: `none`, `always`, or `nocornercut`.
@@ -21931,27 +22211,59 @@ function LORCASolver:addAgent(x, y, radius, max_speed) end
 ---@return number Current ORCA agent count.
 function LORCASolver:agentCount() end
 
---- Computes safe velocities for all ORCA agents.
----@param dt number Elapsed time in seconds for the avoidance step.
-function LORCASolver:compute(dt) end
+--- Computes safe velocities for all ORCA agents, optionally under a time budget.
+---@param dt_or_opts number|table Either elapsed time in seconds, or a table with `dt`, `maxMs`, or `max_ms`.
+function LORCASolver:compute(dt_or_opts) end
 
---- Returns the computed safe velocity for an ORCA agent.
----@param idx number Zero-based ORCA agent index.
+--- Returns the computed safe velocity for an ORCA agent addressed by zero-based index or stable key.
+---@param idx number Zero-based ORCA agent index or stable caller-provided key.
 ---@return number Safe X and Y velocity; or zero velocity for an invalid index. (value 1).
 ---@return number Safe X and Y velocity; or zero velocity for an invalid index. (value 2).
 function LORCASolver:getSafeVelocity(idx) end
 
---- Sets the position for an ORCA agent by zero-based index.
----@param idx number Zero-based ORCA agent index.
+--- Returns statistics from the most recent ORCA compute step.
+---@return table Table containing processed-agent, neighbor, budget, and spatial-hash counters.
+function LORCASolver:getStats() end
+
+--- Removes an ORCA agent addressed by zero-based index or stable key.
+---@param idx number Zero-based ORCA agent index or stable caller-provided key.
+---@return boolean True when an agent was removed.
+function LORCASolver:removeAgent(idx) end
+
+--- Inserts or updates an ORCA avoidance agent under a stable caller-provided key.
+---@param key number Stable agent key, such as a unit ID.
+---@param opts table Agent state with `x`, `y`, `radius`, and `max_speed`, plus optional velocity fields.
+function LORCASolver:setAgent(key, opts) end
+
+--- Sets the spatial-hash cell size used when grouping ORCA agents.
+---@param size number Spatial-hash cell size in world units.
+function LORCASolver:setCellSize(size) end
+
+--- Sets the maximum retained neighbor count used during one ORCA solve step.
+---@param count number Neighbor cap; values below `1` clamp to `1`.
+function LORCASolver:setMaxNeighbors(count) end
+
+--- Sets an explicit neighbor-query radius in world units; zero restores dynamic per-agent radius.
+---@param radius number Neighbor-query radius in world units.
+function LORCASolver:setNeighborRadius(radius) end
+
+--- Sets the position for an ORCA agent addressed by zero-based index or stable key.
+---@param idx number Zero-based ORCA agent index or stable caller-provided key.
 ---@param x number New X position.
 ---@param y number New Y position.
 function LORCASolver:setPosition(idx, x, y) end
 
---- Sets the preferred velocity for an ORCA agent by zero-based index.
----@param idx number Zero-based ORCA agent index.
+--- Sets the preferred velocity for an ORCA agent addressed by zero-based index or stable key.
+---@param idx number Zero-based ORCA agent index or stable caller-provided key.
 ---@param pvx number Preferred X velocity.
 ---@param pvy number Preferred Y velocity.
 function LORCASolver:setPreferredVelocity(idx, pvx, pvy) end
+
+--- Sets the current velocity for an ORCA agent addressed by zero-based index or stable key.
+---@param idx number Zero-based ORCA agent index or stable caller-provided key.
+---@param vx number Current X velocity.
+---@param vy number Current Y velocity.
+function LORCASolver:setVelocity(idx, vx, vy) end
 
 --- Returns the Lua-visible type name for this ORCA solver handle.
 ---@return string The string `LORCASolver`.
@@ -22171,6 +22483,9 @@ function LSteeringManager:typeOf(name) end
 --- Clears all cached paths on this object.
 function LUnitPathfinder:clearCache() end
 
+--- Clears all cached shared-goal fields on this object.
+function LUnitPathfinder:clearSharedGoalCache() end
+
 --- Finds nearest walkable one-based grid cell within a radius.
 ---@param x number One-based column of the search origin.
 ---@param y number One-based row of the search origin.
@@ -22220,6 +22535,24 @@ function LUnitPathfinder:findPathBidirectional(x1, y1, x2, y2, unit_size, max_no
 ---@return LUnitPathfinderFindPathSmoothResult Array of `{x, y}` waypoint tables, or nil when no path exists.
 function LUnitPathfinder:findPathSmooth(x1, y1, x2, y2, unit_size) end
 
+--- Finds routes from many one-based start cells to one goal cell using one shared-goal field.
+---@param starts table Array of `{x, y}` start tables.
+---@param gx number One-based goal column.
+---@param gy number One-based goal row.
+---@param unit_size? number Unit footprint in cells (default 1).
+---@param max_steps? number Maximum downhill steps to follow for each start; 0 or nil uses a grid-sized default.
+---@return table Array of path arrays; unreachable entries are nil.
+function LUnitPathfinder:findPathsToGoal(starts, gx, gy, unit_size, max_steps) end
+
+--- Finds routes from many one-based start cells to one goal cell using one named-footprint shared-goal field.
+---@param name string Stable footprint name defined on the backing navigation grid.
+---@param starts table Array of `{x, y}` start tables.
+---@param gx number One-based goal column.
+---@param gy number One-based goal row.
+---@param max_steps? number Maximum downhill steps to follow for each start; 0 or nil uses a grid-sized default.
+---@return table Array of path arrays; unreachable entries are nil.
+function LUnitPathfinder:findPathsToGoalFor(name, starts, gx, gy, max_steps) end
+
 --- Returns the current path cache entry count.
 ---@return number Cache size.
 function LUnitPathfinder:getCacheSize() end
@@ -22234,6 +22567,40 @@ function LUnitPathfinder:getPathCost(path) end
 ---@return number Path length.
 function LUnitPathfinder:getPathLength(path) end
 
+--- Returns a cached shared-goal flow field handle for one target cell and unit footprint size.
+---@param gx number One-based goal column.
+---@param gy number One-based goal row.
+---@param unit_size? number Unit footprint in cells (default 1).
+---@return LFlowField Flow field handle backed by the pathfinder's shared-goal cache.
+function LUnitPathfinder:getSharedFlowField(gx, gy, unit_size) end
+
+--- Returns a cached shared-goal flow field handle for one target cell and one named footprint.
+---@param name string Stable footprint name defined on the backing navigation grid.
+---@param gx number One-based goal column.
+---@param gy number One-based goal row.
+---@return LFlowField Flow field handle backed by the pathfinder's shared-goal cache.
+function LUnitPathfinder:getSharedFlowFieldFor(name, gx, gy) end
+
+--- Returns a cached shared-goal flow field handle for many target cells and one unit footprint size.
+---@param targets table Array of `{x, y}` goal tables.
+---@param unit_size? number Unit footprint in cells (default 1).
+---@return LFlowField Flow field handle backed by the pathfinder's shared-goal cache.
+function LUnitPathfinder:getSharedFlowFieldMulti(targets, unit_size) end
+
+--- Returns a cached shared-goal flow field handle for many target cells and one named footprint.
+---@param name string Stable footprint name defined on the backing navigation grid.
+---@param targets table Array of `{x, y}` goal tables.
+---@return LFlowField Flow field handle backed by the pathfinder's shared-goal cache.
+function LUnitPathfinder:getSharedFlowFieldMultiFor(name, targets) end
+
+--- Returns the current shared-goal field cache entry count.
+---@return number Shared-goal cache size.
+function LUnitPathfinder:getSharedGoalCacheSize() end
+
+--- Returns shared-goal flow-field cache counters for debugging and performance inspection.
+---@return LUnitPathfinderGetSharedGoalCacheStatsResult Cache statistics table.
+function LUnitPathfinder:getSharedGoalCacheStats() end
+
 --- Returns heuristic distance between two one-based cells.
 ---@param x1 number One-based column of the first cell.
 ---@param y1 number One-based row of the first cell.
@@ -22242,7 +22609,7 @@ function LUnitPathfinder:getPathLength(path) end
 ---@return number Heuristic distance.
 function LUnitPathfinder:heuristicDistance(x1, y1, x2, y2) end
 
---- Returns whether path cache is enabled.
+--- Returns whether the pathfinder's internal caches are enabled.
 ---@return boolean True when enabled.
 function LUnitPathfinder:isCacheEnabled() end
 
@@ -22255,7 +22622,7 @@ function LUnitPathfinder:isCacheEnabled() end
 ---@return boolean True when reachable.
 function LUnitPathfinder:isReachable(x1, y1, x2, y2, unit_size) end
 
---- Enables or disables the path cache on this object.
+--- Enables or disables the pathfinder's internal route and shared-goal caches on this object.
 ---@param enabled boolean True to enable caching.
 function LUnitPathfinder:setCacheEnabled(enabled) end
 
@@ -22432,7 +22799,7 @@ lurek.pathfind.newPathfinder = function(grid_ud) end
 lurek.pathfind.newSteeringManager = function() end
 
 --- Returns all currently available async path events without blocking.
----@return table Array of event tables with ids, status, optional path, and completion flags.
+---@return table Array of event tables with ids, status, optional `path` or grouped `paths`, and completion flags.
 lurek.pathfind.pollAsyncPaths = function() end
 
 --- Computes reachable cells from range map options.
@@ -22455,6 +22822,18 @@ lurek.pathfind.setThreadCount = function(count) end
 ---@param opts table Options with start/goal cells and optional owner, version, priority, unit size, and stream budget.
 ---@return number Request id for polling and cancellation.
 lurek.pathfind.submitAsyncPath = function(grid_ud, opts) end
+
+--- Queues one async paired batch query against a navigation grid snapshot.
+---@param grid_ud LNavGrid Navigation grid to clone for the worker.
+---@param opts table Options with `pairs = { { start = {x,y}, goal = {x,y} } }` and optional owner, version, priority, footprint, unit size, and max steps.
+---@return number Request id for polling and cancellation.
+lurek.pathfind.submitAsyncPathPairs = function(grid_ud, opts) end
+
+--- Queues one async shared-goal batch query against a navigation grid snapshot.
+---@param grid_ud LNavGrid Navigation grid to clone for the worker.
+---@param opts table Options with `starts`, one goal (`goal_x`,`goal_y`) or `targets`, and optional owner, version, priority, footprint, unit size, and max steps.
+---@return number Request id for polling and cancellation.
+lurek.pathfind.submitAsyncPathsToGoal = function(grid_ud, opts) end
 
 --- Attach a child node to a parent composite or decorator node.
 ---@param parentId number The parent node ID.

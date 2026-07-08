@@ -1,6 +1,6 @@
 {
   "version": "auto-generated",
-  "generated": "2026-07-07",
+  "generated": "2026-07-08",
   "modules": [
     {
       "name": "agent",
@@ -19465,6 +19465,54 @@
           "objectType": null
         },
         {
+          "name": "submitAsyncPathsToGoal",
+          "fullPath": "lurek.pathfind.submitAsyncPathsToGoal",
+          "signature": "(grid_ud, opts)",
+          "description": "Queues one async shared-goal batch query against a navigation grid snapshot.",
+          "parameters": [
+            {
+              "name": "grid_ud",
+              "type": "LNavGrid",
+              "description": "Navigation grid to clone for the worker.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Options with `starts`, one goal (`goal_x`,`goal_y`) or `targets`, and optional owner, version, priority, footprint, unit size, and max steps.",
+              "optional": false
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "submitAsyncPathPairs",
+          "fullPath": "lurek.pathfind.submitAsyncPathPairs",
+          "signature": "(grid_ud, opts)",
+          "description": "Queues one async paired batch query against a navigation grid snapshot.",
+          "parameters": [
+            {
+              "name": "grid_ud",
+              "type": "LNavGrid",
+              "description": "Navigation grid to clone for the worker.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Options with `pairs = { { start = {x,y}, goal = {x,y} } }` and optional owner, version, priority, footprint, unit size, and max steps.",
+              "optional": false
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "pollAsyncPaths",
           "fullPath": "lurek.pathfind.pollAsyncPaths",
           "signature": "()",
@@ -34810,6 +34858,151 @@
           "objectType": "LAIWorld"
         },
         {
+          "name": "setSpatialCellSize",
+          "fullPath": "LAIWorld:setSpatialCellSize",
+          "signature": "(size)",
+          "description": "Sets the spatial-hash cell size used by nearby-agent queries in this world.",
+          "parameters": [
+            {
+              "name": "size",
+              "type": "number",
+              "description": "Spatial-hash cell size in world units.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAIWorld"
+        },
+        {
+          "name": "getSpatialCellSize",
+          "fullPath": "LAIWorld:getSpatialCellSize",
+          "signature": "()",
+          "description": "Returns the spatial-hash cell size used by nearby-agent queries in this world.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LAIWorld"
+        },
+        {
+          "name": "getSpatialQueryStats",
+          "fullPath": "LAIWorld:getSpatialQueryStats",
+          "signature": "()",
+          "description": "Returns statistics from the most recent nearby-agent query.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LAIWorld"
+        },
+        {
+          "name": "setOrderArrivalRadius",
+          "fullPath": "LAIWorld:setOrderArrivalRadius",
+          "signature": "(radius)",
+          "description": "Sets the move-order arrival threshold used by world update when completing queued move orders.",
+          "parameters": [
+            {
+              "name": "radius",
+              "type": "number",
+              "description": "Arrival threshold in world units.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAIWorld"
+        },
+        {
+          "name": "getOrderArrivalRadius",
+          "fullPath": "LAIWorld:getOrderArrivalRadius",
+          "signature": "()",
+          "description": "Returns the move-order arrival threshold used by world update.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LAIWorld"
+        },
+        {
+          "name": "setAutoAcquireBudget",
+          "fullPath": "LAIWorld:setAutoAcquireBudget",
+          "signature": "(budget)",
+          "description": "Sets the maximum number of stance-driven hostile-acquisition queries attempted in one update.",
+          "parameters": [
+            {
+              "name": "budget",
+              "type": "integer",
+              "description": "Per-update auto-acquisition query budget; zero disables new acquisition work.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAIWorld"
+        },
+        {
+          "name": "getAutoAcquireBudget",
+          "fullPath": "LAIWorld:getAutoAcquireBudget",
+          "signature": "()",
+          "description": "Returns the per-update budget used for stance-driven hostile-acquisition queries.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LAIWorld"
+        },
+        {
+          "name": "getOrderRuntimeStats",
+          "fullPath": "LAIWorld:getOrderRuntimeStats",
+          "signature": "()",
+          "description": "Returns statistics from the most recent world update's order execution and acquisition work.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LAIWorld"
+        },
+        {
+          "name": "queryAgentsInRadius",
+          "fullPath": "LAIWorld:queryAgentsInRadius",
+          "signature": "(x, y, radius, [opts])",
+          "description": "Returns nearby agents by using the world's persistent spatial index instead of a full Lua scan.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "Query center X position in world units.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Query center Y position in world units.",
+              "optional": false
+            },
+            {
+              "name": "radius",
+              "type": "number",
+              "description": "Query radius in world units.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional table with `limit`, `exclude`, `team`, `hostileTo`, `tag`, and `notTag`.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LAIWorld"
+        },
+        {
           "name": "update",
           "fullPath": "LAIWorld:update",
           "signature": "(dt)",
@@ -46768,6 +46961,70 @@
           "objectType": "LBot"
         },
         {
+          "name": "setTeam",
+          "fullPath": "LBot:setTeam",
+          "signature": "(team)",
+          "description": "Sets this agent's integer team identifier used by hostile-acquisition queries.",
+          "parameters": [
+            {
+              "name": "team",
+              "type": "integer",
+              "description": "Team identifier compared by world-backed hostile queries.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBot"
+        },
+        {
+          "name": "getTeam",
+          "fullPath": "LBot:getTeam",
+          "signature": "()",
+          "description": "Returns this agent's integer team identifier or zero when the agent has been removed.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LBot"
+        },
+        {
+          "name": "setStance",
+          "fullPath": "LBot:setStance",
+          "signature": "(stance, [opts])",
+          "description": "Sets this agent's built-in RTS stance and optionally overrides its acquisition settings.",
+          "parameters": [
+            {
+              "name": "stance",
+              "type": "string",
+              "description": "Built-in stance name such as `passive`, `hold_fire`, `defensive`, `aggressive`, or `berserk`.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional overrides for `acquireEnabled`, `holdFire`, `acquireRadius`, `guardRadius`, `chaseRadius`, `interruptsMove`, and `abandonFormation`.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBot"
+        },
+        {
+          "name": "getStance",
+          "fullPath": "LBot:getStance",
+          "signature": "()",
+          "description": "Returns this agent's current stance profile, including built-in name and effective override values.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LBot"
+        },
+        {
           "name": "setDecisionModel",
           "fullPath": "LBot:setDecisionModel",
           "signature": "(model)",
@@ -46987,6 +47244,48 @@
           "objectType": "LBot"
         },
         {
+          "name": "findHostilesInRange",
+          "fullPath": "LBot:findHostilesInRange",
+          "signature": "([radius], [opts])",
+          "description": "Returns nearby hostile agents by using the world's spatial index and this agent's team as the hostile reference.",
+          "parameters": [
+            {
+              "name": "radius",
+              "type": "number",
+              "description": "Optional explicit acquisition radius in world units; defaults to the stance profile radius.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional table with `limit`, `tag`, and `notTag`.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LBot"
+        },
+        {
+          "name": "acquireTarget",
+          "fullPath": "LBot:acquireTarget",
+          "signature": "([opts])",
+          "description": "Returns the nearest target selected from this agent's stance-driven hostile-acquisition query.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional table with `radius`, `limit`, `tag`, and `notTag`.",
+              "optional": true
+            }
+          ],
+          "returns": "LuaValue",
+          "returnType": "LuaValue",
+          "isMethod": true,
+          "objectType": "LBot"
+        },
+        {
           "name": "getBlackboard",
           "fullPath": "LBot:getBlackboard",
           "signature": "()",
@@ -46994,6 +47293,68 @@
           "parameters": [],
           "returns": "LAIBlackboard",
           "returnType": "LAIBlackboard",
+          "isMethod": true,
+          "objectType": "LBot"
+        },
+        {
+          "name": "getCommandQueue",
+          "fullPath": "LBot:getCommandQueue",
+          "signature": "()",
+          "description": "Returns this agent's owned command queue handle for order staging and inspection.",
+          "parameters": [],
+          "returns": "LCommandQueue",
+          "returnType": "LCommandQueue",
+          "isMethod": true,
+          "objectType": "LBot"
+        },
+        {
+          "name": "getCurrentOrder",
+          "fullPath": "LBot:getCurrentOrder",
+          "signature": "()",
+          "description": "Returns the current queued order snapshot for this agent when one exists.",
+          "parameters": [],
+          "returns": "LuaValue",
+          "returnType": "LuaValue",
+          "isMethod": true,
+          "objectType": "LBot"
+        },
+        {
+          "name": "getOrderRuntimeState",
+          "fullPath": "LBot:getOrderRuntimeState",
+          "signature": "()",
+          "description": "Returns the live soft-interruption state used by world update for temporary engagement overrides.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LBot"
+        },
+        {
+          "name": "clearOrders",
+          "fullPath": "LBot:clearOrders",
+          "signature": "([reason])",
+          "description": "Clears every queued order owned by this agent.",
+          "parameters": [
+            {
+              "name": "reason",
+              "type": "string",
+              "description": "Optional lifecycle detail string recorded on emitted clear events.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LBot"
+        },
+        {
+          "name": "drainCommandEvents",
+          "fullPath": "LBot:drainCommandEvents",
+          "signature": "()",
+          "description": "Returns and clears queued order lifecycle events for this agent.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LBot"
         },
@@ -57795,8 +58156,8 @@
               "optional": true
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LCommandQueue"
         },
@@ -57825,8 +58186,8 @@
               "optional": true
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LCommandQueue"
         },
@@ -57855,17 +58216,24 @@
               "optional": true
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LCommandQueue"
         },
         {
           "name": "cancelCurrent",
           "fullPath": "LCommandQueue:cancelCurrent",
-          "signature": "()",
+          "signature": "([reason])",
           "description": "Cancels the currently active command when one exists.",
-          "parameters": [],
+          "parameters": [
+            {
+              "name": "reason",
+              "type": "string",
+              "description": "Optional lifecycle detail string recorded on cancellation events.",
+              "optional": true
+            }
+          ],
           "returns": "boolean",
           "returnType": "boolean",
           "isMethod": true,
@@ -57874,11 +58242,18 @@
         {
           "name": "clear",
           "fullPath": "LCommandQueue:clear",
-          "signature": "()",
+          "signature": "([reason])",
           "description": "Removes every queued command. This method is available to Lua scripts.",
-          "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "parameters": [
+            {
+              "name": "reason",
+              "type": "string",
+              "description": "Optional lifecycle detail string recorded on clear events.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LCommandQueue"
         },
@@ -57923,6 +58298,75 @@
           "parameters": [],
           "returns": "number, number",
           "returnType": "number, number",
+          "isMethod": true,
+          "objectType": "LCommandQueue"
+        },
+        {
+          "name": "getCurrent",
+          "fullPath": "LCommandQueue:getCurrent",
+          "signature": "()",
+          "description": "Returns the full current command snapshot when one exists.",
+          "parameters": [],
+          "returns": "LuaValue",
+          "returnType": "LuaValue",
+          "isMethod": true,
+          "objectType": "LCommandQueue"
+        },
+        {
+          "name": "getPending",
+          "fullPath": "LCommandQueue:getPending",
+          "signature": "()",
+          "description": "Returns every pending command snapshot in queue order.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LCommandQueue"
+        },
+        {
+          "name": "completeCurrent",
+          "fullPath": "LCommandQueue:completeCurrent",
+          "signature": "([reason])",
+          "description": "Marks the current command as completed and advances the queue.",
+          "parameters": [
+            {
+              "name": "reason",
+              "type": "string",
+              "description": "Optional lifecycle detail string recorded on the completion event.",
+              "optional": true
+            }
+          ],
+          "returns": "LuaValue",
+          "returnType": "LuaValue",
+          "isMethod": true,
+          "objectType": "LCommandQueue"
+        },
+        {
+          "name": "failCurrent",
+          "fullPath": "LCommandQueue:failCurrent",
+          "signature": "([reason])",
+          "description": "Marks the current command as failed and advances the queue.",
+          "parameters": [
+            {
+              "name": "reason",
+              "type": "string",
+              "description": "Optional lifecycle detail string recorded on the failure event.",
+              "optional": true
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LCommandQueue"
+        },
+        {
+          "name": "drainEvents",
+          "fullPath": "LCommandQueue:drainEvents",
+          "signature": "()",
+          "description": "Returns and clears queued lifecycle events.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LCommandQueue"
         },
@@ -68414,6 +68858,60 @@
           "objectType": "LFlowField"
         },
         {
+          "name": "calculateFor",
+          "fullPath": "LFlowField:calculateFor",
+          "signature": "(name, tx, ty)",
+          "description": "Calculates a flow field toward one target cell using a named navigation footprint.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Stable footprint name defined on the backing navigation grid.",
+              "optional": false
+            },
+            {
+              "name": "tx",
+              "type": "integer",
+              "description": "One-based target column.",
+              "optional": false
+            },
+            {
+              "name": "ty",
+              "type": "integer",
+              "description": "One-based target row.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LFlowField"
+        },
+        {
+          "name": "calculateMultiFor",
+          "fullPath": "LFlowField:calculateMultiFor",
+          "signature": "(name, targets)",
+          "description": "Calculates a flow field toward multiple target cells using a named navigation footprint.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Stable footprint name defined on the backing navigation grid.",
+              "optional": false
+            },
+            {
+              "name": "targets",
+              "type": "table",
+              "description": "Array of `{x, y}` target tables.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LFlowField"
+        },
+        {
           "name": "getDirection",
           "fullPath": "LFlowField:getDirection",
           "signature": "(x, y)",
@@ -68497,11 +68995,87 @@
           "objectType": "LFlowField"
         },
         {
+          "name": "getGeneration",
+          "fullPath": "LFlowField:getGeneration",
+          "signature": "()",
+          "description": "Returns the navigation-grid generation that produced the current flow field, or nil before the first build.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LFlowField"
+        },
+        {
+          "name": "getBuildCount",
+          "fullPath": "LFlowField:getBuildCount",
+          "signature": "()",
+          "description": "Returns how many full flow-field builds have actually run on this object.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LFlowField"
+        },
+        {
           "name": "getTargets",
           "fullPath": "LFlowField:getTargets",
           "signature": "()",
           "description": "Returns target cells for this flow field.",
           "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LFlowField"
+        },
+        {
+          "name": "pathFrom",
+          "fullPath": "LFlowField:pathFrom",
+          "signature": "(x, y, [max_steps])",
+          "description": "Reconstructs a downhill route from one start cell to the nearest active target in the current flow field.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "One-based start column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "One-based start row.",
+              "optional": false
+            },
+            {
+              "name": "max_steps",
+              "type": "integer",
+              "description": "Maximum downhill steps to follow before aborting; 0 or nil uses a grid-sized default.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LFlowField"
+        },
+        {
+          "name": "pathsFrom",
+          "fullPath": "LFlowField:pathsFrom",
+          "signature": "(starts, [max_steps])",
+          "description": "Reconstructs downhill routes from many start cells to the nearest active target using one shared flow field.",
+          "parameters": [
+            {
+              "name": "starts",
+              "type": "table",
+              "description": "Array of `{x, y}` start tables.",
+              "optional": false
+            },
+            {
+              "name": "max_steps",
+              "type": "integer",
+              "description": "Maximum downhill steps to follow for each start; 0 or nil uses a grid-sized default.",
+              "optional": true
+            }
+          ],
           "returns": "table",
           "returnType": "table",
           "isMethod": true,
@@ -105506,7 +106080,7 @@
     },
     {
       "name": "LNavGrid",
-      "description": "Lua-side wrapper for a navigation grid and optional abstract graph cache.",
+      "description": "Provides Lua methods for navigation grid dimensions, costs, blocking, serialization, dirty regions, and diagonal mode.",
       "methods": [
         {
           "name": "getWidth",
@@ -105535,6 +106109,17 @@
           "fullPath": "LNavGrid:getDimensions",
           "signature": "()",
           "description": "Returns grid width and height as two integers.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LNavGrid"
+        },
+        {
+          "name": "getGeneration",
+          "fullPath": "LNavGrid:getGeneration",
+          "signature": "()",
+          "description": "Returns the current navigation-grid generation used for cache invalidation.",
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
@@ -105680,6 +106265,96 @@
           "objectType": "LNavGrid"
         },
         {
+          "name": "defineFootprint",
+          "fullPath": "LNavGrid:defineFootprint",
+          "signature": "(name, footprint)",
+          "description": "Stores or replaces a named rectangular footprint for clearance caching.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Stable footprint name.",
+              "optional": false
+            },
+            {
+              "name": "footprint",
+              "type": "table",
+              "description": "Footprint table with positive `w` and `h` cell dimensions.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LNavGrid"
+        },
+        {
+          "name": "getFootprint",
+          "fullPath": "LNavGrid:getFootprint",
+          "signature": "(name)",
+          "description": "Returns the stored width and height for a named footprint when it exists.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Footprint name.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LNavGrid"
+        },
+        {
+          "name": "rebuildClearance",
+          "fullPath": "LNavGrid:rebuildClearance",
+          "signature": "([opts])",
+          "description": "Rebuilds clearance caches for all defined footprints or the supplied named subset.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional table with `profiles = { \"name\" }`.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LNavGrid"
+        },
+        {
+          "name": "isWalkableFor",
+          "fullPath": "LNavGrid:isWalkableFor",
+          "signature": "(name, x, y)",
+          "description": "Returns whether a one-based grid cell is walkable for a named footprint.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Footprint name registered on this grid.",
+              "optional": false
+            },
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "One-based column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "One-based row.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LNavGrid"
+        },
+        {
           "name": "fill",
           "fullPath": "LNavGrid:fill",
           "signature": "(cost)",
@@ -105736,6 +106411,131 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LNavGrid"
+        },
+        {
+          "name": "beginUpdate",
+          "fullPath": "LNavGrid:beginUpdate",
+          "signature": "()",
+          "description": "Starts a batched navigation edit that is finalized by `commitUpdate`.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LNavGrid"
+        },
+        {
+          "name": "setBlockedRect",
+          "fullPath": "LNavGrid:setBlockedRect",
+          "signature": "(x, y, w, h, blocked, [opts])",
+          "description": "Applies one blocked or passable rectangle in batch-edit style.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "One-based top-left column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "One-based top-left row.",
+              "optional": false
+            },
+            {
+              "name": "w",
+              "type": "integer",
+              "description": "Rectangle width in cells.",
+              "optional": false
+            },
+            {
+              "name": "h",
+              "type": "integer",
+              "description": "Rectangle height in cells.",
+              "optional": false
+            },
+            {
+              "name": "blocked",
+              "type": "boolean",
+              "description": "True to block the rectangle.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional metadata reserved for future use.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LNavGrid"
+        },
+        {
+          "name": "setCostRect",
+          "fullPath": "LNavGrid:setCostRect",
+          "signature": "(x, y, w, h, cost, [opts])",
+          "description": "Applies one cost rectangle in batch-edit style.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "One-based top-left column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "One-based top-left row.",
+              "optional": false
+            },
+            {
+              "name": "w",
+              "type": "integer",
+              "description": "Rectangle width in cells.",
+              "optional": false
+            },
+            {
+              "name": "h",
+              "type": "integer",
+              "description": "Rectangle height in cells.",
+              "optional": false
+            },
+            {
+              "name": "cost",
+              "type": "integer",
+              "description": "Movement cost (0-255).",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional metadata reserved for future use.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LNavGrid"
+        },
+        {
+          "name": "commitUpdate",
+          "fullPath": "LNavGrid:commitUpdate",
+          "signature": "([opts])",
+          "description": "Finalizes a batched navigation edit and refreshes clearance caches according to `opts.rebuild`.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table?|Optional table with `rebuild = \"none\"|\"dirty_chunks\"",
+              "description": "\"full\"`.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LNavGrid"
         },
@@ -105798,6 +106598,17 @@
           "objectType": "LNavGrid"
         },
         {
+          "name": "getDirtyRects",
+          "fullPath": "LNavGrid:getDirtyRects",
+          "signature": "()",
+          "description": "Returns the committed dirty rectangles recorded on this grid.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LNavGrid"
+        },
+        {
           "name": "rebuildAbstract",
           "fullPath": "LNavGrid:rebuildAbstract",
           "signature": "()",
@@ -105824,6 +106635,42 @@
               "name": "sy",
               "type": "integer",
               "description": "One-based start row.",
+              "optional": false
+            },
+            {
+              "name": "gx",
+              "type": "integer",
+              "description": "One-based goal column.",
+              "optional": false
+            },
+            {
+              "name": "gy",
+              "type": "integer",
+              "description": "One-based goal row.",
+              "optional": false
+            },
+            {
+              "name": "unit_size",
+              "type": "integer",
+              "description": "Optional unit footprint in cells, default 1.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LNavGrid"
+        },
+        {
+          "name": "findHpaPathsToGoal",
+          "fullPath": "LNavGrid:findHpaPathsToGoal",
+          "signature": "(starts, gx, gy, [unit_size])",
+          "description": "Finds hierarchical paths from many one-based start cells to one goal while sharing one abstract-goal search setup.",
+          "parameters": [
+            {
+              "name": "starts",
+              "type": "table",
+              "description": "Array of `{x, y}` start tables.",
               "optional": false
             },
             {
@@ -109663,15 +110510,39 @@
           "objectType": "LORCASolver"
         },
         {
+          "name": "setAgent",
+          "fullPath": "LORCASolver:setAgent",
+          "signature": "(key, opts)",
+          "description": "Inserts or updates an ORCA avoidance agent under a stable caller-provided key.",
+          "parameters": [
+            {
+              "name": "key",
+              "type": "integer",
+              "description": "Stable agent key, such as a unit ID.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Agent state with `x`, `y`, `radius`, and `max_speed`, plus optional velocity fields.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LORCASolver"
+        },
+        {
           "name": "setPreferredVelocity",
           "fullPath": "LORCASolver:setPreferredVelocity",
           "signature": "(idx, pvx, pvy)",
-          "description": "Sets the preferred velocity for an ORCA agent by zero-based index.",
+          "description": "Sets the preferred velocity for an ORCA agent addressed by zero-based index or stable key.",
           "parameters": [
             {
               "name": "idx",
               "type": "integer",
-              "description": "Zero-based ORCA agent index.",
+              "description": "Zero-based ORCA agent index or stable caller-provided key.",
               "optional": false
             },
             {
@@ -109693,15 +110564,45 @@
           "objectType": "LORCASolver"
         },
         {
-          "name": "setPosition",
-          "fullPath": "LORCASolver:setPosition",
-          "signature": "(idx, x, y)",
-          "description": "Sets the position for an ORCA agent by zero-based index.",
+          "name": "setVelocity",
+          "fullPath": "LORCASolver:setVelocity",
+          "signature": "(idx, vx, vy)",
+          "description": "Sets the current velocity for an ORCA agent addressed by zero-based index or stable key.",
           "parameters": [
             {
               "name": "idx",
               "type": "integer",
-              "description": "Zero-based ORCA agent index.",
+              "description": "Zero-based ORCA agent index or stable caller-provided key.",
+              "optional": false
+            },
+            {
+              "name": "vx",
+              "type": "number",
+              "description": "Current X velocity.",
+              "optional": false
+            },
+            {
+              "name": "vy",
+              "type": "number",
+              "description": "Current Y velocity.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LORCASolver"
+        },
+        {
+          "name": "setPosition",
+          "fullPath": "LORCASolver:setPosition",
+          "signature": "(idx, x, y)",
+          "description": "Sets the position for an ORCA agent addressed by zero-based index or stable key.",
+          "parameters": [
+            {
+              "name": "idx",
+              "type": "integer",
+              "description": "Zero-based ORCA agent index or stable caller-provided key.",
               "optional": false
             },
             {
@@ -109723,15 +110624,87 @@
           "objectType": "LORCASolver"
         },
         {
-          "name": "compute",
-          "fullPath": "LORCASolver:compute",
-          "signature": "(dt)",
-          "description": "Computes safe velocities for all ORCA agents.",
+          "name": "removeAgent",
+          "fullPath": "LORCASolver:removeAgent",
+          "signature": "(idx)",
+          "description": "Removes an ORCA agent addressed by zero-based index or stable key.",
           "parameters": [
             {
-              "name": "dt",
+              "name": "idx",
+              "type": "integer",
+              "description": "Zero-based ORCA agent index or stable caller-provided key.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LORCASolver"
+        },
+        {
+          "name": "setMaxNeighbors",
+          "fullPath": "LORCASolver:setMaxNeighbors",
+          "signature": "(count)",
+          "description": "Sets the maximum retained neighbor count used during one ORCA solve step.",
+          "parameters": [
+            {
+              "name": "count",
+              "type": "integer",
+              "description": "Neighbor cap; values below `1` clamp to `1`.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LORCASolver"
+        },
+        {
+          "name": "setNeighborRadius",
+          "fullPath": "LORCASolver:setNeighborRadius",
+          "signature": "(radius)",
+          "description": "Sets an explicit neighbor-query radius in world units; zero restores dynamic per-agent radius.",
+          "parameters": [
+            {
+              "name": "radius",
               "type": "number",
-              "description": "Elapsed time in seconds for the avoidance step.",
+              "description": "Neighbor-query radius in world units.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LORCASolver"
+        },
+        {
+          "name": "setCellSize",
+          "fullPath": "LORCASolver:setCellSize",
+          "signature": "(size)",
+          "description": "Sets the spatial-hash cell size used when grouping ORCA agents.",
+          "parameters": [
+            {
+              "name": "size",
+              "type": "number",
+              "description": "Spatial-hash cell size in world units.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LORCASolver"
+        },
+        {
+          "name": "compute",
+          "fullPath": "LORCASolver:compute",
+          "signature": "(dt_or_opts)",
+          "description": "Computes safe velocities for all ORCA agents, optionally under a time budget.",
+          "parameters": [
+            {
+              "name": "dt_or_opts",
+              "type": "number|table",
+              "description": "Either elapsed time in seconds, or a table with `dt`, `maxMs`, or `max_ms`.",
               "optional": false
             }
           ],
@@ -109744,17 +110717,28 @@
           "name": "getSafeVelocity",
           "fullPath": "LORCASolver:getSafeVelocity",
           "signature": "(idx)",
-          "description": "Returns the computed safe velocity for an ORCA agent.",
+          "description": "Returns the computed safe velocity for an ORCA agent addressed by zero-based index or stable key.",
           "parameters": [
             {
               "name": "idx",
               "type": "integer",
-              "description": "Zero-based ORCA agent index.",
+              "description": "Zero-based ORCA agent index or stable caller-provided key.",
               "optional": false
             }
           ],
           "returns": "number, number",
           "returnType": "number, number",
+          "isMethod": true,
+          "objectType": "LORCASolver"
+        },
+        {
+          "name": "getStats",
+          "fullPath": "LORCASolver:getStats",
+          "signature": "()",
+          "description": "Returns statistics from the most recent ORCA compute step.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LORCASolver"
         },
@@ -148412,6 +149396,227 @@
           "objectType": "LSquad"
         },
         {
+          "name": "setMemberProfile",
+          "fullPath": "LSquad:setMemberProfile",
+          "signature": "(name, opts)",
+          "description": "Stores footprint and subgroup metadata used during formation slot assignment.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Member name whose formation profile should be stored.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Table with `footprintW`, `footprintH`, and optional `subgroup`.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSquad"
+        },
+        {
+          "name": "getMemberProfile",
+          "fullPath": "LSquad:getMemberProfile",
+          "signature": "(name)",
+          "description": "Returns the stored footprint and subgroup metadata for one member.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Member name to inspect.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LSquad"
+        },
+        {
+          "name": "setFormationBehavior",
+          "fullPath": "LSquad:setFormationBehavior",
+          "signature": "(sort_mode, [fallback_mode], [preserve_subgroups])",
+          "description": "Sets formation assignment behavior knobs used for slot ordering and chokepoint fallback.",
+          "parameters": [
+            {
+              "name": "sort_mode",
+              "type": "string",
+              "description": "Ordering strategy such as `roster` or `distance`.",
+              "optional": false
+            },
+            {
+              "name": "fallback_mode",
+              "type": "string",
+              "description": "Fallback strategy such as `keep` or `column`; defaults to `keep`.",
+              "optional": true
+            },
+            {
+              "name": "preserve_subgroups",
+              "type": "boolean",
+              "description": "Whether subgroup labels should stay clustered; defaults to false.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSquad"
+        },
+        {
+          "name": "getFormationBehavior",
+          "fullPath": "LSquad:getFormationBehavior",
+          "signature": "()",
+          "description": "Returns the current formation assignment behavior settings.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LSquad"
+        },
+        {
+          "name": "getFormationSlots",
+          "fullPath": "LSquad:getFormationSlots",
+          "signature": "(leader_x, leader_y, [opts])",
+          "description": "Returns resolved formation slot assignments for every member, optionally using current member positions and lane width.",
+          "parameters": [
+            {
+              "name": "leader_x",
+              "type": "number",
+              "description": "Leader X position in world units.",
+              "optional": false
+            },
+            {
+              "name": "leader_y",
+              "type": "number",
+              "description": "Leader Y position in world units.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional table with `laneWidth` and `positions = { member = { x = ..., y = ... } }`.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LSquad"
+        },
+        {
+          "name": "getFormationSummary",
+          "fullPath": "LSquad:getFormationSummary",
+          "signature": "(leader_x, leader_y, [opts])",
+          "description": "Returns formation layout metadata after slot assignment and fallback policy are resolved.",
+          "parameters": [
+            {
+              "name": "leader_x",
+              "type": "number",
+              "description": "Leader X position in world units.",
+              "optional": false
+            },
+            {
+              "name": "leader_y",
+              "type": "number",
+              "description": "Leader Y position in world units.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional table with `laneWidth` and `positions = { member = { x = ..., y = ... } }`.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LSquad"
+        },
+        {
+          "name": "assignFormationMove",
+          "fullPath": "LSquad:assignFormationMove",
+          "signature": "(world_ud, leader_x, leader_y, [opts])",
+          "description": "Resolves formation slots and applies queued `move` orders to matching agents in the supplied world.",
+          "parameters": [
+            {
+              "name": "world",
+              "type": "LAIWorld",
+              "description": "AI world whose agent names are matched against squad members.",
+              "optional": false
+            },
+            {
+              "name": "leader_x",
+              "type": "number",
+              "description": "Leader or anchor X position in world units.",
+              "optional": false
+            },
+            {
+              "name": "leader_y",
+              "type": "number",
+              "description": "Leader or anchor Y position in world units.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table?|Optional table with `laneWidth`, `positions`, `mode = replace|push_front",
+              "description": "enqueue`, `priority`, and `interruptible`.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LSquad"
+        },
+        {
+          "name": "submitFormationPaths",
+          "fullPath": "LSquad:submitFormationPaths",
+          "signature": "(world_ud, grid_ud, leader_x, leader_y, opts)",
+          "description": "Resolves formation slots, converts world positions into navigation cells, and submits one async paired path batch.",
+          "parameters": [
+            {
+              "name": "world",
+              "type": "LAIWorld",
+              "description": "AI world whose agent positions provide the path start cells.",
+              "optional": false
+            },
+            {
+              "name": "grid",
+              "type": "LNavGrid",
+              "description": "Navigation grid cloned for the async worker.",
+              "optional": false
+            },
+            {
+              "name": "leader_x",
+              "type": "number",
+              "description": "Leader or anchor X position in world units.",
+              "optional": false
+            },
+            {
+              "name": "leader_y",
+              "type": "number",
+              "description": "Leader or anchor Y position in world units.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Options with `cellSize`, optional `originX`,`originY`,`laneWidth`,`positions`,`requestId`,`ownerId`,`version`,`priority`,`footprint`,`unitSize`, and `maxSteps`.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LSquad"
+        },
+        {
           "name": "getBlackboard",
           "fullPath": "LSquad:getBlackboard",
           "signature": "()",
@@ -177544,6 +178749,198 @@
           "objectType": "LUnitPathfinder"
         },
         {
+          "name": "findPathsToGoal",
+          "fullPath": "LUnitPathfinder:findPathsToGoal",
+          "signature": "LUnitPathfinder:findPathsToGoal(starts, gx, gy, [unit_size], [max_steps])",
+          "description": "Finds routes from many one-based start cells to one goal cell using one shared-goal field.",
+          "parameters": [
+            {
+              "name": "starts",
+              "type": "table",
+              "description": "Array of `{x, y}` start tables.",
+              "optional": false
+            },
+            {
+              "name": "gx",
+              "type": "integer",
+              "description": "One-based goal column.",
+              "optional": false
+            },
+            {
+              "name": "gy",
+              "type": "integer",
+              "description": "One-based goal row.",
+              "optional": false
+            },
+            {
+              "name": "unit_size",
+              "type": "integer",
+              "description": "Unit footprint in cells (default 1).",
+              "optional": true
+            },
+            {
+              "name": "max_steps",
+              "type": "integer",
+              "description": "Maximum downhill steps to follow for each start; 0 or nil uses a grid-sized default.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LUnitPathfinder"
+        },
+        {
+          "name": "findPathsToGoalFor",
+          "fullPath": "LUnitPathfinder:findPathsToGoalFor",
+          "signature": "(name, starts, gx, gy, [max_steps])",
+          "description": "Finds routes from many one-based start cells to one goal cell using one named-footprint shared-goal field.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Stable footprint name defined on the backing navigation grid.",
+              "optional": false
+            },
+            {
+              "name": "starts",
+              "type": "table",
+              "description": "Array of `{x, y}` start tables.",
+              "optional": false
+            },
+            {
+              "name": "gx",
+              "type": "integer",
+              "description": "One-based goal column.",
+              "optional": false
+            },
+            {
+              "name": "gy",
+              "type": "integer",
+              "description": "One-based goal row.",
+              "optional": false
+            },
+            {
+              "name": "max_steps",
+              "type": "integer",
+              "description": "Maximum downhill steps to follow for each start; 0 or nil uses a grid-sized default.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LUnitPathfinder"
+        },
+        {
+          "name": "getSharedFlowField",
+          "fullPath": "LUnitPathfinder:getSharedFlowField",
+          "signature": "(gx, gy, [unit_size])",
+          "description": "Returns a cached shared-goal flow field handle for one target cell and unit footprint size.",
+          "parameters": [
+            {
+              "name": "gx",
+              "type": "integer",
+              "description": "One-based goal column.",
+              "optional": false
+            },
+            {
+              "name": "gy",
+              "type": "integer",
+              "description": "One-based goal row.",
+              "optional": false
+            },
+            {
+              "name": "unit_size",
+              "type": "integer",
+              "description": "Unit footprint in cells (default 1).",
+              "optional": true
+            }
+          ],
+          "returns": "LFlowField",
+          "returnType": "LFlowField",
+          "isMethod": true,
+          "objectType": "LUnitPathfinder"
+        },
+        {
+          "name": "getSharedFlowFieldFor",
+          "fullPath": "LUnitPathfinder:getSharedFlowFieldFor",
+          "signature": "(name, gx, gy)",
+          "description": "Returns a cached shared-goal flow field handle for one target cell and one named footprint.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Stable footprint name defined on the backing navigation grid.",
+              "optional": false
+            },
+            {
+              "name": "gx",
+              "type": "integer",
+              "description": "One-based goal column.",
+              "optional": false
+            },
+            {
+              "name": "gy",
+              "type": "integer",
+              "description": "One-based goal row.",
+              "optional": false
+            }
+          ],
+          "returns": "LFlowField",
+          "returnType": "LFlowField",
+          "isMethod": true,
+          "objectType": "LUnitPathfinder"
+        },
+        {
+          "name": "getSharedFlowFieldMulti",
+          "fullPath": "LUnitPathfinder:getSharedFlowFieldMulti",
+          "signature": "(targets, [unit_size])",
+          "description": "Returns a cached shared-goal flow field handle for many target cells and one unit footprint size.",
+          "parameters": [
+            {
+              "name": "targets",
+              "type": "table",
+              "description": "Array of `{x, y}` goal tables.",
+              "optional": false
+            },
+            {
+              "name": "unit_size",
+              "type": "integer",
+              "description": "Unit footprint in cells (default 1).",
+              "optional": true
+            }
+          ],
+          "returns": "LFlowField",
+          "returnType": "LFlowField",
+          "isMethod": true,
+          "objectType": "LUnitPathfinder"
+        },
+        {
+          "name": "getSharedFlowFieldMultiFor",
+          "fullPath": "LUnitPathfinder:getSharedFlowFieldMultiFor",
+          "signature": "(name, targets)",
+          "description": "Returns a cached shared-goal flow field handle for many target cells and one named footprint.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Stable footprint name defined on the backing navigation grid.",
+              "optional": false
+            },
+            {
+              "name": "targets",
+              "type": "table",
+              "description": "Array of `{x, y}` goal tables.",
+              "optional": false
+            }
+          ],
+          "returns": "LFlowField",
+          "returnType": "LFlowField",
+          "isMethod": true,
+          "objectType": "LUnitPathfinder"
+        },
+        {
           "name": "findPartialPath",
           "fullPath": "LUnitPathfinder:findPartialPath",
           "signature": "LUnitPathfinder:findPartialPath(x1, y1, x2, y2, max_nodes, [unit_size])",
@@ -177709,7 +179106,7 @@
           "name": "setCacheEnabled",
           "fullPath": "LUnitPathfinder:setCacheEnabled",
           "signature": "(enabled)",
-          "description": "Enables or disables the path cache on this object.",
+          "description": "Enables or disables the pathfinder's internal route and shared-goal caches on this object.",
           "parameters": [
             {
               "name": "enabled",
@@ -177727,7 +179124,7 @@
           "name": "isCacheEnabled",
           "fullPath": "LUnitPathfinder:isCacheEnabled",
           "signature": "()",
-          "description": "Returns whether path cache is enabled.",
+          "description": "Returns whether the pathfinder's internal caches are enabled.",
           "parameters": [],
           "returns": "boolean",
           "returnType": "boolean",
@@ -177753,6 +179150,39 @@
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LUnitPathfinder"
+        },
+        {
+          "name": "clearSharedGoalCache",
+          "fullPath": "LUnitPathfinder:clearSharedGoalCache",
+          "signature": "()",
+          "description": "Clears all cached shared-goal fields on this object.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LUnitPathfinder"
+        },
+        {
+          "name": "getSharedGoalCacheSize",
+          "fullPath": "LUnitPathfinder:getSharedGoalCacheSize",
+          "signature": "()",
+          "description": "Returns the current shared-goal field cache entry count.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LUnitPathfinder"
+        },
+        {
+          "name": "getSharedGoalCacheStats",
+          "fullPath": "LUnitPathfinder:getSharedGoalCacheStats",
+          "signature": "()",
+          "description": "Returns shared-goal flow-field cache counters for debugging and performance inspection.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LUnitPathfinder"
         },

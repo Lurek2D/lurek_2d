@@ -77,7 +77,7 @@ pub mod decision {
 
 /// Grouped simulation-side AI state APIs for callers that manage world or actor state.
 pub mod simulation {
-    pub use super::agent::{Agent, DecisionModel};
+    pub use super::agent::{Agent, AgentStance, DecisionModel, OrderRuntimeState, StanceProfile};
     pub use super::director::{AIDirector, DirectorConfig, DirectorPhase};
     pub use super::emotion::{Emotion, EmotionModel};
     pub use super::lod::{AILod, LodTier};
@@ -88,7 +88,7 @@ pub mod simulation {
         DecisionBiasMode, DecisionBiasRule, DecisionBiasSet, TraitArchetypes, TraitModifier,
         TraitProfile, BUILTIN_TRAITS,
     };
-    pub use super::world::AIWorld;
+    pub use super::world::{AIOrderRuntimeStats, AISpatialQueryStats, AIWorld, SpatialQueryOptions};
 }
 
 /// Grouped debug and diagnostics APIs for AI inspection.
@@ -102,21 +102,24 @@ pub mod debug {
 /// Blackboard storage shared by AI systems, re-exported from `crate::patterns`.
 pub use crate::patterns::{Blackboard, BlackboardValue};
 /// Base agent type and decision-model enum.
-pub use agent::{Agent, DecisionModel};
+pub use agent::{Agent, AgentStance, DecisionModel, OrderRuntimeState, StanceProfile};
 /// Behavior tree nodes, statuses, and policies.
 pub use behavior_tree::{BTNode, BTStatus, BehaviorTree, ParallelPolicy};
-/// Deferred command queue and command variants.
-pub use command_queue::{Command, CommandQueue};
+/// Deferred command queue, immutable snapshots, and lifecycle events.
+pub use command_queue::{Command, CommandEvent, CommandQueue, CommandSnapshot};
 /// Finite-state machine building blocks.
 pub use fsm::{StateCallbacks, StateMachine, Transition};
 /// GOAP planner inputs and planner type.
 pub use goap::{GOAPAction, GOAPGoal, GOAPPlanner, PlanFailureReason};
 /// Squad container and formation mode.
-pub use squad::{FormationType, Squad};
+pub use squad::{
+    FormationFallbackMode, FormationLayout, FormationSlotAssignment, FormationSortMode,
+    FormationType, Squad, SquadMemberProfile,
+};
 /// Utility-AI considerations, response curves, and actions.
 pub use utility_ai::{Consideration, ResponseCurve, UAAction, UtilityAI};
 /// AI-facing world abstraction.
-pub use world::AIWorld;
+pub use world::{AIOrderRuntimeStats, AISpatialQueryStats, AIWorld, SpatialQueryOptions};
 
 /// Shared AI callback and decision traces.
 pub use diagnostics::{

@@ -342,18 +342,134 @@ do
   lurek.log.info(tostring("LAIWorld:getGlobalBlackboard: weather=" .. gb:getString("weather", "none")))
 end
 
+--@api: LAIWorld:setSpatialCellSize
+do
+  local world = lurek.ai.newWorld()
+  world:setSpatialCellSize(24.0)
+  local size = world:getSpatialCellSize()
+  local stats = world:getSpatialQueryStats()
+  lurek.log.info(tostring("LAIWorld:setSpatialCellSize: size=" .. tostring(size)))
+  lurek.log.info(tostring("LAIWorld:setSpatialCellSize: queries=" .. tostring(stats.queryCount)))
+end
+
+--@api: LAIWorld:getSpatialCellSize
+do
+  local world = lurek.ai.newWorld()
+  world:setSpatialCellSize(32.0)
+  local size = world:getSpatialCellSize()
+  local type_name = world:type()
+  lurek.log.info(tostring("LAIWorld:getSpatialCellSize: " .. tostring(size)))
+  lurek.log.info(tostring("LAIWorld:getSpatialCellSize: type=" .. tostring(type_name)))
+end
+
+--@api: LAIWorld:getSpatialQueryStats
+do
+  local world = lurek.ai.newWorld()
+  world:setSpatialCellSize(16.0)
+  local alpha = world:addAgent("alpha")
+  local beta = world:addAgent("beta")
+  alpha:setPosition(0.0, 0.0)
+  alpha:setTeam(1)
+  beta:setPosition(10.0, 0.0)
+  beta:setTeam(2)
+  world:queryAgentsInRadius(0.0, 0.0, 32.0, { exclude = "alpha", hostileTo = 1 })
+  local stats = world:getSpatialQueryStats()
+  lurek.log.info(tostring("LAIWorld:getSpatialQueryStats: candidates=" .. tostring(stats.candidateChecks)))
+  lurek.log.info(tostring("LAIWorld:getSpatialQueryStats: returned=" .. tostring(stats.returnedAgents)))
+end
+
+--@api: LAIWorld:setOrderArrivalRadius
+do
+  local world = lurek.ai.newWorld()
+  world:setOrderArrivalRadius(2.5)
+  local radius = world:getOrderArrivalRadius()
+  local stats = world:getOrderRuntimeStats()
+  lurek.log.info(tostring("LAIWorld:setOrderArrivalRadius: radius=" .. tostring(radius)))
+  lurek.log.info(tostring("LAIWorld:setOrderArrivalRadius: active=" .. tostring(stats.activeAgents)))
+end
+
+--@api: LAIWorld:getOrderArrivalRadius
+do
+  local world = lurek.ai.newWorld()
+  world:setOrderArrivalRadius(3.0)
+  local radius = world:getOrderArrivalRadius()
+  local world_type = world:type()
+  lurek.log.info(tostring("LAIWorld:getOrderArrivalRadius: " .. tostring(radius)))
+  lurek.log.info(tostring("LAIWorld:getOrderArrivalRadius: type=" .. tostring(world_type)))
+end
+
+--@api: LAIWorld:setAutoAcquireBudget
+do
+  local world = lurek.ai.newWorld()
+  world:setAutoAcquireBudget(3)
+  local budget = world:getAutoAcquireBudget()
+  local stats = world:getOrderRuntimeStats()
+  lurek.log.info(tostring("LAIWorld:setAutoAcquireBudget: budget=" .. tostring(budget)))
+  lurek.log.info(tostring("LAIWorld:setAutoAcquireBudget: skipped=" .. tostring(stats.budgetSkips)))
+end
+
+--@api: LAIWorld:getAutoAcquireBudget
+do
+  local world = lurek.ai.newWorld()
+  world:setAutoAcquireBudget(5)
+  local budget = world:getAutoAcquireBudget()
+  local world_type = world:type()
+  lurek.log.info(tostring("LAIWorld:getAutoAcquireBudget: " .. tostring(budget)))
+  lurek.log.info(tostring("LAIWorld:getAutoAcquireBudget: type=" .. tostring(world_type)))
+end
+
+--@api: LAIWorld:getOrderRuntimeStats
+do
+  local world = lurek.ai.newWorld()
+  world:setSpatialCellSize(16.0)
+  world:setOrderArrivalRadius(0.5)
+  local hero = world:addAgent("hero")
+  local enemy = world:addAgent("enemy")
+  hero:setTeam(1)
+  hero:setPosition(0.0, 0.0)
+  hero:setStance("aggressive", { acquireRadius = 64.0, chaseRadius = 24.0 })
+  hero:getCommandQueue():enqueue("move", function() end, { targetX = 32.0, targetY = 0.0 })
+  enemy:setTeam(2)
+  enemy:setPosition(8.0, 0.0)
+  world:update(0.1)
+  local stats = world:getOrderRuntimeStats()
+  lurek.log.info(tostring("LAIWorld:getOrderRuntimeStats: queries=" .. tostring(stats.acquireQueries)))
+  lurek.log.info(tostring("LAIWorld:getOrderRuntimeStats: interrupts=" .. tostring(stats.softInterrupts)))
+end
+
+--@api: LAIWorld:queryAgentsInRadius
+do
+  local world = lurek.ai.newWorld()
+  world:setSpatialCellSize(16.0)
+  local alpha = world:addAgent("alpha")
+  local beta = world:addAgent("beta")
+  local gamma = world:addAgent("gamma")
+  alpha:setPosition(0.0, 0.0)
+  alpha:setTeam(1)
+  beta:setPosition(8.0, 0.0)
+  beta:setTeam(2)
+  beta:addTag("hostile")
+  gamma:setPosition(12.0, 0.0)
+  gamma:setTeam(2)
+  gamma:addTag("hidden")
+  local found = world:queryAgentsInRadius(0.0, 0.0, 32.0, { exclude = "alpha", hostileTo = 1, limit = 1, tag = "hostile", notTag = "hidden" })
+  lurek.log.info(tostring("LAIWorld:queryAgentsInRadius: count=" .. tostring(#found)))
+  lurek.log.info(tostring("LAIWorld:queryAgentsInRadius: first=" .. tostring(found[1] and found[1]:getName())))
+end
+
 --@api: LAIWorld:update
 do
   local world = lurek.ai.newWorld()
-  local world_type = world:type()
   local npc = world:addAgent("worker")
-  local agent_name = npc:getName()
-  npc:setPriority(0.5)
-  npc:setDecisionModel("custom")
+  local runner = world:addAgent("runner")
   local ticked = false
   npc:setCustomModel(function(agent, blackboard, dt) ticked = true end)
-  world:update(1 / 60)
+  runner:getCommandQueue():enqueue("move", function() end, { targetX = 10.0, targetY = 0.0 })
+  world:setOrderArrivalRadius(0.5)
+  world:update(1.0)
+  local x, y = runner:getPosition()
   lurek.log.info(tostring("LAIWorld:update: ticked=" .. tostring(ticked)))
+  lurek.log.info(tostring("LAIWorld:update: runner=" .. tostring(x) .. "," .. tostring(y)))
 end
 
 --@api: LAIWorld:type
@@ -509,6 +625,50 @@ do
   lurek.log.info(tostring("LBot:getPriority: " .. tostring(prio)))
 end
 
+--@api: LBot:setTeam
+do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent("captain")
+  npc:setTeam(3)
+  local team = npc:getTeam()
+  local name = npc:getName()
+  lurek.log.info(tostring("LBot:setTeam: team=" .. tostring(team)))
+  lurek.log.info(tostring("LBot:setTeam: name=" .. tostring(name)))
+end
+
+--@api: LBot:getTeam
+do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent("grunt")
+  npc:setTeam(5)
+  local team = npc:getTeam()
+  local type_name = npc:type()
+  lurek.log.info(tostring("LBot:getTeam: " .. tostring(team)))
+  lurek.log.info(tostring("LBot:getTeam: type=" .. tostring(type_name)))
+end
+
+--@api: LBot:setStance
+do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent("raider")
+  npc:setStance("defensive", { chaseRadius = 48.0, interruptsMove = true })
+  local stance = npc:getStance()
+  local team = npc:getTeam()
+  lurek.log.info(tostring("LBot:setStance: stance=" .. tostring(stance.stance)))
+  lurek.log.info(tostring("LBot:setStance: chase=" .. tostring(stance.chaseRadius) .. " team=" .. tostring(team)))
+end
+
+--@api: LBot:getStance
+do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent("guardian")
+  local stance = npc:getStance()
+  local interrupt = stance.interruptsMove
+  local radius = stance.acquireRadius
+  lurek.log.info(tostring("LBot:getStance: stance=" .. tostring(stance.stance)))
+  lurek.log.info(tostring("LBot:getStance: radius=" .. tostring(radius) .. " interrupt=" .. tostring(interrupt)))
+end
+
 --@api: LBot:setDecisionModel
 do
   local world = lurek.ai.newWorld()
@@ -647,6 +807,44 @@ do
   lurek.log.info(tostring("LBot:hasTag: friendly=" .. tostring(friendly) .. " hostile=" .. tostring(hostile)))
 end
 
+--@api: LBot:findHostilesInRange
+do
+  local world = lurek.ai.newWorld()
+  world:setSpatialCellSize(16.0)
+  local hero = world:addAgent("hero")
+  local enemy = world:addAgent("enemy")
+  local ally = world:addAgent("ally")
+  hero:setTeam(1)
+  hero:setPosition(0.0, 0.0)
+  enemy:setTeam(2)
+  enemy:setPosition(20.0, 0.0)
+  enemy:addTag("visible")
+  ally:setTeam(1)
+  ally:setPosition(10.0, 0.0)
+  local found = hero:findHostilesInRange(64.0, { tag = "visible", limit = 4 })
+  lurek.log.info(tostring("LBot:findHostilesInRange: count=" .. tostring(#found)))
+  lurek.log.info(tostring("LBot:findHostilesInRange: first=" .. tostring(found[1] and found[1]:getName())))
+end
+
+--@api: LBot:acquireTarget
+do
+  local world = lurek.ai.newWorld()
+  world:setSpatialCellSize(16.0)
+  local hero = world:addAgent("hero")
+  local near_enemy = world:addAgent("near_enemy")
+  local far_enemy = world:addAgent("far_enemy")
+  hero:setTeam(1)
+  hero:setPosition(0.0, 0.0)
+  hero:setStance("aggressive", { acquireRadius = 80.0 })
+  near_enemy:setTeam(2)
+  near_enemy:setPosition(24.0, 0.0)
+  far_enemy:setTeam(2)
+  far_enemy:setPosition(120.0, 0.0)
+  local target = hero:acquireTarget()
+  lurek.log.info(tostring("LBot:acquireTarget: found=" .. tostring(target ~= nil)))
+  lurek.log.info(tostring("LBot:acquireTarget: target=" .. tostring(target and target:getName())))
+end
+
 --@api: LBot:getBlackboard
 do
   local world = lurek.ai.newWorld()
@@ -658,6 +856,70 @@ do
   bb:setNumber("hp", 100)
   local hp = bb:getNumber("hp", 0)
   lurek.log.info(tostring("LBot:getBlackboard: hp=" .. tostring(hp)))
+end
+
+--@api: LBot:getCommandQueue
+do
+  local world = lurek.ai.newWorld()
+  local bot = world:addAgent("order_owner")
+  local queue = bot:getCommandQueue()
+  local order_id = queue:enqueue("move", function() end, { targetX = 16, targetY = 24, priority = 2 })
+  local current = bot:getCurrentOrder()
+  lurek.log.info(tostring("LBot:getCommandQueue: id=" .. tostring(order_id)))
+  lurek.log.info(tostring("LBot:getCommandQueue: kind=" .. tostring(current and current.kind)))
+end
+
+--@api: LBot:getCurrentOrder
+do
+  local world = lurek.ai.newWorld()
+  local bot = world:addAgent("order_reader")
+  local queue = bot:getCommandQueue()
+  queue:enqueue("guard", function() end, { targetX = 32, targetY = 40 })
+  local current = bot:getCurrentOrder()
+  lurek.log.info(tostring("LBot:getCurrentOrder: id=" .. tostring(current and current.id)))
+  lurek.log.info(tostring("LBot:getCurrentOrder: target=" .. tostring(current and current.targetX) .. "," .. tostring(current and current.targetY)))
+end
+
+--@api: LBot:getOrderRuntimeState
+do
+  local world = lurek.ai.newWorld()
+  world:setSpatialCellSize(16.0)
+  local hero = world:addAgent("hero")
+  local enemy = world:addAgent("enemy")
+  hero:setTeam(1)
+  hero:setPosition(0.0, 0.0)
+  hero:setStance("aggressive", { acquireRadius = 64.0, chaseRadius = 24.0, abandonFormation = true })
+  hero:getCommandQueue():enqueue("move", function() end, { targetX = 100.0, targetY = 0.0, interruptible = true })
+  enemy:setTeam(2)
+  enemy:setPosition(8.0, 0.0)
+  world:update(0.1)
+  local state = hero:getOrderRuntimeState()
+  lurek.log.info(tostring("LBot:getOrderRuntimeState: active=" .. tostring(state.active)))
+  lurek.log.info(tostring("LBot:getOrderRuntimeState: target=" .. tostring(state.engageTarget)))
+end
+
+--@api: LBot:clearOrders
+do
+  local world = lurek.ai.newWorld()
+  local bot = world:addAgent("order_clear")
+  local queue = bot:getCommandQueue()
+  queue:enqueue("move", function() end)
+  queue:enqueue("patrol", function() end)
+  local cleared = bot:clearOrders("player_stop")
+  lurek.log.info(tostring("LBot:clearOrders: cleared=" .. tostring(cleared)))
+  lurek.log.info(tostring("LBot:clearOrders: empty=" .. tostring(queue:isEmpty())))
+end
+
+--@api: LBot:drainCommandEvents
+do
+  local world = lurek.ai.newWorld()
+  local bot = world:addAgent("order_events")
+  local queue = bot:getCommandQueue()
+  queue:enqueue("move", function() end, { targetX = 4, targetY = 8 })
+  queue:completeCurrent("arrived")
+  local events = bot:drainCommandEvents()
+  lurek.log.info(tostring("LBot:drainCommandEvents: count=" .. tostring(#events)))
+  lurek.log.info(tostring("LBot:drainCommandEvents: last=" .. tostring(events[#events] and events[#events].event)))
 end
 
 --@api: LBot:type
@@ -1395,6 +1657,129 @@ do
     lurek.log.info(tostring("member 2 pos = " .. x .. ", " .. y))
 end
 
+--@api: LSquad:setMemberProfile
+do
+  local sq = lurek.ai.newSquad("armor")
+  sq:addMember("tank")
+  sq:setMemberProfile("tank", { footprintW = 4, footprintH = 3, subgroup = "heavy" })
+  local profile = sq:getMemberProfile("tank")
+  lurek.log.info(tostring("LSquad:setMemberProfile: width=" .. tostring(profile.footprintW)))
+  lurek.log.info(tostring("LSquad:setMemberProfile: subgroup=" .. tostring(profile.subgroup)))
+end
+
+--@api: LSquad:getMemberProfile
+do
+  local sq = lurek.ai.newSquad("profiles")
+  sq:addMember("scout")
+  local default_profile = sq:getMemberProfile("scout")
+  sq:setMemberProfile("scout", { footprintW = 2, footprintH = 1 })
+  local updated_profile = sq:getMemberProfile("scout")
+  lurek.log.info(tostring("LSquad:getMemberProfile: default=" .. tostring(default_profile.footprintW)))
+  lurek.log.info(tostring("LSquad:getMemberProfile: updated=" .. tostring(updated_profile.footprintW)))
+end
+
+--@api: LSquad:setFormationBehavior
+do
+  local sq = lurek.ai.newSquad("behavior")
+  sq:addMember("beta_1")
+  sq:addMember("alpha_1")
+  sq:setFormationBehavior("distance", "column", true)
+  local behavior = sq:getFormationBehavior()
+  lurek.log.info(tostring("LSquad:setFormationBehavior: sort=" .. tostring(behavior.sortMode)))
+  lurek.log.info(tostring("LSquad:setFormationBehavior: fallback=" .. tostring(behavior.fallbackMode)))
+end
+
+--@api: LSquad:getFormationBehavior
+do
+  local sq = lurek.ai.newSquad("behavior_read")
+  sq:setFormationBehavior("distance", "keep", false)
+  local behavior = sq:getFormationBehavior()
+  local preserve = behavior.preserveSubgroups
+  lurek.log.info(tostring("LSquad:getFormationBehavior: sort=" .. tostring(behavior.sortMode)))
+  lurek.log.info(tostring("LSquad:getFormationBehavior: preserve=" .. tostring(preserve)))
+end
+
+--@api: LSquad:getFormationSlots
+do
+  local sq = lurek.ai.newSquad("slots")
+  sq:addMember("tank_1")
+  sq:addMember("tank_2")
+  sq:addMember("tank_3")
+  sq:setFormation("line", 10.0)
+  sq:setFormationBehavior("roster", "column", false)
+  sq:setMemberProfile("tank_1", { footprintW = 4, footprintH = 4 })
+  local slots = sq:getFormationSlots(100.0, 50.0, { laneWidth = 20.0 })
+  lurek.log.info(tostring("LSquad:getFormationSlots: count=" .. tostring(#slots)))
+  lurek.log.info(tostring("LSquad:getFormationSlots: first=" .. tostring(slots[1] and slots[1].member)))
+end
+
+--@api: LSquad:getFormationSummary
+do
+  local sq = lurek.ai.newSquad("summary")
+  sq:addMember("beta_1")
+  sq:addMember("alpha_1")
+  sq:addMember("beta_2")
+  sq:addMember("alpha_2")
+  sq:setFormation("line", 8.0)
+  sq:setFormationBehavior("distance", "keep", true)
+  sq:setMemberProfile("beta_1", { subgroup = "beta" })
+  sq:setMemberProfile("beta_2", { subgroup = "beta" })
+  sq:setMemberProfile("alpha_1", { subgroup = "alpha" })
+  sq:setMemberProfile("alpha_2", { subgroup = "alpha" })
+  local summary = sq:getFormationSummary(0.0, 0.0, {
+    positions = {
+      beta_1 = { x = -40.0, y = 0.0 },
+      beta_2 = { x = -30.0, y = 0.0 },
+      alpha_1 = { x = 30.0, y = 0.0 },
+      alpha_2 = { x = 40.0, y = 0.0 },
+    },
+  })
+  lurek.log.info(tostring("LSquad:getFormationSummary: active=" .. tostring(summary.activeFormation)))
+  lurek.log.info(tostring("LSquad:getFormationSummary: slots=" .. tostring(summary.slotCount)))
+end
+
+--@api: LSquad:assignFormationMove
+do
+  local world = lurek.ai.newWorld()
+  local sq = lurek.ai.newSquad("summary_apply")
+  local alpha = world:addAgent("alpha")
+  local beta = world:addAgent("beta")
+  alpha:setPosition(0.0, 0.0)
+  beta:setPosition(10.0, 0.0)
+  sq:addMember("alpha")
+  sq:addMember("beta")
+  sq:setFormation("line", 10.0)
+  local applied = sq:assignFormationMove(world, 100.0, 50.0, {
+    mode = "replace",
+    priority = 3,
+    interruptible = false,
+  })
+  lurek.log.info(tostring("LSquad:assignFormationMove: assigned=" .. tostring(applied.assignedCount)))
+  lurek.log.info(tostring("LSquad:assignFormationMove: first=" .. tostring(applied.slots[1] and applied.slots[1].commandId)))
+end
+
+--@api: LSquad:submitFormationPaths
+do
+  lurek.pathfind.setThreadCount(1)
+  lurek.pathfind.clearAsyncPaths()
+  local world = lurek.ai.newWorld()
+  local nav = lurek.pathfind.newNavGrid(32, 32)
+  local sq = lurek.ai.newSquad("summary_paths")
+  local alpha = world:addAgent("alpha")
+  local beta = world:addAgent("beta")
+  alpha:setPosition(0.0, 0.0)
+  beta:setPosition(10.0, 0.0)
+  sq:addMember("alpha")
+  sq:addMember("beta")
+  sq:setFormation("line", 10.0)
+  local submitted = sq:submitFormationPaths(world, nav, 100.0, 50.0, {
+    cellSize = 10.0,
+    priority = 2,
+  })
+  lurek.log.info(tostring("LSquad:submitFormationPaths: request=" .. tostring(submitted.requestId)))
+  lurek.log.info(tostring("LSquad:submitFormationPaths: submitted=" .. tostring(submitted.submittedCount)))
+end
+
 --@api: LSquad:getBlackboard
 do
     local sq = lurek.ai.newSquad("intel")
@@ -1514,6 +1899,60 @@ do
     cq:enqueue("go", function() end, { targetX = 5, targetY = 10 })
     local tgt = cq:getCurrentTarget()
     lurek.log.info(tostring("target = " .. tostring(tgt)))
+end
+
+--@api: LCommandQueue:getCurrent
+do
+    local cq = lurek.ai.newCommandQueue()
+    local order_id = cq:enqueue("move", function() end, { targetX = 6, targetY = 9, priority = 3, interruptible = false })
+    local current = cq:getCurrent()
+    local queue_count = cq:getCount()
+    lurek.log.info(tostring("LCommandQueue:getCurrent: id=" .. tostring(order_id)))
+    lurek.log.info(tostring("LCommandQueue:getCurrent: kind=" .. tostring(current and current.kind)))
+end
+
+--@api: LCommandQueue:getPending
+do
+    local cq = lurek.ai.newCommandQueue()
+    cq:enqueue("move", function() end)
+    cq:enqueue("guard", function() end)
+    local pending = cq:getPending()
+    local queue_count = cq:getCount()
+    lurek.log.info(tostring("LCommandQueue:getPending: count=" .. tostring(#pending)))
+    lurek.log.info(tostring("LCommandQueue:getPending: second=" .. tostring(pending[2] and pending[2].kind)))
+end
+
+--@api: LCommandQueue:completeCurrent
+do
+    local cq = lurek.ai.newCommandQueue()
+    local first_id = cq:enqueue("move", function() end)
+    cq:enqueue("guard", function() end)
+    local completed = cq:completeCurrent("arrived")
+    local current = cq:getCurrent()
+    lurek.log.info(tostring("LCommandQueue:completeCurrent: id=" .. tostring(completed)))
+    lurek.log.info(tostring("LCommandQueue:completeCurrent: next=" .. tostring(current and current.kind)))
+end
+
+--@api: LCommandQueue:failCurrent
+do
+    local cq = lurek.ai.newCommandQueue()
+    cq:enqueue("move", function() end)
+    local failed = cq:failCurrent("blocked")
+    local events = cq:drainEvents()
+    local queue_count = cq:getCount()
+    lurek.log.info(tostring("LCommandQueue:failCurrent: failed=" .. tostring(failed)))
+    lurek.log.info(tostring("LCommandQueue:failCurrent: last_event=" .. tostring(events[#events] and events[#events].event)))
+end
+
+--@api: LCommandQueue:drainEvents
+do
+    local cq = lurek.ai.newCommandQueue()
+    cq:enqueue("move", function() end, { targetX = 1, targetY = 2 })
+    cq:completeCurrent("arrived")
+    local events = cq:drainEvents()
+    local drained_again = cq:drainEvents()
+    lurek.log.info(tostring("LCommandQueue:drainEvents: count=" .. tostring(#events)))
+    lurek.log.info(tostring("LCommandQueue:drainEvents: empty_after=" .. tostring(#drained_again)))
 end
 
 --@api: LCommandQueue:type

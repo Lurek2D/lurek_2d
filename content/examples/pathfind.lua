@@ -440,6 +440,54 @@ do
     lurek.log.info("walkable_2x2 = " .. tostring(nav:isWalkable(5, 5, 2)))
 end
 
+--@api: LNavGrid:defineFootprint
+do
+
+    local nav = lurek.pathfind.newNavGrid(20, 20)
+    nav:defineFootprint("tank", { w = 2, h = 2 })
+    local spec = nav:getFootprint("tank")
+    nav:setBlocked(10, 10, true)
+
+    lurek.log.info("tank footprint = " .. spec.w .. "x" .. spec.h)
+    lurek.log.info("blocked pivot = " .. tostring(nav:isBlocked(10, 10)))
+end
+
+--@api: LNavGrid:getFootprint
+do
+
+    local nav = lurek.pathfind.newNavGrid(20, 20)
+    nav:defineFootprint("super_heavy", { w = 4, h = 4 })
+    local spec = nav:getFootprint("super_heavy")
+    local missing = nav:getFootprint("missing")
+
+    lurek.log.info("super heavy width = " .. spec.w)
+    lurek.log.info("missing footprint = " .. tostring(missing == nil))
+end
+
+--@api: LNavGrid:rebuildClearance
+do
+
+    local nav = lurek.pathfind.newNavGrid(20, 20)
+    nav:defineFootprint("infantry", { w = 1, h = 1 })
+    nav:defineFootprint("tank", { w = 2, h = 2 })
+    local rebuilt = nav:rebuildClearance()
+
+    lurek.log.info("rebuilt footprints = " .. rebuilt)
+    lurek.log.info("tank walkable = " .. tostring(nav:isWalkableFor("tank", 1, 1)))
+end
+
+--@api: LNavGrid:isWalkableFor
+do
+
+    local nav = lurek.pathfind.newNavGrid(20, 20)
+    nav:defineFootprint("tank", { w = 2, h = 2 })
+    nav:rebuildClearance()
+    nav:setBlocked(2, 2, true)
+
+    lurek.log.info("tank at 1,1 = " .. tostring(nav:isWalkableFor("tank", 1, 1)))
+    lurek.log.info("tank at 3,3 = " .. tostring(nav:isWalkableFor("tank", 3, 3)))
+end
+
 --@api: LNavGrid:fill
 do
 
@@ -465,6 +513,68 @@ do
     lurek.log.info("blocked_5_5 = " .. tostring(nav:isBlocked(5, 5)))
     lurek.log.info("blocked_10_10 = " .. tostring(nav:isBlocked(10, 10)))
     lurek.log.info("blocked_11_11 = " .. tostring(nav:isBlocked(11, 11)))
+end
+
+--@api: LNavGrid:beginUpdate
+do
+
+    local nav = lurek.pathfind.newNavGrid(20, 20)
+    nav:beginUpdate()
+    nav:setBlockedRect(4, 4, 2, 2, true)
+    local before = nav:getGeneration()
+    local committed = nav:commitUpdate()
+
+    lurek.log.info("generation before commit = " .. before)
+    lurek.log.info("committed rects = " .. committed)
+end
+
+--@api: LNavGrid:setBlockedRect
+do
+
+    local nav = lurek.pathfind.newNavGrid(20, 20)
+    nav:setBlockedRect(5, 5, 3, 3, true)
+    local center = nav:isBlocked(6, 6)
+    local edge = nav:isBlocked(5, 5)
+
+    lurek.log.info("blocked center = " .. tostring(center))
+    lurek.log.info("blocked edge = " .. tostring(edge))
+end
+
+--@api: LNavGrid:setCostRect
+do
+
+    local nav = lurek.pathfind.newNavGrid(20, 20)
+    nav:setCostRect(5, 5, 3, 3, 7)
+    local center = nav:getCost(6, 6)
+    local edge = nav:getCost(5, 5)
+
+    lurek.log.info("cost center = " .. center)
+    lurek.log.info("cost edge = " .. edge)
+end
+
+--@api: LNavGrid:commitUpdate
+do
+
+    local nav = lurek.pathfind.newNavGrid(20, 20)
+    nav:beginUpdate()
+    nav:setBlockedRect(4, 4, 2, 2, true)
+    nav:setCostRect(10, 10, 2, 2, 9)
+    local committed = nav:commitUpdate({ rebuild = "dirty_chunks" })
+
+    lurek.log.info("commit dirty rect count = " .. committed)
+    lurek.log.info("generation = " .. nav:getGeneration())
+end
+
+--@api: LNavGrid:getDirtyRects
+do
+
+    local nav = lurek.pathfind.newNavGrid(20, 20)
+    nav:setBlockedRect(5, 5, 3, 3, true)
+    local rects = nav:getDirtyRects()
+    local first = rects[1]
+
+    lurek.log.info("dirty rect count = " .. #rects)
+    lurek.log.info("first dirty rect = " .. first.x .. "," .. first.y .. " " .. first.w .. "x" .. first.h)
 end
 
 --@api: LNavGrid:setDiagonalMode
@@ -545,6 +655,23 @@ do
     local path = nav:findHpaPath(1, 1, 16, 16, 1)
     lurek.log.info("hpa path exists = " .. tostring(path ~= nil))
     lurek.log.info("hpa path len = " .. tostring(path and #path or 0))
+end
+
+--@api: LNavGrid:findHpaPathsToGoal
+do
+
+    local nav = lurek.pathfind.newNavGrid(32, 32)
+    nav:setChunkSize(8)
+    nav:rebuildAbstract()
+
+    local paths = nav:findHpaPathsToGoal({
+        { x = 1, y = 1 },
+        { x = 2, y = 8 },
+        { x = 10, y = 3 },
+    }, 30, 30, 1)
+
+    lurek.log.info("shared hpa count = " .. tostring(#paths))
+    lurek.log.info("first len = " .. tostring(paths[1] and #paths[1] or 0))
 end
 
 --@api: LNavGrid:setDirty
@@ -1094,6 +1221,76 @@ do
     lurek.log.info("last = " .. targets[#targets].x .. "," .. targets[#targets].y)
 end
 
+--@api: LFlowField:calculateFor
+do
+
+    local nav = lurek.pathfind.newNavGrid(15, 15)
+
+    nav:fill(1)
+    nav:defineFootprint("tank", { w = 2, h = 2 })
+    nav:setBlocked(2, 2, true)
+
+    local ff = lurek.pathfind.newFlowField(nav)
+    ff:calculateFor("tank", 10, 10)
+
+    lurek.log.info("builds = " .. ff:getBuildCount())
+    lurek.log.info("start cost = " .. tostring(ff:getCostToTarget(1, 1)))
+end
+
+--@api: LFlowField:calculateMultiFor
+do
+
+    local nav = lurek.pathfind.newNavGrid(15, 15)
+
+    nav:fill(1)
+    nav:defineFootprint("tank", { w = 2, h = 2 })
+
+    local ff = lurek.pathfind.newFlowField(nav)
+    ff:calculateMultiFor("tank", {
+        { x = 5, y = 5 },
+        { x = 10, y = 10 },
+    })
+
+    local targets = ff:getTargets()
+    lurek.log.info("targets = " .. #targets)
+    lurek.log.info("generation = " .. tostring(ff:getGeneration()))
+end
+
+--@api: LFlowField:getGeneration
+do
+
+    local nav = lurek.pathfind.newNavGrid(12, 12)
+
+    nav:fill(1)
+
+    local ff = lurek.pathfind.newFlowField(nav)
+    ff:calculate(8, 8)
+    local before = ff:getGeneration()
+    nav:setBlocked(2, 2, true)
+    ff:calculate(8, 8)
+    local after = ff:getGeneration()
+
+    lurek.log.info("flow generation before = " .. tostring(before))
+    lurek.log.info("flow generation after = " .. tostring(after))
+end
+
+--@api: LFlowField:getBuildCount
+do
+
+    local nav = lurek.pathfind.newNavGrid(12, 12)
+
+    nav:fill(1)
+
+    local ff = lurek.pathfind.newFlowField(nav)
+    ff:calculate(8, 8)
+    ff:calculate(8, 8)
+    nav:setBlocked(3, 3, true)
+    ff:calculate(8, 8)
+
+    lurek.log.info("rebuild count = " .. tostring(ff:getBuildCount()))
+    lurek.log.info("targets = " .. #ff:getTargets())
+end
+
 --@api: LFlowField:getTargets
 do
 
@@ -1110,6 +1307,41 @@ do
     local targets = ff:getTargets()
     lurek.log.info("targets = " .. #targets)
     lurek.log.info("first = " .. targets[1].x .. "," .. targets[1].y)
+end
+
+--@api: LFlowField:pathFrom
+do
+
+    local nav = lurek.pathfind.newNavGrid(12, 12)
+
+    nav:fill(1)
+
+    local ff = lurek.pathfind.newFlowField(nav)
+    ff:calculate(10, 10)
+
+    local path = ff:pathFrom(1, 1)
+    lurek.log.info("path nodes = " .. tostring(path and #path or 0))
+    lurek.log.info("last = " .. path[#path].x .. "," .. path[#path].y)
+end
+
+--@api: LFlowField:pathsFrom
+do
+
+    local nav = lurek.pathfind.newNavGrid(12, 12)
+
+    nav:fill(1)
+
+    local ff = lurek.pathfind.newFlowField(nav)
+    ff:calculate(10, 10)
+
+    local routes = ff:pathsFrom({
+        { x = 1, y = 1 },
+        { x = 3, y = 3 },
+        { x = 10, y = 10 },
+    })
+
+    lurek.log.info("route1 nodes = " .. tostring(routes[1] and #routes[1] or 0))
+    lurek.log.info("route3 last = " .. routes[3][#routes[3]].x .. "," .. routes[3][#routes[3]].y)
 end
 
 --@api: LFlowField:steer
@@ -1497,6 +1729,159 @@ do
     lurek.log.info("cache_size = " .. pf:getCacheSize())
 end
 
+--@api: LUnitPathfinder:findPathsToGoal
+do
+
+    local nav = lurek.pathfind.newNavGrid(30, 30)
+
+    nav:fill(1)
+    nav:setBlocked(15, 10, true)
+    nav:setBlocked(15, 11, true)
+    nav:setBlocked(15, 12, true)
+
+    local pf = lurek.pathfind.newPathfinder(nav)
+    local routes = pf:findPathsToGoal({
+        { x = 1, y = 12 },
+        { x = 2, y = 14 },
+        { x = 5, y = 20 },
+    }, 30, 12)
+
+    lurek.log.info("shared routes = " .. tostring(#routes))
+    lurek.log.info("first nodes = " .. tostring(routes[1] and #routes[1] or 0))
+end
+
+--@api: LUnitPathfinder:findPathsToGoalFor
+do
+
+    local nav = lurek.pathfind.newNavGrid(30, 30)
+
+    nav:fill(1)
+    nav:defineFootprint("tank", { w = 2, h = 2 })
+    nav:setBlocked(2, 2, true)
+
+    local pf = lurek.pathfind.newPathfinder(nav)
+    local routes = pf:findPathsToGoalFor("tank", {
+        { x = 1, y = 1 },
+        { x = 5, y = 5 },
+        { x = 8, y = 8 },
+    }, 25, 25)
+
+    lurek.log.info("blocked start nil = " .. tostring(routes[1] == nil))
+    lurek.log.info("second nodes = " .. tostring(routes[2] and #routes[2] or 0))
+end
+
+--@api: LUnitPathfinder:clearSharedGoalCache
+do
+
+    local nav = lurek.pathfind.newNavGrid(20, 20)
+
+    nav:fill(1)
+
+    local pf = lurek.pathfind.newPathfinder(nav)
+    pf:findPathsToGoal({ { x = 1, y = 1 } }, 20, 20)
+    local before = pf:getSharedGoalCacheSize()
+    pf:clearSharedGoalCache()
+
+    lurek.log.info("shared cache before = " .. tostring(before))
+    lurek.log.info("shared cache after = " .. tostring(pf:getSharedGoalCacheSize()))
+end
+
+--@api: LUnitPathfinder:getSharedGoalCacheSize
+do
+
+    local nav = lurek.pathfind.newNavGrid(20, 20)
+
+    nav:fill(1)
+
+    local pf = lurek.pathfind.newPathfinder(nav)
+    pf:findPathsToGoal({ { x = 1, y = 1 }, { x = 3, y = 3 } }, 20, 20)
+
+    lurek.log.info("shared cache size = " .. tostring(pf:getSharedGoalCacheSize()))
+    lurek.log.info("path cache size = " .. tostring(pf:getCacheSize()))
+end
+
+--@api: LUnitPathfinder:getSharedFlowField
+do
+
+    local nav = lurek.pathfind.newNavGrid(20, 20)
+
+    nav:fill(1)
+
+    local pf = lurek.pathfind.newPathfinder(nav)
+    local flow = pf:getSharedFlowField(20, 20)
+    local path = flow:pathFrom(1, 1)
+
+    lurek.log.info("shared flow targets = " .. tostring(#flow:getTargets()))
+    lurek.log.info("path last = " .. path[#path].x .. "," .. path[#path].y)
+end
+
+--@api: LUnitPathfinder:getSharedFlowFieldFor
+do
+
+    local nav = lurek.pathfind.newNavGrid(20, 20)
+
+    nav:fill(1)
+    nav:defineFootprint("tank", { w = 2, h = 2 })
+    nav:setBlocked(2, 2, true)
+
+    local pf = lurek.pathfind.newPathfinder(nav)
+    local flow = pf:getSharedFlowFieldFor("tank", 18, 18)
+
+    lurek.log.info("tank start cost = " .. tostring(flow:getCostToTarget(1, 1)))
+    lurek.log.info("open lane cost = " .. tostring(flow:getCostToTarget(5, 5)))
+end
+
+--@api: LUnitPathfinder:getSharedFlowFieldMulti
+do
+
+    local nav = lurek.pathfind.newNavGrid(20, 20)
+
+    nav:fill(1)
+
+    local pf = lurek.pathfind.newPathfinder(nav)
+    local flow = pf:getSharedFlowFieldMulti({
+        { x = 18, y = 18 },
+        { x = 20, y = 20 },
+    })
+
+    lurek.log.info("shared multi targets = " .. tostring(#flow:getTargets()))
+    lurek.log.info("cache size = " .. tostring(pf:getSharedGoalCacheSize()))
+end
+
+--@api: LUnitPathfinder:getSharedFlowFieldMultiFor
+do
+
+    local nav = lurek.pathfind.newNavGrid(20, 20)
+
+    nav:fill(1)
+    nav:defineFootprint("tank", { w = 2, h = 2 })
+
+    local pf = lurek.pathfind.newPathfinder(nav)
+    local flow = pf:getSharedFlowFieldMultiFor("tank", {
+        { x = 16, y = 16 },
+        { x = 18, y = 18 },
+    })
+
+    lurek.log.info("footprint targets = " .. tostring(#flow:getTargets()))
+    lurek.log.info("builds = " .. tostring(flow:getBuildCount()))
+end
+
+--@api: LUnitPathfinder:getSharedGoalCacheStats
+do
+
+    local nav = lurek.pathfind.newNavGrid(20, 20)
+
+    nav:fill(1)
+
+    local pf = lurek.pathfind.newPathfinder(nav)
+    pf:getSharedFlowField(20, 20)
+    pf:getSharedFlowField(20, 20)
+    local stats = pf:getSharedGoalCacheStats()
+
+    lurek.log.info("shared hits = " .. tostring(stats.hits))
+    lurek.log.info("shared misses = " .. tostring(stats.misses))
+end
+
 --@api: LUnitPathfinder:clearCache
 do
 
@@ -1637,6 +2022,18 @@ do
     lurek.log.info("height via getter = " .. height)
 end
 
+--@api: LNavGrid:getGeneration
+do
+
+    local ng = lurek.pathfind.newNavGrid(20, 15)
+    local before = ng:getGeneration()
+    ng:setBlocked(10, 8, true)
+    local after = ng:getGeneration()
+
+    lurek.log.info("generation before = " .. before)
+    lurek.log.info("generation after = " .. after)
+end
+
 --@api: LNavGrid:getHeight
 do
 
@@ -1759,6 +2156,38 @@ do
         stream_budget = 4,
     })
     lurek.log.info("request_id = " .. tostring(request_id))
+end
+
+--@api: lurek.pathfind.submitAsyncPathsToGoal
+do
+
+    lurek.pathfind.clearAsyncPaths()
+    local nav = lurek.pathfind.newNavGrid(32, 32)
+    local request_id = lurek.pathfind.submitAsyncPathsToGoal(nav, {
+        starts = {
+            { x = 1, y = 1 },
+            { x = 2, y = 2 },
+            { x = 6, y = 6 },
+        },
+        goal_x = 32,
+        goal_y = 32,
+    })
+    lurek.log.info("grouped_request_id = " .. tostring(request_id))
+end
+
+--@api: lurek.pathfind.submitAsyncPathPairs
+do
+
+    lurek.pathfind.clearAsyncPaths()
+    local nav = lurek.pathfind.newNavGrid(32, 32)
+    local request_id = lurek.pathfind.submitAsyncPathPairs(nav, {
+        pairs = {
+            { start = { x = 1, y = 1 }, goal = { x = 32, y = 32 } },
+            { start = { x = 2, y = 2 }, goal = { x = 32, y = 32 } },
+            { start = { x = 6, y = 6 }, goal = { x = 20, y = 20 } },
+        },
+    })
+    lurek.log.info("paired_request_id = " .. tostring(request_id))
 end
 
 --@api: lurek.pathfind.pollAsyncPaths
@@ -2702,6 +3131,25 @@ do
     lurek.log.info("agent index = " .. idx)
 end
 
+--@api: LORCASolver:setAgent
+do
+
+    local orca = lurek.pathfind.newORCASolver(2.0)
+    orca:setAgent(101, {
+        x = 10.0,
+        y = 20.0,
+        radius = 0.5,
+        max_speed = 3.0,
+        vx = 0.25,
+        vy = 0.0,
+        preferred_vx = 1.0,
+        preferred_vy = 0.0,
+    })
+    orca:compute({ dt = 0.016 })
+    local vx, vy = orca:getSafeVelocity(101)
+    lurek.log.info("stable agent velocity = " .. vx .. ", " .. vy)
+end
+
 --@api: LORCASolver:setPreferredVelocity
 do
 
@@ -2711,6 +3159,17 @@ do
     local count = orca:agentCount()
     local type_name = orca:type()
     lurek.log.info("preferred velocity set for agent 0")
+end
+
+--@api: LORCASolver:setVelocity
+do
+
+    local orca = lurek.pathfind.newORCASolver(2.0)
+    orca:setAgent(77, { x = 0.0, y = 0.0, radius = 0.5, max_speed = 5.0 })
+    orca:setVelocity(77, 1.5, -0.5)
+    orca:compute(0.016)
+    local vx, vy = orca:getSafeVelocity(77)
+    lurek.log.info("current velocity updated = " .. vx .. ", " .. vy)
 end
 
 --@api: LORCASolver:setPosition
@@ -2724,6 +3183,59 @@ do
     lurek.log.info("position updated for agent 0")
 end
 
+--@api: LORCASolver:removeAgent
+do
+
+    local orca = lurek.pathfind.newORCASolver(2.0)
+    orca:setAgent(200, { x = 0.0, y = 0.0, radius = 0.5, max_speed = 2.0 })
+    local before = orca:agentCount()
+    local removed = orca:removeAgent(200)
+    local after = orca:agentCount()
+    lurek.log.info("agent count before = " .. tostring(before))
+    lurek.log.info("removed agent = " .. tostring(removed))
+    lurek.log.info("agent count after = " .. tostring(after))
+end
+
+--@api: LORCASolver:setMaxNeighbors
+do
+
+    local orca = lurek.pathfind.newORCASolver(1.5)
+    orca:setMaxNeighbors(1)
+    orca:setCellSize(4.0)
+    orca:setNeighborRadius(12.0)
+    for i = 1, 4 do
+        orca:setAgent(i, { x = i * 2.0, y = 0.0, radius = 0.5, max_speed = 3.0, preferred_vx = 1.0, preferred_vy = 0.0 })
+    end
+    orca:compute(0.016)
+    local stats = orca:getStats()
+    lurek.log.info("max neighbors used = " .. tostring(stats.maxNeighborsUsed))
+end
+
+--@api: LORCASolver:setNeighborRadius
+do
+
+    local orca = lurek.pathfind.newORCASolver(1.5)
+    orca:setCellSize(4.0)
+    orca:setNeighborRadius(3.0)
+    orca:setAgent(1, { x = 0.0, y = 0.0, radius = 0.5, max_speed = 3.0 })
+    orca:setAgent(2, { x = 20.0, y = 0.0, radius = 0.5, max_speed = 3.0 })
+    orca:compute(0.016)
+    local stats = orca:getStats()
+    lurek.log.info("neighbors used = " .. tostring(stats.neighborsUsed))
+end
+
+--@api: LORCASolver:setCellSize
+do
+
+    local orca = lurek.pathfind.newORCASolver(1.5)
+    orca:setCellSize(6.0)
+    orca:setAgent(11, { x = 0.0, y = 0.0, radius = 0.5, max_speed = 3.0 })
+    orca:setAgent(12, { x = 8.0, y = 0.0, radius = 0.5, max_speed = 3.0 })
+    orca:compute(0.016)
+    local stats = orca:getStats()
+    lurek.log.info("spatial cells = " .. tostring(stats.spatialCells))
+end
+
 --@api: LORCASolver:compute
 do
 
@@ -2732,7 +3244,7 @@ do
   orca:addAgent(5, 0, 0.5, 3.0)
   orca:setPreferredVelocity(0, 1.0, 0.0)
     orca:setPreferredVelocity(1, -1.0, 0.0)
-    orca:compute(0.016)
+    orca:compute({ dt = 0.016, max_ms = 1.0 })
     lurek.log.info("collision avoidance computed")
 end
 
@@ -2745,6 +3257,25 @@ do
     orca:compute(0.016)
     local vx, vy = orca:getSafeVelocity(0)
     lurek.log.info("safe velocity = " .. vx .. ", " .. vy)
+end
+
+--@api: LORCASolver:getStats
+do
+
+    local orca = lurek.pathfind.newORCASolver(1.5)
+    for i = 1, 16 do
+        orca:setAgent(i, {
+            x = (i - 1) * 1.0,
+            y = 0.0,
+            radius = 0.5,
+            max_speed = 3.0,
+            preferred_vx = 1.0,
+            preferred_vy = 0.0,
+        })
+    end
+    orca:compute({ dt = 0.016, max_ms = 0.0 })
+    local stats = orca:getStats()
+    lurek.log.info("budget exhausted = " .. tostring(stats.budgetExhausted))
 end
 
 --@api: LORCASolver:agentCount

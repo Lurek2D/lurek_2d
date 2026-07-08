@@ -6,14 +6,16 @@ use super::SharedState;
 use crate::lua_api::callback_registry::CallbackRegistry;
 use crate::pathfind::ai_flow_field::FlowField as AiFlowField;
 use crate::pathfind::goal_map::{GoalMap, GoalSource};
-use crate::pathfind::hpa::{build_abstract, hpa_star, AbstractGraph};
+use crate::pathfind::hpa::{build_abstract, hpa_paths_to_goal, hpa_star, AbstractGraph};
 use crate::pathfind::pathgrid::PathGrid;
 use crate::pathfind::ContextSteering;
 use crate::pathfind::{
     bidirectional_astar, build_graph_adjacency_map, find_graph_route_bfs,
     find_graph_route_dijkstra, graph_connected, graph_connected_components, AsyncPathEvent,
-    AsyncPathRequest, DiagonalMode, FlowField, NavGrid, NavMesh, ORCAAgent, ORCASolver,
-    PathEventStatus, PathThreadPool, SteeringManager, UnitPathfinder, Waypoint,
+    AsyncPathRequest, DiagonalMode, FlowField, FootprintSpec, NavGrid, NavMesh, ORCAAgent,
+    ORCAComputeStats, ORCASolver, PathEventStatus, PathThreadPool, SteeringManager,
+    UnitPathfinder,
+    UpdateRebuildMode, Waypoint,
 };
 use crate::pathfind::{HexGrid, HexLayout, InfluenceMap, IsoGrid, JpsGrid, RangeMap};
 use crate::tilefield::CellCoord;
@@ -29,6 +31,7 @@ static NEXT_ASYNC_PATH_REQUEST_ID: AtomicU64 = AtomicU64::new(1);
 static PATHFIND_ASYNC_POOL: OnceLock<Mutex<PathThreadPool>> = OnceLock::new();
 
 type GraphEdgesAndNodes = (Vec<(u32, u32)>, Vec<u32>);
+type ZeroBasedPathPair = ((u32, u32), (u32, u32));
 
 fn async_pool() -> &'static Mutex<PathThreadPool> {
     PATHFIND_ASYNC_POOL.get_or_init(|| {
@@ -41,6 +44,16 @@ fn async_pool() -> &'static Mutex<PathThreadPool> {
 fn with_async_pool<T>(f: impl FnOnce(&mut PathThreadPool) -> T) -> T {
     let mut pool = async_pool().lock().unwrap_or_else(|e| e.into_inner());
     f(&mut pool)
+}
+
+pub(crate) fn next_async_path_request_id() -> u64 {
+    NEXT_ASYNC_PATH_REQUEST_ID.fetch_add(1, Ordering::Relaxed)
+}
+
+pub(crate) fn submit_async_query(request: AsyncPathRequest) {
+    with_async_pool(|pool| {
+        let _ = pool.submit_query(request);
+    });
 }
 
 fn one_based_to_zero_based(value: u32, label: &str) -> LuaResult<u32> {
@@ -171,6 +184,20 @@ fn waypoints_to_lua<'a>(lua: &'a Lua, path: &[Waypoint]) -> LuaResult<LuaTable<'
     }
     Ok(tbl)
 }
+
+fn waypoint_options_to_lua<'a>(
+    lua: &'a Lua,
+    paths: &[Option<Vec<Waypoint>>],
+) -> LuaResult<LuaTable<'a>> {
+    let tbl = lua.create_table()?;
+    for (i, path) in paths.iter().enumerate() {
+        match path {
+            Some(path) => tbl.set(i + 1, waypoints_to_lua(lua, path)?)?,
+            None => tbl.set(i + 1, LuaValue::Nil)?,
+        }
+    }
+    Ok(tbl)
+}
 /// Converts one-based Lua point tables into zero-based Rust waypoints.
 fn lua_to_waypoints(tbl: &LuaTable) -> LuaResult<Vec<Waypoint>> {
     let mut waypoints = Vec::new();
@@ -195,6 +222,61 @@ fn tuple_path_to_lua<'a>(lua: &'a Lua, path: &[(u32, u32)]) -> LuaResult<LuaTabl
         tbl.set(i + 1, entry)?;
     }
     Ok(tbl)
+}
+
+fn tuple_path_options_to_lua<'a>(
+    lua: &'a Lua,
+    paths: &[Option<Vec<(u32, u32)>>],
+) -> LuaResult<LuaTable<'a>> {
+    let tbl = lua.create_table()?;
+    for (i, path) in paths.iter().enumerate() {
+        match path {
+            Some(path) => tbl.set(i + 1, tuple_path_to_lua(lua, path)?)?,
+            None => tbl.set(i + 1, LuaValue::Nil)?,
+        }
+    }
+    Ok(tbl)
+}
+
+fn lua_points_to_zero_based(points: LuaTable, api: &str) -> LuaResult<Vec<(u32, u32)>> {
+    let mut out = Vec::new();
+    for pair in points.sequence_values::<LuaTable>() {
+        let entry = pair?;
+        let x: u32 = entry.get("x")?;
+        let y: u32 = entry.get("y")?;
+        out.push(
+            one_based_coords_u32(x, y, "x", "y")
+                .map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))?,
+        );
+    }
+    Ok(out)
+}
+
+fn lua_path_pairs_to_zero_based(
+    pairs: LuaTable,
+    api: &str,
+) -> LuaResult<Vec<ZeroBasedPathPair>> {
+    let mut out = Vec::new();
+    for pair in pairs.sequence_values::<LuaTable>() {
+        let entry = pair?;
+        let start = entry
+            .get::<_, LuaTable>("start")
+            .map_err(|err| LuaError::RuntimeError(format!("{api}: start must be a table: {err}")))?;
+        let goal = entry
+            .get::<_, LuaTable>("goal")
+            .map_err(|err| LuaError::RuntimeError(format!("{api}: goal must be a table: {err}")))?;
+        let sx: u32 = start.get("x")?;
+        let sy: u32 = start.get("y")?;
+        let gx: u32 = goal.get("x")?;
+        let gy: u32 = goal.get("y")?;
+        out.push((
+            one_based_coords_u32(sx, sy, "start.x", "start.y")
+                .map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))?,
+            one_based_coords_u32(gx, gy, "goal.x", "goal.y")
+                .map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))?,
+        ));
+    }
+    Ok(out)
 }
 
 fn graph_path_to_lua<'a>(lua: &'a Lua, path: &[u32]) -> LuaResult<LuaTable<'a>> {
@@ -376,14 +458,76 @@ fn path_event_to_lua<'a>(lua: &'a Lua, event: AsyncPathEvent) -> LuaResult<LuaTa
         Some(path) => tbl.set("path", tuple_path_to_lua(lua, &path)?)?,
         None => tbl.set("path", LuaValue::Nil)?,
     }
+    match event.paths {
+        Some(paths) => tbl.set("paths", tuple_path_options_to_lua(lua, &paths)?)?,
+        None => tbl.set("paths", LuaValue::Nil)?,
+    }
     Ok(tbl)
 }
+
+fn parse_footprint_spec(opts: LuaTable, api: &str) -> LuaResult<FootprintSpec> {
+    let width = require_positive_u32(
+        opts.get::<_, Option<u32>>("w")?
+            .ok_or_else(|| LuaError::RuntimeError(format!("{api}: footprint.w is required")))?,
+        "w",
+    )?;
+    let height = require_positive_u32(
+        opts.get::<_, Option<u32>>("h")?
+            .ok_or_else(|| LuaError::RuntimeError(format!("{api}: footprint.h is required")))?,
+        "h",
+    )?;
+    Ok(FootprintSpec::new(width, height))
+}
+
+fn dirty_rects_to_lua<'a>(lua: &'a Lua, rects: &[(u32, u32, u32, u32)]) -> LuaResult<LuaTable<'a>> {
+    let out = lua.create_table()?;
+    for (i, &(x, y, w, h)) in rects.iter().enumerate() {
+        let rect = lua.create_table()?;
+        rect.set("x", x + 1)?;
+        rect.set("y", y + 1)?;
+        rect.set("w", w)?;
+        rect.set("h", h)?;
+        out.set(i + 1, rect)?;
+    }
+    Ok(out)
+}
+
+fn rebuild_mode_from_opts(opts: Option<LuaTable>, api: &str) -> LuaResult<UpdateRebuildMode> {
+    let rebuild = opts
+        .as_ref()
+        .and_then(|tbl| tbl.get::<_, Option<String>>("rebuild").ok())
+        .flatten()
+        .unwrap_or_else(|| "dirty_chunks".to_string());
+    UpdateRebuildMode::from_lua_str(&rebuild).ok_or_else(|| {
+        LuaError::RuntimeError(format!(
+            "{api}: invalid rebuild mode '{rebuild}' (expected 'none', 'dirty_chunks', or 'full')"
+        ))
+    })
+}
 /// Lua-side wrapper for a navigation grid and optional abstract graph cache.
+struct CachedAbstractGraph {
+    generation: u64,
+    graph: AbstractGraph,
+}
+
 pub struct LuaNavGrid {
     /// Shared navigation grid data exposed by the lurek engine.
     inner: Rc<RefCell<NavGrid>>,
     /// Optional abstract graph built for hierarchical pathfinding.
-    abstract_graph: Rc<RefCell<Option<AbstractGraph>>>,
+    abstract_graph: Rc<RefCell<Option<CachedAbstractGraph>>>,
+}
+impl LuaNavGrid {
+    pub(crate) fn cloned_grid(&self) -> NavGrid {
+        self.inner.borrow().clone()
+    }
+
+    pub(crate) fn dimensions(&self) -> (u32, u32) {
+        self.inner.borrow().get_dimensions()
+    }
+
+    pub(crate) fn footprint(&self, name: &str) -> Option<FootprintSpec> {
+        self.inner.borrow().get_footprint(name)
+    }
 }
 /// Provides Lua methods for navigation grid dimensions, costs, blocking, serialization, dirty regions, and diagonal mode.
 impl LuaUserData for LuaNavGrid {
@@ -406,6 +550,12 @@ impl LuaUserData for LuaNavGrid {
         /// @return | integer | Grid height.
         methods.add_method("getDimensions", |_, this, ()| {
             Ok(this.inner.borrow().get_dimensions())
+        });
+        // -- getGeneration --
+        /// Returns the current navigation-grid generation used for cache invalidation.
+        /// @return | integer | Monotonic generation counter.
+        methods.add_method("getGeneration", |_, this, ()| {
+            Ok(this.inner.borrow().get_generation())
         });
         // -- setCost --
         /// Sets movement cost at a one-based grid cell.
@@ -464,6 +614,73 @@ impl LuaUserData for LuaNavGrid {
                 ))
             },
         );
+        // -- defineFootprint --
+        /// Stores or replaces a named rectangular footprint for clearance caching.
+        /// @param | name | string | Stable footprint name.
+        /// @param | footprint | table | Footprint table with positive `w` and `h` cell dimensions.
+        /// @field | w | integer | Width in cells.
+        /// @field | h | integer | Height in cells.
+        methods.add_method(
+            "defineFootprint",
+            |_, this, (name, footprint): (String, LuaTable)| {
+                let spec = parse_footprint_spec(footprint, "LNavGrid:defineFootprint")?;
+                this.inner
+                    .borrow_mut()
+                    .define_footprint(name, spec.width, spec.height);
+                Ok(())
+            },
+        );
+        // -- getFootprint --
+        /// Returns the stored width and height for a named footprint when it exists.
+        /// @param | name | string | Footprint name.
+        /// @return | table | Table with `w` and `h`, or nil when the name is unknown.
+        methods.add_method("getFootprint", |lua, this, name: String| {
+            match this.inner.borrow().get_footprint(&name) {
+                Some(spec) => {
+                    let out = lua.create_table()?;
+                    out.set("w", spec.width)?;
+                    out.set("h", spec.height)?;
+                    Ok(LuaValue::Table(out))
+                }
+                None => Ok(LuaValue::Nil),
+            }
+        });
+        // -- rebuildClearance --
+        /// Rebuilds clearance caches for all defined footprints or the supplied named subset.
+        /// @param | opts | table? | Optional table with `profiles = { "name" }`.
+        /// @return | integer | Number of unique footprint dimensions rebuilt.
+        methods.add_method("rebuildClearance", |_, this, opts: Option<LuaTable>| {
+            let profiles = match opts {
+                Some(tbl) => match tbl.get::<_, Option<LuaTable>>("profiles")? {
+                    Some(names_tbl) => {
+                        let mut names = Vec::new();
+                        for name in names_tbl.sequence_values::<String>() {
+                            names.push(name?);
+                        }
+                        Some(names)
+                    }
+                    None => None,
+                },
+                None => None,
+            };
+            Ok(this
+                .inner
+                .borrow_mut()
+                .rebuild_clearance(profiles.as_deref()))
+        });
+        // -- isWalkableFor --
+        /// Returns whether a one-based grid cell is walkable for a named footprint.
+        /// @param | name | string | Footprint name registered on this grid.
+        /// @param | x | integer | One-based column.
+        /// @param | y | integer | One-based row.
+        /// @return | boolean | True when the full footprint fits and is passable.
+        methods.add_method(
+            "isWalkableFor",
+            |_, this, (name, x, y): (String, u32, u32)| {
+                let (x, y) = one_based_coords_u32(x, y, "x", "y")?;
+                Ok(this.inner.borrow().is_walkable_for(&name, x, y))
+            },
+        );
         // -- fill --
         /// Fills the entire grid with a uniform movement cost.
         /// @param | cost | integer | Movement cost (0â€“255).
@@ -486,6 +703,52 @@ impl LuaUserData for LuaNavGrid {
                 Ok(())
             },
         );
+        // -- beginUpdate --
+        /// Starts a batched navigation edit that is finalized by `commitUpdate`.
+        methods.add_method("beginUpdate", |_, this, ()| {
+            this.inner.borrow_mut().begin_update();
+            Ok(())
+        });
+        // -- setBlockedRect --
+        /// Applies one blocked or passable rectangle in batch-edit style.
+        /// @param | x | integer | One-based top-left column.
+        /// @param | y | integer | One-based top-left row.
+        /// @param | w | integer | Rectangle width in cells.
+        /// @param | h | integer | Rectangle height in cells.
+        /// @param | blocked | boolean | True to block the rectangle.
+        /// @param | opts | table? | Optional metadata reserved for future use.
+        methods.add_method(
+            "setBlockedRect",
+            |_, this, (x, y, w, h, blocked, _opts): (u32, u32, u32, u32, bool, Option<LuaTable>)| {
+                let (x, y) = one_based_coords_u32(x, y, "x", "y")?;
+                this.inner.borrow_mut().set_blocked_rect(x, y, w, h, blocked);
+                Ok(())
+            },
+        );
+        // -- setCostRect --
+        /// Applies one cost rectangle in batch-edit style.
+        /// @param | x | integer | One-based top-left column.
+        /// @param | y | integer | One-based top-left row.
+        /// @param | w | integer | Rectangle width in cells.
+        /// @param | h | integer | Rectangle height in cells.
+        /// @param | cost | integer | Movement cost (0-255).
+        /// @param | opts | table? | Optional metadata reserved for future use.
+        methods.add_method(
+            "setCostRect",
+            |_, this, (x, y, w, h, cost, _opts): (u32, u32, u32, u32, u8, Option<LuaTable>)| {
+                let (x, y) = one_based_coords_u32(x, y, "x", "y")?;
+                this.inner.borrow_mut().set_cost_rect(x, y, w, h, cost);
+                Ok(())
+            },
+        );
+        // -- commitUpdate --
+        /// Finalizes a batched navigation edit and refreshes clearance caches according to `opts.rebuild`.
+        /// @param | opts | table? | Optional table with `rebuild = "none"|"dirty_chunks"|"full"`.
+        /// @return | integer | Number of dirty rectangles committed by this batch.
+        methods.add_method("commitUpdate", |_, this, opts: Option<LuaTable>| {
+            let rebuild = rebuild_mode_from_opts(opts, "LNavGrid:commitUpdate")?;
+            Ok(this.inner.borrow_mut().commit_update(rebuild))
+        });
         // -- loadFromString --
         /// Loads grid data from a serialized binary string.
         /// @param | data | string | Serialized grid bytes.
@@ -514,13 +777,22 @@ impl LuaUserData for LuaNavGrid {
         methods.add_method("getChunkSize", |_, this, ()| {
             Ok(this.inner.borrow().get_chunk_size())
         });
+        // -- getDirtyRects --
+        /// Returns the committed dirty rectangles recorded on this grid.
+        /// @return | table | Array of `{x, y, w, h}` tables using one-based positions.
+        methods.add_method("getDirtyRects", |lua, this, ()| {
+            dirty_rects_to_lua(lua, this.inner.borrow().dirty_rects())
+        });
         // -- rebuildAbstract --
         /// Rebuilds the cached abstract graph for this grid.
         methods.add_method("rebuildAbstract", |_, this, ()| {
             let grid = this.inner.borrow();
             let chunk_size = grid.get_chunk_size();
             let graph = build_abstract(&grid, chunk_size);
-            *this.abstract_graph.borrow_mut() = Some(graph);
+            *this.abstract_graph.borrow_mut() = Some(CachedAbstractGraph {
+                generation: grid.get_generation(),
+                graph,
+            });
             Ok(())
         });
         // -- findHpaPath --
@@ -543,16 +815,23 @@ impl LuaUserData for LuaNavGrid {
                     one_based_to_zero_based(gy, "gy")?,
                 );
                 let unit_size = unit_size.unwrap_or(1).max(1);
-                if this.abstract_graph.borrow().is_none() {
-                    let grid = this.inner.borrow();
-                    let graph = build_abstract(&grid, grid.get_chunk_size());
-                    drop(grid);
-                    *this.abstract_graph.borrow_mut() = Some(graph);
-                }
                 let grid = this.inner.borrow();
+                let generation = grid.get_generation();
+                let needs_rebuild = this
+                    .abstract_graph
+                    .borrow()
+                    .as_ref()
+                    .map(|cached| cached.generation != generation)
+                    .unwrap_or(true);
+                if needs_rebuild {
+                    let graph = build_abstract(&grid, grid.get_chunk_size());
+                    *this.abstract_graph.borrow_mut() =
+                        Some(CachedAbstractGraph { generation, graph });
+                }
                 let graph_ref = this.abstract_graph.borrow();
                 let graph = graph_ref
                     .as_ref()
+                    .map(|cached| &cached.graph)
                     .ok_or_else(|| LuaError::runtime("abstract graph is unavailable"))?;
                 match hpa_star(&grid, graph, start, goal, unit_size) {
                     Some(path) => {
@@ -567,6 +846,50 @@ impl LuaUserData for LuaNavGrid {
                     }
                     None => Ok(LuaValue::Nil),
                 }
+            },
+        );
+        // -- findHpaPathsToGoal --
+        /// Finds hierarchical paths from many one-based start cells to one goal while sharing one abstract-goal search setup.
+        /// @param | starts | table | Array of `{x, y}` start tables.
+        /// @param | gx | integer | One-based goal column.
+        /// @param | gy | integer | One-based goal row.
+        /// @param | unit_size | integer? | Optional unit footprint in cells, default 1.
+        /// @return | table | Array of `{x, y}` waypoint-table arrays, or nil entries when no path exists.
+        methods.add_method(
+            "findHpaPathsToGoal",
+            |lua, this, (starts, gx, gy, unit_size): (LuaTable, u32, u32, Option<u32>)| {
+                let goal = (
+                    one_based_to_zero_based(gx, "gx")?,
+                    one_based_to_zero_based(gy, "gy")?,
+                );
+                let unit_size = unit_size.unwrap_or(1).max(1);
+                let mut start_points = Vec::new();
+                for pair in starts.sequence_values::<LuaTable>() {
+                    let entry = pair?;
+                    let x: u32 = entry.get("x")?;
+                    let y: u32 = entry.get("y")?;
+                    start_points.push(one_based_coords_u32(x, y, "x", "y")?);
+                }
+                let grid = this.inner.borrow();
+                let generation = grid.get_generation();
+                let needs_rebuild = this
+                    .abstract_graph
+                    .borrow()
+                    .as_ref()
+                    .map(|cached| cached.generation != generation)
+                    .unwrap_or(true);
+                if needs_rebuild {
+                    let graph = build_abstract(&grid, grid.get_chunk_size());
+                    *this.abstract_graph.borrow_mut() =
+                        Some(CachedAbstractGraph { generation, graph });
+                }
+                let graph_ref = this.abstract_graph.borrow();
+                let graph = graph_ref
+                    .as_ref()
+                    .map(|cached| &cached.graph)
+                    .ok_or_else(|| LuaError::runtime("abstract graph is unavailable"))?;
+                let paths = hpa_paths_to_goal(&grid, graph, &start_points, goal, unit_size);
+                Ok(LuaValue::Table(tuple_path_options_to_lua(lua, &paths)?))
             },
         );
         // -- setDirty --
@@ -758,6 +1081,151 @@ impl LuaUserData for LuaUnitPathfinder {
             let waypoints = lua_to_waypoints(&path)?;
             Ok(this.inner.borrow().get_path_cost(&waypoints))
         });
+        // -- findPathsToGoal --
+        /// Finds routes from many one-based start cells to one goal cell using one shared-goal field.
+        /// @param | starts | table | Array of `{x, y}` start tables.
+        /// @param | gx | integer | One-based goal column.
+        /// @param | gy | integer | One-based goal row.
+        /// @param | unit_size | integer? | Unit footprint in cells (default 1).
+        /// @param | max_steps | integer? | Maximum downhill steps to follow for each start; 0 or nil uses a grid-sized default.
+        /// @return | table | Array of path arrays; unreachable entries are nil.
+        methods.add_method(
+            "findPathsToGoal",
+            |lua,
+             this,
+             (starts, gx, gy, unit_size, max_steps): (
+                LuaTable,
+                u32,
+                u32,
+                Option<u32>,
+                Option<u32>,
+            )| {
+                let goal = one_based_coords_u32(gx, gy, "gx", "gy")?;
+                let start_points =
+                    lua_points_to_zero_based(starts, "LUnitPathfinder:findPathsToGoal")?;
+                let paths = this.inner.borrow_mut().find_paths_to_goal(
+                    &start_points,
+                    goal,
+                    unit_size.unwrap_or(1),
+                    max_steps.unwrap_or(0),
+                );
+                Ok(LuaValue::Table(waypoint_options_to_lua(lua, &paths)?))
+            },
+        );
+        // -- findPathsToGoalFor --
+        /// Finds routes from many one-based start cells to one goal cell using one named-footprint shared-goal field.
+        /// @param | name | string | Stable footprint name defined on the backing navigation grid.
+        /// @param | starts | table | Array of `{x, y}` start tables.
+        /// @param | gx | integer | One-based goal column.
+        /// @param | gy | integer | One-based goal row.
+        /// @param | max_steps | integer? | Maximum downhill steps to follow for each start; 0 or nil uses a grid-sized default.
+        /// @return | table | Array of path arrays; unreachable entries are nil.
+        methods.add_method(
+            "findPathsToGoalFor",
+            |lua, this, (name, starts, gx, gy, max_steps): (String, LuaTable, u32, u32, Option<u32>)| {
+                let goal = one_based_coords_u32(gx, gy, "gx", "gy")?;
+                let start_points = lua_points_to_zero_based(
+                    starts,
+                    "LUnitPathfinder:findPathsToGoalFor",
+                )?;
+                let paths = this
+                    .inner
+                    .borrow_mut()
+                    .find_paths_to_goal_for(&start_points, goal, &name, max_steps.unwrap_or(0))
+                    .map_err(|err| {
+                        LuaError::RuntimeError(format!("LUnitPathfinder:findPathsToGoalFor: {err}"))
+                    })?;
+                Ok(LuaValue::Table(waypoint_options_to_lua(lua, &paths)?))
+            },
+        );
+        // -- getSharedFlowField --
+        /// Returns a cached shared-goal flow field handle for one target cell and unit footprint size.
+        /// @param | gx | integer | One-based goal column.
+        /// @param | gy | integer | One-based goal row.
+        /// @param | unit_size | integer? | Unit footprint in cells (default 1).
+        /// @return | LFlowField | Flow field handle backed by the pathfinder's shared-goal cache.
+        methods.add_method(
+            "getSharedFlowField",
+            |lua, this, (gx, gy, unit_size): (u32, u32, Option<u32>)| {
+                let goal = one_based_coords_u32(gx, gy, "gx", "gy")?;
+                let flow = this
+                    .inner
+                    .borrow_mut()
+                    .get_shared_flow_field(goal, unit_size.unwrap_or(1));
+                lua.create_userdata(LuaFlowField {
+                    inner: Rc::new(RefCell::new(flow)),
+                })
+            },
+        );
+        // -- getSharedFlowFieldFor --
+        /// Returns a cached shared-goal flow field handle for one target cell and one named footprint.
+        /// @param | name | string | Stable footprint name defined on the backing navigation grid.
+        /// @param | gx | integer | One-based goal column.
+        /// @param | gy | integer | One-based goal row.
+        /// @return | LFlowField | Flow field handle backed by the pathfinder's shared-goal cache.
+        methods.add_method(
+            "getSharedFlowFieldFor",
+            |lua, this, (name, gx, gy): (String, u32, u32)| {
+                let goal = one_based_coords_u32(gx, gy, "gx", "gy")?;
+                let flow = this
+                    .inner
+                    .borrow_mut()
+                    .get_shared_flow_field_for(goal, &name)
+                    .map_err(|err| {
+                        LuaError::RuntimeError(format!(
+                            "LUnitPathfinder:getSharedFlowFieldFor: {err}"
+                        ))
+                    })?;
+                lua.create_userdata(LuaFlowField {
+                    inner: Rc::new(RefCell::new(flow)),
+                })
+            },
+        );
+        // -- getSharedFlowFieldMulti --
+        /// Returns a cached shared-goal flow field handle for many target cells and one unit footprint size.
+        /// @param | targets | table | Array of `{x, y}` goal tables.
+        /// @param | unit_size | integer? | Unit footprint in cells (default 1).
+        /// @return | LFlowField | Flow field handle backed by the pathfinder's shared-goal cache.
+        methods.add_method(
+            "getSharedFlowFieldMulti",
+            |lua, this, (targets, unit_size): (LuaTable, Option<u32>)| {
+                let targets =
+                    lua_points_to_zero_based(targets, "LUnitPathfinder:getSharedFlowFieldMulti")?;
+                let flow = this
+                    .inner
+                    .borrow_mut()
+                    .get_shared_flow_field_multi(&targets, unit_size.unwrap_or(1));
+                lua.create_userdata(LuaFlowField {
+                    inner: Rc::new(RefCell::new(flow)),
+                })
+            },
+        );
+        // -- getSharedFlowFieldMultiFor --
+        /// Returns a cached shared-goal flow field handle for many target cells and one named footprint.
+        /// @param | name | string | Stable footprint name defined on the backing navigation grid.
+        /// @param | targets | table | Array of `{x, y}` goal tables.
+        /// @return | LFlowField | Flow field handle backed by the pathfinder's shared-goal cache.
+        methods.add_method(
+            "getSharedFlowFieldMultiFor",
+            |lua, this, (name, targets): (String, LuaTable)| {
+                let targets = lua_points_to_zero_based(
+                    targets,
+                    "LUnitPathfinder:getSharedFlowFieldMultiFor",
+                )?;
+                let flow = this
+                    .inner
+                    .borrow_mut()
+                    .get_shared_flow_field_multi_for(&targets, &name)
+                    .map_err(|err| {
+                        LuaError::RuntimeError(format!(
+                            "LUnitPathfinder:getSharedFlowFieldMultiFor: {err}"
+                        ))
+                    })?;
+                lua.create_userdata(LuaFlowField {
+                    inner: Rc::new(RefCell::new(flow)),
+                })
+            },
+        );
         // -- findPartialPath --
         /// Finds the best reachable path from a start to a goal within a maximum node budget. Useful for incremental pathfinding across frames.
         /// @param | x1 | integer | One-based column of the start cell.
@@ -854,14 +1322,14 @@ impl LuaUserData for LuaUnitPathfinder {
             },
         );
         // -- setCacheEnabled --
-        /// Enables or disables the path cache on this object.
+        /// Enables or disables the pathfinder's internal route and shared-goal caches on this object.
         /// @param | enabled | boolean | True to enable caching.
         methods.add_method("setCacheEnabled", |_, this, enabled: bool| {
             this.inner.borrow_mut().set_cache_enabled(enabled);
             Ok(())
         });
         // -- isCacheEnabled --
-        /// Returns whether path cache is enabled.
+        /// Returns whether the pathfinder's internal caches are enabled.
         /// @return | boolean | True when enabled.
         methods.add_method("isCacheEnabled", |_, this, ()| {
             Ok(this.inner.borrow().is_cache_enabled())
@@ -877,6 +1345,32 @@ impl LuaUserData for LuaUnitPathfinder {
         /// @return | integer | Cache size.
         methods.add_method("getCacheSize", |_, this, ()| {
             Ok(this.inner.borrow().get_cache_size())
+        });
+        // -- clearSharedGoalCache --
+        /// Clears all cached shared-goal fields on this object.
+        methods.add_method("clearSharedGoalCache", |_, this, ()| {
+            this.inner.borrow_mut().clear_shared_goal_cache();
+            Ok(())
+        });
+        // -- getSharedGoalCacheSize --
+        /// Returns the current shared-goal field cache entry count.
+        /// @return | integer | Shared-goal cache size.
+        methods.add_method("getSharedGoalCacheSize", |_, this, ()| {
+            Ok(this.inner.borrow().get_shared_goal_cache_size())
+        });
+        // -- getSharedGoalCacheStats --
+        /// Returns shared-goal flow-field cache counters for debugging and performance inspection.
+        /// @return | table | Cache statistics table.
+        /// @field | size | integer | Current number of cached shared-goal fields.
+        /// @field | hits | integer | Cache hits since the last cache reset.
+        /// @field | misses | integer | Cache misses since the last cache reset.
+        methods.add_method("getSharedGoalCacheStats", |lua, this, ()| {
+            let pathfinder = this.inner.borrow();
+            let out = lua.create_table()?;
+            out.set("size", pathfinder.get_shared_goal_cache_size())?;
+            out.set("hits", pathfinder.get_shared_goal_cache_hits())?;
+            out.set("misses", pathfinder.get_shared_goal_cache_misses())?;
+            Ok(out)
         });
         // -- setCacheMaxSize --
         /// Sets maximum path cache size for this object.
@@ -941,6 +1435,47 @@ impl LuaUserData for LuaFlowField {
                 Ok(())
             },
         );
+        // -- calculateFor --
+        /// Calculates a flow field toward one target cell using a named navigation footprint.
+        /// @param | name | string | Stable footprint name defined on the backing navigation grid.
+        /// @param | tx | integer | One-based target column.
+        /// @param | ty | integer | One-based target row.
+        methods.add_method(
+            "calculateFor",
+            |_, this, (name, tx, ty): (String, u32, u32)| {
+                let (tx, ty) = one_based_coords_u32(tx, ty, "tx", "ty")?;
+                this.inner
+                    .borrow_mut()
+                    .calculate_for(&name, tx, ty)
+                    .map_err(|err| {
+                        LuaError::RuntimeError(format!("LFlowField:calculateFor: {err}"))
+                    })?;
+                Ok(())
+            },
+        );
+        // -- calculateMultiFor --
+        /// Calculates a flow field toward multiple target cells using a named navigation footprint.
+        /// @param | name | string | Stable footprint name defined on the backing navigation grid.
+        /// @param | targets | table | Array of `{x, y}` target tables.
+        methods.add_method(
+            "calculateMultiFor",
+            |_, this, (name, targets): (String, LuaTable)| {
+                let mut pts = Vec::new();
+                for pair in targets.sequence_values::<LuaTable>() {
+                    let entry = pair?;
+                    let x: u32 = entry.get("x")?;
+                    let y: u32 = entry.get("y")?;
+                    pts.push(one_based_coords_u32(x, y, "x", "y")?);
+                }
+                this.inner
+                    .borrow_mut()
+                    .calculate_multi_for(&name, &pts)
+                    .map_err(|err| {
+                        LuaError::RuntimeError(format!("LFlowField:calculateMultiFor: {err}"))
+                    })?;
+                Ok(())
+            },
+        );
         // -- getDirection --
         /// Returns flow direction vector at a one-based grid cell.
         /// @param | x | integer | One-based column.
@@ -975,6 +1510,22 @@ impl LuaUserData for LuaFlowField {
         methods.add_method("isCalculated", |_, this, ()| {
             Ok(this.inner.borrow().is_calculated())
         });
+        // -- getGeneration --
+        /// Returns the navigation-grid generation that produced the current flow field, or nil before the first build.
+        /// @return | integer | Monotonic navigation-grid generation, or nil.
+        methods.add_method("getGeneration", |_, this, ()| {
+            Ok(this
+                .inner
+                .borrow()
+                .get_generation()
+                .map(|generation| generation as i64))
+        });
+        // -- getBuildCount --
+        /// Returns how many full flow-field builds have actually run on this object.
+        /// @return | integer | Number of full rebuilds.
+        methods.add_method("getBuildCount", |_, this, ()| {
+            Ok(this.inner.borrow().get_build_count())
+        });
         // -- getTargets --
         /// Returns target cells for this flow field.
         /// @return | table | Array table of target point tables.
@@ -993,6 +1544,48 @@ impl LuaUserData for LuaFlowField {
             }
             Ok(tbl)
         });
+        // -- pathFrom --
+        /// Reconstructs a downhill route from one start cell to the nearest active target in the current flow field.
+        /// @param | x | integer | One-based start column.
+        /// @param | y | integer | One-based start row.
+        /// @param | max_steps | integer? | Maximum downhill steps to follow before aborting; 0 or nil uses a grid-sized default.
+        /// @return | table | Array of `{x, y}` path tables, or nil when the cell is unreachable or the field is unbuilt.
+        /// @field | x | number | X.
+        /// @field | y | number | Y.
+        methods.add_method(
+            "pathFrom",
+            |lua, this, (x, y, max_steps): (u32, u32, Option<u32>)| {
+                let (x, y) = one_based_coords_u32(x, y, "x", "y")?;
+                match this.inner.borrow().path_from(x, y, max_steps.unwrap_or(0)) {
+                    Some(path) => Ok(LuaValue::Table(tuple_path_to_lua(lua, &path)?)),
+                    None => Ok(LuaValue::Nil),
+                }
+            },
+        );
+        // -- pathsFrom --
+        /// Reconstructs downhill routes from many start cells to the nearest active target using one shared flow field.
+        /// @param | starts | table | Array of `{x, y}` start tables.
+        /// @param | max_steps | integer? | Maximum downhill steps to follow for each start; 0 or nil uses a grid-sized default.
+        /// @return | table | Array of path arrays; unreachable entries are nil.
+        methods.add_method(
+            "pathsFrom",
+            |lua, this, (starts, max_steps): (LuaTable, Option<u32>)| {
+                let paths = lua.create_table()?;
+                let step_limit = max_steps.unwrap_or(0);
+                let flow = this.inner.borrow();
+                for (index, pair) in starts.sequence_values::<LuaTable>().enumerate() {
+                    let entry = pair?;
+                    let x: u32 = entry.get("x")?;
+                    let y: u32 = entry.get("y")?;
+                    let start = one_based_coords_u32(x, y, "x", "y")?;
+                    match flow.path_from(start.0, start.1, step_limit) {
+                        Some(path) => paths.set(index + 1, tuple_path_to_lua(lua, &path)?)?,
+                        None => paths.set(index + 1, LuaValue::Nil)?,
+                    }
+                }
+                Ok(paths)
+            },
+        );
         // -- steer --
         /// Returns a steering velocity for a world position using the flow field.
         /// @param | wx | number | World X position.
@@ -2366,50 +2959,135 @@ impl LuaUserData for LuaORCASolver {
                     .add_agent(ORCAAgent::new(x, y, radius, max_speed)) as i64)
             },
         );
+        // -- setAgent --
+        /// Inserts or updates an ORCA avoidance agent under a stable caller-provided key.
+        /// @param | key | integer | Stable agent key, such as a unit ID.
+        /// @param | opts | table | Agent state with `x`, `y`, `radius`, and `max_speed`, plus optional velocity fields.
+        methods.add_method_mut("setAgent", |_, this, (key, opts): (usize, LuaTable)| {
+            let api = "lurek.pathfind.LORCASolver:setAgent";
+            let x = orca_required_f32(&opts, "x", api)?;
+            let y = orca_required_f32(&opts, "y", api)?;
+            let radius = orca_required_f32(&opts, "radius", api)?;
+            let max_speed = orca_required_f32(&opts, "max_speed", api)?;
+            let vx = opts.get::<_, Option<f32>>("vx")?.unwrap_or(0.0);
+            let vy = opts.get::<_, Option<f32>>("vy")?.unwrap_or(0.0);
+            let preferred_vx = opts.get::<_, Option<f32>>("preferred_vx")?.unwrap_or(vx);
+            let preferred_vy = opts.get::<_, Option<f32>>("preferred_vy")?.unwrap_or(vy);
+            let mut agent = ORCAAgent::new(x, y, radius, max_speed);
+            agent.velocity = (vx, vy);
+            agent.preferred_velocity = (preferred_vx, preferred_vy);
+            agent.safe_velocity = (vx, vy);
+            this.inner.borrow_mut().set_agent(key, agent);
+            Ok(())
+        });
         // -- setPreferredVelocity --
-        /// Sets the preferred velocity for an ORCA agent by zero-based index.
-        /// @param | idx | integer | Zero-based ORCA agent index.
+        /// Sets the preferred velocity for an ORCA agent addressed by zero-based index or stable key.
+        /// @param | idx | integer | Zero-based ORCA agent index or stable caller-provided key.
         /// @param | pvx | number | Preferred X velocity.
         /// @param | pvy | number | Preferred Y velocity.
         methods.add_method_mut(
             "setPreferredVelocity",
             |_, this, (idx, pvx, pvy): (usize, f32, f32)| {
-                if let Some(a) = this.inner.borrow_mut().agents.get_mut(idx) {
+                if let Some(a) = this.inner.borrow_mut().agent_for_key_mut(idx) {
                     a.preferred_velocity = (pvx, pvy);
                 }
                 Ok(())
             },
         );
+        // -- setVelocity --
+        /// Sets the current velocity for an ORCA agent addressed by zero-based index or stable key.
+        /// @param | idx | integer | Zero-based ORCA agent index or stable caller-provided key.
+        /// @param | vx | number | Current X velocity.
+        /// @param | vy | number | Current Y velocity.
+        methods.add_method_mut("setVelocity", |_, this, (idx, vx, vy): (usize, f32, f32)| {
+            if let Some(a) = this.inner.borrow_mut().agent_for_key_mut(idx) {
+                a.velocity = (vx, vy);
+            }
+            Ok(())
+        });
         // -- setPosition --
-        /// Sets the position for an ORCA agent by zero-based index.
-        /// @param | idx | integer | Zero-based ORCA agent index.
+        /// Sets the position for an ORCA agent addressed by zero-based index or stable key.
+        /// @param | idx | integer | Zero-based ORCA agent index or stable caller-provided key.
         /// @param | x | number | New X position.
         /// @param | y | number | New Y position.
         methods.add_method_mut("setPosition", |_, this, (idx, x, y): (usize, f32, f32)| {
-            if let Some(a) = this.inner.borrow_mut().agents.get_mut(idx) {
+            if let Some(a) = this.inner.borrow_mut().agent_for_key_mut(idx) {
                 a.position = (x, y);
             }
             Ok(())
         });
+        // -- removeAgent --
+        /// Removes an ORCA agent addressed by zero-based index or stable key.
+        /// @param | idx | integer | Zero-based ORCA agent index or stable caller-provided key.
+        /// @return | boolean | True when an agent was removed.
+        methods.add_method_mut("removeAgent", |_, this, idx: usize| {
+            let mut solver = this.inner.borrow_mut();
+            let removed = solver
+                .resolve_index(idx)
+                .and_then(|index| solver.remove_agent(index))
+                .is_some();
+            Ok(removed)
+        });
+        // -- setMaxNeighbors --
+        /// Sets the maximum retained neighbor count used during one ORCA solve step.
+        /// @param | count | integer | Neighbor cap; values below `1` clamp to `1`.
+        methods.add_method_mut("setMaxNeighbors", |_, this, count: usize| {
+            this.inner.borrow_mut().set_max_neighbors(count);
+            Ok(())
+        });
+        // -- setNeighborRadius --
+        /// Sets an explicit neighbor-query radius in world units; zero restores dynamic per-agent radius.
+        /// @param | radius | number | Neighbor-query radius in world units.
+        methods.add_method_mut("setNeighborRadius", |_, this, radius: f32| {
+            this.inner.borrow_mut().set_neighbor_radius(radius);
+            Ok(())
+        });
+        // -- setCellSize --
+        /// Sets the spatial-hash cell size used when grouping ORCA agents.
+        /// @param | size | number | Spatial-hash cell size in world units.
+        methods.add_method_mut("setCellSize", |_, this, size: f32| {
+            this.inner.borrow_mut().set_spatial_cell_size(size);
+            Ok(())
+        });
         // -- compute --
-        /// Computes safe velocities for all ORCA agents.
-        /// @param | dt | number | Elapsed time in seconds for the avoidance step.
-        methods.add_method_mut("compute", |_, this, dt: f32| {
-            this.inner.borrow_mut().compute(dt);
+        /// Computes safe velocities for all ORCA agents, optionally under a time budget.
+        /// @param | dt_or_opts | number|table | Either elapsed time in seconds, or a table with `dt`, `maxMs`, or `max_ms`.
+        methods.add_method_mut("compute", |_, this, dt_or_opts: LuaValue| {
+            let (dt, max_ms) = match dt_or_opts {
+                LuaValue::Integer(value) => (value as f32, None),
+                LuaValue::Number(value) => (value as f32, None),
+                LuaValue::Table(opts) => (
+                    opts.get::<_, Option<f32>>("dt")?.unwrap_or(0.0),
+                    opts.get::<_, Option<f32>>("maxMs")?
+                        .or(opts.get::<_, Option<f32>>("max_ms")?),
+                ),
+                _ => {
+                    return Err(LuaError::RuntimeError(
+                        "lurek.pathfind.LORCASolver:compute expects a number or table".into(),
+                    ))
+                }
+            };
+            this.inner.borrow_mut().compute_with_budget(dt, max_ms);
             Ok(())
         });
         // -- getSafeVelocity --
-        /// Returns the computed safe velocity for an ORCA agent.
-        /// @param | idx | integer | Zero-based ORCA agent index.
+        /// Returns the computed safe velocity for an ORCA agent addressed by zero-based index or stable key.
+        /// @param | idx | integer | Zero-based ORCA agent index or stable caller-provided key.
         /// @return | number, number | Safe X and Y velocity, or zero velocity for an invalid index.
         methods.add_method("getSafeVelocity", |_, this, idx: usize| {
             let solver = this.inner.borrow();
             let v = solver
-                .agents
-                .get(idx)
+                .agent_for_key(idx)
                 .map(|a| a.safe_velocity)
                 .unwrap_or((0.0, 0.0));
             Ok((v.0, v.1))
+        });
+        // -- getStats --
+        /// Returns statistics from the most recent ORCA compute step.
+        /// @return | table | Table containing processed-agent, neighbor, budget, and spatial-hash counters.
+        methods.add_method("getStats", |lua, this, ()| {
+            let solver = this.inner.borrow();
+            orca_stats_to_lua(lua, solver.last_stats())
         });
         // -- agentCount --
         /// Returns the number of ORCA agents in this solver.
@@ -2435,6 +3113,26 @@ fn path_provider_u32(provider: &LuaTable, name: &str, api: &str) -> LuaResult<u3
     provider
         .get::<_, Option<u32>>(name)?
         .ok_or_else(|| LuaError::RuntimeError(format!("{api}: provider.{name} is required")))
+}
+
+fn orca_required_f32(table: &LuaTable, name: &str, api: &str) -> LuaResult<f32> {
+    table
+        .get::<_, Option<f32>>(name)?
+        .ok_or_else(|| LuaError::RuntimeError(format!("{api}: {name} is required")))
+}
+
+fn orca_stats_to_lua<'a>(lua: &'a Lua, stats: &ORCAComputeStats) -> LuaResult<LuaTable<'a>> {
+    let tbl = lua.create_table()?;
+    tbl.set("activeAgents", stats.active_agents as i64)?;
+    tbl.set("processedAgents", stats.processed_agents as i64)?;
+    tbl.set("neighborChecks", stats.neighbor_checks as i64)?;
+    tbl.set("neighborsUsed", stats.neighbors_used as i64)?;
+    tbl.set("maxNeighborsUsed", stats.max_neighbors_used as i64)?;
+    tbl.set("truncatedAgents", stats.truncated_agents as i64)?;
+    tbl.set("spatialCells", stats.spatial_cells as i64)?;
+    tbl.set("budgetExhausted", stats.budget_exhausted)?;
+    tbl.set("elapsedMs", stats.elapsed_ms)?;
+    Ok(tbl)
 }
 
 fn nav_grid_from_provider(provider: LuaTable, api: &str) -> LuaResult<NavGrid> {
@@ -2830,7 +3528,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             let unit_size = opts.get::<_, Option<u32>>("unit_size")?.unwrap_or(1).max(1);
             let request_id = opts
                 .get::<_, Option<u64>>("request_id")?
-                .unwrap_or_else(|| NEXT_ASYNC_PATH_REQUEST_ID.fetch_add(1, Ordering::Relaxed));
+                .unwrap_or_else(next_async_path_request_id);
             let owner_id = opts
                 .get::<_, Option<u64>>("owner_id")?
                 .unwrap_or(request_id);
@@ -2847,16 +3545,150 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                 goal: one_based_coords_u32(gx, gy, "goal_x", "goal_y")?,
                 unit_size,
                 stream_budget,
+                batch_starts: None,
+                batch_targets: None,
+                batch_pairs: None,
+                batch_footprint: None,
+                batch_max_steps: 0,
             };
-            with_async_pool(|pool| {
-                let _ = pool.submit_query(request);
-            });
+            submit_async_query(request);
+            Ok(request_id)
+        })?,
+    )?;
+    // -- submitAsyncPathsToGoal --
+    /// Queues one async shared-goal batch query against a navigation grid snapshot.
+    /// @param | grid_ud | LNavGrid | Navigation grid to clone for the worker.
+    /// @param | opts | table | Options with `starts`, one goal (`goal_x`,`goal_y`) or `targets`, and optional owner, version, priority, footprint, unit size, and max steps.
+    /// @return | integer | Request id for polling and cancellation.
+    tbl.set(
+        "submitAsyncPathsToGoal",
+        lua.create_function(|_, (grid_ud, opts): (LuaAnyUserData, LuaTable)| {
+            let grid = grid_ud.borrow::<LuaNavGrid>()?;
+            let starts = opts.get::<_, LuaTable>("starts")?;
+            let start_points =
+                lua_points_to_zero_based(starts, "lurek.pathfind.submitAsyncPathsToGoal")?;
+            if start_points.is_empty() {
+                return Err(LuaError::RuntimeError(
+                    "lurek.pathfind.submitAsyncPathsToGoal: starts must contain at least one point"
+                        .to_string(),
+                ));
+            }
+            let target_points = match opts.get::<_, Option<LuaTable>>("targets")? {
+                Some(targets) => {
+                    lua_points_to_zero_based(targets, "lurek.pathfind.submitAsyncPathsToGoal")?
+                }
+                None => {
+                    let gx: u32 = opts.get("goal_x")?;
+                    let gy: u32 = opts.get("goal_y")?;
+                    vec![one_based_coords_u32(gx, gy, "goal_x", "goal_y")?]
+                }
+            };
+            if target_points.is_empty() {
+                return Err(LuaError::RuntimeError(
+                    "lurek.pathfind.submitAsyncPathsToGoal: targets must contain at least one point"
+                        .to_string(),
+                ));
+            }
+            let footprint = if let Some(name) = opts.get::<_, Option<String>>("footprint")? {
+                grid.inner.borrow().get_footprint(&name).ok_or_else(|| {
+                    LuaError::RuntimeError(format!(
+                        "lurek.pathfind.submitAsyncPathsToGoal: unknown footprint '{name}'"
+                    ))
+                })?
+            } else {
+                let unit_size = opts.get::<_, Option<u32>>("unit_size")?.unwrap_or(1).max(1);
+                FootprintSpec::new(unit_size, unit_size)
+            };
+            let request_id = opts
+                .get::<_, Option<u64>>("request_id")?
+                .unwrap_or_else(next_async_path_request_id);
+            let owner_id = opts
+                .get::<_, Option<u64>>("owner_id")?
+                .unwrap_or(request_id);
+            let version = opts.get::<_, Option<u64>>("version")?.unwrap_or(0);
+            let priority = opts.get::<_, Option<i32>>("priority")?.unwrap_or(0);
+            let max_steps = opts.get::<_, Option<u32>>("max_steps")?.unwrap_or(0);
+            let request = AsyncPathRequest {
+                id: request_id,
+                owner_id,
+                version,
+                priority,
+                grid: grid.inner.borrow().clone(),
+                start: (0, 0),
+                goal: (0, 0),
+                unit_size: footprint.width.max(footprint.height),
+                stream_budget: 0,
+                batch_starts: Some(start_points),
+                batch_targets: Some(target_points),
+                batch_pairs: None,
+                batch_footprint: Some(footprint),
+                batch_max_steps: max_steps,
+            };
+            submit_async_query(request);
+            Ok(request_id)
+        })?,
+    )?;
+    // -- submitAsyncPathPairs --
+    /// Queues one async paired batch query against a navigation grid snapshot.
+    /// @param | grid_ud | LNavGrid | Navigation grid to clone for the worker.
+    /// @param | opts | table | Options with `pairs = { { start = {x,y}, goal = {x,y} } }` and optional owner, version, priority, footprint, unit size, and max steps.
+    /// @return | integer | Request id for polling and cancellation.
+    tbl.set(
+        "submitAsyncPathPairs",
+        lua.create_function(|_, (grid_ud, opts): (LuaAnyUserData, LuaTable)| {
+            let grid = grid_ud.borrow::<LuaNavGrid>()?;
+            let pairs = lua_path_pairs_to_zero_based(
+                opts.get::<_, LuaTable>("pairs")?,
+                "lurek.pathfind.submitAsyncPathPairs",
+            )?;
+            if pairs.is_empty() {
+                return Err(LuaError::RuntimeError(
+                    "lurek.pathfind.submitAsyncPathPairs: pairs must contain at least one entry"
+                        .to_string(),
+                ));
+            }
+            let footprint = if let Some(name) = opts.get::<_, Option<String>>("footprint")? {
+                grid.footprint(&name).ok_or_else(|| {
+                    LuaError::RuntimeError(format!(
+                        "lurek.pathfind.submitAsyncPathPairs: unknown footprint '{name}'"
+                    ))
+                })?
+            } else {
+                let unit_size = opts.get::<_, Option<u32>>("unit_size")?.unwrap_or(1).max(1);
+                FootprintSpec::new(unit_size, unit_size)
+            };
+            let request_id = opts
+                .get::<_, Option<u64>>("request_id")?
+                .unwrap_or_else(next_async_path_request_id);
+            let owner_id = opts
+                .get::<_, Option<u64>>("owner_id")?
+                .unwrap_or(request_id);
+            let version = opts.get::<_, Option<u64>>("version")?.unwrap_or(0);
+            let priority = opts.get::<_, Option<i32>>("priority")?.unwrap_or(0);
+            let max_steps = opts.get::<_, Option<u32>>("max_steps")?.unwrap_or(0);
+            let request = AsyncPathRequest {
+                id: request_id,
+                owner_id,
+                version,
+                priority,
+                grid: grid.cloned_grid(),
+                start: (0, 0),
+                goal: (0, 0),
+                unit_size: footprint.width.max(footprint.height),
+                stream_budget: 0,
+                batch_starts: None,
+                batch_targets: None,
+                batch_pairs: Some(pairs),
+                batch_footprint: Some(footprint),
+                batch_max_steps: max_steps,
+            };
+            submit_async_query(request);
             Ok(request_id)
         })?,
     )?;
     // -- pollAsyncPaths --
     /// Returns all currently available async path events without blocking.
-    /// @return | table | Array of event tables with ids, status, optional path, and completion flags.
+    /// @return | table | Array of event tables with ids, status, optional `path` or grouped `paths`, and completion flags.
     tbl.set(
         "pollAsyncPaths",
         lua.create_function(|lua, ()| {

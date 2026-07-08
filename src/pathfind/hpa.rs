@@ -13,6 +13,35 @@ use crate::log_msg;
 use crate::pathfind::{astar, nav_grid::NavGrid};
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap, HashSet, VecDeque};
+
+#[derive(Debug, Clone, Copy)]
+struct GoalFrontierNode {
+    cost: f32,
+    idx: usize,
+}
+
+impl PartialEq for GoalFrontierNode {
+    fn eq(&self, other: &Self) -> bool {
+        self.cost == other.cost
+    }
+}
+
+impl Eq for GoalFrontierNode {}
+
+impl Ord for GoalFrontierNode {
+    fn cmp(&self, other: &Self) -> Ordering {
+        other
+            .cost
+            .partial_cmp(&self.cost)
+            .unwrap_or(Ordering::Equal)
+    }
+}
+
+impl PartialOrd for GoalFrontierNode {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
 /// Directed edge in the abstract graph between two entrance nodes.
 #[derive(Debug, Clone)]
 pub struct AbstractEdge {
@@ -310,6 +339,85 @@ fn path_cost_f32(path: &[(u32, u32)]) -> f32 {
     }
     cost
 }
+
+fn connect_cell_to_chunk_entrances(
+    grid: &NavGrid,
+    abstract_graph: &AbstractGraph,
+    cell: (u32, u32),
+    unit_size: u32,
+) -> Vec<(usize, f32)> {
+    let cs = abstract_graph.chunk_size;
+    let chunk_key = (cell.0 / cs, cell.1 / cs);
+    let Some(chunk) = abstract_graph.chunks.get(&chunk_key) else {
+        return Vec::new();
+    };
+    let mut out = Vec::new();
+    for &ent_idx in &chunk.entrance_indices {
+        let target = (
+            abstract_graph.nodes[ent_idx].x,
+            abstract_graph.nodes[ent_idx].y,
+        );
+        let (path, complete) = astar::astar(grid, cell, target, unit_size, 0);
+        if complete {
+            if let Some(path) = path {
+                out.push((ent_idx, path_cost_f32(&path)));
+            }
+        }
+    }
+    out
+}
+
+fn build_goal_tree(
+    grid: &NavGrid,
+    abstract_graph: &AbstractGraph,
+    goal: (u32, u32),
+    unit_size: u32,
+) -> (Vec<f32>, Vec<Option<usize>>) {
+    let node_count = abstract_graph.nodes.len();
+    let mut dist_to_goal = vec![f32::INFINITY; node_count];
+    let mut next_toward_goal = vec![None; node_count];
+    let mut open = BinaryHeap::new();
+    for (ent_idx, cost) in connect_cell_to_chunk_entrances(grid, abstract_graph, goal, unit_size) {
+        if cost < dist_to_goal[ent_idx] {
+            dist_to_goal[ent_idx] = cost;
+            open.push(GoalFrontierNode { cost, idx: ent_idx });
+        }
+    }
+    while let Some(GoalFrontierNode { cost, idx }) = open.pop() {
+        if cost > dist_to_goal[idx] {
+            continue;
+        }
+        for edge in &abstract_graph.edges[idx] {
+            let candidate = cost + edge.cost;
+            if candidate < dist_to_goal[edge.to] {
+                dist_to_goal[edge.to] = candidate;
+                next_toward_goal[edge.to] = Some(idx);
+                open.push(GoalFrontierNode {
+                    cost: candidate,
+                    idx: edge.to,
+                });
+            }
+        }
+    }
+    (dist_to_goal, next_toward_goal)
+}
+
+fn reconstruct_goal_route(
+    start: (u32, u32),
+    goal: (u32, u32),
+    first_entrance: usize,
+    next_toward_goal: &[Option<usize>],
+    nodes: &[AbstractNode],
+) -> Vec<(u32, u32)> {
+    let mut route = vec![start];
+    let mut current = Some(first_entrance);
+    while let Some(idx) = current {
+        route.push((nodes[idx].x, nodes[idx].y));
+        current = next_toward_goal[idx];
+    }
+    route.push(goal);
+    route
+}
 /// Run HPA\* on `abstract_graph`, returning a refined grid-level path from `start` to `goal`.
 pub(crate) fn hpa_star(
     grid: &NavGrid,
@@ -508,4 +616,63 @@ fn refine_path(
     } else {
         Some(full_path)
     }
+}
+
+/// Run one shared-goal hierarchical search setup, then return refined grid-level paths from every start to `goal`.
+pub fn hpa_paths_to_goal(
+    grid: &NavGrid,
+    abstract_graph: &AbstractGraph,
+    starts: &[(u32, u32)],
+    goal: (u32, u32),
+    unit_size: u32,
+) -> Vec<Option<Vec<(u32, u32)>>> {
+    let (dist_to_goal, next_toward_goal) = build_goal_tree(grid, abstract_graph, goal, unit_size);
+    let cs = abstract_graph.chunk_size;
+    starts
+        .iter()
+        .map(|&start| {
+            let mut best_path = None;
+            let mut best_cost = f32::INFINITY;
+
+            if start == goal {
+                return Some(vec![start]);
+            }
+
+            if (start.0 / cs, start.1 / cs) == (goal.0 / cs, goal.1 / cs) {
+                let (direct, complete) = astar::astar(grid, start, goal, unit_size, 0);
+                if complete {
+                    if let Some(path) = direct {
+                        best_cost = path_cost_f32(&path);
+                        best_path = Some(path);
+                    }
+                }
+            }
+
+            for (ent_idx, start_cost) in
+                connect_cell_to_chunk_entrances(grid, abstract_graph, start, unit_size)
+            {
+                let goal_cost = dist_to_goal[ent_idx];
+                if !goal_cost.is_finite() {
+                    continue;
+                }
+                let total = start_cost + goal_cost;
+                if total >= best_cost {
+                    continue;
+                }
+                let abstract_path = reconstruct_goal_route(
+                    start,
+                    goal,
+                    ent_idx,
+                    &next_toward_goal,
+                    &abstract_graph.nodes,
+                );
+                if let Some(path) = refine_path(grid, &abstract_path, unit_size) {
+                    best_cost = total;
+                    best_path = Some(path);
+                }
+            }
+
+            best_path
+        })
+        .collect()
 }

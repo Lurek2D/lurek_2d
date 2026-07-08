@@ -7,7 +7,7 @@
 //! Neighboring changes usually involve NavGrid snapshots, A* budget behavior, and Lua or gameplay request adapters.
 //! Open this file when path jobs need new lifecycle semantics or when streamed progress events stop matching callers.
 
-use crate::pathfind::{astar, NavGrid};
+use crate::pathfind::{astar, FlowField, FootprintSpec, NavGrid, UnitPathfinder};
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap};
 use std::sync::atomic::{AtomicU64, Ordering as AtomicOrdering};
@@ -19,6 +19,10 @@ type SharedOwnerRequests = Arc<Mutex<OwnerRequestMap>>;
 
 /// Legacy completed result returned from the compatibility `poll()` API.
 pub type PathResult = (u64, Option<Vec<(u32, u32)>>);
+/// Grouped route payload returned by shared-goal async batch requests.
+pub type GroupedPathResult = Vec<Option<Vec<(u32, u32)>>>;
+/// One explicit start-goal pair for a batched path request.
+pub type PathPair = ((u32, u32), (u32, u32));
 
 /// Streaming/final state emitted for an async path request.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -50,6 +54,8 @@ pub struct AsyncPathEvent {
     pub status: PathEventStatus,
     /// Best path known at this step, if any.
     pub path: Option<Vec<(u32, u32)>>,
+    /// Best grouped paths known at this step, if any.
+    pub paths: Option<GroupedPathResult>,
     /// True only when the goal was actually reached.
     pub complete: bool,
     /// True when this is the terminal event for the request.
@@ -69,9 +75,29 @@ impl AsyncPathEvent {
             version: request.version,
             step,
             status,
+            paths: None,
             complete: matches!(status, PathEventStatus::Complete),
             final_event: true,
             path,
+        }
+    }
+
+    fn terminal_paths(
+        request: &AsyncPathRequest,
+        step: u32,
+        status: PathEventStatus,
+        paths: GroupedPathResult,
+    ) -> Self {
+        Self {
+            id: request.id,
+            owner_id: request.owner_id,
+            version: request.version,
+            step,
+            status,
+            path: None,
+            paths: Some(paths),
+            complete: matches!(status, PathEventStatus::Complete),
+            final_event: true,
         }
     }
 
@@ -85,6 +111,7 @@ impl AsyncPathEvent {
             complete: false,
             final_event: false,
             path,
+            paths: None,
         }
     }
 }
@@ -110,6 +137,16 @@ pub struct AsyncPathRequest {
     pub unit_size: u32,
     /// Partial-stream budget per step. Zero disables streaming and runs one final search.
     pub stream_budget: u32,
+    /// Optional grouped start cells for one shared-goal batch request.
+    pub batch_starts: Option<Vec<(u32, u32)>>,
+    /// Optional grouped target cells for one shared-goal batch request.
+    pub batch_targets: Option<Vec<(u32, u32)>>,
+    /// Optional explicit start-goal pairs for one paired async batch request.
+    pub batch_pairs: Option<Vec<PathPair>>,
+    /// Optional footprint forwarded to shared-goal batch flow construction.
+    pub batch_footprint: Option<FootprintSpec>,
+    /// Optional maximum downhill reconstruction steps for shared-goal batch routes.
+    pub batch_max_steps: u32,
 }
 
 impl AsyncPathRequest {
@@ -131,11 +168,20 @@ impl AsyncPathRequest {
             goal,
             unit_size,
             stream_budget: 0,
+            batch_starts: None,
+            batch_targets: None,
+            batch_pairs: None,
+            batch_footprint: None,
+            batch_max_steps: 0,
         }
     }
 
     fn tracks_version(&self) -> bool {
         self.version > 0 || self.owner_id != self.id
+    }
+
+    fn is_batch(&self) -> bool {
+        self.batch_starts.is_some() || self.batch_pairs.is_some()
     }
 }
 
@@ -299,6 +345,80 @@ impl PathThreadPool {
                 if let Some(event) = Self::terminal_state(&request, &cancelled, &latest_versions, 0)
                 {
                     Self::finish_request(&tx, &pending, &owner_requests, event);
+                    continue;
+                }
+
+                if request.is_batch() {
+                    if let Some(pairs) = request.batch_pairs.as_deref() {
+                        let footprint = request.batch_footprint.unwrap_or_else(|| {
+                            FootprintSpec::new(request.unit_size, request.unit_size)
+                        });
+                        let mut pathfinder =
+                            UnitPathfinder::new(ArcGridAdapter::clone_to_rc(&request.grid));
+                        let paths = pathfinder
+                            .find_paths_for_pairs_spec(pairs, footprint, request.batch_max_steps)
+                            .into_iter()
+                            .map(|path| {
+                                path.map(|waypoints| {
+                                    waypoints
+                                        .into_iter()
+                                        .map(|wp| (wp.x, wp.y))
+                                        .collect::<Vec<_>>()
+                                })
+                            })
+                            .collect::<Vec<_>>();
+
+                        if let Some(event) =
+                            Self::terminal_state(&request, &cancelled, &latest_versions, 1)
+                        {
+                            Self::finish_request(&tx, &pending, &owner_requests, event);
+                            continue;
+                        }
+
+                        let status = if paths.iter().all(|path| path.is_some()) {
+                            PathEventStatus::Complete
+                        } else {
+                            PathEventStatus::Failed
+                        };
+                        Self::finish_request(
+                            &tx,
+                            &pending,
+                            &owner_requests,
+                            AsyncPathEvent::terminal_paths(&request, 1, status, paths),
+                        );
+                        continue;
+                    }
+
+                    let starts = request.batch_starts.as_deref().unwrap_or(&[]);
+                    let targets = request.batch_targets.as_deref().unwrap_or(&[]);
+                    let footprint = request.batch_footprint.unwrap_or_else(|| {
+                        FootprintSpec::new(request.unit_size, request.unit_size)
+                    });
+                    let mut flow = FlowField::new(ArcGridAdapter::clone_to_rc(&request.grid));
+                    flow.calculate_multi_spec(targets, footprint);
+                    let paths = starts
+                        .iter()
+                        .map(|&(x, y)| flow.path_from(x, y, request.batch_max_steps))
+                        .collect::<Vec<_>>();
+
+                    if let Some(event) =
+                        Self::terminal_state(&request, &cancelled, &latest_versions, 1)
+                    {
+                        Self::finish_request(&tx, &pending, &owner_requests, event);
+                        continue;
+                    }
+
+                    let status = if paths.iter().any(|path| path.is_some()) {
+                        PathEventStatus::Complete
+                    } else {
+                        PathEventStatus::Failed
+                    };
+                    Self::finish_request(
+                        &tx,
+                        &pending,
+                        &owner_requests,
+                        AsyncPathEvent::terminal_paths(&request, 1, status, paths),
+                    );
                     continue;
                 }
 
@@ -571,6 +691,14 @@ impl PathThreadPool {
     /// Return the configured worker thread count.
     pub fn get_thread_count(&self) -> usize {
         self.thread_count
+    }
+}
+
+struct ArcGridAdapter;
+
+impl ArcGridAdapter {
+    fn clone_to_rc(grid: &NavGrid) -> std::rc::Rc<std::cell::RefCell<NavGrid>> {
+        std::rc::Rc::new(std::cell::RefCell::new(grid.clone()))
     }
 }
 

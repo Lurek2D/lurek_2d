@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Orchestrates agent choices via behavior trees, FSMs, GOAP, HTN, and utility AI. - Interprets sensory perception, internal state, goals, plans, and action-selection models. - Tracks squad coordination, trait-driven emotional motives, needs, and dramatic pacing. - Consumes learned policies only through explicit learning integration points; ML/RL constructors live under the learning module. - Controls dramatic pacing waves and optimizes runtime budgets with distance-based LOD tiers.
+Orchestrates agent choices via behavior trees, FSMs, GOAP, HTN, and utility AI. - Interprets sensory perception, internal state, goals, plans, and action-selection models. - Tracks squad coordination, trait-driven emotional motives, needs, and dramatic pacing. - Exposes agent-owned command queues with inspectable order snapshots and drainable lifecycle events. - Adds footprint-aware squad slot planning with distance-based ordering, subgroup preservation, and lane-width fallback. - Consumes learned policies only through explicit learning integration points; ML/RL constructors live under the learning module. - Controls dramatic pacing waves and optimizes runtime budgets with distance-based LOD tiers.
 
 ## Summary
 
@@ -17,7 +17,9 @@ Orchestrates agent choices via behavior trees, FSMs, GOAP, HTN, and utility AI. 
 - Blackboard-style context storage and shared decision data matter because larger AI systems usually need stable intermediate state. Several subsystems may contribute facts, priorities, or targets, and the module provides a shared surface for that internal coordination.
 - Movement-side helpers are deliberately owned by `pathfind`. Steering stacks, context steering, ORCA-style local avoidance, flow fields, and influence maps live there so navigation and tactical space analysis have one public owner.
 - Squad support extends the module from isolated actors to coordinated groups. Shared group state and coordinated command handling make it possible to express teams or patrols, while pure movement and local-avoidance execution stays in `pathfind`.
+- Formation planning on the squad surface now goes beyond simple offsets. Member footprint metadata, subgroup clustering, and lane-width fallback give Lua enough engine support to express useful RTS-style group movement without re-implementing slot ordering or chokepoint degradation in scripts.
 - Command queues are important because AI output is often not the final physical action. A stable queue boundary separates “what the AI wants next” from “what the actor is currently doing,” which helps with interruption, inspection, and synchronization with animation or movement systems.
+- Agent-owned queues also make RTS-style control practical because Lua can inspect current and pending orders, drain lifecycle events, and clear orders per actor without rebuilding queue state on the script side.
 - Director-style pacing support shows that the module also thinks beyond single actors. Encounter rhythm, phase pressure, tension, spawn pacing, and other orchestration behavior can be represented here when the “agent” is really the game experience itself.
 - Level-of-detail and update-policy support matter for scale. Large groups of intelligent actors can become expensive quickly, so the module includes ways to throttle, schedule, or simplify updates without abandoning the common behavior vocabulary.
 - Debug rendering and inspection support are essential for real use. Visualizing state machines, behavior trees, perception ranges, chosen targets, or queue contents shortens the path from “the agent behaved strangely” to “here is the exact internal reason.”
@@ -2034,6 +2036,35 @@ end
 
 ---
 
+#### `LAIWorld:getAutoAcquireBudget`
+
+Returns the per-update budget used for stance-driven hostile-acquisition queries.
+
+```lua
+LAIWorld:getAutoAcquireBudget()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Current auto-acquisition query budget. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  world:setAutoAcquireBudget(5)
+  local budget = world:getAutoAcquireBudget()
+  local world_type = world:type()
+  lurek.log.info(tostring("LAIWorld:getAutoAcquireBudget: " .. tostring(budget)))
+  lurek.log.info(tostring("LAIWorld:getAutoAcquireBudget: type=" .. tostring(world_type)))
+end
+```
+
+---
+
 #### `LAIWorld:getGlobalBlackboard`
 
 Returns a blackboard snapshot containing the world's shared AI facts.
@@ -2092,6 +2123,185 @@ end
 
 ---
 
+#### `LAIWorld:getOrderArrivalRadius`
+
+Returns the move-order arrival threshold used by world update.
+
+```lua
+LAIWorld:getOrderArrivalRadius()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Arrival threshold in world units. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  world:setOrderArrivalRadius(3.0)
+  local radius = world:getOrderArrivalRadius()
+  local world_type = world:type()
+  lurek.log.info(tostring("LAIWorld:getOrderArrivalRadius: " .. tostring(radius)))
+  lurek.log.info(tostring("LAIWorld:getOrderArrivalRadius: type=" .. tostring(world_type)))
+end
+```
+
+---
+
+#### `LAIWorld:getOrderRuntimeStats`
+
+Returns statistics from the most recent world update's order execution and acquisition work.
+
+```lua
+LAIWorld:getOrderRuntimeStats()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Table with move-order, acquisition, interruption, and budget counters. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  world:setSpatialCellSize(16.0)
+  world:setOrderArrivalRadius(0.5)
+  local hero = world:addAgent("hero")
+  local enemy = world:addAgent("enemy")
+  hero:setTeam(1)
+  hero:setPosition(0.0, 0.0)
+  hero:setStance("aggressive", { acquireRadius = 64.0, chaseRadius = 24.0 })
+  hero:getCommandQueue():enqueue("move", function() end, { targetX = 32.0, targetY = 0.0 })
+  enemy:setTeam(2)
+  enemy:setPosition(8.0, 0.0)
+  world:update(0.1)
+  local stats = world:getOrderRuntimeStats()
+  lurek.log.info(tostring("LAIWorld:getOrderRuntimeStats: queries=" .. tostring(stats.acquireQueries)))
+  lurek.log.info(tostring("LAIWorld:getOrderRuntimeStats: interrupts=" .. tostring(stats.softInterrupts)))
+end
+```
+
+---
+
+#### `LAIWorld:getSpatialCellSize`
+
+Returns the spatial-hash cell size used by nearby-agent queries in this world.
+
+```lua
+LAIWorld:getSpatialCellSize()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Spatial-hash cell size in world units. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  world:setSpatialCellSize(32.0)
+  local size = world:getSpatialCellSize()
+  local type_name = world:type()
+  lurek.log.info(tostring("LAIWorld:getSpatialCellSize: " .. tostring(size)))
+  lurek.log.info(tostring("LAIWorld:getSpatialCellSize: type=" .. tostring(type_name)))
+end
+```
+
+---
+
+#### `LAIWorld:getSpatialQueryStats`
+
+Returns statistics from the most recent nearby-agent query.
+
+```lua
+LAIWorld:getSpatialQueryStats()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Table with active-agent, cell, candidate-check, and returned-agent counters. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  world:setSpatialCellSize(16.0)
+  local alpha = world:addAgent("alpha")
+  local beta = world:addAgent("beta")
+  alpha:setPosition(0.0, 0.0)
+  alpha:setTeam(1)
+  beta:setPosition(10.0, 0.0)
+  beta:setTeam(2)
+  world:queryAgentsInRadius(0.0, 0.0, 32.0, { exclude = "alpha", hostileTo = 1 })
+  local stats = world:getSpatialQueryStats()
+  lurek.log.info(tostring("LAIWorld:getSpatialQueryStats: candidates=" .. tostring(stats.candidateChecks)))
+  lurek.log.info(tostring("LAIWorld:getSpatialQueryStats: returned=" .. tostring(stats.returnedAgents)))
+end
+```
+
+---
+
+#### `LAIWorld:queryAgentsInRadius`
+
+Returns nearby agents by using the world's persistent spatial index instead of a full Lua scan.
+
+```lua
+LAIWorld:queryAgentsInRadius(x, y, radius, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Query center X position in world units. |
+| `y` | number | Query center Y position in world units. |
+| `radius` | number | Query radius in world units. |
+| `opts?` | table | Optional table with `limit`, `exclude`, `team`, `hostileTo`, `tag`, and `notTag`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of nearest-first `[LBot](#lbot)` handles. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  world:setSpatialCellSize(16.0)
+  local alpha = world:addAgent("alpha")
+  local beta = world:addAgent("beta")
+  local gamma = world:addAgent("gamma")
+  alpha:setPosition(0.0, 0.0)
+  alpha:setTeam(1)
+  beta:setPosition(8.0, 0.0)
+  beta:setTeam(2)
+  beta:addTag("hostile")
+  gamma:setPosition(12.0, 0.0)
+  gamma:setTeam(2)
+  gamma:addTag("hidden")
+  local found = world:queryAgentsInRadius(0.0, 0.0, 32.0, { exclude = "alpha", hostileTo = 1, limit = 1, tag = "hostile", notTag = "hidden" })
+  lurek.log.info(tostring("LAIWorld:queryAgentsInRadius: count=" .. tostring(#found)))
+  lurek.log.info(tostring("LAIWorld:queryAgentsInRadius: first=" .. tostring(found[1] and found[1]:getName())))
+end
+```
+
+---
+
 #### `LAIWorld:removeAgent`
 
 Removes an agent from this world by using an existing agent handle.
@@ -2115,6 +2325,93 @@ do
   local temp = world:addAgent("temp_npc")
   world:removeAgent(temp)
   lurek.log.info(tostring("LAIWorld:removeAgent: removed"))
+end
+```
+
+---
+
+#### `LAIWorld:setAutoAcquireBudget`
+
+Sets the maximum number of stance-driven hostile-acquisition queries attempted in one update.
+
+```lua
+LAIWorld:setAutoAcquireBudget(budget)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `budget` | number | Per-update auto-acquisition query budget; zero disables new acquisition work. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  world:setAutoAcquireBudget(3)
+  local budget = world:getAutoAcquireBudget()
+  local stats = world:getOrderRuntimeStats()
+  lurek.log.info(tostring("LAIWorld:setAutoAcquireBudget: budget=" .. tostring(budget)))
+  lurek.log.info(tostring("LAIWorld:setAutoAcquireBudget: skipped=" .. tostring(stats.budgetSkips)))
+end
+```
+
+---
+
+#### `LAIWorld:setOrderArrivalRadius`
+
+Sets the move-order arrival threshold used by world update when completing queued move orders.
+
+```lua
+LAIWorld:setOrderArrivalRadius(radius)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `radius` | number | Arrival threshold in world units. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  world:setOrderArrivalRadius(2.5)
+  local radius = world:getOrderArrivalRadius()
+  local stats = world:getOrderRuntimeStats()
+  lurek.log.info(tostring("LAIWorld:setOrderArrivalRadius: radius=" .. tostring(radius)))
+  lurek.log.info(tostring("LAIWorld:setOrderArrivalRadius: active=" .. tostring(stats.activeAgents)))
+end
+```
+
+---
+
+#### `LAIWorld:setSpatialCellSize`
+
+Sets the spatial-hash cell size used by nearby-agent queries in this world.
+
+```lua
+LAIWorld:setSpatialCellSize(size)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `size` | number | Spatial-hash cell size in world units. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  world:setSpatialCellSize(24.0)
+  local size = world:getSpatialCellSize()
+  local stats = world:getSpatialQueryStats()
+  lurek.log.info(tostring("LAIWorld:setSpatialCellSize: size=" .. tostring(size)))
+  lurek.log.info(tostring("LAIWorld:setSpatialCellSize: queries=" .. tostring(stats.queryCount)))
 end
 ```
 
@@ -2202,15 +2499,16 @@ LAIWorld:update(dt)
 ```lua
 do
   local world = lurek.ai.newWorld()
-  local world_type = world:type()
   local npc = world:addAgent("worker")
-  local agent_name = npc:getName()
-  npc:setPriority(0.5)
-  npc:setDecisionModel("custom")
+  local runner = world:addAgent("runner")
   local ticked = false
   npc:setCustomModel(function(agent, blackboard, dt) ticked = true end)
-  world:update(1 / 60)
+  runner:getCommandQueue():enqueue("move", function() end, { targetX = 10.0, targetY = 0.0 })
+  world:setOrderArrivalRadius(0.5)
+  world:update(1.0)
+  local x, y = runner:getPosition()
   lurek.log.info(tostring("LAIWorld:update: ticked=" .. tostring(ticked)))
+  lurek.log.info(tostring("LAIWorld:update: runner=" .. tostring(x) .. "," .. tostring(y)))
 end
 ```
 
@@ -2923,6 +3221,50 @@ end
 
 ### Type Methods
 
+#### `LBot:acquireTarget`
+
+Returns the nearest target selected from this agent's stance-driven hostile-acquisition query.
+
+```lua
+LBot:acquireTarget(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts?` | table | Optional table with `radius`, `limit`, `tag`, and `notTag`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| LuaValue | Nearest hostile `[LBot](#lbot)` handle, or nil when no target matches the query. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  world:setSpatialCellSize(16.0)
+  local hero = world:addAgent("hero")
+  local near_enemy = world:addAgent("near_enemy")
+  local far_enemy = world:addAgent("far_enemy")
+  hero:setTeam(1)
+  hero:setPosition(0.0, 0.0)
+  hero:setStance("aggressive", { acquireRadius = 80.0 })
+  near_enemy:setTeam(2)
+  near_enemy:setPosition(24.0, 0.0)
+  far_enemy:setTeam(2)
+  far_enemy:setPosition(120.0, 0.0)
+  local target = hero:acquireTarget()
+  lurek.log.info(tostring("LBot:acquireTarget: found=" .. tostring(target ~= nil)))
+  lurek.log.info(tostring("LBot:acquireTarget: target=" .. tostring(target and target:getName())))
+end
+```
+
+---
+
 #### `LBot:addTag`
 
 Adds a tag string to this agent when the agent still exists in its world.
@@ -2987,6 +3329,119 @@ end
 
 ---
 
+#### `LBot:clearOrders`
+
+Clears every queued order owned by this agent.
+
+```lua
+LBot:clearOrders(reason)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `reason?` | string | Optional lifecycle detail string recorded on emitted clear events. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Number of cleared orders. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local bot = world:addAgent("order_clear")
+  local queue = bot:getCommandQueue()
+  queue:enqueue("move", function() end)
+  queue:enqueue("patrol", function() end)
+  local cleared = bot:clearOrders("player_stop")
+  lurek.log.info(tostring("LBot:clearOrders: cleared=" .. tostring(cleared)))
+  lurek.log.info(tostring("LBot:clearOrders: empty=" .. tostring(queue:isEmpty())))
+end
+```
+
+---
+
+#### `LBot:drainCommandEvents`
+
+Returns and clears queued order lifecycle events for this agent.
+
+```lua
+LBot:drainCommandEvents()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of `{ id, kind, event, targetX, targetY, priority, interruptible, detail }` tables in emit order. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local bot = world:addAgent("order_events")
+  local queue = bot:getCommandQueue()
+  queue:enqueue("move", function() end, { targetX = 4, targetY = 8 })
+  queue:completeCurrent("arrived")
+  local events = bot:drainCommandEvents()
+  lurek.log.info(tostring("LBot:drainCommandEvents: count=" .. tostring(#events)))
+  lurek.log.info(tostring("LBot:drainCommandEvents: last=" .. tostring(events[#events] and events[#events].event)))
+end
+```
+
+---
+
+#### `LBot:findHostilesInRange`
+
+Returns nearby hostile agents by using the world's spatial index and this agent's team as the hostile reference.
+
+```lua
+LBot:findHostilesInRange(radius, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `radius?` | number | Optional explicit acquisition radius in world units; defaults to the stance profile radius. |
+| `opts?` | table | Optional table with `limit`, `tag`, and `notTag`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of nearest-first hostile `[LBot](#lbot)` handles. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  world:setSpatialCellSize(16.0)
+  local hero = world:addAgent("hero")
+  local enemy = world:addAgent("enemy")
+  local ally = world:addAgent("ally")
+  hero:setTeam(1)
+  hero:setPosition(0.0, 0.0)
+  enemy:setTeam(2)
+  enemy:setPosition(20.0, 0.0)
+  enemy:addTag("visible")
+  ally:setTeam(1)
+  ally:setPosition(10.0, 0.0)
+  local found = hero:findHostilesInRange(64.0, { tag = "visible", limit = 4 })
+  lurek.log.info(tostring("LBot:findHostilesInRange: count=" .. tostring(#found)))
+  lurek.log.info(tostring("LBot:findHostilesInRange: first=" .. tostring(found[1] and found[1]:getName())))
+end
+```
+
+---
+
 #### `LBot:getBlackboard`
 
 Returns a blackboard snapshot for this agent or an empty blackboard when the agent has been removed.
@@ -3014,6 +3469,66 @@ do
   bb:setNumber("hp", 100)
   local hp = bb:getNumber("hp", 0)
   lurek.log.info(tostring("LBot:getBlackboard: hp=" .. tostring(hp)))
+end
+```
+
+---
+
+#### `LBot:getCommandQueue`
+
+Returns this agent's owned command queue handle for order staging and inspection.
+
+```lua
+LBot:getCommandQueue()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LCommandQueue](#lcommandqueue) | Queue handle bound to the current agent entry inside its AI world. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local bot = world:addAgent("order_owner")
+  local queue = bot:getCommandQueue()
+  local order_id = queue:enqueue("move", function() end, { targetX = 16, targetY = 24, priority = 2 })
+  local current = bot:getCurrentOrder()
+  lurek.log.info(tostring("LBot:getCommandQueue: id=" .. tostring(order_id)))
+  lurek.log.info(tostring("LBot:getCommandQueue: kind=" .. tostring(current and current.kind)))
+end
+```
+
+---
+
+#### `LBot:getCurrentOrder`
+
+Returns the current queued order snapshot for this agent when one exists.
+
+```lua
+LBot:getCurrentOrder()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| LuaValue | Table with `id`, `kind`, `targetX`, `targetY`, `priority`, and `interruptible`, or nil when this agent has no pending order. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local bot = world:addAgent("order_reader")
+  local queue = bot:getCommandQueue()
+  queue:enqueue("guard", function() end, { targetX = 32, targetY = 40 })
+  local current = bot:getCurrentOrder()
+  lurek.log.info(tostring("LBot:getCurrentOrder: id=" .. tostring(current and current.id)))
+  lurek.log.info(tostring("LBot:getCurrentOrder: target=" .. tostring(current and current.targetX) .. "," .. tostring(current and current.targetY)))
 end
 ```
 
@@ -3144,6 +3659,43 @@ end
 
 ---
 
+#### `LBot:getOrderRuntimeState`
+
+Returns the live soft-interruption state used by world update for temporary engagement overrides.
+
+```lua
+LBot:getOrderRuntimeState()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Table with `active`, `engageTarget`, `engageOriginX`, `engageOriginY`, `suspendedOrderId`, and `formationAbandoned`. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  world:setSpatialCellSize(16.0)
+  local hero = world:addAgent("hero")
+  local enemy = world:addAgent("enemy")
+  hero:setTeam(1)
+  hero:setPosition(0.0, 0.0)
+  hero:setStance("aggressive", { acquireRadius = 64.0, chaseRadius = 24.0, abandonFormation = true })
+  hero:getCommandQueue():enqueue("move", function() end, { targetX = 100.0, targetY = 0.0, interruptible = true })
+  enemy:setTeam(2)
+  enemy:setPosition(8.0, 0.0)
+  world:update(0.1)
+  local state = hero:getOrderRuntimeState()
+  lurek.log.info(tostring("LBot:getOrderRuntimeState: active=" .. tostring(state.active)))
+  lurek.log.info(tostring("LBot:getOrderRuntimeState: target=" .. tostring(state.engageTarget)))
+end
+```
+
+---
+
 #### `LBot:getPosition`
 
 Returns this agent's world position or the origin when the agent has been removed.
@@ -3202,6 +3754,66 @@ do
   npc:setPriority(5)
   local prio = npc:getPriority()
   lurek.log.info(tostring("LBot:getPriority: " .. tostring(prio)))
+end
+```
+
+---
+
+#### `LBot:getStance`
+
+Returns this agent's current stance profile, including built-in name and effective override values.
+
+```lua
+LBot:getStance()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Table containing `stance`, acquisition radii, and interruption flags. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent("guardian")
+  local stance = npc:getStance()
+  local interrupt = stance.interruptsMove
+  local radius = stance.acquireRadius
+  lurek.log.info(tostring("LBot:getStance: stance=" .. tostring(stance.stance)))
+  lurek.log.info(tostring("LBot:getStance: radius=" .. tostring(radius) .. " interrupt=" .. tostring(interrupt)))
+end
+```
+
+---
+
+#### `LBot:getTeam`
+
+Returns this agent's integer team identifier or zero when the agent has been removed.
+
+```lua
+LBot:getTeam()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Current team identifier. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent("grunt")
+  npc:setTeam(5)
+  local team = npc:getTeam()
+  local type_name = npc:type()
+  lurek.log.info(tostring("LBot:getTeam: " .. tostring(team)))
+  lurek.log.info(tostring("LBot:getTeam: type=" .. tostring(type_name)))
 end
 ```
 
@@ -3591,6 +4203,67 @@ end
 
 ---
 
+#### `LBot:setStance`
+
+Sets this agent's built-in RTS stance and optionally overrides its acquisition settings.
+
+```lua
+LBot:setStance(stance, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `stance` | string | Built-in stance name such as `passive`, `hold_fire`, `defensive`, `aggressive`, or `berserk`. |
+| `opts?` | table | Optional overrides for `acquireEnabled`, `holdFire`, `acquireRadius`, `guardRadius`, `chaseRadius`, `interruptsMove`, and `abandonFormation`. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent("raider")
+  npc:setStance("defensive", { chaseRadius = 48.0, interruptsMove = true })
+  local stance = npc:getStance()
+  local team = npc:getTeam()
+  lurek.log.info(tostring("LBot:setStance: stance=" .. tostring(stance.stance)))
+  lurek.log.info(tostring("LBot:setStance: chase=" .. tostring(stance.chaseRadius) .. " team=" .. tostring(team)))
+end
+```
+
+---
+
+#### `LBot:setTeam`
+
+Sets this agent's integer team identifier used by hostile-acquisition queries.
+
+```lua
+LBot:setTeam(team)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `team` | number | Team identifier compared by world-backed hostile queries. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent("captain")
+  npc:setTeam(3)
+  local team = npc:getTeam()
+  local name = npc:getName()
+  lurek.log.info(tostring("LBot:setTeam: team=" .. tostring(team)))
+  lurek.log.info(tostring("LBot:setTeam: name=" .. tostring(name)))
+end
+```
+
+---
+
 #### `LBot:setTrait`
 
 Sets one trait on this agent, creating an empty profile first when needed.
@@ -3765,8 +4438,14 @@ end
 Cancels the currently active command when one exists.
 
 ```lua
-LCommandQueue:cancelCurrent()
+LCommandQueue:cancelCurrent(reason)
 ```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `reason?` | string | Optional lifecycle detail string recorded on cancellation events. |
 
 **Returns**
 
@@ -3795,8 +4474,20 @@ end
 Removes every queued command. This method is available to Lua scripts.
 
 ```lua
-LCommandQueue:clear()
+LCommandQueue:clear(reason)
 ```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `reason?` | string | Optional lifecycle detail string recorded on clear events. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Number of cleared commands. |
 
 **Example**
 
@@ -3809,6 +4500,72 @@ do
     cq:enqueue("b", function() end)
     cq:clear()
     lurek.log.info(tostring("after clear, empty = " .. tostring(cq:isEmpty())))
+end
+```
+
+---
+
+#### `LCommandQueue:completeCurrent`
+
+Marks the current command as completed and advances the queue.
+
+```lua
+LCommandQueue:completeCurrent(reason)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `reason?` | string | Optional lifecycle detail string recorded on the completion event. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| LuaValue | Completed command id, or nil when the queue is empty. |
+
+**Example**
+
+```lua
+do
+    local cq = lurek.ai.newCommandQueue()
+    local first_id = cq:enqueue("move", function() end)
+    cq:enqueue("guard", function() end)
+    local completed = cq:completeCurrent("arrived")
+    local current = cq:getCurrent()
+    lurek.log.info(tostring("LCommandQueue:completeCurrent: id=" .. tostring(completed)))
+    lurek.log.info(tostring("LCommandQueue:completeCurrent: next=" .. tostring(current and current.kind)))
+end
+```
+
+---
+
+#### `LCommandQueue:drainEvents`
+
+Returns and clears queued lifecycle events.
+
+```lua
+LCommandQueue:drainEvents()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of `{ id, kind, event, targetX, targetY, priority, interruptible, detail }` tables in emit order. |
+
+**Example**
+
+```lua
+do
+    local cq = lurek.ai.newCommandQueue()
+    cq:enqueue("move", function() end, { targetX = 1, targetY = 2 })
+    cq:completeCurrent("arrived")
+    local events = cq:drainEvents()
+    local drained_again = cq:drainEvents()
+    lurek.log.info(tostring("LCommandQueue:drainEvents: count=" .. tostring(#events)))
+    lurek.log.info(tostring("LCommandQueue:drainEvents: empty_after=" .. tostring(#drained_again)))
 end
 ```
 
@@ -3830,6 +4587,12 @@ LCommandQueue:enqueue(kind, callback, opts)
 | `callback` | function | Callback invoked by command execution logic outside this wrapper. |
 | `opts?` | table | Optional table with `targetX`, `targetY`, `priority`, and `interruptible` fields. |
 
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Stable command id assigned by this queue. |
+
 **Example**
 
 ```lua
@@ -3840,6 +4603,42 @@ do
     cq:enqueue("move", function() lurek.log.info(tostring("  moving")) end, { targetX = 10, targetY = 20 })
     cq:enqueue("attack", function() lurek.log.info(tostring("  attacking")) end)
     lurek.log.info(tostring("queue size = " .. cq:getCount()))
+end
+```
+
+---
+
+#### `LCommandQueue:failCurrent`
+
+Marks the current command as failed and advances the queue.
+
+```lua
+LCommandQueue:failCurrent(reason)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `reason?` | string | Optional lifecycle detail string recorded on the failure event. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when a command was marked failed. |
+
+**Example**
+
+```lua
+do
+    local cq = lurek.ai.newCommandQueue()
+    cq:enqueue("move", function() end)
+    local failed = cq:failCurrent("blocked")
+    local events = cq:drainEvents()
+    local queue_count = cq:getCount()
+    lurek.log.info(tostring("LCommandQueue:failCurrent: failed=" .. tostring(failed)))
+    lurek.log.info(tostring("LCommandQueue:failCurrent: last_event=" .. tostring(events[#events] and events[#events].event)))
 end
 ```
 
@@ -3870,6 +4669,35 @@ do
     cq:enqueue("y", function() end)
     cq:enqueue("z", function() end)
     lurek.log.info(tostring("count = " .. cq:getCount()))
+end
+```
+
+---
+
+#### `LCommandQueue:getCurrent`
+
+Returns the full current command snapshot when one exists.
+
+```lua
+LCommandQueue:getCurrent()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| LuaValue | Table with `id`, `kind`, `targetX`, `targetY`, `priority`, and `interruptible`, or nil when no command is active. |
+
+**Example**
+
+```lua
+do
+    local cq = lurek.ai.newCommandQueue()
+    local order_id = cq:enqueue("move", function() end, { targetX = 6, targetY = 9, priority = 3, interruptible = false })
+    local current = cq:getCurrent()
+    local queue_count = cq:getCount()
+    lurek.log.info(tostring("LCommandQueue:getCurrent: id=" .. tostring(order_id)))
+    lurek.log.info(tostring("LCommandQueue:getCurrent: kind=" .. tostring(current and current.kind)))
 end
 ```
 
@@ -3933,6 +4761,36 @@ end
 
 ---
 
+#### `LCommandQueue:getPending`
+
+Returns every pending command snapshot in queue order.
+
+```lua
+LCommandQueue:getPending()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of `{ id, kind, targetX, targetY, priority, interruptible }` tables. |
+
+**Example**
+
+```lua
+do
+    local cq = lurek.ai.newCommandQueue()
+    cq:enqueue("move", function() end)
+    cq:enqueue("guard", function() end)
+    local pending = cq:getPending()
+    local queue_count = cq:getCount()
+    lurek.log.info(tostring("LCommandQueue:getPending: count=" .. tostring(#pending)))
+    lurek.log.info(tostring("LCommandQueue:getPending: second=" .. tostring(pending[2] and pending[2].kind)))
+end
+```
+
+---
+
 #### `LCommandQueue:isEmpty`
 
 Returns whether the command queue has no commands.
@@ -3978,6 +4836,12 @@ LCommandQueue:pushFront(kind, callback, opts)
 | `callback` | function | Callback invoked by command execution logic outside this wrapper. |
 | `opts?` | table | Optional table with `targetX`, `targetY`, `priority`, and `interruptible` fields. |
 
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Stable command id assigned by this queue. |
+
 **Example**
 
 ```lua
@@ -4008,6 +4872,12 @@ LCommandQueue:replace(kind, callback, opts)
 | `kind` | string | Command type label stored for inspection. |
 | `callback` | function | Callback invoked by command execution logic outside this wrapper. |
 | `opts?` | table | Optional table with `targetX`, `targetY`, `priority`, and `interruptible` fields. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Stable command id assigned to the replacement command. |
 
 **Example**
 
@@ -5589,6 +6459,54 @@ end
 
 ---
 
+#### `LSquad:assignFormationMove`
+
+Resolves formation slots and applies queued `move` orders to matching agents in the supplied world.
+
+```lua
+LSquad:assignFormationMove(world, leader_x, leader_y, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `world` | [LAIWorld](#laiworld) | AI world whose agent names are matched against squad members. |
+| `leader_x` | number | Leader or anchor X position in world units. |
+| `leader_y` | number | Leader or anchor Y position in world units. |
+| `opts?` | table?|Optional | enqueue`, `priority`, and `interruptible`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Table with formation summary fields plus `assignedCount`, `missingMembers`, and `slots` that include `commandId` and `applied`. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local sq = lurek.ai.newSquad("summary_apply")
+  local alpha = world:addAgent("alpha")
+  local beta = world:addAgent("beta")
+  alpha:setPosition(0.0, 0.0)
+  beta:setPosition(10.0, 0.0)
+  sq:addMember("alpha")
+  sq:addMember("beta")
+  sq:setFormation("line", 10.0)
+  local applied = sq:assignFormationMove(world, 100.0, 50.0, {
+    mode = "replace",
+    priority = 3,
+    interruptible = false,
+  })
+  lurek.log.info(tostring("LSquad:assignFormationMove: assigned=" .. tostring(applied.assignedCount)))
+  lurek.log.info(tostring("LSquad:assignFormationMove: first=" .. tostring(applied.slots[1] and applied.slots[1].commandId)))
+end
+```
+
+---
+
 #### `LSquad:getBlackboard`
 
 Returns a blackboard snapshot for this squad.
@@ -5647,6 +6565,35 @@ end
 
 ---
 
+#### `LSquad:getFormationBehavior`
+
+Returns the current formation assignment behavior settings.
+
+```lua
+LSquad:getFormationBehavior()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Table containing `sortMode`, `fallbackMode`, and `preserveSubgroups`. |
+
+**Example**
+
+```lua
+do
+  local sq = lurek.ai.newSquad("behavior_read")
+  sq:setFormationBehavior("distance", "keep", false)
+  local behavior = sq:getFormationBehavior()
+  local preserve = behavior.preserveSubgroups
+  lurek.log.info(tostring("LSquad:getFormationBehavior: sort=" .. tostring(behavior.sortMode)))
+  lurek.log.info(tostring("LSquad:getFormationBehavior: preserve=" .. tostring(preserve)))
+end
+```
+
+---
+
 #### `LSquad:getFormationPosition`
 
 Returns a member's target formation position relative to the leader position.
@@ -5688,6 +6635,47 @@ end
 
 ---
 
+#### `LSquad:getFormationSlots`
+
+Returns resolved formation slot assignments for every member, optionally using current member positions and lane width.
+
+```lua
+LSquad:getFormationSlots(leader_x, leader_y, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `leader_x` | number | Leader X position in world units. |
+| `leader_y` | number | Leader Y position in world units. |
+| `opts?` | table | Optional table with `laneWidth` and `positions = { member = { x = ..., y = ... } }`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of slot tables containing `member`, `slotIndex`, `x`, `y`, `row`, `col`, `footprintW`, `footprintH`, and `subgroup`. |
+
+**Example**
+
+```lua
+do
+  local sq = lurek.ai.newSquad("slots")
+  sq:addMember("tank_1")
+  sq:addMember("tank_2")
+  sq:addMember("tank_3")
+  sq:setFormation("line", 10.0)
+  sq:setFormationBehavior("roster", "column", false)
+  sq:setMemberProfile("tank_1", { footprintW = 4, footprintH = 4 })
+  local slots = sq:getFormationSlots(100.0, 50.0, { laneWidth = 20.0 })
+  lurek.log.info(tostring("LSquad:getFormationSlots: count=" .. tostring(#slots)))
+  lurek.log.info(tostring("LSquad:getFormationSlots: first=" .. tostring(slots[1] and slots[1].member)))
+end
+```
+
+---
+
 #### `LSquad:getFormationSpacing`
 
 Returns the spacing used by squad formation positioning.
@@ -5712,6 +6700,58 @@ do
     sq:setFormation("wedge", 2.5)
     local s = sq:getFormationSpacing()
     lurek.log.info(tostring("spacing = " .. s))
+end
+```
+
+---
+
+#### `LSquad:getFormationSummary`
+
+Returns formation layout metadata after slot assignment and fallback policy are resolved.
+
+```lua
+LSquad:getFormationSummary(leader_x, leader_y, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `leader_x` | number | Leader X position in world units. |
+| `leader_y` | number | Leader Y position in world units. |
+| `opts?` | table | Optional table with `laneWidth` and `positions = { member = { x = ..., y = ... } }`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Table containing `requestedFormation`, `activeFormation`, `fallbackApplied`, `width`, `height`, and `slotCount`. |
+
+**Example**
+
+```lua
+do
+  local sq = lurek.ai.newSquad("summary")
+  sq:addMember("beta_1")
+  sq:addMember("alpha_1")
+  sq:addMember("beta_2")
+  sq:addMember("alpha_2")
+  sq:setFormation("line", 8.0)
+  sq:setFormationBehavior("distance", "keep", true)
+  sq:setMemberProfile("beta_1", { subgroup = "beta" })
+  sq:setMemberProfile("beta_2", { subgroup = "beta" })
+  sq:setMemberProfile("alpha_1", { subgroup = "alpha" })
+  sq:setMemberProfile("alpha_2", { subgroup = "alpha" })
+  local summary = sq:getFormationSummary(0.0, 0.0, {
+    positions = {
+      beta_1 = { x = -40.0, y = 0.0 },
+      beta_2 = { x = -30.0, y = 0.0 },
+      alpha_1 = { x = 30.0, y = 0.0 },
+      alpha_2 = { x = 40.0, y = 0.0 },
+    },
+  })
+  lurek.log.info(tostring("LSquad:getFormationSummary: active=" .. tostring(summary.activeFormation)))
+  lurek.log.info(tostring("LSquad:getFormationSummary: slots=" .. tostring(summary.slotCount)))
 end
 ```
 
@@ -5772,6 +6812,42 @@ do
     sq:addMember("b")
     sq:addMember("c")
     lurek.log.info(tostring("count = " .. sq:getMemberCount()))
+end
+```
+
+---
+
+#### `LSquad:getMemberProfile`
+
+Returns the stored footprint and subgroup metadata for one member.
+
+```lua
+LSquad:getMemberProfile(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Member name to inspect. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Table containing `footprintW`, `footprintH`, and optional `subgroup`. |
+
+**Example**
+
+```lua
+do
+  local sq = lurek.ai.newSquad("profiles")
+  sq:addMember("scout")
+  local default_profile = sq:getMemberProfile("scout")
+  sq:setMemberProfile("scout", { footprintW = 2, footprintH = 1 })
+  local updated_profile = sq:getMemberProfile("scout")
+  lurek.log.info(tostring("LSquad:getMemberProfile: default=" .. tostring(default_profile.footprintW)))
+  lurek.log.info(tostring("LSquad:getMemberProfile: updated=" .. tostring(updated_profile.footprintW)))
 end
 ```
 
@@ -5897,6 +6973,38 @@ end
 
 ---
 
+#### `LSquad:setFormationBehavior`
+
+Sets formation assignment behavior knobs used for slot ordering and chokepoint fallback.
+
+```lua
+LSquad:setFormationBehavior(sort_mode, fallback_mode, preserve_subgroups)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `sort_mode` | string | Ordering strategy such as `roster` or `distance`. |
+| `fallback_mode?` | string | Fallback strategy such as `keep` or `column`; defaults to `keep`. |
+| `preserve_subgroups?` | boolean | Whether subgroup labels should stay clustered; defaults to false. |
+
+**Example**
+
+```lua
+do
+  local sq = lurek.ai.newSquad("behavior")
+  sq:addMember("beta_1")
+  sq:addMember("alpha_1")
+  sq:setFormationBehavior("distance", "column", true)
+  local behavior = sq:getFormationBehavior()
+  lurek.log.info(tostring("LSquad:setFormationBehavior: sort=" .. tostring(behavior.sortMode)))
+  lurek.log.info(tostring("LSquad:setFormationBehavior: fallback=" .. tostring(behavior.fallbackMode)))
+end
+```
+
+---
+
 #### `LSquad:setLeader`
 
 Sets the squad leader name. This method is available to Lua scripts.
@@ -5922,6 +7030,87 @@ do
     sq:addMember("private")
     sq:setLeader("captain")
     lurek.log.info(tostring("leader = " .. sq:getLeader()))
+end
+```
+
+---
+
+#### `LSquad:setMemberProfile`
+
+Stores footprint and subgroup metadata used during formation slot assignment.
+
+```lua
+LSquad:setMemberProfile(name, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Member name whose formation profile should be stored. |
+| `opts` | table | Table with `footprintW`, `footprintH`, and optional `subgroup`. |
+
+**Example**
+
+```lua
+do
+  local sq = lurek.ai.newSquad("armor")
+  sq:addMember("tank")
+  sq:setMemberProfile("tank", { footprintW = 4, footprintH = 3, subgroup = "heavy" })
+  local profile = sq:getMemberProfile("tank")
+  lurek.log.info(tostring("LSquad:setMemberProfile: width=" .. tostring(profile.footprintW)))
+  lurek.log.info(tostring("LSquad:setMemberProfile: subgroup=" .. tostring(profile.subgroup)))
+end
+```
+
+---
+
+#### `LSquad:submitFormationPaths`
+
+Resolves formation slots, converts world positions into navigation cells, and submits one async paired path batch.
+
+```lua
+LSquad:submitFormationPaths(world, grid, leader_x, leader_y, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `world` | [LAIWorld](#laiworld) | AI world whose agent positions provide the path start cells. |
+| `grid` | [LNavGrid](pathfind.md#lnavgrid) | Navigation grid cloned for the async worker. |
+| `leader_x` | number | Leader or anchor X position in world units. |
+| `leader_y` | number | Leader or anchor Y position in world units. |
+| `opts` | table | Options with `cellSize`, optional `originX`,`originY`,`laneWidth`,`positions`,`requestId`,`ownerId`,`version`,`priority`,`footprint`,`unitSize`, and `maxSteps`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Table with formation summary fields plus async request metadata, slot-cell mappings, and skipped-member diagnostics. |
+
+**Example**
+
+```lua
+do
+  lurek.pathfind.setThreadCount(1)
+  lurek.pathfind.clearAsyncPaths()
+  local world = lurek.ai.newWorld()
+  local nav = lurek.pathfind.newNavGrid(32, 32)
+  local sq = lurek.ai.newSquad("summary_paths")
+  local alpha = world:addAgent("alpha")
+  local beta = world:addAgent("beta")
+  alpha:setPosition(0.0, 0.0)
+  beta:setPosition(10.0, 0.0)
+  sq:addMember("alpha")
+  sq:addMember("beta")
+  sq:setFormation("line", 10.0)
+  local submitted = sq:submitFormationPaths(world, nav, 100.0, 50.0, {
+    cellSize = 10.0,
+    priority = 2,
+  })
+  lurek.log.info(tostring("LSquad:submitFormationPaths: request=" .. tostring(submitted.requestId)))
+  lurek.log.info(tostring("LSquad:submitFormationPaths: submitted=" .. tostring(submitted.submittedCount)))
 end
 ```
 

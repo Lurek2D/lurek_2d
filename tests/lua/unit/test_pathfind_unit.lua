@@ -193,6 +193,78 @@ describe("pathfind module functions", function()
         expect_true(second_done)
     end)
 
+    -- @covers lurek.pathfind.submitAsyncPathsToGoal
+    it("submitAsyncPathsToGoal returns one grouped async event for many starts", function()
+        lurek.pathfind.clearAsyncPaths()
+        local grid = new_nav_grid(64, 64)
+        local request_id = lurek.pathfind.submitAsyncPathsToGoal(grid, {
+            starts = {
+                { x = 1, y = 1 },
+                { x = 2, y = 2 },
+                { x = 8, y = 8 },
+            },
+            goal_x = 64,
+            goal_y = 64,
+        })
+        local events = poll_async_until(function(seen)
+            for i = 1, #seen do
+                if seen[i].id == request_id and seen[i].final then
+                    return true
+                end
+            end
+            return false
+        end, 256)
+
+        local final_event = nil
+        for i = 1, #events do
+            if events[i].id == request_id and events[i].final then
+                final_event = events[i]
+                break
+            end
+        end
+        expect_not_nil(final_event)
+        expect_equal("complete", final_event.status)
+        expect_nil(final_event.path)
+        expect_equal(3, #final_event.paths)
+        expect_equal(64, final_event.paths[1][#final_event.paths[1]].x)
+    end)
+
+    -- @covers lurek.pathfind.submitAsyncPathPairs
+    it("submitAsyncPathPairs returns one grouped async event for explicit start-goal pairs", function()
+        lurek.pathfind.clearAsyncPaths()
+        local grid = new_nav_grid(64, 64)
+        local request_id = lurek.pathfind.submitAsyncPathPairs(grid, {
+            pairs = {
+                { start = { x = 1, y = 1 }, goal = { x = 64, y = 64 } },
+                { start = { x = 2, y = 2 }, goal = { x = 64, y = 64 } },
+                { start = { x = 8, y = 8 }, goal = { x = 40, y = 40 } },
+            },
+        })
+        local events = poll_async_until(function(seen)
+            for i = 1, #seen do
+                if seen[i].id == request_id and seen[i].final then
+                    return true
+                end
+            end
+            return false
+        end, 256)
+
+        local final_event = nil
+        for i = 1, #events do
+            if events[i].id == request_id and events[i].final then
+                final_event = events[i]
+                break
+            end
+        end
+        expect_not_nil(final_event)
+        expect_equal("complete", final_event.status)
+        expect_nil(final_event.path)
+        expect_equal(3, #final_event.paths)
+        expect_equal(64, final_event.paths[1][#final_event.paths[1]].x)
+        expect_equal(64, final_event.paths[2][#final_event.paths[2]].y)
+        expect_equal(40, final_event.paths[3][#final_event.paths[3]].x)
+    end)
+
     -- @covers lurek.pathfind.pollAsyncPaths
     it("pollAsyncPaths yields partial and final events for streamed searches", function()
         lurek.pathfind.clearAsyncPaths()
@@ -456,6 +528,14 @@ describe("nav grid", function()
         expect_equal(6, height)
     end)
 
+    -- @covers LNavGrid:getGeneration
+    it("getGeneration increments after committed edits", function()
+        local grid = new_nav_grid(5, 6)
+        expect_equal(0, grid:getGeneration())
+        grid:setBlocked(2, 2, true)
+        expect_equal(1, grid:getGeneration())
+    end)
+
     -- @covers LNavGrid:setCost
     it("setCost updates the cell traversal cost and rejects zero-based coordinates", function()
         local grid = new_nav_grid()
@@ -490,6 +570,38 @@ describe("nav grid", function()
         expect_false(grid:isWalkable(1, 1, 2))
     end)
 
+    -- @covers LNavGrid:defineFootprint
+    it("defineFootprint stores a named footprint", function()
+        local grid = new_nav_grid(5, 5)
+        grid:defineFootprint("tank", { w = 2, h = 2 })
+        local footprint = grid:getFootprint("tank")
+        expect_equal(2, footprint.w)
+        expect_equal(2, footprint.h)
+    end)
+
+    -- @covers LNavGrid:getFootprint
+    it("getFootprint returns nil for an unknown footprint", function()
+        expect_nil(new_nav_grid(5, 5):getFootprint("missing"))
+    end)
+
+    -- @covers LNavGrid:rebuildClearance
+    it("rebuildClearance returns the rebuilt footprint count", function()
+        local grid = new_nav_grid(6, 6)
+        grid:defineFootprint("infantry", { w = 1, h = 1 })
+        grid:defineFootprint("tank", { w = 2, h = 2 })
+        expect_equal(2, grid:rebuildClearance())
+    end)
+
+    -- @covers LNavGrid:isWalkableFor
+    it("isWalkableFor uses the named footprint cache", function()
+        local grid = new_nav_grid(6, 6)
+        grid:defineFootprint("tank", { w = 2, h = 2 })
+        grid:rebuildClearance()
+        expect_true(grid:isWalkableFor("tank", 1, 1))
+        grid:setBlocked(2, 2, true)
+        expect_false(grid:isWalkableFor("tank", 1, 1))
+    end)
+
     -- @covers LNavGrid:fill
     it("fill applies a cost to all cells", function()
         local grid = new_nav_grid(4, 4)
@@ -503,6 +615,51 @@ describe("nav grid", function()
         grid:fillRect(2, 2, 2, 2, 0)
         expect_true(grid:isBlocked(2, 2))
         expect_true(grid:isBlocked(3, 3))
+    end)
+
+    -- @covers LNavGrid:beginUpdate
+    it("beginUpdate defers generation changes until commit", function()
+        local grid = new_nav_grid(6, 6)
+        grid:beginUpdate()
+        grid:setBlockedRect(2, 2, 2, 2, true)
+        expect_equal(0, grid:getGeneration())
+        grid:commitUpdate()
+        expect_equal(1, grid:getGeneration())
+    end)
+
+    -- @covers LNavGrid:setBlockedRect
+    it("setBlockedRect blocks an entire rectangle", function()
+        local grid = new_nav_grid(6, 6)
+        grid:setBlockedRect(2, 2, 2, 2, true)
+        expect_true(grid:isBlocked(2, 2))
+        expect_true(grid:isBlocked(3, 3))
+    end)
+
+    -- @covers LNavGrid:setCostRect
+    it("setCostRect writes the requested movement cost", function()
+        local grid = new_nav_grid(6, 6)
+        grid:setCostRect(2, 2, 2, 2, 7)
+        expect_equal(7, grid:getCost(2, 2))
+        expect_equal(7, grid:getCost(3, 3))
+    end)
+
+    -- @covers LNavGrid:commitUpdate
+    it("commitUpdate returns the number of dirty rectangles in the batch", function()
+        local grid = new_nav_grid(6, 6)
+        grid:beginUpdate()
+        grid:setBlockedRect(2, 2, 2, 2, true)
+        grid:setCostRect(4, 4, 1, 1, 9)
+        expect_equal(2, grid:commitUpdate({ rebuild = "dirty_chunks" }))
+    end)
+
+    -- @covers LNavGrid:getDirtyRects
+    it("getDirtyRects returns one-based committed dirty rectangles", function()
+        local grid = new_nav_grid(6, 6)
+        grid:setBlockedRect(2, 2, 2, 2, true)
+        local rects = grid:getDirtyRects()
+        expect_equal(1, #rects)
+        expect_equal(2, rects[1].x)
+        expect_equal(2, rects[1].y)
     end)
 
     -- @covers LNavGrid:loadFromString
@@ -548,6 +705,20 @@ describe("nav grid", function()
     it("findHpaPath returns a path table", function()
         local path = new_nav_grid(20, 20):findHpaPath(1, 1, 10, 10)
         expect_type("table", path)
+    end)
+
+    -- @covers LNavGrid:findHpaPathsToGoal
+    it("findHpaPathsToGoal returns shared-goal HPA routes", function()
+        local grid = new_nav_grid(20, 20)
+        grid:setChunkSize(4)
+        local paths = grid:findHpaPathsToGoal({
+            { x = 1, y = 1 },
+            { x = 2, y = 2 },
+            { x = 4, y = 4 },
+        }, 10, 10)
+        expect_equal(1, paths[1][1].x)
+        expect_equal(10, paths[2][#paths[2]].x)
+        expect_equal(10, paths[3][#paths[3]].y)
     end)
 
     -- @covers LNavGrid:setDirty
@@ -687,6 +858,101 @@ describe("unit pathfinder", function()
         expect_type("number", pathfinder:getCacheSize())
     end)
 
+    -- @covers LUnitPathfinder:findPathsToGoal
+    it("findPathsToGoal returns shared-goal routes for many starts", function()
+        local _, pathfinder = new_pathfinder()
+        local routes = pathfinder:findPathsToGoal({
+            { x = 1, y = 1 },
+            { x = 2, y = 2 },
+            { x = 8, y = 8 },
+        }, 12, 12)
+        expect_equal(1, routes[1][1].x)
+        expect_equal(2, routes[2][1].x)
+        expect_equal(12, routes[3][#routes[3]].x)
+    end)
+
+    -- @covers LUnitPathfinder:findPathsToGoalFor
+    it("findPathsToGoalFor uses a named footprint for shared-goal routing", function()
+        local grid, pathfinder = new_pathfinder()
+        grid:defineFootprint("tank", { w = 2, h = 2 })
+        grid:setBlocked(2, 2, true)
+        local routes = pathfinder:findPathsToGoalFor("tank", {
+            { x = 1, y = 1 },
+            { x = 4, y = 4 },
+        }, 10, 10)
+        expect_nil(routes[1])
+        expect_equal(4, routes[2][1].x)
+    end)
+
+    -- @covers LUnitPathfinder:clearSharedGoalCache
+    it("clearSharedGoalCache empties the shared-goal cache", function()
+        local _, pathfinder = new_pathfinder()
+        pathfinder:findPathsToGoal({ { x = 1, y = 1 } }, 12, 12)
+        pathfinder:clearSharedGoalCache()
+        expect_equal(0, pathfinder:getSharedGoalCacheSize())
+    end)
+
+    -- @covers LUnitPathfinder:getSharedGoalCacheSize
+    it("getSharedGoalCacheSize reports cached shared-goal fields", function()
+        local _, pathfinder = new_pathfinder()
+        expect_equal(0, pathfinder:getSharedGoalCacheSize())
+        pathfinder:findPathsToGoal({ { x = 1, y = 1 } }, 12, 12)
+        expect_equal(1, pathfinder:getSharedGoalCacheSize())
+    end)
+
+    -- @covers LUnitPathfinder:getSharedFlowField
+    it("getSharedFlowField returns a cached shared flow handle", function()
+        local _, pathfinder = new_pathfinder()
+        local flow = pathfinder:getSharedFlowField(12, 12)
+        local path = flow:pathFrom(1, 1)
+        expect_true(flow:isCalculated())
+        expect_equal(12, path[#path].x)
+    end)
+
+    -- @covers LUnitPathfinder:getSharedFlowFieldFor
+    it("getSharedFlowFieldFor builds a named-footprint shared flow handle", function()
+        local grid, pathfinder = new_pathfinder()
+        grid:defineFootprint("tank", { w = 2, h = 2 })
+        grid:setBlocked(2, 2, true)
+        local flow = pathfinder:getSharedFlowFieldFor("tank", 10, 10)
+        expect_equal(math.huge, flow:getCostToTarget(1, 1))
+        expect_true(flow:getCostToTarget(4, 4) < math.huge)
+    end)
+
+    -- @covers LUnitPathfinder:getSharedFlowFieldMulti
+    it("getSharedFlowFieldMulti accepts many targets and reuses the shared cache", function()
+        local _, pathfinder = new_pathfinder()
+        local flow = pathfinder:getSharedFlowFieldMulti({
+            { x = 10, y = 10 },
+            { x = 12, y = 12 },
+        })
+        expect_true(flow:isCalculated())
+        expect_equal(1, pathfinder:getSharedGoalCacheSize())
+    end)
+
+    -- @covers LUnitPathfinder:getSharedFlowFieldMultiFor
+    it("getSharedFlowFieldMultiFor accepts many targets for a named footprint", function()
+        local grid, pathfinder = new_pathfinder()
+        grid:defineFootprint("tank", { w = 2, h = 2 })
+        local flow = pathfinder:getSharedFlowFieldMultiFor("tank", {
+            { x = 9, y = 9 },
+            { x = 10, y = 10 },
+        })
+        expect_true(flow:isCalculated())
+        expect_equal(2, #flow:getTargets())
+    end)
+
+    -- @covers LUnitPathfinder:getSharedGoalCacheStats
+    it("getSharedGoalCacheStats reports shared flow cache hits and misses", function()
+        local _, pathfinder = new_pathfinder()
+        pathfinder:getSharedFlowField(12, 12)
+        pathfinder:getSharedFlowField(12, 12)
+        local stats = pathfinder:getSharedGoalCacheStats()
+        expect_equal(1, stats.size)
+        expect_equal(1, stats.hits)
+        expect_equal(1, stats.misses)
+    end)
+
     -- @covers LUnitPathfinder:setCacheMaxSize
     it("setCacheMaxSize is callable", function()
         local _, pathfinder = new_pathfinder()
@@ -724,6 +990,24 @@ describe("flow field", function()
         expect_true(flow:isCalculated())
     end)
 
+    -- @covers LFlowField:calculateFor
+    it("calculateFor uses a named navigation footprint", function()
+        local grid, flow = new_flow_field()
+        grid:defineFootprint("tank", { w = 2, h = 2 })
+        grid:setBlocked(2, 2, true)
+        flow:calculateFor("tank", 8, 8)
+        expect_true(flow:getCostToTarget(4, 4) < math.huge)
+        expect_equal(math.huge, flow:getCostToTarget(1, 1))
+    end)
+
+    -- @covers LFlowField:calculateMultiFor
+    it("calculateMultiFor accepts multiple targets for a named footprint", function()
+        local grid, flow = new_flow_field()
+        grid:defineFootprint("tank", { w = 2, h = 2 })
+        flow:calculateMultiFor("tank", { { x = 4, y = 4 }, { x = 8, y = 8 } })
+        expect_true(flow:isCalculated())
+    end)
+
     -- @covers LFlowField:getDirection
     it("getDirection returns vector components", function()
         local _, flow = new_flow_field()
@@ -753,11 +1037,56 @@ describe("flow field", function()
         expect_false(flow:isCalculated())
     end)
 
+    -- @covers LFlowField:getGeneration
+    it("getGeneration tracks the nav-grid generation used for the active field", function()
+        local grid, flow = new_flow_field()
+        expect_nil(flow:getGeneration())
+        flow:calculate(6, 6)
+        expect_equal(0, flow:getGeneration())
+        grid:setBlocked(2, 2, true)
+        flow:calculate(6, 6)
+        expect_equal(1, flow:getGeneration())
+    end)
+
+    -- @covers LFlowField:getBuildCount
+    it("getBuildCount only increments for real rebuilds", function()
+        local grid, flow = new_flow_field()
+        expect_equal(0, flow:getBuildCount())
+        flow:calculate(6, 6)
+        flow:calculate(6, 6)
+        expect_equal(1, flow:getBuildCount())
+        grid:setBlocked(2, 2, true)
+        flow:calculate(6, 6)
+        expect_equal(2, flow:getBuildCount())
+    end)
+
     -- @covers LFlowField:getTargets
     it("getTargets lists the active target cells", function()
         local _, flow = new_flow_field()
         flow:calculate(2, 2)
         expect_equal(1, #flow:getTargets())
+    end)
+
+    -- @covers LFlowField:pathFrom
+    it("pathFrom reconstructs a route from a start cell", function()
+        local _, flow = new_flow_field()
+        flow:calculate(6, 6)
+        local path = flow:pathFrom(1, 1)
+        expect_not_nil(path)
+        expect_equal(1, path[1].x)
+        expect_equal(1, path[1].y)
+        expect_equal(6, path[#path].x)
+        expect_equal(6, path[#path].y)
+    end)
+
+    -- @covers LFlowField:pathsFrom
+    it("pathsFrom reconstructs many routes from one shared field", function()
+        local _, flow = new_flow_field()
+        flow:calculate(6, 6)
+        local routes = flow:pathsFrom({ { x = 1, y = 1 }, { x = 2, y = 2 }, { x = 6, y = 6 } })
+        expect_equal(1, routes[1][1].x)
+        expect_equal(2, routes[2][1].x)
+        expect_equal(6, routes[3][#routes[3]].x)
     end)
 
     -- @covers LFlowField:steer
@@ -1676,6 +2005,25 @@ describe("pathfind movement and tactical APIs", function()
         local orca = lurek.pathfind.newORCASolver(2.0)
         expect_equal(0, orca:addAgent(10.0, 20.0, 0.5, 3.0))
     end)
+    -- @covers LORCASolver:setAgent
+    it("setAgent upserts a stable-keyed agent state", function()
+        local orca = lurek.pathfind.newORCASolver(2.0)
+        orca:setAgent(101, {
+            x = 10.0,
+            y = 20.0,
+            radius = 0.5,
+            max_speed = 3.0,
+            vx = 0.5,
+            vy = 0.0,
+            preferred_vx = 1.0,
+            preferred_vy = 0.0,
+        })
+        expect_equal(1, orca:agentCount())
+        orca:compute({ dt = 0.016 })
+        local vx, vy = orca:getSafeVelocity(101)
+        expect_type("number", vx)
+        expect_type("number", vy)
+    end)
     -- @covers LORCASolver:setPreferredVelocity
     it("setPreferredVelocity influences the computed safe velocity", function()
         local orca = lurek.pathfind.newORCASolver(2.0)
@@ -1686,6 +2034,16 @@ describe("pathfind movement and tactical APIs", function()
         expect_near(2.0, vx, 0.01)
         expect_near(1.0, vy, 0.01)
     end)
+    -- @covers LORCASolver:setVelocity
+    it("setVelocity updates the current agent velocity", function()
+        local orca = lurek.pathfind.newORCASolver(2.0)
+        orca:setAgent(77, { x = 0.0, y = 0.0, radius = 0.5, max_speed = 5.0 })
+        orca:setVelocity(77, 1.5, -0.5)
+        orca:compute(0.016)
+        local vx, vy = orca:getSafeVelocity(77)
+        expect_type("number", vx)
+        expect_type("number", vy)
+    end)
     -- @covers LORCASolver:setPosition
     it("setPosition accepts a new agent position", function()
         local orca = lurek.pathfind.newORCASolver(2.0)
@@ -1693,6 +2051,55 @@ describe("pathfind movement and tactical APIs", function()
         expect_no_error(function()
             orca:setPosition(0, 5.0, 3.0)
         end)
+    end)
+    -- @covers LORCASolver:removeAgent
+    it("removeAgent deletes a keyed agent", function()
+        local orca = lurek.pathfind.newORCASolver(2.0)
+        orca:setAgent(200, { x = 0.0, y = 0.0, radius = 0.5, max_speed = 2.0 })
+        expect_true(orca:removeAgent(200))
+        expect_equal(0, orca:agentCount())
+    end)
+    -- @covers LORCASolver:setMaxNeighbors
+    it("setMaxNeighbors clamps and stores the neighbor cap", function()
+        local orca = lurek.pathfind.newORCASolver(1.5)
+        orca:setMaxNeighbors(1)
+        orca:setCellSize(4.0)
+        orca:setNeighborRadius(12.0)
+        for i = 1, 4 do
+            orca:setAgent(i, {
+                x = i * 2.0,
+                y = 0.0,
+                radius = 0.5,
+                max_speed = 3.0,
+                preferred_vx = 1.0,
+                preferred_vy = 0.0,
+            })
+        end
+        orca:compute(0.016)
+        local stats = orca:getStats()
+        expect_true(stats.maxNeighborsUsed <= 1, "neighbor cap respected")
+    end)
+    -- @covers LORCASolver:setNeighborRadius
+    it("setNeighborRadius constrains retained local neighbors", function()
+        local orca = lurek.pathfind.newORCASolver(1.5)
+        orca:setCellSize(4.0)
+        orca:setNeighborRadius(3.0)
+        orca:setAgent(1, { x = 0.0, y = 0.0, radius = 0.5, max_speed = 3.0 })
+        orca:setAgent(2, { x = 20.0, y = 0.0, radius = 0.5, max_speed = 3.0 })
+        orca:compute(0.016)
+        local stats = orca:getStats()
+        expect_true(stats.neighborsUsed <= 1, "far agents stay outside retained neighbor radius")
+    end)
+    -- @covers LORCASolver:setCellSize
+    it("setCellSize updates spatial hashing without changing agent count", function()
+        local orca = lurek.pathfind.newORCASolver(1.5)
+        orca:setCellSize(6.0)
+        orca:setAgent(11, { x = 0.0, y = 0.0, radius = 0.5, max_speed = 3.0 })
+        orca:setAgent(12, { x = 8.0, y = 0.0, radius = 0.5, max_speed = 3.0 })
+        orca:compute(0.016)
+        local stats = orca:getStats()
+        expect_equal(2, orca:agentCount())
+        expect_true(stats.spatialCells >= 1, "spatial hash populated")
     end)
     -- @covers LORCASolver:compute
     it("compute updates safe velocities for the current agent set", function()
@@ -1702,7 +2109,7 @@ describe("pathfind movement and tactical APIs", function()
         orca:setPreferredVelocity(0, 1.0, 0.0)
         orca:setPreferredVelocity(1, -1.0, 0.0)
         expect_no_error(function()
-            orca:compute(0.016)
+            orca:compute({ dt = 0.016, max_ms = 1.0 })
         end)
     end)
     -- @covers LORCASolver:getSafeVelocity
@@ -1714,6 +2121,24 @@ describe("pathfind movement and tactical APIs", function()
         local vx, vy = orca:getSafeVelocity(0)
         expect_type("number", vx)
         expect_type("number", vy)
+    end)
+    -- @covers LORCASolver:getStats
+    it("getStats reports processed-agent and budget counters", function()
+        local orca = lurek.pathfind.newORCASolver(1.5)
+        for i = 1, 32 do
+            orca:setAgent(i, {
+                x = (i - 1) * 1.0,
+                y = 0.0,
+                radius = 0.5,
+                max_speed = 3.0,
+                preferred_vx = 1.0,
+                preferred_vy = 0.0,
+            })
+        end
+        orca:compute({ dt = 0.016, max_ms = 0.0 })
+        local stats = orca:getStats()
+        expect_equal(32, stats.activeAgents)
+        expect_true(stats.budgetExhausted)
     end)
     -- @covers LORCASolver:agentCount
     it("agentCount returns the number of registered agents", function()

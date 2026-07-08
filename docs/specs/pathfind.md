@@ -14,7 +14,7 @@
 - Source path: `src/pathfind`
 - Binding: `src/lua_api/pathfind_api.rs`
 - Namespace: `lurek.pathfind`
-- Lua API surface: `33` functions, `28` types, `172` methods
+- Lua API surface: `35` functions, `31` types, `205` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -234,10 +234,12 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 ### orca.rs
 
 - Implements ORCA-style local collision avoidance that projects preferred motion into safe velocity choices.
-- Owns solver agents, pairwise half-plane constraints, time horizon tuning, and the linear projection step.
+- Owns solver agents, pairwise half-plane constraints, time horizon tuning, spatial neighbor filtering,
+- and the linear projection step used to produce collision-safe motion.
 - Computes a safe velocity for every registered agent while respecting radius and max-speed bounds.
 - Provides the crowd-avoidance boundary between desired steering intent and collision-safe local movement output.
-- Open this owner when avoidance stability, neighbor constraints, or safe-velocity projection needs adjustment.
+- Open this owner when avoidance stability, neighbor constraints, safe-velocity projection, or
+- crowd-scale performance behavior needs adjustment.
 
 ### pathgrid.rs
 
@@ -280,9 +282,9 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 ### unit_pathfinder.rs
 
 - Wraps a shared NavGrid in a stateful per-unit pathfinding service with cache-aware route and utility queries.
-- Owns Waypoint output records, cache keys, cached path storage, and optional LRU-style eviction behavior.
+- Owns Waypoint output records, cache keys, cached path storage, shared-goal field caches, and optional LRU-style eviction behavior.
 - Calls baseline A* for full, smoothed, or partial routes, then exposes length, cost, LOS, and reachability helpers.
-- Also searches for the nearest walkable fallback cell, keeping per-unit recovery logic close to shared grid access.
+- Also searches for the nearest walkable fallback cell and shared-goal route batches, keeping per-unit recovery logic close to shared grid access.
 - Provides the boundary between raw navigation algorithms and gameplay units that need repeated path requests.
 - Open this owner when route caching, per-unit helper semantics, or fallback walkability behavior needs changes.
 
@@ -331,6 +333,8 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 - `lurek.pathfind.rangeMapFromField(field_ud, opts) -> table`: Computes reachable cells from a tilefield level and movement category.
 - `lurek.pathfind.setThreadCount(count) -> nil`: Sets the configured pathfinding worker-thread count.
 - `lurek.pathfind.submitAsyncPath(grid_ud, opts) -> integer`: Queues an async path query against a navigation grid snapshot.
+- `lurek.pathfind.submitAsyncPathPairs(grid_ud, opts) -> integer`: Queues one async paired batch query against a navigation grid snapshot.
+- `lurek.pathfind.submitAsyncPathsToGoal(grid_ud, opts) -> integer`: Queues one async shared-goal batch query against a navigation grid snapshot.
 
 ### Callbacks
 
@@ -395,17 +399,36 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 ##### Methods
 
 - `LFlowField:calculate(tx, ty, unit_size?) -> nil`: Calculates a flow field toward one target cell.
+- `LFlowField:calculateFor(name, tx, ty) -> nil`: Calculates a flow field toward one target cell using a named navigation footprint.
 - `LFlowField:calculateMulti(targets, unit_size?) -> nil`: Calculates a flow field toward multiple target cells.
+- `LFlowField:calculateMultiFor(name, targets) -> nil`: Calculates a flow field toward multiple target cells using a named navigation footprint.
+- `LFlowField:getBuildCount() -> integer`: Returns how many full flow-field builds have actually run on this object.
 - `LFlowField:getCostToTarget(x, y) -> number`: Returns integration cost to the target from a one-based grid cell.
 - `LFlowField:getDirection(x, y) -> number`: Returns flow direction vector at a one-based grid cell.
 - `LFlowField:getDirectionAngle(x, y) -> number`: Returns flow direction angle at a one-based grid cell.
+- `LFlowField:getGeneration() -> integer`: Returns the navigation-grid generation that produced the current flow field, or nil before the first build.
 - `LFlowField:getTargets() -> table`: Returns target cells for this flow field.
 - `LFlowField:isCalculated() -> boolean`: Returns whether the flow field has been calculated.
+- `LFlowField:pathFrom(x, y, max_steps?) -> table`: Reconstructs a downhill route from one start cell to the nearest active target in the current flow field.
+- `LFlowField:pathsFrom(starts, max_steps?) -> table`: Reconstructs downhill routes from many start cells to the nearest active target using one shared flow field.
 - `LFlowField:steer(wx, wy, speed, tw, th) -> number`: Returns a steering velocity for a world position using the flow field.
 - `LFlowField:type() -> string`: Returns the Lua-visible type name for this flow field handle.
 - `LFlowField:typeOf(name) -> boolean`: Returns whether this flow field handle matches a supported type name.
 
 #### LFlowFieldGetTargetsResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `x` (`number`): X.
+- `y` (`number`): Y.
+
+##### Methods
+
+- No documented methods.
+
+#### LFlowFieldPathFromResult Type
 
 - Generated result shape from @field tags.
 
@@ -593,7 +616,7 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 
 #### LNavGrid Type
 
-- Lua-side wrapper for a navigation grid and optional abstract graph cache.
+- Provides Lua methods for navigation grid dimensions, costs, blocking, serialization, dirty regions, and diagonal mode.
 
 ##### Fields
 
@@ -601,28 +624,52 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 
 ##### Methods
 
+- `LNavGrid:beginUpdate() -> nil`: Starts a batched navigation edit that is finalized by `commitUpdate`.
 - `LNavGrid:clearDirty() -> nil`: Clears all dirty region markers from the grid.
+- `LNavGrid:commitUpdate(opts?) -> integer`: Finalizes a batched navigation edit and refreshes clearance caches according to `opts.rebuild`.
+- `LNavGrid:defineFootprint(name, footprint) -> nil`: Stores or replaces a named rectangular footprint for clearance caching.
 - `LNavGrid:fill(cost) -> nil`: Fills the entire grid with a uniform movement cost.
 - `LNavGrid:fillRect(x, y, w, h, cost) -> nil`: Fills a one-based rectangular area with a movement cost.
 - `LNavGrid:findHpaPath(sx, sy, gx, gy, unit_size?) -> table`: Finds a hierarchical path using the cached abstract graph, rebuilding it on first use.
+- `LNavGrid:findHpaPathsToGoal(starts, gx, gy, unit_size?) -> table`: Finds hierarchical paths from many one-based start cells to one goal while sharing one abstract-goal search setup.
 - `LNavGrid:getChunkSize() -> integer`: Returns the hierarchical chunk size in cells.
 - `LNavGrid:getCost(x, y) -> integer`: Returns movement cost at a one-based grid cell.
 - `LNavGrid:getDiagonalMode() -> string`: Returns the current diagonal movement mode name.
 - `LNavGrid:getDimensions() -> integer`: Returns grid width and height as two integers.
+- `LNavGrid:getDirtyRects() -> table`: Returns the committed dirty rectangles recorded on this grid.
+- `LNavGrid:getFootprint(name) -> table`: Returns the stored width and height for a named footprint when it exists.
+- `LNavGrid:getGeneration() -> integer`: Returns the current navigation-grid generation used for cache invalidation.
 - `LNavGrid:getHeight() -> integer`: Returns grid height from this object.
 - `LNavGrid:getWidth() -> integer`: Returns grid width from this object.
 - `LNavGrid:isBlocked(x, y) -> boolean`: Returns whether a one-based grid cell is blocked.
 - `LNavGrid:isWalkable(x, y, unit_size?) -> boolean`: Returns whether a one-based grid cell is walkable for a unit size.
+- `LNavGrid:isWalkableFor(name, x, y) -> boolean`: Returns whether a one-based grid cell is walkable for a named footprint.
 - `LNavGrid:loadFromString(data) -> nil`: Loads grid data from a serialized binary string.
 - `LNavGrid:rebuildAbstract() -> nil`: Rebuilds the cached abstract graph for this grid.
+- `LNavGrid:rebuildClearance(opts?) -> integer`: Rebuilds clearance caches for all defined footprints or the supplied named subset.
 - `LNavGrid:saveToString() -> string`: Saves grid data to a serialized binary string.
 - `LNavGrid:setBlocked(x, y, blocked) -> nil`: Sets blocked state at a one-based grid cell.
+- `LNavGrid:setBlockedRect(x, y, w, h, blocked, opts?) -> nil`: Applies one blocked or passable rectangle in batch-edit style.
 - `LNavGrid:setChunkSize(size) -> nil`: Sets hierarchical chunk size for abstract graph partitioning.
 - `LNavGrid:setCost(x, y, cost) -> nil`: Sets movement cost at a one-based grid cell.
+- `LNavGrid:setCostRect(x, y, w, h, cost, opts?) -> nil`: Applies one cost rectangle in batch-edit style.
 - `LNavGrid:setDiagonalMode(mode) -> nil`: Sets diagonal movement mode for this object.
 - `LNavGrid:setDirty(x, y, w, h) -> nil`: Marks a one-based rectangular region dirty for incremental rebuild.
 - `LNavGrid:type() -> string`: Returns the Lua-visible type name for this navigation grid handle.
 - `LNavGrid:typeOf(name) -> boolean`: Returns whether this navigation grid handle matches a supported type name.
+
+#### LNavGridDefineFootprintResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `h` (`integer`): Height in cells.
+- `w` (`integer`): Width in cells.
+
+##### Methods
+
+- No documented methods.
 
 #### LNavMesh Type
 
@@ -666,10 +713,17 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 
 - `LORCASolver:addAgent(x, y, radius, max_speed) -> integer`: Adds an ORCA avoidance agent and returns its zero-based solver index.
 - `LORCASolver:agentCount() -> integer`: Returns the number of ORCA agents in this solver.
-- `LORCASolver:compute(dt) -> nil`: Computes safe velocities for all ORCA agents.
-- `LORCASolver:getSafeVelocity(idx) -> number, number`: Returns the computed safe velocity for an ORCA agent.
-- `LORCASolver:setPosition(idx, x, y) -> nil`: Sets the position for an ORCA agent by zero-based index.
-- `LORCASolver:setPreferredVelocity(idx, pvx, pvy) -> nil`: Sets the preferred velocity for an ORCA agent by zero-based index.
+- `LORCASolver:compute(dt_or_opts) -> nil`: Computes safe velocities for all ORCA agents, optionally under a time budget.
+- `LORCASolver:getSafeVelocity(idx) -> number, number`: Returns the computed safe velocity for an ORCA agent addressed by zero-based index or stable key.
+- `LORCASolver:getStats() -> table`: Returns statistics from the most recent ORCA compute step.
+- `LORCASolver:removeAgent(idx) -> boolean`: Removes an ORCA agent addressed by zero-based index or stable key.
+- `LORCASolver:setAgent(key, opts) -> nil`: Inserts or updates an ORCA avoidance agent under a stable caller-provided key.
+- `LORCASolver:setCellSize(size) -> nil`: Sets the spatial-hash cell size used when grouping ORCA agents.
+- `LORCASolver:setMaxNeighbors(count) -> nil`: Sets the maximum retained neighbor count used during one ORCA solve step.
+- `LORCASolver:setNeighborRadius(radius) -> nil`: Sets an explicit neighbor-query radius in world units; zero restores dynamic per-agent radius.
+- `LORCASolver:setPosition(idx, x, y) -> nil`: Sets the position for an ORCA agent addressed by zero-based index or stable key.
+- `LORCASolver:setPreferredVelocity(idx, pvx, pvy) -> nil`: Sets the preferred velocity for an ORCA agent addressed by zero-based index or stable key.
+- `LORCASolver:setVelocity(idx, vx, vy) -> nil`: Sets the current velocity for an ORCA agent addressed by zero-based index or stable key.
 - `LORCASolver:type() -> string`: Returns the Lua-visible type name for this ORCA solver handle.
 - `LORCASolver:typeOf(name) -> boolean`: Returns whether this ORCA solver handle matches a supported type name.
 
@@ -784,18 +838,27 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 ##### Methods
 
 - `LUnitPathfinder:clearCache() -> nil`: Clears all cached paths on this object.
+- `LUnitPathfinder:clearSharedGoalCache() -> nil`: Clears all cached shared-goal fields on this object.
 - `LUnitPathfinder:findNearestWalkable(x, y, max_radius, unit_size?) -> integer`: Finds nearest walkable one-based grid cell within a radius.
 - `LUnitPathfinder:findPartialPath(x1, y1, x2, y2, max_nodes, unit_size?) -> table`: Finds the best reachable path from a start to a goal within a maximum node budget. Useful for incremental pathfinding across frames.
 - `LUnitPathfinder:findPath(x1, y1, x2, y2, unit_size?) -> table`: Finds a path between one-based grid cells.
 - `LUnitPathfinder:findPathBidirectional(x1, y1, x2, y2, unit_size?, max_nodes?) -> table`: Finds a path using bidirectional A* and returns completion status.
 - `LUnitPathfinder:findPathSmooth(x1, y1, x2, y2, unit_size?) -> table`: Finds a smoothed path between one-based grid cells.
+- `LUnitPathfinder:findPathsToGoal(starts, gx, gy, unit_size?, max_steps?) -> table`: Finds routes from many one-based start cells to one goal cell using one shared-goal field.
+- `LUnitPathfinder:findPathsToGoalFor(name, starts, gx, gy, max_steps?) -> table`: Finds routes from many one-based start cells to one goal cell using one named-footprint shared-goal field.
 - `LUnitPathfinder:getCacheSize() -> integer`: Returns the current path cache entry count.
 - `LUnitPathfinder:getPathCost(path) -> number`: Returns the total movement cost along a waypoint path.
 - `LUnitPathfinder:getPathLength(path) -> number`: Returns the total Euclidean length of a waypoint path.
+- `LUnitPathfinder:getSharedFlowField(gx, gy, unit_size?) -> LFlowField`: Returns a cached shared-goal flow field handle for one target cell and unit footprint size.
+- `LUnitPathfinder:getSharedFlowFieldFor(name, gx, gy) -> LFlowField`: Returns a cached shared-goal flow field handle for one target cell and one named footprint.
+- `LUnitPathfinder:getSharedFlowFieldMulti(targets, unit_size?) -> LFlowField`: Returns a cached shared-goal flow field handle for many target cells and one unit footprint size.
+- `LUnitPathfinder:getSharedFlowFieldMultiFor(name, targets) -> LFlowField`: Returns a cached shared-goal flow field handle for many target cells and one named footprint.
+- `LUnitPathfinder:getSharedGoalCacheSize() -> integer`: Returns the current shared-goal field cache entry count.
+- `LUnitPathfinder:getSharedGoalCacheStats() -> table`: Returns shared-goal flow-field cache counters for debugging and performance inspection.
 - `LUnitPathfinder:heuristicDistance(x1, y1, x2, y2) -> number`: Returns heuristic distance between two one-based cells.
-- `LUnitPathfinder:isCacheEnabled() -> boolean`: Returns whether path cache is enabled.
+- `LUnitPathfinder:isCacheEnabled() -> boolean`: Returns whether the pathfinder's internal caches are enabled.
 - `LUnitPathfinder:isReachable(x1, y1, x2, y2, unit_size?) -> boolean`: Returns whether a target cell is reachable from a start cell.
-- `LUnitPathfinder:setCacheEnabled(enabled) -> nil`: Enables or disables the path cache on this object.
+- `LUnitPathfinder:setCacheEnabled(enabled) -> nil`: Enables or disables the pathfinder's internal route and shared-goal caches on this object.
 - `LUnitPathfinder:setCacheMaxSize(n) -> nil`: Sets maximum path cache size for this object.
 - `LUnitPathfinder:type() -> string`: Returns the Lua-visible type name for this pathfinder handle.
 - `LUnitPathfinder:typeOf(name) -> boolean`: Returns whether this pathfinder handle matches a supported type name.
@@ -847,6 +910,20 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 
 - `x` (`number`): X.
 - `y` (`number`): Y.
+
+##### Methods
+
+- No documented methods.
+
+#### LUnitPathfinderGetSharedGoalCacheStatsResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `hits` (`integer`): Cache hits since the last cache reset.
+- `misses` (`integer`): Cache misses since the last cache reset.
+- `size` (`integer`): Current number of cached shared-goal fields.
 
 ##### Methods
 

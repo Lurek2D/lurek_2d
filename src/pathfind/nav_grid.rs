@@ -8,6 +8,7 @@
 
 use crate::log_msg;
 use crate::runtime::log_messages::{NG01, NG02, NG03};
+use std::collections::{HashMap, HashSet};
 /// Controls which diagonal moves are permitted during pathfinding.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum DiagonalMode {
@@ -38,6 +39,74 @@ impl DiagonalMode {
         }
     }
 }
+/// Rebuild policy used when committing a batched grid update.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum UpdateRebuildMode {
+    /// Leave any precomputed footprint caches stale until explicitly rebuilt.
+    None,
+    /// Refresh footprint caches only for dirty regions affected by the batch.
+    DirtyChunks,
+    /// Rebuild every footprint cache across the full grid.
+    Full,
+}
+/// Conversion helpers between Lua string names and `UpdateRebuildMode`.
+impl UpdateRebuildMode {
+    /// Parse a case-insensitive Lua string to a rebuild mode; return `None` for unknown strings.
+    pub fn from_lua_str(s: &str) -> Option<Self> {
+        match s.to_ascii_lowercase().as_str() {
+            "none" => Some(Self::None),
+            "dirty_chunks" | "dirtychunks" => Some(Self::DirtyChunks),
+            "full" => Some(Self::Full),
+            _ => None,
+        }
+    }
+
+    /// Return the canonical lowercase Lua string for this mode.
+    pub fn to_lua_str(self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::DirtyChunks => "dirty_chunks",
+            Self::Full => "full",
+        }
+    }
+}
+/// Rectangle footprint measured in grid cells.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct FootprintSpec {
+    /// Width in cells.
+    pub width: u32,
+    /// Height in cells.
+    pub height: u32,
+}
+impl FootprintSpec {
+    /// Create a normalized footprint with both dimensions clamped to at least one cell.
+    pub fn new(width: u32, height: u32) -> Self {
+        Self {
+            width: width.max(1),
+            height: height.max(1),
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+struct ClearanceCache {
+    walkable: Vec<bool>,
+    built_generation: Option<u64>,
+}
+
+impl ClearanceCache {
+    fn new(size: usize) -> Self {
+        Self {
+            walkable: vec![false; size],
+            built_generation: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Default)]
+struct PendingUpdate {
+    dirty_rects: Vec<(u32, u32, u32, u32)>,
+}
 /// Runtime walkability grid: integer movement costs, dirty tracking, and snapshot support.
 #[derive(Debug, Clone)]
 pub struct NavGrid {
@@ -53,6 +122,14 @@ pub struct NavGrid {
     diagonal_mode: DiagonalMode,
     /// Pending dirty regions awaiting hierarchy rebuild.
     dirty_rects: Vec<(u32, u32, u32, u32)>,
+    /// Monotonic generation incremented when committed walkability or cost data changes.
+    generation: u64,
+    /// Named footprint definitions exposed to callers.
+    footprint_profiles: HashMap<String, FootprintSpec>,
+    /// Cached walkability masks keyed by footprint dimensions.
+    clearance_caches: HashMap<FootprintSpec, ClearanceCache>,
+    /// Batched pending edits collected between `begin_update` and `commit_update`.
+    pending_update: Option<PendingUpdate>,
 }
 /// Construction, query, and mutation methods for `NavGrid`.
 impl NavGrid {
@@ -74,6 +151,10 @@ impl NavGrid {
             .and_then(|idx| usize::try_from(idx).ok())
     }
 
+    fn flat_index(width: u32, x: u32, y: u32) -> usize {
+        (y * width + x) as usize
+    }
+
     /// Create a fully walkable `width × height` grid with all costs set to `1`.
     pub fn new(width: u32, height: u32) -> Self {
         log_msg!(debug, NG01, "{}x{}", width, height);
@@ -84,6 +165,10 @@ impl NavGrid {
             chunk_size: 16,
             diagonal_mode: DiagonalMode::NoCornerCut,
             dirty_rects: Vec::new(),
+            generation: 0,
+            footprint_profiles: HashMap::new(),
+            clearance_caches: HashMap::new(),
+            pending_update: None,
         }
     }
     /// Create a grid from an existing flat cost buffer; panics if `costs.len() != width * height`.
@@ -101,6 +186,10 @@ impl NavGrid {
             chunk_size: 16,
             diagonal_mode: DiagonalMode::NoCornerCut,
             dirty_rects: Vec::new(),
+            generation: 0,
+            footprint_profiles: HashMap::new(),
+            clearance_caches: HashMap::new(),
+            pending_update: None,
         }
     }
     /// Return the grid width in tiles.
@@ -115,6 +204,10 @@ impl NavGrid {
     pub fn get_dimensions(&self) -> (u32, u32) {
         (self.width, self.height)
     }
+    /// Return the current mutation generation for cache invalidation and diagnostics.
+    pub fn get_generation(&self) -> u64 {
+        self.generation
+    }
     /// Return the cost at `(x, y)`; returns `0` (blocked) for out-of-bounds coordinates.
     pub fn get_cost(&self, x: u32, y: u32) -> u8 {
         self.index(x, y).map_or(0, |idx| self.costs[idx])
@@ -122,8 +215,12 @@ impl NavGrid {
     /// Set the cost at `(x, y)`; silently ignores out-of-bounds coordinates.
     pub fn set_cost(&mut self, x: u32, y: u32, cost: u8) {
         if let Some(idx) = self.index(x, y) {
+            if self.costs[idx] == cost {
+                return;
+            }
             log_msg!(trace, NG03, "({}, {})={}", x, y, cost);
             self.costs[idx] = cost;
+            self.record_committed_change(x, y, 1, 1, UpdateRebuildMode::DirtyChunks);
         }
     }
     /// Return true when `(x, y)` has cost `0` (blocked) or is out-of-bounds.
@@ -136,40 +233,78 @@ impl NavGrid {
     }
     /// Return true when a `unit_size × unit_size` footprint anchored at `(x, y)` is fully walkable.
     pub fn is_walkable(&self, x: u32, y: u32, unit_size: u32) -> bool {
-        let size = unit_size.max(1);
-        let Some(x_end) = x.checked_add(size) else {
-            return false;
-        };
-        let Some(y_end) = y.checked_add(size) else {
-            return false;
-        };
-        if x_end > self.width || y_end > self.height {
-            return false;
-        }
-        for dy in 0..size {
-            for dx in 0..size {
-                if self.is_blocked(x + dx, y + dy) {
-                    return false;
-                }
-            }
-        }
-        true
+        self.is_walkable_spec(FootprintSpec::new(unit_size, unit_size), x, y)
+    }
+    /// Return true when the named footprint anchored at `(x, y)` is fully walkable.
+    pub fn is_walkable_for(&self, name: &str, x: u32, y: u32) -> bool {
+        self.get_footprint(name)
+            .is_some_and(|spec| self.is_walkable_spec(spec, x, y))
+    }
+    /// Store or replace a named footprint definition.
+    pub fn define_footprint(
+        &mut self,
+        name: impl Into<String>,
+        width: u32,
+        height: u32,
+    ) -> FootprintSpec {
+        let spec = FootprintSpec::new(width, height);
+        self.footprint_profiles.insert(name.into(), spec);
+        self.clearance_caches
+            .entry(spec)
+            .or_insert_with(|| ClearanceCache::new(Self::grid_len(self.width, self.height)));
+        spec
+    }
+    /// Return one named footprint definition when it exists.
+    pub fn get_footprint(&self, name: &str) -> Option<FootprintSpec> {
+        self.footprint_profiles.get(name).copied()
+    }
+    /// Rebuild clearance caches for all defined footprints or only the named subset.
+    pub fn rebuild_clearance(&mut self, profiles: Option<&[String]>) -> usize {
+        let specs = self.resolve_rebuild_specs(profiles);
+        self.rebuild_clearance_specs(&specs);
+        specs.len()
     }
     /// Set all cells to `cost`. This function is part of the public API.
     pub fn fill(&mut self, cost: u8) {
+        if self.costs.iter().all(|existing| *existing == cost) {
+            return;
+        }
         self.costs.fill(cost);
+        self.record_committed_change(
+            0,
+            0,
+            self.width,
+            self.height,
+            UpdateRebuildMode::DirtyChunks,
+        );
     }
     /// Set all cells in the axis-aligned rectangle at `(x, y, w, h)` to `cost`.
     pub fn fill_rect(&mut self, x: u32, y: u32, w: u32, h: u32, cost: u8) {
         let x_end = x.saturating_add(w).min(self.width);
         let y_end = y.saturating_add(h).min(self.height);
+        let mut changed = false;
         for cy in y..y_end {
             for cx in x..x_end {
                 if let Some(idx) = self.index(cx, cy) {
+                    if self.costs[idx] == cost {
+                        continue;
+                    }
                     self.costs[idx] = cost;
+                    changed = true;
                 }
             }
         }
+        if changed {
+            self.record_committed_change(x, y, w, h, UpdateRebuildMode::DirtyChunks);
+        }
+    }
+    /// Set all cells in the rectangle at `(x, y, w, h)` to blocked or passable.
+    pub fn set_blocked_rect(&mut self, x: u32, y: u32, w: u32, h: u32, blocked: bool) {
+        self.fill_rect(x, y, w, h, if blocked { 0 } else { 1 });
+    }
+    /// Set all cells in the rectangle at `(x, y, w, h)` to `cost`.
+    pub fn set_cost_rect(&mut self, x: u32, y: u32, w: u32, h: u32, cost: u8) {
+        self.fill_rect(x, y, w, h, cost);
     }
     /// Replace the cost buffer from `data`; return an error if the length does not match `width * height`.
     pub fn load_from_bytes(&mut self, data: &[u8]) -> Result<(), String> {
@@ -177,7 +312,17 @@ impl NavGrid {
         if data.len() != expected {
             return Err(format!("expected {} bytes, got {}", expected, data.len()));
         }
+        if self.costs == data {
+            return Ok(());
+        }
         self.costs.copy_from_slice(data);
+        self.record_committed_change(
+            0,
+            0,
+            self.width,
+            self.height,
+            UpdateRebuildMode::DirtyChunks,
+        );
         Ok(())
     }
     /// Return a copy of the cost buffer as a byte vector.
@@ -195,6 +340,23 @@ impl NavGrid {
     /// Set the diagonal movement policy for neighbour queries.
     pub fn set_diagonal_mode(&mut self, mode: DiagonalMode) {
         self.diagonal_mode = mode;
+    }
+    /// Begin collecting batched navigation edits that are finalized by `commit_update`.
+    pub fn begin_update(&mut self) {
+        if self.pending_update.is_none() {
+            self.pending_update = Some(PendingUpdate::default());
+        }
+    }
+    /// Commit any batched navigation edits and refresh caches according to `rebuild`.
+    pub fn commit_update(&mut self, rebuild: UpdateRebuildMode) -> usize {
+        let Some(pending) = self.pending_update.take() else {
+            return 0;
+        };
+        if pending.dirty_rects.is_empty() {
+            return 0;
+        }
+        self.finish_committed_changes(&pending.dirty_rects, rebuild);
+        pending.dirty_rects.len()
     }
     /// Return the current diagonal movement policy.
     pub fn get_diagonal_mode(&self) -> DiagonalMode {
@@ -275,6 +437,10 @@ impl NavGrid {
             chunk_size: self.chunk_size,
             diagonal_mode: self.diagonal_mode,
             dirty_rects: Vec::new(),
+            generation: self.generation,
+            footprint_profiles: self.footprint_profiles.clone(),
+            clearance_caches: self.clearance_caches.clone(),
+            pending_update: None,
         }
     }
     /// Render the grid and optionally overlay a `path`, `start`, and `end` marker into an `ImageData`.
@@ -336,5 +502,200 @@ impl NavGrid {
             );
         }
         img
+    }
+
+    pub(crate) fn is_walkable_spec(&self, spec: FootprintSpec, x: u32, y: u32) -> bool {
+        if let Some(cache) = self.clearance_caches.get(&spec) {
+            if cache.built_generation == Some(self.generation) {
+                return self.cached_walkable(cache, x, y);
+            }
+        }
+        self.scan_walkable_rect(x, y, spec)
+    }
+
+    fn cached_walkable(&self, cache: &ClearanceCache, x: u32, y: u32) -> bool {
+        self.index(x, y)
+            .and_then(|idx| cache.walkable.get(idx))
+            .copied()
+            .unwrap_or(false)
+    }
+
+    fn scan_walkable_rect(&self, x: u32, y: u32, spec: FootprintSpec) -> bool {
+        Self::scan_walkable_rect_in(&self.costs, self.width, self.height, x, y, spec)
+    }
+
+    fn scan_walkable_rect_in(
+        costs: &[u8],
+        width: u32,
+        height: u32,
+        x: u32,
+        y: u32,
+        spec: FootprintSpec,
+    ) -> bool {
+        let Some(x_end) = x.checked_add(spec.width) else {
+            return false;
+        };
+        let Some(y_end) = y.checked_add(spec.height) else {
+            return false;
+        };
+        if x_end > width || y_end > height {
+            return false;
+        }
+        for dy in 0..spec.height {
+            for dx in 0..spec.width {
+                if costs[Self::flat_index(width, x + dx, y + dy)] == 0 {
+                    return false;
+                }
+            }
+        }
+        true
+    }
+
+    fn resolve_rebuild_specs(&self, profiles: Option<&[String]>) -> Vec<FootprintSpec> {
+        let mut specs = Vec::new();
+        let mut seen = HashSet::new();
+        match profiles {
+            Some(names) => {
+                for name in names {
+                    if let Some(spec) = self.get_footprint(name) {
+                        if seen.insert(spec) {
+                            specs.push(spec);
+                        }
+                    }
+                }
+            }
+            None => {
+                for spec in self.footprint_profiles.values().copied() {
+                    if seen.insert(spec) {
+                        specs.push(spec);
+                    }
+                }
+            }
+        }
+        specs
+    }
+
+    fn rebuild_clearance_specs(&mut self, specs: &[FootprintSpec]) {
+        for spec in specs.iter().copied() {
+            self.rebuild_cache_for_spec(spec);
+        }
+    }
+
+    fn rebuild_cache_for_spec(&mut self, spec: FootprintSpec) {
+        let mut cache = ClearanceCache::new(Self::grid_len(self.width, self.height));
+        let anchor_width = self.anchor_limit(self.width, spec.width);
+        let anchor_height = self.anchor_limit(self.height, spec.height);
+        for y in 0..anchor_height {
+            for x in 0..anchor_width {
+                let idx = self
+                    .index(x, y)
+                    .expect("anchor coordinates should always fit within the grid");
+                cache.walkable[idx] = self.scan_walkable_rect(x, y, spec);
+            }
+        }
+        cache.built_generation = Some(self.generation);
+        self.clearance_caches.insert(spec, cache);
+    }
+
+    fn refresh_caches_for_rects(&mut self, rects: &[(u32, u32, u32, u32)]) {
+        let specs: Vec<FootprintSpec> = self
+            .clearance_caches
+            .iter()
+            .filter_map(|(spec, cache)| cache.built_generation.map(|_| *spec))
+            .collect();
+        for spec in specs {
+            let stale = self
+                .clearance_caches
+                .get(&spec)
+                .and_then(|cache| cache.built_generation)
+                != Some(self.generation.saturating_sub(1));
+            if stale {
+                self.rebuild_cache_for_spec(spec);
+                continue;
+            }
+            let anchor_width = self.anchor_limit(self.width, spec.width);
+            let anchor_height = self.anchor_limit(self.height, spec.height);
+            let Some(cache) = self.clearance_caches.get_mut(&spec) else {
+                continue;
+            };
+            for &(x, y, w, h) in rects {
+                let start_x = x.saturating_sub(spec.width.saturating_sub(1));
+                let start_y = y.saturating_sub(spec.height.saturating_sub(1));
+                let end_x = x.saturating_add(w).min(anchor_width);
+                let end_y = y.saturating_add(h).min(anchor_height);
+                for ay in start_y..end_y {
+                    for ax in start_x..end_x {
+                        let idx = Self::flat_index(self.width, ax, ay);
+                        cache.walkable[idx] = Self::scan_walkable_rect_in(
+                            &self.costs,
+                            self.width,
+                            self.height,
+                            ax,
+                            ay,
+                            spec,
+                        );
+                    }
+                }
+            }
+            cache.built_generation = Some(self.generation);
+        }
+    }
+
+    fn anchor_limit(&self, total: u32, footprint: u32) -> u32 {
+        total
+            .checked_sub(footprint)
+            .map(|remaining| remaining + 1)
+            .unwrap_or(0)
+    }
+
+    fn clamp_rect(&self, x: u32, y: u32, w: u32, h: u32) -> Option<(u32, u32, u32, u32)> {
+        if w == 0 || h == 0 || x >= self.width || y >= self.height {
+            return None;
+        }
+        let x_end = x.saturating_add(w).min(self.width);
+        let y_end = y.saturating_add(h).min(self.height);
+        if x_end <= x || y_end <= y {
+            None
+        } else {
+            Some((x, y, x_end - x, y_end - y))
+        }
+    }
+
+    fn record_committed_change(
+        &mut self,
+        x: u32,
+        y: u32,
+        w: u32,
+        h: u32,
+        rebuild: UpdateRebuildMode,
+    ) {
+        let Some(rect) = self.clamp_rect(x, y, w, h) else {
+            return;
+        };
+        if let Some(pending) = self.pending_update.as_mut() {
+            pending.dirty_rects.push(rect);
+        } else {
+            self.finish_committed_changes(&[rect], rebuild);
+        }
+    }
+
+    fn finish_committed_changes(
+        &mut self,
+        rects: &[(u32, u32, u32, u32)],
+        rebuild: UpdateRebuildMode,
+    ) {
+        if rects.is_empty() {
+            return;
+        }
+        self.generation = self.generation.saturating_add(1);
+        self.dirty_rects.extend_from_slice(rects);
+        match rebuild {
+            UpdateRebuildMode::None => {}
+            UpdateRebuildMode::DirtyChunks => self.refresh_caches_for_rects(rects),
+            UpdateRebuildMode::Full => {
+                let specs: Vec<FootprintSpec> = self.clearance_caches.keys().copied().collect();
+                self.rebuild_clearance_specs(&specs);
+            }
+        }
     }
 }

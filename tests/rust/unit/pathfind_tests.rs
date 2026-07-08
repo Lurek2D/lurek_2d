@@ -3,8 +3,8 @@
 // TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
 
 use lurek2d::pathfind::{
-    AsyncPathRequest, DiagonalMode, IsoGrid, NavGrid, PathEventStatus, PathThreadPool,
-    UnitPathfinder,
+    build_abstract, hpa_paths_to_goal, AsyncPathRequest, DiagonalMode, FlowField, FootprintSpec,
+    IsoGrid, NavGrid, ORCAAgent, ORCASolver, PathEventStatus, PathThreadPool, UnitPathfinder,
 };
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -67,6 +67,11 @@ mod async_pool_tests {
                 goal: (63, 63),
                 unit_size: 1,
                 stream_budget: 4,
+                batch_starts: None,
+                batch_targets: None,
+                batch_pairs: None,
+                batch_footprint: None,
+                batch_max_steps: 0,
             };
             assert!(pool.submit_query(request));
             collect_events_until(&pool, |events| {
@@ -96,6 +101,11 @@ mod async_pool_tests {
             goal: (95, 95),
             unit_size: 1,
             stream_budget: 8,
+            batch_starts: None,
+            batch_targets: None,
+            batch_pairs: None,
+            batch_footprint: None,
+            batch_max_steps: 0,
         };
         assert!(pool.submit_query(request));
         pool.cancel(2);
@@ -123,6 +133,11 @@ mod async_pool_tests {
             goal: (95, 95),
             unit_size: 1,
             stream_budget: 8,
+            batch_starts: None,
+            batch_targets: None,
+            batch_pairs: None,
+            batch_footprint: None,
+            batch_max_steps: 0,
         }));
         assert!(pool.submit_query(AsyncPathRequest {
             id: 4,
@@ -134,6 +149,11 @@ mod async_pool_tests {
             goal: (95, 95),
             unit_size: 1,
             stream_budget: 8,
+            batch_starts: None,
+            batch_targets: None,
+            batch_pairs: None,
+            batch_footprint: None,
+            batch_max_steps: 0,
         }));
 
         let events = collect_events_until(&pool, |events| {
@@ -151,6 +171,162 @@ mod async_pool_tests {
         assert!(events
             .iter()
             .any(|e| e.id == 4 && e.status == PathEventStatus::Complete && e.final_event));
+    }
+
+    #[test]
+    fn batch_request_emits_grouped_shared_goal_paths() {
+        let pool = PathThreadPool::new(1);
+        let mut grid = NavGrid::new(64, 64);
+        grid.fill(1);
+        assert!(pool.submit_query(AsyncPathRequest {
+            id: 99,
+            owner_id: 99,
+            version: 0,
+            priority: 0,
+            grid,
+            start: (0, 0),
+            goal: (0, 0),
+            unit_size: 1,
+            stream_budget: 0,
+            batch_starts: Some(vec![(0, 0), (2, 2), (10, 10)]),
+            batch_targets: Some(vec![(60, 60)]),
+            batch_pairs: None,
+            batch_footprint: Some(FootprintSpec::new(1, 1)),
+            batch_max_steps: 0,
+        }));
+
+        let events = collect_events_until(&pool, |events| {
+            events.iter().any(|e| e.id == 99 && e.final_event)
+        });
+        let event = events
+            .iter()
+            .find(|e| e.id == 99 && e.final_event)
+            .expect("final grouped event");
+        assert_eq!(PathEventStatus::Complete, event.status);
+        assert!(event.path.is_none());
+        let paths = event.paths.as_ref().expect("grouped paths payload");
+        assert_eq!(3, paths.len());
+        assert_eq!(
+            Some(&(60, 60)),
+            paths[0].as_ref().and_then(|path| path.last())
+        );
+    }
+
+    #[test]
+    fn paired_batch_request_reuses_goal_work_and_preserves_pair_order() {
+        let pool = PathThreadPool::new(1);
+        let mut grid = NavGrid::new(64, 64);
+        grid.fill(1);
+        assert!(pool.submit_query(AsyncPathRequest {
+            id: 100,
+            owner_id: 100,
+            version: 0,
+            priority: 0,
+            grid,
+            start: (0, 0),
+            goal: (0, 0),
+            unit_size: 1,
+            stream_budget: 0,
+            batch_starts: None,
+            batch_targets: None,
+            batch_pairs: Some(vec![
+                ((0, 0), (60, 60)),
+                ((2, 2), (60, 60)),
+                ((10, 10), (40, 40)),
+            ]),
+            batch_footprint: Some(FootprintSpec::new(1, 1)),
+            batch_max_steps: 0,
+        }));
+
+        let events = collect_events_until(&pool, |events| {
+            events.iter().any(|e| e.id == 100 && e.final_event)
+        });
+        let event = events
+            .iter()
+            .find(|e| e.id == 100 && e.final_event)
+            .expect("final paired event");
+        assert_eq!(PathEventStatus::Complete, event.status);
+        let paths = event.paths.as_ref().expect("paired paths payload");
+        assert_eq!(3, paths.len());
+        assert_eq!(
+            Some(&(60, 60)),
+            paths[0].as_ref().and_then(|path| path.last())
+        );
+        assert_eq!(
+            Some(&(60, 60)),
+            paths[1].as_ref().and_then(|path| path.last())
+        );
+        assert_eq!(
+            Some(&(40, 40)),
+            paths[2].as_ref().and_then(|path| path.last())
+        );
+    }
+}
+
+mod orca_tests {
+    use super::*;
+
+    #[test]
+    fn stable_id_updates_keep_latest_safe_velocity_addressable() {
+        let mut solver = ORCASolver::new(1.5);
+        solver.set_agent(99, ORCAAgent::new(0.0, 0.0, 0.5, 4.0));
+        solver.set_agent(7, ORCAAgent::new(5.0, 0.0, 0.5, 4.0));
+        solver
+            .agent_for_key_mut(99)
+            .expect("stable id agent")
+            .preferred_velocity = (1.0, 0.0);
+        solver
+            .agent_for_key_mut(7)
+            .expect("stable id agent")
+            .preferred_velocity = (-1.0, 0.0);
+
+        solver.compute_with_budget(0.016, None);
+
+        let velocity = solver
+            .agent_for_key(99)
+            .expect("stable id lookup")
+            .safe_velocity;
+        assert!(velocity.0.is_finite());
+        assert_eq!(solver.agent_count(), 2);
+    }
+
+    #[test]
+    fn bounded_neighbors_are_reported_in_stats() {
+        let mut solver = ORCASolver::new(1.5);
+        solver.set_spatial_cell_size(8.0);
+        solver.set_neighbor_radius(20.0);
+        solver.set_max_neighbors(2);
+        for i in 0..6 {
+            let mut agent = ORCAAgent::new(i as f32 * 2.0, 0.0, 0.5, 3.0);
+            agent.preferred_velocity = (1.0, 0.0);
+            solver.add_agent(agent);
+        }
+
+        solver.compute_with_budget(0.016, None);
+
+        let stats = solver.last_stats();
+        assert_eq!(stats.active_agents, 6);
+        assert_eq!(stats.processed_agents, 6);
+        assert!(stats.max_neighbors_used <= 2);
+        assert!(stats.neighbors_used <= 12);
+        assert!(stats.spatial_cells >= 1);
+    }
+
+    #[test]
+    fn compute_budget_can_cut_off_work_and_report_exhaustion() {
+        let mut solver = ORCASolver::new(1.5);
+        for i in 0..256 {
+            let mut agent = ORCAAgent::new((i % 32) as f32, (i / 32) as f32, 0.5, 3.0);
+            agent.preferred_velocity = (1.0, 0.0);
+            solver.add_agent(agent);
+        }
+
+        solver.compute_with_budget(0.016, Some(0.0));
+
+        let stats = solver.last_stats();
+        assert_eq!(stats.active_agents, 256);
+        assert_eq!(stats.processed_agents, 0);
+        assert!(stats.budget_exhausted);
     }
 }
 
@@ -378,6 +554,61 @@ mod nav_grid_internal_tests {
         g.fill_rect(3, 3, u32::MAX, u32::MAX, 9);
         assert_eq!(g.get_cost(3, 3), 9);
     }
+
+    #[test]
+    fn generation_increments_once_for_batched_update_commit() {
+        let mut g = NavGrid::new(8, 8);
+        assert_eq!(g.get_generation(), 0);
+
+        g.begin_update();
+        g.set_blocked_rect(1, 1, 2, 2, true);
+        g.set_cost_rect(4, 4, 2, 2, 9);
+
+        assert_eq!(g.get_generation(), 0);
+        assert_eq!(
+            g.commit_update(lurek2d::pathfind::UpdateRebuildMode::DirtyChunks),
+            2
+        );
+        assert_eq!(g.get_generation(), 1);
+        assert_eq!(g.dirty_rects().len(), 2);
+    }
+
+    #[test]
+    fn named_footprints_rebuild_and_query_rectangles() {
+        let mut g = NavGrid::new(6, 6);
+        g.define_footprint("tank", 2, 2);
+        g.set_blocked(2, 2, true);
+
+        assert_eq!(g.rebuild_clearance(None), 1);
+        assert!(!g.is_walkable_for("tank", 1, 1));
+        assert!(g.is_walkable_for("tank", 3, 3));
+    }
+
+    #[test]
+    fn square_cache_accelerates_unit_size_queries_after_rebuild() {
+        let mut g = NavGrid::new(6, 6);
+        g.define_footprint("square2", 2, 2);
+        g.rebuild_clearance(None);
+        assert!(g.is_walkable(0, 0, 2));
+
+        g.set_blocked(1, 1, true);
+        assert!(!g.is_walkable(0, 0, 2));
+    }
+
+    #[test]
+    fn commit_update_none_keeps_queries_correct_via_fallback_scan() {
+        let mut g = NavGrid::new(6, 6);
+        g.define_footprint("tank", 2, 2);
+        g.rebuild_clearance(None);
+
+        g.begin_update();
+        g.set_blocked_rect(1, 1, 1, 1, true);
+        assert_eq!(
+            g.commit_update(lurek2d::pathfind::UpdateRebuildMode::None),
+            1
+        );
+        assert!(!g.is_walkable_for("tank", 1, 1));
+    }
 }
 
 mod unit_pathfinder_internal_tests {
@@ -397,5 +628,148 @@ mod unit_pathfinder_internal_tests {
     fn unreachable_out_of_bounds_returns_false() {
         let pathfinder = new_pathfinder(4, 4);
         assert!(!pathfinder.is_reachable(0, 0, 99, 99, 1));
+    }
+
+    #[test]
+    fn shared_goal_cache_reuses_one_field_for_many_starts() {
+        let mut pathfinder = new_pathfinder(8, 8);
+
+        let first = pathfinder.find_paths_to_goal(&[(0, 0), (1, 1)], (6, 6), 1, 0);
+        assert_eq!(1, pathfinder.get_shared_goal_cache_size());
+        assert!(first[0].as_ref().is_some_and(|path| !path.is_empty()));
+
+        let second = pathfinder.find_paths_to_goal(&[(2, 2), (3, 3)], (6, 6), 1, 0);
+        assert_eq!(1, pathfinder.get_shared_goal_cache_size());
+        assert!(second[1].as_ref().is_some_and(|path| !path.is_empty()));
+    }
+
+    #[test]
+    fn shared_goal_cache_clears_when_generation_changes() {
+        let mut pathfinder = new_pathfinder(8, 8);
+
+        pathfinder.find_paths_to_goal(&[(0, 0)], (6, 6), 1, 0);
+        assert_eq!(1, pathfinder.get_shared_goal_cache_size());
+
+        pathfinder.nav_grid().borrow_mut().set_blocked(1, 1, true);
+        pathfinder.find_paths_to_goal(&[(0, 0)], (6, 6), 1, 0);
+        assert_eq!(1, pathfinder.get_shared_goal_cache_size());
+    }
+
+    #[test]
+    fn shared_goal_named_footprint_uses_rectangular_clearance() {
+        let mut pathfinder = new_pathfinder(6, 6);
+        {
+            let mut grid = pathfinder.nav_grid().borrow_mut();
+            grid.define_footprint("tank", 2, 2);
+            grid.set_blocked(1, 1, true);
+        }
+
+        let paths = pathfinder
+            .find_paths_to_goal_for(&[(0, 0), (3, 3)], (4, 4), "tank", 0)
+            .expect("known footprint");
+
+        assert!(paths[0].is_none());
+        assert!(paths[1].as_ref().is_some_and(|path| !path.is_empty()));
+    }
+
+    #[test]
+    fn shared_flow_field_cache_tracks_hits_and_normalizes_target_order() {
+        let mut pathfinder = new_pathfinder(8, 8);
+
+        let first = pathfinder.get_shared_flow_field_multi(&[(6, 6), (5, 5), (6, 6)], 1);
+        assert_eq!(1, pathfinder.get_shared_goal_cache_size());
+        assert_eq!(0, pathfinder.get_shared_goal_cache_hits());
+        assert_eq!(1, pathfinder.get_shared_goal_cache_misses());
+        assert!(first.get_cost_to_target(0, 0).is_finite());
+
+        let second = pathfinder.get_shared_flow_field_multi(&[(5, 5), (6, 6)], 1);
+        assert_eq!(1, pathfinder.get_shared_goal_cache_size());
+        assert_eq!(1, pathfinder.get_shared_goal_cache_hits());
+        assert_eq!(1, pathfinder.get_shared_goal_cache_misses());
+        assert_eq!(first.get_targets(), second.get_targets());
+    }
+}
+
+mod flow_field_internal_tests {
+    use super::*;
+
+    fn new_flow_field(width: u32, height: u32) -> (Rc<RefCell<NavGrid>>, FlowField) {
+        let grid = Rc::new(RefCell::new(NavGrid::new(width, height)));
+        let flow = FlowField::new(grid.clone());
+        (grid, flow)
+    }
+
+    #[test]
+    fn repeated_calculate_reuses_matching_request() {
+        let (_grid, mut flow) = new_flow_field(8, 8);
+
+        assert!(flow.calculate(6, 6, 1));
+        assert_eq!(1, flow.get_build_count());
+        assert_eq!(Some(0), flow.get_generation());
+
+        assert!(!flow.calculate(6, 6, 1));
+        assert_eq!(1, flow.get_build_count());
+    }
+
+    #[test]
+    fn grid_generation_change_invalidates_cached_build() {
+        let (grid, mut flow) = new_flow_field(8, 8);
+
+        assert!(flow.calculate(6, 6, 1));
+        grid.borrow_mut().set_blocked(1, 1, true);
+
+        assert!(flow.calculate(6, 6, 1));
+        assert_eq!(2, flow.get_build_count());
+        assert_eq!(Some(1), flow.get_generation());
+    }
+
+    #[test]
+    fn path_from_reconstructs_a_route_to_the_goal() {
+        let (_grid, mut flow) = new_flow_field(8, 8);
+
+        flow.calculate(6, 6, 1);
+        let path = flow.path_from(0, 0, 0).expect("path from corner");
+
+        assert_eq!(Some(&(0, 0)), path.first());
+        assert_eq!(Some(&(6, 6)), path.last());
+        assert!(path.len() > 1);
+    }
+
+    #[test]
+    fn calculate_for_uses_named_rectangular_footprints() {
+        let (grid, mut flow) = new_flow_field(6, 6);
+        {
+            let mut grid = grid.borrow_mut();
+            grid.define_footprint("tank", 2, 2);
+            grid.set_blocked(1, 1, true);
+        }
+
+        assert!(flow.calculate_for("tank", 4, 4).expect("known footprint"));
+        assert!(flow.get_cost_to_target(0, 0).is_infinite());
+        assert!(flow.get_cost_to_target(3, 3).is_finite());
+    }
+}
+
+mod hpa_internal_tests {
+    use super::*;
+
+    #[test]
+    fn hpa_paths_to_goal_reuses_one_goal_setup_for_many_starts() {
+        let mut grid = NavGrid::new(24, 24);
+        grid.fill(1);
+        grid.set_chunk_size(6);
+        let graph = build_abstract(&grid, grid.get_chunk_size());
+
+        let paths = hpa_paths_to_goal(&grid, &graph, &[(0, 0), (1, 1), (5, 5)], (20, 20), 1);
+
+        assert_eq!(3, paths.len());
+        assert_eq!(
+            Some(&(20, 20)),
+            paths[0].as_ref().and_then(|path| path.last())
+        );
+        assert_eq!(
+            Some(&(20, 20)),
+            paths[2].as_ref().and_then(|path| path.last())
+        );
     }
 }

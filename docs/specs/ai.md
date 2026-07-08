@@ -7,6 +7,8 @@
 - Orchestrates agent choices via behavior trees, FSMs, GOAP, HTN, and utility AI.
 - Interprets sensory perception, internal state, goals, plans, and action-selection models.
 - Tracks squad coordination, trait-driven emotional motives, needs, and dramatic pacing.
+- Exposes agent-owned command queues with inspectable order snapshots and drainable lifecycle events.
+- Adds footprint-aware squad slot planning with distance-based ordering, subgroup preservation, and lane-width fallback.
 - Consumes learned policies only through explicit `learning` integration points; ML/RL constructors live under the `learning` module.
 - Controls dramatic pacing waves and optimizes runtime budgets with distance-based LOD tiers.
 
@@ -16,7 +18,7 @@
 - Source path: `src/ai`
 - Binding: `src/lua_api/ai_api.rs`
 - Namespace: `lurek.ai`
-- Lua API surface: `29` functions, `22` types, `204` methods
+- Lua API surface: `29` functions, `22` types, `237` methods
 - User-facing: `true`
 - Plugin tier: `tier_1_plugin`
 
@@ -33,7 +35,9 @@
 - Blackboard-style context storage and shared decision data matter because larger AI systems usually need stable intermediate state. Several subsystems may contribute facts, priorities, or targets, and the module provides a shared surface for that internal coordination.
 - Movement-side helpers are deliberately owned by `pathfind`. Steering stacks, context steering, ORCA-style local avoidance, flow fields, and influence maps live there so navigation and tactical space analysis have one public owner.
 - Squad support extends the module from isolated actors to coordinated groups. Shared group state and coordinated command handling make it possible to express teams or patrols, while pure movement and local-avoidance execution stays in `pathfind`.
+- Formation planning on the squad surface now goes beyond simple offsets. Member footprint metadata, subgroup clustering, and lane-width fallback give Lua enough engine support to express useful RTS-style group movement without re-implementing slot ordering or chokepoint degradation in scripts.
 - Command queues are important because AI output is often not the final physical action. A stable queue boundary separates “what the AI wants next” from “what the actor is currently doing,” which helps with interruption, inspection, and synchronization with animation or movement systems.
+- Agent-owned queues also make RTS-style control practical because Lua can inspect current and pending orders, drain lifecycle events, and clear orders per actor without rebuilding queue state on the script side.
 - Director-style pacing support shows that the module also thinks beyond single actors. Encounter rhythm, phase pressure, tension, spawn pacing, and other orchestration behavior can be represented here when the “agent” is really the game experience itself.
 - Level-of-detail and update-policy support matter for scale. Large groups of intelligent actors can become expensive quickly, so the module includes ways to throttle, schedule, or simplify updates without abandoning the common behavior vocabulary.
 - Debug rendering and inspection support are essential for real use. Visualizing state machines, behavior trees, perception ranges, chosen targets, or queue contents shortens the path from “the agent behaved strangely” to “here is the exact internal reason.”
@@ -394,9 +398,18 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 - `LAIWorld:addAgent(name) -> LBot`: Creates a named agent in this world and returns a handle that can edit its movement and decision state.
 - `LAIWorld:getAgent(name) -> LuaValue`: Returns the named agent handle when it exists in this world.
 - `LAIWorld:getAgentCount() -> integer`: Returns the number of agents currently stored in this world.
+- `LAIWorld:getAutoAcquireBudget() -> integer`: Returns the per-update budget used for stance-driven hostile-acquisition queries.
 - `LAIWorld:getGlobalBlackboard() -> LAIBlackboard`: Returns a blackboard snapshot containing the world's shared AI facts.
 - `LAIWorld:getLastCallbackErrors() -> table`: Returns callback errors recorded during the most recent `update` call.
+- `LAIWorld:getOrderArrivalRadius() -> number`: Returns the move-order arrival threshold used by world update.
+- `LAIWorld:getOrderRuntimeStats() -> table`: Returns statistics from the most recent world update's order execution and acquisition work.
+- `LAIWorld:getSpatialCellSize() -> number`: Returns the spatial-hash cell size used by nearby-agent queries in this world.
+- `LAIWorld:getSpatialQueryStats() -> table`: Returns statistics from the most recent nearby-agent query.
+- `LAIWorld:queryAgentsInRadius(x, y, radius, opts?) -> table`: Returns nearby agents by using the world's persistent spatial index instead of a full Lua scan.
 - `LAIWorld:removeAgent(agent) -> nil`: Removes an agent from this world by using an existing agent handle.
+- `LAIWorld:setAutoAcquireBudget(budget) -> nil`: Sets the maximum number of stance-driven hostile-acquisition queries attempted in one update.
+- `LAIWorld:setOrderArrivalRadius(radius) -> nil`: Sets the move-order arrival threshold used by world update when completing queued move orders.
+- `LAIWorld:setSpatialCellSize(size) -> nil`: Sets the spatial-hash cell size used by nearby-agent queries in this world.
 - `LAIWorld:type() -> string`: Returns the Lua-visible type name for this AI world handle.
 - `LAIWorld:typeOf(name) -> boolean`: Returns whether this AI world handle matches a supported type name.
 - `LAIWorld:update(dt) -> nil`: Advances the world simulation and invokes custom decision callbacks for agents that use a custom model.
@@ -462,15 +475,24 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 
 ##### Methods
 
+- `LBot:acquireTarget(opts?) -> LuaValue`: Returns the nearest target selected from this agent's stance-driven hostile-acquisition query.
 - `LBot:addTag(tag) -> nil`: Adds a tag string to this agent when the agent still exists in its world.
 - `LBot:addTraitModifier(trait_name, delta, duration?, source) -> nil`: Adds a temporary or permanent modifier to one trait on this agent.
+- `LBot:clearOrders(reason?) -> integer`: Clears every queued order owned by this agent.
+- `LBot:drainCommandEvents() -> table`: Returns and clears queued order lifecycle events for this agent.
+- `LBot:findHostilesInRange(radius?, opts?) -> table`: Returns nearby hostile agents by using the world's spatial index and this agent's team as the hostile reference.
 - `LBot:getBlackboard() -> LAIBlackboard`: Returns a blackboard snapshot for this agent or an empty blackboard when the agent has been removed.
+- `LBot:getCommandQueue() -> LCommandQueue`: Returns this agent's owned command queue handle for order staging and inspection.
+- `LBot:getCurrentOrder() -> LuaValue`: Returns the current queued order snapshot for this agent when one exists.
 - `LBot:getDecisionModel() -> string`: Returns this agent's decision model name or the default model name for a missing agent.
 - `LBot:getMaxForce() -> number`: Returns this agent's maximum steering force or the default force for a missing agent.
 - `LBot:getMaxSpeed() -> number`: Returns this agent's maximum movement speed or the default speed for a missing agent.
 - `LBot:getName() -> string`: Returns this agent's stable world name.
+- `LBot:getOrderRuntimeState() -> table`: Returns the live soft-interruption state used by world update for temporary engagement overrides.
 - `LBot:getPosition() -> number, number`: Returns this agent's world position or the origin when the agent has been removed.
 - `LBot:getPriority() -> integer`: Returns this agent's integer priority or zero when the agent has been removed.
+- `LBot:getStance() -> table`: Returns this agent's current stance profile, including built-in name and effective override values.
+- `LBot:getTeam() -> integer`: Returns this agent's integer team identifier or zero when the agent has been removed.
 - `LBot:getTrait(name) -> number`: Returns one effective trait value from this agent's profile.
 - `LBot:getTraitProfile() -> LuaValue`: Returns a snapshot copy of this agent's trait profile when one is assigned.
 - `LBot:getVelocity() -> number, number`: Returns this agent's velocity vector or zero velocity when the agent has been removed.
@@ -483,6 +505,8 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 - `LBot:setMaxSpeed(v) -> nil`: Sets this agent's maximum movement speed when the agent still exists in its world.
 - `LBot:setPosition(x, y) -> nil`: Sets this agent's world position when the agent still exists in its world.
 - `LBot:setPriority(p) -> nil`: Sets this agent's integer priority when the agent still exists in its world.
+- `LBot:setStance(stance, opts?) -> nil`: Sets this agent's built-in RTS stance and optionally overrides its acquisition settings.
+- `LBot:setTeam(team) -> nil`: Sets this agent's integer team identifier used by hostile-acquisition queries.
 - `LBot:setTrait(name, value) -> nil`: Sets one trait on this agent, creating an empty profile first when needed.
 - `LBot:setTraitProfile(profile) -> nil`: Copies a trait profile onto this agent so future agent decisions can read commander personality values.
 - `LBot:setVelocity(x, y) -> nil`: Sets this agent's velocity vector when the agent still exists in its world.
@@ -499,15 +523,20 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 
 ##### Methods
 
-- `LCommandQueue:cancelCurrent() -> boolean`: Cancels the currently active command when one exists.
-- `LCommandQueue:clear() -> nil`: Removes every queued command. This method is available to Lua scripts.
-- `LCommandQueue:enqueue(kind, callback, opts?) -> nil`: Adds a command callback to the back of the queue.
+- `LCommandQueue:cancelCurrent(reason?) -> boolean`: Cancels the currently active command when one exists.
+- `LCommandQueue:clear(reason?) -> integer`: Removes every queued command. This method is available to Lua scripts.
+- `LCommandQueue:completeCurrent(reason?) -> LuaValue`: Marks the current command as completed and advances the queue.
+- `LCommandQueue:drainEvents() -> table`: Returns and clears queued lifecycle events.
+- `LCommandQueue:enqueue(kind, callback, opts?) -> integer`: Adds a command callback to the back of the queue.
+- `LCommandQueue:failCurrent(reason?) -> boolean`: Marks the current command as failed and advances the queue.
 - `LCommandQueue:getCount() -> integer`: Returns the number of commands currently queued.
+- `LCommandQueue:getCurrent() -> LuaValue`: Returns the full current command snapshot when one exists.
 - `LCommandQueue:getCurrentTarget() -> number, number`: Returns the current command target coordinates.
 - `LCommandQueue:getCurrentType() -> LuaValue`: Returns the type label of the current command when one exists.
+- `LCommandQueue:getPending() -> table`: Returns every pending command snapshot in queue order.
 - `LCommandQueue:isEmpty() -> boolean`: Returns whether the command queue has no commands.
-- `LCommandQueue:pushFront(kind, callback, opts?) -> nil`: Adds a command callback to the front of the queue.
-- `LCommandQueue:replace(kind, callback, opts?) -> nil`: Replaces the queue contents with one command callback.
+- `LCommandQueue:pushFront(kind, callback, opts?) -> integer`: Adds a command callback to the front of the queue.
+- `LCommandQueue:replace(kind, callback, opts?) -> integer`: Replaces the queue contents with one command callback.
 - `LCommandQueue:type() -> string`: Returns the Lua-visible type name for this command queue handle.
 - `LCommandQueue:typeOf(name) -> boolean`: Returns whether this command queue handle matches a supported type name.
 
@@ -633,17 +662,25 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 ##### Methods
 
 - `LSquad:addMember(name) -> nil`: Adds a member name to the squad member list.
+- `LSquad:assignFormationMove(world, leader_x, leader_y, opts?) -> table`: Resolves formation slots and applies queued `move` orders to matching agents in the supplied world.
 - `LSquad:getBlackboard() -> LAIBlackboard`: Returns a blackboard snapshot for this squad.
 - `LSquad:getFormation() -> string`: Returns the current squad formation type name.
+- `LSquad:getFormationBehavior() -> table`: Returns the current formation assignment behavior settings.
 - `LSquad:getFormationPosition(member_idx, leader_x, leader_y) -> number, number`: Returns a member's target formation position relative to the leader position.
+- `LSquad:getFormationSlots(leader_x, leader_y, opts?) -> table`: Returns resolved formation slot assignments for every member, optionally using current member positions and lane width.
 - `LSquad:getFormationSpacing() -> number`: Returns the spacing used by squad formation positioning.
+- `LSquad:getFormationSummary(leader_x, leader_y, opts?) -> table`: Returns formation layout metadata after slot assignment and fallback policy are resolved.
 - `LSquad:getLeader() -> LuaValue`: Returns the squad leader name when one is assigned.
 - `LSquad:getMemberCount() -> integer`: Returns the number of members in this squad.
+- `LSquad:getMemberProfile(name) -> table`: Returns the stored footprint and subgroup metadata for one member.
 - `LSquad:getMembers() -> string[]`: Returns all squad members in an array-style Lua table.
 - `LSquad:getName() -> string`: Returns the squad name. This method is available to Lua scripts.
 - `LSquad:removeMember(name) -> nil`: Removes every member entry with the given name.
 - `LSquad:setFormation(ftype, spacing?) -> nil`: Sets the squad formation type and optionally updates spacing.
+- `LSquad:setFormationBehavior(sort_mode, fallback_mode?, preserve_subgroups?) -> nil`: Sets formation assignment behavior knobs used for slot ordering and chokepoint fallback.
 - `LSquad:setLeader(name) -> nil`: Sets the squad leader name. This method is available to Lua scripts.
+- `LSquad:setMemberProfile(name, opts) -> nil`: Stores footprint and subgroup metadata used during formation slot assignment.
+- `LSquad:submitFormationPaths(world, grid, leader_x, leader_y, opts) -> table`: Resolves formation slots, converts world positions into navigation cells, and submits one async paired path batch.
 - `LSquad:type() -> string`: Returns the Lua-visible type name for this squad handle.
 - `LSquad:typeOf(name) -> boolean`: Returns whether this squad handle matches a supported type name.
 

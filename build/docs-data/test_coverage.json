@@ -1,9 +1,9 @@
 {
   "rust": {
-    "total": 7236,
-    "covered": 4095,
-    "uncovered": 3141,
-    "coverage_pct": 56.6,
+    "total": 7325,
+    "covered": 4185,
+    "uncovered": 3140,
+    "coverage_pct": 57.1,
     "covered_items": [
       {
         "module": "agent",
@@ -375,19 +375,37 @@
         "module": "ai",
         "name": "DecisionModel::parse_str",
         "file": "src/ai/agent.rs",
-        "line": 34
+        "line": 35
       },
       {
         "module": "ai",
         "name": "DecisionModel::as_str",
         "file": "src/ai/agent.rs",
-        "line": 45
+        "line": 46
+      },
+      {
+        "module": "ai",
+        "name": "AgentStance::parse_str",
+        "file": "src/ai/agent.rs",
+        "line": 73
+      },
+      {
+        "module": "ai",
+        "name": "AgentStance::as_str",
+        "file": "src/ai/agent.rs",
+        "line": 84
+      },
+      {
+        "module": "ai",
+        "name": "AgentStance::default_profile",
+        "file": "src/ai/agent.rs",
+        "line": 94
       },
       {
         "module": "ai",
         "name": "Agent::new",
         "file": "src/ai/agent.rs",
-        "line": 95
+        "line": 228
       },
       {
         "module": "ai",
@@ -435,37 +453,91 @@
         "module": "ai",
         "name": "CommandQueue::new",
         "file": "src/ai/command_queue.rs",
-        "line": 33
+        "line": 78
+      },
+      {
+        "module": "ai",
+        "name": "CommandQueue::enqueue",
+        "file": "src/ai/command_queue.rs",
+        "line": 87
       },
       {
         "module": "ai",
         "name": "CommandQueue::replace",
         "file": "src/ai/command_queue.rs",
-        "line": 49
+        "line": 104
       },
       {
         "module": "ai",
         "name": "CommandQueue::clear",
         "file": "src/ai/command_queue.rs",
-        "line": 64
+        "line": 129
       },
       {
         "module": "ai",
         "name": "CommandQueue::count",
         "file": "src/ai/command_queue.rs",
-        "line": 70
+        "line": 142
       },
       {
         "module": "ai",
         "name": "CommandQueue::is_empty",
         "file": "src/ai/command_queue.rs",
-        "line": 74
+        "line": 146
+      },
+      {
+        "module": "ai",
+        "name": "CommandQueue::current_type",
+        "file": "src/ai/command_queue.rs",
+        "line": 150
+      },
+      {
+        "module": "ai",
+        "name": "CommandQueue::current_id",
+        "file": "src/ai/command_queue.rs",
+        "line": 154
+      },
+      {
+        "module": "ai",
+        "name": "CommandQueue::current",
+        "file": "src/ai/command_queue.rs",
+        "line": 165
+      },
+      {
+        "module": "ai",
+        "name": "CommandQueue::pending",
+        "file": "src/ai/command_queue.rs",
+        "line": 169
       },
       {
         "module": "ai",
         "name": "CommandQueue::advance",
         "file": "src/ai/command_queue.rs",
-        "line": 89
+        "line": 173
+      },
+      {
+        "module": "ai",
+        "name": "CommandQueue::complete_current",
+        "file": "src/ai/command_queue.rs",
+        "line": 177
+      },
+      {
+        "module": "ai",
+        "name": "CommandQueue::drain_events",
+        "file": "src/ai/command_queue.rs",
+        "line": 193
+      },
+      {
+        "module": "ai",
+        "name": "CommandQueue::enqueue_raw",
+        "file": "src/ai/command_queue.rs",
+        "line": 215
+      },
+      {
+        "module": "ai",
+        "name": "Command::snapshot",
+        "file": "src/ai/command_queue.rs",
+        "line": 307
       },
       {
         "module": "ai",
@@ -879,19 +951,91 @@
         "module": "ai",
         "name": "FormationType::parse_str",
         "file": "src/ai/squad.rs",
-        "line": 24
+        "line": 28
       },
       {
         "module": "ai",
         "name": "FormationType::as_str",
         "file": "src/ai/squad.rs",
-        "line": 34
+        "line": 38
+      },
+      {
+        "module": "ai",
+        "name": "FormationSortMode::parse_str",
+        "file": "src/ai/squad.rs",
+        "line": 58
+      },
+      {
+        "module": "ai",
+        "name": "FormationSortMode::as_str",
+        "file": "src/ai/squad.rs",
+        "line": 65
+      },
+      {
+        "module": "ai",
+        "name": "FormationFallbackMode::parse_str",
+        "file": "src/ai/squad.rs",
+        "line": 82
+      },
+      {
+        "module": "ai",
+        "name": "FormationFallbackMode::as_str",
+        "file": "src/ai/squad.rs",
+        "line": 89
       },
       {
         "module": "ai",
         "name": "Squad::new",
         "file": "src/ai/squad.rs",
-        "line": 61
+        "line": 203
+      },
+      {
+        "module": "ai",
+        "name": "Squad::add_member",
+        "file": "src/ai/squad.rs",
+        "line": 222
+      },
+      {
+        "module": "ai",
+        "name": "Squad::set_formation",
+        "file": "src/ai/squad.rs",
+        "line": 236
+      },
+      {
+        "module": "ai",
+        "name": "Squad::set_formation_behavior",
+        "file": "src/ai/squad.rs",
+        "line": 243
+      },
+      {
+        "module": "ai",
+        "name": "Squad::set_member_profile",
+        "file": "src/ai/squad.rs",
+        "line": 254
+      },
+      {
+        "module": "ai",
+        "name": "Squad::member_profile",
+        "file": "src/ai/squad.rs",
+        "line": 258
+      },
+      {
+        "module": "ai",
+        "name": "Squad::get_formation_layout",
+        "file": "src/ai/squad.rs",
+        "line": 301
+      },
+      {
+        "module": "ai",
+        "name": "Squad::layout_cache_hits",
+        "file": "src/ai/squad.rs",
+        "line": 347
+      },
+      {
+        "module": "ai",
+        "name": "Squad::layout_cache_misses",
+        "file": "src/ai/squad.rs",
+        "line": 352
       },
       {
         "module": "ai",
@@ -1113,31 +1257,103 @@
         "module": "ai",
         "name": "AIWorld::new",
         "file": "src/ai/world.rs",
-        "line": 20
+        "line": 92
       },
       {
         "module": "ai",
         "name": "AIWorld::add_agent",
         "file": "src/ai/world.rs",
-        "line": 28
+        "line": 108
       },
       {
         "module": "ai",
         "name": "AIWorld::agent",
         "file": "src/ai/world.rs",
-        "line": 57
+        "line": 139
       },
       {
         "module": "ai",
         "name": "AIWorld::agent_mut",
         "file": "src/ai/world.rs",
-        "line": 61
+        "line": 143
+      },
+      {
+        "module": "ai",
+        "name": "AIWorld::agent_count",
+        "file": "src/ai/world.rs",
+        "line": 151
+      },
+      {
+        "module": "ai",
+        "name": "AIWorld::mark_spatial_dirty",
+        "file": "src/ai/world.rs",
+        "line": 163
+      },
+      {
+        "module": "ai",
+        "name": "AIWorld::spatial_cell_size",
+        "file": "src/ai/world.rs",
+        "line": 167
+      },
+      {
+        "module": "ai",
+        "name": "AIWorld::set_spatial_cell_size",
+        "file": "src/ai/world.rs",
+        "line": 171
+      },
+      {
+        "module": "ai",
+        "name": "AIWorld::spatial_query_stats",
+        "file": "src/ai/world.rs",
+        "line": 176
+      },
+      {
+        "module": "ai",
+        "name": "AIWorld::order_arrival_radius",
+        "file": "src/ai/world.rs",
+        "line": 180
+      },
+      {
+        "module": "ai",
+        "name": "AIWorld::set_order_arrival_radius",
+        "file": "src/ai/world.rs",
+        "line": 184
+      },
+      {
+        "module": "ai",
+        "name": "AIWorld::auto_acquire_budget",
+        "file": "src/ai/world.rs",
+        "line": 188
+      },
+      {
+        "module": "ai",
+        "name": "AIWorld::set_auto_acquire_budget",
+        "file": "src/ai/world.rs",
+        "line": 192
+      },
+      {
+        "module": "ai",
+        "name": "AIWorld::order_runtime_stats",
+        "file": "src/ai/world.rs",
+        "line": 196
+      },
+      {
+        "module": "ai",
+        "name": "AIWorld::query_agents_in_radius",
+        "file": "src/ai/world.rs",
+        "line": 200
+      },
+      {
+        "module": "ai",
+        "name": "AIWorld::acquire_target_for_agent",
+        "file": "src/ai/world.rs",
+        "line": 270
       },
       {
         "module": "ai",
         "name": "AIWorld::update",
         "file": "src/ai/world.rs",
-        "line": 81
+        "line": 308
       },
       {
         "module": "animation",
@@ -2872,6 +3088,12 @@
         "name": "Camera2D::set_target",
         "file": "src/camera/types.rs",
         "line": 437
+      },
+      {
+        "module": "camera",
+        "name": "Camera2D::get_target",
+        "file": "src/camera/types.rs",
+        "line": 441
       },
       {
         "module": "camera",
@@ -4891,6 +5113,12 @@
       },
       {
         "module": "dialog",
+        "name": "DialogSequencer::current_id",
+        "file": "src/dialog/sequencer.rs",
+        "line": 330
+      },
+      {
+        "module": "dialog",
         "name": "DialogSequencer::history",
         "file": "src/dialog/sequencer.rs",
         "line": 369
@@ -6670,6 +6898,12 @@
         "name": "Node::add_demand",
         "file": "src/flownet/node.rs",
         "line": 322
+      },
+      {
+        "module": "flownet",
+        "name": "Node::enqueue",
+        "file": "src/flownet/node.rs",
+        "line": 356
       },
       {
         "module": "flownet",
@@ -10879,6 +11113,12 @@
       },
       {
         "module": "lua_api",
+        "name": "LuaAISystemRuntime::agent_count",
+        "file": "src/lua_api/agent_api.rs",
+        "line": 2136
+      },
+      {
+        "module": "lua_api",
         "name": "LuaAISystemRuntime::build_context",
         "file": "src/lua_api/agent_api.rs",
         "line": 2166
@@ -10911,7 +11151,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2452
+        "line": 3573
       },
       {
         "module": "lua_api",
@@ -11263,9 +11503,21 @@
       },
       {
         "module": "lua_api",
+        "name": "LuaNavGrid::dimensions",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 524
+      },
+      {
+        "module": "lua_api",
+        "name": "LuaNavGrid::footprint",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 528
+      },
+      {
+        "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2537
+        "line": 3235
       },
       {
         "module": "lua_api",
@@ -12544,6 +12796,12 @@
         "name": "SpatialHash::clear",
         "file": "src/math/spatial_hash.rs",
         "line": 106
+      },
+      {
+        "module": "math",
+        "name": "SpatialHash::query_rect",
+        "file": "src/math/spatial_hash.rs",
+        "line": 111
       },
       {
         "module": "math",
@@ -14271,55 +14529,55 @@
         "module": "pathfind",
         "name": "AsyncPathRequest::legacy",
         "file": "src/pathfind/async_pool.rs",
-        "line": 117
+        "line": 154
       },
       {
         "module": "pathfind",
         "name": "PathThreadPool::new",
         "file": "src/pathfind/async_pool.rs",
-        "line": 256
+        "line": 302
       },
       {
         "module": "pathfind",
         "name": "PathThreadPool::submit_query",
         "file": "src/pathfind/async_pool.rs",
-        "line": 429
+        "line": 549
       },
       {
         "module": "pathfind",
         "name": "PathThreadPool::submit",
         "file": "src/pathfind/async_pool.rs",
-        "line": 489
+        "line": 609
       },
       {
         "module": "pathfind",
         "name": "PathThreadPool::poll_events",
         "file": "src/pathfind/async_pool.rs",
-        "line": 507
+        "line": 627
       },
       {
         "module": "pathfind",
         "name": "PathThreadPool::poll",
         "file": "src/pathfind/async_pool.rs",
-        "line": 516
+        "line": 636
       },
       {
         "module": "pathfind",
         "name": "PathThreadPool::cancel",
         "file": "src/pathfind/async_pool.rs",
-        "line": 525
+        "line": 645
       },
       {
         "module": "pathfind",
         "name": "PathThreadPool::set_thread_count",
         "file": "src/pathfind/async_pool.rs",
-        "line": 549
+        "line": 669
       },
       {
         "module": "pathfind",
         "name": "PathThreadPool::get_thread_count",
         "file": "src/pathfind/async_pool.rs",
-        "line": 572
+        "line": 692
       },
       {
         "module": "pathfind",
@@ -14343,43 +14601,79 @@
         "module": "pathfind",
         "name": "FlowField::new",
         "file": "src/pathfind/flow_field.rs",
-        "line": 35
+        "line": 80
       },
       {
         "module": "pathfind",
         "name": "FlowField::calculate",
         "file": "src/pathfind/flow_field.rs",
-        "line": 53
+        "line": 101
+      },
+      {
+        "module": "pathfind",
+        "name": "FlowField::calculate_for",
+        "file": "src/pathfind/flow_field.rs",
+        "line": 110
       },
       {
         "module": "pathfind",
         "name": "FlowField::get_direction",
         "file": "src/pathfind/flow_field.rs",
-        "line": 145
+        "line": 255
+      },
+      {
+        "module": "pathfind",
+        "name": "FlowField::get_cost_to_target",
+        "file": "src/pathfind/flow_field.rs",
+        "line": 267
+      },
+      {
+        "module": "pathfind",
+        "name": "FlowField::get_targets",
+        "file": "src/pathfind/flow_field.rs",
+        "line": 278
+      },
+      {
+        "module": "pathfind",
+        "name": "FlowField::get_generation",
+        "file": "src/pathfind/flow_field.rs",
+        "line": 286
+      },
+      {
+        "module": "pathfind",
+        "name": "FlowField::get_build_count",
+        "file": "src/pathfind/flow_field.rs",
+        "line": 290
       },
       {
         "module": "pathfind",
         "name": "FlowField::get_width",
         "file": "src/pathfind/flow_field.rs",
-        "line": 172
+        "line": 294
       },
       {
         "module": "pathfind",
         "name": "FlowField::get_height",
         "file": "src/pathfind/flow_field.rs",
-        "line": 176
+        "line": 298
+      },
+      {
+        "module": "pathfind",
+        "name": "FlowField::path_from",
+        "file": "src/pathfind/flow_field.rs",
+        "line": 302
       },
       {
         "module": "pathfind",
         "name": "FlowField::steer",
         "file": "src/pathfind/flow_field.rs",
-        "line": 180
+        "line": 357
       },
       {
         "module": "pathfind",
         "name": "FlowField::draw_to_image",
         "file": "src/pathfind/flow_field.rs",
-        "line": 200
+        "line": 377
       },
       {
         "module": "pathfind",
@@ -14527,6 +14821,12 @@
       },
       {
         "module": "pathfind",
+        "name": "Grid::is_walkable",
+        "file": "src/pathfind/grid.rs",
+        "line": 96
+      },
+      {
+        "module": "pathfind",
         "name": "Grid::set_cost",
         "file": "src/pathfind/grid.rs",
         "line": 100
@@ -14587,9 +14887,21 @@
       },
       {
         "module": "pathfind",
+        "name": "build_abstract",
+        "file": "src/pathfind/hpa.rs",
+        "line": 130
+      },
+      {
+        "module": "pathfind",
         "name": "is_reachable",
         "file": "src/pathfind/hpa.rs",
-        "line": 420
+        "line": 528
+      },
+      {
+        "module": "pathfind",
+        "name": "hpa_paths_to_goal",
+        "file": "src/pathfind/hpa.rs",
+        "line": 622
       },
       {
         "module": "pathfind",
@@ -14638,6 +14950,12 @@
         "name": "InfluenceMap::clear_all",
         "file": "src/pathfind/influence_map.rs",
         "line": 165
+      },
+      {
+        "module": "pathfind",
+        "name": "InfluenceMap::query_rect",
+        "file": "src/pathfind/influence_map.rs",
+        "line": 215
       },
       {
         "module": "pathfind",
@@ -14721,109 +15039,193 @@
         "module": "pathfind",
         "name": "DiagonalMode::from_lua_str",
         "file": "src/pathfind/nav_grid.rs",
-        "line": 24
+        "line": 25
       },
       {
         "module": "pathfind",
         "name": "DiagonalMode::to_lua_str",
         "file": "src/pathfind/nav_grid.rs",
-        "line": 33
+        "line": 34
+      },
+      {
+        "module": "pathfind",
+        "name": "UpdateRebuildMode::from_lua_str",
+        "file": "src/pathfind/nav_grid.rs",
+        "line": 55
+      },
+      {
+        "module": "pathfind",
+        "name": "UpdateRebuildMode::to_lua_str",
+        "file": "src/pathfind/nav_grid.rs",
+        "line": 65
+      },
+      {
+        "module": "pathfind",
+        "name": "FootprintSpec::new",
+        "file": "src/pathfind/nav_grid.rs",
+        "line": 83
       },
       {
         "module": "pathfind",
         "name": "NavGrid::new",
         "file": "src/pathfind/nav_grid.rs",
-        "line": 78
+        "line": 159
       },
       {
         "module": "pathfind",
         "name": "NavGrid::from_costs",
         "file": "src/pathfind/nav_grid.rs",
-        "line": 90
+        "line": 175
       },
       {
         "module": "pathfind",
         "name": "NavGrid::get_width",
         "file": "src/pathfind/nav_grid.rs",
-        "line": 107
+        "line": 196
       },
       {
         "module": "pathfind",
         "name": "NavGrid::get_height",
         "file": "src/pathfind/nav_grid.rs",
-        "line": 111
+        "line": 200
       },
       {
         "module": "pathfind",
         "name": "NavGrid::get_dimensions",
         "file": "src/pathfind/nav_grid.rs",
-        "line": 115
+        "line": 204
+      },
+      {
+        "module": "pathfind",
+        "name": "NavGrid::get_generation",
+        "file": "src/pathfind/nav_grid.rs",
+        "line": 208
       },
       {
         "module": "pathfind",
         "name": "NavGrid::get_cost",
         "file": "src/pathfind/nav_grid.rs",
-        "line": 119
+        "line": 212
       },
       {
         "module": "pathfind",
         "name": "NavGrid::set_cost",
         "file": "src/pathfind/nav_grid.rs",
-        "line": 123
+        "line": 216
       },
       {
         "module": "pathfind",
         "name": "NavGrid::is_blocked",
         "file": "src/pathfind/nav_grid.rs",
-        "line": 130
+        "line": 227
       },
       {
         "module": "pathfind",
         "name": "NavGrid::set_blocked",
         "file": "src/pathfind/nav_grid.rs",
-        "line": 134
+        "line": 231
+      },
+      {
+        "module": "pathfind",
+        "name": "NavGrid::is_walkable",
+        "file": "src/pathfind/nav_grid.rs",
+        "line": 235
+      },
+      {
+        "module": "pathfind",
+        "name": "NavGrid::is_walkable_for",
+        "file": "src/pathfind/nav_grid.rs",
+        "line": 239
+      },
+      {
+        "module": "pathfind",
+        "name": "NavGrid::define_footprint",
+        "file": "src/pathfind/nav_grid.rs",
+        "line": 244
+      },
+      {
+        "module": "pathfind",
+        "name": "NavGrid::rebuild_clearance",
+        "file": "src/pathfind/nav_grid.rs",
+        "line": 262
       },
       {
         "module": "pathfind",
         "name": "NavGrid::fill",
         "file": "src/pathfind/nav_grid.rs",
-        "line": 159
+        "line": 268
       },
       {
         "module": "pathfind",
         "name": "NavGrid::fill_rect",
         "file": "src/pathfind/nav_grid.rs",
-        "line": 163
+        "line": 282
+      },
+      {
+        "module": "pathfind",
+        "name": "NavGrid::set_blocked_rect",
+        "file": "src/pathfind/nav_grid.rs",
+        "line": 302
+      },
+      {
+        "module": "pathfind",
+        "name": "NavGrid::set_cost_rect",
+        "file": "src/pathfind/nav_grid.rs",
+        "line": 306
       },
       {
         "module": "pathfind",
         "name": "NavGrid::load_from_bytes",
         "file": "src/pathfind/nav_grid.rs",
-        "line": 175
+        "line": 310
       },
       {
         "module": "pathfind",
         "name": "NavGrid::set_chunk_size",
         "file": "src/pathfind/nav_grid.rs",
-        "line": 188
+        "line": 333
+      },
+      {
+        "module": "pathfind",
+        "name": "NavGrid::get_chunk_size",
+        "file": "src/pathfind/nav_grid.rs",
+        "line": 337
+      },
+      {
+        "module": "pathfind",
+        "name": "NavGrid::begin_update",
+        "file": "src/pathfind/nav_grid.rs",
+        "line": 345
+      },
+      {
+        "module": "pathfind",
+        "name": "NavGrid::commit_update",
+        "file": "src/pathfind/nav_grid.rs",
+        "line": 351
+      },
+      {
+        "module": "pathfind",
+        "name": "NavGrid::dirty_rects",
+        "file": "src/pathfind/nav_grid.rs",
+        "line": 374
       },
       {
         "module": "pathfind",
         "name": "NavGrid::neighbors",
         "file": "src/pathfind/nav_grid.rs",
-        "line": 216
+        "line": 378
       },
       {
         "module": "pathfind",
         "name": "NavGrid::snapshot",
         "file": "src/pathfind/nav_grid.rs",
-        "line": 270
+        "line": 432
       },
       {
         "module": "pathfind",
         "name": "NavGrid::draw_to_image",
         "file": "src/pathfind/nav_grid.rs",
-        "line": 281
+        "line": 447
       },
       {
         "module": "pathfind",
@@ -14847,25 +15249,85 @@
         "module": "pathfind",
         "name": "ORCAAgent::new",
         "file": "src/pathfind/orca.rs",
-        "line": 25
+        "line": 30
       },
       {
         "module": "pathfind",
         "name": "ORCASolver::new",
         "file": "src/pathfind/orca.rs",
-        "line": 53
+        "line": 109
       },
       {
         "module": "pathfind",
         "name": "ORCASolver::add_agent",
         "file": "src/pathfind/orca.rs",
-        "line": 60
+        "line": 123
+      },
+      {
+        "module": "pathfind",
+        "name": "ORCASolver::set_agent",
+        "file": "src/pathfind/orca.rs",
+        "line": 130
+      },
+      {
+        "module": "pathfind",
+        "name": "ORCASolver::agent_count",
+        "file": "src/pathfind/orca.rs",
+        "line": 150
+      },
+      {
+        "module": "pathfind",
+        "name": "ORCASolver::max_neighbors",
+        "file": "src/pathfind/orca.rs",
+        "line": 154
+      },
+      {
+        "module": "pathfind",
+        "name": "ORCASolver::set_max_neighbors",
+        "file": "src/pathfind/orca.rs",
+        "line": 158
+      },
+      {
+        "module": "pathfind",
+        "name": "ORCASolver::set_neighbor_radius",
+        "file": "src/pathfind/orca.rs",
+        "line": 162
+      },
+      {
+        "module": "pathfind",
+        "name": "ORCASolver::set_spatial_cell_size",
+        "file": "src/pathfind/orca.rs",
+        "line": 166
+      },
+      {
+        "module": "pathfind",
+        "name": "ORCASolver::agent_for_key",
+        "file": "src/pathfind/orca.rs",
+        "line": 177
+      },
+      {
+        "module": "pathfind",
+        "name": "ORCASolver::agent_for_key_mut",
+        "file": "src/pathfind/orca.rs",
+        "line": 181
+      },
+      {
+        "module": "pathfind",
+        "name": "ORCASolver::last_stats",
+        "file": "src/pathfind/orca.rs",
+        "line": 186
       },
       {
         "module": "pathfind",
         "name": "ORCASolver::compute",
         "file": "src/pathfind/orca.rs",
-        "line": 79
+        "line": 190
+      },
+      {
+        "module": "pathfind",
+        "name": "ORCASolver::compute_with_budget",
+        "file": "src/pathfind/orca.rs",
+        "line": 194
       },
       {
         "module": "pathfind",
@@ -14878,6 +15340,12 @@
         "name": "PathGrid::in_bounds",
         "file": "src/pathfind/pathgrid.rs",
         "line": 91
+      },
+      {
+        "module": "pathfind",
+        "name": "PathGrid::is_walkable",
+        "file": "src/pathfind/pathgrid.rs",
+        "line": 102
       },
       {
         "module": "pathfind",
@@ -14914,6 +15382,12 @@
         "name": "RangeMap::reachable",
         "file": "src/pathfind/range_map.rs",
         "line": 115
+      },
+      {
+        "module": "pathfind",
+        "name": "RangeMap::cost_to",
+        "file": "src/pathfind/range_map.rs",
+        "line": 119
       },
       {
         "module": "pathfind",
@@ -15051,31 +15525,73 @@
         "module": "pathfind",
         "name": "UnitPathfinder::new",
         "file": "src/pathfind/unit_pathfinder.rs",
-        "line": 53
+        "line": 78
       },
       {
         "module": "pathfind",
         "name": "UnitPathfinder::find_path",
         "file": "src/pathfind/unit_pathfinder.rs",
-        "line": 64
+        "line": 95
       },
       {
         "module": "pathfind",
-        "name": "UnitPathfinder::find_nearest_walkable",
+        "name": "UnitPathfinder::find_paths_to_goal",
         "file": "src/pathfind/unit_pathfinder.rs",
-        "line": 155
+        "line": 151
       },
       {
         "module": "pathfind",
-        "name": "UnitPathfinder::is_reachable",
+        "name": "UnitPathfinder::find_paths_to_goal_for",
+        "file": "src/pathfind/unit_pathfinder.rs",
+        "line": 166
+      },
+      {
+        "module": "pathfind",
+        "name": "UnitPathfinder::get_shared_flow_field",
+        "file": "src/pathfind/unit_pathfinder.rs",
+        "line": 181
+      },
+      {
+        "module": "pathfind",
+        "name": "UnitPathfinder::get_shared_flow_field_multi",
         "file": "src/pathfind/unit_pathfinder.rs",
         "line": 198
       },
       {
         "module": "pathfind",
+        "name": "UnitPathfinder::find_nearest_walkable",
+        "file": "src/pathfind/unit_pathfinder.rs",
+        "line": 255
+      },
+      {
+        "module": "pathfind",
+        "name": "UnitPathfinder::is_reachable",
+        "file": "src/pathfind/unit_pathfinder.rs",
+        "line": 298
+      },
+      {
+        "module": "pathfind",
+        "name": "UnitPathfinder::get_shared_goal_cache_size",
+        "file": "src/pathfind/unit_pathfinder.rs",
+        "line": 366
+      },
+      {
+        "module": "pathfind",
+        "name": "UnitPathfinder::get_shared_goal_cache_hits",
+        "file": "src/pathfind/unit_pathfinder.rs",
+        "line": 370
+      },
+      {
+        "module": "pathfind",
+        "name": "UnitPathfinder::get_shared_goal_cache_misses",
+        "file": "src/pathfind/unit_pathfinder.rs",
+        "line": 374
+      },
+      {
+        "module": "pathfind",
         "name": "UnitPathfinder::nav_grid",
         "file": "src/pathfind/unit_pathfinder.rs",
-        "line": 263
+        "line": 383
       },
       {
         "module": "patterns",
@@ -15640,6 +16156,12 @@
         "name": "ObjectPool::new",
         "file": "src/patterns/object_pool.rs",
         "line": 25
+      },
+      {
+        "module": "patterns",
+        "name": "ObjectPool::acquire",
+        "file": "src/patterns/object_pool.rs",
+        "line": 36
       },
       {
         "module": "patterns",
@@ -22489,6 +23011,12 @@
       },
       {
         "module": "tilemap",
+        "name": "ChunkMap::get_chunk_size",
+        "file": "src/tilemap/chunk.rs",
+        "line": 58
+      },
+      {
+        "module": "tilemap",
         "name": "ChunkMap::get_tile",
         "file": "src/tilemap/chunk.rs",
         "line": 63
@@ -22693,6 +23221,12 @@
       },
       {
         "module": "tilemap",
+        "name": "LargeMapRenderer::get_chunk_size",
+        "file": "src/tilemap/large_map_renderer.rs",
+        "line": 121
+      },
+      {
+        "module": "tilemap",
         "name": "LargeMapRenderer::get_visible_chunks",
         "file": "src/tilemap/large_map_renderer.rs",
         "line": 138
@@ -22894,6 +23428,12 @@
         "name": "TileMap::get_tile_height",
         "file": "src/tilemap/tilemap.rs",
         "line": 716
+      },
+      {
+        "module": "tilemap",
+        "name": "TileMap::get_chunk_size",
+        "file": "src/tilemap/tilemap.rs",
+        "line": 725
       },
       {
         "module": "tilemap",
@@ -24921,51 +25461,57 @@
       },
       {
         "module": "ai",
-        "name": "CommandQueue::enqueue",
-        "file": "src/ai/command_queue.rs",
-        "line": 40
-      },
-      {
-        "module": "ai",
         "name": "CommandQueue::push_front",
         "file": "src/ai/command_queue.rs",
-        "line": 45
+        "line": 96
       },
       {
         "module": "ai",
         "name": "CommandQueue::cancel_current",
         "file": "src/ai/command_queue.rs",
-        "line": 54
+        "line": 113
       },
       {
         "module": "ai",
-        "name": "CommandQueue::current_type",
+        "name": "CommandQueue::cancel_current_with_reason",
         "file": "src/ai/command_queue.rs",
-        "line": 78
+        "line": 117
+      },
+      {
+        "module": "ai",
+        "name": "CommandQueue::clear_with_reason",
+        "file": "src/ai/command_queue.rs",
+        "line": 133
       },
       {
         "module": "ai",
         "name": "CommandQueue::current_target",
         "file": "src/ai/command_queue.rs",
-        "line": 82
+        "line": 158
       },
       {
         "module": "ai",
-        "name": "CommandQueue::enqueue_raw",
+        "name": "CommandQueue::fail_current",
         "file": "src/ai/command_queue.rs",
-        "line": 93
+        "line": 184
+      },
+      {
+        "module": "ai",
+        "name": "CommandQueue::push_snapshot_event",
+        "file": "src/ai/command_queue.rs",
+        "line": 197
       },
       {
         "module": "ai",
         "name": "CommandQueue::push_front_raw",
         "file": "src/ai/command_queue.rs",
-        "line": 112
+        "line": 235
       },
       {
         "module": "ai",
         "name": "CommandQueue::replace_raw",
         "file": "src/ai/command_queue.rs",
-        "line": 131
+        "line": 255
       },
       {
         "module": "ai",
@@ -25281,9 +25827,39 @@
       },
       {
         "module": "ai",
+        "name": "Squad::remove_member",
+        "file": "src/ai/squad.rs",
+        "line": 226
+      },
+      {
+        "module": "ai",
+        "name": "Squad::set_leader",
+        "file": "src/ai/squad.rs",
+        "line": 232
+      },
+      {
+        "module": "ai",
         "name": "Squad::get_formation_position",
         "file": "src/ai/squad.rs",
-        "line": 72
+        "line": 262
+      },
+      {
+        "module": "ai",
+        "name": "Squad::clear_layout_cache",
+        "file": "src/ai/squad.rs",
+        "line": 340
+      },
+      {
+        "module": "ai",
+        "name": "Squad::next_path_request_version",
+        "file": "src/ai/squad.rs",
+        "line": 356
+      },
+      {
+        "module": "ai",
+        "name": "Squad::default_path_request_owner_id",
+        "file": "src/ai/squad.rs",
+        "line": 362
       },
       {
         "module": "ai",
@@ -25427,31 +26003,25 @@
         "module": "ai",
         "name": "AIWorld::remove_agent",
         "file": "src/ai/world.rs",
-        "line": 40
+        "line": 121
       },
       {
         "module": "ai",
         "name": "AIWorld::get_agent_index",
         "file": "src/ai/world.rs",
-        "line": 53
-      },
-      {
-        "module": "ai",
-        "name": "AIWorld::agent_count",
-        "file": "src/ai/world.rs",
-        "line": 69
+        "line": 135
       },
       {
         "module": "ai",
         "name": "AIWorld::global_blackboard",
         "file": "src/ai/world.rs",
-        "line": 73
+        "line": 155
       },
       {
         "module": "ai",
         "name": "AIWorld::global_blackboard_mut",
         "file": "src/ai/world.rs",
-        "line": 77
+        "line": 159
       },
       {
         "module": "animation",
@@ -27675,12 +28245,6 @@
       },
       {
         "module": "camera",
-        "name": "Camera2D::get_target",
-        "file": "src/camera/types.rs",
-        "line": 441
-      },
-      {
-        "module": "camera",
         "name": "Camera2D::clear_target",
         "file": "src/camera/types.rs",
         "line": 445
@@ -29643,12 +30207,6 @@
       },
       {
         "module": "dialog",
-        "name": "DialogSequencer::current_id",
-        "file": "src/dialog/sequencer.rs",
-        "line": 330
-      },
-      {
-        "module": "dialog",
         "name": "DialogSequencer::current_voice",
         "file": "src/dialog/sequencer.rs",
         "line": 335
@@ -31242,12 +31800,6 @@
         "name": "Node::clear_all_conversions",
         "file": "src/flownet/node.rs",
         "line": 352
-      },
-      {
-        "module": "flownet",
-        "name": "Node::enqueue",
-        "file": "src/flownet/node.rs",
-        "line": 356
       },
       {
         "module": "flownet",
@@ -33123,12 +33675,6 @@
       },
       {
         "module": "lua_api",
-        "name": "LuaAISystemRuntime::agent_count",
-        "file": "src/lua_api/agent_api.rs",
-        "line": 2136
-      },
-      {
-        "module": "lua_api",
         "name": "LuaAISystemRuntime::has_instruction",
         "file": "src/lua_api/agent_api.rs",
         "line": 2141
@@ -33228,6 +33774,24 @@
         "name": "ParticleConfig::from_lua_opts",
         "file": "src/lua_api/particle_api.rs",
         "line": 1910
+      },
+      {
+        "module": "lua_api",
+        "name": "next_async_path_request_id",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 49
+      },
+      {
+        "module": "lua_api",
+        "name": "submit_async_query",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 53
+      },
+      {
+        "module": "lua_api",
+        "name": "LuaNavGrid::cloned_grid",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 520
       },
       {
         "module": "lua_api",
@@ -34230,12 +34794,6 @@
         "name": "Rect::from_points",
         "file": "src/math/rect.rs",
         "line": 87
-      },
-      {
-        "module": "math",
-        "name": "SpatialHash::query_rect",
-        "file": "src/math/spatial_hash.rs",
-        "line": 111
       },
       {
         "module": "math",
@@ -35771,7 +36329,7 @@
         "module": "pathfind",
         "name": "PathThreadPool::pending_count",
         "file": "src/pathfind/async_pool.rs",
-        "line": 532
+        "line": 652
       },
       {
         "module": "pathfind",
@@ -35849,31 +36407,37 @@
         "module": "pathfind",
         "name": "FlowField::calculate_multi",
         "file": "src/pathfind/flow_field.rs",
-        "line": 57
+        "line": 105
+      },
+      {
+        "module": "pathfind",
+        "name": "FlowField::calculate_multi_for",
+        "file": "src/pathfind/flow_field.rs",
+        "line": 120
+      },
+      {
+        "module": "pathfind",
+        "name": "FlowField::calculate_multi_spec",
+        "file": "src/pathfind/flow_field.rs",
+        "line": 134
       },
       {
         "module": "pathfind",
         "name": "FlowField::get_direction_angle",
         "file": "src/pathfind/flow_field.rs",
-        "line": 152
-      },
-      {
-        "module": "pathfind",
-        "name": "FlowField::get_cost_to_target",
-        "file": "src/pathfind/flow_field.rs",
-        "line": 157
+        "line": 262
       },
       {
         "module": "pathfind",
         "name": "FlowField::is_calculated",
         "file": "src/pathfind/flow_field.rs",
-        "line": 164
+        "line": 274
       },
       {
         "module": "pathfind",
-        "name": "FlowField::get_targets",
+        "name": "FlowField::get_footprint",
         "file": "src/pathfind/flow_field.rs",
-        "line": 168
+        "line": 282
       },
       {
         "module": "pathfind",
@@ -35943,12 +36507,6 @@
       },
       {
         "module": "pathfind",
-        "name": "Grid::is_walkable",
-        "file": "src/pathfind/grid.rs",
-        "line": 96
-      },
-      {
-        "module": "pathfind",
         "name": "Grid::find_path_astar",
         "file": "src/pathfind/grid.rs",
         "line": 144
@@ -35979,15 +36537,9 @@
       },
       {
         "module": "pathfind",
-        "name": "build_abstract",
-        "file": "src/pathfind/hpa.rs",
-        "line": 101
-      },
-      {
-        "module": "pathfind",
         "name": "hpa_star",
         "file": "src/pathfind/hpa.rs",
-        "line": 314
+        "line": 422
       },
       {
         "module": "pathfind",
@@ -36039,57 +36591,45 @@
       },
       {
         "module": "pathfind",
-        "name": "InfluenceMap::query_rect",
-        "file": "src/pathfind/influence_map.rs",
-        "line": 215
-      },
-      {
-        "module": "pathfind",
-        "name": "NavGrid::is_walkable",
+        "name": "NavGrid::get_footprint",
         "file": "src/pathfind/nav_grid.rs",
-        "line": 138
+        "line": 258
       },
       {
         "module": "pathfind",
         "name": "NavGrid::save_to_bytes",
         "file": "src/pathfind/nav_grid.rs",
-        "line": 184
-      },
-      {
-        "module": "pathfind",
-        "name": "NavGrid::get_chunk_size",
-        "file": "src/pathfind/nav_grid.rs",
-        "line": 192
+        "line": 329
       },
       {
         "module": "pathfind",
         "name": "NavGrid::set_diagonal_mode",
         "file": "src/pathfind/nav_grid.rs",
-        "line": 196
+        "line": 341
       },
       {
         "module": "pathfind",
         "name": "NavGrid::get_diagonal_mode",
         "file": "src/pathfind/nav_grid.rs",
-        "line": 200
+        "line": 362
       },
       {
         "module": "pathfind",
         "name": "NavGrid::set_dirty",
         "file": "src/pathfind/nav_grid.rs",
-        "line": 204
+        "line": 366
       },
       {
         "module": "pathfind",
         "name": "NavGrid::clear_dirty",
         "file": "src/pathfind/nav_grid.rs",
-        "line": 208
+        "line": 370
       },
       {
         "module": "pathfind",
-        "name": "NavGrid::dirty_rects",
+        "name": "NavGrid::is_walkable_spec",
         "file": "src/pathfind/nav_grid.rs",
-        "line": 212
+        "line": 507
       },
       {
         "module": "pathfind",
@@ -36107,13 +36647,19 @@
         "module": "pathfind",
         "name": "ORCASolver::remove_agent",
         "file": "src/pathfind/orca.rs",
-        "line": 66
+        "line": 141
       },
       {
         "module": "pathfind",
-        "name": "ORCASolver::agent_count",
+        "name": "ORCASolver::remove_agent_by_id",
         "file": "src/pathfind/orca.rs",
-        "line": 74
+        "line": 145
+      },
+      {
+        "module": "pathfind",
+        "name": "ORCASolver::resolve_index",
+        "file": "src/pathfind/orca.rs",
+        "line": 170
       },
       {
         "module": "pathfind",
@@ -36123,21 +36669,9 @@
       },
       {
         "module": "pathfind",
-        "name": "PathGrid::is_walkable",
-        "file": "src/pathfind/pathgrid.rs",
-        "line": 102
-      },
-      {
-        "module": "pathfind",
         "name": "PathGrid::find_path_smoothed",
         "file": "src/pathfind/pathgrid.rs",
         "line": 197
-      },
-      {
-        "module": "pathfind",
-        "name": "RangeMap::cost_to",
-        "file": "src/pathfind/range_map.rs",
-        "line": 119
       },
       {
         "module": "pathfind",
@@ -36203,61 +36737,85 @@
         "module": "pathfind",
         "name": "UnitPathfinder::find_path_smooth",
         "file": "src/pathfind/unit_pathfinder.rs",
-        "line": 100
+        "line": 132
+      },
+      {
+        "module": "pathfind",
+        "name": "UnitPathfinder::get_shared_flow_field_for",
+        "file": "src/pathfind/unit_pathfinder.rs",
+        "line": 185
+      },
+      {
+        "module": "pathfind",
+        "name": "UnitPathfinder::get_shared_flow_field_multi_for",
+        "file": "src/pathfind/unit_pathfinder.rs",
+        "line": 206
       },
       {
         "module": "pathfind",
         "name": "UnitPathfinder::get_path_length",
         "file": "src/pathfind/unit_pathfinder.rs",
-        "line": 119
+        "line": 219
       },
       {
         "module": "pathfind",
         "name": "UnitPathfinder::get_path_cost",
         "file": "src/pathfind/unit_pathfinder.rs",
-        "line": 129
+        "line": 229
       },
       {
         "module": "pathfind",
         "name": "UnitPathfinder::find_partial_path",
         "file": "src/pathfind/unit_pathfinder.rs",
-        "line": 138
+        "line": 238
       },
       {
         "module": "pathfind",
         "name": "UnitPathfinder::heuristic_distance",
         "file": "src/pathfind/unit_pathfinder.rs",
-        "line": 229
+        "line": 329
       },
       {
         "module": "pathfind",
         "name": "UnitPathfinder::set_cache_enabled",
         "file": "src/pathfind/unit_pathfinder.rs",
-        "line": 237
+        "line": 337
       },
       {
         "module": "pathfind",
         "name": "UnitPathfinder::is_cache_enabled",
         "file": "src/pathfind/unit_pathfinder.rs",
-        "line": 245
+        "line": 346
       },
       {
         "module": "pathfind",
         "name": "UnitPathfinder::clear_cache",
         "file": "src/pathfind/unit_pathfinder.rs",
-        "line": 249
+        "line": 350
       },
       {
         "module": "pathfind",
         "name": "UnitPathfinder::get_cache_size",
         "file": "src/pathfind/unit_pathfinder.rs",
-        "line": 254
+        "line": 355
+      },
+      {
+        "module": "pathfind",
+        "name": "UnitPathfinder::clear_shared_goal_cache",
+        "file": "src/pathfind/unit_pathfinder.rs",
+        "line": 359
       },
       {
         "module": "pathfind",
         "name": "UnitPathfinder::set_cache_max_size",
         "file": "src/pathfind/unit_pathfinder.rs",
-        "line": 258
+        "line": 378
+      },
+      {
+        "module": "pathfind",
+        "name": "UnitPathfinder::find_paths_for_pairs_spec",
+        "file": "src/pathfind/unit_pathfinder.rs",
+        "line": 420
       },
       {
         "module": "pathfind",
@@ -36474,12 +37032,6 @@
         "name": "Mediator::remove_channel",
         "file": "src/patterns/mediator.rs",
         "line": 53
-      },
-      {
-        "module": "patterns",
-        "name": "ObjectPool::acquire",
-        "file": "src/patterns/object_pool.rs",
-        "line": 36
       },
       {
         "module": "patterns",
@@ -41349,12 +41901,6 @@
       },
       {
         "module": "tilemap",
-        "name": "ChunkMap::get_chunk_size",
-        "file": "src/tilemap/chunk.rs",
-        "line": 58
-      },
-      {
-        "module": "tilemap",
         "name": "ChunkMap::try_fill_rect",
         "file": "src/tilemap/chunk.rs",
         "line": 94
@@ -41418,12 +41964,6 @@
         "name": "LargeMapRenderer::get_map_size",
         "file": "src/tilemap/large_map_renderer.rs",
         "line": 110
-      },
-      {
-        "module": "tilemap",
-        "name": "LargeMapRenderer::get_chunk_size",
-        "file": "src/tilemap/large_map_renderer.rs",
-        "line": 121
       },
       {
         "module": "tilemap",
@@ -41658,12 +42198,6 @@
         "name": "TileMap::get_tile_dimensions",
         "file": "src/tilemap/tilemap.rs",
         "line": 721
-      },
-      {
-        "module": "tilemap",
-        "name": "TileMap::get_chunk_size",
-        "file": "src/tilemap/tilemap.rs",
-        "line": 725
       },
       {
         "module": "tilemap",
@@ -43426,8 +43960,8 @@
     ]
   },
   "lua": {
-    "total": 6541,
-    "covered": 6541,
+    "total": 6609,
+    "covered": 6609,
     "uncovered": 0,
     "coverage_pct": 100.0,
     "covered_items": [
@@ -44220,1631 +44754,1862 @@
         "lua_name": "LAIWorld:addAgent",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 149
+        "line": 422
       },
       {
         "module": "ai",
         "lua_name": "LAIWorld:getAgent",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 162
+        "line": 435
       },
       {
         "module": "ai",
         "lua_name": "LAIWorld:removeAgent",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 177
+        "line": 450
       },
       {
         "module": "ai",
         "lua_name": "LAIWorld:getAgentCount",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 185
+        "line": 458
       },
       {
         "module": "ai",
         "lua_name": "LAIWorld:getGlobalBlackboard",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 191
+        "line": 464
       },
       {
         "module": "ai",
-        "lua_name": "LAIWorld:update",
+        "lua_name": "LAIWorld:setSpatialCellSize",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 200
+        "line": 473
       },
       {
         "module": "ai",
-        "lua_name": "LAIWorld:getLastCallbackErrors",
+        "lua_name": "LAIWorld:getSpatialCellSize",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 253
+        "line": 481
       },
       {
         "module": "ai",
-        "lua_name": "LAIWorld:type",
+        "lua_name": "LAIWorld:getSpatialQueryStats",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 266
+        "line": 487
       },
       {
         "module": "ai",
-        "lua_name": "LAIWorld:typeOf",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 271
-      },
-      {
-        "module": "ai",
-        "lua_name": "LBot:getName",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 291
-      },
-      {
-        "module": "ai",
-        "lua_name": "LBot:setPosition",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 296
-      },
-      {
-        "module": "ai",
-        "lua_name": "LBot:getPosition",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 307
-      },
-      {
-        "module": "ai",
-        "lua_name": "LBot:setVelocity",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 318
-      },
-      {
-        "module": "ai",
-        "lua_name": "LBot:getVelocity",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 329
-      },
-      {
-        "module": "ai",
-        "lua_name": "LBot:setMaxSpeed",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 339
-      },
-      {
-        "module": "ai",
-        "lua_name": "LBot:getMaxSpeed",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 349
-      },
-      {
-        "module": "ai",
-        "lua_name": "LBot:setMaxForce",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 359
-      },
-      {
-        "module": "ai",
-        "lua_name": "LBot:getMaxForce",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 369
-      },
-      {
-        "module": "ai",
-        "lua_name": "LBot:setPriority",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 379
-      },
-      {
-        "module": "ai",
-        "lua_name": "LBot:getPriority",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 388
-      },
-      {
-        "module": "ai",
-        "lua_name": "LBot:setDecisionModel",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 398
-      },
-      {
-        "module": "ai",
-        "lua_name": "LBot:getDecisionModel",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 410
-      },
-      {
-        "module": "ai",
-        "lua_name": "LBot:setCustomModel",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 420
-      },
-      {
-        "module": "ai",
-        "lua_name": "LBot:setTraitProfile",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 431
-      },
-      {
-        "module": "ai",
-        "lua_name": "LBot:getTraitProfile",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 441
-      },
-      {
-        "module": "ai",
-        "lua_name": "LBot:hasTraitProfile",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 455
-      },
-      {
-        "module": "ai",
-        "lua_name": "LBot:setTrait",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 467
-      },
-      {
-        "module": "ai",
-        "lua_name": "LBot:getTrait",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 479
-      },
-      {
-        "module": "ai",
-        "lua_name": "LBot:addTraitModifier",
+        "lua_name": "LAIWorld:setOrderArrivalRadius",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
         "line": 494
       },
       {
         "module": "ai",
-        "lua_name": "LBot:addTag",
+        "lua_name": "LAIWorld:getOrderArrivalRadius",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 511
+        "line": 502
       },
       {
         "module": "ai",
-        "lua_name": "LBot:removeTag",
+        "lua_name": "LAIWorld:setAutoAcquireBudget",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 520
+        "line": 508
       },
       {
         "module": "ai",
-        "lua_name": "LBot:hasTag",
+        "lua_name": "LAIWorld:getAutoAcquireBudget",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 530
+        "line": 515
       },
       {
         "module": "ai",
-        "lua_name": "LBot:getBlackboard",
+        "lua_name": "LAIWorld:getOrderRuntimeStats",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 540
+        "line": 521
       },
       {
         "module": "ai",
-        "lua_name": "LBot:type",
+        "lua_name": "LAIWorld:queryAgentsInRadius",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 555
+        "line": 532
       },
       {
         "module": "ai",
-        "lua_name": "LBot:typeOf",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 560
-      },
-      {
-        "module": "ai",
-        "lua_name": "LAIBlackboard:setNumber",
+        "lua_name": "LAIWorld:update",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
         "line": 577
       },
       {
         "module": "ai",
-        "lua_name": "LAIBlackboard:getNumber",
+        "lua_name": "LAIWorld:getLastCallbackErrors",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 586
+        "line": 630
       },
       {
         "module": "ai",
-        "lua_name": "LAIBlackboard:setBool",
+        "lua_name": "LAIWorld:type",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 596
+        "line": 643
       },
       {
         "module": "ai",
-        "lua_name": "LAIBlackboard:getBool",
+        "lua_name": "LAIWorld:typeOf",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 605
+        "line": 648
       },
       {
         "module": "ai",
-        "lua_name": "LAIBlackboard:setString",
+        "lua_name": "LBot:getName",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 615
+        "line": 668
       },
       {
         "module": "ai",
-        "lua_name": "LAIBlackboard:getString",
+        "lua_name": "LBot:setPosition",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 624
+        "line": 673
       },
       {
         "module": "ai",
-        "lua_name": "LAIBlackboard:has",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 635
-      },
-      {
-        "module": "ai",
-        "lua_name": "LAIBlackboard:remove",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 641
-      },
-      {
-        "module": "ai",
-        "lua_name": "LAIBlackboard:clear",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 647
-      },
-      {
-        "module": "ai",
-        "lua_name": "LAIBlackboard:getKeys",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 654
-      },
-      {
-        "module": "ai",
-        "lua_name": "LAIBlackboard:getSize",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 665
-      },
-      {
-        "module": "ai",
-        "lua_name": "LAIBlackboard:type",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 669
-      },
-      {
-        "module": "ai",
-        "lua_name": "LAIBlackboard:typeOf",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 674
-      },
-      {
-        "module": "ai",
-        "lua_name": "LStateMachine:addState",
+        "lua_name": "LBot:getPosition",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
         "line": 691
       },
       {
         "module": "ai",
-        "lua_name": "LStateMachine:addTransition",
+        "lua_name": "LBot:setVelocity",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 711
+        "line": 702
       },
       {
         "module": "ai",
-        "lua_name": "LStateMachine:setInitialState",
+        "lua_name": "LBot:getVelocity",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 720
+        "line": 713
       },
       {
         "module": "ai",
-        "lua_name": "LStateMachine:getCurrentState",
+        "lua_name": "LBot:setMaxSpeed",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 731
+        "line": 723
       },
       {
         "module": "ai",
-        "lua_name": "LStateMachine:forceState",
+        "lua_name": "LBot:getMaxSpeed",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 737
+        "line": 733
       },
       {
         "module": "ai",
-        "lua_name": "LStateMachine:getTimeInState",
+        "lua_name": "LBot:setMaxForce",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 746
+        "line": 743
       },
       {
         "module": "ai",
-        "lua_name": "LStateMachine:type",
+        "lua_name": "LBot:getMaxForce",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 752
+        "line": 753
       },
       {
         "module": "ai",
-        "lua_name": "LStateMachine:typeOf",
+        "lua_name": "LBot:setPriority",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 757
+        "line": 763
       },
       {
         "module": "ai",
-        "lua_name": "LBehaviorTree:setRoot",
+        "lua_name": "LBot:getPriority",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 773
+        "line": 772
       },
       {
         "module": "ai",
-        "lua_name": "LBehaviorTree:getLastStatus",
+        "lua_name": "LBot:setTeam",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 782
+      },
+      {
+        "module": "ai",
+        "lua_name": "LBot:getTeam",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
         "line": 791
       },
       {
         "module": "ai",
-        "lua_name": "LBehaviorTree:getDebugState",
+        "lua_name": "LBot:setStance",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 799
+        "line": 802
       },
       {
         "module": "ai",
-        "lua_name": "LBehaviorTree:type",
+        "lua_name": "LBot:getStance",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 820
+        "line": 816
       },
       {
         "module": "ai",
-        "lua_name": "LBehaviorTree:typeOf",
+        "lua_name": "LBot:setDecisionModel",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 825
+        "line": 826
       },
       {
         "module": "ai",
-        "lua_name": "LBTNode:addChild",
+        "lua_name": "LBot:getDecisionModel",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 841
+        "line": 838
       },
       {
         "module": "ai",
-        "lua_name": "LBTNode:getChildCount",
+        "lua_name": "LBot:setCustomModel",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 848
+      },
+      {
+        "module": "ai",
+        "lua_name": "LBot:setTraitProfile",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 859
+      },
+      {
+        "module": "ai",
+        "lua_name": "LBot:getTraitProfile",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
         "line": 869
       },
       {
         "module": "ai",
-        "lua_name": "LBTNode:reset",
+        "lua_name": "LBot:hasTraitProfile",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 874
+        "line": 883
       },
       {
         "module": "ai",
-        "lua_name": "LBTNode:setChild",
+        "lua_name": "LBot:setTrait",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 881
+        "line": 895
       },
       {
         "module": "ai",
-        "lua_name": "LBTNode:setCount",
+        "lua_name": "LBot:getTrait",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 913
+        "line": 907
       },
       {
         "module": "ai",
-        "lua_name": "LBTNode:getCount",
+        "lua_name": "LBot:addTraitModifier",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 923
+        "line": 922
       },
       {
         "module": "ai",
-        "lua_name": "LBTNode:setSuccessPolicy",
+        "lua_name": "LBot:addTag",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 934
+        "line": 939
       },
       {
         "module": "ai",
-        "lua_name": "LBTNode:setFailurePolicy",
+        "lua_name": "LBot:removeTag",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 944
+        "line": 948
       },
       {
         "module": "ai",
-        "lua_name": "LBTNode:getNodeType",
+        "lua_name": "LBot:hasTag",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 954
+        "line": 958
       },
       {
         "module": "ai",
-        "lua_name": "LBTNode:type",
+        "lua_name": "LBot:findHostilesInRange",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 972
+        "line": 970
       },
       {
         "module": "ai",
-        "lua_name": "LBTNode:typeOf",
+        "lua_name": "LBot:acquireTarget",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 977
+        "line": 1019
       },
       {
         "module": "ai",
-        "lua_name": "LUtilityAI:addAction",
+        "lua_name": "LBot:getBlackboard",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1000
+        "line": 1055
       },
       {
         "module": "ai",
-        "lua_name": "LUtilityAI:evaluate",
+        "lua_name": "LBot:getCommandQueue",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1016
+        "line": 1070
       },
       {
         "module": "ai",
-        "lua_name": "LUtilityAI:evaluateWithProfile",
+        "lua_name": "LBot:getCurrentOrder",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1027
+        "line": 1081
       },
       {
         "module": "ai",
-        "lua_name": "LUtilityAI:getActionCount",
+        "lua_name": "LBot:getOrderRuntimeState",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1048
+        "line": 1095
       },
       {
         "module": "ai",
-        "lua_name": "LUtilityAI:getLastAction",
+        "lua_name": "LBot:clearOrders",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1054
+        "line": 1108
       },
       {
         "module": "ai",
-        "lua_name": "LUtilityAI:getLastTrace",
+        "lua_name": "LBot:drainCommandEvents",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1061
+        "line": 1118
       },
       {
         "module": "ai",
-        "lua_name": "LUtilityAI:addConsideration",
+        "lua_name": "LBot:type",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1075
+        "line": 1129
       },
       {
         "module": "ai",
-        "lua_name": "LUtilityAI:type",
+        "lua_name": "LBot:typeOf",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1164
+        "line": 1134
       },
       {
         "module": "ai",
-        "lua_name": "LUtilityAI:typeOf",
+        "lua_name": "LAIBlackboard:setNumber",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1169
+        "line": 1151
       },
       {
         "module": "ai",
-        "lua_name": "LGOAPPlanner:addAction",
+        "lua_name": "LAIBlackboard:getNumber",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1187
+        "line": 1160
       },
       {
         "module": "ai",
-        "lua_name": "LGOAPPlanner:setPrecondition",
+        "lua_name": "LAIBlackboard:setBool",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1204
+        "line": 1170
       },
       {
         "module": "ai",
-        "lua_name": "LGOAPPlanner:setEffect",
+        "lua_name": "LAIBlackboard:getBool",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1219
+        "line": 1179
       },
       {
         "module": "ai",
-        "lua_name": "LGOAPPlanner:addGoal",
+        "lua_name": "LAIBlackboard:setString",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1233
+        "line": 1189
       },
       {
         "module": "ai",
-        "lua_name": "LGOAPPlanner:setGoalState",
+        "lua_name": "LAIBlackboard:getString",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1250
+        "line": 1198
       },
       {
         "module": "ai",
-        "lua_name": "LGOAPPlanner:plan",
+        "lua_name": "LAIBlackboard:has",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 1209
+      },
+      {
+        "module": "ai",
+        "lua_name": "LAIBlackboard:remove",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 1215
+      },
+      {
+        "module": "ai",
+        "lua_name": "LAIBlackboard:clear",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 1221
+      },
+      {
+        "module": "ai",
+        "lua_name": "LAIBlackboard:getKeys",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 1228
+      },
+      {
+        "module": "ai",
+        "lua_name": "LAIBlackboard:getSize",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 1239
+      },
+      {
+        "module": "ai",
+        "lua_name": "LAIBlackboard:type",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 1243
+      },
+      {
+        "module": "ai",
+        "lua_name": "LAIBlackboard:typeOf",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 1248
+      },
+      {
+        "module": "ai",
+        "lua_name": "LStateMachine:addState",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
         "line": 1265
       },
       {
         "module": "ai",
-        "lua_name": "LGOAPPlanner:getActionCount",
+        "lua_name": "LStateMachine:addTransition",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1287
+        "line": 1285
       },
       {
         "module": "ai",
-        "lua_name": "LGOAPPlanner:getGoalCount",
+        "lua_name": "LStateMachine:setInitialState",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1293
+        "line": 1294
       },
       {
         "module": "ai",
-        "lua_name": "LGOAPPlanner:getMaxIterations",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 1299
-      },
-      {
-        "module": "ai",
-        "lua_name": "LGOAPPlanner:setMaxIterations",
+        "lua_name": "LStateMachine:getCurrentState",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
         "line": 1305
       },
       {
         "module": "ai",
-        "lua_name": "LGOAPPlanner:getLastFailureReason",
+        "lua_name": "LStateMachine:forceState",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1312
+        "line": 1311
       },
       {
         "module": "ai",
-        "lua_name": "LGOAPPlanner:getLastTrace",
+        "lua_name": "LStateMachine:getTimeInState",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1323
+        "line": 1320
       },
       {
         "module": "ai",
-        "lua_name": "LGOAPPlanner:type",
+        "lua_name": "LStateMachine:type",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1329
+        "line": 1326
       },
       {
         "module": "ai",
-        "lua_name": "LGOAPPlanner:typeOf",
+        "lua_name": "LStateMachine:typeOf",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1334
+        "line": 1331
       },
       {
         "module": "ai",
-        "lua_name": "LSquad:getName",
+        "lua_name": "LBehaviorTree:setRoot",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1350
+        "line": 1347
       },
       {
         "module": "ai",
-        "lua_name": "LSquad:addMember",
+        "lua_name": "LBehaviorTree:getLastStatus",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1356
+        "line": 1365
       },
       {
         "module": "ai",
-        "lua_name": "LSquad:removeMember",
+        "lua_name": "LBehaviorTree:getDebugState",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1363
+        "line": 1373
       },
       {
         "module": "ai",
-        "lua_name": "LSquad:getMemberCount",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 1370
-      },
-      {
-        "module": "ai",
-        "lua_name": "LSquad:getMembers",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 1376
-      },
-      {
-        "module": "ai",
-        "lua_name": "LSquad:setLeader",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 1387
-      },
-      {
-        "module": "ai",
-        "lua_name": "LSquad:getLeader",
+        "lua_name": "LBehaviorTree:type",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
         "line": 1394
       },
       {
         "module": "ai",
-        "lua_name": "LSquad:setFormation",
+        "lua_name": "LBehaviorTree:typeOf",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1401
+        "line": 1399
       },
       {
         "module": "ai",
-        "lua_name": "LSquad:getFormation",
+        "lua_name": "LBTNode:addChild",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
         "line": 1415
       },
       {
         "module": "ai",
-        "lua_name": "LSquad:getFormationSpacing",
+        "lua_name": "LBTNode:getChildCount",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1421
+        "line": 1443
       },
       {
         "module": "ai",
-        "lua_name": "LSquad:getFormationPosition",
+        "lua_name": "LBTNode:reset",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1430
+        "line": 1448
       },
       {
         "module": "ai",
-        "lua_name": "LSquad:getBlackboard",
+        "lua_name": "LBTNode:setChild",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1442
+        "line": 1455
       },
       {
         "module": "ai",
-        "lua_name": "LSquad:type",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 1451
-      },
-      {
-        "module": "ai",
-        "lua_name": "LSquad:typeOf",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 1456
-      },
-      {
-        "module": "ai",
-        "lua_name": "LCommandQueue:enqueue",
+        "lua_name": "LBTNode:setCount",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
         "line": 1487
       },
       {
         "module": "ai",
-        "lua_name": "LCommandQueue:pushFront",
+        "lua_name": "LBTNode:getCount",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1503
+        "line": 1497
       },
       {
         "module": "ai",
-        "lua_name": "LCommandQueue:replace",
+        "lua_name": "LBTNode:setSuccessPolicy",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1519
+        "line": 1508
       },
       {
         "module": "ai",
-        "lua_name": "LCommandQueue:cancelCurrent",
+        "lua_name": "LBTNode:setFailurePolicy",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1533
+        "line": 1518
       },
       {
         "module": "ai",
-        "lua_name": "LCommandQueue:clear",
+        "lua_name": "LBTNode:getNodeType",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1538
+        "line": 1528
       },
       {
         "module": "ai",
-        "lua_name": "LCommandQueue:getCount",
+        "lua_name": "LBTNode:type",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1545
+        "line": 1546
       },
       {
         "module": "ai",
-        "lua_name": "LCommandQueue:isEmpty",
+        "lua_name": "LBTNode:typeOf",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1549
+        "line": 1551
       },
       {
         "module": "ai",
-        "lua_name": "LCommandQueue:getCurrentType",
+        "lua_name": "LUtilityAI:addAction",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1553
+        "line": 1574
       },
       {
         "module": "ai",
-        "lua_name": "LCommandQueue:getCurrentTarget",
+        "lua_name": "LUtilityAI:evaluate",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1559
+        "line": 1590
       },
       {
         "module": "ai",
-        "lua_name": "LCommandQueue:type",
+        "lua_name": "LUtilityAI:evaluateWithProfile",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1565
+        "line": 1601
       },
       {
         "module": "ai",
-        "lua_name": "LCommandQueue:typeOf",
+        "lua_name": "LUtilityAI:getActionCount",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1570
+        "line": 1622
       },
       {
         "module": "ai",
-        "lua_name": "LTraitArchetypes:register",
+        "lua_name": "LUtilityAI:getLastAction",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1587
+        "line": 1628
       },
       {
         "module": "ai",
-        "lua_name": "LTraitArchetypes:createProfile",
+        "lua_name": "LUtilityAI:getLastTrace",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1598
+        "line": 1635
       },
       {
         "module": "ai",
-        "lua_name": "LTraitArchetypes:names",
+        "lua_name": "LUtilityAI:addConsideration",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1614
+        "line": 1649
       },
       {
         "module": "ai",
-        "lua_name": "LTraitArchetypes:count",
+        "lua_name": "LUtilityAI:type",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1624
+        "line": 1738
       },
       {
         "module": "ai",
-        "lua_name": "LTraitArchetypes:type",
+        "lua_name": "LUtilityAI:typeOf",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1631
+        "line": 1743
       },
       {
         "module": "ai",
-        "lua_name": "LTraitArchetypes:typeOf",
+        "lua_name": "LGOAPPlanner:addAction",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1636
+        "line": 1761
       },
       {
         "module": "ai",
-        "lua_name": "LDecisionBiasSet:addRule",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 1656
-      },
-      {
-        "module": "ai",
-        "lua_name": "LDecisionBiasSet:score",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 1675
-      },
-      {
-        "module": "ai",
-        "lua_name": "LDecisionBiasSet:ruleCount",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 1692
-      },
-      {
-        "module": "ai",
-        "lua_name": "LDecisionBiasSet:type",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 1698
-      },
-      {
-        "module": "ai",
-        "lua_name": "LDecisionBiasSet:typeOf",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 1703
-      },
-      {
-        "module": "ai",
-        "lua_name": "LTraitProfile:set",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 1721
-      },
-      {
-        "module": "ai",
-        "lua_name": "LTraitProfile:get",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 1729
-      },
-      {
-        "module": "ai",
-        "lua_name": "LTraitProfile:getBase",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 1736
-      },
-      {
-        "module": "ai",
-        "lua_name": "LTraitProfile:addModifier",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 1745
-      },
-      {
-        "module": "ai",
-        "lua_name": "LTraitProfile:removeModifiers",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 1757
-      },
-      {
-        "module": "ai",
-        "lua_name": "LTraitProfile:update",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 1764
-      },
-      {
-        "module": "ai",
-        "lua_name": "LTraitProfile:has",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 1772
-      },
-      {
-        "module": "ai",
-        "lua_name": "LTraitProfile:names",
+        "lua_name": "LGOAPPlanner:setPrecondition",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
         "line": 1778
       },
       {
         "module": "ai",
-        "lua_name": "LTraitProfile:scoreDecision",
+        "lua_name": "LGOAPPlanner:setEffect",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1791
+        "line": 1793
       },
       {
         "module": "ai",
-        "lua_name": "LTraitProfile:traitCount",
+        "lua_name": "LGOAPPlanner:addGoal",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1809
+        "line": 1807
       },
       {
         "module": "ai",
-        "lua_name": "LTraitProfile:archetype",
+        "lua_name": "LGOAPPlanner:setGoalState",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1815
+        "line": 1824
       },
       {
         "module": "ai",
-        "lua_name": "LTraitProfile:type",
+        "lua_name": "LGOAPPlanner:plan",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1821
+        "line": 1839
       },
       {
         "module": "ai",
-        "lua_name": "LTraitProfile:typeOf",
+        "lua_name": "LGOAPPlanner:getActionCount",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1826
+        "line": 1861
       },
       {
         "module": "ai",
-        "lua_name": "LStimulusWorld:addVisual",
+        "lua_name": "LGOAPPlanner:getGoalCount",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1847
+        "line": 1867
       },
       {
         "module": "ai",
-        "lua_name": "LStimulusWorld:addAuditory",
+        "lua_name": "LGOAPPlanner:getMaxIterations",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1865
+        "line": 1873
       },
       {
         "module": "ai",
-        "lua_name": "LStimulusWorld:remove",
+        "lua_name": "LGOAPPlanner:setMaxIterations",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1888
+        "line": 1879
       },
       {
         "module": "ai",
-        "lua_name": "LStimulusWorld:update",
+        "lua_name": "LGOAPPlanner:getLastFailureReason",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1894
+        "line": 1886
       },
       {
         "module": "ai",
-        "lua_name": "LStimulusWorld:count",
+        "lua_name": "LGOAPPlanner:getLastTrace",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1901
+        "line": 1897
       },
       {
         "module": "ai",
-        "lua_name": "LStimulusWorld:clear",
+        "lua_name": "LGOAPPlanner:type",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1907
+        "line": 1903
       },
       {
         "module": "ai",
-        "lua_name": "LStimulusWorld:type",
+        "lua_name": "LGOAPPlanner:typeOf",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1914
+        "line": 1908
       },
       {
         "module": "ai",
-        "lua_name": "LStimulusWorld:typeOf",
+        "lua_name": "LSquad:getName",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1919
+        "line": 1924
       },
       {
         "module": "ai",
-        "lua_name": "LNeedSystem:addNeed",
+        "lua_name": "LSquad:addMember",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1938
+        "line": 1930
       },
       {
         "module": "ai",
-        "lua_name": "LNeedSystem:update",
+        "lua_name": "LSquad:removeMember",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1945
+        "line": 1937
       },
       {
         "module": "ai",
-        "lua_name": "LNeedSystem:mostUrgent",
+        "lua_name": "LSquad:getMemberCount",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1952
+        "line": 1944
       },
       {
         "module": "ai",
-        "lua_name": "LNeedSystem:satisfy",
+        "lua_name": "LSquad:getMembers",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1959
+        "line": 1950
       },
       {
         "module": "ai",
-        "lua_name": "LNeedSystem:valueOf",
+        "lua_name": "LSquad:setLeader",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1967
+        "line": 1961
       },
       {
         "module": "ai",
-        "lua_name": "LNeedSystem:type",
+        "lua_name": "LSquad:getLeader",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1973
+        "line": 1968
       },
       {
         "module": "ai",
-        "lua_name": "LNeedSystem:typeOf",
+        "lua_name": "LSquad:setFormation",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1978
+        "line": 1975
       },
       {
         "module": "ai",
-        "lua_name": "LAIDirector:pushEvent",
+        "lua_name": "LSquad:getFormation",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 1994
+        "line": 1987
       },
       {
         "module": "ai",
-        "lua_name": "LAIDirector:update",
+        "lua_name": "LSquad:getFormationSpacing",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2001
+        "line": 1993
       },
       {
         "module": "ai",
-        "lua_name": "LAIDirector:tension",
+        "lua_name": "LSquad:getFormationPosition",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2008
+        "line": 2002
       },
       {
         "module": "ai",
-        "lua_name": "LAIDirector:phase",
+        "lua_name": "LSquad:setMemberProfile",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2012
+        "line": 2015
       },
       {
         "module": "ai",
-        "lua_name": "LAIDirector:spawnRateFactor",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 2018
-      },
-      {
-        "module": "ai",
-        "lua_name": "LAIDirector:lootFactor",
+        "lua_name": "LSquad:getMemberProfile",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
         "line": 2024
       },
       {
         "module": "ai",
-        "lua_name": "LAIDirector:ambientIntensity",
+        "lua_name": "LSquad:setFormationBehavior",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2030
+        "line": 2033
       },
       {
         "module": "ai",
-        "lua_name": "LAIDirector:setTension",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 2036
-      },
-      {
-        "module": "ai",
-        "lua_name": "LAIDirector:reset",
-        "kind": "method",
-        "file": "src/lua_api/ai_api.rs",
-        "line": 2042
-      },
-      {
-        "module": "ai",
-        "lua_name": "LAIDirector:type",
+        "lua_name": "LSquad:getFormationBehavior",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
         "line": 2049
       },
       {
         "module": "ai",
+        "lua_name": "LSquad:getFormationSlots",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2063
+      },
+      {
+        "module": "ai",
+        "lua_name": "LSquad:getFormationSummary",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2093
+      },
+      {
+        "module": "ai",
+        "lua_name": "LSquad:assignFormationMove",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2124
+      },
+      {
+        "module": "ai",
+        "lua_name": "LSquad:submitFormationPaths",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2270
+      },
+      {
+        "module": "ai",
+        "lua_name": "LSquad:getBlackboard",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2459
+      },
+      {
+        "module": "ai",
+        "lua_name": "LSquad:type",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2468
+      },
+      {
+        "module": "ai",
+        "lua_name": "LSquad:typeOf",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2473
+      },
+      {
+        "module": "ai",
+        "lua_name": "LCommandQueue:enqueue",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2541
+      },
+      {
+        "module": "ai",
+        "lua_name": "LCommandQueue:pushFront",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2560
+      },
+      {
+        "module": "ai",
+        "lua_name": "LCommandQueue:replace",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2579
+      },
+      {
+        "module": "ai",
+        "lua_name": "LCommandQueue:cancelCurrent",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2596
+      },
+      {
+        "module": "ai",
+        "lua_name": "LCommandQueue:clear",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2605
+      },
+      {
+        "module": "ai",
+        "lua_name": "LCommandQueue:getCount",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2613
+      },
+      {
+        "module": "ai",
+        "lua_name": "LCommandQueue:isEmpty",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2619
+      },
+      {
+        "module": "ai",
+        "lua_name": "LCommandQueue:getCurrentType",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2625
+      },
+      {
+        "module": "ai",
+        "lua_name": "LCommandQueue:getCurrentTarget",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2633
+      },
+      {
+        "module": "ai",
+        "lua_name": "LCommandQueue:getCurrent",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2641
+      },
+      {
+        "module": "ai",
+        "lua_name": "LCommandQueue:getPending",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2651
+      },
+      {
+        "module": "ai",
+        "lua_name": "LCommandQueue:completeCurrent",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2659
+      },
+      {
+        "module": "ai",
+        "lua_name": "LCommandQueue:failCurrent",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2669
+      },
+      {
+        "module": "ai",
+        "lua_name": "LCommandQueue:drainEvents",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2677
+      },
+      {
+        "module": "ai",
+        "lua_name": "LCommandQueue:type",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2686
+      },
+      {
+        "module": "ai",
+        "lua_name": "LCommandQueue:typeOf",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2691
+      },
+      {
+        "module": "ai",
+        "lua_name": "LTraitArchetypes:register",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2708
+      },
+      {
+        "module": "ai",
+        "lua_name": "LTraitArchetypes:createProfile",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2719
+      },
+      {
+        "module": "ai",
+        "lua_name": "LTraitArchetypes:names",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2735
+      },
+      {
+        "module": "ai",
+        "lua_name": "LTraitArchetypes:count",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2745
+      },
+      {
+        "module": "ai",
+        "lua_name": "LTraitArchetypes:type",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2752
+      },
+      {
+        "module": "ai",
+        "lua_name": "LTraitArchetypes:typeOf",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2757
+      },
+      {
+        "module": "ai",
+        "lua_name": "LDecisionBiasSet:addRule",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2777
+      },
+      {
+        "module": "ai",
+        "lua_name": "LDecisionBiasSet:score",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2796
+      },
+      {
+        "module": "ai",
+        "lua_name": "LDecisionBiasSet:ruleCount",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2813
+      },
+      {
+        "module": "ai",
+        "lua_name": "LDecisionBiasSet:type",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2819
+      },
+      {
+        "module": "ai",
+        "lua_name": "LDecisionBiasSet:typeOf",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2824
+      },
+      {
+        "module": "ai",
+        "lua_name": "LTraitProfile:set",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2842
+      },
+      {
+        "module": "ai",
+        "lua_name": "LTraitProfile:get",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2850
+      },
+      {
+        "module": "ai",
+        "lua_name": "LTraitProfile:getBase",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2857
+      },
+      {
+        "module": "ai",
+        "lua_name": "LTraitProfile:addModifier",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2866
+      },
+      {
+        "module": "ai",
+        "lua_name": "LTraitProfile:removeModifiers",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2878
+      },
+      {
+        "module": "ai",
+        "lua_name": "LTraitProfile:update",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2885
+      },
+      {
+        "module": "ai",
+        "lua_name": "LTraitProfile:has",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2893
+      },
+      {
+        "module": "ai",
+        "lua_name": "LTraitProfile:names",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2899
+      },
+      {
+        "module": "ai",
+        "lua_name": "LTraitProfile:scoreDecision",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2912
+      },
+      {
+        "module": "ai",
+        "lua_name": "LTraitProfile:traitCount",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2930
+      },
+      {
+        "module": "ai",
+        "lua_name": "LTraitProfile:archetype",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2936
+      },
+      {
+        "module": "ai",
+        "lua_name": "LTraitProfile:type",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2942
+      },
+      {
+        "module": "ai",
+        "lua_name": "LTraitProfile:typeOf",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2947
+      },
+      {
+        "module": "ai",
+        "lua_name": "LStimulusWorld:addVisual",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2968
+      },
+      {
+        "module": "ai",
+        "lua_name": "LStimulusWorld:addAuditory",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 2986
+      },
+      {
+        "module": "ai",
+        "lua_name": "LStimulusWorld:remove",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 3009
+      },
+      {
+        "module": "ai",
+        "lua_name": "LStimulusWorld:update",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 3015
+      },
+      {
+        "module": "ai",
+        "lua_name": "LStimulusWorld:count",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 3022
+      },
+      {
+        "module": "ai",
+        "lua_name": "LStimulusWorld:clear",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 3028
+      },
+      {
+        "module": "ai",
+        "lua_name": "LStimulusWorld:type",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 3035
+      },
+      {
+        "module": "ai",
+        "lua_name": "LStimulusWorld:typeOf",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 3040
+      },
+      {
+        "module": "ai",
+        "lua_name": "LNeedSystem:addNeed",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 3059
+      },
+      {
+        "module": "ai",
+        "lua_name": "LNeedSystem:update",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 3066
+      },
+      {
+        "module": "ai",
+        "lua_name": "LNeedSystem:mostUrgent",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 3073
+      },
+      {
+        "module": "ai",
+        "lua_name": "LNeedSystem:satisfy",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 3080
+      },
+      {
+        "module": "ai",
+        "lua_name": "LNeedSystem:valueOf",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 3088
+      },
+      {
+        "module": "ai",
+        "lua_name": "LNeedSystem:type",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 3094
+      },
+      {
+        "module": "ai",
+        "lua_name": "LNeedSystem:typeOf",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 3099
+      },
+      {
+        "module": "ai",
+        "lua_name": "LAIDirector:pushEvent",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 3115
+      },
+      {
+        "module": "ai",
+        "lua_name": "LAIDirector:update",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 3122
+      },
+      {
+        "module": "ai",
+        "lua_name": "LAIDirector:tension",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 3129
+      },
+      {
+        "module": "ai",
+        "lua_name": "LAIDirector:phase",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 3133
+      },
+      {
+        "module": "ai",
+        "lua_name": "LAIDirector:spawnRateFactor",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 3139
+      },
+      {
+        "module": "ai",
+        "lua_name": "LAIDirector:lootFactor",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 3145
+      },
+      {
+        "module": "ai",
+        "lua_name": "LAIDirector:ambientIntensity",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 3151
+      },
+      {
+        "module": "ai",
+        "lua_name": "LAIDirector:setTension",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 3157
+      },
+      {
+        "module": "ai",
+        "lua_name": "LAIDirector:reset",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 3163
+      },
+      {
+        "module": "ai",
+        "lua_name": "LAIDirector:type",
+        "kind": "method",
+        "file": "src/lua_api/ai_api.rs",
+        "line": 3170
+      },
+      {
+        "module": "ai",
         "lua_name": "LAIDirector:typeOf",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2054
+        "line": 3175
       },
       {
         "module": "ai",
         "lua_name": "LHTNDomain:addPrimitive",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2073
+        "line": 3194
       },
       {
         "module": "ai",
         "lua_name": "LHTNDomain:addCompound",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2084
+        "line": 3205
       },
       {
         "module": "ai",
         "lua_name": "LHTNDomain:plan",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2114
+        "line": 3235
       },
       {
         "module": "ai",
         "lua_name": "LHTNDomain:taskCount",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2138
+        "line": 3259
       },
       {
         "module": "ai",
         "lua_name": "LHTNDomain:type",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2144
+        "line": 3265
       },
       {
         "module": "ai",
         "lua_name": "LHTNDomain:typeOf",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2149
+        "line": 3270
       },
       {
         "module": "ai",
         "lua_name": "LMCTSEngine:search",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2169
+        "line": 3290
       },
       {
         "module": "ai",
         "lua_name": "LMCTSEngine:getLastTrace",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2230
+        "line": 3351
       },
       {
         "module": "ai",
         "lua_name": "LMCTSEngine:type",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2236
+        "line": 3357
       },
       {
         "module": "ai",
         "lua_name": "LMCTSEngine:typeOf",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2241
+        "line": 3362
       },
       {
         "module": "ai",
         "lua_name": "LEmotionModel:add",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2260
+        "line": 3381
       },
       {
         "module": "ai",
         "lua_name": "LEmotionModel:trigger",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2273
+        "line": 3394
       },
       {
         "module": "ai",
         "lua_name": "LEmotionModel:get",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2281
+        "line": 3402
       },
       {
         "module": "ai",
         "lua_name": "LEmotionModel:dominant",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2287
+        "line": 3408
       },
       {
         "module": "ai",
         "lua_name": "LEmotionModel:isActive",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2294
+        "line": 3415
       },
       {
         "module": "ai",
         "lua_name": "LEmotionModel:update",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2300
+        "line": 3421
       },
       {
         "module": "ai",
         "lua_name": "LEmotionModel:reset",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2306
+        "line": 3427
       },
       {
         "module": "ai",
         "lua_name": "LEmotionModel:type",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2313
+        "line": 3434
       },
       {
         "module": "ai",
         "lua_name": "LEmotionModel:typeOf",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2318
+        "line": 3439
       },
       {
         "module": "ai",
         "lua_name": "LStrategyAI:addGoal",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2334
+        "line": 3455
       },
       {
         "module": "ai",
         "lua_name": "LStrategyAI:addTag",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2341
+        "line": 3462
       },
       {
         "module": "ai",
         "lua_name": "LStrategyAI:removeTag",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2348
+        "line": 3469
       },
       {
         "module": "ai",
         "lua_name": "LStrategyAI:update",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2356
+        "line": 3477
       },
       {
         "module": "ai",
         "lua_name": "LStrategyAI:forceEvaluate",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2365
+        "line": 3486
       },
       {
         "module": "ai",
         "lua_name": "LStrategyAI:activeGoal",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2374
+        "line": 3495
       },
       {
         "module": "ai",
         "lua_name": "LStrategyAI:timeUntilNext",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2380
+        "line": 3501
       },
       {
         "module": "ai",
         "lua_name": "LStrategyAI:type",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2386
+        "line": 3507
       },
       {
         "module": "ai",
         "lua_name": "LStrategyAI:typeOf",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2391
+        "line": 3512
       },
       {
         "module": "ai",
         "lua_name": "LAILod:tierFor",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2411
+        "line": 3532
       },
       {
         "module": "ai",
         "lua_name": "LAILod:shouldUpdate",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2422
+        "line": 3543
       },
       {
         "module": "ai",
         "lua_name": "LAILod:tierCount",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2428
+        "line": 3549
       },
       {
         "module": "ai",
         "lua_name": "LAILod:tierName",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2435
+        "line": 3556
       },
       {
         "module": "ai",
         "lua_name": "LAILod:type",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2441
+        "line": 3562
       },
       {
         "module": "ai",
         "lua_name": "LAILod:typeOf",
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2446
+        "line": 3567
       },
       {
         "module": "ai",
         "lua_name": "lurek.ai.newWorld",
         "kind": "function",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2457
+        "line": 3578
       },
       {
         "module": "ai",
         "lua_name": "lurek.ai.newBlackboard",
         "kind": "function",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2470
+        "line": 3591
       },
       {
         "module": "ai",
         "lua_name": "lurek.ai.newStateMachine",
         "kind": "function",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2481
+        "line": 3602
       },
       {
         "module": "ai",
         "lua_name": "lurek.ai.newBehaviorTree",
         "kind": "function",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2492
+        "line": 3613
       },
       {
         "module": "ai",
         "lua_name": "lurek.ai.newSelector",
         "kind": "function",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2503
+        "line": 3624
       },
       {
         "module": "ai",
         "lua_name": "lurek.ai.newSequence",
         "kind": "function",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2517
+        "line": 3638
       },
       {
         "module": "ai",
         "lua_name": "lurek.ai.newParallel",
         "kind": "function",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2533
+        "line": 3654
       },
       {
         "module": "ai",
         "lua_name": "lurek.ai.newInverter",
         "kind": "function",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2552
+        "line": 3673
       },
       {
         "module": "ai",
         "lua_name": "lurek.ai.newRepeater",
         "kind": "function",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2569
+        "line": 3690
       },
       {
         "module": "ai",
         "lua_name": "lurek.ai.newSucceeder",
         "kind": "function",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2587
+        "line": 3708
       },
       {
         "module": "ai",
         "lua_name": "lurek.ai.newAction",
         "kind": "function",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2604
+        "line": 3725
       },
       {
         "module": "ai",
         "lua_name": "lurek.ai.newCondition",
         "kind": "function",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2617
+        "line": 3738
       },
       {
         "module": "ai",
         "lua_name": "lurek.ai.newGuard",
         "kind": "function",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2631
+        "line": 3752
       },
       {
         "module": "ai",
         "lua_name": "lurek.ai.newUtilityAI",
         "kind": "function",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2656
+        "line": 3777
       },
       {
         "module": "ai",
         "lua_name": "lurek.ai.newDialogueAI",
         "kind": "function",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2668
+        "line": 3789
       },
       {
         "module": "ai",
         "lua_name": "lurek.ai.newGOAPPlanner",
         "kind": "function",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2679
+        "line": 3800
       },
       {
         "module": "ai",
         "lua_name": "lurek.ai.newSquad",
         "kind": "function",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2691
+        "line": 3812
       },
       {
         "module": "ai",
         "lua_name": "lurek.ai.newCommandQueue",
         "kind": "function",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2702
+        "line": 3823
       },
       {
         "module": "ai",
         "lua_name": "lurek.ai.newTraitProfile",
         "kind": "function",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2713
+        "line": 3834
       },
       {
         "module": "ai",
         "lua_name": "lurek.ai.newTraitArchetypes",
         "kind": "function",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2724
+        "line": 3845
       },
       {
         "module": "ai",
         "lua_name": "lurek.ai.newDecisionBiasSet",
         "kind": "function",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2735
+        "line": 3856
       },
       {
         "module": "ai",
         "lua_name": "lurek.ai.newStimulusWorld",
         "kind": "function",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2746
+        "line": 3867
       },
       {
         "module": "ai",
         "lua_name": "lurek.ai.newNeedSystem",
         "kind": "function",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2757
+        "line": 3878
       },
       {
         "module": "ai",
         "lua_name": "lurek.ai.newAIDirector",
         "kind": "function",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2768
+        "line": 3889
       },
       {
         "module": "ai",
         "lua_name": "lurek.ai.newHTNDomain",
         "kind": "function",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2779
+        "line": 3900
       },
       {
         "module": "ai",
         "lua_name": "lurek.ai.newMCTSEngine",
         "kind": "function",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2794
+        "line": 3915
       },
       {
         "module": "ai",
         "lua_name": "lurek.ai.newEmotionModel",
         "kind": "function",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2813
+        "line": 3934
       },
       {
         "module": "ai",
         "lua_name": "lurek.ai.newStrategyAI",
         "kind": "function",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2825
+        "line": 3946
       },
       {
         "module": "ai",
         "lua_name": "lurek.ai.newAILod",
         "kind": "function",
         "file": "src/lua_api/ai_api.rs",
-        "line": 2836
+        "line": 3957
       },
       {
         "module": "animation",
@@ -69553,1435 +70318,1680 @@
         "lua_name": "LNavGrid:getWidth",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 394
+        "line": 538
       },
       {
         "module": "pathfind",
         "lua_name": "LNavGrid:getHeight",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 400
+        "line": 544
       },
       {
         "module": "pathfind",
         "lua_name": "LNavGrid:getDimensions",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 407
+        "line": 551
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LNavGrid:getGeneration",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 557
       },
       {
         "module": "pathfind",
         "lua_name": "LNavGrid:setCost",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 415
+        "line": 565
       },
       {
         "module": "pathfind",
         "lua_name": "LNavGrid:getCost",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 425
+        "line": 575
       },
       {
         "module": "pathfind",
         "lua_name": "LNavGrid:setBlocked",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 434
+        "line": 584
       },
       {
         "module": "pathfind",
         "lua_name": "LNavGrid:isBlocked",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 447
+        "line": 597
       },
       {
         "module": "pathfind",
         "lua_name": "LNavGrid:isWalkable",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 457
+        "line": 607
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LNavGrid:defineFootprint",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 623
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LNavGrid:getFootprint",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 637
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LNavGrid:rebuildClearance",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 652
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LNavGrid:isWalkableFor",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 677
       },
       {
         "module": "pathfind",
         "lua_name": "LNavGrid:fill",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 470
+        "line": 687
       },
       {
         "module": "pathfind",
         "lua_name": "LNavGrid:fillRect",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 481
+        "line": 698
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LNavGrid:beginUpdate",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 708
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LNavGrid:setBlockedRect",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 720
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LNavGrid:setCostRect",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 736
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LNavGrid:commitUpdate",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 748
       },
       {
         "module": "pathfind",
         "lua_name": "LNavGrid:loadFromString",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 492
+        "line": 755
       },
       {
         "module": "pathfind",
         "lua_name": "LNavGrid:saveToString",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 501
+        "line": 764
       },
       {
         "module": "pathfind",
         "lua_name": "LNavGrid:setChunkSize",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 507
+        "line": 770
       },
       {
         "module": "pathfind",
         "lua_name": "LNavGrid:getChunkSize",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 514
+        "line": 777
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LNavGrid:getDirtyRects",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 783
       },
       {
         "module": "pathfind",
         "lua_name": "LNavGrid:rebuildAbstract",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 519
+        "line": 788
       },
       {
         "module": "pathfind",
         "lua_name": "LNavGrid:findHpaPath",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 534
+        "line": 806
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LNavGrid:findHpaPathsToGoal",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 858
       },
       {
         "module": "pathfind",
         "lua_name": "LNavGrid:setDirty",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 578
+        "line": 901
       },
       {
         "module": "pathfind",
         "lua_name": "LNavGrid:clearDirty",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 585
+        "line": 908
       },
       {
         "module": "pathfind",
         "lua_name": "LNavGrid:setDiagonalMode",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 592
+        "line": 915
       },
       {
         "module": "pathfind",
         "lua_name": "LNavGrid:getDiagonalMode",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 605
+        "line": 928
       },
       {
         "module": "pathfind",
         "lua_name": "LNavGrid:type",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 616
+        "line": 939
       },
       {
         "module": "pathfind",
         "lua_name": "LNavGrid:typeOf",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 621
+        "line": 944
       },
       {
         "module": "pathfind",
         "lua_name": "LUnitPathfinder:findPath",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 644
+        "line": 967
       },
       {
         "module": "pathfind",
         "lua_name": "LUnitPathfinder:findPathSmooth",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 671
+        "line": 994
       },
       {
         "module": "pathfind",
         "lua_name": "LUnitPathfinder:findPathBidirectional",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 703
+        "line": 1026
       },
       {
         "module": "pathfind",
         "lua_name": "LUnitPathfinder:getPathLength",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 749
+        "line": 1072
       },
       {
         "module": "pathfind",
         "lua_name": "LUnitPathfinder:getPathCost",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 757
+        "line": 1080
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LUnitPathfinder:findPathsToGoal",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 1092
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LUnitPathfinder:findPathsToGoalFor",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 1123
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LUnitPathfinder:getSharedFlowField",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 1147
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LUnitPathfinder:getSharedFlowFieldFor",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 1166
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LUnitPathfinder:getSharedFlowFieldMulti",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 1189
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LUnitPathfinder:getSharedFlowFieldMultiFor",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 1208
       },
       {
         "module": "pathfind",
         "lua_name": "LUnitPathfinder:findPartialPath",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 773
+        "line": 1241
       },
       {
         "module": "pathfind",
         "lua_name": "LUnitPathfinder:findNearestWalkable",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 804
+        "line": 1272
       },
       {
         "module": "pathfind",
         "lua_name": "LUnitPathfinder:isReachable",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 830
+        "line": 1298
       },
       {
         "module": "pathfind",
         "lua_name": "LUnitPathfinder:heuristicDistance",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 848
+        "line": 1316
       },
       {
         "module": "pathfind",
         "lua_name": "LUnitPathfinder:setCacheEnabled",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 859
+        "line": 1327
       },
       {
         "module": "pathfind",
         "lua_name": "LUnitPathfinder:isCacheEnabled",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 866
+        "line": 1334
       },
       {
         "module": "pathfind",
         "lua_name": "LUnitPathfinder:clearCache",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 871
+        "line": 1339
       },
       {
         "module": "pathfind",
         "lua_name": "LUnitPathfinder:getCacheSize",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 878
+        "line": 1346
       },
       {
         "module": "pathfind",
-        "lua_name": "LUnitPathfinder:setCacheMaxSize",
+        "lua_name": "LUnitPathfinder:clearSharedGoalCache",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 884
+        "line": 1351
       },
       {
         "module": "pathfind",
-        "lua_name": "LUnitPathfinder:type",
+        "lua_name": "LUnitPathfinder:getSharedGoalCacheSize",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 891
+        "line": 1358
       },
       {
         "module": "pathfind",
-        "lua_name": "LUnitPathfinder:typeOf",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 896
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LFlowField:calculate",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 914
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LFlowField:calculateMulti",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 928
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LFlowField:getDirection",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 950
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LFlowField:getDirectionAngle",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 959
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LFlowField:getCostToTarget",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 968
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LFlowField:isCalculated",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 975
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LFlowField:getTargets",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 983
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LFlowField:steer",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 1005
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LFlowField:type",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 1014
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LFlowField:typeOf",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 1019
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LPathGrid:getWidth",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 1035
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LPathGrid:getHeight",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 1041
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LPathGrid:getCellSize",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 1047
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LPathGrid:setWalkable",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 1055
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LPathGrid:isWalkable",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 1065
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LPathGrid:setCost",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 1074
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LPathGrid:getCost",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 1084
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LPathGrid:findPath",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 1097
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LPathGrid:findPathSmoothed",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 1128
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LPathGrid:type",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 1153
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LPathGrid:typeOf",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 1158
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LAIFlowField:getWidth",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 1174
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LAIFlowField:getHeight",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 1180
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LAIFlowField:hasGoal",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 1186
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LAIFlowField:setGoal",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 1193
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LAIFlowField:getGoal",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 1202
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LAIFlowField:getDirection",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 1220
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LAIFlowField:getDistance",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 1229
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LAIFlowField:type",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 1236
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LAIFlowField:typeOf",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 1241
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LIsoGrid:setBlocked",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 1259
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LIsoGrid:setCost",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 1272
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LIsoGrid:isBlocked",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 1284
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LIsoGrid:getCost",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 1293
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LIsoGrid:findPath",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 1308
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LIsoGrid:type",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 1331
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LIsoGrid:typeOf",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 1336
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LHexGrid:setBlocked",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 1354
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LHexGrid:setCost",
+        "lua_name": "LUnitPathfinder:getSharedGoalCacheStats",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
         "line": 1367
       },
       {
         "module": "pathfind",
-        "lua_name": "LHexGrid:isBlocked",
+        "lua_name": "LUnitPathfinder:setCacheMaxSize",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1377
+        "line": 1378
       },
       {
         "module": "pathfind",
-        "lua_name": "LHexGrid:findPath",
+        "lua_name": "LUnitPathfinder:type",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 1385
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LUnitPathfinder:typeOf",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
         "line": 1390
       },
       {
         "module": "pathfind",
-        "lua_name": "LHexGrid:fieldOfView",
+        "lua_name": "LFlowField:calculate",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1420
+        "line": 1408
       },
       {
         "module": "pathfind",
-        "lua_name": "LHexGrid:rangeOfMovement",
+        "lua_name": "LFlowField:calculateMulti",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1445
+        "line": 1422
       },
       {
         "module": "pathfind",
-        "lua_name": "LHexGrid:distance",
+        "lua_name": "LFlowField:calculateFor",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1469
+        "line": 1443
       },
       {
         "module": "pathfind",
-        "lua_name": "LHexGrid:type",
+        "lua_name": "LFlowField:calculateMultiFor",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1480
+        "line": 1460
       },
       {
         "module": "pathfind",
-        "lua_name": "LHexGrid:typeOf",
+        "lua_name": "LFlowField:getDirection",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
         "line": 1485
       },
       {
         "module": "pathfind",
-        "lua_name": "LJpsGrid:setBlocked",
+        "lua_name": "LFlowField:getDirectionAngle",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 1494
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LFlowField:getCostToTarget",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
         "line": 1503
       },
       {
         "module": "pathfind",
-        "lua_name": "LJpsGrid:isBlocked",
+        "lua_name": "LFlowField:isCalculated",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 1510
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LFlowField:getGeneration",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
         "line": 1516
       },
       {
         "module": "pathfind",
-        "lua_name": "LJpsGrid:findPath",
+        "lua_name": "LFlowField:getBuildCount",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1529
+        "line": 1526
       },
       {
         "module": "pathfind",
-        "lua_name": "LJpsGrid:type",
+        "lua_name": "LFlowField:getTargets",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1554
+        "line": 1534
       },
       {
         "module": "pathfind",
-        "lua_name": "LJpsGrid:typeOf",
+        "lua_name": "LFlowField:pathFrom",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1559
+        "line": 1555
       },
       {
         "module": "pathfind",
-        "lua_name": "LNavMesh:addPolygon",
+        "lua_name": "LFlowField:pathsFrom",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1576
+        "line": 1570
       },
       {
         "module": "pathfind",
-        "lua_name": "LNavMesh:connectPolygons",
+        "lua_name": "LFlowField:steer",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1597
+        "line": 1598
       },
       {
         "module": "pathfind",
-        "lua_name": "LNavMesh:findPath",
+        "lua_name": "LFlowField:type",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1616
+        "line": 1607
       },
       {
         "module": "pathfind",
-        "lua_name": "LNavMesh:getPolygonCount",
+        "lua_name": "LFlowField:typeOf",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 1612
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LPathGrid:getWidth",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 1628
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LPathGrid:getHeight",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 1634
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LPathGrid:getCellSize",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
         "line": 1640
       },
       {
         "module": "pathfind",
-        "lua_name": "LNavMesh:type",
+        "lua_name": "LPathGrid:setWalkable",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1646
+        "line": 1648
       },
       {
         "module": "pathfind",
-        "lua_name": "LNavMesh:typeOf",
+        "lua_name": "LPathGrid:isWalkable",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1651
+        "line": 1658
       },
       {
         "module": "pathfind",
-        "lua_name": "LSteeringManager:addSeek",
+        "lua_name": "LPathGrid:setCost",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1671
+        "line": 1667
       },
       {
         "module": "pathfind",
-        "lua_name": "LSteeringManager:addFlee",
+        "lua_name": "LPathGrid:getCost",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 1677
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LPathGrid:findPath",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
         "line": 1690
       },
       {
         "module": "pathfind",
-        "lua_name": "LSteeringManager:addArrive",
+        "lua_name": "LPathGrid:findPathSmoothed",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1713
+        "line": 1721
       },
       {
         "module": "pathfind",
-        "lua_name": "LSteeringManager:addWander",
+        "lua_name": "LPathGrid:type",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1734
+        "line": 1746
       },
       {
         "module": "pathfind",
-        "lua_name": "LSteeringManager:addPursue",
+        "lua_name": "LPathGrid:typeOf",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1766
+        "line": 1751
       },
       {
         "module": "pathfind",
-        "lua_name": "LSteeringManager:addEvade",
+        "lua_name": "LAIFlowField:getWidth",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 1767
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LAIFlowField:getHeight",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 1773
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LAIFlowField:hasGoal",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
         "line": 1779
       },
       {
         "module": "pathfind",
-        "lua_name": "LSteeringManager:addFlock",
+        "lua_name": "LAIFlowField:setGoal",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 1786
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LAIFlowField:getGoal",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
         "line": 1795
       },
       {
         "module": "pathfind",
-        "lua_name": "LSteeringManager:getBehaviorCount",
+        "lua_name": "LAIFlowField:getDirection",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1820
+        "line": 1813
       },
       {
         "module": "pathfind",
-        "lua_name": "LSteeringManager:setCombineMode",
+        "lua_name": "LAIFlowField:getDistance",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1826
+        "line": 1822
       },
       {
         "module": "pathfind",
-        "lua_name": "LSteeringManager:getCombineMode",
+        "lua_name": "LAIFlowField:type",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1833
+        "line": 1829
       },
       {
         "module": "pathfind",
-        "lua_name": "LSteeringManager:getLastSteering",
+        "lua_name": "LAIFlowField:typeOf",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1839
+        "line": 1834
       },
       {
         "module": "pathfind",
-        "lua_name": "LSteeringManager:calculate",
+        "lua_name": "LIsoGrid:setBlocked",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
         "line": 1852
       },
       {
         "module": "pathfind",
-        "lua_name": "LSteeringManager:setPath",
+        "lua_name": "LIsoGrid:setCost",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1875
+        "line": 1865
       },
       {
         "module": "pathfind",
-        "lua_name": "LSteeringManager:clearPath",
+        "lua_name": "LIsoGrid:isBlocked",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1905
+        "line": 1877
       },
       {
         "module": "pathfind",
-        "lua_name": "LSteeringManager:hasPath",
+        "lua_name": "LIsoGrid:getCost",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1912
+        "line": 1886
       },
       {
         "module": "pathfind",
-        "lua_name": "LSteeringManager:getPathProgress",
+        "lua_name": "LIsoGrid:findPath",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1918
+        "line": 1901
       },
       {
         "module": "pathfind",
-        "lua_name": "LSteeringManager:setEntity",
+        "lua_name": "LIsoGrid:type",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 1924
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LIsoGrid:typeOf",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
         "line": 1929
       },
       {
         "module": "pathfind",
-        "lua_name": "LSteeringManager:removeEntity",
+        "lua_name": "LHexGrid:setBlocked",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1944
+        "line": 1947
       },
       {
         "module": "pathfind",
-        "lua_name": "LSteeringManager:clearEntities",
+        "lua_name": "LHexGrid:setCost",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1949
+        "line": 1960
       },
       {
         "module": "pathfind",
-        "lua_name": "LSteeringManager:entityCount",
+        "lua_name": "LHexGrid:isBlocked",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1956
+        "line": 1970
       },
       {
         "module": "pathfind",
-        "lua_name": "LSteeringManager:getLastDiagnostic",
+        "lua_name": "LHexGrid:findPath",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1962
+        "line": 1983
       },
       {
         "module": "pathfind",
-        "lua_name": "LSteeringManager:type",
+        "lua_name": "LHexGrid:fieldOfView",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1968
+        "line": 2013
       },
       {
         "module": "pathfind",
-        "lua_name": "LSteeringManager:typeOf",
+        "lua_name": "LHexGrid:rangeOfMovement",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1973
+        "line": 2038
       },
       {
         "module": "pathfind",
-        "lua_name": "LSteeringManager:setSpatialHashCellSize",
+        "lua_name": "LHexGrid:distance",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1979
+        "line": 2062
       },
       {
         "module": "pathfind",
-        "lua_name": "LSteeringManager:enableSpatialHash",
+        "lua_name": "LHexGrid:type",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1986
+        "line": 2073
       },
       {
         "module": "pathfind",
-        "lua_name": "LSteeringManager:addCustomBehavior",
+        "lua_name": "LHexGrid:typeOf",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1994
+        "line": 2078
       },
       {
         "module": "pathfind",
-        "lua_name": "LSteeringManager:applyCustomSteering",
+        "lua_name": "LJpsGrid:setBlocked",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2016
+        "line": 2096
       },
       {
         "module": "pathfind",
-        "lua_name": "LInfluenceMap:addLayer",
+        "lua_name": "LJpsGrid:isBlocked",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2077
+        "line": 2109
       },
       {
         "module": "pathfind",
-        "lua_name": "LInfluenceMap:hasLayer",
+        "lua_name": "LJpsGrid:findPath",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2085
+        "line": 2122
       },
       {
         "module": "pathfind",
-        "lua_name": "LInfluenceMap:setInfluence",
+        "lua_name": "LJpsGrid:type",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2094
+        "line": 2147
       },
       {
         "module": "pathfind",
-        "lua_name": "LInfluenceMap:getInfluence",
+        "lua_name": "LJpsGrid:typeOf",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2112
+        "line": 2152
       },
       {
         "module": "pathfind",
-        "lua_name": "LInfluenceMap:stampInfluence",
+        "lua_name": "LNavMesh:addPolygon",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2130
+        "line": 2169
       },
       {
         "module": "pathfind",
-        "lua_name": "LInfluenceMap:propagate",
+        "lua_name": "LNavMesh:connectPolygons",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2146
+        "line": 2190
       },
       {
         "module": "pathfind",
-        "lua_name": "LInfluenceMap:decay",
+        "lua_name": "LNavMesh:findPath",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2159
+        "line": 2209
       },
       {
         "module": "pathfind",
-        "lua_name": "LInfluenceMap:clearLayer",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 2166
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LInfluenceMap:clearAll",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 2172
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LInfluenceMap:getMaxPosition",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 2180
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LInfluenceMap:getMinPosition",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 2187
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LInfluenceMap:queryRect",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 2198
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LInfluenceMap:blend",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 2211
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LInfluenceMap:getWidth",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 2219
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LInfluenceMap:getHeight",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 2223
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LInfluenceMap:getCellSize",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 2227
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LInfluenceMap:type",
+        "lua_name": "LNavMesh:getPolygonCount",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
         "line": 2233
       },
       {
         "module": "pathfind",
-        "lua_name": "LInfluenceMap:typeOf",
+        "lua_name": "LNavMesh:type",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2238
+        "line": 2239
       },
       {
         "module": "pathfind",
-        "lua_name": "LContextSteering:addSeekTarget",
+        "lua_name": "LNavMesh:typeOf",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2257
+        "line": 2244
       },
       {
         "module": "pathfind",
-        "lua_name": "LContextSteering:addWander",
+        "lua_name": "LSteeringManager:addSeek",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2268
+        "line": 2264
       },
       {
         "module": "pathfind",
-        "lua_name": "LContextSteering:addAvoidPoint",
+        "lua_name": "LSteeringManager:addFlee",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2278
+        "line": 2283
       },
       {
         "module": "pathfind",
-        "lua_name": "LContextSteering:addAvoidBounds",
+        "lua_name": "LSteeringManager:addArrive",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2295
+        "line": 2306
       },
       {
         "module": "pathfind",
-        "lua_name": "LContextSteering:clearBehaviors",
+        "lua_name": "LSteeringManager:addWander",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2301
+        "line": 2327
       },
       {
         "module": "pathfind",
-        "lua_name": "LContextSteering:evaluate",
+        "lua_name": "LSteeringManager:addPursue",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2312
+        "line": 2359
       },
       {
         "module": "pathfind",
-        "lua_name": "LContextSteering:chosenMagnitude",
+        "lua_name": "LSteeringManager:addEvade",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2322
+        "line": 2372
       },
       {
         "module": "pathfind",
-        "lua_name": "LContextSteering:slotCount",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 2328
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LContextSteering:type",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 2334
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LContextSteering:typeOf",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 2339
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LORCASolver:addAgent",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 2360
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LORCASolver:setPreferredVelocity",
-        "kind": "method",
-        "file": "src/lua_api/pathfind_api.rs",
-        "line": 2374
-      },
-      {
-        "module": "pathfind",
-        "lua_name": "LORCASolver:setPosition",
+        "lua_name": "LSteeringManager:addFlock",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
         "line": 2388
       },
       {
         "module": "pathfind",
+        "lua_name": "LSteeringManager:getBehaviorCount",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2413
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LSteeringManager:setCombineMode",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2419
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LSteeringManager:getCombineMode",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2426
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LSteeringManager:getLastSteering",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2432
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LSteeringManager:calculate",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2445
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LSteeringManager:setPath",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2468
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LSteeringManager:clearPath",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2498
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LSteeringManager:hasPath",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2505
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LSteeringManager:getPathProgress",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2511
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LSteeringManager:setEntity",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2522
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LSteeringManager:removeEntity",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2537
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LSteeringManager:clearEntities",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2542
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LSteeringManager:entityCount",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2549
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LSteeringManager:getLastDiagnostic",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2555
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LSteeringManager:type",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2561
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LSteeringManager:typeOf",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2566
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LSteeringManager:setSpatialHashCellSize",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2572
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LSteeringManager:enableSpatialHash",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2579
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LSteeringManager:addCustomBehavior",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2587
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LSteeringManager:applyCustomSteering",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2609
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LInfluenceMap:addLayer",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2670
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LInfluenceMap:hasLayer",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2678
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LInfluenceMap:setInfluence",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2687
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LInfluenceMap:getInfluence",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2705
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LInfluenceMap:stampInfluence",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2723
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LInfluenceMap:propagate",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2739
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LInfluenceMap:decay",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2752
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LInfluenceMap:clearLayer",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2759
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LInfluenceMap:clearAll",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2765
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LInfluenceMap:getMaxPosition",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2773
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LInfluenceMap:getMinPosition",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2780
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LInfluenceMap:queryRect",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2791
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LInfluenceMap:blend",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2804
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LInfluenceMap:getWidth",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2812
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LInfluenceMap:getHeight",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2816
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LInfluenceMap:getCellSize",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2820
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LInfluenceMap:type",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2826
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LInfluenceMap:typeOf",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2831
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LContextSteering:addSeekTarget",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2850
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LContextSteering:addWander",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2861
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LContextSteering:addAvoidPoint",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2871
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LContextSteering:addAvoidBounds",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2888
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LContextSteering:clearBehaviors",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2894
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LContextSteering:evaluate",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2905
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LContextSteering:chosenMagnitude",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2915
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LContextSteering:slotCount",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2921
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LContextSteering:type",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2927
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LContextSteering:typeOf",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2932
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LORCASolver:addAgent",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2953
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LORCASolver:setAgent",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2966
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LORCASolver:setPreferredVelocity",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2988
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LORCASolver:setVelocity",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 3002
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LORCASolver:setPosition",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 3013
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LORCASolver:removeAgent",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 3023
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LORCASolver:setMaxNeighbors",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 3034
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LORCASolver:setNeighborRadius",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 3041
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LORCASolver:setCellSize",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 3048
+      },
+      {
+        "module": "pathfind",
         "lua_name": "LORCASolver:compute",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2397
+        "line": 3055
       },
       {
         "module": "pathfind",
         "lua_name": "LORCASolver:getSafeVelocity",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2405
+        "line": 3077
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "LORCASolver:getStats",
+        "kind": "method",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 3088
       },
       {
         "module": "pathfind",
         "lua_name": "LORCASolver:agentCount",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2417
+        "line": 3095
       },
       {
         "module": "pathfind",
         "lua_name": "LORCASolver:type",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2423
+        "line": 3101
       },
       {
         "module": "pathfind",
         "lua_name": "LORCASolver:typeOf",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2428
+        "line": 3106
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.graphRoute",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2546
+        "line": 3244
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.graphRoutes",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2563
+        "line": 3261
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.graphConnectedComponents",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2588
+        "line": 3286
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.graphConnected",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2613
+        "line": 3311
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newNavGrid",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2632
+        "line": 3330
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newNavGridFromProvider",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2648
+        "line": 3346
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newPathfinder",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2664
+        "line": 3362
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newFlowField",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2677
+        "line": 3375
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newPathGrid",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2692
+        "line": 3390
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newPathGridFromProvider",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2708
+        "line": 3406
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newPathFlowField",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2723
+        "line": 3421
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newSteeringManager",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2740
+        "line": 3438
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newInfluenceMap",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2755
+        "line": 3453
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newContextSteering",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2767
+        "line": 3465
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newORCASolver",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2780
+        "line": 3478
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.setThreadCount",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2791
+        "line": 3489
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.getThreadCount",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2806
+        "line": 3504
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.submitAsyncPath",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2822
+        "line": 3520
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "lurek.pathfind.submitAsyncPathsToGoal",
+        "kind": "function",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 3563
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "lurek.pathfind.submitAsyncPathPairs",
+        "kind": "function",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 3636
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.pollAsyncPaths",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2860
+        "line": 3692
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.cancelAsyncPath",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2875
+        "line": 3707
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.getAsyncPendingCount",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2885
+        "line": 3717
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.clearAsyncPaths",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2891
+        "line": 3723
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newNavGridFromTileMap",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2908
+        "line": 3740
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newNavGridFromField",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2943
+        "line": 3775
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newIsoGridFromField",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 3030
+        "line": 3862
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newIsoGrid",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 3092
+        "line": 3924
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newHexGridFromField",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 3107
+        "line": 3939
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newHexGrid",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 3178
+        "line": 4010
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newJpsGrid",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 3197
+        "line": 4029
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newNavMesh",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 3208
+        "line": 4040
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.rangeMap",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 3223
+        "line": 4055
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.rangeMapFromField",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 3283
+        "line": 4115
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newGoalMap",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 3349
+        "line": 4181
       },
       {
         "module": "pathfind",
         "lua_name": "LGoalMap:addSource",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 3381
+        "line": 4213
       },
       {
         "module": "pathfind",
         "lua_name": "LGoalMap:setSources",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 3396
+        "line": 4228
       },
       {
         "module": "pathfind",
         "lua_name": "LGoalMap:clearSources",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 3415
+        "line": 4247
       },
       {
         "module": "pathfind",
         "lua_name": "LGoalMap:setBlocker",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 3423
+        "line": 4255
       },
       {
         "module": "pathfind",
         "lua_name": "LGoalMap:bake",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 3433
+        "line": 4265
       },
       {
         "module": "pathfind",
         "lua_name": "LGoalMap:isReady",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 3460
+        "line": 4292
       },
       {
         "module": "pathfind",
         "lua_name": "LGoalMap:distanceAt",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 3468
+        "line": 4300
       },
       {
         "module": "pathfind",
         "lua_name": "LGoalMap:gradientAt",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 3480
+        "line": 4312
       },
       {
         "module": "pathfind",
         "lua_name": "LGoalMap:flee",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 3493
+        "line": 4325
       },
       {
         "module": "pathfind",
         "lua_name": "LGoalMap:floodFill",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 3505
+        "line": 4337
       },
       {
         "module": "pathfind",
         "lua_name": "LGoalMap:save",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 3527
+        "line": 4359
       },
       {
         "module": "pathfind",
         "lua_name": "LGoalMap:restore",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 3534
+        "line": 4366
       },
       {
         "module": "pathfind",
         "lua_name": "LGoalMap:type",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 3544
+        "line": 4376
       },
       {
         "module": "pathfind",
         "lua_name": "LGoalMap:typeOf",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 3550
+        "line": 4382
       },
       {
         "module": "patterns",

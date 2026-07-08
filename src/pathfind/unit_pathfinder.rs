@@ -1,17 +1,21 @@
 //! Wraps a shared NavGrid in a stateful per-unit pathfinding service with cache-aware route and utility queries.
-//! Owns Waypoint output records, cache keys, cached path storage, and optional LRU-style eviction behavior.
+//! Owns Waypoint output records, cache keys, cached path storage, shared-goal field caches, and optional LRU-style eviction behavior.
 //! Calls baseline A* for full, smoothed, or partial routes, then exposes length, cost, LOS, and reachability helpers.
-//! Also searches for the nearest walkable fallback cell, keeping per-unit recovery logic close to shared grid access.
+//! Also searches for the nearest walkable fallback cell and shared-goal route batches, keeping per-unit recovery logic close to shared grid access.
 //! Provides the boundary between raw navigation algorithms and gameplay units that need repeated path requests.
 //! Open this owner when route caching, per-unit helper semantics, or fallback walkability behavior needs changes.
 
 use crate::runtime::log_messages::{UP01, UP02, UP03};
 
 use crate::log_msg;
-use crate::pathfind::{astar, nav_grid::NavGrid};
+use crate::pathfind::{astar, nav_grid::NavGrid, FlowField, FootprintSpec};
 use std::cell::RefCell;
 use std::collections::{HashMap, VecDeque};
 use std::rc::Rc;
+
+const DEFAULT_SHARED_GOAL_CACHE_MAX_SIZE: usize = 32;
+type PathPair = ((u32, u32), (u32, u32));
+type IndexedStartsByGoal = HashMap<(u32, u32), Vec<(usize, (u32, u32))>>;
 /// Grid cell coordinate returned as a path waypoint.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Waypoint {
@@ -34,6 +38,15 @@ struct CacheKey {
     /// Footprint side length used to compute walkability.
     unit_size: u32,
 }
+
+/// Cache lookup key for one shared-goal flow-field request.
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+struct SharedGoalKey {
+    /// Sorted and deduplicated target cells shared by all routes in the cached field.
+    targets: Vec<(u32, u32)>,
+    /// Footprint shape used to compute walkability.
+    footprint: FootprintSpec,
+}
 /// Stateful pathfinder for one unit type sharing a grid reference.
 pub struct UnitPathfinder {
     /// Shared walkability grid.
@@ -46,6 +59,18 @@ pub struct UnitPathfinder {
     cache_enabled: bool,
     /// Maximum number of cached entries before eviction.
     cache_max_size: usize,
+    /// Grid generation used by the currently valid cache contents.
+    cache_generation: u64,
+    /// Cached shared-goal flow fields keyed by goal and footprint.
+    shared_goal_cache: HashMap<SharedGoalKey, FlowField>,
+    /// Insertion-order key list used for shared-goal cache eviction.
+    shared_goal_cache_order: Vec<SharedGoalKey>,
+    /// Maximum number of cached shared-goal fields before eviction.
+    shared_goal_cache_max_size: usize,
+    /// Number of cache hits served by the shared-goal field cache.
+    shared_goal_cache_hits: u64,
+    /// Number of cache misses that rebuilt one shared-goal field.
+    shared_goal_cache_misses: u64,
 }
 /// All public and private methods for `UnitPathfinder`.
 impl UnitPathfinder {
@@ -58,6 +83,12 @@ impl UnitPathfinder {
             cache_order: Vec::new(),
             cache_enabled: true,
             cache_max_size: 1024,
+            cache_generation: 0,
+            shared_goal_cache: HashMap::new(),
+            shared_goal_cache_order: Vec::new(),
+            shared_goal_cache_max_size: DEFAULT_SHARED_GOAL_CACHE_MAX_SIZE,
+            shared_goal_cache_hits: 0,
+            shared_goal_cache_misses: 0,
         }
     }
     /// Find a path from `(x1, y1)` to `(x2, y2)` for a unit of `unit_size`; return waypoints or `None`.
@@ -69,6 +100,7 @@ impl UnitPathfinder {
         y2: u32,
         unit_size: u32,
     ) -> Option<Vec<Waypoint>> {
+        self.sync_cache_generation();
         let key = CacheKey {
             x1,
             y1,
@@ -114,6 +146,74 @@ impl UnitPathfinder {
                 .map(|(x, y)| Waypoint { x, y })
                 .collect()
         })
+    }
+    /// Build or reuse one shared-goal field, then reconstruct routes from `starts` to `goal`.
+    pub fn find_paths_to_goal(
+        &mut self,
+        starts: &[(u32, u32)],
+        goal: (u32, u32),
+        unit_size: u32,
+        max_steps: u32,
+    ) -> Vec<Option<Vec<Waypoint>>> {
+        self.find_paths_to_goal_spec(
+            starts,
+            goal,
+            FootprintSpec::new(unit_size, unit_size),
+            max_steps,
+        )
+    }
+    /// Build or reuse one named-footprint shared-goal field, then reconstruct routes from `starts` to `goal`.
+    pub fn find_paths_to_goal_for(
+        &mut self,
+        starts: &[(u32, u32)],
+        goal: (u32, u32),
+        footprint_name: &str,
+        max_steps: u32,
+    ) -> Result<Vec<Option<Vec<Waypoint>>>, String> {
+        let footprint = self
+            .grid
+            .borrow()
+            .get_footprint(footprint_name)
+            .ok_or_else(|| format!("unknown footprint '{footprint_name}'"))?;
+        Ok(self.find_paths_to_goal_spec(starts, goal, footprint, max_steps))
+    }
+    /// Build or reuse one shared-goal field, then return a cloned handle for one goal cell.
+    pub fn get_shared_flow_field(&mut self, goal: (u32, u32), unit_size: u32) -> FlowField {
+        self.get_shared_flow_field_spec(&[goal], FootprintSpec::new(unit_size, unit_size))
+    }
+    /// Build or reuse one named-footprint shared-goal field, then return a cloned handle for one goal cell.
+    pub fn get_shared_flow_field_for(
+        &mut self,
+        goal: (u32, u32),
+        footprint_name: &str,
+    ) -> Result<FlowField, String> {
+        let footprint = self
+            .grid
+            .borrow()
+            .get_footprint(footprint_name)
+            .ok_or_else(|| format!("unknown footprint '{footprint_name}'"))?;
+        Ok(self.get_shared_flow_field_spec(&[goal], footprint))
+    }
+    /// Build or reuse one shared-goal field, then return a cloned handle for many target cells.
+    pub fn get_shared_flow_field_multi(
+        &mut self,
+        targets: &[(u32, u32)],
+        unit_size: u32,
+    ) -> FlowField {
+        self.get_shared_flow_field_spec(targets, FootprintSpec::new(unit_size, unit_size))
+    }
+    /// Build or reuse one named-footprint shared-goal field, then return a cloned handle for many target cells.
+    pub fn get_shared_flow_field_multi_for(
+        &mut self,
+        targets: &[(u32, u32)],
+        footprint_name: &str,
+    ) -> Result<FlowField, String> {
+        let footprint = self
+            .grid
+            .borrow()
+            .get_footprint(footprint_name)
+            .ok_or_else(|| format!("unknown footprint '{footprint_name}'"))?;
+        Ok(self.get_shared_flow_field_spec(targets, footprint))
     }
     /// Return the Euclidean length of `path` in cells.
     pub fn get_path_length(path: &[Waypoint]) -> f32 {
@@ -233,12 +333,13 @@ impl UnitPathfinder {
         let max = dx.max(dy);
         min * std::f32::consts::SQRT_2 + (max - min)
     }
-    /// Enable or disable path caching; clears existing cache when disabled.
+    /// Enable or disable path and shared-goal caching; clears existing caches when disabled.
     pub fn set_cache_enabled(&mut self, enabled: bool) {
         self.cache_enabled = enabled;
         if !enabled {
             self.cache.clear();
             self.cache_order.clear();
+            self.clear_shared_goal_cache();
         }
     }
     /// Return true when path caching is currently enabled.
@@ -253,6 +354,25 @@ impl UnitPathfinder {
     /// Return the current number of cached entries.
     pub fn get_cache_size(&self) -> usize {
         self.cache.len()
+    }
+    /// Remove all cached shared-goal fields.
+    pub fn clear_shared_goal_cache(&mut self) {
+        self.shared_goal_cache.clear();
+        self.shared_goal_cache_order.clear();
+        self.shared_goal_cache_hits = 0;
+        self.shared_goal_cache_misses = 0;
+    }
+    /// Return the current number of cached shared-goal fields.
+    pub fn get_shared_goal_cache_size(&self) -> usize {
+        self.shared_goal_cache.len()
+    }
+    /// Return the number of shared-goal field cache hits since the last cache reset.
+    pub fn get_shared_goal_cache_hits(&self) -> u64 {
+        self.shared_goal_cache_hits
+    }
+    /// Return the number of shared-goal field cache misses since the last cache reset.
+    pub fn get_shared_goal_cache_misses(&self) -> u64 {
+        self.shared_goal_cache_misses
     }
     /// Set the maximum cache size and evict old entries if needed.
     pub fn set_cache_max_size(&mut self, max_size: usize) {
@@ -269,11 +389,123 @@ impl UnitPathfinder {
         self.cache_order.push(key);
         self.evict();
     }
+
+    fn shared_goal_cache_insert(&mut self, key: SharedGoalKey, value: FlowField) {
+        self.shared_goal_cache.insert(key.clone(), value);
+        self.shared_goal_cache_order.push(key);
+        self.evict_shared_goal_cache();
+    }
+
+    fn sync_cache_generation(&mut self) {
+        let generation = self.grid.borrow().get_generation();
+        if generation != self.cache_generation {
+            self.cache.clear();
+            self.cache_order.clear();
+            self.clear_shared_goal_cache();
+            self.cache_generation = generation;
+        }
+    }
+
+    fn find_paths_to_goal_spec(
+        &mut self,
+        starts: &[(u32, u32)],
+        goal: (u32, u32),
+        footprint: FootprintSpec,
+        max_steps: u32,
+    ) -> Vec<Option<Vec<Waypoint>>> {
+        let field = self.get_shared_flow_field_spec(&[goal], footprint);
+        Self::paths_from_field(&field, starts, max_steps)
+    }
+
+    pub(crate) fn find_paths_for_pairs_spec(
+        &mut self,
+        pairs: &[PathPair],
+        footprint: FootprintSpec,
+        max_steps: u32,
+    ) -> Vec<Option<Vec<Waypoint>>> {
+        let mut grouped: IndexedStartsByGoal = HashMap::new();
+        for (index, (start, goal)) in pairs.iter().copied().enumerate() {
+            grouped.entry(goal).or_default().push((index, start));
+        }
+
+        let mut out = vec![None; pairs.len()];
+        for (goal, entries) in grouped {
+            let starts = entries
+                .iter()
+                .map(|(_, start)| *start)
+                .collect::<Vec<_>>();
+            let paths = self.find_paths_to_goal_spec(&starts, goal, footprint, max_steps);
+            for ((index, _), path) in entries.into_iter().zip(paths.into_iter()) {
+                out[index] = path;
+            }
+        }
+        out
+    }
+
+    fn get_shared_flow_field_spec(
+        &mut self,
+        targets: &[(u32, u32)],
+        footprint: FootprintSpec,
+    ) -> FlowField {
+        self.sync_cache_generation();
+        let key = SharedGoalKey {
+            targets: Self::normalize_targets(targets),
+            footprint,
+        };
+        if !self.cache_enabled {
+            let mut field = FlowField::new(self.grid.clone());
+            field.calculate_multi_spec(&key.targets, footprint);
+            return field;
+        }
+        if let Some(field) = self.shared_goal_cache.get(&key) {
+            self.shared_goal_cache_hits = self.shared_goal_cache_hits.saturating_add(1);
+            return field.clone();
+        }
+        self.shared_goal_cache_misses = self.shared_goal_cache_misses.saturating_add(1);
+        let mut field = FlowField::new(self.grid.clone());
+        field.calculate_multi_spec(&key.targets, footprint);
+        self.shared_goal_cache_insert(key, field.clone());
+        field
+    }
+
+    fn paths_from_field(
+        field: &FlowField,
+        starts: &[(u32, u32)],
+        max_steps: u32,
+    ) -> Vec<Option<Vec<Waypoint>>> {
+        starts
+            .iter()
+            .map(|&(x, y)| {
+                field.path_from(x, y, max_steps).map(|path| {
+                    path.into_iter()
+                        .map(|(px, py)| Waypoint { x: px, y: py })
+                        .collect()
+                })
+            })
+            .collect()
+    }
+
     /// Remove the oldest cache entry until the cache is at or below `cache_max_size`.
     fn evict(&mut self) {
         while self.cache.len() > self.cache_max_size && !self.cache_order.is_empty() {
             let oldest = self.cache_order.remove(0);
             self.cache.remove(&oldest);
         }
+    }
+
+    fn evict_shared_goal_cache(&mut self) {
+        while self.shared_goal_cache.len() > self.shared_goal_cache_max_size
+            && !self.shared_goal_cache_order.is_empty()
+        {
+            let oldest = self.shared_goal_cache_order.remove(0);
+            self.shared_goal_cache.remove(&oldest);
+        }
+    }
+
+    fn normalize_targets(targets: &[(u32, u32)]) -> Vec<(u32, u32)> {
+        let mut normalized = targets.to_vec();
+        normalized.sort_unstable();
+        normalized.dedup();
+        normalized
     }
 }

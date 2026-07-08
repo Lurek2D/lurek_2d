@@ -19,7 +19,7 @@ This generated Wiki is the friendly cookbook and quick-guide layer. The full `lu
 ## Project Snapshot
 
 - 71 Lua API modules
-- 6541 Lua API functions
+- 6609 Lua API functions
 - 74 module specs
 - 71 API examples
 - 7 reference games
