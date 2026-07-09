@@ -1,6 +1,7 @@
 --- Lurek2D loot library — designer-friendly weighted RNG, drop DSL, and pity timers.
 --
--- A pure-Lua loot table system built on `lurek.math.RandomGenerator`. Provides:
+-- A pure-Lua loot table system that delegates to `lurek.math` loot handles
+-- when they can preserve this library's compatibility surface. Provides:
 --
 --   * `LootTable` — Walker–Vose alias-method weighted RNG with O(1) sampling.
 --   * `DropSet`   — composable, conditional, multi-roll drop DSL.
@@ -30,6 +31,7 @@ local floor        = math.floor
 -- ─── Module RNG (resolved lazily; falls back to math.random on hostile envs) ───
 
 local _default_rng
+local _default_rng_custom = false
 
 local function _get_default_rng()
     if _default_rng then return _default_rng end
@@ -49,6 +51,7 @@ end
 -- @param rng userdata|table A `RandomGenerator` or any object implementing `:random()` → [0,1).
 function M.setDefaultRng(rng)
     _default_rng = rng
+    _default_rng_custom = rng ~= nil
 end
 
 --- Get the module's current default RNG (resolves on first use).
@@ -61,6 +64,33 @@ local function _rng_uniform(rng)
     rng = rng or _get_default_rng()
     if type(rng.random) == "function" then return rng:random() end
     return math.random()
+end
+
+local function _engine_math()
+    if type(lurek) == "table" and type(lurek.math) == "table" then
+        return lurek.math
+    end
+    return nil
+end
+
+local function _meta_engine_safe(meta)
+    if meta == nil then return true end
+    if type(meta) ~= "table" then return false end
+    for k, v in pairs(meta) do
+        if type(k) ~= "string" then return false end
+        local tv = type(v)
+        if tv ~= "string" and tv ~= "number" and tv ~= "boolean" then
+            return false
+        end
+    end
+    return true
+end
+
+local function _copy_meta(meta)
+    if type(meta) ~= "table" then return meta end
+    local out = {}
+    for k, v in pairs(meta) do out[k] = v end
+    return out
 end
 
 -- ─── LootTable ────────────────────────────────────────────────────────────────
@@ -116,8 +146,50 @@ function M.newTable()
         _dirty   = true,
         _prob    = nil,
         _alias   = nil,
+        _engine  = nil,
+        _engine_dirty = true,
+        _engine_usable = true,
     }, LootTable)
     return t
+end
+
+local function _sync_engine_table(self)
+    if not self._engine_usable then return nil end
+    if self._engine and not self._engine_dirty then return self._engine end
+    local lm = _engine_math()
+    if not lm or type(lm.newLootTable) ~= "function" then return nil end
+
+    for i = 1, #self._ids do
+        if not _meta_engine_safe(self._meta[i]) then
+            self._engine_usable = false
+            self._engine = nil
+            return nil
+        end
+    end
+
+    local ok, engine = pcall(lm.newLootTable)
+    if not ok or not engine then return nil end
+    for i, id in ipairs(self._ids) do
+        local added = pcall(function()
+            engine:add(id, self._weights[i], self._meta[i])
+        end)
+        if not added then
+            self._engine_usable = false
+            self._engine = nil
+            return nil
+        end
+    end
+    pcall(function() engine:build() end)
+    self._engine = engine
+    self._engine_dirty = false
+    return engine
+end
+
+local function _entry_from_engine(entry)
+    if type(entry) ~= "table" then return nil, nil end
+    local id = entry.id or entry[1]
+    if id == nil then return nil, nil end
+    return id, entry.meta
 end
 
 --- Bulk-build a loot table from a list of `{id, weight, meta?}` entries.
@@ -128,6 +200,14 @@ function M.fromList(entries)
     for _, e in ipairs(entries) do
         t:add(e.id, e.weight, e.meta)
     end
+    local lm = _engine_math()
+    if lm and type(lm.lootFromList) == "function" then
+        local ok, engine = pcall(lm.lootFromList, entries)
+        if ok and engine then
+            t._engine = engine
+            t._engine_dirty = false
+        end
+    end
     return t
 end
 
@@ -137,8 +217,20 @@ end
 -- @treturn LootTable
 -- @raise descriptive error on missing engine bindings or malformed file.
 function M.fromToml(path)
+    local engine
+    local lm = _engine_math()
+    if lm and type(lm.lootFromToml) == "function" then
+        local ok_engine, handle = pcall(lm.lootFromToml, path)
+        if ok_engine and handle then engine = handle end
+    end
     if type(lurek) ~= "table" or type(lurek.filesystem) ~= "table"
        or type(lurek.filesystem.read) ~= "function" then
+        if engine then
+            local t = M.newTable()
+            t._engine = engine
+            t._engine_dirty = false
+            return t
+        end
         error("loot.fromToml: lurek.filesystem.read unavailable", 2)
     end
     if type(lurek.serialize) ~= "table" or type(lurek.serialize.fromToml) ~= "function" then
@@ -151,7 +243,12 @@ function M.fromToml(path)
     if type(data) ~= "table" or type(data.entries) ~= "table" then
         error("loot.fromToml: expected top-level 'entries' array", 2)
     end
-    return M.fromList(data.entries)
+    local t = M.fromList(data.entries)
+    if engine then
+        t._engine = engine
+        t._engine_dirty = false
+    end
+    return t
 end
 
 --- Combine multiple LootTables into a single new one. Identical IDs sum weights.
@@ -197,6 +294,8 @@ function LootTable:add(id, weight, meta)
         self._index[id]  = n
     end
     self._dirty = true
+    self._engine_dirty = true
+    if not _meta_engine_safe(meta) then self._engine_usable = false end
     return self
 end
 
@@ -212,6 +311,7 @@ function LootTable:remove(id)
     self._index = {}
     for i, v in ipairs(self._ids) do self._index[v] = i end
     self._dirty = true
+    self._engine_dirty = true
     return true
 end
 
@@ -227,6 +327,7 @@ function LootTable:setWeight(id, w)
     end
     self._weights[pos] = w
     self._dirty = true
+    self._engine_dirty = true
     return self
 end
 
@@ -236,7 +337,29 @@ end
 -- @treturn table? meta (may be nil)
 function LootTable:sample(rng)
     local n = #self._ids
-    if n == 0 then error("LootTable:sample: table is empty", 2) end
+    if n == 0 then
+        local engine = _sync_engine_table(self)
+        if engine and type(engine.sample) == "function" then
+            local ok, entry = pcall(function() return engine:sample() end)
+            if ok and entry ~= nil then
+                self._dirty = false
+                return _entry_from_engine(entry)
+            end
+        end
+        error("LootTable:sample: table is empty", 2)
+    end
+    if rng == nil and not _default_rng_custom then
+        local engine = _sync_engine_table(self)
+        if engine and type(engine.sample) == "function" then
+            local ok, entry = pcall(function() return engine:sample() end)
+            if ok and entry ~= nil then
+                self._dirty = false
+                local id = _entry_from_engine(entry)
+                local pos = id and self._index[id] or nil
+                return id, pos and self._meta[pos] or nil
+            end
+        end
+    end
     if self._dirty then
         self._prob, self._alias = _build_alias(self._weights)
         self._dirty = false
@@ -266,6 +389,19 @@ function LootTable:sampleN(n, rng, opts)
         if n > #self._ids then
             error("LootTable:sampleN: unique=true but n > entries", 2)
         end
+        if rng == nil and not _default_rng_custom then
+            local engine = _sync_engine_table(self)
+            if engine and type(engine.sampleUnique) == "function" then
+                local ok, entries = pcall(function() return engine:sampleUnique(n) end)
+                if ok and type(entries) == "table" and #entries == n then
+                    for i, entry in ipairs(entries) do
+                        out[i] = _entry_from_engine(entry)
+                    end
+                    self._dirty = false
+                    return out
+                end
+            end
+        end
         local pool = M.newTable()
         for i, id in ipairs(self._ids) do
             pool:add(id, self._weights[i], self._meta[i])
@@ -276,6 +412,19 @@ function LootTable:sampleN(n, rng, opts)
             pool:remove(id)
         end
     else
+        if rng == nil and not _default_rng_custom then
+            local engine = _sync_engine_table(self)
+            if engine and type(engine.sampleN) == "function" then
+                local ok, entries = pcall(function() return engine:sampleN(n) end)
+                if ok and type(entries) == "table" and #entries == n then
+                    for i, entry in ipairs(entries) do
+                        out[i] = _entry_from_engine(entry)
+                    end
+                    self._dirty = false
+                    return out
+                end
+            end
+        end
         for _ = 1, n do
             out[#out + 1] = self:sample(rng)
         end
@@ -450,6 +599,29 @@ end
 local Pity = {}
 Pity.__index = Pity
 
+local function _new_engine_pity(target_id, threshold)
+    local lm = _engine_math()
+    if not lm or type(lm.newPityTracker) ~= "function" then return nil end
+    local ok, tracker = pcall(lm.newPityTracker, target_id, threshold)
+    if ok then return tracker end
+    return nil
+end
+
+local function _sync_pity_engine(self)
+    self._engine = _new_engine_pity(self._target, self._threshold)
+    if self._engine then
+        for _ = 1, self._counter do
+            pcall(function() self._engine:notice("__library_loot_pity_miss__") end)
+        end
+        if self._primed and not self._engine:isPrimed() then
+            while not self._engine:isPrimed() do
+                pcall(function() self._engine:notice("__library_loot_pity_miss__") end)
+                if self._engine:counter() > self._threshold + 1 then break end
+            end
+        end
+    end
+end
+
 --- Guarantee `target_id` is forced after `threshold` consecutive misses.
 -- @param target_id string Id whose appearance resets the counter.
 -- @param threshold integer Misses before pity fires (must be >= 1).
@@ -464,6 +636,7 @@ function M.newPity(target_id, threshold)
         _threshold = floor(threshold),
         _counter   = 0,
         _primed    = false,
+        _engine    = _new_engine_pity(target_id, floor(threshold)),
     }, Pity)
 end
 
@@ -472,6 +645,16 @@ end
 -- @param result_id string The id that just dropped.
 -- @treturn boolean primed
 function Pity:notice(result_id)
+    if self._engine and type(self._engine.notice) == "function" then
+        local ok, primed = pcall(function() return self._engine:notice(result_id) end)
+        if ok then
+            self._primed = primed and true or false
+            local ok_counter, counter = pcall(function() return self._engine:counter() end)
+            self._counter = ok_counter and counter or self._counter
+            return self._primed
+        end
+        self._engine = nil
+    end
     if result_id == self._target then
         self._counter = 0
         self._primed  = false
@@ -486,6 +669,9 @@ end
 
 --- Reset the pity counter to 0.
 function Pity:reset()
+    if self._engine and type(self._engine.reset) == "function" then
+        pcall(function() self._engine:reset() end)
+    end
     self._counter = 0
     self._primed  = false
     return self
@@ -502,11 +688,17 @@ function Pity:isPrimed() return self._primed end
 --- Serialise to a save blob.
 -- @treturn table
 function Pity:save()
+    local engine_blob
+    if self._engine and type(self._engine.save) == "function" then
+        local ok, blob = pcall(function() return self._engine:save() end)
+        if ok then engine_blob = blob end
+    end
     return {
         target    = self._target,
         threshold = self._threshold,
         counter   = self._counter,
         primed    = self._primed,
+        engine_blob = engine_blob,
     }
 end
 
@@ -519,6 +711,14 @@ function Pity:restore(blob)
     self._threshold = blob.threshold or self._threshold
     self._counter   = blob.counter   or 0
     self._primed    = blob.primed    or false
+    _sync_pity_engine(self)
+    if self._engine and type(blob.engine_blob) == "string" and type(self._engine.restore) == "function" then
+        pcall(function() self._engine:restore(blob.engine_blob) end)
+        local ok_counter, counter = pcall(function() return self._engine:counter() end)
+        if ok_counter then self._counter = counter end
+        local ok_primed, primed = pcall(function() return self._engine:isPrimed() end)
+        if ok_primed then self._primed = primed and true or false end
+    end
     return self
 end
 

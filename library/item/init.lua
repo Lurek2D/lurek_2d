@@ -15,7 +15,7 @@
 -- @module library.item
 -- @status full
 -- @see lurek.math
--- @see lurek.serializeize.toJson
+-- @see lurek.serialize.toJson
 --
 -- Note (P7 batch C, 0.6.0): the previous file split `M.newStack` and
 -- `M.newStackBuilder` into a base definition followed by a wrapper that
@@ -24,6 +24,21 @@
 -- original definitions in this revision; functional behaviour is unchanged.
 
 local M = {}
+
+local function _patterns_api()
+    if type(lurek) == "table" and type(lurek.patterns) == "table" then
+        return lurek.patterns
+    end
+    return nil
+end
+
+local function _new_weighted_random()
+    local patterns = _patterns_api()
+    if not patterns or type(patterns.newWeightedRandom) ~= "function" then return nil end
+    local ok, pool = pcall(patterns.newWeightedRandom)
+    if ok then return pool end
+    return nil
+end
 
 -- --- Optional logging (guarded) -----------------------------------------------
 
@@ -612,6 +627,7 @@ end
 function M.newItemPool()
     local _entries = {}   -- array of { type_name, weight }
     local _total   = 0
+    local _weighted = _new_weighted_random()
 
     local pool = {}
 
@@ -647,7 +663,12 @@ function M.newItemPool()
         if type(weight) ~= "number" or weight <= 0 then
             error("pool:addType: 'weight' must be a positive number, got: " .. tostring(weight), 2)
         end
-        table.insert(_entries, { type_name = type_name, weight = weight })
+        local engine_id
+        if _weighted and type(_weighted.add) == "function" then
+            local ok, id = pcall(function() return _weighted:add(weight, type_name, type_name) end)
+            if ok then engine_id = id else _weighted = nil end
+        end
+        table.insert(_entries, { type_name = type_name, weight = weight, engine_id = engine_id })
         _total = _total + weight
         _log_debug("pool:addType: added '" .. type_name .. "' weight=" .. weight)
     end
@@ -664,6 +685,10 @@ function M.newItemPool()
             if e.type_name == type_name then
                 _total = _total - e.weight + weight
                 e.weight = weight
+                if _weighted and e.engine_id and type(_weighted.setWeight) == "function" then
+                    local ok = pcall(function() return _weighted:setWeight(e.engine_id, weight) end)
+                    if not ok then _weighted = nil end
+                end
                 return true
             end
         end
@@ -677,6 +702,10 @@ function M.newItemPool()
         for i, e in ipairs(_entries) do
             if e.type_name == type_name then
                 _total = _total - e.weight
+                if _weighted and e.engine_id and type(_weighted.remove) == "function" then
+                    local ok = pcall(function() return _weighted:remove(e.engine_id) end)
+                    if not ok then _weighted = nil end
+                end
                 table.remove(_entries, i)
                 return true
             end
@@ -690,6 +719,15 @@ function M.newItemPool()
         if #_entries == 0 or _total <= 0 then
             _log_warn("pool:draw: pool is empty or has zero total weight")
             return nil
+        end
+        if _weighted and type(_weighted.pick) == "function" then
+            local ok, type_name = pcall(function() return _weighted:pick(math.random()) end)
+            if ok and type(type_name) == "string" then
+                _log_debug("pool:draw: drew '" .. type_name .. "'")
+                return M.newItem(type_name)
+            elseif not ok then
+                _weighted = nil
+            end
         end
         local r = math.random() * _total
         local cum = 0
@@ -1186,6 +1224,17 @@ end
 -- @tparam number n How many to return.
 -- @treturn table Array of 0-based integer indices.
 function M.findNOfStat(items, stat, n)
+    local patterns = _patterns_api()
+    if patterns and type(patterns.topN) == "function" then
+        local ok, top = pcall(patterns.topN, items, function(it)
+            return (it.getStat and it:getStat(stat)) or 0
+        end, n, { indices = true, descending = true })
+        if ok and type(top) == "table" then
+            local result = {}
+            for i, idx in ipairs(top) do result[i] = idx - 1 end
+            return result
+        end
+    end
     local scored = {}
     for i, it in ipairs(items) do
         table.insert(scored, { val = it:getStat(stat) or 0, idx = i - 1 })
@@ -1271,6 +1320,13 @@ end
 -- @tparam table items list of Item objects.
 -- @treturn table
 function M.groupByCategory(items)
+    local patterns = _patterns_api()
+    if patterns and type(patterns.groupBy) == "function" then
+        local ok, grouped = pcall(patterns.groupBy, items, function(it)
+            return (it.getCategory and it:getCategory()) or "misc"
+        end)
+        if ok and type(grouped) == "table" then return grouped end
+    end
     local out = {}
     for _, it in ipairs(items) do
         local cat = (it.getCategory and it:getCategory()) or "misc"
@@ -1318,6 +1374,13 @@ end
 -- @treturn table indices
 function M.sortedIndicesByStat(items, stat, ascending)
     if ascending == nil then ascending = true end
+    local patterns = _patterns_api()
+    if patterns and type(patterns.sortedIndices) == "function" then
+        local ok, indices = pcall(patterns.sortedIndices, items, function(it)
+            return (it.getStat and it:getStat(stat)) or 0
+        end, { descending = not ascending })
+        if ok and type(indices) == "table" then return indices end
+    end
     local indices = {}
     for i = 1, #items do indices[#indices+1] = i end
     table.sort(indices, function(a, b)
@@ -1333,6 +1396,13 @@ end
 -- @tparam table items
 -- @treturn table indices
 function M.sortedIndicesByCategory(items)
+    local patterns = _patterns_api()
+    if patterns and type(patterns.sortedIndices) == "function" then
+        local ok, indices = pcall(patterns.sortedIndices, items, function(it)
+            return (it.getCategory and it:getCategory()) or ""
+        end)
+        if ok and type(indices) == "table" then return indices end
+    end
     local indices = {}
     for i = 1, #items do indices[#indices+1] = i end
     table.sort(indices, function(a, b)

@@ -157,7 +157,7 @@ describe("Sheet basics", function()
         expect_equal(s.xp, 0)
     end)
 
-    -- @library LTraitProfile:getBase
+    -- @library lurek.library_stats
     it("should define and get attribute", function()
         local s = Stats.newSheet()
         s:define("hp", 100)
@@ -165,14 +165,14 @@ describe("Sheet basics", function()
         expect_equal(s:getBase("hp"), 100)
     end)
 
-    -- @library LTraitProfile:getBase
+    -- @library lurek.library_stats
     it("should return nil for undefined attribute", function()
         local s = Stats.newSheet()
         expect_equal(s:get("nope"), nil)
         expect_equal(s:getBase("nope"), nil)
     end)
 
-    -- @library LTraitProfile:getBase
+    -- @library lurek.library_stats
     it("should set base value", function()
         local s = Stats.newSheet()
         s:define("hp", 100, { max = 200 })
@@ -180,7 +180,7 @@ describe("Sheet basics", function()
         expect_equal(s:getBase("hp"), 150)
     end)
 
-    -- @library LTraitProfile:getBase
+    -- @library lurek.library_stats
     it("should clamp base to min/max", function()
         local s = Stats.newSheet()
         s:define("hp", 50, { min = 0, max = 100 })
@@ -340,7 +340,7 @@ describe("Skills", function()
         expect_equal(s:learnSkill("slash"), false)
     end)
 
-    -- @library LTraitProfile:getBase
+    -- @library lurek.library_stats
     it("useSkill costs resource and starts cooldown", function()
         local s = Stats.newSheet()
         s:define("mana", 100)
@@ -444,7 +444,7 @@ end)
 
 -- @describe XP and Levelling
 describe("XP and Levelling", function()
-    -- @library LRelationshipManager:getLevel
+    -- @library lurek.library_stats
     it("addXP gains levels with linear thresholds", function()
         local s = Stats.newSheet()
         s:setLevelThresholds(Stats.newLinearThresholds(100, 100))
@@ -456,7 +456,7 @@ describe("XP and Levelling", function()
         expect_equal(s:getXP(), 150)
     end)
 
-    -- @library LRelationshipManager:getLevel
+    -- @library lurek.library_stats
     it("addXP gains levels with table thresholds", function()
         local s = Stats.newSheet()
         s:setLevelThresholds(Stats.newTableThresholds({ 50, 100, 200 }))
@@ -466,8 +466,8 @@ describe("XP and Levelling", function()
         expect_equal(s:getXP(), 10)
     end)
 
-    -- @library LRelationshipManager:getLevel
-    -- @library LRelationshipManager:setLevel
+    -- @library lurek.library_stats
+    -- @library lurek.library_stats
     it("setXP and setLevel directly", function()
         local s = Stats.newSheet()
         s:setXP(42)
@@ -490,7 +490,7 @@ describe("Use tracking", function()
         expect_equal(s:getUseCount("str"), 2)
     end)
 
-    -- @library LTraitProfile:getBase
+    -- @library lurek.library_stats
     it("recordUse applies growth", function()
         local s = Stats.newSheet()
         s:define("str", 10, { growth = 0.5, max = 12 })
@@ -607,7 +607,7 @@ describe("Resistances", function()
         expect_near(s:getResistance("ice"), 0.0, 0.01)
     end)
 
-    -- @library LTraitProfile:getBase
+    -- @library lurek.library_stats
     it("applyDamage reduced by resistance", function()
         local s = Stats.newSheet()
         s:define("hp", 100)
@@ -617,7 +617,7 @@ describe("Resistances", function()
         expect_near(s:getBase("hp"), 70, 0.01)
     end)
 
-    -- @library LTraitProfile:getBase
+    -- @library lurek.library_stats
     it("applyDamage without type ignores resistances", function()
         local s = Stats.newSheet()
         s:define("hp", 100)
@@ -689,7 +689,7 @@ describe("Update tick", function()
         expect_near(s:getCooldownRemaining("heal"), 0, 0.01)
     end)
 
-    -- @library LTraitProfile:getBase
+    -- @library lurek.library_stats
     it("applies regen", function()
         local s = Stats.newSheet()
         s:define("hp", 80, { max = 100, regen = 10 })
@@ -697,7 +697,7 @@ describe("Update tick", function()
         expect_near(s:getBase("hp"), 90, 0.01)
     end)
 
-    -- @library LTraitProfile:getBase
+    -- @library lurek.library_stats
     it("regen clamped to max", function()
         local s = Stats.newSheet()
         s:define("hp", 95, { max = 100, regen = 10 })
@@ -710,9 +710,9 @@ end)
 
 -- @describe Snapshot and Restore
 describe("Snapshot and Restore", function()
-    -- @library LBlackboard:snapshot
-    -- @library LSaveManager:restore
-    -- @library LTraitProfile:getBase
+    -- @library lurek.library_stats
+    -- @library lurek.library_stats
+    -- @library lurek.library_stats
     it("snapshot captures and restores state", function()
         local s = Stats.newSheet()
         s:define("hp", 100, { min = 0, max = 200 })
@@ -763,7 +763,7 @@ describe("StatsRegistry", function()
         expect_equal(found, true)
     end)
 
-    -- @library LTraitProfile:getBase
+    -- @library lurek.library_stats
     it("applyArchetypes applies race bases", function()
         Stats.defineRace("dwarf", { bases = { hp = 20, str = 5 }, traits = {} })
         local s = Stats.newSheet()
@@ -774,7 +774,7 @@ describe("StatsRegistry", function()
         expect_equal(s:getBase("str"), 15)
     end)
 
-    -- @library LTraitProfile:getBase
+    -- @library lurek.library_stats
     it("applyArchetypes applies class", function()
         Stats.defineClass("warrior", { bases = { str = 10 }, traits = {} })
         local s = Stats.newSheet()
@@ -986,6 +986,19 @@ describe("Input validation", function()
         local gained = s:addXP(nil)
         expect_equal(gained, 0)
         expect_equal(s:getXP(), 0)
+    end)
+end)
+
+-- @describe JSON helpers
+describe("JSON helpers", function()
+    -- @library lurek.library_stats
+    it("snapshot JSON helpers use lurek.serialize when available", function()
+        if not (lurek and lurek.serialize and lurek.serialize.toJson and lurek.serialize.fromJson) then return end
+        local s = Stats.newSheet()
+        s:define("hp", 100)
+        local encoded = Stats.snapshotToJson(s:snapshot())
+        local decoded = Stats.snapshotFromJson(encoded)
+        expect_equal(decoded.attributes.hp.base, 100)
     end)
 end)
 test_summary()

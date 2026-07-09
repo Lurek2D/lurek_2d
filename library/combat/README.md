@@ -1,27 +1,36 @@
 # combat
 
-A vehicle/turret combat system with physics-backed projectile pooling. Models chassis, mount slots, turrets, weapons, and projectiles. Handles targeting, firing arcs, cooldowns, hit detection, and pool recycling.
+A pure-Lua combat model for chassis, turrets, weapons, projectile pools, and a
+top-level combat world. Games should handle actual collision queries in
+`lurek.physics` and map the results back onto these combat objects.
 
 ## Usage
 
 ```lua
-local combat = require("library/combat")
+local combat = require("library.combat")
 
-local tank = combat.Chassis.new({ hp = 200, armor = 20 })
-local turret = combat.Turret.new({ arc = 120, rotate_speed = 60 })
-tank:mount(turret, combat.MountSlot.new({ offset_x = 0, offset_y = -10 }))
+local tank = combat.newChassis(1, 200)
+local turret = combat.newTurret(1, 1)
+local cannon = combat.newWeapon("cannon")
+local pool = combat.newProjectilePool(64)
 
-local cannon = combat.Weapon.new({ damage = 50, range = 400, cooldown = 1.5 })
-turret:equip(cannon)
+cannon:setDamageAmount(50)
+cannon:setRange(400)
+turret:setWeaponIndex(1)
+tank:addSlot(combat.newMountSlot("main", 0, -10, "medium"))
 
-local pool = combat.ProjectilePool.new({ capacity = 64 })
+local world = combat.newCombatWorld()
+world:addChassis(tank)
+world:addTurret(turret)
+world:addWeapon(cannon)
+world:addProjectilePool(pool)
 
-function lurek.update(dt)
-    tank:update(dt)
-    pool:update(dt)
-end
+-- In game code:
+-- 1. advance combat objects,
+-- 2. query lurek.physics for hits,
+-- 3. apply the resulting damage through library.combat objects.
 ```
 
-## Dependencies
+## Optional bindings
 
-- `lurek.math`, `lurek.physics` (optional)
+- `lurek.physics`: recommended for projectile hit detection and collision.

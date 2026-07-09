@@ -828,4 +828,18 @@ describe("Input validation", function()
         expect_error(function() q:addJournalEntry(123) end)
     end)
 end)
+
+-- @describe JSON helpers
+describe("JSON helpers", function()
+    -- @library lurek.library_quest
+    it("quest JSON helpers use lurek.serialize when available", function()
+        if not (lurek and lurek.serialize and lurek.serialize.toJson and lurek.serialize.fromJson) then return end
+        local log = quest.newQuestLog()
+        local q = quest.newQuest("tutorial", "Tutorial")
+        log:addQuest(q)
+        local encoded = quest.toJson(log)
+        local restored = quest.fromJson(encoded)
+        expect_not_nil(restored:getQuest("tutorial"))
+    end)
+end)
 test_summary()

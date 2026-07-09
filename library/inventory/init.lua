@@ -14,8 +14,8 @@
 --
 -- @module library.inventory
 -- @status full
--- @see lurek.serializeize.toJson           serialise inventory snapshots for save round-trip
--- @see lurek.serializeize.fromJson         restore inventory snapshots
+-- @see lurek.serialize.toJson              serialise inventory snapshots for save round-trip
+-- @see lurek.serialize.fromJson            restore inventory snapshots
 -- @see lurek.save.SaveManager   register inventory state via a SaveManager collector
 -- @see lurek.patterns.newEventBus   optional change-event bus from `inv:getEventBus()`
 -- @see deepCopy helper                P4 lift candidate - `item:clone()` can delegate when available

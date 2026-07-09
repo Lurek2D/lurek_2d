@@ -11,8 +11,8 @@
 ---
 --- @see lurek.math.clamp
 --- @see lurek.math.lerp
---- @see lurek.serializeize.toJson
---- @see lurek.serializeize.fromJson
+--- @see lurek.serialize.toJson
+--- @see lurek.serialize.fromJson
 --- @see lurek.dataframe
 --- @see lurek.save.SaveManager
 
@@ -962,25 +962,63 @@ end
 
 -- -- JSON helpers ---------------------------------------------------------------
 
---- Encode a snapshot table to a JSON string via `lurek.serializeize.toJson`.
---- @tparam table snap Snapshot produced by `Sheet:snapshot`.
---- @treturn string JSON-encoded snapshot.
---- @see lurek.serializeize.toJson
-function M.snapshotToJson(snap)
-    assert(lurek and lurek.serializeize and lurek.serializeize.toJson,
-        "library.stats.snapshotToJson requires lurek.serializeize.toJson")
-    return lurek.serializeize.toJson(snap)
+local _json_number_tag = "__library_stats_number"
+
+local function _json_safe_value(value)
+    if type(value) == "number" then
+        if value == math.huge then
+            return { [_json_number_tag] = "inf" }
+        elseif value == -math.huge then
+            return { [_json_number_tag] = "-inf" }
+        elseif value ~= value then
+            return { [_json_number_tag] = "nan" }
+        end
+        return value
+    elseif type(value) == "table" then
+        local out = {}
+        for k, v in pairs(value) do
+            out[k] = _json_safe_value(v)
+        end
+        return out
+    end
+    return value
 end
 
---- Decode a JSON snapshot string back into a Lua table via `lurek.serializeize.fromJson`.
+local function _json_restore_value(value)
+    if type(value) == "table" then
+        if value[_json_number_tag] == "inf" then
+            return math.huge
+        elseif value[_json_number_tag] == "-inf" then
+            return -math.huge
+        elseif value[_json_number_tag] == "nan" then
+            return 0 / 0
+        end
+        for k, v in pairs(value) do
+            value[k] = _json_restore_value(v)
+        end
+    end
+    return value
+end
+
+--- Encode a snapshot table to a JSON string via `lurek.serialize.toJson`.
+--- @tparam table snap Snapshot produced by `Sheet:snapshot`.
+--- @treturn string JSON-encoded snapshot.
+--- @see lurek.serialize.toJson
+function M.snapshotToJson(snap)
+    assert(lurek and lurek.serialize and lurek.serialize.toJson,
+        "library.stats.snapshotToJson requires lurek.serialize.toJson")
+    return lurek.serialize.toJson(_json_safe_value(snap))
+end
+
+--- Decode a JSON snapshot string back into a Lua table via `lurek.serialize.fromJson`.
 --- The returned table can be passed to `Sheet:restore`.
 --- @tparam string str JSON-encoded snapshot.
 --- @treturn table Decoded snapshot.
---- @see lurek.serializeize.fromJson
+--- @see lurek.serialize.fromJson
 function M.snapshotFromJson(str)
-    assert(lurek and lurek.serializeize and lurek.serializeize.fromJson,
-        "library.stats.snapshotFromJson requires lurek.serializeize.fromJson")
-    return lurek.serializeize.fromJson(str)
+    assert(lurek and lurek.serialize and lurek.serialize.fromJson,
+        "library.stats.snapshotFromJson requires lurek.serialize.fromJson")
+    return _json_restore_value(lurek.serialize.fromJson(str))
 end
 
 return M

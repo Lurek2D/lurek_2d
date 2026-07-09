@@ -1,69 +1,33 @@
-# `inventory` — Agent Reference (Lureksome)
+# `inventory` - Agent Reference
 
-| Property              | Value                                                                                                                                                                                                                                           |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Tier**              | Tier 3 --- Lureksome (pure Lua, no Rust dependencies)                                                                                                                                                                                            |
-| **Source**            | \library/inventory/init.lua\                                                                                                                                                                                                                    |
-| **Lua Tests**         | \	ests/lua/library/test_library_inventory.lua\                                                                                                                                                                                                  |
-| **Depends on**        | \lurek.*\ public API only                                                                                                                                                                                                                       |  | **Status** | full |
-| **Optional bindings** | `lurek.patterns.newEventBus` (change-event bus from `inv:getEventBus()`), `lurek.serialize.toJson/fromJson` (save round-trip), `lurek.save.SaveManager` (recommended collector host), deepCopy helper (P4 lift target for `item:clone()`) |
-## Summary
+| Property | Value |
+| --- | --- |
+| Tier | Tier 3 - Lureksome (pure Lua) |
+| Source | `library/inventory/init.lua` |
+| Lua tests | `tests/lua/library/test_inventory_library.lua` |
+| Status | full |
+| Optional bindings | `lurek.patterns.newEventBus`, `lurek.serialize.toJson/fromJson`, `lurek.save.SaveManager` |
 
-Slot-based item inventory system with typed containers, item stacking, named
-equipment slots, configurable subsystem toggles (weight, size, stacking, sets),
-optional item-set bonus detection, and cross-container convenience helpers.
+## Purpose
 
-The library mirrors the public surface of \src/inventory/\ while adding Lua-idiomatic
-wrappers. All implementation uses pure-Lua closures; there are no Rust dependencies.
+Inventory domain model with items, item stacks, slots, containers, equipment
+slots, item sets, and a top-level inventory object.
 
-## Architecture
+## Current shape
 
-Inventory owns multiple named Containers and a separate set of named equip Slots.
-Each Container holds Slots in one of three modes: fixed (static count), unlimited
-(grows on demand), or expandable (bounded growth). Slots hold an optional ItemStack.
-ItemSet objects define set bonuses that activate when all tagged-equipment requirements
-are simultaneously met across equip slots.
+- `newItem`, `newItemStack`, `newSlot`, `newContainer`, `newItemSet`, and
+  `newInventory` make up the main object graph.
+- Containers support `fixed`, `unlimited`, and `expandable` modes.
+- Inventory supports equip slots, container transfer helpers, stack merging and
+  splitting, and optional item-set checks.
 
-## Source Files
+## Engine integration
 
-| File                         | Purpose             |
-| ---------------------------- | ------------------- |
-| \library/inventory/init.lua\ | Full implementation |
+- Event-bus support is optional via `lurek.patterns.newEventBus`.
+- Serialization remains opt-in via `lurek.serialize` and save collectors.
 
-## Key Types
+## Notes
 
-| Type            | Constructor                     | Purpose                                                      |
-| --------------- | ------------------------------- | ------------------------------------------------------------ |
-| InvItem         | newItem(type)                   | Blueprint: type, tags, weight, size, stack_limit, properties |
-| ItemStack       | newItemStack(item, qty, max)    | Counted stack with add/remove/split/merge                    |
-| Slot            | newSlot(type, state)            | Single position with type filter, state, and optional stack  |
-| Container       | newContainer(name, mode, count) | Slot collection with removeSlot, addItem, queries            |
-| Inventory       | newInventory()                  | Top-level with equip slots, item sets, stack management      |
-| ItemSet         | newItemSet(name)                | Set-bonus via tagged requirements                            |
-| M.ContainerMode | table                           | String constants: fixed, unlimited, expandable               |
-| M.SlotState     | table                           | String constants: Active, Passive, Idle                      |
-
-## Container Methods
-
-slotCount / getCapacity / getSlot / getSlots / addSlot / removeSlot(idx)
-setWeightLimit / getWeightLimit / getCurrentWeight / isFull
-addItem / countItem / hasItem / removeItem / findByTag / toItemList / expand
-
-## Inventory Methods
-
-addContainer / getContainer / removeContainer / containerNames
-addEquipSlot / getEquipSlot / removeEquipSlot / equipSlotNames / equip / unequip
-countItem / hasItem / removeFromAny
-transfer(from, fIdx, to, tIdx) / splitStack(c, slot, qty) / mergeStacks(c, from, to) / swap(cA, sA, cB, sB)
-addItemSet / getItemSets / getActiveSets
-enableSubsystem / disableSubsystem / isSubsystemEnabled
-
-## Subsystem Names
-
-weight | size | stacking | sets
-
-## Test Coverage
-
-72 tests: InvItem, ItemStack, Slot, Container (all modes), ItemSet, Inventory
-(containers, equip slots, queries, stack ops: splitStack, mergeStacks, swap,
-transfer), Container.removeSlot, Slot state, ContainerMode enum.
+- This library stays domain-specific and should not be collapsed into generic
+  engine containers.
+- Keep constructor names and existing return shapes intact.

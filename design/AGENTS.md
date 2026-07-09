@@ -16,7 +16,7 @@
 - Reference exact Lurek2D API namespaces such as `lurek.render`, `lurek.input`, `lurek.physics`, `lurek.ui`, `lurek.audio`, `lurek.scene`, `lurek.ecs`, `lurek.tilemap`, `lurek.tilefield`, `lurek.pathfind`, `lurek.ai`, `lurek.save`, `lurek.serialize`, `lurek.filesystem`, `lurek.dataframe`, `lurek.province`, and `lurek.minimap`.
 - Explain why each API or module belongs in the design.
 - Keep designs realistic for the 2D runtime. Do not target 3D-first, MMO-scale, cloud-service, or engine-editor products here.
-- Use market references from Steam and itch.io as design anchors, not clone targets.
+- Use market expectations from Steam and itch.io as scope anchors, not product identities to copy.
 
 ## File Shape
 - Each design document should include:

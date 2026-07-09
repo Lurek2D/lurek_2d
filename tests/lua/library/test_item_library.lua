@@ -77,7 +77,7 @@ describe("Item", function()
         expect_equal(it:getStat("dmg"), nil)
     end)
 
-    -- @library LGraph:getStats
+    -- @library lurek.library_item
     it("getStats returns shallow copy", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={dmg=10}, base_tags={} })
@@ -151,7 +151,7 @@ describe("Item", function()
         expect_equal(c:getStat("dmg"), 10)
     end)
 
-    -- @library LGraph:getStats
+    -- @library lurek.library_item
     it("getStats mutations don't affect item", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={dmg=5}, base_tags={} })
@@ -166,7 +166,7 @@ end)
 
 -- @describe Stack
 describe("Stack", function()
-    -- @library LThreadPool:size
+    -- @library lurek.library_item
     it("push / size / peek round-trip", function()
         local s = item.newStack("test")
         local a = item.newItem("coin")
@@ -175,7 +175,7 @@ describe("Stack", function()
         expect_equal(s:peek(), a)
     end)
 
-    -- @library LThreadPool:size
+    -- @library lurek.library_item
     it("pop removes top", function()
         local s = item.newStack("test")
         local a = item.newItem("a"); local b = item.newItem("b")
@@ -185,7 +185,7 @@ describe("Stack", function()
         expect_equal(s:size(), 1)
     end)
 
-    -- @library LThreadPool:size
+    -- @library lurek.library_item
     it("popBottom removes first item", function()
         local s = item.newStack("test")
         local a = item.newItem("a"); local b = item.newItem("b")
@@ -212,7 +212,7 @@ describe("Stack", function()
         expect_equal(s:peekAt(2), b)
     end)
 
-    -- @library LThreadPool:size
+    -- @library lurek.library_item
     it("removeAt removes specific index", function()
         local s = item.newStack("test")
         local a = item.newItem("a"); local b = item.newItem("b"); local c = item.newItem("c")
@@ -222,7 +222,7 @@ describe("Stack", function()
         expect_equal(s:size(), 2)
     end)
 
-    -- @library LThreadPool:size
+    -- @library lurek.library_item
     it("insertAt inserts at position", function()
         local s = item.newStack("test")
         local a = item.newItem("a"); local b = item.newItem("b"); local x = item.newItem("x")
@@ -265,7 +265,7 @@ describe("Stack", function()
         expect_equal(s:push(item.newItem("c")), false)
     end)
 
-    -- @library LThreadPool:size
+    -- @library lurek.library_item
     it("clear empties stack", function()
         local s = item.newStack("test")
         s:push(item.newItem("a"))
@@ -296,7 +296,7 @@ describe("ItemPool", function()
         expect_equal(drawn, nil)
     end)
 
-    -- @library LThreadPool:size
+    -- @library lurek.library_item
     it("size returns entry count", function()
         local pool = item.newItemPool()
         pool:addType("a", 1); pool:addType("b", 2)
@@ -330,7 +330,7 @@ describe("ItemPool", function()
         for _, v in pairs(seen) do expect_equal(v, 1) end
     end)
 
-    -- @library LApiCatalog:getEntries
+    -- @library lurek.library_item
     it("setWeight updates total", function()
         item.clearTypes()
         local pool = item.newItemPool()
@@ -340,7 +340,7 @@ describe("ItemPool", function()
         expect_equal(entries[1].weight, 5.0)
     end)
 
-    -- @library LThreadPool:size
+    -- @library lurek.library_item
     it("remove decreases size", function()
         local pool = item.newItemPool()
         pool:addType("common", 10); pool:addType("rare", 1)
@@ -348,7 +348,7 @@ describe("ItemPool", function()
         expect_equal(pool:size(), 1)
     end)
 
-    -- @library LApiCatalog:getEntries
+    -- @library lurek.library_item
     it("getEntries returns copy", function()
         local pool = item.newItemPool()
         pool:addType("x", 2.0)
@@ -442,7 +442,7 @@ describe("StackManager", function()
         expect_equal(mgr:getStack("x"), nil)
     end)
 
-    -- @library LBlackboard:keys
+    -- @library lurek.library_item
     it("keys returns sorted names", function()
         local mgr = item.newStackManager()
         mgr:addStack("zz", item.newStack("zz"))
@@ -542,7 +542,7 @@ end)
 
 -- @describe StackBuilder
 describe("StackBuilder", function()
-    -- @library LThreadPool:size
+    -- @library lurek.library_item
     it("build creates stack from recipe", function()
         item.clearTypes()
         item.defineType("arrow", { category="ammo", base_stats={}, base_tags={} })
@@ -554,7 +554,7 @@ describe("StackBuilder", function()
         expect_equal(s:size(), 5)
     end)
 
-    -- @library LThreadPool:size
+    -- @library lurek.library_item
     it("addWith applies stat overrides to built items", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={dmg=5}, base_tags={} })
@@ -568,7 +568,7 @@ describe("StackBuilder", function()
         expect_equal(items[2]:getStat("dmg"), 99)
     end)
 
-    -- @library LThreadPool:size
+    -- @library lurek.library_item
     it("setShuffleOnBuild does not lose items", function()
         item.clearTypes()
         item.defineType("card", { category="misc", base_stats={}, base_tags={} })
@@ -611,7 +611,7 @@ describe("StackBuilder", function()
         expect_equal(type(err), "string")
     end)
 
-    -- @library LThreadPool:size
+    -- @library lurek.library_item
     it("buildNamed is alias for build", function()
         item.clearTypes()
         item.defineType("gem", { category="misc", base_stats={}, base_tags={} })
@@ -756,7 +756,7 @@ end)
 
 -- @describe Stack peekBottom
 describe("Stack peekBottom", function()
-    -- @library LThreadPool:size
+    -- @library lurek.library_item
     it("returns first item without removing it", function()
         local s = item.newStack("test")
         local a = item.newItem("a")
@@ -879,7 +879,7 @@ describe("StackManager extras", function()
         expect_equal(mgr:hasStack("inv"), true)
     end)
 
-    -- @library LThreadPool:size
+    -- @library lurek.library_item
     it("createStack adds empty unlimited stack", function()
         local mgr = item.newStackManager()
         mgr:createStack("draw")
@@ -979,7 +979,7 @@ end)
 
 -- @describe Slot
 describe("Slot", function()
-    -- @library LThreadPool:size
+    -- @library lurek.library_item
     it("push / size / peek round-trip", function()
         local s = item.newSlot("weapon_slot")
         local sword = item.newItem("sword")
@@ -1017,7 +1017,7 @@ describe("Slot", function()
         expect_equal(s:getCapacity(), 4)
     end)
 
-    -- @library LThreadPool:size
+    -- @library lurek.library_item
     it("pop removes last item", function()
         local s = item.newSlot("slot")
         local a = item.newItem("a")
@@ -1027,7 +1027,7 @@ describe("Slot", function()
         expect_equal(s:size(), 1)
     end)
 
-    -- @library LThreadPool:size
+    -- @library lurek.library_item
     it("removeAt removes item at index", function()
         local s = item.newSlot("slot")
         local a = item.newItem("a")
@@ -1038,7 +1038,7 @@ describe("Slot", function()
         expect_equal(s:size(), 1)
     end)
 
-    -- @library LThreadPool:size
+    -- @library lurek.library_item
     it("peekAt peeks without removal", function()
         local s = item.newSlot("slot")
         local a = item.newItem("a")

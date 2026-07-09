@@ -52,7 +52,7 @@ describe("CombatAction", function()
         expect_equal(a:isReady(), true)
     end)
 
-    -- @library LGraphEdge:setCooldown
+    -- @library lurek.library_battle
     it("cooldown cycle", function()
         local a = battle.newAction("fireball")
         a:setCooldown(3)
@@ -355,7 +355,7 @@ describe("CombatBattle", function()
         expect_equal(b:getLog()[1], "Battle started")
     end)
 
-    -- @library LGraphEdge:setCooldown
+    -- @library lurek.library_battle
     it("tick all statuses and actions", function()
         local b = battle.newBattle()
         local c = battle.newCombatant("hero")
@@ -395,7 +395,26 @@ describe("CombatBattle", function()
         expect_equal("enemy", result.target)
     end)
 
-    -- @library LGraphEdge:setCooldown
+    -- @library lurek.library_battle
+    it("attack uses battle-specific RNG when provided", function()
+        local b = battle.newBattle():setRng({ random = function() return 0.99 end })
+        local hero = battle.newCombatant("hero")
+        hero:setTeam("player")
+        local risky = battle.newAction("risky")
+        risky:setBaseDamage(30)
+        risky:setAccuracy(0.5)
+        hero:addAction(risky)
+        local enemy = battle.newCombatant("enemy")
+        enemy:setTeam("foe")
+        b:addCombatant(hero)
+        b:addCombatant(enemy)
+        local result = b:attack("hero", "risky", "enemy")
+        if result == nil then error("expected attack result") end
+        expect_equal(false, result.hit)
+        expect_equal(0, result.damage)
+    end)
+
+    -- @library lurek.library_battle
     it("attack returns nil when action is on cooldown", function()
         local b = battle.newBattle()
         local hero = battle.newCombatant("hero")
@@ -525,8 +544,8 @@ end)
 
 -- @describe Combatant setLevel
 describe("Combatant setLevel", function()
-    -- @library LRelationshipManager:getLevel
-    -- @library LRelationshipManager:setLevel
+    -- @library lurek.library_battle
+    -- @library lurek.library_battle
     it("can set and get level", function()
         local c = battle.newCombatant("hero")
         expect_equal(c:getLevel(), 1)
@@ -746,7 +765,7 @@ end)
 
 -- @describe CombatBattle resolve
 describe("CombatBattle resolve", function()
-    -- @library LGraphEdge:setCooldown
+    -- @library lurek.library_battle
     it("ticks statuses and cooldowns in one call", function()
         local b = battle.newBattle("arena")
         local c = battle.newCombatant("hero")

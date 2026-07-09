@@ -1,25 +1,29 @@
 # quest
 
-A quest log system with objectives, staged progression, and a journal. Each Quest has one or more QuestStages; each stage has one or more Objectives with progress tracking. A QuestLog manages all active quests and fires events on start, advance, complete, and fail.
+A pure-Lua quest library with staged objectives, journal entries, rewards, and
+top-level quest-log helpers.
 
 ## Usage
 
 ```lua
-local quest = require("library/quest")
+local quest = require("library.quest")
 
-local kill_q = quest.Quest.new({ id = "slay_wolves", title = "Pest Control" })
-local stage1 = quest.QuestStage.new({ id = "kill" })
-stage1:addObjective(quest.Objective.new({
-    id = "wolves", text = "Kill 5 wolves", type = "counter", target = 5
-}))
-kill_q:addStage(stage1)
+local stage = quest.newQuestStage("kill", "Clear the wolves")
+stage:addObjective(quest.newObjective("wolves", "Kill 5 wolves", 5))
 
-local log = quest.QuestLog.new()
-log:start(kill_q)
-log:progress("slay_wolves", "wolves", 1)  -- +1 kill
-print("Done:", log:isComplete("slay_wolves"))
+local q = quest.newQuest("slay_wolves", "Pest Control")
+q:addStage(stage)
+
+local log = quest.newQuestLog()
+log:addQuest(q)
+log:startQuest("slay_wolves")
+log:advanceObjective("slay_wolves", "wolves", 1)
+
+print(log:activeIds()[1], q:completionPercent())
 ```
 
-## Dependencies
+## Optional bindings
 
-- `lurek.patterns.newEventBus` (optional), `lurek.save.SaveManager` (optional)
+- `lurek.patterns.newEventBus`: used by `QuestLog` when available or injected.
+- `lurek.serialize.toJson/fromJson`: used by `quest.toJson()` and
+  `quest.fromJson()` helpers.

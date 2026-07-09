@@ -28,7 +28,7 @@ describe("Fov", function()
         expect_false(fov:isVisible(4, 0))
     end)
 
-    -- @library LORCASolver:compute
+    -- @library lurek.library_roguelike
     it("explored set persists after recompute from a new origin", function()
         local fov = rl.newFov({range=3}):setBlocker(open_blocker):compute(0, 0)
         expect_true(fov:isExplored(2, 0))
@@ -42,6 +42,14 @@ describe("Fov", function()
         local fov = rl.newFov({range=3}):setBlocker(open_blocker):compute(0, 0)
         fov:resetExplored()
         expect_false(fov:isExplored(2, 0))
+    end)
+
+    -- @library lurek.library_roguelike
+    it("uses Lurek awareness FOV backend when available", function()
+        if not (lurek and lurek.awareness and lurek.awareness.newFov) then return end
+        local fov = rl.newFov({ range = 4 }):setBlocker(open_blocker):compute(0, 0)
+        expect_not_nil(fov._engine)
+        expect_true(fov:isVisible(0, 0))
     end)
 end)
 
@@ -76,7 +84,7 @@ describe("Scheduler", function()
         end
     end)
 
-    -- @library LSaveManager:restore
+    -- @library lurek.library_roguelike
     it("save / restore round-trips actor energies", function()
         local sch = rl.newScheduler()
         local a = {}; sch:add(a, 25)
@@ -115,6 +123,14 @@ describe("GoalMap", function()
         expect_equal(0, g:distanceAt(5, 5))
         expect_equal(1, g:distanceAt(5, 6))
         expect_equal(3, g:distanceAt(5, 8))
+    end)
+
+    -- @library lurek.library_roguelike
+    it("uses Lurek GoalMap backend when available", function()
+        if not (lurek and lurek.pathfind and lurek.pathfind.newGoalMap) then return end
+        local g = rl.newGoalMap(6, 6):addSource(3, 3, 0):bake()
+        expect_not_nil(g._engine)
+        expect_equal(0, g:distanceAt(3, 3))
     end)
 
     -- @library lurek.library_roguelike

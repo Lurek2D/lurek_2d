@@ -1,30 +1,36 @@
 # roguelike
 
-A roguelike toolkit providing three foundational algorithms: a shadowcast FOV system, an energy-based turn scheduler, and a Dijkstra goal-map for AI navigation. All three work on a shared tile grid and interoperate cleanly.
+A roguelike toolkit with field-of-view, an energy scheduler, and goal-map
+distance fields. `Fov` and `GoalMap` use engine backends when available and
+fall back to pure Lua behavior otherwise.
 
 ## Usage
 
 ```lua
-local roguelike = require("library/roguelike")
+local rl = require("library.roguelike")
 
--- Field of view
-local fov = roguelike.Fov.new({ radius = 8 })
-fov:compute(player_x, player_y, function(x, y) return is_opaque(x, y) end)
-print("Can see 10,5:", fov:visible(10, 5))
+local fov = rl.newFov({ range = 8 })
+fov:setBlocker(function(x, y)
+    return x == 2 and y == 0
+end)
+fov:compute(0, 0)
 
--- Turn scheduler (energy model)
-local sched = roguelike.Scheduler.new()
-sched:add(player,  { speed = 12 })
-sched:add(goblin1, { speed =  8 })
-local actor = sched:next()   -- returns actor with most energy
+local scheduler = rl.newScheduler()
+scheduler:add("hero", 12)
+scheduler:add("goblin", 8)
 
--- Goal map (Dijkstra)
-local goals = roguelike.GoalMap.new(MAP_W, MAP_H)
-goals:setGoal(player_x, player_y)
-goals:compute(function(x, y) return is_passable(x, y) end)
-local nx, ny = goals:bestNeighbour(goblin_x, goblin_y)
+local goals = rl.newGoalMap(20, 20)
+goals:addSource(10, 10, 0):bake()
+local dx, dy = goals:gradientAt(5, 5)
+print(fov:isVisible(1, 0), scheduler:peek(), dx, dy)
 ```
 
-## Dependencies
+## Optional bindings
 
-- `lurek.tilemap` (optional), `lurek.pathfind` (optional)
+- `lurek.awareness.newFov`: engine-backed FOV with the same visible/explored API.
+- `lurek.pathfind.newGoalMap`: engine-backed goal map used by `GoalMap:bake()`.
+- `lurek.math.bresenham`: preferred backend for `rl.bresenham()`.
+- `lurek.tilemap`: convenient blocker source for `attachTilemap()`.
+
+`Scheduler` remains pure Lua because it models energy turns, not real-time
+engine scheduling.

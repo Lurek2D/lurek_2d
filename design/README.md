@@ -7,7 +7,7 @@ The documents assume Lurek2D's normal project shape: a game folder with `main.lu
 ## How to use these documents
 
 1. Pick the game type closest to the product you want to build.
-2. Treat the reference games as design anchors, not as clone targets.
+2. Treat market expectations as scope anchors, not as product identities to copy.
 3. Start from the proposed state model and project structure.
 4. Build the vertical slice criteria before expanding content volume.
 5. Keep reusable systems in `scripts/systems/`, authored content in `data/`, and media in `assets/`.
@@ -33,7 +33,7 @@ The documents assume Lurek2D's normal project shape: a game folder with `main.lu
 
 ## Current design entries
 
-- [Massive 2D RTS](strategy-games/massive-2d-rts.md) - Rusted Warfare-inspired large-map RTS architecture with thousands of units, multi-size footprints, shared routing/flow fields, formation movement, RTS orders, stances, and benchmark targets.
+- [Massive 2D RTS](strategy-games/massive-2d-rts.md) - large-map RTS architecture with thousands of units, multi-size footprints, shared routing/flow fields, formation movement, RTS orders, stances, and benchmark targets.
 - [Japanese Visual Novel](narrative-social/japanese-visual-novel.md) - story-first route-based VN architecture with backlog, rollback, save slots, auto/skip, gallery unlocks, and scene command strategy.
 - [RPG Maker Style JRPG](role-playing-games/rpg-maker-style-jrpg.md) - tile-based JRPG architecture with map/event/database model, party progression, turn-based battles, and RPG Maker MZ-style importer/runtime notes.
 
@@ -41,7 +41,7 @@ The documents assume Lurek2D's normal project shape: a game folder with `main.lu
 
 Each design should name its market promise for itch.io and Steam. Itch.io targets can be narrower, experimental, and shorter, but still need a complete loop. Steam targets need stronger onboarding, save stability, settings, input remapping, accessibility, content depth, and presentation polish.
 
-Do not treat reference games as clone targets. Use them to clarify player expectations, production scope, UI density, session length, and replay structure.
+Use market expectations to clarify player promise, production scope, UI density, session length, and replay structure without naming other products as identity anchors.
 
 ## Cross-cutting architecture conventions
 

@@ -215,7 +215,7 @@ describe("Slot", function()
         expect_equal(sl:canAccept(it), true)
     end)
 
-    -- @library LWidget:getItem
+    -- @library lurek.library_inventory
     it("setStack/getStack round-trip", function()
         local sl = inventory.newSlot("any", inventory.SlotState.Active)
         local it = inventory.newItem("sword")
@@ -226,7 +226,7 @@ describe("Slot", function()
         expect_not_nil(got)
     end)
 
-    -- @library LWidget:getItem
+    -- @library lurek.library_inventory
     it("takeStack empties slot", function()
         local sl = inventory.newSlot("any", inventory.SlotState.Active)
         local it = inventory.newItem("sword")
@@ -250,7 +250,7 @@ end)
 
 -- @describe Container.fixed
 describe("Container.fixed", function()
-    -- @library LFileHandle:getMode
+    -- @library lurek.library_inventory
     it("creates fixed container with correct slot count", function()
         local c = inventory.newContainer("bag", "fixed", 5)
         expect_equal(c:slotCount(), 5)
@@ -276,7 +276,7 @@ describe("Container.fixed", function()
         expect_equal(c:countItem("arrow"), 15)
     end)
 
-    -- @library LGraph:hasItem
+    -- @library lurek.library_inventory
     it("hasItem returns true when quantity met", function()
         local c = inventory.newContainer("bag", "fixed", 5)
         local it = inventory.newItem("coin")
@@ -474,7 +474,7 @@ describe("Inventory", function()
         expect_equal(inv:countItem("coin"), 25)
     end)
 
-    -- @library LGraph:hasItem
+    -- @library lurek.library_inventory
     it("hasItem checks across containers", function()
         local inv = inventory.newInventory()
         local c   = inventory.newContainer("bag", "unlimited", 0)
@@ -726,7 +726,7 @@ describe("Slot.state", function()
         expect_equal(sl:getState(), inventory.SlotState.Passive)
     end)
 
-    -- @library LRandomGenerator:setState
+    -- @library lurek.library_inventory
     it("setState changes state", function()
         local sl = inventory.newSlot("any", inventory.SlotState.Active)
         sl:setState(inventory.SlotState.Idle)
@@ -758,7 +758,7 @@ describe("ContainerMode", function()
         expect_equal(inventory.ContainerMode.expandable, "expandable")
     end)
 
-    -- @library LFileHandle:getMode
+    -- @library lurek.library_inventory
     it("can be used directly with newContainer", function()
         local c = inventory.newContainer("bag", inventory.ContainerMode.fixed, 4)
         expect_equal(c:getMode(), "fixed")
@@ -802,7 +802,7 @@ describe("Container.expandable.bounds", function()
         expect_equal(c:getCapacity(), 3)
     end)
 
-    -- @library LSkeleton:addSlot
+    -- @library lurek.library_inventory
     it("addSlot respects max_slots in expandable mode", function()
         local c = inventory.newContainer("pouch", "expandable", 2, 3)
         c:addSlot(inventory.newSlot("any", inventory.SlotState.Active)) -- 3rd slot OK
@@ -856,7 +856,7 @@ end)
 
 -- @describe Container.tagFiltering
 describe("Container.tagFiltering", function()
-    -- @library LSkeleton:addSlot
+    -- @library lurek.library_inventory
     it("typed slot in container accepts item with matching tag via addItem", function()
         -- Container with a "weapon" slot     item type is "magic_blade" but has "weapon" tag
         local c = inventory.newContainer("equip", "expandable", 0, 1)
@@ -869,7 +869,7 @@ describe("Container.tagFiltering", function()
         expect_equal(c:countItem("magic_blade"), 1)
     end)
 
-    -- @library LSkeleton:addSlot
+    -- @library lurek.library_inventory
     it("typed slot rejects item without matching type or tag", function()
         local c = inventory.newContainer("equip", "expandable", 0, 1)
         c:addSlot(inventory.newSlot("weapon", inventory.SlotState.Active))
@@ -879,7 +879,7 @@ describe("Container.tagFiltering", function()
         expect_equal(c:countItem("potion"), 0)
     end)
 
-    -- @library LSkeleton:addSlot
+    -- @library lurek.library_inventory
     it("item type match satisfies slot type without needing tag", function()
         local c = inventory.newContainer("equip", "expandable", 0, 1)
         c:addSlot(inventory.newSlot("sword", inventory.SlotState.Active))

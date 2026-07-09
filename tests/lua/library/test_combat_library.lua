@@ -141,8 +141,8 @@ describe("Chassis", function()
         expect_equal(c.hp, 100)
     end)
 
-    -- @library LSaveManager:getSlots
-    -- @library LSkeleton:addSlot
+    -- @library lurek.library_combat
+    -- @library lurek.library_combat
     it("addSlot and getSlot", function()
         local c = combat.newChassis(1, 100)
         c:addSlot(combat.newMountSlot("s1", 0, 0, "small"))
@@ -230,7 +230,7 @@ describe("Turret", function()
         expect_equal(t:isAimed(0.01), false)
     end)
 
-    -- @library LNetworkHost:isDestroyed
+    -- @library lurek.library_combat
     it("Turret getters and setters", function()
         local t = combat.newTurret(5, 6)
         t:setTurnSpeed(3.0)
@@ -356,8 +356,8 @@ describe("Weapon", function()
         expect_equal(w:isFiring(), false)
     end)
 
-    -- @library LParticleSystem:getSpread
-    -- @library LParticleSystem:setSpread
+    -- @library lurek.library_combat
+    -- @library lurek.library_combat
     it("Weapon getters and setters", function()
         local w = combat.newWeapon("Test")
         expect_equal(w:getName(), "Test")
@@ -394,7 +394,7 @@ end)
 
 -- @describe Projectile
 describe("Projectile", function()
-    -- @library LUniverse:spawn
+    -- @library lurek.library_combat
     it("reset clears all fields and restores projectile_type to Ballistic", function()
         local pool = combat.newProjectilePool(2, combat.ProjectileType.Homing)
         local idx = pool:spawn(0, 0, 0, 100, 10, "kinetic", 500)
@@ -409,7 +409,7 @@ describe("Projectile", function()
         expect_equal(p.projectile_type, combat.ProjectileType.Ballistic)
     end)
 
-    -- @library LUniverse:spawn
+    -- @library lurek.library_combat
     it("update does nothing when projectile is inactive", function()
         local pool = combat.newProjectilePool(2)
         local idx = pool:spawn(0, 0, 0, 100, 10, "k", 500)
@@ -419,7 +419,7 @@ describe("Projectile", function()
         expect_equal(p.distance_traveled, 0)
     end)
 
-    -- @library LUniverse:spawn
+    -- @library lurek.library_combat
     it("update advances lifetime and distance when active", function()
         local pool = combat.newProjectilePool(2)
         local idx = pool:spawn(0, 0, 0, 200, 10, "k", 500)
@@ -441,7 +441,7 @@ describe("ProjectilePool", function()
         expect_equal(pool:activeCount(), 0)
     end)
 
-    -- @library LUniverse:spawn
+    -- @library lurek.library_combat
     it("spawn and release", function()
         local pool = combat.newProjectilePool(5)
         local idx = pool:spawn(0, 0, 0, 100, 10, "kinetic", 500)
@@ -453,7 +453,7 @@ describe("ProjectilePool", function()
         expect_equal(pool:freeCount(), 5)
     end)
 
-    -- @library LUniverse:spawn
+    -- @library lurek.library_combat
     it("getActive returns active indices", function()
         local pool = combat.newProjectilePool(5)
         pool:spawn(0, 0, 0, 100, 10, "k", 500)
@@ -462,7 +462,7 @@ describe("ProjectilePool", function()
         expect_equal(#active, 2)
     end)
 
-    -- @library LUniverse:spawn
+    -- @library lurek.library_combat
     it("resetAll releases all", function()
         local pool = combat.newProjectilePool(5)
         pool:spawn(0, 0, 0, 100, 10, "k", 500)
@@ -478,7 +478,7 @@ describe("ProjectilePool", function()
         expect_equal(pool.pool_size, 1024)
     end)
 
-    -- @library LUniverse:spawn
+    -- @library lurek.library_combat
     it("spawn returns nil when exhausted", function()
         local pool = combat.newProjectilePool(2)
         pool:spawn(0, 0, 0, 100, 10, "k", 500)
@@ -487,7 +487,7 @@ describe("ProjectilePool", function()
         expect_equal(idx, nil)
     end)
 
-    -- @library LUniverse:spawn
+    -- @library lurek.library_combat
     it("get returns projectile data", function()
         local pool = combat.newProjectilePool(5)
         local idx = pool:spawn(0, 0, 0, 200, 25, "explosive", 800)
@@ -497,7 +497,7 @@ describe("ProjectilePool", function()
         expect_equal(p.damage_type, "explosive")
     end)
 
-    -- @library LUniverse:spawn
+    -- @library lurek.library_combat
     it("release of already-inactive slot is a no-op", function()
         local pool = combat.newProjectilePool(3)
         local idx = pool:spawn(0, 0, 0, 100, 10, "k", 500)
@@ -564,7 +564,7 @@ describe("CombatWorld", function()
         expect_equal(w:activeChassisCount(), 1)
     end)
 
-    -- @library LUniverse:spawn
+    -- @library lurek.library_combat
     it("activeProjectileCount sums across pools", function()
         local w = combat.newCombatWorld()
         local pool = combat.newProjectilePool(10)

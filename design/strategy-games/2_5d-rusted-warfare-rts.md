@@ -1,20 +1,117 @@
 # 2.5D Classic RTS Design
 
-## Design anchor
+## Design target
 
-This document describes a 2D real-time strategy game in the spirit of classic macro RTS games such as Rusted Warfare, Total Annihilation, and Command & Conquer. The goal is not to clone those games. The goal is to define the Lurek2D project architecture needed for a large-unit-count, Lua-authored RTS where the world is visually and tactically 2D, but units and projectiles can still reason about altitude above the terrain.
-
-The important design constraint is: the game remains a 2D RTS. It does not require a 3D scene graph, 3D rigid bodies, skeletal meshes, or full 3D navigation. The additional axis is a gameplay altitude layer used for flying units, ballistic projectiles, shadow rendering, collision filtering, line of sight, target clearance, and impact resolution.
+A technical game design document for a marketable 2D 2.5D Classic RTS Design built with Lurek2D. The design target is 2D RTS control with altitude metadata, projectile arcs, fog, and combined arms, expressed through data-driven Lua systems and exact `lurek.*` runtime boundaries.
 
 ## Market positioning
 
-### Itch.io promise
+2.5D Classic RTS Design should be positioned as a focused strategy games entry about 2D RTS control with altitude metadata, projectile arcs, fog, and combined arms. The short-form release should prove the core loop with a small authored content set, clear failure feedback, and one polished presentation hook. The larger release should add progression depth, content validation, accessibility settings, and enough authored variation that its main content records do not feel interchangeable. The document should describe the product promise directly instead of borrowing identity from another game.
 
-A moddable 2D RTS toolkit where creators can ship compact skirmish maps with factories, tanks, aircraft, artillery, missiles, fog of war, and tactical terrain without building a full engine from scratch.
+## Lurek2D API map
 
-### Steam promise
+| API area | Lurek2D API | How this design should use it |
+|---|---|---|
+| Game flow | `lurek.scene`, `lurek.input`, `lurek.ui` | For 2.5D Classic RTS Design, this area covers game flow from the current design; it should support 2D RTS control with altitude metadata, projectile arcs, fog, and combined arms. Use it to decide which systems are active and which state may change in each screen. Use it for named actions, buffering, rebinding, and controller parity instead of reading raw keys inside domain rules. Use it for HUD, menus, prompts, inspectors, accessibility controls, and player-facing state summaries. |
+| World state | `lurek.ecs`, `lurek.tilemap`, `lurek.tilefield` | For 2.5D Classic RTS Design, this area covers world state from the current design; it should support 2D RTS control with altitude metadata, projectile arcs, fog, and combined arms. Use it for objects that must be addressed by simulation, UI, save data, audio, or AI with the same stable identity. Use it for visual layers, imported maps, chunks, decoration, and camera-facing tile presentation. Use it for authoritative cell facts such as blockers, costs, regions, hazards, ownership, or tags. |
+| Simulation | `lurek.pathfind`, `lurek.ai`, `lurek.physics` | For 2.5D Classic RTS Design, this area covers simulation from the current design; it should support 2D RTS control with altitude metadata, projectile arcs, fog, and combined arms. Use it for route, range, flow, and reachability queries instead of embedding movement guesses in UI. Use it for inspectable decision scoring and scheduled planners. Use it for collision, sensor, sweep, overlap, and contact queries while domain systems decide outcomes. |
+| Data and persistence | `lurek.filesystem`, `lurek.serialize`, `lurek.dataframe`, `lurek.save` | For 2.5D Classic RTS Design, this area covers data and persistence from the current design; it should support 2D RTS control with altitude metadata, projectile arcs, fog, and combined arms. Use it as the runtime boundary for authored maps, rules, manifests, and asset lists. Use it for TOML or JSON content, snapshots, migrations, and replay-safe state interchange. Use it when balance data needs table validation, reporting, sorting, or spreadsheet-like review. Use it for profile data, slots, settings, unlocks, and migrations after runtime-only fields are stripped. |
+| Presentation | `lurek.render`, `lurek.camera`, `lurek.audio`, `lurek.animation`, `lurek.tween`, `lurek.particle` | For 2.5D Classic RTS Design, this area covers presentation from the current design; it should support 2D RTS control with altitude metadata, projectile arcs, fog, and combined arms. Use it for passive drawing of world, sprites, text, shapes, and shader-backed presentation. Use it to frame the active decision, constrain movement, handle zoom, and apply non-authoritative shake. Use it for music, cues, bus levels, voice timing, and feedback synced to resolved events. Use it for clips chosen from resolved state, never as the source of gameplay authority. Use it for UI and presentation interpolation that can be skipped without changing simulation results. Use it for short-lived trails, impacts, weather, and celebration feedback tied to events. |
+| Orders, formations, and navigation | `lurek.pathfind`, `lurek.graph`, `lurek.ai` | For 2.5D Classic RTS Design, this area covers querying routes, flows, adjacency, threat maps, and scheduled command decisions; it should support 2D RTS control with altitude metadata, projectile arcs, fog, and combined arms. Use it for route, range, flow, and reachability queries instead of embedding movement guesses in UI. Use it for adjacency, supply, flow, non-grid links, formations, and network analysis. Use it for inspectable decision scoring and scheduled planners. |
+| Territory, fog, and map overlays | `lurek.province`, `lurek.awareness`, `lurek.minimap` | For 2.5D Classic RTS Design, this area covers tracking ownership, visibility, strategic regions, alerts, and overview commands; it should support 2D RTS control with altitude metadata, projectile arcs, fog, and combined arms. Use it for territory ownership, regions, adjacency, strategic overlays, and faction maps. Use it for visibility, perception, reveal, stealth, fog, and field-of-view decisions. Use it for overview navigation, alerts, fog summaries, and large-map command feedback. |
+| Economy, production, and telemetry | `lurek.timer`, `lurek.dataframe`, `lurek.charts` | For 2.5D Classic RTS Design, this area covers driving build queues, resource ticks, balance tables, and debug economy reports; it should support 2D RTS control with altitude metadata, projectile arcs, fog, and combined arms. Use it for explicit clocks, cooldowns, production ticks, turn timers, and scheduled actions. Use it when balance data needs table validation, reporting, sorting, or spreadsheet-like review. Use it for economy reports, telemetry, demand curves, production graphs, and balance views. |
+| Scene ownership and mode boundaries | `lurek.scene` | For 2.5D Classic RTS Design, this area covers splitting boot, loading, setup, active play, pause, results, and debug review into modes with different authority; it should support 2D RTS control with altitude metadata, projectile arcs, fog, and combined arms. Use it to decide which systems are active and which state may change in each screen. |
+| Entity identity and cross-system state | `lurek.ecs`, `lurek.event` | For 2.5D Classic RTS Design, this area covers giving long-lived objects stable IDs and publishing resolved domain events after systems mutate owned state; it should support 2D RTS control with altitude metadata, projectile arcs, fog, and combined arms. Use it for objects that must be addressed by simulation, UI, save data, audio, or AI with the same stable identity. Use it for resolved commands and domain facts so UI, audio, debug, and replay logic observe the same outcome. |
+| Input commands and accessibility | `lurek.input`, `lurek.ui` | For 2.5D Classic RTS Design, this area covers turning device input into named commands, exposing remapping, and keeping command prompts consistent with the active scene; it should support 2D RTS control with altitude metadata, projectile arcs, fog, and combined arms. Use it for named actions, buffering, rebinding, and controller parity instead of reading raw keys inside domain rules. Use it for HUD, menus, prompts, inspectors, accessibility controls, and player-facing state summaries. |
+| Authored content loading | `lurek.filesystem`, `lurek.serialize` | For 2.5D Classic RTS Design, this area covers loading rules, maps, encounter tables, and manifests through runtime paths and versioned interchange data; it should support 2D RTS control with altitude metadata, projectile arcs, fog, and combined arms. Use it as the runtime boundary for authored maps, rules, manifests, and asset lists. Use it for TOML or JSON content, snapshots, migrations, and replay-safe state interchange. |
+| Balance tables and validation | `lurek.dataframe`, `lurek.log` | For 2.5D Classic RTS Design, this area covers keeping tunable content in inspectable tables and reporting missing IDs, bad references, or suspicious values before play; it should support 2D RTS control with altitude metadata, projectile arcs, fog, and combined arms. Use it when balance data needs table validation, reporting, sorting, or spreadsheet-like review. Use it to record validation errors, command traces, and reproducible bug evidence. |
+| Progress, options, and migration | `lurek.save`, `lurek.serialize` | For 2.5D Classic RTS Design, this area covers storing only stable IDs, schema versions, settings, unlocks, and player progress while rebuilding runtime caches; it should support 2D RTS control with altitude metadata, projectile arcs, fog, and combined arms. Use it for profile data, slots, settings, unlocks, and migrations after runtime-only fields are stripped. Use it for TOML or JSON content, snapshots, migrations, and replay-safe state interchange. |
+| Camera, HUD, and readable feedback | `lurek.camera`, `lurek.render`, `lurek.ui` | For 2.5D Classic RTS Design, this area covers framing the active problem, drawing passive presentation, and keeping HUD state downstream of simulation; it should support 2D RTS control with altitude metadata, projectile arcs, fog, and combined arms. Use it to frame the active decision, constrain movement, handle zoom, and apply non-authoritative shake. Use it for passive drawing of world, sprites, text, shapes, and shader-backed presentation. Use it for HUD, menus, prompts, inspectors, accessibility controls, and player-facing state summaries. |
+| Animation and non-authoritative polish | `lurek.animation`, `lurek.tween`, `lurek.particle`, `lurek.audio` | For 2.5D Classic RTS Design, this area covers making state changes readable without letting presentation timing decide gameplay outcomes; it should support 2D RTS control with altitude metadata, projectile arcs, fog, and combined arms. Use it for clips chosen from resolved state, never as the source of gameplay authority. Use it for UI and presentation interpolation that can be skipped without changing simulation results. Use it for short-lived trails, impacts, weather, and celebration feedback tied to events. Use it for music, cues, bus levels, voice timing, and feedback synced to resolved events. |
+| Debug overlays and tuning | `lurek.overlay`, `lurek.devtools`, `lurek.log` | For 2.5D Classic RTS Design, this area covers showing live state, timings, IDs, paths, and recent events in developer-only views; it should support 2D RTS control with altitude metadata, projectile arcs, fog, and combined arms. Use it for developer-only live views of cells, paths, IDs, timings, and hidden state. Use it for tuning panels and inspectors that modify test values without becoming shipped rules. Use it to record validation errors, command traces, and reproducible bug evidence. |
 
-A content-rich classic RTS with stable saves, AI skirmish opponents, large battles, mod-friendly data files, replayable maps, keyboard and mouse controls, minimap commands, and readable spectacle from hundreds of units and projectiles.
+## Runtime architecture
+
+The authoritative 2.5D Classic RTS Design state should center on 2D RTS control with altitude metadata, projectile arcs, fog, and combined arms. Treat units as the first state owner to inspect when a bug appears, then follow derived events into UI, audio, effects, or debug overlays.
+
+Update order should be explicit: read commands, validate them against current 2.5D Classic RTS Design state, run domain systems, publish events, then let presentation systems draw the resolved snapshot. Rendering and animation may smooth the result, but they should not decide outcomes.
+
+Long-lived managers should be created during scene setup and passed to systems that need them. Transient caches for 2.5d classic rts design previews, paths, reports, or effects should be rebuilt from saved state rather than persisted.
+
+## Scene and ECS architecture
+
+`lurek.scene` should split 2.5D Classic RTS Design into screens that have different authority: boot/loading, setup, active play, pause/options, results, and focused debug review. Each scene should declare which systems run, which UI surfaces are visible, and which save/profile data may be changed.
+
+`lurek.ecs` belongs where units, aircraft, projectiles, factories, resources, fog cells, and command groups need stable identity across several systems. Single-purpose values can stay in domain tables, but any 2.5d classic rts design object touched by simulation, UI, audio, save data, or AI should use an entity ID plus narrow components.
+
+The pattern for 2.5D Classic RTS Design is scene-driven activation with system-owned mutation: scenes choose the active slice, systems update their owned components, and render/UI/audio consume events or snapshots.
+
+## Suggested project structure
+
+- `content/games/2_5d_rusted_warfare_rts/main.lua` - owns 2.5d classic rts design callback handoff and startup wiring.
+- `content/games/2_5d_rusted_warfare_rts/conf.toml` - owns 2.5d classic rts design window, input, asset, and runtime defaults.
+- `content/games/2_5d_rusted_warfare_rts/data/2_5d_rusted_warfare_rts_rules.toml` - owns 2.5d classic rts design authored rules for 2D RTS control with altitude metadata, projectile arcs, fog, and combined arms.
+- `content/games/2_5d_rusted_warfare_rts/data/units.toml` - owns 2.5d classic rts design content records for units.
+- `content/games/2_5d_rusted_warfare_rts/scripts/scenes/2_5d_rusted_warfare_rts_play.lua` - owns 2.5d classic rts design scene-local orchestration and pause/result transitions.
+- `content/games/2_5d_rusted_warfare_rts/scripts/systems/2_5d_rusted_warfare_rts_state.lua` - owns 2.5d classic rts design authoritative state containers and domain update order.
+- `content/games/2_5d_rusted_warfare_rts/scripts/systems/2_5d_rusted_warfare_rts_validation.lua` - owns 2.5d classic rts design data integrity checks before content enters a run.
+- `content/games/2_5d_rusted_warfare_rts/scripts/ui/2_5d_rusted_warfare_rts_hud.lua` - owns 2.5d classic rts design HUD, inspector, prompt, and accessibility surfaces.
+- `content/games/2_5d_rusted_warfare_rts/assets/2_5d_rusted_warfare_rts/` - owns 2.5d classic rts design media grouped by stable asset IDs.
+
+## Game structure
+
+2.5D Classic RTS Design should be built as a set of named domain services rather than one large gameplay script.
+
+- `2_5d_rusted_warfare_rts_state` owns durable units, aircraft, and projectiles records.
+- `2_5d_rusted_warfare_rts_rules` validates commands, applies 2D RTS control with altitude metadata, projectile arcs, fog, and combined arms, and emits deterministic events.
+- `2_5d_rusted_warfare_rts_content` loads tables, checks IDs, and reports missing media before play starts.
+- `2_5d_rusted_warfare_rts_presentation` converts resolved state into render, audio, tween, particle, and UI requests.
+- `2_5d_rusted_warfare_rts_save` writes only stable IDs, schema versions, player progress, and settings through `lurek.save`.
+- `2_5d_rusted_warfare_rts_debug` exposes factories, resources, and fog cells in overlays without mutating shipped state.
+
+## Data and content model
+
+- `units_id` records should be stable across saves, tests, telemetry, and authored data revisions.
+- `units_table` data should live in `data/` and be validated before 2.5D Classic RTS Design enters active play.
+- `aircraft_id` records should be stable across saves, tests, telemetry, and authored data revisions.
+- `aircraft_table` data should live in `data/` and be validated before 2.5D Classic RTS Design enters active play.
+- `projectiles_id` records should be stable across saves, tests, telemetry, and authored data revisions.
+- `projectiles_table` data should live in `data/` and be validated before 2.5D Classic RTS Design enters active play.
+- 2.5D Classic RTS Design save data should store progress, settings, unlocked content, and schema versions; runtime handles and generated caches should be rebuilt.
+- 2.5D Classic RTS Design content should use `lurek.filesystem`, `lurek.serialize`, and `lurek.dataframe` according to file shape and table size.
+
+## Technical design notes
+
+- Use `lurek.scene` to isolate 2.5d classic rts design setup, active play, pause, result, and debug review so each mode has a clear state owner.
+- Use `lurek.ecs` only for units, aircraft, and other records that cross simulation, UI, save, AI, or audio boundaries.
+- Use data files for 2D RTS control with altitude metadata, projectile arcs, fog, and combined arms; hard-coded constants should be limited to defaults and migration fallbacks.
+- Use `lurek.event` to publish resolved domain events, not speculative preview state.
+- Use `lurek.save` after converting runtime state into stable IDs, versioned tables, and player-visible progress.
+- Keep render, tween, particle, and audio requests downstream of simulation so 2.5D Classic RTS Design tests can run without presentation timing.
+
+## Vertical slice acceptance
+The first playable slice should prove the 2.5D requirement, not just generic RTS control.
+
+- One small skirmish map with ground height samples, cliffs, ramps, and resource points.
+- One builder, one factory, one tank, one artillery unit, one aircraft, one turret, and one HQ.
+- Ground units path around blockers.
+- Aircraft pass over ground blockers and cast altitude-aware shadows.
+- Artillery shells arc over low obstacles, collide with high terrain or valid target altitude, and produce splash damage.
+- Direct-fire cannon projectiles use swept circle 2D checks plus altitude filtering.
+- Fog of war, minimap pings, basic enemy AI, and save/load work.
+- Debug overlay can show XY colliders, altitude ranges, terrain height samples, projectile arcs, and impact kind.
+
+## Risks
+- If altitude remains script-only, Lua systems must duplicate physics filtering, projectile collision, terrain impact, and debug visualization. That will make large RTS simulations harder to optimize and harder to keep deterministic.
+- If the engine tries to solve this as full 3D physics, the feature will become too broad and conflict with the runtime-only 2D scope of the design library.
+- Ballistic projectiles need deterministic sampling and a predictable maximum number of substeps to avoid frame-dependent hits.
+- Large battles require stable data-oriented update patterns. The altitude layer should be cheap metadata plus query helpers, not one full rigid body per shell fragment or visual-only effect.
+
+## Design anchor
+
+This document describes a 2D real-time strategy game for classic macro-RTS expectations: base building, large armies, fog, factories, terrain, and combined arms. The goal is to define the Lurek2D project architecture needed for a large-unit-count, Lua-authored RTS where the world is visually and tactically 2D, but units and projectiles can still reason about altitude above the terrain.
+
+The important design constraint is: the game remains a 2D RTS. It does not require a 3D scene graph, 3D rigid bodies, skeletal meshes, or full 3D navigation. The additional axis is a gameplay altitude layer used for flying units, ballistic projectiles, shadow rendering, collision filtering, line of sight, target clearance, and impact resolution.
 
 ## Player fantasy
 
@@ -43,20 +140,6 @@ The player commands a base, expands across resource nodes, builds factories, cre
 - Deterministic fixed-step simulation for gameplay logic, separated from visual interpolation.
 - Save/replay-friendly state snapshots.
 
-## Lurek2D API strategy
-
-Use Lua as the gameplay orchestration layer and Rust-backed Lurek2D systems as the stable runtime substrate.
-
-- `lurek.ecs`: preferred entity substrate for units, projectiles, orders, weapons, construction jobs, radar pings, decals, and temporary effects.
-- `lurek.tilemap` / `lurek.tilefield`: visual tiles and gameplay cell facts such as terrain type, cost, buildability, resource spots, water, cliffs, ramps, and cover flags.
-- `lurek.pathfind`: route planning per movement class. Ground and naval units should use obstacle-aware paths; air units can use simpler steering with soft avoidance.
-- `lurek.physics`: collision queries, projectile sweeps, sensors, terrain interaction, and collision-layer policy. Current physics should be used for 2D XY authority, but altitude needs a dedicated API extension before true Rusted Warfare-style projectile/air behavior can be engine-owned.
-- `lurek.minimap`: command surface, threat/reveal overlays, radar blips, and camera navigation.
-- `lurek.ai`: skirmish AI planners, tactical target scoring, base expansion, build-order logic, and squad-level behavior.
-- `lurek.save`: scenario saves, skirmish snapshots, campaign progression, user settings, and mod load order.
-- `lurek.ui`: production panels, command cards, selection groups, health bars, tooltips, tech tree browser, lobby, and pause menu.
-- `lurek.audio`: positional weapon sounds, alerts, UI cues, ambient battle loops, and faction voice responses.
-
 ## Current Lurek2D fit
 
 The existing physics model already covers much of the 2D foundation needed by this design:
@@ -66,7 +149,7 @@ The existing physics model already covers much of the 2D foundation needed by th
 - The 16-group world collision matrix and per-body layer/mask filters are useful for separating terrain, units, projectiles, sensors, air, water, resources, and build previews.
 - Terrain, liquid, flow-field, beam reflection, projectile reflection, material, and debug-rendering APIs are useful for expressive strategy maps.
 
-However, the current physics API appears to model only 2D position and 2D velocity. It has no first-class `z`, `altitude`, `verticalVelocity`, `heightExtent`, `terrainHeight`, or altitude-aware collision query contract. A Rusted Warfare-style RTS can fake this in Lua, but then the engine is no longer the shared spatial authority for projectiles, aircraft, ballistic impacts, shadows, and collision filtering.
+However, the current physics API appears to model only 2D position and 2D velocity. It has no first-class `z`, `altitude`, `verticalVelocity`, `heightExtent`, `terrainHeight`, or altitude-aware collision query contract. A classic large-scale RTS can fake this in Lua, but then the engine is no longer the shared spatial authority for projectiles, aircraft, ballistic impacts, shadows, and collision filtering.
 
 ## Needed implementation: 2.5D physics layer
 
@@ -86,102 +169,13 @@ Add an optional altitude layer to the physics subsystem. This should be explicit
 
 ### Proposed Lua API
 
-```lua
-local altitude = lurek.physics.newAltitudeLayer({
-  width = mapWidth,
-  height = mapHeight,
-  cellSize = 16,
-  defaultGroundHeight = 0,
-})
 
-altitude:setCellHeight(cx, cy, 12)
-altitude:getCellHeight(cx, cy)
-altitude:sampleHeight(x, y)
-altitude:setCellClearance(cx, cy, 24)
-altitude:sampleClearance(x, y)
-
-world:setAltitudeLayer(altitude)
-world:getAltitudeLayer()
-
-body:setAltitude(0)
-body:getAltitude()
-body:setVerticalVelocity(0)
-body:getVerticalVelocity()
-body:setHeightExtent(18)
-body:getHeightExtent()
-body:setAltitudeMode("ground") -- ground | airborne | ballistic | fixed
-body:getAltitudeMode()
-body:setVerticalGravity(-480)
-body:getVerticalGravity()
-body:setClearanceClass("ground") -- ground | hover | air | projectile | custom
-body:getClearanceClass()
-body:getWorldZRange() -- zMin, zMax
-body:setAltitudeCollision({
-  enabled = true,
-  collideWhenSeparated = false,
-  hitGroundWhenBelowTerrain = true,
-})
-
-world:queryAltitudeOverlap(x, y, radius, zMin, zMax, filter)
-world:castCircle2_5d({
-  x = x,
-  y = y,
-  z = z,
-  radius = radius,
-  height = height,
-  dx = dx,
-  dy = dy,
-  dz = dz,
-  filter = filter,
-})
-
-world:castBallisticArc({
-  from = { x = sx, y = sy, z = sz },
-  to = { x = tx, y = ty, z = tz },
-  speed = 260,
-  gravity = -480,
-  radius = 3,
-  maxTime = 4,
-  sampleDt = 1 / 30,
-  filter = projectileFilter,
-})
-
-world:spawnBallisticProjectile({
-  owner = unitId,
-  from = { x = sx, y = sy, z = muzzleZ },
-  target = { x = tx, y = ty, z = targetZ },
-  speed = 260,
-  gravity = -480,
-  radius = 3,
-  splashRadius = 48,
-  layer = PROJECTILE_LAYER,
-  mask = UNIT_MASK | TERRAIN_MASK,
-})
-
-world:drawAltitudeDebug({
-  showBodyRanges = true,
-  showProjectileArcs = true,
-  showTerrainSamples = true,
-})
-```
 
 ### Contact and hit payload additions
 
 Altitude-aware hits should extend existing collision/query results without breaking older code:
 
-```lua
-{
-  body_id = id,
-  point = { x = x, y = y },
-  normal = { x = nx, y = ny },
-  toi = toi,
-  z = impactZ,
-  targetZMin = zMin,
-  targetZMax = zMax,
-  groundHeight = groundHeight,
-  hitKind = "body", -- body | terrain | ground | expired
-}
-```
+
 
 ### Collision semantics
 
@@ -197,62 +191,13 @@ Altitude-aware hits should extend existing collision/query results without break
 
 ### Unit definition
 
-```lua
-{
-  id = "tank_medium",
-  name = "Medium Tank",
-  movement = "tracked",
-  footprint = { radius = 13 },
-  altitude = { mode = "ground", height = 18, clearanceClass = "ground" },
-  maxSpeed = 64,
-  turnRate = 4.0,
-  acceleration = 180,
-  health = 450,
-  armor = "vehicle",
-  visionRadius = 220,
-  radarSignature = 1.0,
-  weapons = { "cannon_75mm" },
-  build = { cost = 320, time = 18, factory = "vehicle_factory" },
-  sprites = { body = "tank_body", turret = "tank_turret", shadow = "tank_shadow" },
-}
-```
+
 
 ### Weapon definition
 
-```lua
-{
-  id = "artillery_shell",
-  type = "ballistic",
-  range = 620,
-  reload = 4.2,
-  muzzleZ = 20,
-  targetPolicy = "ground_or_structure",
-  projectile = {
-    speed = 260,
-    gravity = -480,
-    radius = 3,
-    splashRadius = 56,
-    damage = 140,
-    damageFalloff = "linear",
-    collideWith = { "terrain", "ground_units", "structures" },
-  },
-}
-```
+
 
 ### Map cell facts
-
-```lua
-{
-  terrain = "grass",
-  movementCost = { ground = 1.0, hover = 1.0, naval = nil, air = 1.0 },
-  buildable = true,
-  groundHeight = 0,
-  clearance = 0,
-  resource = nil,
-  blocksVision = false,
-  radarPenalty = 0,
-}
-```
 
 ## Simulation architecture
 
@@ -277,26 +222,6 @@ Altitude-aware hits should extend existing collision/query results without break
 4. Draw airborne units and projectiles with altitude-adjusted sprite offsets.
 5. Draw explosions, trails, muzzle flashes, and smoke.
 6. Draw selection rings, health bars, command lines, build previews, fog, radar, minimap, and UI.
-
-## Vertical slice
-
-The first playable slice should prove the 2.5D requirement, not just generic RTS control.
-
-- One small skirmish map with ground height samples, cliffs, ramps, and resource points.
-- One builder, one factory, one tank, one artillery unit, one aircraft, one turret, and one HQ.
-- Ground units path around blockers.
-- Aircraft pass over ground blockers and cast altitude-aware shadows.
-- Artillery shells arc over low obstacles, collide with high terrain or valid target altitude, and produce splash damage.
-- Direct-fire cannon projectiles use swept circle 2D checks plus altitude filtering.
-- Fog of war, minimap pings, basic enemy AI, and save/load work.
-- Debug overlay can show XY colliders, altitude ranges, terrain height samples, projectile arcs, and impact kind.
-
-## Technical risks
-
-- If altitude remains script-only, Lua systems must duplicate physics filtering, projectile collision, terrain impact, and debug visualization. That will make large RTS simulations harder to optimize and harder to keep deterministic.
-- If the engine tries to solve this as full 3D physics, the feature will become too broad and conflict with the runtime-only 2D scope of the design library.
-- Ballistic projectiles need deterministic sampling and a predictable maximum number of substeps to avoid frame-dependent hits.
-- Large battles require stable data-oriented update patterns. The altitude layer should be cheap metadata plus query helpers, not one full rigid body per shell fragment or visual-only effect.
 
 ## Acceptance criteria for engine support
 

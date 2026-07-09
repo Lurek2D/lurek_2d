@@ -1,69 +1,37 @@
-# `battle` — Agent Reference (Lureksome)
+# `battle` - Agent Reference
 
 | Property | Value |
-|----------|-------|
-| **Tier** | Tier 3 — Lureksome (pure Lua, no Rust dependencies) |
-| **Source** | `library/battle/init.lua` |
-| **Lua Tests** | `tests/lua/library/test_library_battle.lua` |
-| **Depends on** | `lurek.*` public API only |
+| --- | --- |
+| Tier | Tier 3 - Lureksome (pure Lua) |
+| Source | `library/battle/init.lua` |
+| Lua tests | `tests/lua/library/test_battle_library.lua` |
+| Status | full |
+| Optional bindings | `lurek.math.newRandomGenerator` |
 
-## Summary
+## Purpose
 
-Turn-based battle engine with combatants, initiative ordering, named combat
-actions, status effects, and typed damage. `Combatant` stores HP, MP,
-resistances, active status effects, and a list of `CombatAction` instances
-with typed accessors for all stat fields. `CombatBattle` holds the combatant
-list, tracks turn order, logs events to an append-only log, and exposes
-resolution helpers such as `sortInitiative()` and `attack()`.
+Turn-based battle resolution with combatants, actions, status effects, typed
+damage, initiative sorting, battle logs, and winner detection.
 
-`CombatAction` owns one action blueprint: fire rate, accuracy, cooldown, HP
-and MP costs, damage values, and an extensible tag+metadata table. Tag methods
-(`addTag`, `removeTag`, `hasTag`, `getTags`) allow scripts to mark actions with
-arbitrary flags such as `"projectile"` or `"aoe"`. `StatusEffect` tracks a
-named effect with a turn-based duration, stack count, and its own metadata
-table; the `getMetadata`/`setMetadata` alias aligns naming with the Rust module.
-`M.DamageType` provides named constants (Physical, Fire, Ice, Lightning, Poison,
-Arcane, Heal, True, Custom) for use with `Combatant:takeDamage()`.
+## Current shape
 
-The library carries no GPU, audio, or engine state; all types are plain Lua
-tables usable in headless test VMs.
+- `newCombatant(name)` creates a combatant with HP, MP, stats, resistances,
+  status effects, actions, and metadata.
+- `newAction(name)` creates an action with damage, accuracy, cooldown, HP/MP
+  costs, tags, and metadata.
+- `newStatusEffect(name, duration)` creates a stackable timed status entry.
+- `newBattle(name)` owns combatants, logs, turn order, and `attack()` /
+  `resolve()` helpers.
 
-## Architecture
+## Engine integration
 
-```
-CombatBattle (round orchestration)
-  │
-  ├── combatants[]: Combatant  (sorted by speed for initiative)
-  ├── turn_index: number
-  └── log[]: string
+- The library remains portable without engine bindings.
+- Module RNG may delegate to `lurek.math.newRandomGenerator`.
+- `battle.setDefaultRng(rng)` sets the default RNG for new battles.
+- `battle:setRng(rng)` overrides RNG per battle instance.
 
-Combatant
-  │
-  ├── stats: { name → value }      (getStat / setStat)
-  ├── resistances: { dtype → factor }
-  ├── status_effects[]: StatusEffect
-  │     ├── name, duration, stacks
-  │     └── metadata: { key → value }  (getMeta / getMetadata)
-  └── actions[]: CombatAction
-        ├── damage, accuracy, cooldown, cost_hp, cost_mp
-        ├── tags: { tag → true }    (addTag / removeTag / hasTag)
-        └── metadata: { key → value }  (getMeta / setMeta)
+## Notes
 
-M.DamageType  ──  Physical | Fire | Ice | Lightning | Poison | Arcane | Heal | True | Custom
-```
-
-## Source Files
-
-| File | Purpose |
-|------|---------|
-| `library/battle/init.lua` | Full implementation — Combatant, CombatBattle, CombatAction, StatusEffect, DamageType |
-
-## Key Types
-
-| Type | Constructor | Purpose |
-|------|-------------|--------|
-| `Combatant` | `M.newCombatant(name)` | Combatant with HP, MP, stats, status effects, and resistances |
-| `CombatBattle` | `M.newBattle(name)` | Turn-order container; holds combatants and drives round execution |
-| `CombatAction` | `M.newAction(name)` | Named action with damage, cooldown, accuracy, tags, and metadata |
-| `StatusEffect` | `M.newStatusEffect(name, duration)` | Timed status modifier with stacks, duration, and metadata |
-| `M.DamageType` | enum table | Named damage type constants used with `takeDamage()` |
+- Public API is compatibility-sensitive; keep constructor names, method names,
+  and return shapes stable.
+- `math.random` is still the fallback when no engine RNG is available.

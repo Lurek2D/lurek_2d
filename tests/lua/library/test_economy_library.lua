@@ -194,7 +194,7 @@ describe("Modifier", function()
         expect_equal(m:isExpired(), false)
     end)
 
-    -- @library LScheduler:getRemaining
+    -- @library lurek.library_economy
     it("expires after duration", function()
         local m = eco.newModifier("multiply", 1.5, 3, "potion")
         expect_equal(m:isExpired(), false)
@@ -226,9 +226,9 @@ end)
 
 -- @describe ConversionRule
 describe("ConversionRule", function()
-    -- @library LGraphEdge:getFrom
-    -- @library LGraphEdge:getTo
-    -- @library LGraphEdge:isOnCooldown
+    -- @library lurek.library_economy
+    -- @library lurek.library_economy
+    -- @library lurek.library_economy
     it("creates with defaults", function()
         local rule = eco.newConversionRule("gold", "gems", 0.1)
         expect_equal(rule:getFrom(), "gold")
@@ -238,8 +238,8 @@ describe("ConversionRule", function()
         expect_equal(rule:isOnCooldown(), false)
     end)
 
-    -- @library LGraphEdge:isOnCooldown
-    -- @library LGraphEdge:setCooldown
+    -- @library lurek.library_economy
+    -- @library lurek.library_economy
     it("cooldown cycle", function()
         local rule = eco.newConversionRule("a", "b", 1)
         rule:setCooldown(5)
@@ -251,7 +251,7 @@ describe("ConversionRule", function()
         expect_equal(rule:isOnCooldown(), false)
     end)
 
-    -- @library LTraitProfile:addModifier
+    -- @library lurek.library_economy
     it("effectiveRate with modifiers", function()
         local rule = eco.newConversionRule("a", "b", 10)
         rule:addModifier(eco.newModifier("add", 5, -1, ""))
@@ -260,7 +260,7 @@ describe("ConversionRule", function()
         expect_equal(rule:effectiveRate(), 30)
     end)
 
-    -- @library LTraitProfile:addModifier
+    -- @library lurek.library_economy
     it("effectiveRate set modifier wins", function()
         local rule = eco.newConversionRule("a", "b", 10)
         rule:addModifier(eco.newModifier("add", 5, -1, ""))
@@ -268,7 +268,7 @@ describe("ConversionRule", function()
         expect_equal(rule:effectiveRate(), 42)
     end)
 
-    -- @library LTraitProfile:addModifier
+    -- @library lurek.library_economy
     it("expired modifiers ignored", function()
         local rule = eco.newConversionRule("a", "b", 10)
         local m = eco.newModifier("add", 100, 1, "")
@@ -277,7 +277,7 @@ describe("ConversionRule", function()
         expect_equal(rule:effectiveRate(), 10) -- only base
     end)
 
-    -- @library LTraitProfile:addModifier
+    -- @library lurek.library_economy
     it("removeModifier and clearModifiers", function()
         local rule = eco.newConversionRule("a", "b", 10)
         rule:addModifier(eco.newModifier("add", 1, -1, ""))
@@ -355,7 +355,7 @@ describe("ResourceManager", function()
         expect_equal(mgr:getValue("gems"), 10)
     end)
 
-    -- @library LGraphEdge:setCooldown
+    -- @library lurek.library_economy
     it("conversion fails on cooldown", function()
         local mgr = eco.newManager()
         mgr:newResource("gold", 1000)
@@ -393,7 +393,7 @@ describe("ResourceManager", function()
         expect_equal(mgr:getValue("gold"), 110)
     end)
 
-    -- @library LGraphEdge:setCooldown
+    -- @library lurek.library_economy
     it("tick advances cooldowns", function()
         local mgr = eco.newManager()
         mgr:newResource("gold", 1000)
@@ -556,8 +556,8 @@ end)
 
 -- @describe ConversionRule (extra coverage)
 describe("ConversionRule (extra coverage)", function()
-    -- @library LGraphEdge:getCooldown
-    -- @library LGraphEdge:setCooldown
+    -- @library lurek.library_economy
+    -- @library lurek.library_economy
     it("getCooldown returns configured cooldown", function()
         local rule = eco.newConversionRule("a", "b", 1)
         rule:setCooldown(3)
@@ -572,8 +572,8 @@ describe("ConversionRule (extra coverage)", function()
         expect_equal(rule:effectiveRate(), 5)
     end)
 
-    -- @library LGraphEdge:isOnCooldown
-    -- @library LGraphEdge:setCooldown
+    -- @library lurek.library_economy
+    -- @library lurek.library_economy
     it("resetCooldown clears mid-cooldown timer", function()
         local rule = eco.newConversionRule("a", "b", 1)
         rule:setCooldown(10)
@@ -731,7 +731,7 @@ describe("Bug-fix regressions", function()
         expect_equal(r:getValue(), 10)
     end)
 
-    -- @library LTraitProfile:addModifier
+    -- @library lurek.library_economy
     it("effectiveRate short-circuits on set modifier", function()
         local rule = eco.newConversionRule("a", "b", 10)
         rule:addModifier(eco.newModifier("add", 100, -1, "big_add"))
@@ -741,7 +741,7 @@ describe("Bug-fix regressions", function()
         expect_equal(rule:effectiveRate(), 7)
     end)
 
-    -- @library LTraitProfile:addModifier
+    -- @library lurek.library_economy
     it("expired set modifier does not override rate", function()
         local rule = eco.newConversionRule("a", "b", 10)
         local m = eco.newModifier("set", 999, 1, "temp_override")
@@ -751,7 +751,7 @@ describe("Bug-fix regressions", function()
         expect_equal(rule:effectiveRate(), 10)
     end)
 
-    -- @library LTraitProfile:addModifier
+    -- @library lurek.library_economy
     it("effectiveRate with mixed expired set and live add", function()
         local rule = eco.newConversionRule("a", "b", 10)
         local set_mod = eco.newModifier("set", 999, 1, "expired_set")

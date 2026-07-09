@@ -4,7 +4,7 @@
 |----------|-------|
 | **Tier** | Tier 3 — Lureksome (pure Lua, no Rust dependencies) |
 | **Source** | `library/combat/init.lua` |
-| **Lua Tests** | `tests/lua/library/test_library_combat.lua` |
+| **Lua Tests** | `tests/lua/library/test_combat_library.lua` |
 | **Depends on** | `lurek.*` public API only |
 
 ## Summary

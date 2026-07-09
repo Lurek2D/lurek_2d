@@ -1,23 +1,29 @@
 # inventory
 
-A slot-based inventory system with item stacks, weighted bags, and equipment slots. Supports transfer between containers, save/load serialization, and an event bus for pick-up, drop, and equip notifications.
+A pure-Lua inventory library with items, item stacks, slots, containers,
+equipment slots, item sets, and top-level inventory helpers.
 
 ## Usage
 
 ```lua
-local inventory = require("library/inventory")
+local inventory = require("library.inventory")
 
-local bag = inventory.Container.new({ slots = 20, max_weight = 50 })
-local sword = inventory.InvItem.new({ id = "iron_sword", weight = 3.5 })
+local bag = inventory.newContainer("bag", "fixed", 5)
+local sword = inventory.newItem("sword")
+bag:addItem(sword, 1)
 
-bag:add(sword)
-print("Items:", bag:count())
+local inv = inventory.newInventory()
+inv:addContainer("bag", bag)
 
-local equip = inventory.Equipment.new({ slots = { "weapon", "armor", "ring" } })
-equip:equip("weapon", sword)
-print("Weapon:", equip:get("weapon").id)
+local mainHand = inventory.newSlot("weapon", inventory.SlotState.Active)
+inv:addEquipSlot("main_hand", mainHand)
+inv:equip("main_hand", inventory.newItemStack(sword, 1, 1))
+
+print(inv:countItem("sword"))
 ```
 
-## Dependencies
+## Optional bindings
 
-- `lurek.serializeize` (optional), `lurek.save.SaveManager` (optional)
+- `lurek.patterns.newEventBus`: used by `inventory:getEventBus()` when available.
+- `lurek.serialize.toJson/fromJson`: recommended for save payloads.
+- `lurek.save.SaveManager`: recommended host for persistence collectors.

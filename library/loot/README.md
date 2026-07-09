@@ -1,28 +1,31 @@
 # loot
 
-A weighted random loot system using the Walker-Vose alias method for O(1) draws. Supports drop sets, pity timers (guaranteed drop after N misses), and per-roll modifiers (luck bonuses, item-type multipliers). Table data can be loaded from TOML files.
+A weighted loot library with loot tables, drop sets, pity tracking, and
+modifier views. It uses public `lurek.math` backends when they can preserve
+the legacy `library.loot` API, and keeps a pure Lua fallback for portability.
 
 ## Usage
 
 ```lua
-local loot = require("library/loot")
+local loot = require("library.loot")
 
-local table = loot.LootTable.new({
-    { item = "gold_coin",  weight = 60 },
-    { item = "iron_sword", weight = 25 },
-    { item = "rare_gem",   weight = 10 },
-    { item = "epic_ring",  weight =  5 },
+local tbl = loot.fromList({
+    { "gold_coin", 60 },
+    { "iron_sword", 25, { rarity = "common" } },
+    { "epic_ring", 5, { rarity = "epic" } },
 })
 
-local rng = lurek.math.newRandomGenerator(os.time())
-local drop = table:roll(rng)
-print("Dropped:", drop.item)
+local pity = loot.newPity("epic_ring", 50)
+local id, meta = tbl:sample()
+local guaranteed = pity:notice(id)
 
--- Pity: guarantees epic_ring after 50 misses
-local pity = loot.Pity.new({ item = "epic_ring", max_misses = 50 })
-drop = table:rollWithPity(rng, pity)
+print(id, meta and meta.rarity, guaranteed)
 ```
 
-## Dependencies
+## Optional bindings
 
-- `lurek.math.newRandomGenerator` (required), `lurek.save` (optional for pity persistence)
+- `lurek.math.newLootTable`, `lootFromList`, `lootFromToml`: engine-backed loot
+  sampling and TOML loading.
+- `lurek.math.newPityTracker`, `sampleWithPity`: engine-backed pity handling.
+- `lurek.math.newRandomGenerator`: module default RNG.
+- `lurek.serialize.fromToml`, `lurek.filesystem.read`: TOML file loading.

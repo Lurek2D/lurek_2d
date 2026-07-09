@@ -461,14 +461,14 @@ end)
 
 -- @describe CraftSkill
 describe("CraftSkill", function()
-    -- @library LRelationshipManager:getLevel
+    -- @library lurek.library_crafting
     it("create and getLevel", function()
         local sk = C.newCraftSkill("smithing")
         expect_equal(sk:getLevel(), 1)
         expect_equal(sk:getXP(), 0)
     end)
 
-    -- @library LRelationshipManager:getLevel
+    -- @library lurek.library_crafting
     it("addXP gains levels", function()
         local sk = C.newCraftSkill("smithing")
         -- Level 1 requires 100 XP (linear: level * 100)
@@ -550,7 +550,7 @@ end)
 
 -- @describe UpgradeTree
 describe("UpgradeTree", function()
-    -- @library LGraph:addNode
+    -- @library lurek.library_crafting
     it("add and get nodes", function()
         local tree = C.newUpgradeTree("root")
         local n1 = C.newUpgradeNode("root")
@@ -562,7 +562,7 @@ describe("UpgradeTree", function()
         expect_equal(tree:getNode("branch_a").id, "branch_a")
     end)
 
-    -- @library LGraph:addNode
+    -- @library lurek.library_crafting
     it("availableUpgrades filters by level and unlocked", function()
         local tree = C.newUpgradeTree("root")
         tree:addNode(C.newUpgradeNode("a"))
@@ -678,8 +678,8 @@ describe("CraftSkill specializations", function()
         expect_equal(false, sk:chooseSpecialization("armorsmith"))
     end)
 
-    -- @library LRelationshipManager:getLevel
-    -- @library LRelationshipManager:setLevel
+    -- @library lurek.library_crafting
+    -- @library lurek.library_crafting
     it("setLevel force-sets level and resets XP to 0", function()
         local sk = C.newCraftSkill("smithing")
         sk:addXP(150)  -- gains at least 1 level
@@ -703,7 +703,7 @@ describe("CraftSkill specializations", function()
         expect_near(0.02, sk:getYieldBonus(),   0.001)
     end)
 
-    -- @library LRelationshipManager:setLevel
+    -- @library lurek.library_crafting
     it("recipeColor returns grey for recipe with no thresholds", function()
         local sk = C.newCraftSkill("smithing")
         sk:setLevel(1)
@@ -712,7 +712,7 @@ describe("CraftSkill specializations", function()
         expect_near(0.0, sk:skillUpChance(recipe), 0.001)
     end)
 
-    -- @library LRelationshipManager:setLevel
+    -- @library lurek.library_crafting
     it("recipeColor returns orange and skillUpChance is 1.0 for hard recipe", function()
         local sk = C.newCraftSkill("smithing")
         sk:setLevel(1)
@@ -832,7 +832,7 @@ end)
 
 -- @describe UpgradeTree getAllNodes
 describe("UpgradeTree getAllNodes", function()
-    -- @library LGraph:addNode
+    -- @library lurek.library_crafting
     it("returns all nodes in insertion order", function()
         local tree = C.newUpgradeTree("weapons")
         tree:addNode(C.newUpgradeNode("basic"))

@@ -1,28 +1,30 @@
 # stats
 
-A full RPG character stat sheet with attributes, buffs/debuffs, skills, perks, action points, morale, and level thresholds. Supports archetype templates (race, class) that seed a new Sheet with base values, and serialization to JSON for save files.
+A pure-Lua character-stats library with attributes, buffs, thresholds, traits,
+skills, perks, action points, morale, and snapshot helpers.
 
 ## Usage
 
 ```lua
-local stats = require("library/stats")
+local stats = require("library.stats")
 
-local sheet = stats.Sheet.new()
-sheet:applyArchetype(stats.ARCHETYPES.warrior)
+local sheet = stats.newSheet()
+sheet:define("hp", 100, { min = 0, max = 200, regen = 5 })
+sheet:define("str", 10)
+sheet:addBuff("str", 5, 1, -1, "blessing")
 
-print("STR:", sheet:get("strength"))    -- base + racial + class bonuses
+local ap = stats.newActionPoints(6)
+ap:spend(2)
 
-local rage = stats.Buff.new({ name = "Rage", stat = "strength", amount = 10, duration = 5.0 })
-sheet:applyBuff(rage)
-
-sheet:useActionPoints(2)
-print("AP left:", sheet:getActionPoints())
-
-function lurek.update(dt)
-    sheet:tick(dt)   -- drains buff durations, recovers morale
-end
+local snap = sheet:snapshot()
+print(sheet:get("str"), ap.current, snap.attributes.hp.base)
 ```
 
-## Dependencies
+## Optional bindings
 
-- `lurek.math.clamp/lerp` (optional), `lurek.serializeize` (optional)
+- `lurek.math.clamp`: preferred clamp backend when both bounds are present.
+- `lurek.serialize.toJson/fromJson`: used by `snapshotToJson()` and
+  `snapshotFromJson()`.
+
+The JSON helpers preserve snapshot round-trips for open-ended bounds such as
+`math.huge`.

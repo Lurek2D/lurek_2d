@@ -47,6 +47,17 @@ describe("LootTable.sample distribution", function()
         tbl:sample()
         expect_equal(false, tbl._dirty)
     end)
+
+    -- @library lurek.library_loot
+    it("uses Lurek loot backend when available without a custom RNG", function()
+        if not (lurek and lurek.math and lurek.math.newLootTable) then return end
+        loot.setDefaultRng(nil)
+        local tbl = loot.fromList({ { id = "engine", weight = 1, meta = { tier = "rare" } } })
+        local id, meta = tbl:sample()
+        expect_equal("engine", id)
+        expect_equal("rare", meta.tier)
+        expect_not_nil(tbl._engine)
+    end)
 end)
 
 -- @describe LootTable.sampleN unique

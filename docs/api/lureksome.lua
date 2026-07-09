@@ -57,6 +57,7 @@ Combatant = {}
 ---@field public over boolean
 ---@field public winner_team any
 ---@field public log table
+---@field public rng any
 CombatBattle = {}
 
 ---@class CollisionGroupSet
@@ -294,6 +295,15 @@ Skill = {}
 
 ---@class library.battle
 library.battle = {}
+
+--- Install the module default RNG used by new battles without their own RNG.
+---@param rng userdata|table|nil
+---@return nil
+function library.battle.setDefaultRng(rng) end
+
+--- Return the module default RNG, resolving `lurek.math.newRandomGenerator` lazily.
+---@return userdata|table|nil
+function library.battle.getDefaultRng() end
 
 --- Create a new status effect.
 ---@param name string
@@ -618,6 +628,11 @@ function CombatBattle:getWinner(auto_detect) end
 --- Returns the battle log as an array of strings.
 ---@return table
 function CombatBattle:getLog() end
+
+--- Set the RNG used by this battle's probabilistic actions.
+---@param rng userdata|table|nil
+---@return CombatBattle
+function CombatBattle:setRng(rng) end
 
 --- Add a log entry.
 ---@param msg string
@@ -1394,7 +1409,7 @@ function library.crafting.newModifierEntry(name, weight) end
 ---@return ModifierPool
 function library.crafting.newModifierPool() end
 
---- Select a random weighted modifier entry (non-deterministic).
+--- Select a random weighted modifier entry.
 ---@return ModifierEntry|nil
 function ModifierPool:roll() end
 
@@ -4349,7 +4364,7 @@ function QuestLog:completedCount() end
 ---@return boolean
 function Objective:removeTag(tag) end
 
---- Encode a `QuestLog` to a JSON string via `lurek.serializeize.toJson`.
+--- Encode a `QuestLog` to a JSON string via `lurek.serialize.toJson`.
 ---@param log QuestLog
 ---@return string
 function library.quest.toJson(log) end
@@ -4487,7 +4502,7 @@ function GoalMap:addSource(x, y, w) end
 ---@return GoalMap
 function GoalMap:clearSources() end
 
---- Bake the Dijkstra distance field from the current sources. Delegates to `lurek.pathfind.dijkstra` when available; falls back to a pure-Lua 4-neighbour BFS otherwise.
+--- Bake the Dijkstra distance field from the current sources. Delegates to `lurek.pathfind.newGoalMap` when available; falls back to a pure-Lua 4-neighbour BFS otherwise.
 ---@return GoalMap
 function GoalMap:bake() end
 
@@ -4927,12 +4942,12 @@ function Sheet:snapshot() end
 ---@return nil
 function Sheet:restore(snap) end
 
---- Encode a snapshot table to a JSON string via `lurek.serializeize.toJson`.
+--- Encode a snapshot table to a JSON string via `lurek.serialize.toJson`.
 ---@param snap table
 ---@return string
 function library.stats.snapshotToJson(snap) end
 
---- Decode a JSON snapshot string back into a Lua table via `lurek.serializeize.fromJson`. The returned table can be passed to `Sheet:restore`.
+--- Decode a JSON snapshot string back into a Lua table via `lurek.serialize.fromJson`. The returned table can be passed to `Sheet:restore`.
 ---@param str string
 ---@return table
 function library.stats.snapshotFromJson(str) end

@@ -1,25 +1,37 @@
 # battle
 
-A pure-Lua turn-based combat engine. Models combatants with status effects, combat actions (attack, skill, item, flee), and full battle resolution including damage rolls, buffs, debuffs, and victory detection.
+A pure-Lua turn-based battle library with combatants, actions, status effects,
+initiative ordering, typed damage, and battle resolution.
 
 ## Usage
 
 ```lua
-local battle = require("library/battle")
+local battle = require("library.battle")
 
-local hero  = battle.Combatant.new({ name = "Hero",  hp = 100, atk = 20, def = 5 })
-local enemy = battle.Combatant.new({ name = "Slime", hp =  40, atk = 10, def = 2 })
+local hero = battle.newCombatant("hero")
+hero:setTeam("player")
 
-local b = battle.CombatBattle.new({ hero, enemy })
-b:start()
-while not b:isOver() do
-    b:queueAction(hero, battle.CombatAction.attack(enemy))
-    b:queueAction(enemy, battle.CombatAction.attack(hero))
-    b:resolveTurn()
-end
-print("Winner:", b:winner().name)
+local slash = battle.newAction("slash")
+slash:setBaseDamage(12)
+slash:setAccuracy(0.95)
+hero:addAction(slash)
+
+local goblin = battle.newCombatant("goblin")
+goblin:setTeam("enemy")
+goblin:setHp(30)
+
+local arena = battle.newBattle("arena")
+arena:addCombatant(hero)
+arena:addCombatant(goblin)
+
+local result = arena:attack("hero", "slash", "goblin")
+print(result and result.hit, goblin:getHp())
 ```
 
-## Dependencies
+## Optional bindings
 
-- `lurek.math` (optional), `lurek.event` (optional)
+- `lurek.math.newRandomGenerator`: module default RNG via
+  `battle.setDefaultRng(rng)` and per-battle RNG via `battle:setRng(rng)`.
+
+The library stays portable without engine bindings and falls back to
+`math.random`.

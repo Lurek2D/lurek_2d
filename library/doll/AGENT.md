@@ -1,52 +1,33 @@
-# Doll Library
+# `doll` - Agent Reference
 
-**Tier**: 3 — Lureksome (Pure Lua)
-**Status**: full
-**Path**: `library/doll/`
-**Optional bindings**: `lurek.render` (caller-side renderer for `getDrawList()` entries), `lurek.image` (texture loader for `Part:setTexture`)
+| Property | Value |
+| --- | --- |
+| Tier | Tier 3 - Lureksome (pure Lua) |
+| Source | `library/doll/init.lua` |
+| Lua tests | `tests/lua/library/test_doll_library.lua` |
+| Status | full |
+| Optional bindings | caller-side `lurek.render`, caller-side `lurek.image` |
 
-## P7 batch B note
+## Purpose
 
-The legacy `Doll:draw()` method previously dereferenced an undefined global
-`lurek` and a non-existent namespace `lurek.render` (init.lua line 405). It is
-now a deprecated one-time-warning no-op. Library code does not call render
-APIs directly — callers must iterate `Doll:getDrawList()` and dispatch the
-entries to `lurek.render` (or any other renderer) themselves.
+Socket-based 2D visual composition for layered characters, equipment, vehicles,
+and other modular visuals.
 
-## Responsibility
+## Current shape
 
-Socket-based visual composition for 2D characters. A DollTemplate defines
-named sockets (attachment points with position, rotation, and draw order).
-A Doll instance attaches Part visuals to sockets and produces a z-sorted
-draw list with world-space transforms.
+- `newPart()` creates a visual part with texture, quad, offsets, color, scale,
+  flips, origin, and metadata.
+- `newTemplate(name)` defines sockets via `addSocket(...)`.
+- `newDoll(template)` attaches parts to sockets and emits `getDrawList()`.
 
-## Key Types
+## Engine integration
 
-| Type           | Constructor           | Purpose                                                 |
-| -------------- | --------------------- | ------------------------------------------------------- |
-| `Part`         | `M.newPart()`         | Visual element with texture, quad, offset, scale, color |
-| `DollTemplate` | `M.newTemplate(name)` | Socket layout blueprint                                 |
-| `Doll`         | `M.newDoll(template)` | Runtime instance — attach/detach parts, get draw list   |
+- Rendering is caller-owned. The library does not drive render APIs directly.
+- `Doll:draw()` is deprecated and intentionally a no-op with a warning.
+- Games should iterate `getDrawList()` and dispatch those entries to
+  `lurek.render` or another renderer.
 
-## API Surface
+## Notes
 
-```lua
-local Doll = require("library.doll")
-
-local template = Doll.newTemplate("player")
-template:addSocket({ name = "body", x = 0, y = 0, drawOrder = 0 })
-template:addSocket({ name = "head", x = 0, y = -20, drawOrder = 1 })
-
-local doll = Doll.newDoll(template)
-doll:attach("body", Doll.newPart({ partType = "armor" }))
-local drawList = doll:getDrawList()
-```
-
-## Dependencies
-
-- None (pure Lua, optionally calls `lurek.render` in `draw()`)
-
-## Tests
-
-- `tests/lua/library/test_library_doll.lua` — BDD test suite (Part, DollTemplate, Doll, getDrawList, hot-swap)
-- Harness entry: `lua_test_library_doll` in `tests/lua/harness.rs`
+- Preserve `getDrawList()` as the primary rendering contract.
+- Do not reintroduce direct rendering inside the library.

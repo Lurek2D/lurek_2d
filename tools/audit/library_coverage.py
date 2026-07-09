@@ -187,7 +187,9 @@ def _bare_name(full_name: str) -> str:
 def audit_library(lib_name: str) -> dict:
     """Audit one library and return a metrics dict."""
     init_lua = LIB_DIR / lib_name / "init.lua"
-    test_lua = TEST_LIB_DIR / f"test_library_{lib_name}.lua"
+    test_lua = TEST_LIB_DIR / f"test_{lib_name}_library.lua"
+    if not test_lua.exists():
+        test_lua = TEST_LIB_DIR / f"test_library_{lib_name}.lua"
 
     result: dict = {
         "library": lib_name,

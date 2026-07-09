@@ -21,6 +21,42 @@ local table_unpack = table.unpack or unpack
 local floor, abs   = math.floor, math.abs
 local huge         = math.huge
 
+local function _pathfind_api()
+    if type(lurek) == "table" and type(lurek.pathfind) == "table" then
+        return lurek.pathfind
+    end
+    return nil
+end
+
+local function _awareness_api()
+    if type(lurek) == "table" and type(lurek.awareness) == "table" then
+        return lurek.awareness
+    end
+    return nil
+end
+
+local function _new_engine_fov(opts)
+    local api = _awareness_api()
+    if not api or type(api.newFov) ~= "function" then return nil end
+    local engine_opts = {
+        range = opts.range or 8,
+        light_walls = opts.light_walls ~= false,
+        width = opts.width or 256,
+        height = opts.height or 256,
+    }
+    local ok, fov = pcall(api.newFov, engine_opts)
+    if ok then return fov end
+    return nil
+end
+
+local function _new_engine_goal_map(width, height)
+    local api = _pathfind_api()
+    if not api or type(api.newGoalMap) ~= "function" then return nil end
+    local ok, goal = pcall(api.newGoalMap, width, height)
+    if ok then return goal end
+    return nil
+end
+
 -- ─── FOV (recursive shadowcasting) ──────────────────────────────────────────
 --
 -- Symmetric shadowcasting for square grids (Bjorn Bergstrom variant).
@@ -51,6 +87,8 @@ function M.newFov(opts)
         _explored    = {},          -- key(x,y) -> true
         _origin_x    = 0,
         _origin_y    = 0,
+        _engine      = _new_engine_fov(opts),
+        _engine_active = false,
     }, Fov)
 end
 
@@ -59,6 +97,13 @@ local function _key(x, y) return x * 100000 + y end
 --- Set a custom blocker function.
 function Fov:setBlocker(fn)
     self._blocker = fn
+    if self._engine and type(self._engine.setBlocker) == "function" then
+        pcall(function()
+            self._engine:setBlocker(function(x, y)
+                return fn(x, y)
+            end)
+        end)
+    end
     return self
 end
 
@@ -84,6 +129,14 @@ function Fov:attachTilemap(tilemap, layer, blocker_ids)
             id = row and row[x]
         end
         return id ~= nil and ids[id] == true
+    end
+    if self._engine and type(self._engine.setBlocker) == "function" then
+        local blocker = self._blocker
+        pcall(function()
+            self._engine:setBlocker(function(x, y)
+                return blocker(x, y)
+            end)
+        end)
     end
     return self
 end
@@ -152,6 +205,22 @@ function Fov:compute(ox, oy)
     self._visible = {}
     self._origin_x = ox
     self._origin_y = oy
+    if self._engine and ox >= 0 and oy >= 0 and type(self._engine.compute) == "function" then
+        local ok = pcall(function() self._engine:compute(ox, oy) end)
+        if ok then
+            self._engine_active = true
+            local ok_cells, cells = pcall(function() return self._engine:visibleCells() end)
+            if ok_cells and type(cells) == "table" then
+                for _, p in ipairs(cells) do
+                    local x, y = p.x or p[1], p.y or p[2]
+                    _set_visible(self, x, y)
+                end
+                return self
+            end
+        else
+            self._engine_active = false
+        end
+    end
     _set_visible(self, ox, oy)
     for _, oc in ipairs(_OCT) do
         _cast(self, 1, 1.0, 0.0, oc[1], oc[2], oc[3], oc[4])
@@ -179,6 +248,9 @@ end
 -- @treturn Fov self
 function Fov:resetExplored()
     self._explored = {}
+    if self._engine and type(self._engine.resetExplored) == "function" then
+        pcall(function() self._engine:resetExplored() end)
+    end
     return self
 end
 
@@ -389,13 +461,23 @@ function M.newGoalMap(width, height)
         _sources  = {},       -- {{x,y,weight}, ...}
         _dist     = nil,      -- 2D array dist[y][x] = number or nil
         _dirty    = true,
+        _engine   = _new_engine_goal_map(floor(width), floor(height)),
+        _engine_active = false,
     }, GoalMap)
 end
 
 --- Set a custom blocker predicate `fn(x, y) -> bool`.
 -- @param fn function|nil returns true for impassable cells (nil = allow all)
 -- @treturn GoalMap self
-function GoalMap:setBlocker(fn) self._blocker = fn or function() return false end; return self end
+function GoalMap:setBlocker(fn)
+    self._blocker = fn or function() return false end
+    self._dirty = true
+    if self._engine and type(self._engine.setBlocker) == "function" then
+        local blocker = self._blocker
+        pcall(function() self._engine:setBlocker(blocker) end)
+    end
+    return self
+end
 
 --- Attach to a tilemap layer, treating the supplied tile IDs as blockers.
 -- @param tilemap table|userdata tilemap with `:getTile(layer, x, y)` or table indexing
@@ -419,6 +501,11 @@ function GoalMap:attachTilemap(tilemap, layer, blocker_ids)
             id = row and row[x]
         end
         return id ~= nil and ids[id] == true
+    end
+    self._dirty = true
+    if self._engine and type(self._engine.setBlocker) == "function" then
+        local blocker = self._blocker
+        pcall(function() self._engine:setBlocker(blocker) end)
     end
     return self
 end
@@ -452,7 +539,33 @@ end
 function GoalMap:clearSources()
     self._sources = {}
     self._dirty = true
+    if self._engine and type(self._engine.clearSources) == "function" then
+        pcall(function() self._engine:clearSources() end)
+    end
     return self
+end
+
+local function _bake_engine_goal_map(self)
+    local engine = self._engine
+    if not engine then return false end
+    if type(engine.clearSources) ~= "function"
+       or type(engine.addSource) ~= "function"
+       or type(engine.bake) ~= "function" then
+        return false
+    end
+    local ok = pcall(function()
+        engine:clearSources()
+        if type(engine.setBlocker) == "function" then
+            engine:setBlocker(self._blocker)
+        end
+        for _, s in ipairs(self._sources) do
+            engine:addSource(s.x, s.y, s.w or 0)
+        end
+        engine:bake()
+    end)
+    self._engine_active = ok and true or false
+    if ok then self._dirty = false end
+    return ok and true or false
 end
 
 local function _bake_dijkstra(self)
@@ -493,29 +606,16 @@ local function _bake_dijkstra(self)
 end
 
 --- Bake the Dijkstra distance field from the current sources.
--- Delegates to `lurek.pathfind.dijkstra` when available; falls back to a
+-- Delegates to `lurek.pathfind.newGoalMap` when available; falls back to a
 -- pure-Lua 4-neighbour BFS otherwise.
 -- @treturn GoalMap self
 function GoalMap:bake()
     if #self._sources == 0 then
         error("GoalMap:bake: no sources set", 2)
     end
-    -- Try lurek.pathfind façade first (P1 advertised but signature varies).
-    local lp = lurek and lurek.pathfind
-    if type(lp) == "table" and type(rawget(lp, "dijkstra")) == "function" then
-        local ok, dist = pcall(function()
-            return rawget(lp, "dijkstra")({
-                width = self._w, height = self._h,
-                sources = self._sources, blocker = self._blocker,
-            })
-        end)
-        if ok and type(dist) == "table" then
-            self._dist = dist
-            self._dirty = false
-            return self
-        end
-    end
+    if _bake_engine_goal_map(self) then return self end
     _bake_dijkstra(self)
+    self._engine_active = false
     return self
 end
 
@@ -530,6 +630,13 @@ end
 -- @treturn number distance (or math.huge)
 function GoalMap:distanceAt(x, y)
     _ensure(self)
+    if self._engine_active and self._engine and type(self._engine.distanceAt) == "function" then
+        local ok, dist = pcall(function() return self._engine:distanceAt(x, y) end)
+        if ok then
+            if dist > 1000000000 then return huge end
+            return dist
+        end
+    end
     local row = self._dist[y]
     if not row then return huge end
     return row[x] or huge
@@ -556,14 +663,23 @@ end
 
 --- Unit step toward the nearest goal cell.
 function GoalMap:gradientAt(x, y)
+    _ensure(self)
+    if self._engine_active and self._engine and type(self._engine.gradientAt) == "function" then
+        local ok, dx, dy = pcall(function() return self._engine:gradientAt(x, y) end)
+        if ok then return dx, dy end
+    end
     return _step_toward(self, x, y, 1)
 end
 
 --- Unit step away from goals, scaled by `fear` (default 1.2).
 function GoalMap:flee(x, y, fear)
     fear = fear or 1.2
-    -- Invert the distance field locally and pick the steepest descent.
     _ensure(self)
+    if self._engine_active and self._engine and type(self._engine.flee) == "function" then
+        local ok, dx, dy = pcall(function() return self._engine:flee(x, y, fear) end)
+        if ok then return dx, dy end
+    end
+    -- Invert the distance field locally and pick the steepest descent.
     local cur = self:distanceAt(x, y)
     if cur == huge then return 0, 0 end
     local best_dx, best_dy = 0, 0

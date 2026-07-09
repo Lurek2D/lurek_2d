@@ -48,6 +48,36 @@ local function _log(level, msg)
     end
 end
 
+local _default_rng
+
+local function _new_lurek_rng()
+    if type(lurek) == "table" and type(lurek.math) == "table"
+       and type(lurek.math.newRandomGenerator) == "function" then
+        local ok, rng = pcall(lurek.math.newRandomGenerator)
+        if ok then return rng end
+    end
+    return nil
+end
+
+local function _rng_uniform(rng)
+    rng = rng or _default_rng
+    if rng and type(rng.random) == "function" then return rng:random() end
+    return math.random()
+end
+
+--- Install the module default RNG used by new battles without their own RNG.
+-- @param rng userdata|table|nil Object implementing `:random()` or nil to use Lurek/math fallback.
+function M.setDefaultRng(rng)
+    _default_rng = rng or _new_lurek_rng()
+end
+
+--- Return the module default RNG, resolving `lurek.math.newRandomGenerator` lazily.
+-- @treturn userdata|table|nil
+function M.getDefaultRng()
+    if not _default_rng then _default_rng = _new_lurek_rng() end
+    return _default_rng
+end
+
 ---------------------------------------------------------------------------
 -- StatusEffect
 ---------------------------------------------------------------------------
@@ -524,6 +554,7 @@ function M.newBattle(name)
     b.over        = false
     b.winner_team = nil
     b.log         = {}
+    b.rng         = nil
     return b
 end
 
@@ -550,6 +581,14 @@ end
 --- Returns the battle log as an array of strings.
 --- @treturn table
 function CombatBattle:getLog()    return self.log end
+
+--- Set the RNG used by this battle's probabilistic actions.
+-- @param rng userdata|table|nil Object implementing `:random()`, or nil for module default.
+-- @treturn CombatBattle self
+function CombatBattle:setRng(rng)
+    self.rng = rng
+    return self
+end
 
 --- Add a log entry.
 --- @tparam string msg
@@ -663,16 +702,13 @@ end
 --   local r = battle:attack("hero", "slash", "goblin")
 --   if r and r.hit then print(r.message) end
 function CombatBattle:attack(attacker_name, action_name, target_name)
-    -- TODO(P4 lift): switch to lurek.math.newRng() for seedable, deterministic
-    -- battle replays. Currently uses the global Lua RNG which makes saves
-    -- non-deterministic across reloads.
     local atk = self:getCombatant(attacker_name)
     if not atk then return nil end
     local action = atk:getAction(action_name)
     if not action then return nil end
     if not action:isReady() then return nil end
 
-    local hit = math.random() <= action.accuracy
+    local hit = _rng_uniform(self.rng or M.getDefaultRng()) <= action.accuracy
     local damage = hit and action.base_damage or 0
     local damage_type = action.damage_type
     action:useAction()

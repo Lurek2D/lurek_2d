@@ -3,12 +3,22 @@
 --- Crafting system: recipes, ingredients, outputs, job queues, stations,
 --- craft skills, perk trees, upgrade trees, modifier pools, and recipe knowledge.
 --- Pure-Lua port of src/crafting/.
---- @see lurek.serializeize
+--- @see lurek.serialize
 --- @see lurek.patterns
 --- @see lurek.event
 --- @see lurek.log
 
 local M = {}
+
+local function _new_weighted_random()
+    if type(lurek) ~= "table" or type(lurek.patterns) ~= "table"
+       or type(lurek.patterns.newWeightedRandom) ~= "function" then
+        return nil
+    end
+    local ok, pool = pcall(lurek.patterns.newWeightedRandom)
+    if ok then return pool end
+    return nil
+end
 
 -- Optional logging via lurek.log (no-op if unavailable).
 -- Hardened against the prior bug where a non-nil `lurek` table with a nil
@@ -754,18 +764,31 @@ ModifierPool.__index = ModifierPool
 --- Create an empty modifier pool.
 -- @treturn ModifierPool
 function M.newModifierPool()
-    return setmetatable({ entries = {} }, ModifierPool)
+    return setmetatable({ entries = {}, _weighted = _new_weighted_random() }, ModifierPool)
 end
 
 --- Add a ModifierEntry to the pool.
 -- @param entry ModifierEntry
 
-function ModifierPool:add(entry) self.entries[#self.entries+1] = entry end
+function ModifierPool:add(entry)
+    if self._weighted and type(self._weighted.add) == "function" then
+        local ok, id = pcall(function()
+            return self._weighted:add(entry.weight or 1, entry, entry.name or "")
+        end)
+        if ok then entry._engine_id = id else self._weighted = nil end
+    end
+    self.entries[#self.entries+1] = entry
+end
 
---- Select a random weighted modifier entry (non-deterministic).
+--- Select a random weighted modifier entry.
 -- @treturn ModifierEntry|nil  nil if pool is empty.
 function ModifierPool:roll()
     if #self.entries == 0 then return nil end
+    if self._weighted and type(self._weighted.pick) == "function" then
+        local ok, picked = pcall(function() return self._weighted:pick(math.random()) end)
+        if ok and picked ~= nil then return picked end
+        if not ok then self._weighted = nil end
+    end
     local total = 0
     for _, e in ipairs(self.entries) do total = total + e.weight end
     if total <= 0 then return nil end
@@ -1557,7 +1580,14 @@ end
 -- @treturn boolean
 function ModifierPool:remove(name)
     for i, e in ipairs(self.entries) do
-        if e.name == name then table.remove(self.entries, i); return true end
+        if e.name == name then
+            if self._weighted and e._engine_id and type(self._weighted.remove) == "function" then
+                local ok = pcall(function() return self._weighted:remove(e._engine_id) end)
+                if not ok then self._weighted = nil end
+            end
+            table.remove(self.entries, i)
+            return true
+        end
     end
     return false
 end
