@@ -147,6 +147,67 @@ impl Default for Layout {
         Self::new(LayoutDirection::Vertical)
     }
 }
+/// Container that fits children inside an aspect-ratio constrained rectangle.
+#[derive(Debug, Clone)]
+pub struct AspectRatioContainer {
+    /// Shared layout, style, and state fields.
+    pub base: WidgetBase,
+    /// Indices of child widgets positioned by this container.
+    pub children: Vec<usize>,
+    /// Width divided by height; values <= 0 fall back to 1.0.
+    pub ratio: f32,
+    /// Fit mode: `"contain"`, `"cover"`, or `"stretch"`.
+    pub fit: String,
+}
+impl AspectRatioContainer {
+    /// Create an aspect-ratio container with a square contain fit.
+    pub fn new() -> Self {
+        Self {
+            base: WidgetBase::new(WidgetType::AspectRatioContainer),
+            children: Vec::new(),
+            ratio: 1.0,
+            fit: "contain".to_string(),
+        }
+    }
+    /// Return the child rectangle inside `rect` according to the configured fit mode.
+    pub fn child_rect(&self, rect: crate::math::Rect) -> crate::math::Rect {
+        let pad = self.base.padding;
+        let inner = crate::math::Rect::new(
+            rect.x + pad[3],
+            rect.y + pad[0],
+            (rect.width - pad[1] - pad[3]).max(0.0),
+            (rect.height - pad[0] - pad[2]).max(0.0),
+        );
+        let ratio = self.ratio.max(0.0001);
+        if inner.width <= 0.0 || inner.height <= 0.0 || self.fit == "stretch" {
+            return inner;
+        }
+        let current = inner.width / inner.height.max(0.0001);
+        let constrain_width = if self.fit == "cover" {
+            current < ratio
+        } else {
+            current > ratio
+        };
+        let (w, h) = if constrain_width {
+            let w = inner.width;
+            (w, w / ratio)
+        } else {
+            let h = inner.height;
+            (h * ratio, h)
+        };
+        crate::math::Rect::new(
+            inner.x + (inner.width - w) * 0.5,
+            inner.y + (inner.height - h) * 0.5,
+            w.max(0.0),
+            h.max(0.0),
+        )
+    }
+}
+impl Default for AspectRatioContainer {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 /// Panel with independently scrollable content area larger than its visible bounds.
 #[derive(Debug, Clone)]
 pub struct ScrollPanel {

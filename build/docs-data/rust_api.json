@@ -1,10 +1,10 @@
 {
   "meta": {
-    "generated": "2026-07-08T21:16:53.394155+00:00",
+    "generated": "2026-07-09T15:04:11.101102+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "rust_items": 3268,
+      "rust_items": 3277,
       "rust_modules": 768,
       "rust_tests": 496,
       "lua_tests": 280
@@ -12,8 +12,8 @@
   },
   "rust_api": {
     "summary": {
-      "total_items": 3268,
-      "documented": 3268,
+      "total_items": 3277,
+      "documented": 3277,
       "modules": 768
     },
     "modules": {
@@ -19882,14 +19882,14 @@
             "kind": "fn",
             "description": "Validate one render command and attach its broad owner bucket to any failure.",
             "file": "src/render/input_validation.rs",
-            "line": 790
+            "line": 792
           },
           {
             "name": "validate_compound_shape",
             "kind": "fn",
             "description": "Validate a registered compound shape before replaying its nested commands in a backend.",
             "file": "src/render/input_validation.rs",
-            "line": 801
+            "line": 803
           }
         ]
       },
@@ -20234,21 +20234,35 @@
             "kind": "fn",
             "description": "Convert a named `params` map into a 16-float uniform array ordered by well-known param keys.",
             "file": "src/render/postfx_pipeline.rs",
-            "line": 492
+            "line": 536
+          },
+          {
+            "name": "params_to_uniform_for_effect",
+            "kind": "fn",
+            "description": "Convert effect parameters into the uniform layout expected by one built-in post-fx shader.",
+            "file": "src/render/postfx_pipeline.rs",
+            "line": 559
+          },
+          {
+            "name": "built_in_postfx_shader_sources",
+            "kind": "fn",
+            "description": "Returns the full WGSL source for every built-in post-fx shader.",
+            "file": "src/render/postfx_pipeline.rs",
+            "line": 736
           },
           {
             "name": "PostFxTexture",
             "kind": "struct",
             "description": "Intermediate render texture holding a single post-processing frame.",
             "file": "src/render/postfx_pipeline.rs",
-            "line": 514
+            "line": 780
           },
           {
             "name": "PostFxPipeline",
             "kind": "struct",
             "description": "GPU post-processing pipeline owning compiled WGSL render pipelines and shared GPU resources.",
             "file": "src/render/postfx_pipeline.rs",
-            "line": 578
+            "line": 844
           }
         ]
       },
@@ -20420,84 +20434,84 @@
             "kind": "enum",
             "description": "Broad owner bucket for one `RenderCommand` variant.",
             "file": "src/render/renderer.rs",
-            "line": 805
+            "line": 811
           },
           {
             "name": "TextureData",
             "kind": "struct",
             "description": "Raw CPU-side texture pixel data passed to `GpuRenderer::upload_texture`.",
             "file": "src/render/renderer.rs",
-            "line": 916
+            "line": 923
           },
           {
             "name": "ParticleRenderShape",
             "kind": "enum",
             "description": "Shape used to render a single particle in `DrawParticleSystem`.",
             "file": "src/render/renderer.rs",
-            "line": 953
+            "line": 960
           },
           {
             "name": "ParticleInstance",
             "kind": "struct",
             "description": "A single particle snapshot submitted by `DrawParticleSystem`.",
             "file": "src/render/renderer.rs",
-            "line": 977
+            "line": 984
           },
           {
             "name": "DrawableKind",
             "kind": "enum",
             "description": "A renderable resource handle used by generic draw utilities.",
             "file": "src/render/renderer.rs",
-            "line": 1019
+            "line": 1026
           },
           {
             "name": "PathSegment",
             "kind": "enum",
             "description": "A single segment in a `DrawPath` command.",
             "file": "src/render/renderer.rs",
-            "line": 1031
+            "line": 1038
           },
           {
             "name": "GradientDirection",
             "kind": "enum",
             "description": "Direction of the color transition in a `DrawGradientRect` command.",
             "file": "src/render/renderer.rs",
-            "line": 1075
+            "line": 1082
           },
           {
             "name": "HexOrientation",
             "kind": "enum",
             "description": "Hex tile axis orientation used by `DrawHexTile`.",
             "file": "src/render/renderer.rs",
-            "line": 1089
+            "line": 1096
           },
           {
             "name": "BevelStyle",
             "kind": "enum",
             "description": "Lighting style for a `DrawBevelRect` command.",
             "file": "src/render/renderer.rs",
-            "line": 1097
+            "line": 1104
           },
           {
             "name": "PhysicsDebugShape",
             "kind": "struct",
             "description": "A single physics collider shape record used in `DrawPhysicsDebug`.",
             "file": "src/render/renderer.rs",
-            "line": 1111
+            "line": 1118
           },
           {
             "name": "PhysicsDebugConfig",
             "kind": "struct",
             "description": "Color and line-width settings for `DrawPhysicsDebug`.",
             "file": "src/render/renderer.rs",
-            "line": 1135
+            "line": 1142
           },
           {
             "name": "SpineSlotDraw",
             "kind": "struct",
             "description": "One Spine animation slot draw record used in `DrawSpineSkeleton`.",
             "file": "src/render/renderer.rs",
-            "line": 1161
+            "line": 1168
           }
         ]
       },
@@ -25138,7 +25152,7 @@
             "kind": "struct",
             "description": "Infinite tile grid partitioned into fixed-size square chunks loaded on demand.",
             "file": "src/tilemap/chunk.rs",
-            "line": 17
+            "line": 19
           }
         ]
       },
@@ -26010,53 +26024,60 @@
             "line": 71
           },
           {
+            "name": "AspectRatioContainer",
+            "kind": "struct",
+            "description": "Container that fits children inside an aspect-ratio constrained rectangle.",
+            "file": "src/ui/containers.rs",
+            "line": 152
+          },
+          {
             "name": "ScrollPanel",
             "kind": "struct",
             "description": "Panel with independently scrollable content area larger than its visible bounds.",
             "file": "src/ui/containers.rs",
-            "line": 152
+            "line": 213
           },
           {
             "name": "StackContainer",
             "kind": "struct",
             "description": "Layered child container that lays out every child in the same content rectangle but shows one active page.",
             "file": "src/ui/containers.rs",
-            "line": 212
+            "line": 273
           },
           {
             "name": "NineSlice",
             "kind": "type",
             "description": "Eight-tuple of `(src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w, dst_h)` describing one 9-patch tile region.",
             "file": "src/ui/containers.rs",
-            "line": 279
+            "line": 340
           },
           {
             "name": "NinePatch",
             "kind": "struct",
             "description": "9-patch scalable border widget; divides a source image into 9 regions for resolution-independent borders.",
             "file": "src/ui/containers.rs",
-            "line": 282
+            "line": 343
           },
           {
             "name": "GUIWindow",
             "kind": "struct",
             "description": "Floating window with an optional title bar, close button, drag, and resize support.",
             "file": "src/ui/containers.rs",
-            "line": 388
+            "line": 449
           },
           {
             "name": "SplitPanel",
             "kind": "struct",
             "description": "Two-pane container split by a draggable divider along a given orientation.",
             "file": "src/ui/containers.rs",
-            "line": 417
+            "line": 478
           },
           {
             "name": "DockPanel",
             "kind": "struct",
             "description": "Docking container that attaches children to named edges (`\"top\"`, `\"bottom\"`, `\"left\"`, `\"right\"`, `\"fill\"`).",
             "file": "src/ui/containers.rs",
-            "line": 446
+            "line": 507
           }
         ]
       },
@@ -26099,28 +26120,28 @@
             "kind": "enum",
             "description": "A typed binding value that can be pushed into widgets via `update_bindings`.",
             "file": "src/ui/context.rs",
-            "line": 65
+            "line": 66
           },
           {
             "name": "GuiEvent",
             "kind": "enum",
             "description": "An event emitted by a widget interaction and drained each frame by the Lua binding.",
             "file": "src/ui/context.rs",
-            "line": 75
+            "line": 76
           },
           {
             "name": "WidgetKind",
             "kind": "enum",
             "description": "Discriminated union of all concrete widget types stored in the flat `GuiContext::widgets` list.",
             "file": "src/ui/context.rs",
-            "line": 87
+            "line": 88
           },
           {
             "name": "GuiContext",
             "kind": "struct",
             "description": "Retained-mode GUI context owning all widgets, focus state, animations, drag state, and event queue.",
             "file": "src/ui/context.rs",
-            "line": 296
+            "line": 308
           }
         ]
       },
@@ -26150,74 +26171,88 @@
             "line": 56
           },
           {
+            "name": "TextArea",
+            "kind": "struct",
+            "description": "Multi-line editable text field with cursor tracking, selection, and vertical scroll state.",
+            "file": "src/ui/controls.rs",
+            "line": 359
+          },
+          {
+            "name": "RichLabel",
+            "kind": "struct",
+            "description": "Read-only text label that accepts lightweight inline formatting markers.",
+            "file": "src/ui/controls.rs",
+            "line": 586
+          },
+          {
             "name": "CheckBox",
             "kind": "struct",
             "description": "Boolean toggle control with a visible label.",
             "file": "src/ui/controls.rs",
-            "line": 359
+            "line": 639
           },
           {
             "name": "Slider",
             "kind": "struct",
             "description": "Continuous or stepped numeric value slider.",
             "file": "src/ui/controls.rs",
-            "line": 379
+            "line": 659
           },
           {
             "name": "ProgressBar",
             "kind": "struct",
             "description": "Read-only bounded progress indicator.",
             "file": "src/ui/controls.rs",
-            "line": 440
+            "line": 720
           },
           {
             "name": "ComboBox",
             "kind": "struct",
             "description": "Drop-down single-selection list with an open/closed toggle.",
             "file": "src/ui/controls.rs",
-            "line": 493
+            "line": 773
           },
           {
             "name": "ListBox",
             "kind": "struct",
             "description": "Scrollable multi-item list with keyboard-navigable single selection.",
             "file": "src/ui/controls.rs",
-            "line": 566
+            "line": 846
           },
           {
             "name": "TabBar",
             "kind": "struct",
             "description": "Horizontal navigation bar with labelled tab buttons.",
             "file": "src/ui/controls.rs",
-            "line": 630
+            "line": 910
           },
           {
             "name": "RadioButton",
             "kind": "struct",
             "description": "Mutually exclusive selection option belonging to a named group.",
             "file": "src/ui/controls.rs",
-            "line": 672
+            "line": 952
           },
           {
             "name": "ScrollBar",
             "kind": "struct",
             "description": "Explicit horizontal or vertical scroll bar for a `ScrollPanel`.",
             "file": "src/ui/controls.rs",
-            "line": 695
+            "line": 975
           },
           {
             "name": "SpinBox",
             "kind": "struct",
             "description": "Number field with increment/decrement step buttons.",
             "file": "src/ui/controls.rs",
-            "line": 721
+            "line": 1001
           },
           {
             "name": "Switch",
             "kind": "struct",
             "description": "Animated on/off toggle switch.",
             "file": "src/ui/controls.rs",
-            "line": 788
+            "line": 1068
           }
         ]
       },
@@ -26500,56 +26535,84 @@
             "kind": "struct",
             "description": "Declarative dialog footer action loaded from TOML or Lua layout definitions.",
             "file": "src/ui/layout_loader.rs",
-            "line": 20
+            "line": 22
           },
           {
             "name": "PropertyRowDef",
             "kind": "struct",
             "description": "Declarative property row loaded into a `PropertyWidget`.",
             "file": "src/ui/layout_loader.rs",
-            "line": 30
+            "line": 32
           },
           {
             "name": "PropertyGroupDef",
             "kind": "struct",
             "description": "Declarative collapsible property group loaded into a `PropertyWidget`.",
             "file": "src/ui/layout_loader.rs",
-            "line": 44
+            "line": 46
+          },
+          {
+            "name": "FocusNeighborDef",
+            "kind": "struct",
+            "description": "Declarative keyboard neighbor links resolved by widget id after the tree is built.",
+            "file": "src/ui/layout_loader.rs",
+            "line": 56
+          },
+          {
+            "name": "TableColumnDef",
+            "kind": "enum",
+            "description": "Table column entry accepted by `guitable` definitions.",
+            "file": "src/ui/layout_loader.rs",
+            "line": 65
+          },
+          {
+            "name": "ColumnsDef",
+            "kind": "enum",
+            "description": "`columns` can be a grid count for layout widgets or table column definitions for `guitable`.",
+            "file": "src/ui/layout_loader.rs",
+            "line": 72
+          },
+          {
+            "name": "TreeNodeDef",
+            "kind": "struct",
+            "description": "Tree node entry accepted by `treeview` definitions.",
+            "file": "src/ui/layout_loader.rs",
+            "line": 79
           },
           {
             "name": "WidgetDef",
             "kind": "struct",
             "description": "Flat description of a single widget produced by TOML deserialisation; children are nested inline.",
             "file": "src/ui/layout_loader.rs",
-            "line": 54
+            "line": 87
           },
           {
             "name": "LayoutDef",
             "kind": "struct",
             "description": "Top-level TOML layout definition containing an optional resolution hint and the root widget tree.",
             "file": "src/ui/layout_loader.rs",
-            "line": 160
+            "line": 228
           },
           {
             "name": "load_layout_def",
             "kind": "fn",
             "description": "Recursively instantiate `def` and all its `children` into `ctx`; return the root widget index or an error string.",
             "file": "src/ui/layout_loader.rs",
-            "line": 167
+            "line": 235
           },
           {
             "name": "load_layout_toml",
             "kind": "fn",
             "description": "Parse `toml_src` into a `LayoutDef` and load it into `ctx`; return the root widget index or an error string.",
             "file": "src/ui/layout_loader.rs",
-            "line": 381
+            "line": 563
           },
           {
             "name": "render_to_image",
             "kind": "fn",
             "description": "Run the engine UI rasteriser on `ctx` at the given resolution and save the PNG to `path`.",
             "file": "src/ui/layout_loader.rs",
-            "line": 387
+            "line": 569
           }
         ]
       },
@@ -26655,14 +26718,14 @@
             "kind": "fn",
             "description": "Push a scissor rect onto the stack, intersecting with the current topmost scissor.",
             "file": "src/ui/render.rs",
-            "line": 693
+            "line": 745
           },
           {
             "name": "pop_scissor",
             "kind": "fn",
             "description": "Pop the topmost scissor rect and restore the previous one (or disable scissor if stack is empty).",
             "file": "src/ui/render.rs",
-            "line": 714
+            "line": 766
           }
         ]
       },
@@ -26730,28 +26793,28 @@
             "kind": "enum",
             "description": "Easing function for property animations.",
             "file": "src/ui/widget.rs",
-            "line": 438
+            "line": 458
           },
           {
             "name": "WidgetTransitionKind",
             "kind": "enum",
             "description": "Which property a `WidgetTransition` animates.",
             "file": "src/ui/widget.rs",
-            "line": 519
+            "line": 539
           },
           {
             "name": "WidgetTransition",
             "kind": "struct",
             "description": "Active animation on a `WidgetBase`; evaluated each frame by `GuiContext::update`.",
             "file": "src/ui/widget.rs",
-            "line": 566
+            "line": 586
           },
           {
             "name": "WidgetBase",
             "kind": "struct",
             "description": "Shared layout, identity, and state fields embedded in every concrete widget struct.",
             "file": "src/ui/widget.rs",
-            "line": 647
+            "line": 667
           }
         ]
       },

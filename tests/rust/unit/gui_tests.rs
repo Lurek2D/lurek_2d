@@ -188,6 +188,8 @@ fn theme_default_dark_has_normal_style_for_every_widget_type() {
         WidgetType::Button,
         WidgetType::Label,
         WidgetType::TextInput,
+        WidgetType::TextArea,
+        WidgetType::RichLabel,
         WidgetType::CheckBox,
         WidgetType::Slider,
         WidgetType::ProgressBar,
@@ -195,6 +197,7 @@ fn theme_default_dark_has_normal_style_for_every_widget_type() {
         WidgetType::ListBox,
         WidgetType::Panel,
         WidgetType::Layout,
+        WidgetType::AspectRatioContainer,
         WidgetType::ScrollPanel,
         WidgetType::NinePatch,
         WidgetType::TabBar,
@@ -206,6 +209,8 @@ fn theme_default_dark_has_normal_style_for_every_widget_type() {
         WidgetType::ScrollBar,
         WidgetType::GUIWindow,
         WidgetType::SplitPanel,
+        WidgetType::StackContainer,
+        WidgetType::TabContainer,
         WidgetType::DockPanel,
         WidgetType::Toolbar,
         WidgetType::MenuBar,
@@ -880,6 +885,249 @@ fn combo_dropdown_clamps_to_viewport_above_trigger() {
             assert!(!combo.open);
         }
         _ => panic!("expected combo box"),
+    }
+}
+
+#[test]
+fn layout_loader_resolves_id_references_and_runtime_base_fields_from_toml() {
+    let mut ctx = GuiContext::new();
+    let root_idx = load_layout_toml(
+        &mut ctx,
+        r#"
+[root]
+widget_type = "panel"
+id = "root"
+w = 640
+h = 360
+
+[[root.children]]
+widget_type = "richlabel"
+id = "name_label"
+text = "[b]Name[/b]"
+label_for = "name_input"
+x = 16
+y = 16
+w = 120
+h = 32
+role = "label"
+aria_name = "Name label"
+style_class = "form-label"
+mouse_filter = "ignore"
+z_order = 3
+tab_index = 1
+focus_group = "form"
+bind = "profile.name_label"
+
+[[root.children]]
+widget_type = "textarea"
+id = "name_input"
+text = "Ada\nLovelace"
+placeholder = "Full name"
+x = 144
+y = 16
+w = 192
+h = 96
+anchor_left = 144
+anchor_top = 16
+anchor_right = 304
+anchor_bottom = 248
+anchor_center = [0.5, 0.0]
+focus_neighbors = { right = "mode_combo" }
+
+[[root.children]]
+widget_type = "combobox"
+id = "mode_combo"
+items = ["Write", "Review"]
+x = 352
+y = 16
+w = 128
+h = 32
+focus_neighbors = { left = "name_input" }
+"#,
+    )
+    .expect("layout should load");
+    assert_eq!(ctx.widgets[root_idx].base().id, "root");
+
+    let label_idx = ctx
+        .widgets
+        .iter()
+        .position(|widget| widget.base().id == "name_label")
+        .expect("label id");
+    let input_idx = ctx
+        .widgets
+        .iter()
+        .position(|widget| widget.base().id == "name_input")
+        .expect("input id");
+    let combo_idx = ctx
+        .widgets
+        .iter()
+        .position(|widget| widget.base().id == "mode_combo")
+        .expect("combo id");
+
+    let label_base = ctx.widgets[label_idx].base();
+    assert_eq!(label_base.label_for, Some(input_idx));
+    assert_eq!(label_base.style_class.as_deref(), Some("form-label"));
+    assert_eq!(label_base.mouse_filter, MouseFilter::Ignore);
+    assert_eq!(label_base.z_order, 3);
+    assert_eq!(label_base.tab_index, 1);
+    assert_eq!(label_base.focus_group, "form");
+    assert_eq!(label_base.role, "label");
+    assert_eq!(label_base.aria_name, "Name label");
+    assert_eq!(label_base.bind_key.as_deref(), Some("profile.name_label"));
+
+    let input_base = ctx.widgets[input_idx].base();
+    assert_eq!(input_base.focus_neighbor_right, Some(combo_idx));
+    assert_eq!(input_base.anchor_left, Some(144.0));
+    assert_eq!(input_base.anchor_top, Some(16.0));
+    assert_eq!(input_base.anchor_right, Some(304.0));
+    assert_eq!(input_base.anchor_bottom, Some(248.0));
+    assert_eq!(input_base.anchor_center_x, Some(0.5));
+    assert_eq!(input_base.anchor_center_y, Some(0.0));
+    assert_eq!(
+        ctx.widgets[combo_idx].base().focus_neighbor_left,
+        Some(input_idx)
+    );
+
+    match &ctx.widgets[input_idx] {
+        WidgetKind::TextArea(text_area) => {
+            assert_eq!(text_area.text, "Ada\nLovelace");
+            assert_eq!(text_area.placeholder, "Full name");
+        }
+        _ => panic!("expected text area"),
+    }
+    match &ctx.widgets[label_idx] {
+        WidgetKind::RichLabel(label) => assert_eq!(label.plain_text(), "Name"),
+        _ => panic!("expected rich label"),
+    }
+    match &ctx.widgets[combo_idx] {
+        WidgetKind::ComboBox(combo) => {
+            assert_eq!(combo.items, vec!["Write".to_string(), "Review".to_string()]);
+            assert_eq!(combo.selected_index, Some(0));
+        }
+        _ => panic!("expected combo box"),
+    }
+}
+
+#[test]
+fn layout_loader_rejects_unknown_id_references() {
+    let mut ctx = GuiContext::new();
+    let err = load_layout_toml(
+        &mut ctx,
+        r#"
+[root]
+widget_type = "panel"
+id = "root"
+
+[[root.children]]
+widget_type = "label"
+id = "label"
+text = "Missing"
+label_for = "does_not_exist"
+"#,
+    )
+    .expect_err("unknown label_for id should be rejected");
+    assert!(err.contains("label_for references unknown widget id"));
+}
+
+#[test]
+fn layout_loader_loads_declarative_data_models_and_aspect_container() {
+    let mut ctx = GuiContext::new();
+    let root_idx = load_layout_toml(
+        &mut ctx,
+        r#"
+[root]
+widget_type = "layout"
+id = "root"
+direction = "grid"
+columns = 2
+
+[[root.children]]
+widget_type = "guitable"
+id = "table"
+columns = [
+  { header = "Name", width = 120 },
+  { header = "Score", width = 72 },
+]
+rows = [["Ada", "10"], ["Grace", "12"]]
+
+[[root.children]]
+widget_type = "treeview"
+id = "tree"
+nodes = [
+  { text = "Root", expanded = true },
+  { text = "Child", parent = 0 },
+]
+
+[[root.children]]
+widget_type = "tabbar"
+id = "tabs"
+text = "One|Two|Three"
+
+[[root.children]]
+widget_type = "aspectcontainer"
+id = "aspect"
+ratio = 1.7777778
+fit = "cover"
+"#,
+    )
+    .expect("declarative data layout should load");
+    match &ctx.widgets[root_idx] {
+        WidgetKind::Layout(layout) => assert_eq!(layout.columns, 2),
+        _ => panic!("expected root layout"),
+    }
+
+    let table = ctx
+        .widgets
+        .iter()
+        .find(|widget| widget.base().id == "table")
+        .expect("table");
+    match table {
+        WidgetKind::GUITable(table) => {
+            assert_eq!(table.columns.len(), 2);
+            assert_eq!(table.columns[0].header, "Name");
+            assert_eq!(table.columns[0].width, 120.0);
+            assert_eq!(table.rows.len(), 2);
+        }
+        _ => panic!("expected table"),
+    }
+
+    let tree = ctx
+        .widgets
+        .iter()
+        .find(|widget| widget.base().id == "tree")
+        .expect("tree");
+    match tree {
+        WidgetKind::TreeView(tree) => {
+            assert_eq!(tree.nodes.len(), 2);
+            assert!(tree.nodes[0].expanded);
+            assert_eq!(tree.nodes[1].parent, Some(0));
+        }
+        _ => panic!("expected tree"),
+    }
+
+    let tabs = ctx
+        .widgets
+        .iter()
+        .find(|widget| widget.base().id == "tabs")
+        .expect("tabs");
+    match tabs {
+        WidgetKind::TabBar(tabs) => {
+            assert_eq!(tabs.tabs, vec!["One", "Two", "Three"]);
+        }
+        _ => panic!("expected tabbar"),
+    }
+
+    let aspect = ctx
+        .widgets
+        .iter()
+        .find(|widget| widget.base().id == "aspect")
+        .expect("aspect");
+    match aspect {
+        WidgetKind::AspectRatioContainer(container) => {
+            assert!((container.ratio - 1.7777778).abs() < 1e-5);
+            assert_eq!(container.fit, "cover");
+        }
+        _ => panic!("expected aspect container"),
     }
 }
 

@@ -1891,6 +1891,9 @@ fn create_typed_widget_table<'a>(
 enum TypedWidgetKind {
     TabBar,
     ComboBox,
+    TextArea,
+    RichLabel,
+    AspectRatioContainer,
     Slider,
     Switch,
     Button,
@@ -1906,6 +1909,9 @@ fn typed_widget_kind(ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> TypedWidgetKi
     match g.widgets.get(idx) {
         Some(WidgetKind::TabBar(_)) => TypedWidgetKind::TabBar,
         Some(WidgetKind::ComboBox(_)) => TypedWidgetKind::ComboBox,
+        Some(WidgetKind::TextArea(_)) => TypedWidgetKind::TextArea,
+        Some(WidgetKind::RichLabel(_)) => TypedWidgetKind::RichLabel,
+        Some(WidgetKind::AspectRatioContainer(_)) => TypedWidgetKind::AspectRatioContainer,
         Some(WidgetKind::Slider(_)) => TypedWidgetKind::Slider,
         Some(WidgetKind::Switch(_)) => TypedWidgetKind::Switch,
         Some(WidgetKind::Button(_)) => TypedWidgetKind::Button,
@@ -1921,6 +1927,9 @@ fn typed_widget_type_name(kind: TypedWidgetKind) -> &'static str {
     match kind {
         TypedWidgetKind::TabBar => "LTabBar",
         TypedWidgetKind::ComboBox => "LComboBox",
+        TypedWidgetKind::TextArea => "LTextArea",
+        TypedWidgetKind::RichLabel => "LRichLabel",
+        TypedWidgetKind::AspectRatioContainer => "LAspectRatioContainer",
         TypedWidgetKind::Slider => "LSlider",
         TypedWidgetKind::Switch => "LSwitch",
         TypedWidgetKind::Button => "LButton",
@@ -1943,6 +1952,11 @@ fn add_typed_widget_methods(
     match kind {
         TypedWidgetKind::TabBar => add_tab_bar_methods(lua, table, ctx, idx),
         TypedWidgetKind::ComboBox => add_combo_box_methods(lua, table, ctx, idx),
+        TypedWidgetKind::TextArea => add_text_area_methods(lua, table, ctx, idx),
+        TypedWidgetKind::RichLabel => add_rich_label_methods(lua, table, ctx, idx),
+        TypedWidgetKind::AspectRatioContainer => {
+            add_aspect_ratio_container_methods(lua, table, ctx, idx)
+        }
         TypedWidgetKind::Slider => add_slider_methods(lua, table, ctx, idx),
         TypedWidgetKind::Switch => add_switch_methods(lua, table, ctx, idx),
         TypedWidgetKind::Button => add_button_methods(lua, table, ctx, idx),
@@ -2170,6 +2184,245 @@ fn add_text_input_methods(
             Ok(match g.widgets.get(idx) {
                 Some(WidgetKind::TextInput(ti)) => ti.submit_on_enter,
                 _ => true,
+            })
+        })?,
+    )?;
+    Ok(())
+}
+/// Adds text-area-specific methods to a multi-line text widget table.
+fn add_text_area_methods(
+    lua: &Lua,
+    t: &LuaTable,
+    ctx: &Rc<RefCell<GuiContext>>,
+    idx: usize,
+) -> LuaResult<()> {
+    let c = ctx.clone();
+    // -- setText --
+    /// Sets the text content of this multi-line text area and moves the cursor to the end.
+    /// @param | self | LTextArea | The widget instance.
+    /// @param | text | string | The text to set.
+    t.set(
+        "setText",
+        lua.create_function(move |_, (_self, text): (LuaValue, String)| {
+            let mut g = c.borrow_mut();
+            if let Some(WidgetKind::TextArea(ta)) = g.widgets.get_mut(idx) {
+                ta.set_text(text);
+            }
+            Ok(())
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- getText --
+    /// Returns the current text content of this multi-line text area.
+    /// @param | self | LTextArea | The widget instance.
+    /// @return | string | The text area content.
+    t.set(
+        "getText",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(WidgetKind::TextArea(ta)) => ta.text.clone(),
+                _ => String::new(),
+            })
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- setPlaceholder --
+    /// Sets the placeholder text shown when the text area is empty.
+    /// @param | self | LTextArea | The widget instance.
+    /// @param | text | string | The placeholder text.
+    t.set(
+        "setPlaceholder",
+        lua.create_function(move |_, (_self, text): (LuaValue, String)| {
+            let mut g = c.borrow_mut();
+            if let Some(WidgetKind::TextArea(ta)) = g.widgets.get_mut(idx) {
+                ta.placeholder = text;
+            }
+            Ok(())
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- getPlaceholder --
+    /// Returns the placeholder text of this text area.
+    /// @param | self | LTextArea | The widget instance.
+    /// @return | string | The placeholder text.
+    t.set(
+        "getPlaceholder",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(WidgetKind::TextArea(ta)) => ta.placeholder.clone(),
+                _ => String::new(),
+            })
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- setMaxLength --
+    /// Sets the maximum number of characters allowed in this text area.
+    /// @param | self | LTextArea | The widget instance.
+    /// @param | n | integer | Maximum character count; 0 disables the limit.
+    t.set(
+        "setMaxLength",
+        lua.create_function(move |_, (_self, n): (LuaValue, usize)| {
+            let mut g = c.borrow_mut();
+            if let Some(WidgetKind::TextArea(ta)) = g.widgets.get_mut(idx) {
+                ta.set_max_length(n);
+            }
+            Ok(())
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- isFocused --
+    /// Returns whether this text area currently has keyboard focus.
+    /// @param | self | LTextArea | The widget instance.
+    /// @return | boolean | True if focused.
+    t.set(
+        "isFocused",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(WidgetKind::TextArea(ta)) => ta.focused,
+                _ => false,
+            })
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- getCursorPosition --
+    /// Returns the current cursor position as a zero-based character index.
+    /// @param | self | LTextArea | The widget instance.
+    /// @return | integer | The cursor position.
+    t.set(
+        "getCursorPosition",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(WidgetKind::TextArea(ta)) => ta.cursor_char_pos(),
+                _ => 0,
+            })
+        })?,
+    )?;
+    Ok(())
+}
+/// Adds rich-label-specific methods to a formatted read-only label table.
+fn add_rich_label_methods(
+    lua: &Lua,
+    t: &LuaTable,
+    ctx: &Rc<RefCell<GuiContext>>,
+    idx: usize,
+) -> LuaResult<()> {
+    let c = ctx.clone();
+    // -- setText --
+    /// Sets the rich label source text with simple `[b]` and `[color=...]` spans.
+    /// @param | self | LRichLabel | The widget instance.
+    /// @param | text | string | The rich label source text.
+    t.set(
+        "setText",
+        lua.create_function(move |_, (_self, text): (LuaValue, String)| {
+            let mut g = c.borrow_mut();
+            if let Some(WidgetKind::RichLabel(label)) = g.widgets.get_mut(idx) {
+                label.text = text;
+            }
+            Ok(())
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- getText --
+    /// Returns the rich label source text, including inline span markers.
+    /// @param | self | LRichLabel | The widget instance.
+    /// @return | string | The rich label source text.
+    t.set(
+        "getText",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(WidgetKind::RichLabel(label)) => label.text.clone(),
+                _ => String::new(),
+            })
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- getPlainText --
+    /// Returns the rich label text with simple inline span markers stripped.
+    /// @param | self | LRichLabel | The widget instance.
+    /// @return | string | The plain display text.
+    t.set(
+        "getPlainText",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(WidgetKind::RichLabel(label)) => label.plain_text(),
+                _ => String::new(),
+            })
+        })?,
+    )?;
+    Ok(())
+}
+/// Adds aspect-container-specific methods.
+fn add_aspect_ratio_container_methods(
+    lua: &Lua,
+    t: &LuaTable,
+    ctx: &Rc<RefCell<GuiContext>>,
+    idx: usize,
+) -> LuaResult<()> {
+    let c = ctx.clone();
+    // -- setRatio --
+    /// Sets the child aspect ratio used by this container.
+    /// @param | self | LAspectRatioContainer | The widget instance.
+    /// @param | ratio | number | Width divided by height; values below 0.01 are clamped.
+    t.set(
+        "setRatio",
+        lua.create_function(move |_, (_self, ratio): (LuaValue, f32)| {
+            let mut g = c.borrow_mut();
+            if let Some(WidgetKind::AspectRatioContainer(container)) = g.widgets.get_mut(idx) {
+                container.ratio = ratio.max(0.01);
+            }
+            Ok(())
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- getRatio --
+    /// Returns the child aspect ratio used by this container.
+    /// @param | self | LAspectRatioContainer | The widget instance.
+    /// @return | number | Width divided by height.
+    t.set(
+        "getRatio",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(WidgetKind::AspectRatioContainer(container)) => container.ratio,
+                _ => 1.0,
+            })
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- setFit --
+    /// Sets how the child is fit into the aspect rectangle.
+    /// @param | self | LAspectRatioContainer | The widget instance.
+    /// @param | fit | string | `contain`, `cover`, or `stretch`.
+    t.set(
+        "setFit",
+        lua.create_function(move |_, (_self, fit): (LuaValue, String)| {
+            let mut g = c.borrow_mut();
+            if let Some(WidgetKind::AspectRatioContainer(container)) = g.widgets.get_mut(idx) {
+                if matches!(fit.as_str(), "contain" | "cover" | "stretch") {
+                    container.fit = fit;
+                }
+            }
+            Ok(())
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- getFit --
+    /// Returns how the child is fit into the aspect rectangle.
+    /// @param | self | LAspectRatioContainer | The widget instance.
+    /// @return | string | `contain`, `cover`, or `stretch`.
+    t.set(
+        "getFit",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(WidgetKind::AspectRatioContainer(container)) => container.fit.clone(),
+                _ => "contain".to_string(),
             })
         })?,
     )?;
@@ -7095,6 +7348,8 @@ fn parse_widget_type(s: &str) -> Option<WidgetType> {
         "button" => Some(WidgetType::Button),
         "label" => Some(WidgetType::Label),
         "textinput" => Some(WidgetType::TextInput),
+        "textarea" | "textedit" => Some(WidgetType::TextArea),
+        "richlabel" | "richtextlabel" => Some(WidgetType::RichLabel),
         "checkbox" => Some(WidgetType::CheckBox),
         "slider" => Some(WidgetType::Slider),
         "progressbar" => Some(WidgetType::ProgressBar),
@@ -7102,6 +7357,7 @@ fn parse_widget_type(s: &str) -> Option<WidgetType> {
         "listbox" => Some(WidgetType::ListBox),
         "panel" => Some(WidgetType::Panel),
         "layout" => Some(WidgetType::Layout),
+        "aspectcontainer" | "aspectratiocontainer" => Some(WidgetType::AspectRatioContainer),
         "scrollpanel" => Some(WidgetType::ScrollPanel),
         "ninepatch" => Some(WidgetType::NinePatch),
         "tabbar" => Some(WidgetType::TabBar),
@@ -7321,6 +7577,39 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     )?;
     let c = ctx.clone();
     let cbs = callbacks.clone();
+    // -- newTextArea --
+    /// Creates a new multi-line text area widget.
+    /// @return | LTextArea | The new text area widget table.
+    tbl.set(
+        "newTextArea",
+        lua.create_function(move |lua, ()| {
+            let mut g = c.borrow_mut();
+            let idx = g.add_text_area();
+            drop(g);
+            let t = create_widget_table(lua, &c, idx, &cbs, "LTextArea")?;
+            add_text_area_methods(lua, &t, &c, idx)?;
+            Ok(t)
+        })?,
+    )?;
+    let c = ctx.clone();
+    let cbs = callbacks.clone();
+    // -- newRichLabel --
+    /// Creates a new rich label with simple inline formatting spans.
+    /// @param | text | string? | The initial rich label text.
+    /// @return | LRichLabel | The new rich label widget table.
+    tbl.set(
+        "newRichLabel",
+        lua.create_function(move |lua, text: Option<String>| {
+            let mut g = c.borrow_mut();
+            let idx = g.add_rich_label(text.unwrap_or_default());
+            drop(g);
+            let t = create_widget_table(lua, &c, idx, &cbs, "LRichLabel")?;
+            add_rich_label_methods(lua, &t, &c, idx)?;
+            Ok(t)
+        })?,
+    )?;
+    let c = ctx.clone();
+    let cbs = callbacks.clone();
     // -- newCheckbox --
     /// Creates a new checkbox widget with optional label.
     /// @param | text | string? | The checkbox label text.
@@ -7417,6 +7706,22 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             drop(g);
             let t = create_widget_table(lua, &c, idx, &cbs, "LPanel")?;
             add_panel_methods(lua, &t, &c, idx)?;
+            Ok(t)
+        })?,
+    )?;
+    let c = ctx.clone();
+    let cbs = callbacks.clone();
+    // -- newAspectRatioContainer --
+    /// Creates a container that fits its child to a fixed aspect ratio.
+    /// @return | LAspectRatioContainer | The new aspect-ratio container table.
+    tbl.set(
+        "newAspectRatioContainer",
+        lua.create_function(move |lua, ()| {
+            let mut g = c.borrow_mut();
+            let idx = g.add_aspect_ratio_container();
+            drop(g);
+            let t = create_widget_table(lua, &c, idx, &cbs, "LAspectRatioContainer")?;
+            add_aspect_ratio_container_methods(lua, &t, &c, idx)?;
             Ok(t)
         })?,
     )?;
@@ -9045,7 +9350,7 @@ fn lua_table_to_widget_def(table: &mlua::Table) -> mlua::Result<crate::ui::Widge
     };
     apply_widget_scalar_fields(&mut def, table);
     apply_widget_text_layout_fields(&mut def, table);
-    apply_widget_container_fields(&mut def, table);
+    apply_widget_container_fields(&mut def, table)?;
     apply_widget_dialog_fields(&mut def, table);
     apply_widget_property_fields(&mut def, table)?;
     Ok(def)
@@ -9088,6 +9393,33 @@ fn lua_dialog_actions(
 
 fn apply_widget_scalar_fields(def: &mut crate::ui::WidgetDef, table: &mlua::Table) {
     def.id = table.get("id").ok();
+    def.style_class = table
+        .get("style_class")
+        .or_else(|_| table.get("styleClass"))
+        .ok();
+    def.mouse_filter = table
+        .get("mouse_filter")
+        .or_else(|_| table.get("mouseFilter"))
+        .ok();
+    def.z_order = table.get("z_order").or_else(|_| table.get("zOrder")).ok();
+    def.tab_index = table
+        .get("tab_index")
+        .or_else(|_| table.get("tabIndex"))
+        .ok();
+    def.focus_group = table
+        .get("focus_group")
+        .or_else(|_| table.get("focusGroup"))
+        .ok();
+    def.role = table.get("role").ok();
+    def.aria_name = table
+        .get("aria_name")
+        .or_else(|_| table.get("ariaName"))
+        .ok();
+    def.label_for = table
+        .get("label_for")
+        .or_else(|_| table.get("labelFor"))
+        .ok();
+    def.bind = table.get("bind").ok();
     def.x = table.get("x").ok();
     def.y = table.get("y").ok();
     def.w = table.get("w").ok();
@@ -9110,6 +9442,26 @@ fn apply_widget_scalar_fields(def: &mut crate::ui::WidgetDef, table: &mlua::Tabl
     def.icon_size = table
         .get("icon_size")
         .or_else(|_| table.get("iconSize"))
+        .ok();
+    def.anchor_left = table
+        .get("anchor_left")
+        .or_else(|_| table.get("anchorLeft"))
+        .ok();
+    def.anchor_top = table
+        .get("anchor_top")
+        .or_else(|_| table.get("anchorTop"))
+        .ok();
+    def.anchor_right = table
+        .get("anchor_right")
+        .or_else(|_| table.get("anchorRight"))
+        .ok();
+    def.anchor_bottom = table
+        .get("anchor_bottom")
+        .or_else(|_| table.get("anchorBottom"))
+        .ok();
+    def.anchor_center = table
+        .get("anchor_center")
+        .or_else(|_| table.get("anchorCenter"))
         .ok();
 }
 
@@ -9142,18 +9494,35 @@ fn apply_widget_text_layout_fields(def: &mut crate::ui::WidgetDef, table: &mlua:
         .ok();
 }
 
-fn apply_widget_container_fields(def: &mut crate::ui::WidgetDef, table: &mlua::Table) {
+fn apply_widget_container_fields(
+    def: &mut crate::ui::WidgetDef,
+    table: &mlua::Table,
+) -> mlua::Result<()> {
     def.direction = table.get("direction").ok();
     def.spacing = table.get("spacing").ok();
     def.align = table.get("align").ok();
     def.justify = table.get("justify").ok();
-    def.columns = table.get("columns").ok();
+    def.columns = lua_columns_def(table)?;
     def.wrap = table.get("wrap").ok();
     def.active_index = table
         .get("active_index")
         .or_else(|_| table.get("activeIndex"))
         .ok();
     def.tabs = table.get("tabs").ok();
+    def.items = table
+        .get::<_, Option<mlua::Table>>("items")?
+        .map(lua_string_array)
+        .transpose()?;
+    def.rows = table
+        .get::<_, Option<mlua::Table>>("rows")?
+        .map(lua_string_rows)
+        .transpose()?;
+    def.nodes = table
+        .get::<_, Option<mlua::Table>>("nodes")?
+        .map(lua_tree_nodes)
+        .transpose()?;
+    def.ratio = table.get("ratio").ok();
+    def.fit = table.get("fit").ok();
     def.tab_bar_height = table
         .get("tab_bar_height")
         .or_else(|_| table.get("tabBarHeight"))
@@ -9161,6 +9530,8 @@ fn apply_widget_container_fields(def: &mut crate::ui::WidgetDef, table: &mlua::T
     def.orientation = table.get("orientation").ok();
     def.group = table.get("group").ok();
     def.slot = table.get("slot").ok();
+    def.focus_neighbors = lua_focus_neighbors(table)?;
+    Ok(())
 }
 
 fn apply_widget_dialog_fields(def: &mut crate::ui::WidgetDef, table: &mlua::Table) {
@@ -9188,6 +9559,102 @@ fn lua_string_array(table: mlua::Table) -> mlua::Result<Vec<String>> {
         result.push(table.get(i)?);
     }
     Ok(result)
+}
+
+fn lua_string_rows(table: mlua::Table) -> mlua::Result<Vec<Vec<String>>> {
+    let len = table.raw_len();
+    let mut rows = Vec::with_capacity(len);
+    for row_idx in 1..=len {
+        let row_table: mlua::Table = table.get(row_idx)?;
+        rows.push(lua_string_array(row_table)?);
+    }
+    Ok(rows)
+}
+
+fn lua_columns_def(
+    table: &mlua::Table,
+) -> mlua::Result<Option<crate::ui::layout_loader::ColumnsDef>> {
+    let value = table.get::<_, LuaValue>("columns").unwrap_or(LuaValue::Nil);
+    match value {
+        LuaValue::Nil => Ok(None),
+        LuaValue::Integer(value) if value >= 0 => Ok(Some(
+            crate::ui::layout_loader::ColumnsDef::Count(value as usize),
+        )),
+        LuaValue::Number(value) if value.is_finite() && value >= 0.0 => Ok(Some(
+            crate::ui::layout_loader::ColumnsDef::Count(value as usize),
+        )),
+        LuaValue::Table(columns_table) => {
+            let len = columns_table.raw_len();
+            let mut names = Vec::new();
+            let mut objects = Vec::new();
+            for i in 1..=len {
+                match columns_table.get::<_, LuaValue>(i)? {
+                    LuaValue::String(value) => names.push(value.to_str()?.to_string()),
+                    LuaValue::Table(column_table) => {
+                        objects.push(crate::ui::layout_loader::TableColumnDef::Object {
+                            header: column_table.get("header")?,
+                            width: column_table.get("width").ok(),
+                        });
+                    }
+                    other => {
+                        return Err(mlua::Error::external(format!(
+                            "columns[{i}] must be string or table, got {}",
+                            other.type_name()
+                        )));
+                    }
+                }
+            }
+            if objects.is_empty() {
+                Ok(Some(crate::ui::layout_loader::ColumnsDef::Names(names)))
+            } else {
+                for name in names {
+                    objects.push(crate::ui::layout_loader::TableColumnDef::Header(name));
+                }
+                Ok(Some(crate::ui::layout_loader::ColumnsDef::Objects(objects)))
+            }
+        }
+        other => Err(mlua::Error::external(format!(
+            "columns must be integer or table, got {}",
+            other.type_name()
+        ))),
+    }
+}
+
+fn lua_focus_neighbors(
+    table: &mlua::Table,
+) -> mlua::Result<Option<crate::ui::layout_loader::FocusNeighborDef>> {
+    let neighbors = table
+        .get::<_, Option<mlua::Table>>("focus_neighbors")?
+        .or_else(|| {
+            table
+                .get::<_, Option<mlua::Table>>("focusNeighbors")
+                .ok()
+                .flatten()
+        });
+    let Some(neighbors) = neighbors else {
+        return Ok(None);
+    };
+    Ok(Some(crate::ui::layout_loader::FocusNeighborDef {
+        up: neighbors.get("up").ok(),
+        down: neighbors.get("down").ok(),
+        left: neighbors.get("left").ok(),
+        right: neighbors.get("right").ok(),
+    }))
+}
+
+fn lua_tree_nodes(table: mlua::Table) -> mlua::Result<Vec<crate::ui::layout_loader::TreeNodeDef>> {
+    let len = table.raw_len();
+    let mut nodes = Vec::with_capacity(len);
+    for i in 1..=len {
+        let node: mlua::Table = table.get(i)?;
+        nodes.push(crate::ui::layout_loader::TreeNodeDef {
+            text: node.get("text")?,
+            parent: node.get("parent").ok(),
+            expanded: node.get("expanded").ok(),
+            icon: node.get("icon").ok(),
+        });
+    }
+    Ok(nodes)
 }
 
 fn apply_widget_property_fields(

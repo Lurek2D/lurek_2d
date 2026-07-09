@@ -122,6 +122,19 @@ impl Theme {
         self.styles
             .get(&(widget_type, state, None))
             .or_else(|| self.styles.get(&(widget_type, WidgetState::Normal, None)))
+            .or_else(|| {
+                let fallback_type = match widget_type {
+                    WidgetType::TextArea => WidgetType::TextInput,
+                    WidgetType::RichLabel => WidgetType::Label,
+                    WidgetType::AspectRatioContainer
+                    | WidgetType::StackContainer
+                    | WidgetType::TabContainer => WidgetType::Layout,
+                    _ => return None,
+                };
+                self.styles
+                    .get(&(fallback_type, state, None))
+                    .or_else(|| self.styles.get(&(fallback_type, WidgetState::Normal, None)))
+            })
     }
     /// Return the named semantic token, or `None` if the name is not registered.
     pub fn get_token(&self, name: &str) -> Option<&ThemeToken> {

@@ -865,6 +865,25 @@ describe("render strict: canvas and shader", function()
         end)
     end)
 
+    -- @covers lurek.render.applyEffectToCanvas
+    it("applyEffectToCanvas accepts an effect or stack and rejects invalid handles", function()
+        local source = lurek.render.newCanvas(8, 8)
+        local target = lurek.render.newCanvas(16, 16)
+        local effect = lurek.effect.newEffect("scale2x")
+        local returned = lurek.render.applyEffectToCanvas(source, target, effect)
+        expect_equal("LCanvas", returned:type())
+
+        local stack = lurek.effect.newStack(16, 16)
+        stack:add(lurek.effect.newEffect("sepia"))
+        local returned_stack = lurek.render.applyEffectToCanvas(source, target, stack)
+        expect_equal("LCanvas", returned_stack:type())
+
+        target:release()
+        expect_error(function()
+            lurek.render.applyEffectToCanvas(source, target, effect)
+        end)
+    end)
+
     -- @covers lurek.render.setShader
     it("setShader accepts draw shaders and rejects other targets", function()
         local draw_shader = lurek.render.newShader(minimal_shader_code())

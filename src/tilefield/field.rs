@@ -181,6 +181,16 @@ impl TileField {
         self.version
     }
 
+    /// Clear pending dirty rectangles before a grouped edit.
+    pub fn begin_edit(&mut self) {
+        self.dirty_rects.clear();
+    }
+
+    /// Clear and return dirty rectangles accumulated by a grouped edit.
+    pub fn commit_edit(&mut self) -> Vec<(u32, u32, u32, u32, u32)> {
+        self.drain_dirty_rects()
+    }
+
     /// Register or replace a user-defined category.
     pub fn define_category(&mut self, category: TileCategory) -> Result<(), String> {
         if category.name.trim().is_empty() {
@@ -206,6 +216,11 @@ impl TileField {
     /// Clear and return pending dirty cell rectangles.
     pub fn drain_dirty_rects(&mut self) -> Vec<(u32, u32, u32, u32, u32)> {
         std::mem::take(&mut self.dirty_rects)
+    }
+
+    /// Return pending dirty cell rectangles without clearing them.
+    pub fn dirty_rects(&self) -> &[(u32, u32, u32, u32, u32)] {
+        &self.dirty_rects
     }
 
     fn bump_version(&mut self) {
@@ -890,6 +905,39 @@ impl TileField {
     /// Return every declared ref slot name.
     pub fn ref_slots(&self) -> Vec<String> {
         self.slots.iter().cloned().collect()
+    }
+
+    /// Return resource cells in deterministic order for snapshots.
+    pub fn resource_cells(&self) -> Vec<(CellCoord, String)> {
+        let mut cells = self
+            .resources
+            .iter()
+            .map(|(coord, resource)| (*coord, resource.clone()))
+            .collect::<Vec<_>>();
+        cells.sort_by_key(|(coord, _)| (coord.z, coord.y, coord.x));
+        cells
+    }
+
+    /// Return explicit buildable overrides in deterministic order for snapshots.
+    pub fn buildable_cells(&self) -> Vec<(CellCoord, bool)> {
+        let mut cells = self
+            .buildable
+            .iter()
+            .map(|(coord, buildable)| (*coord, *buildable))
+            .collect::<Vec<_>>();
+        cells.sort_by_key(|(coord, _)| (coord.z, coord.y, coord.x));
+        cells
+    }
+
+    /// Return occupant cells in deterministic order for snapshots.
+    pub fn occupant_cells(&self) -> Vec<(CellCoord, u64)> {
+        let mut cells = self
+            .occupants
+            .iter()
+            .map(|(coord, occupant)| (*coord, *occupant))
+            .collect::<Vec<_>>();
+        cells.sort_by_key(|(coord, _)| (coord.z, coord.y, coord.x));
+        cells
     }
 
     /// Clear a named object/tile reference on one cell.

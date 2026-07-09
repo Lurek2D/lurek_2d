@@ -18,8 +18,10 @@ impl GuiContext {
                 if base.state == WidgetState::Focused {
                     base.state = WidgetState::Normal;
                 }
-                if let WidgetKind::TextInput(ti) = w {
-                    ti.focused = false;
+                match w {
+                    WidgetKind::TextInput(ti) => ti.focused = false,
+                    WidgetKind::TextArea(ta) => ta.focused = false,
+                    _ => {}
                 }
             }
         }
@@ -34,8 +36,10 @@ impl GuiContext {
         if let Some(idx) = next_focus {
             if let Some(w) = self.widgets.get_mut(idx) {
                 w.base_mut().state = WidgetState::Focused;
-                if let WidgetKind::TextInput(ti) = w {
-                    ti.focused = true;
+                match w {
+                    WidgetKind::TextInput(ti) => ti.focused = true,
+                    WidgetKind::TextArea(ta) => ta.focused = true,
+                    _ => {}
                 }
             }
         }

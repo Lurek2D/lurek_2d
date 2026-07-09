@@ -4459,6 +4459,37 @@ end
 
 ---
 
+#### `LLiquidMap:getDirtyChunks`
+
+Returns liquid chunks changed by the most recent liquid edit or simulation step.
+
+```lua
+LLiquidMap:getDirtyChunks()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of `{cx, cy}` chunk coordinates. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local liquid = lurek.physics.newLiquidMap(8, 8, 8, world)
+    liquid:setCell(2, 3, 0.75, "water")
+    local dirty = liquid:getDirtyChunks()
+    local first = dirty[1] or { cx = -1, cy = -1 }
+    lurek.log.info("liquid dirty chunks=" .. tostring(#dirty))
+    lurek.log.info("liquid first dirty=" .. tostring(first.cx) .. "," .. tostring(first.cy))
+end
+```
+
+---
+
 #### `LLiquidMap:getLevelAt`
 
 Returns the top liquid surface level for the sampled column.
@@ -5510,6 +5541,38 @@ do
     terrain:setCell(5, 5, true)
     lurek.log.info("cell=" .. tostring(terrain:getCell(5, 5)))
     lurek.log.info("type=" .. tostring(terrain:type()))
+end
+```
+
+---
+
+#### `LTerrain:getDirtyChunks`
+
+Returns terrain chunks pending collider rebuild after terrain edits.
+
+```lua
+LTerrain:getDirtyChunks()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of `{cx, cy}` chunk coordinates. |
+
+**Example**
+
+```lua
+do
+
+    local world = lurek.physics.newWorld(0, 400)
+    local terrain = lurek.physics.newTerrain(32, 32, 4, world)
+    terrain:fillAll(true)
+    local dirty = terrain:getDirtyChunks()
+    terrain:flush(1)
+    local remaining = terrain:getDirtyChunks()
+    lurek.log.info("terrain dirty before=" .. tostring(#dirty))
+    lurek.log.info("terrain dirty after budget=" .. tostring(#remaining))
 end
 ```
 

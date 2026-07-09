@@ -37,6 +37,11 @@ pub(super) struct FrameCommandContext<'a> {
     pub(super) active_text_shader: Option<ShaderKey>,
     pub(super) pending_postfx: Vec<(u64, Vec<crate::render::renderer::PostFxPass>, u32, u32)>,
     pub(super) pending_canvas_postfx: Vec<(CanvasKey, Vec<crate::render::renderer::PostFxPass>)>,
+    pub(super) pending_canvas_effects: Vec<(
+        CanvasKey,
+        CanvasKey,
+        Vec<crate::render::renderer::PostFxPass>,
+    )>,
     pub(super) pending_province_maps: Vec<PendingProvinceMapDraw>,
     pub(super) all_color_verts: Vec<ColorVertex>,
     pub(super) all_color_idxs: Vec<u32>,
@@ -128,6 +133,11 @@ impl GpuRenderer {
             Vec::new();
         let mut pending_canvas_postfx: Vec<(CanvasKey, Vec<crate::render::renderer::PostFxPass>)> =
             Vec::new();
+        let mut pending_canvas_effects: Vec<(
+            CanvasKey,
+            CanvasKey,
+            Vec<crate::render::renderer::PostFxPass>,
+        )> = Vec::new();
         let mut pending_province_maps: Vec<PendingProvinceMapDraw> = Vec::new();
         let mut command_context = FrameCommandContext {
             fonts,
@@ -154,6 +164,7 @@ impl GpuRenderer {
             active_text_shader,
             pending_postfx,
             pending_canvas_postfx,
+            pending_canvas_effects,
             pending_province_maps,
             all_color_verts,
             all_color_idxs,
@@ -184,6 +195,7 @@ impl GpuRenderer {
         let FrameCommandContext {
             pending_postfx,
             pending_canvas_postfx,
+            pending_canvas_effects,
             pending_province_maps,
             all_color_verts,
             all_color_idxs,
@@ -487,6 +499,64 @@ impl GpuRenderer {
                         frame_count,
                     );
                     self.canvas_needs_clear.insert(*canvas_key, false);
+                }
+            }
+        }
+        if !pending_canvas_effects.is_empty() {
+            if self.postfx_pipeline.is_none() {
+                self.postfx_pipeline = Some(crate::render::postfx_pipeline::PostFxPipeline::new(
+                    &self.device,
+                    self.surface_format,
+                ));
+            }
+            for (source_canvas_key, target_canvas_key, passes) in &pending_canvas_effects {
+                let Some(source_canvas) = canvases.get(*source_canvas_key) else {
+                    self.render_diagnostics.record_missing_canvas();
+                    continue;
+                };
+                let Some(target_canvas) = canvases.get(*target_canvas_key) else {
+                    self.render_diagnostics.record_missing_canvas();
+                    continue;
+                };
+                let Some(source_texture) = self.canvas_gpu_textures.get(*source_canvas_key) else {
+                    self.render_diagnostics.record_missing_canvas();
+                    continue;
+                };
+                let Some(target_texture) = self.canvas_gpu_textures.get(*target_canvas_key) else {
+                    self.render_diagnostics.record_missing_canvas();
+                    continue;
+                };
+                if let Some(pipeline) = self.postfx_pipeline.as_mut() {
+                    if source_canvas_key == target_canvas_key {
+                        pipeline.apply_in_place(
+                            &self.device,
+                            &self.queue,
+                            &mut encoder,
+                            &target_texture.view,
+                            passes,
+                            shaders,
+                            target_canvas.width,
+                            target_canvas.height,
+                            frame_time,
+                            frame_count,
+                        );
+                    } else {
+                        pipeline.apply(
+                            &self.device,
+                            &self.queue,
+                            &mut encoder,
+                            &source_texture.view,
+                            &target_texture.view,
+                            passes,
+                            shaders,
+                            target_canvas.width,
+                            target_canvas.height,
+                            frame_time,
+                            frame_count,
+                        );
+                    }
+                    let _ = source_canvas;
+                    self.canvas_needs_clear.insert(*target_canvas_key, false);
                 }
             }
         }

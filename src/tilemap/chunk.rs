@@ -10,7 +10,9 @@ use super::limits::{checked_chunk_cells, TileMapLimits};
 use crate::log_msg;
 use crate::math::Rect;
 use crate::runtime::log_messages::{CK01, CK02, CK03};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
+
+const CHUNK_BYTES_MAGIC: &[u8; 4] = b"LCM1";
 
 /// Infinite tile grid partitioned into fixed-size square chunks loaded on demand.
 #[derive(Debug, Clone)]
@@ -19,6 +21,8 @@ pub struct ChunkMap {
     chunk_size: u32,
     /// Sparse map from chunk coordinates to flattened tile GID arrays.
     chunks: HashMap<(i32, i32), Vec<u32>>,
+    /// Chunks with tile edits pending downstream renderer/save/minimap work.
+    dirty_chunks: HashSet<(i32, i32)>,
 }
 
 impl ChunkMap {
@@ -34,6 +38,7 @@ impl ChunkMap {
         Self {
             chunk_size,
             chunks: HashMap::new(),
+            dirty_chunks: HashSet::new(),
         }
     }
 
@@ -76,12 +81,31 @@ impl ChunkMap {
             .chunks
             .entry((cx, cy))
             .or_insert_with(|| vec![0u32; chunk_cells_len(cs)]);
-        chunk[(ly * cs + lx) as usize] = gid;
+        let index = (ly * cs + lx) as usize;
+        if chunk[index] != gid {
+            chunk[index] = gid;
+            self.mark_dirty_chunk(cx, cy);
+        }
     }
 
     /// Reset tile `(x, y)` to GID 0, allocating the chunk if needed.
     pub fn clear_tile(&mut self, x: i32, y: i32) {
         self.set_tile(x, y, 0);
+    }
+
+    /// Apply multiple tile edits in one call and return the dirty chunks touched.
+    pub fn set_tiles(&mut self, edits: &[(i32, i32, u32)]) -> Vec<(i32, i32)> {
+        let before = self.dirty_chunks.clone();
+        for (x, y, gid) in edits {
+            self.set_tile(*x, *y, *gid);
+        }
+        let mut changed = self
+            .dirty_chunks
+            .difference(&before)
+            .copied()
+            .collect::<Vec<_>>();
+        changed.sort();
+        changed
     }
 
     /// Fill all tiles in the rectangle `[x0,x1) x [y0,y1)` with `gid`.
@@ -135,6 +159,26 @@ impl ChunkMap {
     pub fn unload_chunk(&mut self, cx: i32, cy: i32) {
         log_msg!(debug, CK03, "({}, {})", cx, cy);
         self.chunks.remove(&(cx, cy));
+        self.dirty_chunks.remove(&(cx, cy));
+    }
+
+    /// Return a stable list of chunks with pending tile changes.
+    pub fn get_dirty_chunks(&self) -> Vec<(i32, i32)> {
+        let mut chunks = self.dirty_chunks.iter().copied().collect::<Vec<_>>();
+        chunks.sort();
+        chunks
+    }
+
+    /// Clear dirty chunk tracking without changing tile data.
+    pub fn clear_dirty_chunks(&mut self) {
+        self.dirty_chunks.clear();
+    }
+
+    /// Clear and return chunks with pending tile changes.
+    pub fn drain_dirty_chunks(&mut self) -> Vec<(i32, i32)> {
+        let chunks = self.get_dirty_chunks();
+        self.clear_dirty_chunks();
+        chunks
     }
 
     /// Return the coordinates of all currently loaded chunks.
@@ -201,6 +245,53 @@ impl ChunkMap {
         self.chunks.get(&(cx, cy)).map(|v| v.as_slice())
     }
 
+    /// Serialize one loaded chunk to a compact binary format.
+    pub fn chunk_to_bytes(&self, cx: i32, cy: i32) -> Option<Vec<u8>> {
+        let chunk = self.chunks.get(&(cx, cy))?;
+        let mut out = Vec::with_capacity(8 + chunk.len() * 4);
+        out.extend_from_slice(CHUNK_BYTES_MAGIC);
+        out.extend_from_slice(&self.chunk_size.to_le_bytes());
+        for gid in chunk {
+            out.extend_from_slice(&gid.to_le_bytes());
+        }
+        Some(out)
+    }
+
+    /// Load one chunk from bytes produced by `chunk_to_bytes`.
+    pub fn load_chunk_from_bytes(&mut self, cx: i32, cy: i32, bytes: &[u8]) -> Result<(), String> {
+        if bytes.len() < 8 || &bytes[0..4] != CHUNK_BYTES_MAGIC {
+            return Err("chunk bytes have an invalid LChunkMap header".to_string());
+        }
+        let chunk_size = u32::from_le_bytes(bytes[4..8].try_into().unwrap());
+        if chunk_size != self.chunk_size {
+            return Err(format!(
+                "chunk bytes use chunk size {chunk_size}, expected {}",
+                self.chunk_size
+            ));
+        }
+        let cells = chunk_cells_len(self.chunk_size);
+        let expected = 8usize
+            .checked_add(
+                cells
+                    .checked_mul(4)
+                    .ok_or_else(|| "chunk byte size overflowed addressable storage".to_string())?,
+            )
+            .ok_or_else(|| "chunk byte size overflowed addressable storage".to_string())?;
+        if bytes.len() != expected {
+            return Err(format!(
+                "chunk bytes expected {expected} bytes, got {}",
+                bytes.len()
+            ));
+        }
+        let mut chunk = Vec::with_capacity(cells);
+        for raw in bytes[8..].chunks_exact(4) {
+            chunk.push(u32::from_le_bytes(raw.try_into().unwrap()));
+        }
+        self.chunks.insert((cx, cy), chunk);
+        self.mark_dirty_chunk(cx, cy);
+        Ok(())
+    }
+
     /// Decompose world tile `(x, y)` into chunk coordinates `(cx, cy)` and local tile offsets `(lx, ly)`.
     fn decompose(&self, x: i32, y: i32) -> (i32, i32, u32, u32) {
         let cs = self.chunk_size as i32;
@@ -209,6 +300,10 @@ impl ChunkMap {
         let lx = x.rem_euclid(cs) as u32;
         let ly = y.rem_euclid(cs) as u32;
         (cx, cy, lx, ly)
+    }
+
+    fn mark_dirty_chunk(&mut self, cx: i32, cy: i32) {
+        self.dirty_chunks.insert((cx, cy));
     }
 }
 

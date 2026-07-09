@@ -3104,6 +3104,10 @@ LTweenState = {}
 ---@class LAccordion : LUiWidget
 LAccordion = {}
 
+--- Adds aspect-container-specific methods.
+---@class LAspectRatioContainer : LUiWidget
+LAspectRatioContainer = {}
+
 --- Adds badge-specific methods to a notification badge widget table.
 ---@class LBadge : LUiWidget
 LBadge = {}
@@ -3184,6 +3188,10 @@ LPropertyWidget = {}
 ---@class LRadioButton : LUiWidget
 LRadioButton = {}
 
+--- Adds rich-label-specific methods to a formatted read-only label table.
+---@class LRichLabel : LUiWidget
+LRichLabel = {}
+
 --- Adds scroll-bar-specific methods to a scroll bar widget table.
 ---@class LScrollBar : LUiWidget
 LScrollBar = {}
@@ -3227,6 +3235,10 @@ LTabBar = {}
 --- Adds tab-container-specific methods to tab container widget tables.
 ---@class LTabContainer : LUiWidget
 LTabContainer = {}
+
+--- Adds text-area-specific methods to a multi-line text widget table.
+---@class LTextArea : LUiWidget
+LTextArea = {}
 
 --- Adds text-input-specific methods to a text input widget table.
 ---@class LTextInput : LUiWidget
@@ -24870,6 +24882,10 @@ function LLiquidMap:getAmountAt(worldX, worldY) end
 ---@return LuaValue Liquid kind as a built-in string or custom integer id; or nil when the cell is empty.
 function LLiquidMap:getCell(cx, cy) end
 
+--- Returns liquid chunks changed by the most recent liquid edit or simulation step.
+---@return table Array of `{cx, cy}` chunk coordinates.
+function LLiquidMap:getDirtyChunks() end
+
 --- Returns the top liquid surface level for the sampled column.
 ---@param worldX number World-space X coordinate.
 ---@param worldY number World-space Y coordinate used to select the sampled column.
@@ -25029,6 +25045,10 @@ function LTerrain:flush(maxDirtyChunks) end
 ---@param cy number Cell row.
 ---@return boolean True if the cell is solid.
 function LTerrain:getCell(cx, cy) end
+
+--- Returns terrain chunks pending collider rebuild after terrain edits.
+---@return table Array of `{cx, cy}` chunk coordinates.
+function LTerrain:getDirtyChunks() end
 
 --- Returns true if terrain cells have been modified since the last flush.
 ---@return boolean True if a flush is needed.
@@ -28806,6 +28826,13 @@ function LSpriteBatch:type() end
 ---@return boolean True if the name matches.
 function LSpriteBatch:typeOf(name) end
 
+--- Applies a post-processing effect or stack from one canvas into another canvas.
+---@param sourceCanvas LCanvas Canvas used as the source texture.
+---@param targetCanvas LCanvas Canvas receiving the processed output.
+---@param effectOrStack LPostFxEffect|LPostFxStack Effect or stack created through `lurek.effect`.
+---@return LCanvas The target canvas handle.
+lurek.render.applyEffectToCanvas = function(sourceCanvas, targetCanvas, effectOrStack) end
+
 --- Queues a postfx shader pass that mutates a canvas render target after queued canvas draws in the current frame.
 ---@param canvas LCanvas Canvas render target to process.
 ---@param shader LShader Shader created with `lurek.render.newShader(code, { target = "postfx" })`.
@@ -31803,6 +31830,9 @@ function LTileField:applyTilesetObject(x, y, z, slot, tileset, opts) end
 ---@return number Number of cells that received object defaults.
 function LTileField:applyTilesetObjectLayer(slot, tileset, opts) end
 
+--- Clears pending dirty rectangles before a grouped tilefield edit.
+function LTileField:beginEdit() end
+
 --- Returns whether a cell blocks a channel.
 ---@param x number One-based column.
 ---@param y number One-based row.
@@ -31858,6 +31888,15 @@ function LTileField:clearOccupant(x, y, z) end
 ---@param slot string Reference slot name.
 function LTileField:clearRef(x, y, z, slot) end
 
+--- Clears and returns dirty rectangles accumulated since `beginEdit`.
+---@param chunkSize? number Optional chunk size used to add cx/cy fields to each dirty rect.
+---@return table Array of `{x, y, z, w, h, cx?, cy?}` one-based dirty rectangles.
+function LTileField:commitEdit(chunkSize) end
+
+--- Defines conventional ref slots for mutable block worlds without adding a new module.
+---@return table Slot names: foreground, wall, platform, ore, furniture, liquid, spawn, biome.
+function LTileField:defineBlockWorldSlots() end
+
 --- Defines or replaces a user category used by movement, awareness, light, sun, or custom systems.
 ---@param name string Stable category name.
 ---@param opts? table?|Options custom', active=true?.
@@ -31866,6 +31905,11 @@ function LTileField:defineCategory(name, opts) end
 --- Defines a named object slot that cells may reference.
 ---@param slot string Slot name chosen by the Lua game.
 function LTileField:defineSlot(slot) end
+
+--- Clears and returns pending dirty cell rectangles.
+---@param chunkSize? number Optional chunk size used to add cx/cy fields to each dirty rect.
+---@return table Array of `{x, y, z, w, h, cx?, cy?}` one-based dirty rectangles.
+function LTileField:drainDirtyRects(chunkSize) end
 
 --- Exports one blocker channel and level as a row-major boolean array.
 ---@param channel string Blocker channel name to export.
@@ -31949,6 +31993,11 @@ function LTileField:getCell(x, y, z) end
 ---@param channel string Cost channel name to query.
 ---@return number Movement or traversal cost value.
 function LTileField:getCost(x, y, z, channel) end
+
+--- Returns pending dirty cell rectangles without clearing them.
+---@param chunkSize? number Optional chunk size used to add cx/cy fields to each dirty rect.
+---@return table Array of `{x, y, z, w, h, cx?, cy?}` one-based dirty rectangles.
+function LTileField:getDirtyRects(chunkSize) end
 
 --- Returns a named tile modifier table, or nil.
 ---@param name string Modifier name.
@@ -32142,6 +32191,10 @@ function LTileField:removeRegion(name) end
 ---@return boolean True when the slot existed.
 function LTileField:removeSlot(slot) end
 
+--- Replaces this tilefield state from a snapshot returned by `snapshot`.
+---@param snapshot table Snapshot table.
+function LTileField:restore(snapshot) end
+
 --- Sets whether a cell blocks a channel.
 ---@param x number One-based column.
 ---@param y number One-based row.
@@ -32262,6 +32315,10 @@ function LTileField:setResource(x, y, z, resource) end
 ---@param z? number One-based level, default 1.
 ---@param value number Top-light occlusion value in the inclusive range 0..1.
 function LTileField:setSunOcclusion(x, y, z, value) end
+
+--- Captures block/cost/ref layers plus resource, buildable, and occupant cell facts.
+---@return table Snapshot table suitable for `restore`.
+function LTileField:snapshot() end
 
 --- Returns the Lua-visible type name for this tilefield handle.
 ---@return string The string `LTileField`.
@@ -32566,10 +32623,23 @@ function LAutoTileSheet:typeOf(name) end
 ---@return number Maximum tile Y.
 function LChunkMap:chunkTileRange(cx, cy) end
 
+--- Serializes one loaded chunk into binary bytes for save workflows.
+---@param cx number Chunk X coordinate.
+---@param cy number Chunk Y coordinate.
+---@return string Binary chunk data, or nil when the chunk is not loaded.
+function LChunkMap:chunkToBytes(cx, cy) end
+
+--- Clears chunk dirty tracking without changing tile contents.
+function LChunkMap:clearDirtyChunks() end
+
 --- Removes the tile at the given world-tile coordinate.
 ---@param x number Tile X coordinate.
 ---@param y number Tile Y coordinate.
 function LChunkMap:clearTile(x, y) end
+
+--- Clears and returns chunk coordinates with pending tile changes.
+---@return table Array of `{cx, cy}` pairs.
+function LChunkMap:drainDirtyChunks() end
 
 --- Fills a rectangular region of tiles with a given GID.
 ---@param x0 number Left tile coordinate.
@@ -32593,6 +32663,10 @@ function LChunkMap:getChunkSize() end
 ---@return LChunkMapGetChunksInViewResult Array of `{cx, cy}` pairs.
 function LChunkMap:getChunksInView(vx, vy, vw, vh, tw, th) end
 
+--- Returns loaded chunk coordinates with tile changes pending downstream updates.
+---@return table Array of `{cx, cy}` pairs.
+function LChunkMap:getDirtyChunks() end
+
 --- Returns a list of all currently loaded chunk coordinates.
 ---@return LChunkMapGetLoadedChunksResult Array of `{cx, cy}` pairs.
 function LChunkMap:getLoadedChunks() end
@@ -32608,11 +32682,22 @@ function LChunkMap:getTile(x, y) end
 ---@param cy number Chunk Y coordinate.
 function LChunkMap:loadChunk(cx, cy) end
 
+--- Loads one chunk from bytes previously returned by `chunkToBytes`.
+---@param cx number Chunk X coordinate.
+---@param cy number Chunk Y coordinate.
+---@param data string Binary chunk data.
+function LChunkMap:loadChunkFromBytes(cx, cy, data) end
+
 --- Sets the tile GID at the given world-tile coordinate.
 ---@param x number Tile X coordinate.
 ---@param y number Tile Y coordinate.
 ---@param gid number Global tile ID to place.
 function LChunkMap:setTile(x, y, gid) end
+
+--- Applies multiple `{x, y, gid}` tile edits and returns the chunks dirtied by this batch.
+---@param edits table Array of `{x, y, gid}` tables or `{x, y, gid}` arrays.
+---@return table Array of `{cx, cy}` chunks changed by the batch.
+function LChunkMap:setTiles(edits) end
 
 --- Returns the type name of this userdata.
 ---@return string Always `"LChunkMap"`.
@@ -34161,6 +34246,22 @@ function LAccordion:setExclusive(v) end
 ---@return boolean The new expanded state.
 function LAccordion:toggleSection(section_idx) end
 
+--- Returns how the child is fit into the aspect rectangle.
+---@return string `contain`, `cover`, or `stretch`.
+function LAspectRatioContainer:getFit() end
+
+--- Returns the child aspect ratio used by this container.
+---@return number Width divided by height.
+function LAspectRatioContainer:getRatio() end
+
+--- Sets how the child is fit into the aspect rectangle.
+---@param fit string `contain`, `cover`, or `stretch`.
+function LAspectRatioContainer:setFit(fit) end
+
+--- Sets the child aspect ratio used by this container.
+---@param ratio number Width divided by height; values below 0.01 are clamped.
+function LAspectRatioContainer:setRatio(ratio) end
+
 --- Returns the current notification count of this badge.
 ---@return number The badge count.
 function LBadge:getCount() end
@@ -34857,6 +34958,18 @@ function LRadioButton:setSelected(v) end
 ---@param text string The radio button label.
 function LRadioButton:setText(text) end
 
+--- Returns the rich label text with simple inline span markers stripped.
+---@return string The plain display text.
+function LRichLabel:getPlainText() end
+
+--- Returns the rich label source text, including inline span markers.
+---@return string The rich label source text.
+function LRichLabel:getText() end
+
+--- Sets the rich label source text with simple `[b]` and `[color=...]` spans.
+---@param text string The rich label source text.
+function LRichLabel:setText(text) end
+
 --- Returns the total content size tracked by this scroll bar.
 ---@return number The content size.
 function LScrollBar:getContentSize() end
@@ -35142,6 +35255,34 @@ function LTabContainer:getTabCount() end
 ---@param index number The 1-based child index to show.
 ---@return boolean True when the index exists and was set.
 function LTabContainer:setActiveIndex(index) end
+
+--- Returns the current cursor position as a zero-based character index.
+---@return number The cursor position.
+function LTextArea:getCursorPosition() end
+
+--- Returns the placeholder text of this text area.
+---@return string The placeholder text.
+function LTextArea:getPlaceholder() end
+
+--- Returns the current text content of this multi-line text area.
+---@return string The text area content.
+function LTextArea:getText() end
+
+--- Returns whether this text area currently has keyboard focus.
+---@return boolean True if focused.
+function LTextArea:isFocused() end
+
+--- Sets the maximum number of characters allowed in this text area.
+---@param n number Maximum character count; 0 disables the limit.
+function LTextArea:setMaxLength(n) end
+
+--- Sets the placeholder text shown when the text area is empty.
+---@param text string The placeholder text.
+function LTextArea:setPlaceholder(text) end
+
+--- Sets the text content of this multi-line text area and moves the cursor to the end.
+---@param text string The text to set.
+function LTextArea:setText(text) end
 
 --- Returns the current cursor position (character index) within the text input.
 ---@return number The zero-based cursor position.
@@ -35971,6 +36112,10 @@ lurek.ui.mousereleased = function(x, y, btn) end
 ---@return LAccordion The new accordion widget table.
 lurek.ui.newAccordion = function() end
 
+--- Creates a container that fits its child to a fixed aspect ratio.
+---@return LAspectRatioContainer The new aspect-ratio container table.
+lurek.ui.newAspectRatioContainer = function() end
+
 --- Creates a new badge widget for displaying counts.
 ---@param count? number Initial count (default 0).
 ---@return LBadge The new badge widget table.
@@ -36092,6 +36237,11 @@ lurek.ui.newPropertyWidget = function() end
 ---@return LRadioButton The new radio button widget table.
 lurek.ui.newRadioButton = function(text, group) end
 
+--- Creates a new rich label with simple inline formatting spans.
+---@param text? string The initial rich label text.
+---@return LRichLabel The new rich label widget table.
+lurek.ui.newRichLabel = function(text) end
+
 --- Creates a new scroll bar widget for content scrolling.
 ---@param vertical? boolean True for vertical (default true).
 ---@return LScrollBar The new scroll bar widget table.
@@ -36173,6 +36323,10 @@ lurek.ui.newTabContainer = function() end
 --- Creates a new table widget for tabular data display.
 ---@return LGuiTable The new table widget.
 lurek.ui.newTable = function() end
+
+--- Creates a new multi-line text area widget.
+---@return LTextArea The new text area widget table.
+lurek.ui.newTextArea = function() end
 
 --- Creates a new text input widget for user entry.
 ---@return LTextInput The new text input widget table.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fix Lurek2D TOML layout files.
+"""Fix and validate Lurek2D TOML layout files.
 
 Operations applied in order:
 
@@ -40,6 +40,11 @@ import sys
 from pathlib import Path
 from typing import Any
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 try:
     import tomllib  # type: ignore[import]
 except ModuleNotFoundError:
@@ -57,7 +62,74 @@ GRID = 8  # pixel grid
 # Matches the start of an array-of-tables block at the start of a line
 _BLOCK_START_RE = re.compile(r"^(\[\[)", re.MULTILINE)
 
-SEP_NEEDLE = 'widget_type = "separator"'
+SUPPORTED_WIDGET_TYPES = {
+    "button",
+    "label",
+    "textinput",
+    "textarea",
+    "textedit",
+    "richlabel",
+    "richtextlabel",
+    "checkbox",
+    "slider",
+    "progressbar",
+    "combobox",
+    "listbox",
+    "list",
+    "panel",
+    "layout",
+    "vboxcontainer",
+    "vbox",
+    "hboxcontainer",
+    "hbox",
+    "gridcontainer",
+    "grid",
+    "margincontainer",
+    "centercontainer",
+    "aspectcontainer",
+    "aspectratiocontainer",
+    "scrollpanel",
+    "scrollcontainer",
+    "ninepatch",
+    "tabbar",
+    "separator",
+    "spacer",
+    "treeview",
+    "radiobutton",
+    "scrollbar",
+    "guiwindow",
+    "window",
+    "splitpanel",
+    "splitcontainer",
+    "stackcontainer",
+    "stack",
+    "tabcontainer",
+    "dockpanel",
+    "toolbar",
+    "menubar",
+    "menuitem",
+    "dialog",
+    "statusbar",
+    "accordion",
+    "tooltippanel",
+    "colorpicker",
+    "guitable",
+    "property",
+    "propertywidget",
+    "property_widget",
+    "chart",
+    "linechart",
+    "barchart",
+    "scatterplot",
+    "piechart",
+    "areachart",
+    "imagewidget",
+    "image",
+    "spinbox",
+    "switch",
+    "badge",
+    "custom",
+}
 
 
 # ---------------------------------------------------------------------------
@@ -84,6 +156,23 @@ def remove_separators(text: str) -> tuple[str, int]:
             kept.append(block)
 
     return "".join(kept), removed
+
+
+def _find_unknown_widget_types(widget: dict[str, Any], path: str) -> list[tuple[str, str]]:
+    raw = str(widget.get("widget_type", "")).strip().lower()
+    results: list[tuple[str, str]] = []
+    if not raw:
+        results.append((path, "<missing>"))
+    elif raw not in SUPPORTED_WIDGET_TYPES:
+        results.append((path, raw))
+    for idx, child in enumerate(widget.get("children", [])):
+        child_id = child.get("id") or child.get("widget_type", f"child{idx}")
+        results.extend(_find_unknown_widget_types(child, f"{path}.children[{child_id}]"))
+    return results
+
+
+def validate_widget_types(data: dict[str, Any]) -> list[tuple[str, str]]:
+    return _find_unknown_widget_types(data["root"], "root")
 
 
 # ---------------------------------------------------------------------------
@@ -308,12 +397,6 @@ def process_file(path: Path, fix_overlaps: bool, dry_run: bool) -> bool:
     label = str(path)
 
     # ── Step 1: remove separators (text-based) ──────────────────────────────
-    new_text, sep_count = remove_separators(text)
-    if sep_count:
-        print(f"  {label}: removed {sep_count} separator block(s)")
-        text = new_text
-        modified = True
-
     # ── Step 2: detect overlaps ──────────────────────────────────────────────
     try:
         data = tomllib.loads(text)
@@ -323,6 +406,15 @@ def process_file(path: Path, fix_overlaps: bool, dry_run: bool) -> bool:
 
     if "root" not in data:
         return modified
+
+    unknown = validate_widget_types(data)
+    if unknown:
+        for op, widget_type in unknown:
+            print(
+                f"  {label}: unsupported widget_type '{widget_type}' at {op}",
+                file=sys.stderr,
+            )
+        raise ValueError(f"{len(unknown)} unsupported widget_type value(s)")
 
     overlaps = detect_overlaps(data)
     if overlaps:

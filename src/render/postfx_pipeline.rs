@@ -184,13 +184,17 @@ fn barrel(uv: vec2<f32>, warp: f32) -> vec2<f32> {
 }
 @fragment
 fn fs_main(@location(0) uv: vec2<f32>) -> @location(0) vec4<f32> {
-    let warp = params.p[0].x;
-    let rgb = params.p[0].y;
+    let scanline_strength = params.p[0].x;
+    let warp = params.p[0].y;
+    let rgb = params.p[0].z;
     let uvc = barrel(uv, warp);
     let r = textureSample(t_src, s_src, barrel(uv + vec2<f32>( rgb, 0.0), warp)).r;
     let g = textureSample(t_src, s_src, uvc).g;
     let b = textureSample(t_src, s_src, barrel(uv - vec2<f32>( rgb, 0.0), warp)).b;
-    return vec4<f32>(r, g, b, 1.0);
+    let dim = vec2<f32>(textureDimensions(t_src));
+    let line = floor(uv.y * dim.y) % 2.0;
+    let scan = 1.0 - line * scanline_strength;
+    return vec4<f32>(vec3<f32>(r, g, b) * scan, 1.0);
 }
 "#;
 /// WGSL fragment shader for radial chromatic aberration.
@@ -238,6 +242,46 @@ fn fs_main(@location(0) uv: vec2<f32>) -> @location(0) vec4<f32> {
     let dim = vec2<f32>(textureDimensions(t_src));
     let snapped = floor(uv * dim / px) * px / dim;
     return textureSample(t_src, s_src, snapped);
+}
+"#;
+/// WGSL fragment shader for Scale2x-style pixel-art enlargement.
+const SHADER_SCALE2X: &str = r#"
+struct PostFxParams { p: array<vec4<f32>, 4>, }
+@group(0) @binding(0) var t_src: texture_2d<f32>;
+@group(0) @binding(1) var s_src: sampler;
+@group(0) @binding(2) var<uniform> params: PostFxParams;
+fn eq(a: vec4<f32>, b: vec4<f32>) -> bool {
+    return all(abs(a - b) < vec4<f32>(0.001));
+}
+fn load_px(pos: vec2<i32>, dim: vec2<i32>) -> vec4<f32> {
+    return textureLoad(t_src, clamp(pos, vec2<i32>(0, 0), dim - vec2<i32>(1, 1)), 0);
+}
+@fragment
+fn fs_main(@location(0) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    let dim = vec2<i32>(textureDimensions(t_src));
+    let src_pos = clamp(uv, vec2<f32>(0.0), vec2<f32>(0.999999)) * vec2<f32>(dim);
+    let base = vec2<i32>(floor(src_pos));
+    let frac = fract(src_pos);
+    let e = load_px(base, dim);
+    let a = load_px(base + vec2<i32>(0, -1), dim);
+    let b = load_px(base + vec2<i32>(-1, 0), dim);
+    let c = load_px(base + vec2<i32>(1, 0), dim);
+    let d = load_px(base + vec2<i32>(0, 1), dim);
+    let top = frac.y < 0.5;
+    let left = frac.x < 0.5;
+    if (top && left && eq(b, a) && !eq(b, d) && !eq(a, c)) {
+        return a;
+    }
+    if (top && !left && eq(a, c) && !eq(a, b) && !eq(c, d)) {
+        return c;
+    }
+    if (!top && left && eq(d, b) && !eq(d, c) && !eq(b, a)) {
+        return b;
+    }
+    if (!top && !left && eq(c, d) && !eq(c, a) && !eq(d, b)) {
+        return d;
+    }
+    return e;
 }
 "#;
 /// WGSL fragment shader for per-pixel hue rotation.
@@ -510,6 +554,228 @@ pub fn params_to_uniform(params: &HashMap<String, f32>) -> [f32; 16] {
         get("palette_size"),
     ]
 }
+
+/// Convert effect parameters into the uniform layout expected by one built-in post-fx shader.
+pub fn params_to_uniform_for_effect(effect_name: &str, params: &HashMap<String, f32>) -> [f32; 16] {
+    let get = |key: &str| params.get(key).copied().unwrap_or(0.0);
+    match effect_name {
+        "bloom" => [
+            get("threshold"),
+            get("intensity"),
+            get("radius"),
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            get("time"),
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+        ],
+        "blur" | "blur_h" | "blur_v" => [
+            get("radius"),
+            get("strength"),
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            get("time"),
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+        ],
+        "crt" => [
+            get("scanline_strength"),
+            get("warp"),
+            get("rgb_offset"),
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            get("time"),
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+        ],
+        "scanlines" => [
+            get("spacing"),
+            get("strength"),
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            get("time"),
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+        ],
+        "pixelate" => [
+            get("block_size"),
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            get("time"),
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+        ],
+        "chromatic" => {
+            let offset = params
+                .get("offset")
+                .copied()
+                .unwrap_or_else(|| get("strength"));
+            [
+                offset,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                get("time"),
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+            ]
+        }
+        "hueshift" => [
+            get("angle"),
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            get("time"),
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+        ],
+        "waterdistort" => [
+            get("amplitude"),
+            get("frequency"),
+            get("time"),
+            get("speed"),
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            get("time"),
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+        ],
+        "outline" => [
+            get("color_r"),
+            get("color_g"),
+            get("color_b"),
+            get("thickness"),
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            get("time"),
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+        ],
+        "scale2x" => [0.0; 16],
+        _ => params_to_uniform(params),
+    }
+}
+
+/// Returns the full WGSL source for every built-in post-fx shader.
+pub fn built_in_postfx_shader_sources() -> Vec<(&'static str, String)> {
+    vec![
+        ("bloom", format!("{POSTFX_VERTEX}\n{SHADER_BLOOM}")),
+        ("blur_h", format!("{POSTFX_VERTEX}\n{SHADER_BLUR_H}")),
+        ("blur_v", format!("{POSTFX_VERTEX}\n{SHADER_BLUR_V}")),
+        ("vignette", format!("{POSTFX_VERTEX}\n{SHADER_VIGNETTE}")),
+        ("noise", format!("{POSTFX_VERTEX}\n{SHADER_NOISE}")),
+        ("grayscale", format!("{POSTFX_VERTEX}\n{SHADER_GRAYSCALE}")),
+        ("sepia", format!("{POSTFX_VERTEX}\n{SHADER_SEPIA}")),
+        ("invert", format!("{POSTFX_VERTEX}\n{SHADER_INVERT}")),
+        ("crt", format!("{POSTFX_VERTEX}\n{SHADER_CRT}")),
+        ("chromatic", format!("{POSTFX_VERTEX}\n{SHADER_CHROMATIC}")),
+        ("scanlines", format!("{POSTFX_VERTEX}\n{SHADER_SCANLINES}")),
+        ("pixelate", format!("{POSTFX_VERTEX}\n{SHADER_PIXELATE}")),
+        ("scale2x", format!("{POSTFX_VERTEX}\n{SHADER_SCALE2X}")),
+        ("hueshift", format!("{POSTFX_VERTEX}\n{SHADER_HUESHIFT}")),
+        (
+            "edgedetect",
+            format!("{POSTFX_VERTEX}\n{SHADER_EDGEDETECT}"),
+        ),
+        ("godrays", format!("{POSTFX_VERTEX}\n{SHADER_GODRAYS}")),
+        (
+            "waterdistort",
+            format!("{POSTFX_VERTEX}\n{SHADER_WATERDISTORT}"),
+        ),
+        ("sharpen", format!("{POSTFX_VERTEX}\n{SHADER_SHARPEN}")),
+        ("dither", format!("{POSTFX_VERTEX}\n{SHADER_DITHER}")),
+        ("outline", format!("{POSTFX_VERTEX}\n{SHADER_OUTLINE}")),
+        (
+            "depthoffield",
+            format!("{POSTFX_VERTEX}\n{SHADER_DEPTHOFFIELD}"),
+        ),
+        (
+            "motionblur",
+            format!("{POSTFX_VERTEX}\n{SHADER_MOTIONBLUR}"),
+        ),
+        (
+            "cursor_lens",
+            format!("{POSTFX_VERTEX}\n{SHADER_CURSOR_LENS}"),
+        ),
+        ("__copy", format!("{POSTFX_VERTEX}\n{SHADER_COPY}")),
+    ]
+}
 /// Intermediate render texture holding a single post-processing frame.
 pub struct PostFxTexture {
     /// Underlying wgpu texture object.
@@ -727,6 +993,7 @@ impl PostFxPipeline {
             build("postfx_scanlines", SHADER_SCANLINES),
         );
         pipelines.insert("pixelate".into(), build("postfx_pixelate", SHADER_PIXELATE));
+        pipelines.insert("scale2x".into(), build("postfx_scale2x", SHADER_SCALE2X));
         pipelines.insert("hueshift".into(), build("postfx_hueshift", SHADER_HUESHIFT));
         pipelines.insert(
             "edgedetect".into(),
@@ -963,7 +1230,7 @@ impl PostFxPipeline {
                 };
                 &texture.texture.view
             };
-            let mut raw = params_to_uniform(&pass.params);
+            let mut raw = params_to_uniform_for_effect(effect_key, &pass.params);
             if pass.auto_uniforms {
                 raw[12] = total_time;
                 raw[13] = frame_count as f32;

@@ -60,12 +60,23 @@ describe("lurek.effect module", function()
         local types = lurek.effect.getEffectTypes()
         expect_type("table", types)
         expect_true(#types >= 1)
+        local found = {}
+        for _, name in ipairs(types) do
+            found[name] = true
+        end
+        expect_true(found.crt)
+        expect_true(found.sepia)
+        expect_true(found.pixelate)
+        expect_true(found.scanlines)
+        expect_true(found.scale2x)
     end)
 
     -- @covers lurek.effect.newEffect
-    it("newEffect constructs a built-in effect", function()
+    it("newEffect constructs built-in effects and accepts the scalex2 alias", function()
         local effect = new_effect("blur")
         expect_equal("LPostFxEffect", effect:type())
+        expect_equal("scale2x", new_effect("scale2x"):getTypeName())
+        expect_equal("scale2x", new_effect("scalex2"):getTypeName())
     end)
 
     -- @covers lurek.effect.newStack

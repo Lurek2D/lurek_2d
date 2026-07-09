@@ -567,6 +567,12 @@ pub enum RenderCommand {
         canvas_key: CanvasKey,
         passes: Vec<PostFxPass>,
     },
+    /// Apply post-fx passes from one canvas render target into another canvas render target.
+    ApplyEffectToCanvas {
+        source_canvas_key: CanvasKey,
+        target_canvas_key: CanvasKey,
+        passes: Vec<PostFxPass>,
+    },
     /// Draw a list of screen-space points.
     Points { points: Vec<(f32, f32)> },
     /// Set the point-sprite size in pixels.
@@ -890,7 +896,8 @@ impl RenderCommand {
             | DrawCanvas { .. }
             | RegisterCanvas { .. }
             | ResetCanvas(..)
-            | ApplyShaderToCanvas { .. } => RenderCommandCategory::Canvas,
+            | ApplyShaderToCanvas { .. }
+            | ApplyEffectToCanvas { .. } => RenderCommandCategory::Canvas,
             DrawMesh { .. }
             | SyncMesh { .. }
             | DrawMeshTransient { .. }

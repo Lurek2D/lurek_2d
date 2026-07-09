@@ -21,7 +21,7 @@
 - Source path: `src/physics`
 - Binding: `src/lua_api/physics_api.rs`
 - Namespace: `lurek.physics`
-- Lua API surface: `27` functions, `26` types, `296` methods
+- Lua API surface: `27` functions, `26` types, `298` methods
 - User-facing: `true`
 - Plugin tier: `tier_2_plugin`
 
@@ -483,6 +483,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LLiquidMap:fillRect(x, y, width, height, amount, kind) -> nil`: Sets every liquid cell in a rectangular region to the same amount and kind.
 - `LLiquidMap:getAmountAt(worldX, worldY) -> number`: Samples liquid fill amount at one world-space point.
 - `LLiquidMap:getCell(cx, cy) -> number`: Returns the amount and kind stored in one liquid cell.
+- `LLiquidMap:getDirtyChunks() -> table`: Returns liquid chunks changed by the most recent liquid edit or simulation step.
 - `LLiquidMap:getLevelAt(worldX, worldY) -> number`: Returns the top liquid surface level for the sampled column.
 - `LLiquidMap:loadFromBytes(data) -> boolean`: Restores liquid grid state from binary data previously produced by `toBytes`.
 - `LLiquidMap:setCell(cx, cy, amount, kind) -> nil`: Sets one liquid cell amount and kind.
@@ -549,6 +550,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LTerrain:fillRect(wx, wy, w, h, solid) -> nil`: Fills or clears a rectangular region of terrain cells.
 - `LTerrain:flush(maxDirtyChunks?) -> table`: Regenerates physics colliders from the current terrain grid state and returns rebuild diagnostics.
 - `LTerrain:getCell(cx, cy) -> boolean`: Returns whether a cell is solid. This method is available to Lua scripts.
+- `LTerrain:getDirtyChunks() -> table`: Returns terrain chunks pending collider rebuild after terrain edits.
 - `LTerrain:isDirty() -> boolean`: Returns true if terrain cells have been modified since the last flush.
 - `LTerrain:loadFromBytes(data) -> boolean`: Restores terrain grid state from binary data previously produced by toBytes.
 - `LTerrain:setCell(cx, cy, solid) -> nil`: Sets a single terrain cell to solid or empty.

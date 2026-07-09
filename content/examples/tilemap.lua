@@ -1017,6 +1017,71 @@ do
     end
 end
 
+--@api: LChunkMap:setTiles
+do
+    local cm = lurek.tilemap.newChunkMap(8)
+    local dirty = cm:setTiles({ { x = 0, y = 0, gid = 2 }, { x = 8, y = 0, gid = 3 }, { -1, -1, 4 } })
+    local left = cm:getTile(-1, -1)
+    local right = cm:getTile(8, 0)
+    lurek.log.info("batch dirty chunks=" .. tostring(#dirty))
+    lurek.log.info("batch samples=" .. tostring(left) .. "," .. tostring(right))
+end
+
+--@api: LChunkMap:getDirtyChunks
+do
+    local cm = lurek.tilemap.newChunkMap(8)
+    cm:setTile(0, 0, 1)
+    cm:setTile(8, 0, 2)
+    local dirty = cm:getDirtyChunks()
+    local first = dirty[1] or { cx = -1, cy = -1 }
+    lurek.log.info("dirty chunks=" .. tostring(#dirty))
+    lurek.log.info("first dirty=" .. tostring(first.cx) .. "," .. tostring(first.cy))
+end
+
+--@api: LChunkMap:drainDirtyChunks
+do
+    local cm = lurek.tilemap.newChunkMap(8)
+    cm:setTile(0, 0, 1)
+    cm:setTile(9, 0, 2)
+    local drained = cm:drainDirtyChunks()
+    local remaining = cm:getDirtyChunks()
+    lurek.log.info("drained chunks=" .. tostring(#drained))
+    lurek.log.info("remaining chunks=" .. tostring(#remaining))
+end
+
+--@api: LChunkMap:clearDirtyChunks
+do
+    local cm = lurek.tilemap.newChunkMap(8)
+    cm:setTile(0, 0, 1)
+    local before = #cm:getDirtyChunks()
+    cm:clearDirtyChunks()
+    local after = #cm:getDirtyChunks()
+    lurek.log.info("clear dirty before=" .. tostring(before))
+    lurek.log.info("clear dirty after=" .. tostring(after))
+end
+
+--@api: LChunkMap:chunkToBytes
+do
+    local cm = lurek.tilemap.newChunkMap(8)
+    cm:setTile(2, 3, 7)
+    local bytes = cm:chunkToBytes(0, 0)
+    local size = bytes and #bytes or 0
+    local gid = cm:getTile(2, 3)
+    lurek.log.info("chunk bytes=" .. tostring(size))
+    lurek.log.info("chunk sample=" .. tostring(gid))
+end
+
+--@api: LChunkMap:loadChunkFromBytes
+do
+    local source = lurek.tilemap.newChunkMap(8)
+    source:setTile(2, 3, 7)
+    local bytes = source:chunkToBytes(0, 0)
+    local clone = lurek.tilemap.newChunkMap(8)
+    clone:loadChunkFromBytes(1, 0, bytes)
+    lurek.log.info("loaded chunk sample=" .. tostring(clone:getTile(10, 3)))
+    lurek.log.info("loaded chunk dirty=" .. tostring(#clone:getDirtyChunks()))
+end
+
 --@api: lurek.tilemap.newIsoMap
 do
 

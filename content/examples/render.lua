@@ -600,6 +600,23 @@ fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @locati
     lurek.log.info("queued render.applyShaderToCanvas")
 end
 
+--@api: lurek.render.applyEffectToCanvas
+do
+
+    local source = lurek.render.newCanvas(32, 32)
+    local target = lurek.render.newCanvas(64, 64)
+    lurek.render.setCanvas(source)
+    lurek.render.clear(0.05, 0.05, 0.08, 1.0)
+    lurek.render.rectangle("fill", 4, 4, 10, 10)
+    lurek.render.circle("fill", 22, 18, 7)
+    lurek.render.setCanvas(nil)
+    local effect = lurek.effect.newEffect("scale2x")
+    local processed = lurek.render.applyEffectToCanvas(source, target, effect)
+    lurek.render.draw(processed, 340, 70)
+    local w, h = processed:getDimensions()
+    lurek.log.info("scale2x canvas output = " .. w .. "x" .. h)
+end
+
 --@api: LCanvas:applyShader
 do
 

@@ -15,7 +15,7 @@
 - Source path: `src/render`
 - Binding: `src/lua_api/render_api.rs`
 - Namespace: `lurek.render`
-- Lua API surface: `123` functions, `14` types, `93` methods
+- Lua API surface: `124` functions, `14` types, `93` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -471,6 +471,7 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 
 ### Functions
 
+- `lurek.render.applyEffectToCanvas(sourceCanvas, targetCanvas, effectOrStack) -> LCanvas`: Applies a post-processing effect or stack from one canvas into another canvas.
 - `lurek.render.applyShaderToCanvas(canvas, shader, opts?) -> LCanvas`: Queues a postfx shader pass that mutates a canvas render target after queued canvas draws in the current frame.
 - `lurek.render.applyTransform(mat) -> nil`: Multiplies the current transformation matrix by a 3x3 matrix (9 values in row-major order).
 - `lurek.render.arc(mode, x, y, radius, angle1, angle2, segments?) -> nil`: Draws a filled or outlined circular arc segment.

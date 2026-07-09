@@ -10,8 +10,10 @@
 //! Open this owner before sibling files when a regression centers on UI layout loader state, helpers, or integration rules.
 
 use crate::ui::context::{GuiContext, WidgetKind};
-use crate::ui::extras::{DialogAction, DialogActionRole, PropertyRow, PropertyValueKind};
-use crate::ui::widget::TextVAlign;
+use crate::ui::extras::{
+    DialogAction, DialogActionRole, PropertyRow, PropertyValueKind, TableColumn,
+};
+use crate::ui::widget::{MouseFilter, TextVAlign};
 use serde::Deserialize;
 use std::collections::{HashMap, HashSet};
 use std::path::{Component, Path};
@@ -49,6 +51,37 @@ pub struct PropertyGroupDef {
     /// Ordered property rows.
     pub rows: Option<Vec<PropertyRowDef>>,
 }
+/// Declarative keyboard neighbor links resolved by widget id after the tree is built.
+#[derive(Debug, Clone, Deserialize, Default)]
+pub struct FocusNeighborDef {
+    pub up: Option<String>,
+    pub down: Option<String>,
+    pub left: Option<String>,
+    pub right: Option<String>,
+}
+/// Table column entry accepted by `guitable` definitions.
+#[derive(Debug, Clone, Deserialize)]
+#[serde(untagged)]
+pub enum TableColumnDef {
+    Header(String),
+    Object { header: String, width: Option<f32> },
+}
+/// `columns` can be a grid count for layout widgets or table column definitions for `guitable`.
+#[derive(Debug, Clone, Deserialize)]
+#[serde(untagged)]
+pub enum ColumnsDef {
+    Count(usize),
+    Names(Vec<String>),
+    Objects(Vec<TableColumnDef>),
+}
+/// Tree node entry accepted by `treeview` definitions.
+#[derive(Debug, Clone, Deserialize, Default)]
+pub struct TreeNodeDef {
+    pub text: String,
+    pub parent: Option<usize>,
+    pub expanded: Option<bool>,
+    pub icon: Option<String>,
+}
 /// Flat description of a single widget produced by TOML deserialisation; children are nested inline.
 #[derive(Debug, Clone, Deserialize, Default)]
 pub struct WidgetDef {
@@ -56,6 +89,26 @@ pub struct WidgetDef {
     pub widget_type: String,
     /// Optional identifier assigned to `WidgetBase::id`.
     pub id: Option<String>,
+    /// Optional theme style class assigned to `WidgetBase::style_class`.
+    pub style_class: Option<String>,
+    /// Godot-like mouse filter: `stop`, `pass`, or `ignore`.
+    pub mouse_filter: Option<String>,
+    /// Paint order key; higher values render above lower values.
+    pub z_order: Option<i32>,
+    /// Keyboard traversal order key.
+    pub tab_index: Option<i32>,
+    /// Optional keyboard focus group name.
+    pub focus_group: Option<String>,
+    /// Id-based keyboard focus neighbors resolved after all widgets are created.
+    pub focus_neighbors: Option<FocusNeighborDef>,
+    /// Semantic accessibility role override.
+    pub role: Option<String>,
+    /// Accessible display name override.
+    pub aria_name: Option<String>,
+    /// Id of the target widget this label describes.
+    pub label_for: Option<String>,
+    /// Data binding key consumed by `GuiContext::update_bindings`.
+    pub bind: Option<String>,
     /// X pixel position passed to `WidgetBase::x`.
     pub x: Option<f32>,
     /// Y pixel position passed to `WidgetBase::y`.
@@ -117,13 +170,23 @@ pub struct WidgetDef {
     /// Main-axis justification token for layout widgets.
     pub justify: Option<String>,
     /// Grid column count for layout widgets using `direction = "grid"`.
-    pub columns: Option<usize>,
+    pub columns: Option<ColumnsDef>,
     /// Whether layout children wrap when they exceed available space.
     pub wrap: Option<bool>,
     /// Active page index for stack and tab containers; one-based to match Lua.
     pub active_index: Option<usize>,
     /// Optional tab labels for tab container definitions.
     pub tabs: Option<Vec<String>>,
+    /// Declarative item list for combo boxes, list boxes, and tab bars.
+    pub items: Option<Vec<String>>,
+    /// Declarative row matrix for `guitable`.
+    pub rows: Option<Vec<Vec<String>>>,
+    /// Declarative node list for `treeview`.
+    pub nodes: Option<Vec<TreeNodeDef>>,
+    /// Aspect ratio used by `aspectcontainer`.
+    pub ratio: Option<f32>,
+    /// Fitting mode for `aspectcontainer`: `contain`, `cover`, or `stretch`.
+    pub fit: Option<String>,
     /// Height reserved for a tab container tab strip.
     pub tab_bar_height: Option<f32>,
     /// Maximum number of visible rows in combo-box dropdowns before scrolling.
@@ -142,6 +205,11 @@ pub struct WidgetDef {
     pub center_on_open: Option<bool>,
     pub min_size: Option<[f32; 2]>,
     pub max_size: Option<[f32; 2]>,
+    pub anchor_left: Option<f32>,
+    pub anchor_top: Option<f32>,
+    pub anchor_right: Option<f32>,
+    pub anchor_bottom: Option<f32>,
+    pub anchor_center: Option<[f32; 2]>,
     pub slot: Option<String>,
     pub actions: Option<Vec<DialogActionDef>>,
     /// Property groups for `propertywidget` definitions.
@@ -166,6 +234,8 @@ pub struct LayoutDef {
 /// Recursively instantiate `def` and all its `children` into `ctx`; return the root widget index or an error string.
 pub fn load_layout_def(ctx: &mut GuiContext, def: &WidgetDef) -> Result<usize, String> {
     let idx = load_layout_def_inner(ctx, def)?;
+    let id_map = collect_id_map(ctx, idx)?;
+    resolve_layout_references(ctx, idx, def, &id_map)?;
     let errors = validate_loaded_subtree(ctx, idx);
     if !errors.is_empty() {
         return Err(format!(
@@ -174,6 +244,118 @@ pub fn load_layout_def(ctx: &mut GuiContext, def: &WidgetDef) -> Result<usize, S
         ));
     }
     Ok(idx)
+}
+
+fn collect_id_map(ctx: &GuiContext, root_idx: usize) -> Result<HashMap<String, usize>, String> {
+    fn visit(
+        ctx: &GuiContext,
+        idx: usize,
+        visited: &mut HashSet<usize>,
+        ids: &mut HashMap<String, usize>,
+    ) -> Result<(), String> {
+        if !visited.insert(idx) {
+            return Ok(());
+        }
+        let Some(widget) = ctx.widgets.get(idx) else {
+            return Err(format!("widget {idx} is out of range"));
+        };
+        let id = widget.base().id.trim();
+        if !id.is_empty() {
+            if let Some(previous) = ids.insert(id.to_string(), idx) {
+                return Err(format!(
+                    "duplicate widget id \"{id}\" at widgets {previous} and {idx}"
+                ));
+            }
+        }
+        for child_idx in subtree_children(ctx, idx) {
+            visit(ctx, child_idx, visited, ids)?;
+        }
+        Ok(())
+    }
+    let mut ids = HashMap::new();
+    let mut visited = HashSet::new();
+    visit(ctx, root_idx, &mut visited, &mut ids)?;
+    Ok(ids)
+}
+
+fn resolve_id(id_map: &HashMap<String, usize>, field: &str, id: &str) -> Result<usize, String> {
+    id_map
+        .get(id)
+        .copied()
+        .ok_or_else(|| format!("{field} references unknown widget id \"{id}\""))
+}
+
+fn child_idx_for_def(
+    ctx: &GuiContext,
+    parent_idx: usize,
+    child_def: &WidgetDef,
+    normal_pos: &mut usize,
+) -> Option<usize> {
+    match child_def.slot.as_deref() {
+        Some("content") => match ctx.widgets.get(parent_idx) {
+            Some(WidgetKind::Dialog(dialog)) => dialog.content_idx,
+            _ => None,
+        },
+        Some("footer") => match ctx.widgets.get(parent_idx) {
+            Some(WidgetKind::Dialog(dialog)) => dialog.footer_idx,
+            _ => None,
+        },
+        Some("first") | Some("left") | Some("top") => match ctx.widgets.get(parent_idx) {
+            Some(WidgetKind::SplitPanel(split)) => split.first_child,
+            _ => None,
+        },
+        Some("second") | Some("right") | Some("bottom") => match ctx.widgets.get(parent_idx) {
+            Some(WidgetKind::SplitPanel(split)) => split.second_child,
+            _ => None,
+        },
+        _ => {
+            let children = ctx.widgets.get(parent_idx)?.children()?;
+            let idx = children.get(*normal_pos).copied();
+            *normal_pos += 1;
+            idx
+        }
+    }
+}
+
+fn resolve_layout_references(
+    ctx: &mut GuiContext,
+    idx: usize,
+    def: &WidgetDef,
+    id_map: &HashMap<String, usize>,
+) -> Result<(), String> {
+    if let Some(widget) = ctx.widgets.get_mut(idx) {
+        let base = widget.base_mut();
+        if let Some(neighbors) = &def.focus_neighbors {
+            if let Some(id) = &neighbors.up {
+                base.focus_neighbor_up = Some(resolve_id(id_map, "focus_neighbors.up", id)?);
+            }
+            if let Some(id) = &neighbors.down {
+                base.focus_neighbor_down = Some(resolve_id(id_map, "focus_neighbors.down", id)?);
+            }
+            if let Some(id) = &neighbors.left {
+                base.focus_neighbor_left = Some(resolve_id(id_map, "focus_neighbors.left", id)?);
+            }
+            if let Some(id) = &neighbors.right {
+                base.focus_neighbor_right = Some(resolve_id(id_map, "focus_neighbors.right", id)?);
+            }
+        }
+        if let Some(id) = &def.label_for {
+            base.label_for = Some(resolve_id(id_map, "label_for", id)?);
+        }
+    }
+    if let Some(children) = &def.children {
+        let mut normal_pos = 0usize;
+        for child_def in children {
+            let Some(child_idx) = child_idx_for_def(ctx, idx, child_def, &mut normal_pos) else {
+                return Err(format!(
+                    "failed to resolve child \"{}\" while resolving id references",
+                    child_def.id.as_deref().unwrap_or(&child_def.widget_type)
+                ));
+            };
+            resolve_layout_references(ctx, child_idx, child_def, id_map)?;
+        }
+    }
+    Ok(())
 }
 
 fn subtree_children(ctx: &GuiContext, idx: usize) -> Vec<usize> {
@@ -422,6 +604,14 @@ fn ensure_finite_f64(name: &str, value: f64) -> Result<f64, String> {
         Err(format!("field \"{name}\" must be finite"))
     }
 }
+
+fn split_pipe_items(text: &str) -> Vec<String> {
+    text.split('|')
+        .map(str::trim)
+        .filter(|item| !item.is_empty())
+        .map(str::to_string)
+        .collect()
+}
 /// Instantiate a single widget from `def` in `ctx` without recursing into children; return its index or an error.
 fn create_from_def(ctx: &mut GuiContext, def: &WidgetDef) -> Result<usize, String> {
     let widget_type = def.widget_type.to_lowercase();
@@ -429,6 +619,8 @@ fn create_from_def(ctx: &mut GuiContext, def: &WidgetDef) -> Result<usize, Strin
         "button" => ctx.add_button(def.text.clone().unwrap_or_default()),
         "label" => ctx.add_label(def.text.clone().unwrap_or_default()),
         "textinput" => ctx.add_text_input(),
+        "textarea" | "textedit" => ctx.add_text_area(),
+        "richlabel" | "richtextlabel" => ctx.add_rich_label(def.text.clone().unwrap_or_default()),
         "checkbox" => ctx.add_checkbox(def.text.clone().unwrap_or_default()),
         "slider" => ctx.add_slider(
             def.min
@@ -473,6 +665,7 @@ fn create_from_def(ctx: &mut GuiContext, def: &WidgetDef) -> Result<usize, Strin
             }
             idx
         }
+        "aspectcontainer" | "aspectratiocontainer" => ctx.add_aspect_ratio_container(),
         "scrollpanel" | "scrollcontainer" => ctx.add_scroll_panel(),
         "ninepatch" => ctx.add_nine_patch(),
         "tabbar" => ctx.add_tab_bar(),
@@ -574,6 +767,31 @@ fn apply_base_props(ctx: &mut GuiContext, idx: usize, def: &WidgetDef) -> Result
         if let Some(ref id) = def.id {
             base.id = id.clone();
         }
+        if let Some(ref class_name) = def.style_class {
+            base.style_class = Some(class_name.clone());
+        }
+        if let Some(ref value) = def.mouse_filter {
+            base.mouse_filter = MouseFilter::parse_str(value)
+                .ok_or_else(|| format!("unsupported mouse_filter value \"{}\"", value))?;
+        }
+        if let Some(value) = def.z_order {
+            base.z_order = value;
+        }
+        if let Some(value) = def.tab_index {
+            base.tab_index = value;
+        }
+        if let Some(ref value) = def.focus_group {
+            base.focus_group = value.clone();
+        }
+        if let Some(ref value) = def.role {
+            base.role = value.clone();
+        }
+        if let Some(ref value) = def.aria_name {
+            base.aria_name = value.clone();
+        }
+        if let Some(ref value) = def.bind {
+            base.bind_key = Some(value.clone());
+        }
         if let Some(vis) = def.visible {
             base.visible = vis;
         }
@@ -644,6 +862,30 @@ fn apply_base_props(ctx: &mut GuiContext, idx: usize, def: &WidgetDef) -> Result
             base.max_width = ensure_finite_f32("max_size[0]", max_w)?.max(base.min_width);
             base.max_height = ensure_finite_f32("max_size[1]", max_h)?.max(base.min_height);
         }
+        if def.anchor_left.is_some()
+            || def.anchor_top.is_some()
+            || def.anchor_right.is_some()
+            || def.anchor_bottom.is_some()
+            || def.anchor_center.is_some()
+        {
+            base.clear_anchors();
+            if let Some(value) = def.anchor_left {
+                base.anchor_left = Some(ensure_finite_f32("anchor_left", value)?);
+            }
+            if let Some(value) = def.anchor_top {
+                base.anchor_top = Some(ensure_finite_f32("anchor_top", value)?);
+            }
+            if let Some(value) = def.anchor_right {
+                base.anchor_right = Some(ensure_finite_f32("anchor_right", value)?);
+            }
+            if let Some(value) = def.anchor_bottom {
+                base.anchor_bottom = Some(ensure_finite_f32("anchor_bottom", value)?);
+            }
+            if let Some([x, y]) = def.anchor_center {
+                base.anchor_center_x = Some(ensure_finite_f32("anchor_center[0]", x)?);
+                base.anchor_center_y = Some(ensure_finite_f32("anchor_center[1]", y)?);
+            }
+        }
     }
     match ctx.widgets.get_mut(idx) {
         Some(WidgetKind::Slider(sl)) => {
@@ -688,9 +930,122 @@ fn apply_base_props(ctx: &mut GuiContext, idx: usize, def: &WidgetDef) -> Result
                 ti.set_text(t.clone());
             }
         }
+        Some(WidgetKind::TextArea(ta)) => {
+            if let Some(ref p) = def.placeholder {
+                ta.placeholder = p.clone();
+            }
+            if let Some(ref t) = def.text {
+                ta.set_text(t.clone());
+            }
+        }
+        Some(WidgetKind::RichLabel(rl)) => {
+            if let Some(ref t) = def.text {
+                rl.text = t.clone();
+            }
+        }
         Some(WidgetKind::ComboBox(combo_box)) => {
+            let items = def.items.clone().or_else(|| {
+                def.text
+                    .as_deref()
+                    .filter(|text| text.contains('|'))
+                    .map(split_pipe_items)
+            });
+            if let Some(items) = items {
+                combo_box.items = items;
+                if !combo_box.items.is_empty() && combo_box.selected_index.is_none() {
+                    combo_box.selected_index = Some(0);
+                }
+            }
             if let Some(value) = def.max_visible_items {
                 combo_box.set_max_visible_items(value);
+            }
+        }
+        Some(WidgetKind::ListBox(list_box)) => {
+            let items = def.items.clone().or_else(|| {
+                def.text
+                    .as_deref()
+                    .filter(|text| text.contains('|'))
+                    .map(split_pipe_items)
+            });
+            if let Some(items) = items {
+                list_box.items = items;
+            }
+        }
+        Some(WidgetKind::TabBar(tab_bar)) => {
+            let items = def.items.clone().or_else(|| {
+                def.text
+                    .as_deref()
+                    .filter(|text| text.contains('|'))
+                    .map(split_pipe_items)
+            });
+            if let Some(items) = items {
+                tab_bar.tabs = items;
+                tab_bar.active_tab = tab_bar.active_tab.min(tab_bar.tabs.len().saturating_sub(1));
+            }
+        }
+        Some(WidgetKind::GUITable(table)) => {
+            if let Some(columns) = &def.columns {
+                match columns {
+                    ColumnsDef::Names(names) => {
+                        table.columns = names
+                            .iter()
+                            .map(|header| TableColumn {
+                                header: header.clone(),
+                                width: 100.0,
+                            })
+                            .collect();
+                    }
+                    ColumnsDef::Objects(columns) => {
+                        table.columns = columns
+                            .iter()
+                            .map(|column| match column {
+                                TableColumnDef::Header(header) => TableColumn {
+                                    header: header.clone(),
+                                    width: 100.0,
+                                },
+                                TableColumnDef::Object { header, width } => TableColumn {
+                                    header: header.clone(),
+                                    width: width.unwrap_or(100.0).max(0.0),
+                                },
+                            })
+                            .collect();
+                    }
+                    ColumnsDef::Count(_) => {}
+                }
+            }
+            if let Some(rows) = &def.rows {
+                table.set_rows(rows.clone());
+            }
+        }
+        Some(WidgetKind::TreeView(tree)) => {
+            if let Some(nodes) = &def.nodes {
+                tree.nodes.clear();
+                tree.root_nodes.clear();
+                tree.selected_node = None;
+                for node in nodes {
+                    let idx = tree.add_node(node.text.clone(), node.parent);
+                    if let Some(expanded) = node.expanded {
+                        tree.nodes[idx].expanded = expanded;
+                    }
+                    if let Some(icon) = &node.icon {
+                        tree.nodes[idx].icon = Some(icon.clone());
+                    }
+                }
+            }
+        }
+        Some(WidgetKind::AspectRatioContainer(container)) => {
+            if let Some(value) = def.ratio {
+                container.ratio = ensure_finite_f32("ratio", value)?.max(0.01);
+            }
+            if let Some(value) = &def.fit {
+                if matches!(value.as_str(), "contain" | "cover" | "stretch") {
+                    container.fit = value.clone();
+                } else {
+                    return Err(format!(
+                        "unsupported aspectcontainer fit value \"{}\"",
+                        value
+                    ));
+                }
             }
         }
         Some(WidgetKind::Layout(lay)) => {
@@ -703,8 +1058,8 @@ fn apply_base_props(ctx: &mut GuiContext, idx: usize, def: &WidgetDef) -> Result
             if let Some(ref justify) = def.justify {
                 lay.justify = justify.clone();
             }
-            if let Some(columns) = def.columns {
-                lay.columns = columns.max(1);
+            if let Some(ColumnsDef::Count(columns)) = &def.columns {
+                lay.columns = (*columns).max(1);
             }
             if let Some(wrap) = def.wrap {
                 lay.wrap = wrap;

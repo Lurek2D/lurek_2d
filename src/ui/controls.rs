@@ -354,6 +354,286 @@ impl Default for TextInput {
         Self::new()
     }
 }
+/// Multi-line editable text field with cursor tracking, selection, and vertical scroll state.
+#[derive(Debug, Clone)]
+pub struct TextArea {
+    /// Shared layout, style, and state fields.
+    pub base: WidgetBase,
+    /// Current text content. Newline characters are preserved.
+    pub text: String,
+    /// Placeholder text shown when `text` is empty.
+    pub placeholder: String,
+    /// Maximum character count; 0 = unlimited.
+    pub max_length: usize,
+    /// Byte offset of the insertion cursor within `text`.
+    pub cursor_pos: usize,
+    /// Optional byte offset anchoring the active selection range.
+    pub selection_anchor: Option<usize>,
+    /// Whether this widget currently holds keyboard focus.
+    pub focused: bool,
+    /// Vertical scroll offset in pixels.
+    pub scroll_y: f32,
+}
+impl TextArea {
+    /// Create an empty multi-line text area.
+    pub fn new() -> Self {
+        Self {
+            base: WidgetBase::new(WidgetType::TextArea),
+            text: String::new(),
+            placeholder: String::new(),
+            max_length: 0,
+            cursor_pos: 0,
+            selection_anchor: None,
+            focused: false,
+            scroll_y: 0.0,
+        }
+    }
+    fn clamp_cursor_to_text(&mut self) {
+        self.cursor_pos = self.cursor_pos.min(self.text.len());
+        while !self.text.is_char_boundary(self.cursor_pos) {
+            self.cursor_pos -= 1;
+        }
+        if let Some(anchor) = self.selection_anchor {
+            let mut anchor = anchor.min(self.text.len());
+            while !self.text.is_char_boundary(anchor) {
+                anchor -= 1;
+            }
+            self.selection_anchor = Some(anchor);
+        }
+    }
+    fn enforce_max_length(&mut self) {
+        if self.max_length > 0 {
+            let limit = TextInput::byte_index_for_char_limit(&self.text, self.max_length);
+            self.text.truncate(limit);
+        }
+        self.clamp_cursor_to_text();
+        if self.selection_anchor == Some(self.cursor_pos) {
+            self.selection_anchor = None;
+        }
+    }
+    fn set_cursor_internal(&mut self, next_pos: usize, extend_selection: bool) -> bool {
+        self.clamp_cursor_to_text();
+        let mut next_pos = next_pos.min(self.text.len());
+        while !self.text.is_char_boundary(next_pos) {
+            next_pos -= 1;
+        }
+        let previous_cursor = self.cursor_pos;
+        let previous_anchor = self.selection_anchor;
+        if extend_selection {
+            if previous_anchor.is_none() {
+                self.selection_anchor = Some(previous_cursor);
+            }
+        } else {
+            self.selection_anchor = None;
+        }
+        self.cursor_pos = next_pos;
+        if self.selection_anchor == Some(self.cursor_pos) {
+            self.selection_anchor = None;
+        }
+        previous_cursor != self.cursor_pos || previous_anchor != self.selection_anchor
+    }
+    /// Return the current selection range as byte offsets, or `None` when no text is selected.
+    pub fn selection_range(&self) -> Option<(usize, usize)> {
+        let anchor = self.selection_anchor?;
+        if anchor == self.cursor_pos {
+            return None;
+        }
+        Some((anchor.min(self.cursor_pos), anchor.max(self.cursor_pos)))
+    }
+    /// Return the current cursor position as a character index instead of a byte offset.
+    pub fn cursor_char_pos(&self) -> usize {
+        self.text[..self.cursor_pos.min(self.text.len())]
+            .chars()
+            .count()
+    }
+    /// Select all text in the text area.
+    pub fn select_all(&mut self) -> bool {
+        if self.text.is_empty() {
+            let had_selection = self.selection_anchor.is_some();
+            self.selection_anchor = None;
+            return had_selection;
+        }
+        let changed = self.selection_anchor != Some(0) || self.cursor_pos != self.text.len();
+        self.selection_anchor = Some(0);
+        self.cursor_pos = self.text.len();
+        changed
+    }
+    /// Delete the active selection range; return `false` when no selection is present.
+    pub fn delete_selection(&mut self) -> bool {
+        let Some((start, end)) = self.selection_range() else {
+            return false;
+        };
+        self.text.drain(start..end);
+        self.cursor_pos = start;
+        self.selection_anchor = None;
+        true
+    }
+    /// Replace the text and clamp it to `max_length` when one is configured.
+    pub fn set_text(&mut self, text: impl Into<String>) {
+        self.text = text.into();
+        self.cursor_pos = self.text.len();
+        self.selection_anchor = None;
+        self.enforce_max_length();
+    }
+    /// Set the maximum character count, truncating existing text when needed.
+    pub fn set_max_length(&mut self, max_length: usize) {
+        self.max_length = max_length;
+        self.enforce_max_length();
+    }
+    /// Insert text at the cursor position, preserving newlines.
+    pub fn insert_text(&mut self, input: &str) -> bool {
+        self.clamp_cursor_to_text();
+        let _ = self.delete_selection();
+        let allowed_input = if self.max_length == 0 {
+            input
+        } else {
+            let remaining = self.max_length.saturating_sub(self.text.chars().count());
+            if remaining == 0 {
+                return false;
+            }
+            let limit = TextInput::byte_index_for_char_limit(input, remaining);
+            &input[..limit]
+        };
+        if allowed_input.is_empty() {
+            return false;
+        }
+        self.text.insert_str(self.cursor_pos, allowed_input);
+        self.cursor_pos += allowed_input.len();
+        self.selection_anchor = None;
+        true
+    }
+    /// Delete the character before the cursor; return `false` if already at position 0.
+    pub fn backspace(&mut self) -> bool {
+        if self.delete_selection() {
+            return true;
+        }
+        if self.cursor_pos == 0 {
+            return false;
+        }
+        let prev = self.text[..self.cursor_pos]
+            .char_indices()
+            .next_back()
+            .map(|(i, _)| i)
+            .unwrap_or(0);
+        self.text.drain(prev..self.cursor_pos);
+        self.cursor_pos = prev;
+        true
+    }
+    /// Delete the character at the cursor; return `false` when already at the end.
+    pub fn delete_forward(&mut self) -> bool {
+        if self.delete_selection() {
+            return true;
+        }
+        if self.cursor_pos >= self.text.len() {
+            return false;
+        }
+        let next = self.text[self.cursor_pos..]
+            .char_indices()
+            .nth(1)
+            .map(|(offset, _)| self.cursor_pos + offset)
+            .unwrap_or(self.text.len());
+        self.text.drain(self.cursor_pos..next);
+        true
+    }
+    /// Move the insertion cursor one character left.
+    pub fn move_cursor_left(&mut self) -> bool {
+        if self.cursor_pos == 0 {
+            self.selection_anchor.take().is_some()
+        } else {
+            let prev = self.text[..self.cursor_pos]
+                .char_indices()
+                .next_back()
+                .map(|(index, _)| index)
+                .unwrap_or(0);
+            self.set_cursor_internal(prev, false)
+        }
+    }
+    /// Move the insertion cursor one character right.
+    pub fn move_cursor_right(&mut self) -> bool {
+        if self.cursor_pos >= self.text.len() {
+            self.selection_anchor.take().is_some()
+        } else {
+            let next = self.text[self.cursor_pos..]
+                .char_indices()
+                .nth(1)
+                .map(|(offset, _)| self.cursor_pos + offset)
+                .unwrap_or(self.text.len());
+            self.set_cursor_internal(next, false)
+        }
+    }
+    /// Move the insertion cursor to the start of the current line.
+    pub fn move_cursor_home(&mut self) -> bool {
+        let prefix = &self.text[..self.cursor_pos.min(self.text.len())];
+        let target = prefix.rfind('\n').map_or(0, |index| index + 1);
+        self.set_cursor_internal(target, false)
+    }
+    /// Move the insertion cursor to the end of the current line.
+    pub fn move_cursor_end(&mut self) -> bool {
+        let suffix = &self.text[self.cursor_pos.min(self.text.len())..];
+        let target = suffix
+            .find('\n')
+            .map_or(self.text.len(), |offset| self.cursor_pos + offset);
+        self.set_cursor_internal(target, false)
+    }
+}
+impl Default for TextArea {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+/// Read-only text label that accepts lightweight inline formatting markers.
+#[derive(Debug, Clone)]
+pub struct RichLabel {
+    /// Shared layout, style, and state fields.
+    pub base: WidgetBase,
+    /// Source text, including lightweight formatting markers.
+    pub text: String,
+}
+impl RichLabel {
+    /// Create a rich label with the supplied formatted source text.
+    pub fn new(text: impl Into<String>) -> Self {
+        let mut base = WidgetBase::new(WidgetType::RichLabel);
+        base.text_wrap = true;
+        Self {
+            base,
+            text: text.into(),
+        }
+    }
+    /// Return text with simple `[b]`, `[/b]`, `[color=...]`, and `[/color]` markers removed.
+    pub fn plain_text(&self) -> String {
+        let mut out = String::with_capacity(self.text.len());
+        let mut chars = self.text.chars().peekable();
+        while let Some(ch) = chars.next() {
+            if ch == '[' {
+                let mut tag = String::new();
+                while let Some(&next) = chars.peek() {
+                    chars.next();
+                    if next == ']' {
+                        break;
+                    }
+                    tag.push(next);
+                }
+                let normalized = tag.to_ascii_lowercase();
+                if matches!(normalized.as_str(), "b" | "/b" | "/color")
+                    || normalized.starts_with("color=")
+                {
+                    continue;
+                }
+                out.push('[');
+                out.push_str(&tag);
+                out.push(']');
+            } else {
+                out.push(ch);
+            }
+        }
+        out
+    }
+}
+impl Default for RichLabel {
+    fn default() -> Self {
+        Self::new("")
+    }
+}
 /// Boolean toggle control with a visible label.
 #[derive(Debug, Clone)]
 pub struct CheckBox {

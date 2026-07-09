@@ -267,6 +267,64 @@ describe("LTileField cell state", function()
         local field = lurek.tilefield.new({ width = 3, height = 3 })
         expect_near(0.0, field:getSunOcclusion(1, 1, 1), 0.001)
     end)
+
+    -- @covers LTileField:beginEdit
+    -- @covers LTileField:commitEdit
+    -- @covers LTileField:getDirtyRects
+    -- @covers LTileField:drainDirtyRects
+    it("groups edits and reports dirty rects with optional chunk coordinates", function()
+        local field = lurek.tilefield.new({ width = 6, height = 6 })
+        field:beginEdit()
+        field:setBlock(2, 2, 1, "move", true)
+        field:setResource(3, 2, 1, "copper")
+        expect_equal(2, #field:getDirtyRects())
+
+        local dirty = field:commitEdit(4)
+        expect_equal(2, #dirty)
+        expect_equal(2, dirty[1].x)
+        expect_equal(1, dirty[1].z)
+        expect_equal(0, dirty[1].cx)
+        expect_equal(0, #field:drainDirtyRects())
+    end)
+
+    -- @covers LTileField:defineBlockWorldSlots
+    it("defines conventional block-world ref slots on the existing field", function()
+        local field = lurek.tilefield.new({ width = 4, height = 4 })
+        local slots = field:defineBlockWorldSlots()
+        expect_equal("foreground", slots[1])
+        field:setRef(2, 2, 1, "foreground", 11)
+        field:setRef(2, 2, 1, "wall", 12)
+        expect_equal(11, field:getRef(2, 2, 1, "foreground"))
+        expect_equal(12, field:getRef(2, 2, 1, "wall"))
+    end)
+
+    -- @covers LTileField:snapshot
+    -- @covers LTileField:restore
+    -- @covers LTileField:writeRefLayer
+    -- @covers LTileField:exportRefLayer
+    it("snapshots and restores block layers, wall refs, resources, and buildable facts", function()
+        local field = lurek.tilefield.new({ width = 4, height = 4, levels = 1 })
+        field:defineBlockWorldSlots()
+        field:setBlock(2, 2, 1, "move", true)
+        field:setCost(2, 2, 1, "move", 5.0)
+        field:setRef(2, 2, 1, "foreground", 20)
+        field:setRef(2, 2, 1, "wall", 30)
+        field:setResource(3, 2, 1, "iron")
+        field:setBuildable(4, 2, 1, false)
+        field:setOccupant(1, 1, 1, 77)
+
+        local snapshot = field:snapshot()
+        local clone = lurek.tilefield.new({ width = 1, height = 1 })
+        clone:restore(snapshot)
+
+        expect_true(clone:blocks(2, 2, 1, "move"))
+        expect_near(5.0, clone:getCost(2, 2, 1, "move"), 0.001)
+        expect_equal(20, clone:getRef(2, 2, 1, "foreground"))
+        expect_equal(30, clone:getRef(2, 2, 1, "wall"))
+        expect_equal("iron", clone:getResource(3, 2, 1))
+        expect_false(clone:isBuildable(4, 2, 1))
+        expect_equal(77, clone:getOccupant(1, 1, 1))
+    end)
 end)
 
 -- @describe LTileField categories and lines

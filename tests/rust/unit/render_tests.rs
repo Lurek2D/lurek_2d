@@ -13,7 +13,9 @@ use lurek2d::render::canvas::Canvas;
 use lurek2d::render::decal_surface::DecalSurface;
 use lurek2d::render::image_effect::ShaderPassDescriptor;
 use lurek2d::render::mesh::{Mesh, MeshDrawMode, MeshError, MeshVertex};
-use lurek2d::render::postfx_pipeline::params_to_uniform;
+use lurek2d::render::postfx_pipeline::{
+    built_in_postfx_shader_sources, params_to_uniform, params_to_uniform_for_effect,
+};
 use lurek2d::render::province_map_pipeline::ProvinceMapUniforms;
 use lurek2d::render::renderer::{
     adaptive_circle_ellipse_segments, BlendMode, CompareMode, DepthMode, DrawMode,
@@ -934,6 +936,44 @@ mod postfx_pipeline_tests {
             assert_eq!(val, (i + 1) as f32, "slot {i} mismatch");
         }
     }
+
+    #[test]
+    fn built_in_postfx_shaders_are_parseable_wgsl() {
+        for (name, source) in built_in_postfx_shader_sources() {
+            wgpu::naga::front::wgsl::parse_str(&source)
+                .unwrap_or_else(|err| panic!("{name} postfx shader should parse: {err}"));
+        }
+    }
+
+    #[test]
+    fn effect_specific_uniforms_map_documented_postfx_parameters() {
+        let mut crt = HashMap::new();
+        crt.insert("scanline_strength".to_string(), 0.25);
+        crt.insert("warp".to_string(), 0.15);
+        crt.insert("rgb_offset".to_string(), 0.002);
+        let crt_uniform = params_to_uniform_for_effect("crt", &crt);
+        assert_eq!(crt_uniform[0], 0.25);
+        assert_eq!(crt_uniform[1], 0.15);
+        assert_eq!(crt_uniform[2], 0.002);
+
+        let mut scanlines = HashMap::new();
+        scanlines.insert("strength".to_string(), 0.6);
+        scanlines.insert("spacing".to_string(), 3.0);
+        let scanline_uniform = params_to_uniform_for_effect("scanlines", &scanlines);
+        assert_eq!(scanline_uniform[0], 3.0);
+        assert_eq!(scanline_uniform[1], 0.6);
+
+        let mut pixelate = HashMap::new();
+        pixelate.insert("block_size".to_string(), 5.0);
+        assert_eq!(params_to_uniform_for_effect("pixelate", &pixelate)[0], 5.0);
+
+        let mut sepia = HashMap::new();
+        sepia.insert("strength".to_string(), 0.75);
+        assert_eq!(params_to_uniform_for_effect("sepia", &sepia)[0], 0.75);
+
+        let scale2x = HashMap::new();
+        assert_eq!(params_to_uniform_for_effect("scale2x", &scale2x), [0.0; 16]);
+    }
 }
 
 mod obj_loader_tests {
@@ -1306,6 +1346,7 @@ mod render_input_validation_tests {
         validate_compound_shape, validate_render_command, validate_render_command_with_category,
         RenderInputError, RenderInputLimits,
     };
+    use lurek2d::render::renderer::PostFxPass;
     use lurek2d::render::shape::{CompoundShape, ShapeCommand};
     use lurek2d::render::{DrawMode, RenderCommand, RenderCommandCategory};
     use lurek2d::runtime::resource_keys::{CanvasKey, FontKey};
@@ -1362,9 +1403,35 @@ mod render_input_validation_tests {
             RenderCommandCategory::Canvas
         );
         assert_eq!(
+            RenderCommand::ApplyEffectToCanvas {
+                source_canvas_key: dummy_canvas_key(),
+                target_canvas_key: dummy_canvas_key(),
+                passes: Vec::new(),
+            }
+            .category(),
+            RenderCommandCategory::Canvas
+        );
+        assert_eq!(
             RenderCommand::BeginPostFx { stack_id: 9 }.category(),
             RenderCommandCategory::Effect
         );
+    }
+
+    #[test]
+    fn validates_canvas_to_canvas_postfx_passes() {
+        let command = RenderCommand::ApplyEffectToCanvas {
+            source_canvas_key: dummy_canvas_key(),
+            target_canvas_key: dummy_canvas_key(),
+            passes: vec![PostFxPass {
+                effect_name: "scale2x".to_string(),
+                params: std::collections::HashMap::new(),
+                shader_id: None,
+                auto_uniforms: false,
+            }],
+        };
+
+        validate_render_command(&command, &RenderInputLimits::default())
+            .expect("canvas-to-canvas postfx command should validate");
     }
 
     #[test]

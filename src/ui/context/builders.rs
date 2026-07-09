@@ -26,6 +26,19 @@ impl GuiContext {
         self.widgets.push(WidgetKind::TextInput(TextInput::new()));
         idx
     }
+    /// Add a `TextArea` widget and return its index.
+    pub fn add_text_area(&mut self) -> usize {
+        let idx = self.widgets.len();
+        self.widgets.push(WidgetKind::TextArea(TextArea::new()));
+        idx
+    }
+    /// Add a `RichLabel` widget and return its index.
+    pub fn add_rich_label(&mut self, text: impl Into<String>) -> usize {
+        let idx = self.widgets.len();
+        self.widgets
+            .push(WidgetKind::RichLabel(RichLabel::new(text)));
+        idx
+    }
     /// Add a `CheckBox` widget with the given label and return its index.
     pub fn add_checkbox(&mut self, text: impl Into<String>) -> usize {
         let idx = self.widgets.len();
@@ -68,6 +81,13 @@ impl GuiContext {
         let idx = self.widgets.len();
         self.widgets
             .push(WidgetKind::Layout(Layout::new(direction)));
+        idx
+    }
+    /// Add an `AspectRatioContainer` and return its index.
+    pub fn add_aspect_ratio_container(&mut self) -> usize {
+        let idx = self.widgets.len();
+        self.widgets
+            .push(WidgetKind::AspectRatioContainer(AspectRatioContainer::new()));
         idx
     }
     /// Add a `ScrollPanel` container and return its index.

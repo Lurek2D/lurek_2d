@@ -51,6 +51,50 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 
 ## Functions
 
+### `lurek.render.applyEffectToCanvas`
+
+Applies a post-processing effect or stack from one canvas into another canvas.
+
+```lua
+lurek.render.applyEffectToCanvas(sourceCanvas, targetCanvas, effectOrStack)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `sourceCanvas` | [LCanvas](#lcanvas) | Canvas used as the source texture. |
+| `targetCanvas` | [LCanvas](#lcanvas) | Canvas receiving the processed output. |
+| `effectOrStack` | [LPostFxEffect](effect.md#lpostfxeffect)|[LPostFxStack](effect.md#lpostfxstack) | Effect or stack created through `lurek.effect`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LCanvas](#lcanvas) | The target canvas handle. |
+
+**Example**
+
+```lua
+do
+
+    local source = lurek.render.newCanvas(32, 32)
+    local target = lurek.render.newCanvas(64, 64)
+    lurek.render.setCanvas(source)
+    lurek.render.clear(0.05, 0.05, 0.08, 1.0)
+    lurek.render.rectangle("fill", 4, 4, 10, 10)
+    lurek.render.circle("fill", 22, 18, 7)
+    lurek.render.setCanvas(nil)
+    local effect = lurek.effect.newEffect("scale2x")
+    local processed = lurek.render.applyEffectToCanvas(source, target, effect)
+    lurek.render.draw(processed, 340, 70)
+    local w, h = processed:getDimensions()
+    lurek.log.info("scale2x canvas output = " .. w .. "x" .. h)
+end
+```
+
+---
+
 ### `lurek.render.applyShaderToCanvas`
 
 Queues a postfx shader pass that mutates a canvas render target after queued canvas draws in the current frame.

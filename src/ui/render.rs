@@ -361,6 +361,58 @@ fn display_text(widget: &WidgetKind) -> Option<&str> {
     }
 }
 
+fn emit_text_lines(
+    lines: Vec<TextLine>,
+    font_key: FontKey,
+    font: Option<&Font>,
+    style: &WidgetStyle,
+    cmds: &mut Vec<RenderCommand>,
+) {
+    for line in lines {
+        cmds.push(RenderCommand::SetScissor(Some((
+            line.clip_rect.x,
+            line.clip_rect.y,
+            line.clip_rect.width,
+            line.clip_rect.height,
+        ))));
+        emit_text_at(&line.text, line.x, line.y, font_key, font, style, cmds);
+    }
+    cmds.push(RenderCommand::SetScissor(None));
+}
+
+fn emit_multiline_text_box(
+    text: &str,
+    base: &WidgetBase,
+    scroll_y: f32,
+    font_key: FontKey,
+    font: Option<&Font>,
+    style: &WidgetStyle,
+    cmds: &mut Vec<RenderCommand>,
+) {
+    let rect = Rect::new(
+        base.x,
+        base.y - scroll_y.max(0.0),
+        base.width,
+        base.height + scroll_y.max(0.0),
+    );
+    let mut lines = layout_text(
+        text,
+        rect,
+        style,
+        font,
+        true,
+        false,
+        TextVAlign::Top,
+        base.padding,
+        &base.text_align,
+    );
+    let clip = Rect::new(base.x, base.y, base.width, base.height);
+    for line in &mut lines {
+        line.clip_rect = clip;
+    }
+    emit_text_lines(lines, font_key, font, style, cmds);
+}
+
 fn widget_icon_glyph(base: &WidgetBase) -> Option<&'static str> {
     base.icon
         .as_deref()
@@ -839,7 +891,10 @@ fn render_widget(
     let font = fonts.get(font_key);
     let style_with_alpha = resolve_style_with_alpha(ctx, base, default_style);
     let style = &style_with_alpha;
-    let draw_widget_chrome = !matches!(widget, WidgetKind::Label(_));
+    let draw_widget_chrome = !matches!(
+        widget,
+        WidgetKind::Label(_) | WidgetKind::RichLabel(_) | WidgetKind::AspectRatioContainer(_)
+    );
     if draw_widget_chrome {
         emit_shadow(base, style, cmds);
         emit_box(base, style, cmds);
@@ -974,6 +1029,86 @@ fn render_widget(
                     h: (base.height - 6.0).max(0.0),
                 });
             }
+        }
+        WidgetKind::TextArea(w) => {
+            if let Some((sel_start, sel_end)) = w.selection_range() {
+                let before = &w.text[..sel_start.min(w.text.len())];
+                let selected = &w.text[sel_start.min(w.text.len())..sel_end.min(w.text.len())];
+                let before_line = before.rsplit('\n').next().unwrap_or_default();
+                let selected_w = measure_text(selected, style, font);
+                let line_idx = before.chars().filter(|ch| *ch == '\n').count() as f32;
+                let selection_x =
+                    base.x + base.padding[3] + 4.0 + measure_text(before_line, style, font);
+                let selection_y =
+                    base.y + base.padding[0] + line_idx * text_line_advance(style, font)
+                        - w.scroll_y.max(0.0);
+                if selected_w > 0.0 && selection_y + text_line_advance(style, font) >= base.y {
+                    cmds.push(RenderCommand::SetColor(
+                        style.fg_color[0],
+                        style.fg_color[1],
+                        style.fg_color[2],
+                        0.22,
+                    ));
+                    cmds.push(RenderCommand::Rectangle {
+                        mode: DrawMode::Fill,
+                        x: selection_x,
+                        y: selection_y.max(base.y),
+                        w: selected_w,
+                        h: text_line_advance(style, font).min(base.y + base.height - selection_y),
+                    });
+                }
+            }
+            let content = if w.text.is_empty() {
+                w.placeholder.as_str()
+            } else {
+                w.text.as_str()
+            };
+            if !content.is_empty() {
+                let mut text_style = style.clone();
+                if w.text.is_empty() {
+                    text_style.fg_color = [0.55, 0.57, 0.64, 1.0];
+                }
+                emit_multiline_text_box(
+                    content,
+                    base,
+                    if w.text.is_empty() { 0.0 } else { w.scroll_y },
+                    font_key,
+                    font,
+                    &text_style,
+                    cmds,
+                );
+            }
+            if w.focused {
+                let before_cursor = &w.text[..w.cursor_pos.min(w.text.len())];
+                let line = before_cursor.chars().filter(|ch| *ch == '\n').count();
+                let prefix = before_cursor.rsplit('\n').next().unwrap_or_default();
+                let cursor_x = base.x + base.padding[3] + 4.0 + measure_text(prefix, style, font);
+                let cursor_y =
+                    base.y + base.padding[0] + line as f32 * text_line_advance(style, font)
+                        - w.scroll_y.max(0.0);
+                if cursor_y + text_line_advance(style, font) >= base.y
+                    && cursor_y <= base.y + base.height
+                {
+                    cmds.push(RenderCommand::SetColor(
+                        style.fg_color[0],
+                        style.fg_color[1],
+                        style.fg_color[2],
+                        0.9,
+                    ));
+                    cmds.push(RenderCommand::Rectangle {
+                        mode: DrawMode::Fill,
+                        x: cursor_x,
+                        y: cursor_y.max(base.y + 2.0),
+                        w: 1.0,
+                        h: (text_line_advance(style, font) - 2.0)
+                            .min(base.y + base.height - cursor_y)
+                            .max(0.0),
+                    });
+                }
+            }
+        }
+        WidgetKind::RichLabel(w) => {
+            emit_multiline_text_box(&w.plain_text(), base, 0.0, font_key, font, style, cmds);
         }
         WidgetKind::ComboBox(w) => {
             emit_combo_box_arrow(base, style, cmds);
@@ -1840,6 +1975,8 @@ fn render_widget(
             | WidgetKind::CheckBox(_)
             | WidgetKind::RadioButton(_)
             | WidgetKind::TextInput(_)
+            | WidgetKind::TextArea(_)
+            | WidgetKind::RichLabel(_)
             | WidgetKind::ComboBox(_)
             | WidgetKind::MenuItem(_)
     );

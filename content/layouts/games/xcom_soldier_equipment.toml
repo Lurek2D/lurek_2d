@@ -37,8 +37,8 @@ widget_type = "panel"
 id = "soldier_3d_canvas"
 x = 96.0
 y = 56.0
-w = 200.0
-h = 384.0
+w = 128.0
+h = 320.0
 tooltip = "Equipment preview"
 
 [[root.children.children]]

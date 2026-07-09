@@ -564,6 +564,36 @@ mod chunk_tests {
         let m = ChunkMap::new(8);
         assert!(m.iter_chunk(99, 99).is_none());
     }
+
+    #[test]
+    fn dirty_chunks_track_tile_batches() {
+        let mut m = ChunkMap::new(4);
+
+        let dirty = m.set_tiles(&[(0, 0, 1), (4, 0, 2), (-1, -1, 3)]);
+
+        assert_eq!(dirty, vec![(-1, -1), (0, 0), (1, 0)]);
+        assert_eq!(m.get_dirty_chunks(), dirty);
+        assert_eq!(m.drain_dirty_chunks(), dirty);
+        assert!(m.get_dirty_chunks().is_empty());
+    }
+
+    #[test]
+    fn chunk_bytes_roundtrip_and_validate_size() {
+        let mut source = ChunkMap::new(4);
+        source.set_tile(1, 2, 9);
+        source.set_tile(3, 3, 12);
+
+        let bytes = source.chunk_to_bytes(0, 0).expect("loaded chunk bytes");
+        let mut restored = ChunkMap::new(4);
+        restored.load_chunk_from_bytes(2, -1, &bytes).unwrap();
+
+        assert_eq!(restored.get_tile(9, -2), 9);
+        assert_eq!(restored.get_tile(11, -1), 12);
+        assert_eq!(restored.get_dirty_chunks(), vec![(2, -1)]);
+
+        let mut wrong_size = ChunkMap::new(8);
+        assert!(wrong_size.load_chunk_from_bytes(0, 0, &bytes).is_err());
+    }
 }
 
 mod large_map_renderer_tests {

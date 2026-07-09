@@ -2313,6 +2313,19 @@ do
     lurek.log.info("dirty=" .. tostring(terrain:isDirty()))
 end
 
+--@api: LTerrain:getDirtyChunks
+do
+
+    local world = lurek.physics.newWorld(0, 400)
+    local terrain = lurek.physics.newTerrain(32, 32, 4, world)
+    terrain:fillAll(true)
+    local dirty = terrain:getDirtyChunks()
+    terrain:flush(1)
+    local remaining = terrain:getDirtyChunks()
+    lurek.log.info("terrain dirty before=" .. tostring(#dirty))
+    lurek.log.info("terrain dirty after budget=" .. tostring(#remaining))
+end
+
 --@api: LTerrain:loadFromBytes
 do
 
@@ -2837,6 +2850,18 @@ do
     local bytes = liquid:toBytes()
     lurek.log.info("liquid bytes=" .. tostring(#bytes))
     lurek.log.info("liquid type=" .. tostring(liquid:type()))
+end
+
+--@api: LLiquidMap:getDirtyChunks
+do
+
+    local world = lurek.physics.newWorld(0, 0)
+    local liquid = lurek.physics.newLiquidMap(8, 8, 8, world)
+    liquid:setCell(2, 3, 0.75, "water")
+    local dirty = liquid:getDirtyChunks()
+    local first = dirty[1] or { cx = -1, cy = -1 }
+    lurek.log.info("liquid dirty chunks=" .. tostring(#dirty))
+    lurek.log.info("liquid first dirty=" .. tostring(first.cx) .. "," .. tostring(first.cy))
 end
 
 --@api: LLiquidMap:loadFromBytes

@@ -82,7 +82,12 @@ impl GuiContext {
             let h = rect.height.max(1.0) as u32;
             let style_with_alpha = resolve_style_with_alpha(&layout_ctx, base, &default_style);
             let style = &style_with_alpha;
-            let draw_widget_chrome = !matches!(widget, WidgetKind::Label(_));
+            let draw_widget_chrome = !matches!(
+                widget,
+                WidgetKind::Label(_)
+                    | WidgetKind::RichLabel(_)
+                    | WidgetKind::AspectRatioContainer(_)
+            );
             if draw_widget_chrome {
                 let [sr, sg, sb, sa] = style.shadow_color;
                 if sa > 0.0 {
@@ -497,6 +502,79 @@ impl GuiContext {
                                 })
                                 .unwrap_or(ti.cursor_pos.min(ti.text.len()) as i32 * 6);
                         img.draw_rect(cursor_x, y + 3, 1, h.saturating_sub(6), fr, fg, fb, 220);
+                    }
+                    skip_text = true;
+                }
+                WidgetKind::TextArea(ta) => {
+                    let text = if ta.text.is_empty() {
+                        ta.placeholder.as_str()
+                    } else {
+                        ta.text.as_str()
+                    };
+                    let (tr, tg, tb) = if ta.text.is_empty() {
+                        (120, 125, 145)
+                    } else {
+                        (fr, fg, fb)
+                    };
+                    let line_h = cpu_text_height(ui_font.as_ref()).max(12) + 4;
+                    let first_line = (ta.scroll_y.max(0.0) as i32 / line_h).max(0) as usize;
+                    let visible_lines = ((h as i32 / line_h).max(1) as usize).saturating_add(1);
+                    for (line_idx, line) in text
+                        .lines()
+                        .enumerate()
+                        .skip(first_line)
+                        .take(visible_lines)
+                    {
+                        let ty =
+                            y + base.padding[0] as i32 + (line_idx - first_line) as i32 * line_h;
+                        if ty >= y && ty < y + h as i32 {
+                            draw_cpu_text(
+                                &mut img,
+                                ui_font.as_ref(),
+                                line,
+                                x + base.padding[3] as i32 + 4,
+                                ty,
+                                tr,
+                                tg,
+                                tb,
+                            );
+                        }
+                    }
+                    if ta.focused {
+                        let before_cursor = &ta.text[..ta.cursor_pos.min(ta.text.len())];
+                        let line = before_cursor.chars().filter(|ch| *ch == '\n').count();
+                        let prefix = before_cursor.rsplit('\n').next().unwrap_or_default();
+                        let cursor_x = x
+                            + base.padding[3] as i32
+                            + 4
+                            + ui_font
+                                .as_ref()
+                                .map(|f| f.text_width(prefix) as i32)
+                                .unwrap_or(prefix.chars().count() as i32 * 6);
+                        let cursor_y =
+                            y + base.padding[0] as i32 + line as i32 * line_h - ta.scroll_y as i32;
+                        if cursor_y >= y && cursor_y < y + h as i32 {
+                            img.draw_rect(cursor_x, cursor_y, 1, line_h as u32, fr, fg, fb, 220);
+                        }
+                    }
+                    skip_text = true;
+                }
+                WidgetKind::RichLabel(rl) => {
+                    let line_h = cpu_text_height(ui_font.as_ref()).max(12) + 4;
+                    for (line_idx, line) in rl.plain_text().lines().enumerate() {
+                        let ty = y + base.padding[0] as i32 + line_idx as i32 * line_h;
+                        if ty >= y && ty < y + h as i32 {
+                            draw_cpu_text(
+                                &mut img,
+                                ui_font.as_ref(),
+                                line,
+                                x + base.padding[3] as i32 + 4,
+                                ty,
+                                fr,
+                                fg,
+                                fb,
+                            );
+                        }
                     }
                     skip_text = true;
                 }
@@ -1332,6 +1410,7 @@ impl GuiContext {
                 }
                 WidgetKind::Panel(_)
                 | WidgetKind::Layout(_)
+                | WidgetKind::AspectRatioContainer(_)
                 | WidgetKind::ScrollPanel(_)
                 | WidgetKind::StackContainer(_)
                 | WidgetKind::TabContainer(_)

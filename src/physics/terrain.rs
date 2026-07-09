@@ -604,6 +604,17 @@ impl TerrainMap {
         !self.dirty_chunks.is_empty()
     }
 
+    /// Return chunks pending a collider rebuild in deterministic order.
+    pub fn dirty_chunks(&self) -> Vec<(u32, u32)> {
+        let mut chunks = self
+            .dirty_chunks
+            .iter()
+            .map(|chunk| (chunk.cx, chunk.cy))
+            .collect::<Vec<_>>();
+        chunks.sort();
+        chunks
+    }
+
     /// Mark the chunk containing `(cx, cy)` as dirty.
     fn mark_dirty(&mut self, cx: u32, cy: u32) {
         self.dirty_chunks.insert(ChunkId {

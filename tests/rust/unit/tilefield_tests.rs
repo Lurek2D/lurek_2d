@@ -48,6 +48,42 @@ fn cell_refs_store_author_defined_slots() {
 }
 
 #[test]
+fn edit_dirty_rects_can_be_drained_as_a_batch() {
+    let mut field = TileField::new(4, 4, 1, TileTopology::Square).unwrap();
+
+    field.begin_edit();
+    field
+        .set_ref(CellCoord { x: 1, y: 1, z: 0 }, "foreground".to_string(), 7)
+        .unwrap();
+    field
+        .set_resource(CellCoord { x: 2, y: 1, z: 0 }, Some("copper".to_string()))
+        .unwrap();
+
+    assert_eq!(field.dirty_rects().len(), 2);
+    let rects = field.commit_edit();
+    assert_eq!(rects, vec![(1, 1, 0, 1, 1), (2, 1, 0, 1, 1)]);
+    assert!(field.dirty_rects().is_empty());
+}
+
+#[test]
+fn snapshot_support_lists_are_deterministic() {
+    let mut field = TileField::new(4, 4, 1, TileTopology::Square).unwrap();
+    field
+        .set_resource(CellCoord { x: 2, y: 0, z: 0 }, Some("ore".to_string()))
+        .unwrap();
+    field
+        .set_buildable(CellCoord { x: 1, y: 0, z: 0 }, false)
+        .unwrap();
+    field
+        .set_occupant(CellCoord { x: 3, y: 0, z: 0 }, 42)
+        .unwrap();
+
+    assert_eq!(field.resource_cells()[0].1, "ore");
+    assert_eq!(field.buildable_cells()[0].1, false);
+    assert_eq!(field.occupant_cells()[0].1, 42);
+}
+
+#[test]
 fn hex_line_uses_hex_topology() {
     let field = TileField::new(8, 8, 1, TileTopology::Hex).unwrap();
     let cells = field

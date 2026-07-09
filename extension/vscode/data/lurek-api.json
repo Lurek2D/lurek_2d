@@ -1,6 +1,6 @@
 {
   "version": "auto-generated",
-  "generated": "2026-07-08",
+  "generated": "2026-07-09",
   "modules": [
     {
       "name": "agent",
@@ -25177,6 +25177,36 @@
           "objectType": null
         },
         {
+          "name": "applyEffectToCanvas",
+          "fullPath": "lurek.render.applyEffectToCanvas",
+          "signature": "lurek.render.applyEffectToCanvas(sourceCanvas, targetCanvas, effectOrStack)",
+          "description": "Applies a post-processing effect or stack from one canvas into another canvas.",
+          "parameters": [
+            {
+              "name": "sourceCanvas",
+              "type": "LCanvas",
+              "description": "Canvas used as the source texture.",
+              "optional": false
+            },
+            {
+              "name": "targetCanvas",
+              "type": "LCanvas",
+              "description": "Canvas receiving the processed output.",
+              "optional": false
+            },
+            {
+              "name": "effectOrStack",
+              "type": "LPostFxEffect|LPostFxStack",
+              "description": "Effect or stack created through `lurek.effect`.",
+              "optional": false
+            }
+          ],
+          "returns": "LCanvas",
+          "returnType": "LCanvas",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "setCanvas",
           "fullPath": "lurek.render.setCanvas",
           "signature": "([ud])",
@@ -31570,6 +31600,35 @@
           "objectType": null
         },
         {
+          "name": "newTextArea",
+          "fullPath": "lurek.ui.newTextArea",
+          "signature": "()",
+          "description": "Creates a new multi-line text area widget.",
+          "parameters": [],
+          "returns": "LTextArea",
+          "returnType": "LTextArea",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newRichLabel",
+          "fullPath": "lurek.ui.newRichLabel",
+          "signature": "([text])",
+          "description": "Creates a new rich label with simple inline formatting spans.",
+          "parameters": [
+            {
+              "name": "text",
+              "type": "string",
+              "description": "The initial rich label text.",
+              "optional": true
+            }
+          ],
+          "returns": "LRichLabel",
+          "returnType": "LRichLabel",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "newCheckbox",
           "fullPath": "lurek.ui.newCheckbox",
           "signature": "([text])",
@@ -31665,6 +31724,17 @@
           "parameters": [],
           "returns": "LPanel",
           "returnType": "LPanel",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newAspectRatioContainer",
+          "fullPath": "lurek.ui.newAspectRatioContainer",
+          "signature": "()",
+          "description": "Creates a container that fits its child to a fixed aspect ratio.",
+          "parameters": [],
+          "returns": "LAspectRatioContainer",
+          "returnType": "LAspectRatioContainer",
           "isMethod": false,
           "objectType": null
         },
@@ -41572,6 +41642,1527 @@
           "returnType": "boolean",
           "isMethod": true,
           "objectType": "LArray"
+        }
+      ]
+    },
+    {
+      "name": "LAspectRatioContainer",
+      "description": "Adds aspect-container-specific methods.",
+      "methods": [
+        {
+          "name": "setRatio",
+          "fullPath": "LAspectRatioContainer:setRatio",
+          "signature": "(ratio)",
+          "description": "Sets the child aspect ratio used by this container.",
+          "parameters": [
+            {
+              "name": "ratio",
+              "type": "number",
+              "description": "Width divided by height; values below 0.01 are clamped.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "getRatio",
+          "fullPath": "LAspectRatioContainer:getRatio",
+          "signature": "()",
+          "description": "Returns the child aspect ratio used by this container.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setFit",
+          "fullPath": "LAspectRatioContainer:setFit",
+          "signature": "(fit)",
+          "description": "Sets how the child is fit into the aspect rectangle.",
+          "parameters": [
+            {
+              "name": "fit",
+              "type": "string",
+              "description": "`contain`, `cover`, or `stretch`.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "getFit",
+          "fullPath": "LAspectRatioContainer:getFit",
+          "signature": "()",
+          "description": "Returns how the child is fit into the aspect rectangle.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "type",
+          "fullPath": "LAspectRatioContainer.type",
+          "signature": "()",
+          "description": "Returns the type name string of this widget (e.g. \"LButton\", \"LSlider\").",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LAspectRatioContainer.typeOf",
+          "signature": "(name)",
+          "description": "Checks whether this widget matches the given type name, including base types \"LWidget\" and \"Object\".",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "The type name to check against.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setPosition",
+          "fullPath": "LAspectRatioContainer.setPosition",
+          "signature": "(x, y)",
+          "description": "Sets the local position of this widget relative to its parent.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "Horizontal position in pixels.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Vertical position in pixels.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "getPosition",
+          "fullPath": "LAspectRatioContainer.getPosition",
+          "signature": "()",
+          "description": "Returns the local position of this widget relative to its parent.",
+          "parameters": [],
+          "returns": "number, number",
+          "returnType": "number, number",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setSize",
+          "fullPath": "LAspectRatioContainer.setSize",
+          "signature": "(w, h)",
+          "description": "Sets the width and height of this widget in pixels.",
+          "parameters": [
+            {
+              "name": "w",
+              "type": "number",
+              "description": "Width in pixels.",
+              "optional": false
+            },
+            {
+              "name": "h",
+              "type": "number",
+              "description": "Height in pixels.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "getSize",
+          "fullPath": "LAspectRatioContainer.getSize",
+          "signature": "()",
+          "description": "Returns the width and height of this widget.",
+          "parameters": [],
+          "returns": "number, number",
+          "returnType": "number, number",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setFont",
+          "fullPath": "LAspectRatioContainer.setFont",
+          "signature": "(font_ud)",
+          "description": "Assigns a specific font to this widget and its descendants unless overridden further down the tree.",
+          "parameters": [
+            {
+              "name": "font",
+              "type": "LFont",
+              "description": "Font handle to use for this widget subtree.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "clearFont",
+          "fullPath": "LAspectRatioContainer.clearFont",
+          "signature": "()",
+          "description": "Clears any font override on this widget so it inherits from its parent again.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "getRect",
+          "fullPath": "LAspectRatioContainer.getRect",
+          "signature": "()",
+          "description": "Returns the computed bounding rectangle of this widget in screen coordinates after layout.",
+          "parameters": [],
+          "returns": "number, number, number, number",
+          "returnType": "number, number, number, number",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setStyleClass",
+          "fullPath": "LAspectRatioContainer.setStyleClass",
+          "signature": "(class)",
+          "description": "Sets the style class of this widget.",
+          "parameters": [
+            {
+              "name": "class",
+              "type": "string",
+              "description": "The style class name.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "getStyleClass",
+          "fullPath": "LAspectRatioContainer.getStyleClass",
+          "signature": "()",
+          "description": "Returns the style class of this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setIcon",
+          "fullPath": "LAspectRatioContainer.setIcon",
+          "signature": "(icon)",
+          "description": "Sets this widget's built-in UI icon by semantic name.",
+          "parameters": [
+            {
+              "name": "icon",
+              "type": "string",
+              "description": "Built-in icon name such as \"save\", \"settings\", or \"inventory\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "getIcon",
+          "fullPath": "LAspectRatioContainer.getIcon",
+          "signature": "()",
+          "description": "Returns this widget's assigned built-in icon name, or nil when no icon is assigned.",
+          "parameters": [],
+          "returns": "string|nil",
+          "returnType": "string|nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "clearIcon",
+          "fullPath": "LAspectRatioContainer.clearIcon",
+          "signature": "()",
+          "description": "Clears this widget's assigned built-in icon.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setIconPosition",
+          "fullPath": "LAspectRatioContainer.setIconPosition",
+          "signature": "(position)",
+          "description": "Sets where this widget's icon is placed relative to its text.",
+          "parameters": [
+            {
+              "name": "position",
+              "type": "string",
+              "description": "One of \"left\", \"right\", \"top\", \"bottom\", or \"only\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "getIconPosition",
+          "fullPath": "LAspectRatioContainer.getIconPosition",
+          "signature": "()",
+          "description": "Returns this widget's icon placement token.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setIconSize",
+          "fullPath": "LAspectRatioContainer.setIconSize",
+          "signature": "(size)",
+          "description": "Sets this widget's requested icon size in pixels.",
+          "parameters": [
+            {
+              "name": "size",
+              "type": "number",
+              "description": "Pixel size; 0 uses the widget font size.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "getIconSize",
+          "fullPath": "LAspectRatioContainer.getIconSize",
+          "signature": "()",
+          "description": "Returns this widget's requested icon size in pixels.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setMouseFilter",
+          "fullPath": "LAspectRatioContainer.setMouseFilter",
+          "signature": "(filter)",
+          "description": "Sets the mouse filter for this widget (\"stop\", \"pass\", \"ignore\").",
+          "parameters": [
+            {
+              "name": "filter",
+              "type": "string",
+              "description": "The mouse filter type.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setTextWrap",
+          "fullPath": "LAspectRatioContainer.setTextWrap",
+          "signature": "(wrap)",
+          "description": "Enables or disables word-wrap for text inside this widget.",
+          "parameters": [
+            {
+              "name": "wrap",
+              "type": "boolean",
+              "description": "True to wrap text, false for single-line.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setTextEllipsis",
+          "fullPath": "LAspectRatioContainer.setTextEllipsis",
+          "signature": "(ellipsis)",
+          "description": "Enables or disables ellipsis clipping for overflowing single-line text.",
+          "parameters": [
+            {
+              "name": "ellipsis",
+              "type": "boolean",
+              "description": "True to enable ellipsis on overflow.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setTextVAlign",
+          "fullPath": "LAspectRatioContainer.setTextVAlign",
+          "signature": "(align)",
+          "description": "Sets the vertical alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Vertical alignment: \"top\", \"middle\", or \"bottom\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setTextAlign",
+          "fullPath": "LAspectRatioContainer.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LAspectRatioContainer.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setFocusable",
+          "fullPath": "LAspectRatioContainer.setFocusable",
+          "signature": "(value)",
+          "description": "Sets whether this widget participates in keyboard focus traversal.",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "boolean",
+              "description": "True to allow focus traversal; false to skip this widget.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setTabIndex",
+          "fullPath": "LAspectRatioContainer.setTabIndex",
+          "signature": "(value)",
+          "description": "Sets the tab-order index for this widget.",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "integer",
+              "description": "Tab-order index.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setFocusGroup",
+          "fullPath": "LAspectRatioContainer.setFocusGroup",
+          "signature": "(group)",
+          "description": "Sets the focus traversal group for this widget.",
+          "parameters": [
+            {
+              "name": "group",
+              "type": "string",
+              "description": "Focus group name; empty string means the default/global group.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setFocusNeighbor",
+          "fullPath": "LAspectRatioContainer.setFocusNeighbor",
+          "signature": "(direction, [target])",
+          "description": "Sets an explicit directional focus neighbor for this widget.",
+          "parameters": [
+            {
+              "name": "direction",
+              "type": "string",
+              "description": "Neighbor direction: \"up\", \"down\", \"left\", or \"right\".",
+              "optional": false
+            },
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the neighbor.",
+              "optional": true
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setRole",
+          "fullPath": "LAspectRatioContainer.setRole",
+          "signature": "(role)",
+          "description": "Sets a semantic role string for this widget.",
+          "parameters": [
+            {
+              "name": "role",
+              "type": "string",
+              "description": "Semantic role name.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "getRole",
+          "fullPath": "LAspectRatioContainer.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setAriaName",
+          "fullPath": "LAspectRatioContainer.setAriaName",
+          "signature": "(name)",
+          "description": "Sets the accessible name metadata for this widget.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Accessible name value.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LAspectRatioContainer.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LAspectRatioContainer.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LAspectRatioContainer.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "getMouseFilter",
+          "fullPath": "LAspectRatioContainer.getMouseFilter",
+          "signature": "()",
+          "description": "Returns the mouse filter of this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setVisible",
+          "fullPath": "LAspectRatioContainer.setVisible",
+          "signature": "(v)",
+          "description": "Shows or hides this widget. Hidden widgets are not drawn and do not receive input.",
+          "parameters": [
+            {
+              "name": "v",
+              "type": "boolean",
+              "description": "True to show, false to hide.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "isVisible",
+          "fullPath": "LAspectRatioContainer.isVisible",
+          "signature": "()",
+          "description": "Returns whether this widget is currently visible.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setEnabled",
+          "fullPath": "LAspectRatioContainer.setEnabled",
+          "signature": "(v)",
+          "description": "Enables or disables this widget. Disabled widgets appear grayed out and ignore input.",
+          "parameters": [
+            {
+              "name": "v",
+              "type": "boolean",
+              "description": "True to enable, false to disable.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "isEnabled",
+          "fullPath": "LAspectRatioContainer.isEnabled",
+          "signature": "()",
+          "description": "Returns whether this widget is currently enabled and can receive input.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setId",
+          "fullPath": "LAspectRatioContainer.setId",
+          "signature": "(id)",
+          "description": "Assigns a string identifier to this widget for lookup with findById.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "string",
+              "description": "A unique identifier string.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "getId",
+          "fullPath": "LAspectRatioContainer.getId",
+          "signature": "()",
+          "description": "Returns the string identifier assigned to this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setTooltip",
+          "fullPath": "LAspectRatioContainer.setTooltip",
+          "signature": "(text)",
+          "description": "Sets the tooltip text shown when the user hovers over this widget.",
+          "parameters": [
+            {
+              "name": "text",
+              "type": "string",
+              "description": "The tooltip message.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "getTooltip",
+          "fullPath": "LAspectRatioContainer.getTooltip",
+          "signature": "()",
+          "description": "Returns the tooltip text of this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "getState",
+          "fullPath": "LAspectRatioContainer.getState",
+          "signature": "()",
+          "description": "Returns the current interaction state of this widget (e.g. \"normal\", \"hovered\", \"pressed\", \"disabled\").",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "addChild",
+          "fullPath": "LAspectRatioContainer.addChild",
+          "signature": "(child)",
+          "description": "Adds a child widget to this widget's hierarchy.",
+          "parameters": [
+            {
+              "name": "child",
+              "type": "LUiWidget|integer",
+              "description": "The child widget table or widget index to add.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "removeChild",
+          "fullPath": "LAspectRatioContainer.removeChild",
+          "signature": "(child)",
+          "description": "Removes a child widget from this widget's hierarchy.",
+          "parameters": [
+            {
+              "name": "child",
+              "type": "LUiWidget|integer",
+              "description": "The child widget table or widget index to remove.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "getChildCount",
+          "fullPath": "LAspectRatioContainer.getChildCount",
+          "signature": "()",
+          "description": "Returns the number of direct child widgets attached to this widget.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "getChildren",
+          "fullPath": "LAspectRatioContainer.getChildren",
+          "signature": "()",
+          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "findById",
+          "fullPath": "LAspectRatioContainer.findById",
+          "signature": "(id)",
+          "description": "Searches this widget's subtree for a child with the given ID.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "string",
+              "description": "The widget ID to search for.",
+              "optional": false
+            }
+          ],
+          "returns": "LWidget",
+          "returnType": "LWidget",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setOnClick",
+          "fullPath": "LAspectRatioContainer.setOnClick",
+          "signature": "(f)",
+          "description": "Registers a callback function invoked when this widget is clicked.",
+          "parameters": [
+            {
+              "name": "f",
+              "type": "function",
+              "description": "Callback receiving the widget index as argument.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setOnChange",
+          "fullPath": "LAspectRatioContainer.setOnChange",
+          "signature": "(f)",
+          "description": "Registers a callback function invoked when this widget's value changes.",
+          "parameters": [
+            {
+              "name": "f",
+              "type": "function",
+              "description": "Callback receiving the widget index as argument.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setOnDraw",
+          "fullPath": "LAspectRatioContainer.setOnDraw",
+          "signature": "(f)",
+          "description": "Registers a custom draw callback for this widget, invoked each frame during the draw pass.",
+          "parameters": [
+            {
+              "name": "f",
+              "type": "function",
+              "description": "Callback receiving a rect table {x, y, w, h} with the computed bounds.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setShader",
+          "fullPath": "LAspectRatioContainer.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LAspectRatioContainer.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "containsPoint",
+          "fullPath": "LAspectRatioContainer.containsPoint",
+          "signature": "(x, y)",
+          "description": "Tests whether the given screen-space point is inside this widget's bounds.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "X coordinate in screen pixels.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Y coordinate in screen pixels.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setPadding",
+          "fullPath": "LAspectRatioContainer.setPadding",
+          "signature": "LUiWidget:setPadding(top, [right], [bottom], [left])",
+          "description": "Sets the inner padding of this widget. Accepts 1 to 4 values (top, right?, bottom?, left?) following CSS shorthand rules.",
+          "parameters": [
+            {
+              "name": "top",
+              "type": "number",
+              "description": "Top padding in pixels (also used as default for other sides).",
+              "optional": false
+            },
+            {
+              "name": "right",
+              "type": "number",
+              "description": "Right padding. Defaults to top.",
+              "optional": true
+            },
+            {
+              "name": "bottom",
+              "type": "number",
+              "description": "Bottom padding. Defaults to top.",
+              "optional": true
+            },
+            {
+              "name": "left",
+              "type": "number",
+              "description": "Left padding. Defaults to right.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "getPadding",
+          "fullPath": "LAspectRatioContainer.getPadding",
+          "signature": "()",
+          "description": "Returns the inner padding of this widget.",
+          "parameters": [],
+          "returns": "number, number, number, number",
+          "returnType": "number, number, number, number",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setMargin",
+          "fullPath": "LAspectRatioContainer.setMargin",
+          "signature": "LUiWidget:setMargin(top, [right], [bottom], [left])",
+          "description": "Sets the outer margin of this widget. Accepts 1 to 4 values (top, right?, bottom?, left?) following CSS shorthand rules.",
+          "parameters": [
+            {
+              "name": "top",
+              "type": "number",
+              "description": "Top margin in pixels (also used as default for other sides).",
+              "optional": false
+            },
+            {
+              "name": "right",
+              "type": "number",
+              "description": "Right margin. Defaults to top.",
+              "optional": true
+            },
+            {
+              "name": "bottom",
+              "type": "number",
+              "description": "Bottom margin. Defaults to top.",
+              "optional": true
+            },
+            {
+              "name": "left",
+              "type": "number",
+              "description": "Left margin. Defaults to right.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "getMargin",
+          "fullPath": "LAspectRatioContainer.getMargin",
+          "signature": "()",
+          "description": "Returns the outer margin of this widget.",
+          "parameters": [],
+          "returns": "number, number, number, number",
+          "returnType": "number, number, number, number",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setZOrder",
+          "fullPath": "LAspectRatioContainer.setZOrder",
+          "signature": "(z)",
+          "description": "Sets the z-order (draw priority) of this widget. Higher values draw on top.",
+          "parameters": [
+            {
+              "name": "z",
+              "type": "integer",
+              "description": "The z-order integer value.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "getZOrder",
+          "fullPath": "LAspectRatioContainer.getZOrder",
+          "signature": "()",
+          "description": "Returns the z-order (draw priority) of this widget.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setMinSize",
+          "fullPath": "LAspectRatioContainer.setMinSize",
+          "signature": "(w, h)",
+          "description": "Sets the minimum allowed width and height for this widget during layout.",
+          "parameters": [
+            {
+              "name": "w",
+              "type": "number",
+              "description": "Minimum width in pixels.",
+              "optional": false
+            },
+            {
+              "name": "h",
+              "type": "number",
+              "description": "Minimum height in pixels.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "getMinSize",
+          "fullPath": "LAspectRatioContainer.getMinSize",
+          "signature": "()",
+          "description": "Returns the minimum width and height of this widget.",
+          "parameters": [],
+          "returns": "number, number",
+          "returnType": "number, number",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setMaxSize",
+          "fullPath": "LAspectRatioContainer.setMaxSize",
+          "signature": "(w, h)",
+          "description": "Sets the maximum allowed width and height for this widget during layout.",
+          "parameters": [
+            {
+              "name": "w",
+              "type": "number",
+              "description": "Maximum width in pixels.",
+              "optional": false
+            },
+            {
+              "name": "h",
+              "type": "number",
+              "description": "Maximum height in pixels.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "getMaxSize",
+          "fullPath": "LAspectRatioContainer.getMaxSize",
+          "signature": "()",
+          "description": "Returns the maximum width and height of this widget.",
+          "parameters": [],
+          "returns": "number, number",
+          "returnType": "number, number",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setAnchor",
+          "fullPath": "LAspectRatioContainer.setAnchor",
+          "signature": "LUiWidget:setAnchor([left], [top], [right], [bottom])",
+          "description": "Anchors this widget to its parent's edges. Pass nil for any side to leave it unanchored.",
+          "parameters": [
+            {
+              "name": "left",
+              "type": "number",
+              "description": "Distance from parent's left edge, or nil.",
+              "optional": true
+            },
+            {
+              "name": "top",
+              "type": "number",
+              "description": "Distance from parent's top edge, or nil.",
+              "optional": true
+            },
+            {
+              "name": "right",
+              "type": "number",
+              "description": "Distance from parent's right edge, or nil.",
+              "optional": true
+            },
+            {
+              "name": "bottom",
+              "type": "number",
+              "description": "Distance from parent's bottom edge, or nil.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setAnchorCenter",
+          "fullPath": "LAspectRatioContainer.setAnchorCenter",
+          "signature": "([cx], [cy])",
+          "description": "Centers this widget within its parent using proportional anchor offsets (0.0 to 1.0).",
+          "parameters": [
+            {
+              "name": "cx",
+              "type": "number",
+              "description": "Horizontal center fraction (0.5 = centered).",
+              "optional": true
+            },
+            {
+              "name": "cy",
+              "type": "number",
+              "description": "Vertical center fraction (0.5 = centered).",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "clearAnchor",
+          "fullPath": "LAspectRatioContainer.clearAnchor",
+          "signature": "()",
+          "description": "Removes all anchor constraints from this widget.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setFlexGrow",
+          "fullPath": "LAspectRatioContainer.setFlexGrow",
+          "signature": "(grow)",
+          "description": "Sets the flex-grow factor controlling how much extra space this widget receives in a layout.",
+          "parameters": [
+            {
+              "name": "grow",
+              "type": "number",
+              "description": "The grow factor (0 = no growth).",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "getFlexGrow",
+          "fullPath": "LAspectRatioContainer.getFlexGrow",
+          "signature": "()",
+          "description": "Returns the flex-grow factor of this widget.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setFlexShrink",
+          "fullPath": "LAspectRatioContainer.setFlexShrink",
+          "signature": "(shrink)",
+          "description": "Sets the flex-shrink factor controlling how much this widget shrinks when layout space is insufficient.",
+          "parameters": [
+            {
+              "name": "shrink",
+              "type": "number",
+              "description": "The shrink factor (0 = no shrinkage).",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "getFlexShrink",
+          "fullPath": "LAspectRatioContainer.getFlexShrink",
+          "signature": "()",
+          "description": "Returns the flex-shrink factor of this widget.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "bind",
+          "fullPath": "LAspectRatioContainer.bind",
+          "signature": "(key)",
+          "description": "Binds this widget to a data key for use with update_bindings.",
+          "parameters": [
+            {
+              "name": "key",
+              "type": "string",
+              "description": "The binding key name.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setBindKey",
+          "fullPath": "LAspectRatioContainer.setBindKey",
+          "signature": "(key)",
+          "description": "Binds this widget to a data key and reports whether the widget exists.",
+          "parameters": [
+            {
+              "name": "key",
+              "type": "string",
+              "description": "The binding key name.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "unbind",
+          "fullPath": "LAspectRatioContainer.unbind",
+          "signature": "()",
+          "description": "Removes the data binding from this widget.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "setAlpha",
+          "fullPath": "LAspectRatioContainer.setAlpha",
+          "signature": "(alpha)",
+          "description": "Sets the opacity of this widget, clamped to 0.0 (fully transparent) through 1.0 (fully opaque).",
+          "parameters": [
+            {
+              "name": "alpha",
+              "type": "number",
+              "description": "The opacity value.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "getAlpha",
+          "fullPath": "LAspectRatioContainer.getAlpha",
+          "signature": "()",
+          "description": "Returns the current opacity of this widget.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "fadeIn",
+          "fullPath": "LAspectRatioContainer.fadeIn",
+          "signature": "()",
+          "description": "Instantly makes this widget fully opaque and visible.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "fadeOut",
+          "fullPath": "LAspectRatioContainer.fadeOut",
+          "signature": "()",
+          "description": "Instantly makes this widget fully transparent and hidden.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "slideIn",
+          "fullPath": "LAspectRatioContainer.slideIn",
+          "signature": "(x, y)",
+          "description": "Moves this widget to the given position and makes it visible.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "Target x position.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Target y position.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "slideOut",
+          "fullPath": "LAspectRatioContainer.slideOut",
+          "signature": "(x, y)",
+          "description": "Moves this widget to the given position and hides it.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "Target x position.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Target y position.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "animateAlpha",
+          "fullPath": "LAspectRatioContainer.animateAlpha",
+          "signature": "LUiWidget:animateAlpha(target, [duration], [hide_on_complete])",
+          "description": "Smoothly animates this widget's opacity toward a target value over the given duration.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "number",
+              "description": "Target alpha value (0.0 to 1.0).",
+              "optional": false
+            },
+            {
+              "name": "duration",
+              "type": "number",
+              "description": "Animation duration in seconds. Defaults to 0.2.",
+              "optional": true
+            },
+            {
+              "name": "hide_on_complete",
+              "type": "boolean",
+              "description": "If true, hides the widget when alpha reaches 0.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "animatePosition",
+          "fullPath": "LAspectRatioContainer.animatePosition",
+          "signature": "(x, y, [duration])",
+          "description": "Smoothly animates this widget's position toward the target coordinates.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "Target x position.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Target y position.",
+              "optional": false
+            },
+            {
+              "name": "duration",
+              "type": "number",
+              "description": "Animation duration in seconds. Defaults to 0.2.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "isAnimating",
+          "fullPath": "LAspectRatioContainer.isAnimating",
+          "signature": "()",
+          "description": "Returns whether this widget currently has an active animation.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "cancelAnimations",
+          "fullPath": "LAspectRatioContainer.cancelAnimations",
+          "signature": "()",
+          "description": "Cancels all active animations on this widget, leaving it at its current state.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "attachToEntity",
+          "fullPath": "LAspectRatioContainer.attachToEntity",
+          "signature": "(entity_id)",
+          "description": "Attaches this widget to a game entity so it follows the entity's position on screen.",
+          "parameters": [
+            {
+              "name": "entity_id",
+              "type": "integer",
+              "description": "The entity ID to attach to.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "detachFromEntity",
+          "fullPath": "LAspectRatioContainer.detachFromEntity",
+          "signature": "()",
+          "description": "Detaches this widget from any previously attached entity.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
         }
       ]
     },
@@ -54577,6 +56168,24 @@
           "objectType": "LChunkMap"
         },
         {
+          "name": "setTiles",
+          "fullPath": "LChunkMap:setTiles",
+          "signature": "(edits)",
+          "description": "Applies multiple `{x, y, gid}` tile edits and returns the chunks dirtied by this batch.",
+          "parameters": [
+            {
+              "name": "edits",
+              "type": "table",
+              "description": "Array of `{x, y, gid}` tables or `{x, y, gid}` arrays.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LChunkMap"
+        },
+        {
           "name": "clearTile",
           "fullPath": "LChunkMap:clearTile",
           "signature": "(x, y)",
@@ -54682,6 +56291,93 @@
               "name": "cy",
               "type": "integer",
               "description": "Chunk Y coordinate.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LChunkMap"
+        },
+        {
+          "name": "getDirtyChunks",
+          "fullPath": "LChunkMap:getDirtyChunks",
+          "signature": "()",
+          "description": "Returns loaded chunk coordinates with tile changes pending downstream updates.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LChunkMap"
+        },
+        {
+          "name": "drainDirtyChunks",
+          "fullPath": "LChunkMap:drainDirtyChunks",
+          "signature": "()",
+          "description": "Clears and returns chunk coordinates with pending tile changes.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LChunkMap"
+        },
+        {
+          "name": "clearDirtyChunks",
+          "fullPath": "LChunkMap:clearDirtyChunks",
+          "signature": "()",
+          "description": "Clears chunk dirty tracking without changing tile contents.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LChunkMap"
+        },
+        {
+          "name": "chunkToBytes",
+          "fullPath": "LChunkMap:chunkToBytes",
+          "signature": "(cx, cy)",
+          "description": "Serializes one loaded chunk into binary bytes for save workflows.",
+          "parameters": [
+            {
+              "name": "cx",
+              "type": "integer",
+              "description": "Chunk X coordinate.",
+              "optional": false
+            },
+            {
+              "name": "cy",
+              "type": "integer",
+              "description": "Chunk Y coordinate.",
+              "optional": false
+            }
+          ],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LChunkMap"
+        },
+        {
+          "name": "loadChunkFromBytes",
+          "fullPath": "LChunkMap:loadChunkFromBytes",
+          "signature": "(cx, cy, data)",
+          "description": "Loads one chunk from bytes previously returned by `chunkToBytes`.",
+          "parameters": [
+            {
+              "name": "cx",
+              "type": "integer",
+              "description": "Chunk X coordinate.",
+              "optional": false
+            },
+            {
+              "name": "cy",
+              "type": "integer",
+              "description": "Chunk Y coordinate.",
+              "optional": false
+            },
+            {
+              "name": "data",
+              "type": "string",
+              "description": "Binary chunk data.",
               "optional": false
             }
           ],
@@ -96205,6 +97901,17 @@
           "objectType": "LLiquidMap"
         },
         {
+          "name": "getDirtyChunks",
+          "fullPath": "LLiquidMap:getDirtyChunks",
+          "signature": "()",
+          "description": "Returns liquid chunks changed by the most recent liquid edit or simulation step.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LLiquidMap"
+        },
+        {
           "name": "getAmountAt",
           "fullPath": "LLiquidMap:getAmountAt",
           "signature": "(world_x, world_y)",
@@ -132064,6 +133771,1509 @@
       ]
     },
     {
+      "name": "LRichLabel",
+      "description": "Adds rich-label-specific methods to a formatted read-only label table.",
+      "methods": [
+        {
+          "name": "setText",
+          "fullPath": "LRichLabel:setText",
+          "signature": "(text)",
+          "description": "Sets the rich label source text with simple `[b]` and `[color=...]` spans.",
+          "parameters": [
+            {
+              "name": "text",
+              "type": "string",
+              "description": "The rich label source text.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "getText",
+          "fullPath": "LRichLabel:getText",
+          "signature": "()",
+          "description": "Returns the rich label source text, including inline span markers.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "getPlainText",
+          "fullPath": "LRichLabel:getPlainText",
+          "signature": "()",
+          "description": "Returns the rich label text with simple inline span markers stripped.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "type",
+          "fullPath": "LRichLabel.type",
+          "signature": "()",
+          "description": "Returns the type name string of this widget (e.g. \"LButton\", \"LSlider\").",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LRichLabel.typeOf",
+          "signature": "(name)",
+          "description": "Checks whether this widget matches the given type name, including base types \"LWidget\" and \"Object\".",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "The type name to check against.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setPosition",
+          "fullPath": "LRichLabel.setPosition",
+          "signature": "(x, y)",
+          "description": "Sets the local position of this widget relative to its parent.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "Horizontal position in pixels.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Vertical position in pixels.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "getPosition",
+          "fullPath": "LRichLabel.getPosition",
+          "signature": "()",
+          "description": "Returns the local position of this widget relative to its parent.",
+          "parameters": [],
+          "returns": "number, number",
+          "returnType": "number, number",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setSize",
+          "fullPath": "LRichLabel.setSize",
+          "signature": "(w, h)",
+          "description": "Sets the width and height of this widget in pixels.",
+          "parameters": [
+            {
+              "name": "w",
+              "type": "number",
+              "description": "Width in pixels.",
+              "optional": false
+            },
+            {
+              "name": "h",
+              "type": "number",
+              "description": "Height in pixels.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "getSize",
+          "fullPath": "LRichLabel.getSize",
+          "signature": "()",
+          "description": "Returns the width and height of this widget.",
+          "parameters": [],
+          "returns": "number, number",
+          "returnType": "number, number",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setFont",
+          "fullPath": "LRichLabel.setFont",
+          "signature": "(font_ud)",
+          "description": "Assigns a specific font to this widget and its descendants unless overridden further down the tree.",
+          "parameters": [
+            {
+              "name": "font",
+              "type": "LFont",
+              "description": "Font handle to use for this widget subtree.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "clearFont",
+          "fullPath": "LRichLabel.clearFont",
+          "signature": "()",
+          "description": "Clears any font override on this widget so it inherits from its parent again.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "getRect",
+          "fullPath": "LRichLabel.getRect",
+          "signature": "()",
+          "description": "Returns the computed bounding rectangle of this widget in screen coordinates after layout.",
+          "parameters": [],
+          "returns": "number, number, number, number",
+          "returnType": "number, number, number, number",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setStyleClass",
+          "fullPath": "LRichLabel.setStyleClass",
+          "signature": "(class)",
+          "description": "Sets the style class of this widget.",
+          "parameters": [
+            {
+              "name": "class",
+              "type": "string",
+              "description": "The style class name.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "getStyleClass",
+          "fullPath": "LRichLabel.getStyleClass",
+          "signature": "()",
+          "description": "Returns the style class of this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setIcon",
+          "fullPath": "LRichLabel.setIcon",
+          "signature": "(icon)",
+          "description": "Sets this widget's built-in UI icon by semantic name.",
+          "parameters": [
+            {
+              "name": "icon",
+              "type": "string",
+              "description": "Built-in icon name such as \"save\", \"settings\", or \"inventory\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "getIcon",
+          "fullPath": "LRichLabel.getIcon",
+          "signature": "()",
+          "description": "Returns this widget's assigned built-in icon name, or nil when no icon is assigned.",
+          "parameters": [],
+          "returns": "string|nil",
+          "returnType": "string|nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "clearIcon",
+          "fullPath": "LRichLabel.clearIcon",
+          "signature": "()",
+          "description": "Clears this widget's assigned built-in icon.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setIconPosition",
+          "fullPath": "LRichLabel.setIconPosition",
+          "signature": "(position)",
+          "description": "Sets where this widget's icon is placed relative to its text.",
+          "parameters": [
+            {
+              "name": "position",
+              "type": "string",
+              "description": "One of \"left\", \"right\", \"top\", \"bottom\", or \"only\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "getIconPosition",
+          "fullPath": "LRichLabel.getIconPosition",
+          "signature": "()",
+          "description": "Returns this widget's icon placement token.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setIconSize",
+          "fullPath": "LRichLabel.setIconSize",
+          "signature": "(size)",
+          "description": "Sets this widget's requested icon size in pixels.",
+          "parameters": [
+            {
+              "name": "size",
+              "type": "number",
+              "description": "Pixel size; 0 uses the widget font size.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "getIconSize",
+          "fullPath": "LRichLabel.getIconSize",
+          "signature": "()",
+          "description": "Returns this widget's requested icon size in pixels.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setMouseFilter",
+          "fullPath": "LRichLabel.setMouseFilter",
+          "signature": "(filter)",
+          "description": "Sets the mouse filter for this widget (\"stop\", \"pass\", \"ignore\").",
+          "parameters": [
+            {
+              "name": "filter",
+              "type": "string",
+              "description": "The mouse filter type.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setTextWrap",
+          "fullPath": "LRichLabel.setTextWrap",
+          "signature": "(wrap)",
+          "description": "Enables or disables word-wrap for text inside this widget.",
+          "parameters": [
+            {
+              "name": "wrap",
+              "type": "boolean",
+              "description": "True to wrap text, false for single-line.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setTextEllipsis",
+          "fullPath": "LRichLabel.setTextEllipsis",
+          "signature": "(ellipsis)",
+          "description": "Enables or disables ellipsis clipping for overflowing single-line text.",
+          "parameters": [
+            {
+              "name": "ellipsis",
+              "type": "boolean",
+              "description": "True to enable ellipsis on overflow.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setTextVAlign",
+          "fullPath": "LRichLabel.setTextVAlign",
+          "signature": "(align)",
+          "description": "Sets the vertical alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Vertical alignment: \"top\", \"middle\", or \"bottom\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setTextAlign",
+          "fullPath": "LRichLabel.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LRichLabel.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setFocusable",
+          "fullPath": "LRichLabel.setFocusable",
+          "signature": "(value)",
+          "description": "Sets whether this widget participates in keyboard focus traversal.",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "boolean",
+              "description": "True to allow focus traversal; false to skip this widget.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setTabIndex",
+          "fullPath": "LRichLabel.setTabIndex",
+          "signature": "(value)",
+          "description": "Sets the tab-order index for this widget.",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "integer",
+              "description": "Tab-order index.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setFocusGroup",
+          "fullPath": "LRichLabel.setFocusGroup",
+          "signature": "(group)",
+          "description": "Sets the focus traversal group for this widget.",
+          "parameters": [
+            {
+              "name": "group",
+              "type": "string",
+              "description": "Focus group name; empty string means the default/global group.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setFocusNeighbor",
+          "fullPath": "LRichLabel.setFocusNeighbor",
+          "signature": "(direction, [target])",
+          "description": "Sets an explicit directional focus neighbor for this widget.",
+          "parameters": [
+            {
+              "name": "direction",
+              "type": "string",
+              "description": "Neighbor direction: \"up\", \"down\", \"left\", or \"right\".",
+              "optional": false
+            },
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the neighbor.",
+              "optional": true
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setRole",
+          "fullPath": "LRichLabel.setRole",
+          "signature": "(role)",
+          "description": "Sets a semantic role string for this widget.",
+          "parameters": [
+            {
+              "name": "role",
+              "type": "string",
+              "description": "Semantic role name.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "getRole",
+          "fullPath": "LRichLabel.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setAriaName",
+          "fullPath": "LRichLabel.setAriaName",
+          "signature": "(name)",
+          "description": "Sets the accessible name metadata for this widget.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Accessible name value.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LRichLabel.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LRichLabel.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LRichLabel.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "getMouseFilter",
+          "fullPath": "LRichLabel.getMouseFilter",
+          "signature": "()",
+          "description": "Returns the mouse filter of this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setVisible",
+          "fullPath": "LRichLabel.setVisible",
+          "signature": "(v)",
+          "description": "Shows or hides this widget. Hidden widgets are not drawn and do not receive input.",
+          "parameters": [
+            {
+              "name": "v",
+              "type": "boolean",
+              "description": "True to show, false to hide.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "isVisible",
+          "fullPath": "LRichLabel.isVisible",
+          "signature": "()",
+          "description": "Returns whether this widget is currently visible.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setEnabled",
+          "fullPath": "LRichLabel.setEnabled",
+          "signature": "(v)",
+          "description": "Enables or disables this widget. Disabled widgets appear grayed out and ignore input.",
+          "parameters": [
+            {
+              "name": "v",
+              "type": "boolean",
+              "description": "True to enable, false to disable.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "isEnabled",
+          "fullPath": "LRichLabel.isEnabled",
+          "signature": "()",
+          "description": "Returns whether this widget is currently enabled and can receive input.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setId",
+          "fullPath": "LRichLabel.setId",
+          "signature": "(id)",
+          "description": "Assigns a string identifier to this widget for lookup with findById.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "string",
+              "description": "A unique identifier string.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "getId",
+          "fullPath": "LRichLabel.getId",
+          "signature": "()",
+          "description": "Returns the string identifier assigned to this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setTooltip",
+          "fullPath": "LRichLabel.setTooltip",
+          "signature": "(text)",
+          "description": "Sets the tooltip text shown when the user hovers over this widget.",
+          "parameters": [
+            {
+              "name": "text",
+              "type": "string",
+              "description": "The tooltip message.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "getTooltip",
+          "fullPath": "LRichLabel.getTooltip",
+          "signature": "()",
+          "description": "Returns the tooltip text of this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "getState",
+          "fullPath": "LRichLabel.getState",
+          "signature": "()",
+          "description": "Returns the current interaction state of this widget (e.g. \"normal\", \"hovered\", \"pressed\", \"disabled\").",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "addChild",
+          "fullPath": "LRichLabel.addChild",
+          "signature": "(child)",
+          "description": "Adds a child widget to this widget's hierarchy.",
+          "parameters": [
+            {
+              "name": "child",
+              "type": "LUiWidget|integer",
+              "description": "The child widget table or widget index to add.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "removeChild",
+          "fullPath": "LRichLabel.removeChild",
+          "signature": "(child)",
+          "description": "Removes a child widget from this widget's hierarchy.",
+          "parameters": [
+            {
+              "name": "child",
+              "type": "LUiWidget|integer",
+              "description": "The child widget table or widget index to remove.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "getChildCount",
+          "fullPath": "LRichLabel.getChildCount",
+          "signature": "()",
+          "description": "Returns the number of direct child widgets attached to this widget.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "getChildren",
+          "fullPath": "LRichLabel.getChildren",
+          "signature": "()",
+          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "findById",
+          "fullPath": "LRichLabel.findById",
+          "signature": "(id)",
+          "description": "Searches this widget's subtree for a child with the given ID.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "string",
+              "description": "The widget ID to search for.",
+              "optional": false
+            }
+          ],
+          "returns": "LWidget",
+          "returnType": "LWidget",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setOnClick",
+          "fullPath": "LRichLabel.setOnClick",
+          "signature": "(f)",
+          "description": "Registers a callback function invoked when this widget is clicked.",
+          "parameters": [
+            {
+              "name": "f",
+              "type": "function",
+              "description": "Callback receiving the widget index as argument.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setOnChange",
+          "fullPath": "LRichLabel.setOnChange",
+          "signature": "(f)",
+          "description": "Registers a callback function invoked when this widget's value changes.",
+          "parameters": [
+            {
+              "name": "f",
+              "type": "function",
+              "description": "Callback receiving the widget index as argument.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setOnDraw",
+          "fullPath": "LRichLabel.setOnDraw",
+          "signature": "(f)",
+          "description": "Registers a custom draw callback for this widget, invoked each frame during the draw pass.",
+          "parameters": [
+            {
+              "name": "f",
+              "type": "function",
+              "description": "Callback receiving a rect table {x, y, w, h} with the computed bounds.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setShader",
+          "fullPath": "LRichLabel.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LRichLabel.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "containsPoint",
+          "fullPath": "LRichLabel.containsPoint",
+          "signature": "(x, y)",
+          "description": "Tests whether the given screen-space point is inside this widget's bounds.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "X coordinate in screen pixels.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Y coordinate in screen pixels.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setPadding",
+          "fullPath": "LRichLabel.setPadding",
+          "signature": "LUiWidget:setPadding(top, [right], [bottom], [left])",
+          "description": "Sets the inner padding of this widget. Accepts 1 to 4 values (top, right?, bottom?, left?) following CSS shorthand rules.",
+          "parameters": [
+            {
+              "name": "top",
+              "type": "number",
+              "description": "Top padding in pixels (also used as default for other sides).",
+              "optional": false
+            },
+            {
+              "name": "right",
+              "type": "number",
+              "description": "Right padding. Defaults to top.",
+              "optional": true
+            },
+            {
+              "name": "bottom",
+              "type": "number",
+              "description": "Bottom padding. Defaults to top.",
+              "optional": true
+            },
+            {
+              "name": "left",
+              "type": "number",
+              "description": "Left padding. Defaults to right.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "getPadding",
+          "fullPath": "LRichLabel.getPadding",
+          "signature": "()",
+          "description": "Returns the inner padding of this widget.",
+          "parameters": [],
+          "returns": "number, number, number, number",
+          "returnType": "number, number, number, number",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setMargin",
+          "fullPath": "LRichLabel.setMargin",
+          "signature": "LUiWidget:setMargin(top, [right], [bottom], [left])",
+          "description": "Sets the outer margin of this widget. Accepts 1 to 4 values (top, right?, bottom?, left?) following CSS shorthand rules.",
+          "parameters": [
+            {
+              "name": "top",
+              "type": "number",
+              "description": "Top margin in pixels (also used as default for other sides).",
+              "optional": false
+            },
+            {
+              "name": "right",
+              "type": "number",
+              "description": "Right margin. Defaults to top.",
+              "optional": true
+            },
+            {
+              "name": "bottom",
+              "type": "number",
+              "description": "Bottom margin. Defaults to top.",
+              "optional": true
+            },
+            {
+              "name": "left",
+              "type": "number",
+              "description": "Left margin. Defaults to right.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "getMargin",
+          "fullPath": "LRichLabel.getMargin",
+          "signature": "()",
+          "description": "Returns the outer margin of this widget.",
+          "parameters": [],
+          "returns": "number, number, number, number",
+          "returnType": "number, number, number, number",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setZOrder",
+          "fullPath": "LRichLabel.setZOrder",
+          "signature": "(z)",
+          "description": "Sets the z-order (draw priority) of this widget. Higher values draw on top.",
+          "parameters": [
+            {
+              "name": "z",
+              "type": "integer",
+              "description": "The z-order integer value.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "getZOrder",
+          "fullPath": "LRichLabel.getZOrder",
+          "signature": "()",
+          "description": "Returns the z-order (draw priority) of this widget.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setMinSize",
+          "fullPath": "LRichLabel.setMinSize",
+          "signature": "(w, h)",
+          "description": "Sets the minimum allowed width and height for this widget during layout.",
+          "parameters": [
+            {
+              "name": "w",
+              "type": "number",
+              "description": "Minimum width in pixels.",
+              "optional": false
+            },
+            {
+              "name": "h",
+              "type": "number",
+              "description": "Minimum height in pixels.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "getMinSize",
+          "fullPath": "LRichLabel.getMinSize",
+          "signature": "()",
+          "description": "Returns the minimum width and height of this widget.",
+          "parameters": [],
+          "returns": "number, number",
+          "returnType": "number, number",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setMaxSize",
+          "fullPath": "LRichLabel.setMaxSize",
+          "signature": "(w, h)",
+          "description": "Sets the maximum allowed width and height for this widget during layout.",
+          "parameters": [
+            {
+              "name": "w",
+              "type": "number",
+              "description": "Maximum width in pixels.",
+              "optional": false
+            },
+            {
+              "name": "h",
+              "type": "number",
+              "description": "Maximum height in pixels.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "getMaxSize",
+          "fullPath": "LRichLabel.getMaxSize",
+          "signature": "()",
+          "description": "Returns the maximum width and height of this widget.",
+          "parameters": [],
+          "returns": "number, number",
+          "returnType": "number, number",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setAnchor",
+          "fullPath": "LRichLabel.setAnchor",
+          "signature": "LUiWidget:setAnchor([left], [top], [right], [bottom])",
+          "description": "Anchors this widget to its parent's edges. Pass nil for any side to leave it unanchored.",
+          "parameters": [
+            {
+              "name": "left",
+              "type": "number",
+              "description": "Distance from parent's left edge, or nil.",
+              "optional": true
+            },
+            {
+              "name": "top",
+              "type": "number",
+              "description": "Distance from parent's top edge, or nil.",
+              "optional": true
+            },
+            {
+              "name": "right",
+              "type": "number",
+              "description": "Distance from parent's right edge, or nil.",
+              "optional": true
+            },
+            {
+              "name": "bottom",
+              "type": "number",
+              "description": "Distance from parent's bottom edge, or nil.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setAnchorCenter",
+          "fullPath": "LRichLabel.setAnchorCenter",
+          "signature": "([cx], [cy])",
+          "description": "Centers this widget within its parent using proportional anchor offsets (0.0 to 1.0).",
+          "parameters": [
+            {
+              "name": "cx",
+              "type": "number",
+              "description": "Horizontal center fraction (0.5 = centered).",
+              "optional": true
+            },
+            {
+              "name": "cy",
+              "type": "number",
+              "description": "Vertical center fraction (0.5 = centered).",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "clearAnchor",
+          "fullPath": "LRichLabel.clearAnchor",
+          "signature": "()",
+          "description": "Removes all anchor constraints from this widget.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setFlexGrow",
+          "fullPath": "LRichLabel.setFlexGrow",
+          "signature": "(grow)",
+          "description": "Sets the flex-grow factor controlling how much extra space this widget receives in a layout.",
+          "parameters": [
+            {
+              "name": "grow",
+              "type": "number",
+              "description": "The grow factor (0 = no growth).",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "getFlexGrow",
+          "fullPath": "LRichLabel.getFlexGrow",
+          "signature": "()",
+          "description": "Returns the flex-grow factor of this widget.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setFlexShrink",
+          "fullPath": "LRichLabel.setFlexShrink",
+          "signature": "(shrink)",
+          "description": "Sets the flex-shrink factor controlling how much this widget shrinks when layout space is insufficient.",
+          "parameters": [
+            {
+              "name": "shrink",
+              "type": "number",
+              "description": "The shrink factor (0 = no shrinkage).",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "getFlexShrink",
+          "fullPath": "LRichLabel.getFlexShrink",
+          "signature": "()",
+          "description": "Returns the flex-shrink factor of this widget.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "bind",
+          "fullPath": "LRichLabel.bind",
+          "signature": "(key)",
+          "description": "Binds this widget to a data key for use with update_bindings.",
+          "parameters": [
+            {
+              "name": "key",
+              "type": "string",
+              "description": "The binding key name.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setBindKey",
+          "fullPath": "LRichLabel.setBindKey",
+          "signature": "(key)",
+          "description": "Binds this widget to a data key and reports whether the widget exists.",
+          "parameters": [
+            {
+              "name": "key",
+              "type": "string",
+              "description": "The binding key name.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "unbind",
+          "fullPath": "LRichLabel.unbind",
+          "signature": "()",
+          "description": "Removes the data binding from this widget.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "setAlpha",
+          "fullPath": "LRichLabel.setAlpha",
+          "signature": "(alpha)",
+          "description": "Sets the opacity of this widget, clamped to 0.0 (fully transparent) through 1.0 (fully opaque).",
+          "parameters": [
+            {
+              "name": "alpha",
+              "type": "number",
+              "description": "The opacity value.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "getAlpha",
+          "fullPath": "LRichLabel.getAlpha",
+          "signature": "()",
+          "description": "Returns the current opacity of this widget.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "fadeIn",
+          "fullPath": "LRichLabel.fadeIn",
+          "signature": "()",
+          "description": "Instantly makes this widget fully opaque and visible.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "fadeOut",
+          "fullPath": "LRichLabel.fadeOut",
+          "signature": "()",
+          "description": "Instantly makes this widget fully transparent and hidden.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "slideIn",
+          "fullPath": "LRichLabel.slideIn",
+          "signature": "(x, y)",
+          "description": "Moves this widget to the given position and makes it visible.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "Target x position.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Target y position.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "slideOut",
+          "fullPath": "LRichLabel.slideOut",
+          "signature": "(x, y)",
+          "description": "Moves this widget to the given position and hides it.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "Target x position.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Target y position.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "animateAlpha",
+          "fullPath": "LRichLabel.animateAlpha",
+          "signature": "LUiWidget:animateAlpha(target, [duration], [hide_on_complete])",
+          "description": "Smoothly animates this widget's opacity toward a target value over the given duration.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "number",
+              "description": "Target alpha value (0.0 to 1.0).",
+              "optional": false
+            },
+            {
+              "name": "duration",
+              "type": "number",
+              "description": "Animation duration in seconds. Defaults to 0.2.",
+              "optional": true
+            },
+            {
+              "name": "hide_on_complete",
+              "type": "boolean",
+              "description": "If true, hides the widget when alpha reaches 0.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "animatePosition",
+          "fullPath": "LRichLabel.animatePosition",
+          "signature": "(x, y, [duration])",
+          "description": "Smoothly animates this widget's position toward the target coordinates.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "Target x position.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Target y position.",
+              "optional": false
+            },
+            {
+              "name": "duration",
+              "type": "number",
+              "description": "Animation duration in seconds. Defaults to 0.2.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "isAnimating",
+          "fullPath": "LRichLabel.isAnimating",
+          "signature": "()",
+          "description": "Returns whether this widget currently has an active animation.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "cancelAnimations",
+          "fullPath": "LRichLabel.cancelAnimations",
+          "signature": "()",
+          "description": "Cancels all active animations on this widget, leaving it at its current state.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "attachToEntity",
+          "fullPath": "LRichLabel.attachToEntity",
+          "signature": "(entity_id)",
+          "description": "Attaches this widget to a game entity so it follows the entity's position on screen.",
+          "parameters": [
+            {
+              "name": "entity_id",
+              "type": "integer",
+              "description": "The entity ID to attach to.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "detachFromEntity",
+          "fullPath": "LRichLabel.detachFromEntity",
+          "signature": "()",
+          "description": "Detaches this widget from any previously attached entity.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        }
+      ]
+    },
+    {
       "name": "LRing",
       "description": "Lua-facing fixed-size ring buffer for numeric or string values. Oldest entries are overwritten when full.",
       "methods": [
@@ -162183,6 +165393,17 @@
           "objectType": "LTerrain"
         },
         {
+          "name": "getDirtyChunks",
+          "fullPath": "LTerrain:getDirtyChunks",
+          "signature": "()",
+          "description": "Returns terrain chunks pending collider rebuild after terrain edits.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LTerrain"
+        },
+        {
           "name": "collapseColumns",
           "fullPath": "LTerrain:collapseColumns",
           "signature": "()",
@@ -162357,6 +165578,1567 @@
           "returnType": "boolean",
           "isMethod": true,
           "objectType": "LTerrain"
+        }
+      ]
+    },
+    {
+      "name": "LTextArea",
+      "description": "Adds text-area-specific methods to a multi-line text widget table.",
+      "methods": [
+        {
+          "name": "setText",
+          "fullPath": "LTextArea:setText",
+          "signature": "(text)",
+          "description": "Sets the text content of this multi-line text area and moves the cursor to the end.",
+          "parameters": [
+            {
+              "name": "text",
+              "type": "string",
+              "description": "The text to set.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "getText",
+          "fullPath": "LTextArea:getText",
+          "signature": "()",
+          "description": "Returns the current text content of this multi-line text area.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setPlaceholder",
+          "fullPath": "LTextArea:setPlaceholder",
+          "signature": "(text)",
+          "description": "Sets the placeholder text shown when the text area is empty.",
+          "parameters": [
+            {
+              "name": "text",
+              "type": "string",
+              "description": "The placeholder text.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "getPlaceholder",
+          "fullPath": "LTextArea:getPlaceholder",
+          "signature": "()",
+          "description": "Returns the placeholder text of this text area.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setMaxLength",
+          "fullPath": "LTextArea:setMaxLength",
+          "signature": "(n)",
+          "description": "Sets the maximum number of characters allowed in this text area.",
+          "parameters": [
+            {
+              "name": "n",
+              "type": "integer",
+              "description": "Maximum character count; 0 disables the limit.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "isFocused",
+          "fullPath": "LTextArea:isFocused",
+          "signature": "()",
+          "description": "Returns whether this text area currently has keyboard focus.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "getCursorPosition",
+          "fullPath": "LTextArea:getCursorPosition",
+          "signature": "()",
+          "description": "Returns the current cursor position as a zero-based character index.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "type",
+          "fullPath": "LTextArea.type",
+          "signature": "()",
+          "description": "Returns the type name string of this widget (e.g. \"LButton\", \"LSlider\").",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LTextArea.typeOf",
+          "signature": "(name)",
+          "description": "Checks whether this widget matches the given type name, including base types \"LWidget\" and \"Object\".",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "The type name to check against.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setPosition",
+          "fullPath": "LTextArea.setPosition",
+          "signature": "(x, y)",
+          "description": "Sets the local position of this widget relative to its parent.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "Horizontal position in pixels.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Vertical position in pixels.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "getPosition",
+          "fullPath": "LTextArea.getPosition",
+          "signature": "()",
+          "description": "Returns the local position of this widget relative to its parent.",
+          "parameters": [],
+          "returns": "number, number",
+          "returnType": "number, number",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setSize",
+          "fullPath": "LTextArea.setSize",
+          "signature": "(w, h)",
+          "description": "Sets the width and height of this widget in pixels.",
+          "parameters": [
+            {
+              "name": "w",
+              "type": "number",
+              "description": "Width in pixels.",
+              "optional": false
+            },
+            {
+              "name": "h",
+              "type": "number",
+              "description": "Height in pixels.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "getSize",
+          "fullPath": "LTextArea.getSize",
+          "signature": "()",
+          "description": "Returns the width and height of this widget.",
+          "parameters": [],
+          "returns": "number, number",
+          "returnType": "number, number",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setFont",
+          "fullPath": "LTextArea.setFont",
+          "signature": "(font_ud)",
+          "description": "Assigns a specific font to this widget and its descendants unless overridden further down the tree.",
+          "parameters": [
+            {
+              "name": "font",
+              "type": "LFont",
+              "description": "Font handle to use for this widget subtree.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "clearFont",
+          "fullPath": "LTextArea.clearFont",
+          "signature": "()",
+          "description": "Clears any font override on this widget so it inherits from its parent again.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "getRect",
+          "fullPath": "LTextArea.getRect",
+          "signature": "()",
+          "description": "Returns the computed bounding rectangle of this widget in screen coordinates after layout.",
+          "parameters": [],
+          "returns": "number, number, number, number",
+          "returnType": "number, number, number, number",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setStyleClass",
+          "fullPath": "LTextArea.setStyleClass",
+          "signature": "(class)",
+          "description": "Sets the style class of this widget.",
+          "parameters": [
+            {
+              "name": "class",
+              "type": "string",
+              "description": "The style class name.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "getStyleClass",
+          "fullPath": "LTextArea.getStyleClass",
+          "signature": "()",
+          "description": "Returns the style class of this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setIcon",
+          "fullPath": "LTextArea.setIcon",
+          "signature": "(icon)",
+          "description": "Sets this widget's built-in UI icon by semantic name.",
+          "parameters": [
+            {
+              "name": "icon",
+              "type": "string",
+              "description": "Built-in icon name such as \"save\", \"settings\", or \"inventory\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "getIcon",
+          "fullPath": "LTextArea.getIcon",
+          "signature": "()",
+          "description": "Returns this widget's assigned built-in icon name, or nil when no icon is assigned.",
+          "parameters": [],
+          "returns": "string|nil",
+          "returnType": "string|nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "clearIcon",
+          "fullPath": "LTextArea.clearIcon",
+          "signature": "()",
+          "description": "Clears this widget's assigned built-in icon.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setIconPosition",
+          "fullPath": "LTextArea.setIconPosition",
+          "signature": "(position)",
+          "description": "Sets where this widget's icon is placed relative to its text.",
+          "parameters": [
+            {
+              "name": "position",
+              "type": "string",
+              "description": "One of \"left\", \"right\", \"top\", \"bottom\", or \"only\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "getIconPosition",
+          "fullPath": "LTextArea.getIconPosition",
+          "signature": "()",
+          "description": "Returns this widget's icon placement token.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setIconSize",
+          "fullPath": "LTextArea.setIconSize",
+          "signature": "(size)",
+          "description": "Sets this widget's requested icon size in pixels.",
+          "parameters": [
+            {
+              "name": "size",
+              "type": "number",
+              "description": "Pixel size; 0 uses the widget font size.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "getIconSize",
+          "fullPath": "LTextArea.getIconSize",
+          "signature": "()",
+          "description": "Returns this widget's requested icon size in pixels.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setMouseFilter",
+          "fullPath": "LTextArea.setMouseFilter",
+          "signature": "(filter)",
+          "description": "Sets the mouse filter for this widget (\"stop\", \"pass\", \"ignore\").",
+          "parameters": [
+            {
+              "name": "filter",
+              "type": "string",
+              "description": "The mouse filter type.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setTextWrap",
+          "fullPath": "LTextArea.setTextWrap",
+          "signature": "(wrap)",
+          "description": "Enables or disables word-wrap for text inside this widget.",
+          "parameters": [
+            {
+              "name": "wrap",
+              "type": "boolean",
+              "description": "True to wrap text, false for single-line.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setTextEllipsis",
+          "fullPath": "LTextArea.setTextEllipsis",
+          "signature": "(ellipsis)",
+          "description": "Enables or disables ellipsis clipping for overflowing single-line text.",
+          "parameters": [
+            {
+              "name": "ellipsis",
+              "type": "boolean",
+              "description": "True to enable ellipsis on overflow.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setTextVAlign",
+          "fullPath": "LTextArea.setTextVAlign",
+          "signature": "(align)",
+          "description": "Sets the vertical alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Vertical alignment: \"top\", \"middle\", or \"bottom\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setTextAlign",
+          "fullPath": "LTextArea.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LTextArea.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setFocusable",
+          "fullPath": "LTextArea.setFocusable",
+          "signature": "(value)",
+          "description": "Sets whether this widget participates in keyboard focus traversal.",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "boolean",
+              "description": "True to allow focus traversal; false to skip this widget.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setTabIndex",
+          "fullPath": "LTextArea.setTabIndex",
+          "signature": "(value)",
+          "description": "Sets the tab-order index for this widget.",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "integer",
+              "description": "Tab-order index.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setFocusGroup",
+          "fullPath": "LTextArea.setFocusGroup",
+          "signature": "(group)",
+          "description": "Sets the focus traversal group for this widget.",
+          "parameters": [
+            {
+              "name": "group",
+              "type": "string",
+              "description": "Focus group name; empty string means the default/global group.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setFocusNeighbor",
+          "fullPath": "LTextArea.setFocusNeighbor",
+          "signature": "(direction, [target])",
+          "description": "Sets an explicit directional focus neighbor for this widget.",
+          "parameters": [
+            {
+              "name": "direction",
+              "type": "string",
+              "description": "Neighbor direction: \"up\", \"down\", \"left\", or \"right\".",
+              "optional": false
+            },
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the neighbor.",
+              "optional": true
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setRole",
+          "fullPath": "LTextArea.setRole",
+          "signature": "(role)",
+          "description": "Sets a semantic role string for this widget.",
+          "parameters": [
+            {
+              "name": "role",
+              "type": "string",
+              "description": "Semantic role name.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "getRole",
+          "fullPath": "LTextArea.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setAriaName",
+          "fullPath": "LTextArea.setAriaName",
+          "signature": "(name)",
+          "description": "Sets the accessible name metadata for this widget.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Accessible name value.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LTextArea.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LTextArea.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LTextArea.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "getMouseFilter",
+          "fullPath": "LTextArea.getMouseFilter",
+          "signature": "()",
+          "description": "Returns the mouse filter of this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setVisible",
+          "fullPath": "LTextArea.setVisible",
+          "signature": "(v)",
+          "description": "Shows or hides this widget. Hidden widgets are not drawn and do not receive input.",
+          "parameters": [
+            {
+              "name": "v",
+              "type": "boolean",
+              "description": "True to show, false to hide.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "isVisible",
+          "fullPath": "LTextArea.isVisible",
+          "signature": "()",
+          "description": "Returns whether this widget is currently visible.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setEnabled",
+          "fullPath": "LTextArea.setEnabled",
+          "signature": "(v)",
+          "description": "Enables or disables this widget. Disabled widgets appear grayed out and ignore input.",
+          "parameters": [
+            {
+              "name": "v",
+              "type": "boolean",
+              "description": "True to enable, false to disable.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "isEnabled",
+          "fullPath": "LTextArea.isEnabled",
+          "signature": "()",
+          "description": "Returns whether this widget is currently enabled and can receive input.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setId",
+          "fullPath": "LTextArea.setId",
+          "signature": "(id)",
+          "description": "Assigns a string identifier to this widget for lookup with findById.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "string",
+              "description": "A unique identifier string.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "getId",
+          "fullPath": "LTextArea.getId",
+          "signature": "()",
+          "description": "Returns the string identifier assigned to this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setTooltip",
+          "fullPath": "LTextArea.setTooltip",
+          "signature": "(text)",
+          "description": "Sets the tooltip text shown when the user hovers over this widget.",
+          "parameters": [
+            {
+              "name": "text",
+              "type": "string",
+              "description": "The tooltip message.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "getTooltip",
+          "fullPath": "LTextArea.getTooltip",
+          "signature": "()",
+          "description": "Returns the tooltip text of this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "getState",
+          "fullPath": "LTextArea.getState",
+          "signature": "()",
+          "description": "Returns the current interaction state of this widget (e.g. \"normal\", \"hovered\", \"pressed\", \"disabled\").",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "addChild",
+          "fullPath": "LTextArea.addChild",
+          "signature": "(child)",
+          "description": "Adds a child widget to this widget's hierarchy.",
+          "parameters": [
+            {
+              "name": "child",
+              "type": "LUiWidget|integer",
+              "description": "The child widget table or widget index to add.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "removeChild",
+          "fullPath": "LTextArea.removeChild",
+          "signature": "(child)",
+          "description": "Removes a child widget from this widget's hierarchy.",
+          "parameters": [
+            {
+              "name": "child",
+              "type": "LUiWidget|integer",
+              "description": "The child widget table or widget index to remove.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "getChildCount",
+          "fullPath": "LTextArea.getChildCount",
+          "signature": "()",
+          "description": "Returns the number of direct child widgets attached to this widget.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "getChildren",
+          "fullPath": "LTextArea.getChildren",
+          "signature": "()",
+          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "findById",
+          "fullPath": "LTextArea.findById",
+          "signature": "(id)",
+          "description": "Searches this widget's subtree for a child with the given ID.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "string",
+              "description": "The widget ID to search for.",
+              "optional": false
+            }
+          ],
+          "returns": "LWidget",
+          "returnType": "LWidget",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setOnClick",
+          "fullPath": "LTextArea.setOnClick",
+          "signature": "(f)",
+          "description": "Registers a callback function invoked when this widget is clicked.",
+          "parameters": [
+            {
+              "name": "f",
+              "type": "function",
+              "description": "Callback receiving the widget index as argument.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setOnChange",
+          "fullPath": "LTextArea.setOnChange",
+          "signature": "(f)",
+          "description": "Registers a callback function invoked when this widget's value changes.",
+          "parameters": [
+            {
+              "name": "f",
+              "type": "function",
+              "description": "Callback receiving the widget index as argument.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setOnDraw",
+          "fullPath": "LTextArea.setOnDraw",
+          "signature": "(f)",
+          "description": "Registers a custom draw callback for this widget, invoked each frame during the draw pass.",
+          "parameters": [
+            {
+              "name": "f",
+              "type": "function",
+              "description": "Callback receiving a rect table {x, y, w, h} with the computed bounds.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setShader",
+          "fullPath": "LTextArea.setShader",
+          "signature": "([shader], [opts])",
+          "description": "Binds or clears a render-owned UI shader for this widget subtree.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LTextArea.setShaderLayer",
+          "signature": "LUiWidget:setShaderLayer(name, [shader], [opts])",
+          "description": "Binds or clears a named render-owned UI shader layer for this widget subtree.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name. Names are sorted deterministically when choosing the active layer.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Shader created with `lurek.render.newShader(code, { target = \"ui\" })`, or nil to clear the layer.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Reserved options table for future UI shader parameters.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "containsPoint",
+          "fullPath": "LTextArea.containsPoint",
+          "signature": "(x, y)",
+          "description": "Tests whether the given screen-space point is inside this widget's bounds.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "X coordinate in screen pixels.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Y coordinate in screen pixels.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setPadding",
+          "fullPath": "LTextArea.setPadding",
+          "signature": "LUiWidget:setPadding(top, [right], [bottom], [left])",
+          "description": "Sets the inner padding of this widget. Accepts 1 to 4 values (top, right?, bottom?, left?) following CSS shorthand rules.",
+          "parameters": [
+            {
+              "name": "top",
+              "type": "number",
+              "description": "Top padding in pixels (also used as default for other sides).",
+              "optional": false
+            },
+            {
+              "name": "right",
+              "type": "number",
+              "description": "Right padding. Defaults to top.",
+              "optional": true
+            },
+            {
+              "name": "bottom",
+              "type": "number",
+              "description": "Bottom padding. Defaults to top.",
+              "optional": true
+            },
+            {
+              "name": "left",
+              "type": "number",
+              "description": "Left padding. Defaults to right.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "getPadding",
+          "fullPath": "LTextArea.getPadding",
+          "signature": "()",
+          "description": "Returns the inner padding of this widget.",
+          "parameters": [],
+          "returns": "number, number, number, number",
+          "returnType": "number, number, number, number",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setMargin",
+          "fullPath": "LTextArea.setMargin",
+          "signature": "LUiWidget:setMargin(top, [right], [bottom], [left])",
+          "description": "Sets the outer margin of this widget. Accepts 1 to 4 values (top, right?, bottom?, left?) following CSS shorthand rules.",
+          "parameters": [
+            {
+              "name": "top",
+              "type": "number",
+              "description": "Top margin in pixels (also used as default for other sides).",
+              "optional": false
+            },
+            {
+              "name": "right",
+              "type": "number",
+              "description": "Right margin. Defaults to top.",
+              "optional": true
+            },
+            {
+              "name": "bottom",
+              "type": "number",
+              "description": "Bottom margin. Defaults to top.",
+              "optional": true
+            },
+            {
+              "name": "left",
+              "type": "number",
+              "description": "Left margin. Defaults to right.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "getMargin",
+          "fullPath": "LTextArea.getMargin",
+          "signature": "()",
+          "description": "Returns the outer margin of this widget.",
+          "parameters": [],
+          "returns": "number, number, number, number",
+          "returnType": "number, number, number, number",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setZOrder",
+          "fullPath": "LTextArea.setZOrder",
+          "signature": "(z)",
+          "description": "Sets the z-order (draw priority) of this widget. Higher values draw on top.",
+          "parameters": [
+            {
+              "name": "z",
+              "type": "integer",
+              "description": "The z-order integer value.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "getZOrder",
+          "fullPath": "LTextArea.getZOrder",
+          "signature": "()",
+          "description": "Returns the z-order (draw priority) of this widget.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setMinSize",
+          "fullPath": "LTextArea.setMinSize",
+          "signature": "(w, h)",
+          "description": "Sets the minimum allowed width and height for this widget during layout.",
+          "parameters": [
+            {
+              "name": "w",
+              "type": "number",
+              "description": "Minimum width in pixels.",
+              "optional": false
+            },
+            {
+              "name": "h",
+              "type": "number",
+              "description": "Minimum height in pixels.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "getMinSize",
+          "fullPath": "LTextArea.getMinSize",
+          "signature": "()",
+          "description": "Returns the minimum width and height of this widget.",
+          "parameters": [],
+          "returns": "number, number",
+          "returnType": "number, number",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setMaxSize",
+          "fullPath": "LTextArea.setMaxSize",
+          "signature": "(w, h)",
+          "description": "Sets the maximum allowed width and height for this widget during layout.",
+          "parameters": [
+            {
+              "name": "w",
+              "type": "number",
+              "description": "Maximum width in pixels.",
+              "optional": false
+            },
+            {
+              "name": "h",
+              "type": "number",
+              "description": "Maximum height in pixels.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "getMaxSize",
+          "fullPath": "LTextArea.getMaxSize",
+          "signature": "()",
+          "description": "Returns the maximum width and height of this widget.",
+          "parameters": [],
+          "returns": "number, number",
+          "returnType": "number, number",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setAnchor",
+          "fullPath": "LTextArea.setAnchor",
+          "signature": "LUiWidget:setAnchor([left], [top], [right], [bottom])",
+          "description": "Anchors this widget to its parent's edges. Pass nil for any side to leave it unanchored.",
+          "parameters": [
+            {
+              "name": "left",
+              "type": "number",
+              "description": "Distance from parent's left edge, or nil.",
+              "optional": true
+            },
+            {
+              "name": "top",
+              "type": "number",
+              "description": "Distance from parent's top edge, or nil.",
+              "optional": true
+            },
+            {
+              "name": "right",
+              "type": "number",
+              "description": "Distance from parent's right edge, or nil.",
+              "optional": true
+            },
+            {
+              "name": "bottom",
+              "type": "number",
+              "description": "Distance from parent's bottom edge, or nil.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setAnchorCenter",
+          "fullPath": "LTextArea.setAnchorCenter",
+          "signature": "([cx], [cy])",
+          "description": "Centers this widget within its parent using proportional anchor offsets (0.0 to 1.0).",
+          "parameters": [
+            {
+              "name": "cx",
+              "type": "number",
+              "description": "Horizontal center fraction (0.5 = centered).",
+              "optional": true
+            },
+            {
+              "name": "cy",
+              "type": "number",
+              "description": "Vertical center fraction (0.5 = centered).",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "clearAnchor",
+          "fullPath": "LTextArea.clearAnchor",
+          "signature": "()",
+          "description": "Removes all anchor constraints from this widget.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setFlexGrow",
+          "fullPath": "LTextArea.setFlexGrow",
+          "signature": "(grow)",
+          "description": "Sets the flex-grow factor controlling how much extra space this widget receives in a layout.",
+          "parameters": [
+            {
+              "name": "grow",
+              "type": "number",
+              "description": "The grow factor (0 = no growth).",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "getFlexGrow",
+          "fullPath": "LTextArea.getFlexGrow",
+          "signature": "()",
+          "description": "Returns the flex-grow factor of this widget.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setFlexShrink",
+          "fullPath": "LTextArea.setFlexShrink",
+          "signature": "(shrink)",
+          "description": "Sets the flex-shrink factor controlling how much this widget shrinks when layout space is insufficient.",
+          "parameters": [
+            {
+              "name": "shrink",
+              "type": "number",
+              "description": "The shrink factor (0 = no shrinkage).",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "getFlexShrink",
+          "fullPath": "LTextArea.getFlexShrink",
+          "signature": "()",
+          "description": "Returns the flex-shrink factor of this widget.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "bind",
+          "fullPath": "LTextArea.bind",
+          "signature": "(key)",
+          "description": "Binds this widget to a data key for use with update_bindings.",
+          "parameters": [
+            {
+              "name": "key",
+              "type": "string",
+              "description": "The binding key name.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setBindKey",
+          "fullPath": "LTextArea.setBindKey",
+          "signature": "(key)",
+          "description": "Binds this widget to a data key and reports whether the widget exists.",
+          "parameters": [
+            {
+              "name": "key",
+              "type": "string",
+              "description": "The binding key name.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "unbind",
+          "fullPath": "LTextArea.unbind",
+          "signature": "()",
+          "description": "Removes the data binding from this widget.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "setAlpha",
+          "fullPath": "LTextArea.setAlpha",
+          "signature": "(alpha)",
+          "description": "Sets the opacity of this widget, clamped to 0.0 (fully transparent) through 1.0 (fully opaque).",
+          "parameters": [
+            {
+              "name": "alpha",
+              "type": "number",
+              "description": "The opacity value.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "getAlpha",
+          "fullPath": "LTextArea.getAlpha",
+          "signature": "()",
+          "description": "Returns the current opacity of this widget.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "fadeIn",
+          "fullPath": "LTextArea.fadeIn",
+          "signature": "()",
+          "description": "Instantly makes this widget fully opaque and visible.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "fadeOut",
+          "fullPath": "LTextArea.fadeOut",
+          "signature": "()",
+          "description": "Instantly makes this widget fully transparent and hidden.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "slideIn",
+          "fullPath": "LTextArea.slideIn",
+          "signature": "(x, y)",
+          "description": "Moves this widget to the given position and makes it visible.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "Target x position.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Target y position.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "slideOut",
+          "fullPath": "LTextArea.slideOut",
+          "signature": "(x, y)",
+          "description": "Moves this widget to the given position and hides it.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "Target x position.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Target y position.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "animateAlpha",
+          "fullPath": "LTextArea.animateAlpha",
+          "signature": "LUiWidget:animateAlpha(target, [duration], [hide_on_complete])",
+          "description": "Smoothly animates this widget's opacity toward a target value over the given duration.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "number",
+              "description": "Target alpha value (0.0 to 1.0).",
+              "optional": false
+            },
+            {
+              "name": "duration",
+              "type": "number",
+              "description": "Animation duration in seconds. Defaults to 0.2.",
+              "optional": true
+            },
+            {
+              "name": "hide_on_complete",
+              "type": "boolean",
+              "description": "If true, hides the widget when alpha reaches 0.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "animatePosition",
+          "fullPath": "LTextArea.animatePosition",
+          "signature": "(x, y, [duration])",
+          "description": "Smoothly animates this widget's position toward the target coordinates.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "Target x position.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Target y position.",
+              "optional": false
+            },
+            {
+              "name": "duration",
+              "type": "number",
+              "description": "Animation duration in seconds. Defaults to 0.2.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "isAnimating",
+          "fullPath": "LTextArea.isAnimating",
+          "signature": "()",
+          "description": "Returns whether this widget currently has an active animation.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "cancelAnimations",
+          "fullPath": "LTextArea.cancelAnimations",
+          "signature": "()",
+          "description": "Cancels all active animations on this widget, leaving it at its current state.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "attachToEntity",
+          "fullPath": "LTextArea.attachToEntity",
+          "signature": "(entity_id)",
+          "description": "Attaches this widget to a game entity so it follows the entity's position on screen.",
+          "parameters": [
+            {
+              "name": "entity_id",
+              "type": "integer",
+              "description": "The entity ID to attach to.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "detachFromEntity",
+          "fullPath": "LTextArea.detachFromEntity",
+          "signature": "()",
+          "description": "Detaches this widget from any previously attached entity.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextArea"
         }
       ]
     },
@@ -166105,6 +170887,111 @@
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "beginEdit",
+          "fullPath": "LTileField:beginEdit",
+          "signature": "()",
+          "description": "Clears pending dirty rectangles before a grouped tilefield edit.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "getDirtyRects",
+          "fullPath": "LTileField:getDirtyRects",
+          "signature": "([chunk_size])",
+          "description": "Returns pending dirty cell rectangles without clearing them.",
+          "parameters": [
+            {
+              "name": "chunkSize",
+              "type": "integer",
+              "description": "Optional chunk size used to add cx/cy fields to each dirty rect.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "drainDirtyRects",
+          "fullPath": "LTileField:drainDirtyRects",
+          "signature": "([chunk_size])",
+          "description": "Clears and returns pending dirty cell rectangles.",
+          "parameters": [
+            {
+              "name": "chunkSize",
+              "type": "integer",
+              "description": "Optional chunk size used to add cx/cy fields to each dirty rect.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "commitEdit",
+          "fullPath": "LTileField:commitEdit",
+          "signature": "([chunk_size])",
+          "description": "Clears and returns dirty rectangles accumulated since `beginEdit`.",
+          "parameters": [
+            {
+              "name": "chunkSize",
+              "type": "integer",
+              "description": "Optional chunk size used to add cx/cy fields to each dirty rect.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "defineBlockWorldSlots",
+          "fullPath": "LTileField:defineBlockWorldSlots",
+          "signature": "()",
+          "description": "Defines conventional ref slots for mutable block worlds without adding a new module.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "snapshot",
+          "fullPath": "LTileField:snapshot",
+          "signature": "()",
+          "description": "Captures block/cost/ref layers plus resource, buildable, and occupant cell facts.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "restore",
+          "fullPath": "LTileField:restore",
+          "signature": "(snapshot)",
+          "description": "Replaces this tilefield state from a snapshot returned by `snapshot`.",
+          "parameters": [
+            {
+              "name": "snapshot",
+              "type": "table",
+              "description": "Snapshot table.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": true,
           "objectType": "LTileField"
         },

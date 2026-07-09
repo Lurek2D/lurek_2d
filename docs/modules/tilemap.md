@@ -1005,6 +1005,67 @@ end
 
 ---
 
+#### `LChunkMap:chunkToBytes`
+
+Serializes one loaded chunk into binary bytes for save workflows.
+
+```lua
+LChunkMap:chunkToBytes(cx, cy)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `cx` | number | Chunk X coordinate. |
+| `cy` | number | Chunk Y coordinate. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Binary chunk data, or nil when the chunk is not loaded. |
+
+**Example**
+
+```lua
+do
+    local cm = lurek.tilemap.newChunkMap(8)
+    cm:setTile(2, 3, 7)
+    local bytes = cm:chunkToBytes(0, 0)
+    local size = bytes and #bytes or 0
+    local gid = cm:getTile(2, 3)
+    lurek.log.info("chunk bytes=" .. tostring(size))
+    lurek.log.info("chunk sample=" .. tostring(gid))
+end
+```
+
+---
+
+#### `LChunkMap:clearDirtyChunks`
+
+Clears chunk dirty tracking without changing tile contents.
+
+```lua
+LChunkMap:clearDirtyChunks()
+```
+
+**Example**
+
+```lua
+do
+    local cm = lurek.tilemap.newChunkMap(8)
+    cm:setTile(0, 0, 1)
+    local before = #cm:getDirtyChunks()
+    cm:clearDirtyChunks()
+    local after = #cm:getDirtyChunks()
+    lurek.log.info("clear dirty before=" .. tostring(before))
+    lurek.log.info("clear dirty after=" .. tostring(after))
+end
+```
+
+---
+
 #### `LChunkMap:clearTile`
 
 Removes the tile at the given world-tile coordinate.
@@ -1030,6 +1091,36 @@ do
     cm:clearTile(10, 20)
     local gid = cm:getTile(10, 20)
     lurek.log.info("after clear = " .. gid)
+end
+```
+
+---
+
+#### `LChunkMap:drainDirtyChunks`
+
+Clears and returns chunk coordinates with pending tile changes.
+
+```lua
+LChunkMap:drainDirtyChunks()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of `{cx, cy}` pairs. |
+
+**Example**
+
+```lua
+do
+    local cm = lurek.tilemap.newChunkMap(8)
+    cm:setTile(0, 0, 1)
+    cm:setTile(9, 0, 2)
+    local drained = cm:drainDirtyChunks()
+    local remaining = cm:getDirtyChunks()
+    lurek.log.info("drained chunks=" .. tostring(#drained))
+    lurek.log.info("remaining chunks=" .. tostring(#remaining))
 end
 ```
 
@@ -1141,6 +1232,36 @@ end
 
 ---
 
+#### `LChunkMap:getDirtyChunks`
+
+Returns loaded chunk coordinates with tile changes pending downstream updates.
+
+```lua
+LChunkMap:getDirtyChunks()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of `{cx, cy}` pairs. |
+
+**Example**
+
+```lua
+do
+    local cm = lurek.tilemap.newChunkMap(8)
+    cm:setTile(0, 0, 1)
+    cm:setTile(8, 0, 2)
+    local dirty = cm:getDirtyChunks()
+    local first = dirty[1] or { cx = -1, cy = -1 }
+    lurek.log.info("dirty chunks=" .. tostring(#dirty))
+    lurek.log.info("first dirty=" .. tostring(first.cx) .. "," .. tostring(first.cy))
+end
+```
+
+---
+
 #### `LChunkMap:getLoadedChunks`
 
 Returns a list of all currently loaded chunk coordinates.
@@ -1246,6 +1367,38 @@ end
 
 ---
 
+#### `LChunkMap:loadChunkFromBytes`
+
+Loads one chunk from bytes previously returned by `chunkToBytes`.
+
+```lua
+LChunkMap:loadChunkFromBytes(cx, cy, data)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `cx` | number | Chunk X coordinate. |
+| `cy` | number | Chunk Y coordinate. |
+| `data` | string | Binary chunk data. |
+
+**Example**
+
+```lua
+do
+    local source = lurek.tilemap.newChunkMap(8)
+    source:setTile(2, 3, 7)
+    local bytes = source:chunkToBytes(0, 0)
+    local clone = lurek.tilemap.newChunkMap(8)
+    clone:loadChunkFromBytes(1, 0, bytes)
+    lurek.log.info("loaded chunk sample=" .. tostring(clone:getTile(10, 3)))
+    lurek.log.info("loaded chunk dirty=" .. tostring(#clone:getDirtyChunks()))
+end
+```
+
+---
+
 #### `LChunkMap:setTile`
 
 Sets the tile GID at the given world-tile coordinate.
@@ -1274,6 +1427,41 @@ do
     local loaded = cm:getLoadedChunks()
     lurek.log.info("tile at 10,20 = " .. gid)
     lurek.log.info("loaded chunks after write = " .. #loaded)
+end
+```
+
+---
+
+#### `LChunkMap:setTiles`
+
+Applies multiple `{x, y, gid}` tile edits and returns the chunks dirtied by this batch.
+
+```lua
+LChunkMap:setTiles(edits)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `edits` | table | Array of `{x, y, gid}` tables or `{x, y, gid}` arrays. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of `{cx, cy}` chunks changed by the batch. |
+
+**Example**
+
+```lua
+do
+    local cm = lurek.tilemap.newChunkMap(8)
+    local dirty = cm:setTiles({ { x = 0, y = 0, gid = 2 }, { x = 8, y = 0, gid = 3 }, { -1, -1, 4 } })
+    local left = cm:getTile(-1, -1)
+    local right = cm:getTile(8, 0)
+    lurek.log.info("batch dirty chunks=" .. tostring(#dirty))
+    lurek.log.info("batch samples=" .. tostring(left) .. "," .. tostring(right))
 end
 ```
 

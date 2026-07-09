@@ -77,6 +77,28 @@ impl LuaPostFxEffect {
     fn from_rc(rc: Rc<RefCell<PostFxEffect>>) -> Self {
         Self { inner: rc }
     }
+
+    /// Converts this effect into one renderer pass after validating custom shader ownership.
+    pub(crate) fn to_postfx_pass(&self, state: &SharedState, api: &str) -> LuaResult<PostFxPass> {
+        let limits = PostFxLimits::default();
+        let effect = self.inner.borrow();
+        let diagnostics = effect.validate_params_with_limits(&limits);
+        if diagnostics.has_errors() {
+            return Err(postfx_diagnostics_error(api, &diagnostics));
+        }
+        effect
+            .validate_custom_shader(|shader_id| shader_exists(state, shader_id))
+            .map_err(|error| postfx_runtime_error(api, error.to_string()))?;
+        Ok(PostFxPass {
+            effect_name: effect
+                .shader_id
+                .map(|id| format!("custom_{id}"))
+                .unwrap_or_else(|| effect_type_name(&effect).to_string()),
+            params: effect.params.clone(),
+            shader_id: effect.shader_id,
+            auto_uniforms: effect.auto_uniforms,
+        })
+    }
 }
 /// Provides Lua methods for querying and editing post-processing effect parameters.
 impl LuaUserData for LuaPostFxEffect {
@@ -315,7 +337,12 @@ impl LuaPostFxStack {
         self.inner.enabled = enabled;
     }
 
-    fn effect_passes(&self) -> LuaResult<Vec<PostFxPass>> {
+    pub(crate) fn effect_passes(&self) -> LuaResult<Vec<PostFxPass>> {
+        self.effect_passes_for_api("LPostFxStack.apply")
+    }
+
+    /// Resolves enabled stack entries into renderer passes for a caller-specific API.
+    pub(crate) fn effect_passes_for_api(&self, api: &str) -> LuaResult<Vec<PostFxPass>> {
         let limits = PostFxLimits::default();
         let mut passes = Vec::new();
         let state = self.state.borrow();
@@ -329,13 +356,16 @@ impl LuaPostFxStack {
             }
             let diagnostics = effect.validate_params_with_limits(&limits);
             if diagnostics.has_errors() {
-                return Err(postfx_diagnostics_error("LPostFxStack.apply", &diagnostics));
+                return Err(postfx_diagnostics_error(api, &diagnostics));
             }
             effect
                 .validate_custom_shader(|shader_id| shader_exists(&state, shader_id))
-                .map_err(|error| postfx_runtime_error("LPostFxStack.apply", error.to_string()))?;
+                .map_err(|error| postfx_runtime_error(api, error.to_string()))?;
             passes.push(PostFxPass {
-                effect_name: effect_type_name(&effect).to_string(),
+                effect_name: effect
+                    .shader_id
+                    .map(|id| format!("custom_{id}"))
+                    .unwrap_or_else(|| effect_type_name(&effect).to_string()),
                 params: effect.params.clone(),
                 shader_id: effect.shader_id,
                 auto_uniforms: effect.auto_uniforms,

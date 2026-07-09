@@ -13,7 +13,7 @@ id = "cover_photo"
 x = 0.0
 y = 0.0
 w = 400.0
-h = 120.0
+h = 64.0
 tooltip = "Cover photo"
 
 [[root.children]]

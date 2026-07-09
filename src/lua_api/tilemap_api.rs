@@ -85,6 +85,19 @@ fn tilemap_limits_from_table(opts: Option<&LuaTable>) -> LuaResult<TileMapLimits
     Ok(limits)
 }
 
+fn chunk_pairs_to_lua<'lua>(lua: &'lua Lua, chunks: Vec<(i32, i32)>) -> LuaResult<LuaTable<'lua>> {
+    let tbl = lua.create_table()?;
+    for (i, (cx, cy)) in chunks.iter().enumerate() {
+        let entry = lua.create_table()?;
+        entry.set(1, *cx)?;
+        entry.set(2, *cy)?;
+        entry.set("cx", *cx)?;
+        entry.set("cy", *cy)?;
+        tbl.set(i + 1, entry)?;
+    }
+    Ok(tbl)
+}
+
 fn provider_u32(provider: &LuaTable, name: &str, api: &str) -> LuaResult<u32> {
     provider
         .get::<_, Option<u32>>(name)?
@@ -1158,6 +1171,29 @@ impl LuaUserData for LuaChunkMap {
             this.inner.borrow_mut().set_tile(x, y, gid);
             Ok(())
         });
+        // -- setTiles --
+        /// Applies multiple `{x, y, gid}` tile edits and returns the chunks dirtied by this batch.
+        /// @param | edits | table | Array of `{x, y, gid}` tables or `{x, y, gid}` arrays.
+        /// @return | table | Array of `{cx, cy}` chunks changed by the batch.
+        methods.add_method("setTiles", |lua, this, edits: LuaTable| {
+            let mut parsed = Vec::with_capacity(edits.raw_len());
+            for value in edits.sequence_values::<LuaTable>() {
+                let edit = value
+                    .map_err(|err| LuaError::RuntimeError(format!("LChunkMap:setTiles: {err}")))?;
+                let x: i32 = edit.get("x").or_else(|_| edit.get(1)).map_err(|err| {
+                    LuaError::RuntimeError(format!("LChunkMap:setTiles: missing edit x: {err}"))
+                })?;
+                let y: i32 = edit.get("y").or_else(|_| edit.get(2)).map_err(|err| {
+                    LuaError::RuntimeError(format!("LChunkMap:setTiles: missing edit y: {err}"))
+                })?;
+                let gid: u32 = edit.get("gid").or_else(|_| edit.get(3)).map_err(|err| {
+                    LuaError::RuntimeError(format!("LChunkMap:setTiles: missing edit gid: {err}"))
+                })?;
+                parsed.push((x, y, gid));
+            }
+            let dirty = this.inner.borrow_mut().set_tiles(&parsed);
+            chunk_pairs_to_lua(lua, dirty)
+        });
         // -- clearTile --
         /// Removes the tile at the given world-tile coordinate.
         /// @param | x | integer | Tile X coordinate.
@@ -1200,6 +1236,53 @@ impl LuaUserData for LuaChunkMap {
             this.inner.borrow_mut().unload_chunk(cx, cy);
             Ok(())
         });
+        // -- getDirtyChunks --
+        /// Returns loaded chunk coordinates with tile changes pending downstream updates.
+        /// @return | table | Array of `{cx, cy}` pairs.
+        methods.add_method("getDirtyChunks", |lua, this, ()| {
+            chunk_pairs_to_lua(lua, this.inner.borrow().get_dirty_chunks())
+        });
+        // -- drainDirtyChunks --
+        /// Clears and returns chunk coordinates with pending tile changes.
+        /// @return | table | Array of `{cx, cy}` pairs.
+        methods.add_method("drainDirtyChunks", |lua, this, ()| {
+            chunk_pairs_to_lua(lua, this.inner.borrow_mut().drain_dirty_chunks())
+        });
+        // -- clearDirtyChunks --
+        /// Clears chunk dirty tracking without changing tile contents.
+        methods.add_method("clearDirtyChunks", |_, this, ()| {
+            this.inner.borrow_mut().clear_dirty_chunks();
+            Ok(())
+        });
+        // -- chunkToBytes --
+        /// Serializes one loaded chunk into binary bytes for save workflows.
+        /// @param | cx | integer | Chunk X coordinate.
+        /// @param | cy | integer | Chunk Y coordinate.
+        /// @return | string | Binary chunk data, or nil when the chunk is not loaded.
+        methods.add_method("chunkToBytes", |lua, this, (cx, cy): (i32, i32)| match this
+            .inner
+            .borrow()
+            .chunk_to_bytes(cx, cy)
+        {
+            Some(bytes) => Ok(Some(lua.create_string(&bytes)?)),
+            None => Ok(None),
+        });
+        // -- loadChunkFromBytes --
+        /// Loads one chunk from bytes previously returned by `chunkToBytes`.
+        /// @param | cx | integer | Chunk X coordinate.
+        /// @param | cy | integer | Chunk Y coordinate.
+        /// @param | data | string | Binary chunk data.
+        methods.add_method(
+            "loadChunkFromBytes",
+            |_, this, (cx, cy, data): (i32, i32, LuaString)| {
+                this.inner
+                    .borrow_mut()
+                    .load_chunk_from_bytes(cx, cy, data.as_bytes().as_ref())
+                    .map_err(|err| {
+                        LuaError::RuntimeError(format!("LChunkMap:loadChunkFromBytes: {err}"))
+                    })
+            },
+        );
         // -- getChunkSize --
         /// Returns the size of each chunk in tiles per side.
         /// @return | integer | Chunk size.
@@ -1212,17 +1295,7 @@ impl LuaUserData for LuaChunkMap {
         /// @field | cx | integer | Cx.
         /// @field | cy | integer | Cy.
         methods.add_method("getLoadedChunks", |lua, this, ()| {
-            let chunks = this.inner.borrow().get_loaded_chunks();
-            let tbl = lua.create_table()?;
-            for (i, (cx, cy)) in chunks.iter().enumerate() {
-                let entry = lua.create_table()?;
-                entry.set(1, *cx)?;
-                entry.set(2, *cy)?;
-                entry.set("cx", *cx)?;
-                entry.set("cy", *cy)?;
-                tbl.set(i + 1, entry)?;
-            }
-            Ok(tbl)
+            chunk_pairs_to_lua(lua, this.inner.borrow().get_loaded_chunks())
         });
         // -- getChunksInView --
         /// Returns chunk coordinates that overlap a viewport region, given tile dimensions.
@@ -1242,16 +1315,7 @@ impl LuaUserData for LuaChunkMap {
                     .inner
                     .borrow()
                     .get_chunks_in_view(vx, vy, vw, vh, tw, th);
-                let tbl = lua.create_table()?;
-                for (i, (cx, cy)) in chunks.iter().enumerate() {
-                    let entry = lua.create_table()?;
-                    entry.set(1, *cx)?;
-                    entry.set(2, *cy)?;
-                    entry.set("cx", *cx)?;
-                    entry.set("cy", *cy)?;
-                    tbl.set(i + 1, entry)?;
-                }
-                Ok(tbl)
+                chunk_pairs_to_lua(lua, chunks)
             },
         );
         // -- chunkTileRange --

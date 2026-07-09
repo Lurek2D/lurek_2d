@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Centralized retained-mode UI context with arena storage, automatic layouts, and resolution scaling. - Rich control catalog featuring standard inputs, numeric steppers, combo selections, and visual containers. - Layout-manager containers cover vertical boxes, horizontal boxes, grids, margin/padding wrappers, centering, scroll regions, split regions, stacks, and tabbed page containers. - Property inspector widget for grouped name/value rows with collapsible sections and predefined value editors. - Supports resizable window shells, modal dialog triggers, and nine-slice border-stretching layouts. - Declarative TOML layouts, semantic theme tokens, alpha-aware animations, and drag-and-drop event dispatching. - Integrates retained widgets, theme/layout flows, and headless screenshot exports.
+Centralized retained-mode UI context with arena storage, automatic layouts, and resolution scaling. - Rich control catalog featuring standard inputs, multi-line text areas, rich labels, numeric steppers, combo selections, and visual containers. - Layout-manager containers cover vertical boxes, horizontal boxes, grids, margin/padding wrappers, centering, scroll regions, split regions, aspect-ratio slots, stacks, and tabbed page containers. - Property inspector widget for grouped name/value rows with collapsible sections and predefined value editors. - Supports resizable window shells, modal dialog triggers, and nine-slice border-stretching layouts. - Declarative TOML layouts, semantic theme tokens, alpha-aware animations, and drag-and-drop event dispatching. - Integrates retained widgets, theme/layout flows, and headless screenshot exports.
 
 ## Summary
 
@@ -10,17 +10,20 @@ Centralized retained-mode UI context with arena storage, automatic layouts, and 
 - Its core promise is continuity across frames. The UI context remembers widget identity, parent-child structure, focus, hover, active state, capture, bindings, transitions, and pending events, so a screen can evolve over time without losing the state that makes it feel interactive and stable.
 - This retained model matters because large interfaces are rarely redrawn from pure stateless logic. Text inputs need cursors and selection, lists need scroll position, windows need placement, trees need expansion state, and complex panels need to survive temporary data changes without resetting user intent.
 - Container widgets define the structural grammar of the module. Panels, windows, stacks, docks, split regions, scroll containers, frames, and nine-slice shells let projects assemble larger interface layouts from composable blocks rather than hand-managing every rectangle.
-- Basic controls sit on top of that structure as first-class runtime widgets. Buttons, labels, checkboxes, sliders, text boxes, radio groups, combo boxes, lists, tabs, steppers, toggles, and status displays all share the same identity, event, and style model.
+- Basic controls sit on top of that structure as first-class runtime widgets. Buttons, labels, rich labels, checkboxes, sliders, text boxes, text areas, radio groups, combo boxes, lists, tabs, steppers, toggles, and status displays all share the same identity, event, and style model.
 - Property widgets cover editor-style inspector panels where a script or TOML layout needs a left-hand property name, a right-hand value, predefined editor semantics such as text/number/bool/select/color, and collapsible groups that can hide advanced settings without rebuilding the widget tree.
 - The `extras` surface pushes the module past ordinary menus into more tool-like workflows by covering dialogs, menus, tree views, inspectors, status bars, toasts, overlays, and richer dashboard-oriented pieces that are common in internal tools and game editors.
 - Declarative layout loading from TOML is one of the most important user-facing capabilities because it means interface structure can be authored as content. Teams can describe screens in data, instantiate them into live widgets, and still use the same event, style, and binding behavior as hand-written UI.
 - For inspector-style tools, TOML can define property widget groups and rows directly, so configuration panels can live as content while Lua remains responsible for runtime value updates and callbacks.
+- TOML layouts expose Godot-inspired control metadata such as `style_class`, `mouse_filter`, `z_order`, `tab_index`, `focus_group`, `focus_neighbors`, `role`, `aria_name`, `label_for`, `bind`, and anchor fields, with id references resolved after the widget tree is instantiated.
+- Data-heavy widgets can now be populated declaratively: combo boxes, list boxes, and tab bars accept `items`, tables accept `columns` and `rows`, and tree views accept `nodes`, while legacy pipe-delimited `text` remains a compatibility path for combo/list/tab widgets.
 - Styling is not a thin afterthought. Themes, classes, semantic colors, spacing, typography, borders, fills, corner treatment, widget states, and transition-friendly variants all live inside one coherent theme system so several screens can share a recognizable visual language.
 - Layout calculation is another central responsibility. The module resolves requested size, parent constraints, alignment, padding, spacing, scrolling, overflow, clipping, stacking order, and viewport-aware placement into concrete geometry so widgets can be reasoned about structurally instead of geometrically line by line.
 - Layout-manager constructors expose the common screen-structure vocabulary directly: `newVBoxContainer`, `newHBoxContainer`, `newGridContainer`, `newMarginContainer`, `newCenterContainer`, `newScrollContainer`, `newSplitContainer`, `newStackContainer`, and `newTabContainer`. These names mirror the way users think about menu columns, HUD rows, inventory grids, safe-area padding, centered dialogs, scrollable lists, resizable panes, layered views, and settings tabs.
 - `Layout` remains the underlying owner for box, grid, margin, and center behavior, so spacing, padding, alignment, justification, flex grow, and child margins stay on one code path instead of fragmenting into one-off containers.
 - `StackContainer` and `TabContainer` own page selection. They keep all child pages in the retained tree while the layout pass marks only the active child as effectively visible, which lets hidden pages preserve state without being drawn or hit-tested as active content.
 - `SplitPanel` owns two explicit child slots and divides its content rectangle in the layout pass with a clamped split fraction and minimum panel size, making dockable editor-style panes layout-managed rather than manually positioned.
+- `AspectRatioContainer` owns the common media-preview case where one child must be fit into a stable aspect rectangle using `contain`, `cover`, or `stretch` behavior.
 - Scroll regions, nested containers, resizable panels, and dock-like arrangements are important examples of why layout belongs here: they require persistent bookkeeping and cross-widget coordination that would become brittle if each feature implemented its own layout rules.
 - Input routing is part of the same authority. Mouse, keyboard, controller-like activation, focus traversal, drag, drop, text entry, pointer capture, and event bubbling all flow through the UI context so the entire screen obeys one interaction model.
 - Binding support turns UI from a decorative layer into a practical application surface. Widgets can synchronize with script-visible values, settings models, editor records, or runtime debug state without every screen inventing its own plumbing for reads, writes, and synchronization.
@@ -1408,6 +1411,36 @@ end
 
 ---
 
+### `lurek.ui.newAspectRatioContainer`
+
+Creates a container that fits its child to a fixed aspect ratio.
+
+```lua
+lurek.ui.newAspectRatioContainer()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LAspectRatioContainer](#laspectratiocontainer) | The new aspect-ratio container table. |
+
+**Example**
+
+```lua
+do
+
+    local container = lurek.ui.newAspectRatioContainer()
+    container:setRatio(16 / 9)
+    container:setFit("contain")
+    local ratio = container:getRatio()
+    lurek.log.info(tostring("aspect type = " .. container:type()))
+    lurek.log.info(tostring("aspect ratio = " .. ratio))
+end
+```
+
+---
+
 ### `lurek.ui.newBadge`
 
 Creates a new badge widget for displaying counts.
@@ -2291,6 +2324,42 @@ end
 
 ---
 
+### `lurek.ui.newRichLabel`
+
+Creates a new rich label with simple inline formatting spans.
+
+```lua
+lurek.ui.newRichLabel(text)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `text?` | string | The initial rich label text. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LRichLabel](#lrichlabel) | The new rich label widget table. |
+
+**Example**
+
+```lua
+do
+
+    local rich = lurek.ui.newRichLabel("[b]Warning[/b]")
+    local text = rich:getText()
+    local plain = rich:getPlainText()
+    rich:setText("[color=yellow]Ready[/color]")
+    lurek.log.info(tostring("rich text = " .. text))
+    lurek.log.info(tostring("plain text = " .. plain))
+end
+```
+
+---
+
 ### `lurek.ui.newScrollBar`
 
 Creates a new scroll bar widget for content scrolling.
@@ -2863,6 +2932,36 @@ do
     tbl:setCell(0, 1, "999")
     tbl:setSelectedRow(1)
     lurek.log.info(tostring("selected=" .. tbl:getSelectedRow()))
+end
+```
+
+---
+
+### `lurek.ui.newTextArea`
+
+Creates a new multi-line text area widget.
+
+```lua
+lurek.ui.newTextArea()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LTextArea](#ltextarea) | The new text area widget table. |
+
+**Example**
+
+```lua
+do
+
+    local area = lurek.ui.newTextArea()
+    area:setText("Line one\nLine two")
+    area:setPlaceholder("Notes")
+    local cursor = area:getCursorPosition()
+    lurek.log.info(tostring("textarea type = " .. area:type()))
+    lurek.log.info(tostring("textarea cursor = " .. cursor))
 end
 ```
 
@@ -3745,6 +3844,7 @@ end
 ## Types
 
 - [LAccordion](#laccordion)
+- [LAspectRatioContainer](#laspectratiocontainer)
 - [LBadge](#lbadge)
 - [LButton](#lbutton)
 - [LCheckbox](#lcheckbox)
@@ -3765,6 +3865,7 @@ end
 - [LProgressBar](#lprogressbar)
 - [LPropertyWidget](#lpropertywidget)
 - [LRadioButton](#lradiobutton)
+- [LRichLabel](#lrichlabel)
 - [LScrollBar](#lscrollbar)
 - [LScrollPanel](#lscrollpanel)
 - [LSeparator](#lseparator)
@@ -3776,6 +3877,7 @@ end
 - [LSwitch](#lswitch)
 - [LTabBar](#ltabbar)
 - [LTabContainer](#ltabcontainer)
+- [LTextArea](#ltextarea)
 - [LTextInput](#ltextinput)
 - [LTheme](#ltheme)
 - [LToast](#ltoast)
@@ -4040,6 +4142,134 @@ do
     acc:toggleSection(2)
     lurek.log.info(tostring("section 1 after toggle 2 = " .. tostring(acc:isSectionExpanded(1))))
     lurek.log.info(tostring("section 2 expanded = " .. tostring(acc:isSectionExpanded(2))))
+end
+```
+
+---
+
+## LAspectRatioContainer
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LAspectRatioContainer:getFit`
+
+Returns how the child is fit into the aspect rectangle.
+
+```lua
+LAspectRatioContainer:getFit()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | `contain`, `cover`, or `stretch`. |
+
+**Example**
+
+```lua
+do
+
+    local container = lurek.ui.newAspectRatioContainer()
+    container:setFit("contain")
+    local fit = container:getFit()
+    container:setRatio(1.0)
+    lurek.log.info(tostring("aspect fit = " .. fit))
+    lurek.log.info(tostring("aspect ratio = " .. container:getRatio()))
+end
+```
+
+---
+
+#### `LAspectRatioContainer:getRatio`
+
+Returns the child aspect ratio used by this container.
+
+```lua
+LAspectRatioContainer:getRatio()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Width divided by height. |
+
+**Example**
+
+```lua
+do
+
+    local container = lurek.ui.newAspectRatioContainer()
+    container:setRatio(1.5)
+    local ratio = container:getRatio()
+    container:setFit("stretch")
+    lurek.log.info(tostring("aspect ratio = " .. ratio))
+    lurek.log.info(tostring("aspect fit = " .. container:getFit()))
+end
+```
+
+---
+
+#### `LAspectRatioContainer:setFit`
+
+Sets how the child is fit into the aspect rectangle.
+
+```lua
+LAspectRatioContainer:setFit(fit)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `fit` | string | `contain`, `cover`, or `stretch`. |
+
+**Example**
+
+```lua
+do
+
+    local container = lurek.ui.newAspectRatioContainer()
+    container:setFit("cover")
+    container:setRatio(2.0)
+    local fit = container:getFit()
+    lurek.log.info(tostring("aspect fit = " .. fit))
+    lurek.log.info(tostring("aspect ratio = " .. container:getRatio()))
+end
+```
+
+---
+
+#### `LAspectRatioContainer:setRatio`
+
+Sets the child aspect ratio used by this container.
+
+```lua
+LAspectRatioContainer:setRatio(ratio)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `ratio` | number | Width divided by height; values below 0.01 are clamped. |
+
+**Example**
+
+```lua
+do
+
+    local container = lurek.ui.newAspectRatioContainer()
+    container:setRatio(4 / 3)
+    container:setFit("cover")
+    local ratio = container:getRatio()
+    lurek.log.info(tostring("aspect ratio = " .. ratio))
+    lurek.log.info(tostring("aspect fit = " .. container:getFit()))
 end
 ```
 
@@ -9334,6 +9564,102 @@ end
 
 ---
 
+## LRichLabel
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LRichLabel:getPlainText`
+
+Returns the rich label text with simple inline span markers stripped.
+
+```lua
+LRichLabel:getPlainText()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The plain display text. |
+
+**Example**
+
+```lua
+do
+
+    local rich = lurek.ui.newRichLabel("[b]Alert[/b]")
+    local plain = rich:getPlainText()
+    rich:setText("[color=red]Alert[/color]")
+    lurek.log.info(tostring("plain text = " .. plain))
+    lurek.log.info(tostring("updated text = " .. rich:getText()))
+end
+```
+
+---
+
+#### `LRichLabel:getText`
+
+Returns the rich label source text, including inline span markers.
+
+```lua
+LRichLabel:getText()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The rich label source text. |
+
+**Example**
+
+```lua
+do
+
+    local rich = lurek.ui.newRichLabel("[b]Status[/b]")
+    local text = rich:getText()
+    rich:setText("[color=green]Online[/color]")
+    lurek.log.info(tostring("rich text = " .. text))
+    lurek.log.info(tostring("new plain = " .. rich:getPlainText()))
+end
+```
+
+---
+
+#### `LRichLabel:setText`
+
+Sets the rich label source text with simple `[b]` and `[color=...]` spans.
+
+```lua
+LRichLabel:setText(text)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `text` | string | The rich label source text. |
+
+**Example**
+
+```lua
+do
+
+    local rich = lurek.ui.newRichLabel("Initial")
+    rich:setText("[b]Updated[/b]")
+    local text = rich:getText()
+    local plain = rich:getPlainText()
+    lurek.log.info(tostring("rich text = " .. text))
+    lurek.log.info(tostring("plain text = " .. plain))
+end
+```
+
+---
+
 ## LScrollBar
 
 ### Type Fields
@@ -11616,6 +11942,224 @@ do
     tabs:addChild(lurek.ui.newPanel())
     local changed = tabs:setActiveIndex(2)
     lurek.log.info(tostring("tab active changed = " .. tostring(changed)))
+end
+```
+
+---
+
+## LTextArea
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LTextArea:getCursorPosition`
+
+Returns the current cursor position as a zero-based character index.
+
+```lua
+LTextArea:getCursorPosition()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | The cursor position. |
+
+**Example**
+
+```lua
+do
+
+    local area = lurek.ui.newTextArea()
+    area:setText("First\nSecond")
+    area:setMaxLength(64)
+    local cursor = area:getCursorPosition()
+    lurek.log.info(tostring("textarea cursor = " .. cursor))
+    lurek.log.info(tostring("textarea text = " .. area:getText()))
+end
+```
+
+---
+
+#### `LTextArea:getPlaceholder`
+
+Returns the placeholder text of this text area.
+
+```lua
+LTextArea:getPlaceholder()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The placeholder text. |
+
+**Example**
+
+```lua
+do
+
+    local area = lurek.ui.newTextArea()
+    area:setPlaceholder("Body text")
+    area:setText("Existing body")
+    local placeholder = area:getPlaceholder()
+    lurek.log.info(tostring("textarea placeholder = " .. placeholder))
+    lurek.log.info(tostring("textarea text = " .. area:getText()))
+end
+```
+
+---
+
+#### `LTextArea:getText`
+
+Returns the current text content of this multi-line text area.
+
+```lua
+LTextArea:getText()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The text area content. |
+
+**Example**
+
+```lua
+do
+
+    local area = lurek.ui.newTextArea()
+    area:setText("Draft\nReady")
+    area:setMaxLength(32)
+    local text = area:getText()
+    lurek.log.info(tostring("textarea text = " .. text))
+    lurek.log.info(tostring("textarea cursor = " .. area:getCursorPosition()))
+end
+```
+
+---
+
+#### `LTextArea:isFocused`
+
+Returns whether this text area currently has keyboard focus.
+
+```lua
+LTextArea:isFocused()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if focused. |
+
+**Example**
+
+```lua
+do
+
+    local area = lurek.ui.newTextArea()
+    area:setText("Focus target")
+    area:setPlaceholder("Focus")
+    local focused = area:isFocused()
+    lurek.log.info(tostring("textarea focused = " .. tostring(focused)))
+    lurek.log.info(tostring("textarea type = " .. area:type()))
+end
+```
+
+---
+
+#### `LTextArea:setMaxLength`
+
+Sets the maximum number of characters allowed in this text area.
+
+```lua
+LTextArea:setMaxLength(n)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `n` | number | Maximum character count; 0 disables the limit. |
+
+**Example**
+
+```lua
+do
+
+    local area = lurek.ui.newTextArea()
+    area:setMaxLength(5)
+    area:setText("abcdef")
+    local text = area:getText()
+    lurek.log.info(tostring("textarea capped = " .. text))
+    lurek.log.info(tostring("textarea cursor = " .. area:getCursorPosition()))
+end
+```
+
+---
+
+#### `LTextArea:setPlaceholder`
+
+Sets the placeholder text shown when the text area is empty.
+
+```lua
+LTextArea:setPlaceholder(text)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `text` | string | The placeholder text. |
+
+**Example**
+
+```lua
+do
+
+    local area = lurek.ui.newTextArea()
+    area:setPlaceholder("Enter notes")
+    area:setText("")
+    local placeholder = area:getPlaceholder()
+    lurek.log.info(tostring("textarea placeholder = " .. placeholder))
+    lurek.log.info(tostring("textarea focused = " .. tostring(area:isFocused())))
+end
+```
+
+---
+
+#### `LTextArea:setText`
+
+Sets the text content of this multi-line text area and moves the cursor to the end.
+
+```lua
+LTextArea:setText(text)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `text` | string | The text to set. |
+
+**Example**
+
+```lua
+do
+
+    local area = lurek.ui.newTextArea()
+    area:setText("Alpha\nBeta")
+    area:setPlaceholder("Body")
+    local text = area:getText()
+    lurek.log.info(tostring("textarea text = " .. text))
+    lurek.log.info(tostring("textarea placeholder = " .. area:getPlaceholder()))
 end
 ```
 

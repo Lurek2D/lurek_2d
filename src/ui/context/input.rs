@@ -89,6 +89,7 @@ impl GuiContext {
                 WidgetKind::ScrollPanel(_)
                     | WidgetKind::ListBox(_)
                     | WidgetKind::GUITable(_)
+                    | WidgetKind::TextArea(_)
                     | WidgetKind::ScrollBar(_)
             ) || !self.widget_contains_point(idx, x, y)
             {
@@ -488,6 +489,22 @@ impl GuiContext {
                 let max_y = (content_h - visible_h).max(0.0);
                 table.scroll_y = (table.scroll_y - y_delta * TABLE_ROW_HEIGHT).clamp(0.0, max_y);
                 if (table.scroll_y - old_y).abs() > f32::EPSILON {
+                    self.dirty = true;
+                }
+                true
+            }
+            WidgetKind::TextArea(text_area) => {
+                let old_y = text_area.scroll_y;
+                let line_h = 18.0_f32;
+                let content_h = text_area.text.lines().count().max(1) as f32 * line_h;
+                let viewport_h = if text_area.base.computed_rect.height > 0.0 {
+                    text_area.base.computed_rect.height
+                } else {
+                    text_area.base.height
+                };
+                let max_y = (content_h - viewport_h).max(0.0);
+                text_area.scroll_y = (text_area.scroll_y - y_delta * line_h).clamp(0.0, max_y);
+                if (text_area.scroll_y - old_y).abs() > f32::EPSILON {
                     self.dirty = true;
                 }
                 true
@@ -1818,11 +1835,20 @@ impl GuiContext {
         match normalized_key.as_str() {
             "ctrl+a" => {
                 if let Some(idx) = self.focused_widget {
-                    if let WidgetKind::TextInput(ti) = &mut self.widgets[idx] {
-                        if ti.select_all() {
-                            self.dirty = true;
+                    match &mut self.widgets[idx] {
+                        WidgetKind::TextInput(ti) => {
+                            if ti.select_all() {
+                                self.dirty = true;
+                            }
+                            return true;
                         }
-                        return true;
+                        WidgetKind::TextArea(ta) => {
+                            if ta.select_all() {
+                                self.dirty = true;
+                            }
+                            return true;
+                        }
+                        _ => {}
                     }
                 }
                 false
@@ -1837,42 +1863,78 @@ impl GuiContext {
             }
             "backspace" => {
                 if let Some(idx) = self.focused_widget {
-                    if let WidgetKind::TextInput(ti) = &mut self.widgets[idx] {
-                        if ti.backspace() {
-                            self.pending_events.push(GuiEvent::Change(idx));
-                            self.dirty = true;
+                    match &mut self.widgets[idx] {
+                        WidgetKind::TextInput(ti) => {
+                            if ti.backspace() {
+                                self.pending_events.push(GuiEvent::Change(idx));
+                                self.dirty = true;
+                            }
+                            return true;
                         }
-                        return true;
+                        WidgetKind::TextArea(ta) => {
+                            if ta.backspace() {
+                                self.pending_events.push(GuiEvent::Change(idx));
+                                self.dirty = true;
+                            }
+                            return true;
+                        }
+                        _ => {}
                     }
                 }
                 false
             }
             "delete" => {
                 if let Some(idx) = self.focused_widget {
-                    if let WidgetKind::TextInput(ti) = &mut self.widgets[idx] {
-                        if ti.delete_forward() {
-                            self.pending_events.push(GuiEvent::Change(idx));
-                            self.dirty = true;
+                    match &mut self.widgets[idx] {
+                        WidgetKind::TextInput(ti) => {
+                            if ti.delete_forward() {
+                                self.pending_events.push(GuiEvent::Change(idx));
+                                self.dirty = true;
+                            }
+                            return true;
                         }
-                        return true;
+                        WidgetKind::TextArea(ta) => {
+                            if ta.delete_forward() {
+                                self.pending_events.push(GuiEvent::Change(idx));
+                                self.dirty = true;
+                            }
+                            return true;
+                        }
+                        _ => {}
                     }
                 }
                 false
             }
             "left" | "right" | "home" | "end" => {
                 if let Some(idx) = self.focused_widget {
-                    if let WidgetKind::TextInput(ti) = &mut self.widgets[idx] {
-                        let moved = match normalized_key.as_str() {
-                            "left" => ti.move_cursor_left(),
-                            "right" => ti.move_cursor_right(),
-                            "home" => ti.move_cursor_home(),
-                            "end" => ti.move_cursor_end(),
-                            _ => false,
-                        };
-                        if moved {
-                            self.dirty = true;
+                    match &mut self.widgets[idx] {
+                        WidgetKind::TextInput(ti) => {
+                            let moved = match normalized_key.as_str() {
+                                "left" => ti.move_cursor_left(),
+                                "right" => ti.move_cursor_right(),
+                                "home" => ti.move_cursor_home(),
+                                "end" => ti.move_cursor_end(),
+                                _ => false,
+                            };
+                            if moved {
+                                self.dirty = true;
+                            }
+                            return true;
                         }
-                        return true;
+                        WidgetKind::TextArea(ta) => {
+                            let moved = match normalized_key.as_str() {
+                                "left" => ta.move_cursor_left(),
+                                "right" => ta.move_cursor_right(),
+                                "home" => ta.move_cursor_home(),
+                                "end" => ta.move_cursor_end(),
+                                _ => false,
+                            };
+                            if moved {
+                                self.dirty = true;
+                            }
+                            return true;
+                        }
+                        _ => {}
                     }
                 }
                 self.navigate_focused_widget(&normalized_key)
@@ -1913,6 +1975,15 @@ impl GuiContext {
             }
             "up" | "down" => self.navigate_focused_widget(&normalized_key),
             "return" | "enter" => {
+                if let Some(idx) = self.focused_widget {
+                    if let WidgetKind::TextArea(text_area) = &mut self.widgets[idx] {
+                        if text_area.insert_text("\n") {
+                            self.pending_events.push(GuiEvent::Change(idx));
+                            self.dirty = true;
+                        }
+                        return true;
+                    }
+                }
                 if let Some(dialog_idx) = self.active_modal_dialog() {
                     let text_input_submit_on_enter = self.focused_widget.and_then(|idx| match self
                         .widgets
@@ -1963,6 +2034,13 @@ impl GuiContext {
                     }
                     return true;
                 }
+                WidgetKind::TextArea(ta) => {
+                    if ta.insert_text(text) {
+                        self.pending_events.push(GuiEvent::Change(idx));
+                        self.dirty = true;
+                    }
+                    return true;
+                }
                 WidgetKind::ComboBox(_) => {
                     return self.combo_typeahead_input(idx, text);
                 }
@@ -1989,6 +2067,7 @@ impl GuiContext {
                     WidgetKind::ScrollPanel(_)
                         | WidgetKind::ListBox(_)
                         | WidgetKind::GUITable(_)
+                        | WidgetKind::TextArea(_)
                         | WidgetKind::ScrollBar(_)
                 )
             ) {

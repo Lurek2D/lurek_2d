@@ -460,6 +460,22 @@ fn terrain_flush_stats_to_table<'lua>(
     Ok(tbl)
 }
 
+fn physics_chunk_pairs_to_lua<'lua>(
+    lua: &'lua Lua,
+    chunks: Vec<(u32, u32)>,
+) -> LuaResult<LuaTable<'lua>> {
+    let tbl = lua.create_table()?;
+    for (index, (cx, cy)) in chunks.iter().enumerate() {
+        let row = lua.create_table()?;
+        row.set(1, *cx)?;
+        row.set(2, *cy)?;
+        row.set("cx", *cx)?;
+        row.set("cy", *cy)?;
+        tbl.set(index + 1, row)?;
+    }
+    Ok(tbl)
+}
+
 fn parse_liquid_kind(method: &str, value: LuaValue) -> LuaResult<LiquidKind> {
     match value {
         LuaValue::String(text) => match text.to_str()?.trim().to_ascii_lowercase().as_str() {
@@ -4512,6 +4528,12 @@ impl LuaUserData for LuaTerrain {
         methods.add_method("isDirty", |_, this, ()| {
             Ok(this.terrain.borrow().is_dirty())
         });
+        // -- getDirtyChunks --
+        /// Returns terrain chunks pending collider rebuild after terrain edits.
+        /// @return | table | Array of `{cx, cy}` chunk coordinates.
+        methods.add_method("getDirtyChunks", |lua, this, ()| {
+            physics_chunk_pairs_to_lua(lua, this.terrain.borrow().dirty_chunks())
+        });
         // -- collapseColumns --
         /// Removes isolated single-cell overhangs that have no support below or beside them.
         /// @return | integer | Number of unsupported single cells removed.
@@ -4727,6 +4749,12 @@ impl LuaUserData for LuaLiquidMap {
                     .map_err(|err| physics_runtime_error("step", err))?
             };
             liquid_step_stats_to_table(lua, stats)
+        });
+        // -- getDirtyChunks --
+        /// Returns liquid chunks changed by the most recent liquid edit or simulation step.
+        /// @return | table | Array of `{cx, cy}` chunk coordinates.
+        methods.add_method("getDirtyChunks", |lua, this, ()| {
+            physics_chunk_pairs_to_lua(lua, this.liquid.borrow().dirty_chunks())
         });
         // -- getAmountAt --
         /// Samples liquid fill amount at one world-space point.

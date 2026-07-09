@@ -1057,6 +1057,85 @@ do
     lurek.log.info(status .. " " .. tostring(value))
 end
 
+--@api: LTileField:beginEdit
+do
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 1 })
+    field:beginEdit()
+    field:setBlock(2, 2, 1, "move", true)
+    field:setResource(3, 2, 1, "iron")
+    local dirty = field:getDirtyRects()
+    lurek.log.info("beginEdit dirty=" .. tostring(#dirty))
+    lurek.log.info("beginEdit resource=" .. tostring(field:getResource(3, 2, 1)))
+end
+
+--@api: LTileField:getDirtyRects
+do
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 1 })
+    field:setBlock(2, 2, 1, "move", true)
+    field:setBlock(3, 2, 1, "light", true)
+    local dirty = field:getDirtyRects(4)
+    local first = dirty[1] or { x = 0, y = 0, cx = 0, cy = 0 }
+    lurek.log.info("dirty rects=" .. tostring(#dirty))
+    lurek.log.info("first rect=" .. tostring(first.x) .. "," .. tostring(first.y) .. " chunk=" .. tostring(first.cx) .. "," .. tostring(first.cy))
+end
+
+--@api: LTileField:drainDirtyRects
+do
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 1 })
+    field:setBlock(2, 2, 1, "move", true)
+    field:setResource(3, 2, 1, "coal")
+    local drained = field:drainDirtyRects()
+    local remaining = field:getDirtyRects()
+    lurek.log.info("drained rects=" .. tostring(#drained))
+    lurek.log.info("remaining rects=" .. tostring(#remaining))
+end
+
+--@api: LTileField:commitEdit
+do
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 1 })
+    field:beginEdit()
+    field:setBlock(2, 2, 1, "move", true)
+    field:setRef(2, 2, 1, "foreground", 12)
+    local dirty = field:commitEdit(4)
+    lurek.log.info("commit rects=" .. tostring(#dirty))
+    lurek.log.info("commit ref=" .. tostring(field:getRef(2, 2, 1, "foreground")))
+end
+
+--@api: LTileField:defineBlockWorldSlots
+do
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 1 })
+    local slots = field:defineBlockWorldSlots()
+    field:setRef(2, 2, 1, "foreground", 12)
+    field:setRef(2, 2, 1, "wall", 13)
+    local foreground = field:getRef(2, 2, 1, "foreground")
+    lurek.log.info("block slots=" .. tostring(#slots))
+    lurek.log.info("foreground ref=" .. tostring(foreground))
+end
+
+--@api: LTileField:snapshot
+do
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 1 })
+    field:defineBlockWorldSlots()
+    field:setRef(2, 2, 1, "foreground", 12)
+    field:setResource(3, 2, 1, "copper")
+    local snapshot = field:snapshot()
+    lurek.log.info("snapshot width=" .. tostring(snapshot.width))
+    lurek.log.info("snapshot resources=" .. tostring(#snapshot.resources))
+end
+
+--@api: LTileField:restore
+do
+    local source = lurek.tilefield.new({ width = 5, height = 4, levels = 1 })
+    source:defineBlockWorldSlots()
+    source:setRef(2, 2, 1, "wall", 13)
+    source:setBuildable(3, 2, 1, false)
+    local snapshot = source:snapshot()
+    local clone = lurek.tilefield.new({ width = 1, height = 1 })
+    clone:restore(snapshot)
+    lurek.log.info("restore wall=" .. tostring(clone:getRef(2, 2, 1, "wall")))
+    lurek.log.info("restore buildable=" .. tostring(clone:isBuildable(3, 2, 1)))
+end
+
 --@api: LTileFieldMap:type
 do
     local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })

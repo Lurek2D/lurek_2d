@@ -443,6 +443,30 @@ end
 
 ---
 
+#### `LTileField:beginEdit`
+
+Clears pending dirty rectangles before a grouped tilefield edit.
+
+```lua
+LTileField:beginEdit()
+```
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 1 })
+    field:beginEdit()
+    field:setBlock(2, 2, 1, "move", true)
+    field:setResource(3, 2, 1, "iron")
+    local dirty = field:getDirtyRects()
+    lurek.log.info("beginEdit dirty=" .. tostring(#dirty))
+    lurek.log.info("beginEdit resource=" .. tostring(field:getResource(3, 2, 1)))
+end
+```
+
+---
+
 #### `LTileField:blocks`
 
 Returns whether a cell blocks a channel.
@@ -735,6 +759,72 @@ end
 
 ---
 
+#### `LTileField:commitEdit`
+
+Clears and returns dirty rectangles accumulated since `beginEdit`.
+
+```lua
+LTileField:commitEdit(chunkSize)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `chunkSize?` | number | Optional chunk size used to add cx/cy fields to each dirty rect. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of `{x, y, z, w, h, cx?, cy?}` one-based dirty rectangles. |
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 1 })
+    field:beginEdit()
+    field:setBlock(2, 2, 1, "move", true)
+    field:setRef(2, 2, 1, "foreground", 12)
+    local dirty = field:commitEdit(4)
+    lurek.log.info("commit rects=" .. tostring(#dirty))
+    lurek.log.info("commit ref=" .. tostring(field:getRef(2, 2, 1, "foreground")))
+end
+```
+
+---
+
+#### `LTileField:defineBlockWorldSlots`
+
+Defines conventional ref slots for mutable block worlds without adding a new module.
+
+```lua
+LTileField:defineBlockWorldSlots()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Slot names: foreground, wall, platform, ore, furniture, liquid, spawn, biome. |
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 1 })
+    local slots = field:defineBlockWorldSlots()
+    field:setRef(2, 2, 1, "foreground", 12)
+    field:setRef(2, 2, 1, "wall", 13)
+    local foreground = field:getRef(2, 2, 1, "foreground")
+    lurek.log.info("block slots=" .. tostring(#slots))
+    lurek.log.info("foreground ref=" .. tostring(foreground))
+end
+```
+
+---
+
 #### `LTileField:defineCategory`
 
 Defines or replaces a user category used by movement, awareness, light, sun, or custom systems.
@@ -799,6 +889,42 @@ do
     end)
     local status = ok and "ok" or "error"
     lurek.log.info(status .. " " .. tostring(value))
+end
+```
+
+---
+
+#### `LTileField:drainDirtyRects`
+
+Clears and returns pending dirty cell rectangles.
+
+```lua
+LTileField:drainDirtyRects(chunkSize)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `chunkSize?` | number | Optional chunk size used to add cx/cy fields to each dirty rect. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of `{x, y, z, w, h, cx?, cy?}` one-based dirty rectangles. |
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 1 })
+    field:setBlock(2, 2, 1, "move", true)
+    field:setResource(3, 2, 1, "coal")
+    local drained = field:drainDirtyRects()
+    local remaining = field:getDirtyRects()
+    lurek.log.info("drained rects=" .. tostring(#drained))
+    lurek.log.info("remaining rects=" .. tostring(#remaining))
 end
 ```
 
@@ -1263,6 +1389,42 @@ do
     field:setCost(1, 2, 1, "move", 5)
     local changed = field:getCost(1, 2, 1, "move")
     lurek.log.info("cost base=" .. base .. " changed=" .. changed)
+end
+```
+
+---
+
+#### `LTileField:getDirtyRects`
+
+Returns pending dirty cell rectangles without clearing them.
+
+```lua
+LTileField:getDirtyRects(chunkSize)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `chunkSize?` | number | Optional chunk size used to add cx/cy fields to each dirty rect. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of `{x, y, z, w, h, cx?, cy?}` one-based dirty rectangles. |
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 1 })
+    field:setBlock(2, 2, 1, "move", true)
+    field:setBlock(3, 2, 1, "light", true)
+    local dirty = field:getDirtyRects(4)
+    local first = dirty[1] or { x = 0, y = 0, cx = 0, cy = 0 }
+    lurek.log.info("dirty rects=" .. tostring(#dirty))
+    lurek.log.info("first rect=" .. tostring(first.x) .. "," .. tostring(first.y) .. " chunk=" .. tostring(first.cx) .. "," .. tostring(first.cy))
 end
 ```
 
@@ -2408,6 +2570,38 @@ end
 
 ---
 
+#### `LTileField:restore`
+
+Replaces this tilefield state from a snapshot returned by `snapshot`.
+
+```lua
+LTileField:restore(snapshot)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `snapshot` | table | Snapshot table. |
+
+**Example**
+
+```lua
+do
+    local source = lurek.tilefield.new({ width = 5, height = 4, levels = 1 })
+    source:defineBlockWorldSlots()
+    source:setRef(2, 2, 1, "wall", 13)
+    source:setBuildable(3, 2, 1, false)
+    local snapshot = source:snapshot()
+    local clone = lurek.tilefield.new({ width = 1, height = 1 })
+    clone:restore(snapshot)
+    lurek.log.info("restore wall=" .. tostring(clone:getRef(2, 2, 1, "wall")))
+    lurek.log.info("restore buildable=" .. tostring(clone:isBuildable(3, 2, 1)))
+end
+```
+
+---
+
 #### `LTileField:setBlock`
 
 Sets whether a cell blocks a channel.
@@ -2974,6 +3168,36 @@ do
     local value = field:getSunOcclusion(1, 1, 2)
     local default = field:getSunOcclusion(2, 2, 2)
     lurek.log.info("sun occlusion=" .. value .. " default=" .. default)
+end
+```
+
+---
+
+#### `LTileField:snapshot`
+
+Captures block/cost/ref layers plus resource, buildable, and occupant cell facts.
+
+```lua
+LTileField:snapshot()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Snapshot table suitable for `restore`. |
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 1 })
+    field:defineBlockWorldSlots()
+    field:setRef(2, 2, 1, "foreground", 12)
+    field:setResource(3, 2, 1, "copper")
+    local snapshot = field:snapshot()
+    lurek.log.info("snapshot width=" .. tostring(snapshot.width))
+    lurek.log.info("snapshot resources=" .. tostring(#snapshot.resources))
 end
 ```
 

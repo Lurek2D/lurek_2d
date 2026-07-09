@@ -2502,6 +2502,17 @@ describe("destructible terrain", function()
         expect_true(terrain:isDirty())
     end)
 
+    -- @covers LTerrain:getDirtyChunks
+    it("getDirtyChunks reports terrain chunks pending flush", function()
+        local terrain = new_terrain(new_world(0, 0), 20, 20, 4)
+        terrain:fillAll(true)
+        local chunks = terrain:getDirtyChunks()
+        expect_true(#chunks >= 1)
+        expect_type("number", chunks[1].cx)
+        terrain:flush()
+        expect_equal(0, #terrain:getDirtyChunks())
+    end)
+
     -- @covers LTerrain:damageCircle
     it("damageCircle carves terrain and returns a collapse result table", function()
         local terrain = new_terrain(new_world(0, 0), 32, 32, 4)
@@ -2612,6 +2623,16 @@ describe("liquid map", function()
         local amount, kind = liquid:getCell(2, 3)
         expect_near(0.75, amount, 0.001)
         expect_equal("water", kind)
+    end)
+
+    -- @covers LLiquidMap:getDirtyChunks
+    it("getDirtyChunks reports changed liquid chunks", function()
+        local liquid = lurek.physics.newLiquidMap(8, 8, 4, new_world(0, 0))
+        liquid:setCell(2, 3, 0.75, "water")
+        local chunks = liquid:getDirtyChunks()
+        expect_equal(1, #chunks)
+        expect_equal(0, chunks[1].cx)
+        expect_equal(0, chunks[1].cy)
     end)
 
     -- @covers LLiquidMap:getCell

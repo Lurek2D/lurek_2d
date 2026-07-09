@@ -1,15 +1,15 @@
 {
   "meta": {
-    "generated": "2026-07-08T21:18:22.917081+00:00",
+    "generated": "2026-07-09T15:05:25.610613+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
-    "total_api_functions": 6713,
-    "marker_covered": 6688,
+    "total_api_functions": 6746,
+    "marker_covered": 6707,
     "describe_covered": 150,
     "describe_coverage_pct": 2.2,
-    "heuristic_covered": 0,
-    "total_covered": 6713,
+    "heuristic_covered": 14,
+    "total_covered": 6746,
     "coverage_pct": 100.0
   },
   "modules": {
@@ -39876,11 +39876,11 @@
       ]
     },
     "physics": {
-      "total": 323,
-      "marker_covered": 323,
+      "total": 325,
+      "marker_covered": 325,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 323,
+      "covered": 325,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -41792,6 +41792,15 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "LTerrain:getDirtyChunks",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "LTerrain:collapseColumns",
           "kind": "method",
           "marker_covered": true,
@@ -41910,6 +41919,15 @@
         },
         {
           "lua_name": "LLiquidMap:step",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LLiquidMap:getDirtyChunks",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -46341,11 +46359,11 @@
       ]
     },
     "render": {
-      "total": 216,
-      "marker_covered": 216,
+      "total": 217,
+      "marker_covered": 217,
       "describe_covered": 2,
       "heuristic_covered": 0,
-      "covered": 216,
+      "covered": 217,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.9,
       "describe_score": 0.009,
@@ -46841,6 +46859,15 @@
         },
         {
           "lua_name": "lurek.render.applyShaderToCanvas",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.render.applyEffectToCanvas",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -52658,11 +52685,11 @@
       ]
     },
     "tilefield": {
-      "total": 92,
-      "marker_covered": 92,
+      "total": 99,
+      "marker_covered": 99,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 92,
+      "covered": 99,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -53099,6 +53126,69 @@
         },
         {
           "lua_name": "LTileField:getVersion",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileField:beginEdit",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileField:getDirtyRects",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileField:drainDirtyRects",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileField:commitEdit",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileField:defineBlockWorldSlots",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileField:snapshot",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileField:restore",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -53774,11 +53864,11 @@
       ]
     },
     "tilemap": {
-      "total": 129,
-      "marker_covered": 129,
+      "total": 135,
+      "marker_covered": 135,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 129,
+      "covered": 135,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -54510,6 +54600,15 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "LChunkMap:setTiles",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "LChunkMap:clearTile",
           "kind": "method",
           "marker_covered": true,
@@ -54538,6 +54637,51 @@
         },
         {
           "lua_name": "LChunkMap:unloadChunk",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LChunkMap:getDirtyChunks",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LChunkMap:drainDirtyChunks",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LChunkMap:clearDirtyChunks",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LChunkMap:chunkToBytes",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LChunkMap:loadChunkFromBytes",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -56735,11 +56879,11 @@
       ]
     },
     "ui": {
-      "total": 481,
-      "marker_covered": 481,
+      "total": 498,
+      "marker_covered": 484,
       "describe_covered": 0,
-      "heuristic_covered": 0,
-      "covered": 481,
+      "heuristic_covered": 14,
+      "covered": 498,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -56850,6 +56994,24 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "lurek.ui.newTextArea",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.ui.newRichLabel",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "lurek.ui.newCheckbox",
           "kind": "function",
           "marker_covered": true,
@@ -56896,6 +57058,15 @@
         },
         {
           "lua_name": "lurek.ui.newPanel",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.ui.newAspectRatioContainer",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -58628,6 +58799,132 @@
           "marker_covered": true,
           "describe_covered": false,
           "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTextArea:setText",
+          "kind": "method",
+          "marker_covered": false,
+          "describe_covered": false,
+          "heuristic_covered": true,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTextArea:getText",
+          "kind": "method",
+          "marker_covered": false,
+          "describe_covered": false,
+          "heuristic_covered": true,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTextArea:setPlaceholder",
+          "kind": "method",
+          "marker_covered": false,
+          "describe_covered": false,
+          "heuristic_covered": true,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTextArea:getPlaceholder",
+          "kind": "method",
+          "marker_covered": false,
+          "describe_covered": false,
+          "heuristic_covered": true,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTextArea:setMaxLength",
+          "kind": "method",
+          "marker_covered": false,
+          "describe_covered": false,
+          "heuristic_covered": true,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTextArea:isFocused",
+          "kind": "method",
+          "marker_covered": false,
+          "describe_covered": false,
+          "heuristic_covered": true,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTextArea:getCursorPosition",
+          "kind": "method",
+          "marker_covered": false,
+          "describe_covered": false,
+          "heuristic_covered": true,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LRichLabel:setText",
+          "kind": "method",
+          "marker_covered": false,
+          "describe_covered": false,
+          "heuristic_covered": true,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LRichLabel:getText",
+          "kind": "method",
+          "marker_covered": false,
+          "describe_covered": false,
+          "heuristic_covered": true,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LRichLabel:getPlainText",
+          "kind": "method",
+          "marker_covered": false,
+          "describe_covered": false,
+          "heuristic_covered": true,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LAspectRatioContainer:setRatio",
+          "kind": "method",
+          "marker_covered": false,
+          "describe_covered": false,
+          "heuristic_covered": true,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LAspectRatioContainer:getRatio",
+          "kind": "method",
+          "marker_covered": false,
+          "describe_covered": false,
+          "heuristic_covered": true,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LAspectRatioContainer:setFit",
+          "kind": "method",
+          "marker_covered": false,
+          "describe_covered": false,
+          "heuristic_covered": true,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LAspectRatioContainer:getFit",
+          "kind": "method",
+          "marker_covered": false,
+          "describe_covered": false,
+          "heuristic_covered": true,
           "covered": true,
           "describe_score": 0.0
         },

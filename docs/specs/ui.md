@@ -5,8 +5,8 @@
 ## TL;DR
 
 - Centralized retained-mode UI context with arena storage, automatic layouts, and resolution scaling.
-- Rich control catalog featuring standard inputs, numeric steppers, combo selections, and visual containers.
-- Layout-manager containers cover vertical boxes, horizontal boxes, grids, margin/padding wrappers, centering, scroll regions, split regions, stacks, and tabbed page containers.
+- Rich control catalog featuring standard inputs, multi-line text areas, rich labels, numeric steppers, combo selections, and visual containers.
+- Layout-manager containers cover vertical boxes, horizontal boxes, grids, margin/padding wrappers, centering, scroll regions, split regions, aspect-ratio slots, stacks, and tabbed page containers.
 - Property inspector widget for grouped name/value rows with collapsible sections and predefined value editors.
 - Supports resizable window shells, modal dialog triggers, and nine-slice border-stretching layouts.
 - Declarative TOML layouts, semantic theme tokens, alpha-aware animations, and drag-and-drop event dispatching.
@@ -18,7 +18,7 @@
 - Source path: `src/ui`
 - Binding: `src/lua_api/ui_api.rs`
 - Namespace: `lurek.ui`
-- Lua API surface: `109` functions, `42` types, `372` methods
+- Lua API surface: `112` functions, `45` types, `386` methods
 - User-facing: `true`
 - Plugin tier: `tier_1_plugin`
 
@@ -28,17 +28,20 @@
 - Its core promise is continuity across frames. The UI context remembers widget identity, parent-child structure, focus, hover, active state, capture, bindings, transitions, and pending events, so a screen can evolve over time without losing the state that makes it feel interactive and stable.
 - This retained model matters because large interfaces are rarely redrawn from pure stateless logic. Text inputs need cursors and selection, lists need scroll position, windows need placement, trees need expansion state, and complex panels need to survive temporary data changes without resetting user intent.
 - Container widgets define the structural grammar of the module. Panels, windows, stacks, docks, split regions, scroll containers, frames, and nine-slice shells let projects assemble larger interface layouts from composable blocks rather than hand-managing every rectangle.
-- Basic controls sit on top of that structure as first-class runtime widgets. Buttons, labels, checkboxes, sliders, text boxes, radio groups, combo boxes, lists, tabs, steppers, toggles, and status displays all share the same identity, event, and style model.
+- Basic controls sit on top of that structure as first-class runtime widgets. Buttons, labels, rich labels, checkboxes, sliders, text boxes, text areas, radio groups, combo boxes, lists, tabs, steppers, toggles, and status displays all share the same identity, event, and style model.
 - Property widgets cover editor-style inspector panels where a script or TOML layout needs a left-hand property name, a right-hand value, predefined editor semantics such as text/number/bool/select/color, and collapsible groups that can hide advanced settings without rebuilding the widget tree.
 - The `extras` surface pushes the module past ordinary menus into more tool-like workflows by covering dialogs, menus, tree views, inspectors, status bars, toasts, overlays, and richer dashboard-oriented pieces that are common in internal tools and game editors.
 - Declarative layout loading from TOML is one of the most important user-facing capabilities because it means interface structure can be authored as content. Teams can describe screens in data, instantiate them into live widgets, and still use the same event, style, and binding behavior as hand-written UI.
 - For inspector-style tools, TOML can define property widget groups and rows directly, so configuration panels can live as content while Lua remains responsible for runtime value updates and callbacks.
+- TOML layouts expose Godot-inspired control metadata such as `style_class`, `mouse_filter`, `z_order`, `tab_index`, `focus_group`, `focus_neighbors`, `role`, `aria_name`, `label_for`, `bind`, and anchor fields, with id references resolved after the widget tree is instantiated.
+- Data-heavy widgets can now be populated declaratively: combo boxes, list boxes, and tab bars accept `items`, tables accept `columns` and `rows`, and tree views accept `nodes`, while legacy pipe-delimited `text` remains a compatibility path for combo/list/tab widgets.
 - Styling is not a thin afterthought. Themes, classes, semantic colors, spacing, typography, borders, fills, corner treatment, widget states, and transition-friendly variants all live inside one coherent theme system so several screens can share a recognizable visual language.
 - Layout calculation is another central responsibility. The module resolves requested size, parent constraints, alignment, padding, spacing, scrolling, overflow, clipping, stacking order, and viewport-aware placement into concrete geometry so widgets can be reasoned about structurally instead of geometrically line by line.
 - Layout-manager constructors expose the common screen-structure vocabulary directly: `newVBoxContainer`, `newHBoxContainer`, `newGridContainer`, `newMarginContainer`, `newCenterContainer`, `newScrollContainer`, `newSplitContainer`, `newStackContainer`, and `newTabContainer`. These names mirror the way users think about menu columns, HUD rows, inventory grids, safe-area padding, centered dialogs, scrollable lists, resizable panes, layered views, and settings tabs.
 - `Layout` remains the underlying owner for box, grid, margin, and center behavior, so spacing, padding, alignment, justification, flex grow, and child margins stay on one code path instead of fragmenting into one-off containers.
 - `StackContainer` and `TabContainer` own page selection. They keep all child pages in the retained tree while the layout pass marks only the active child as effectively visible, which lets hidden pages preserve state without being drawn or hit-tested as active content.
 - `SplitPanel` owns two explicit child slots and divides its content rectangle in the layout pass with a clamped split fraction and minimum panel size, making dockable editor-style panes layout-managed rather than manually positioned.
+- `AspectRatioContainer` owns the common media-preview case where one child must be fit into a stable aspect rectangle using `contain`, `cover`, or `stretch` behavior.
 - Scroll regions, nested containers, resizable panels, and dock-like arrangements are important examples of why layout belongs here: they require persistent bookkeeping and cross-widget coordination that would become brittle if each feature implemented its own layout rules.
 - Input routing is part of the same authority. Mouse, keyboard, controller-like activation, focus traversal, drag, drop, text entry, pointer capture, and event bubbling all flow through the UI context so the entire screen obeys one interaction model.
 - Binding support turns UI from a decorative layer into a practical application surface. Widgets can synchronize with script-visible values, settings models, editor records, or runtime debug state without every screen inventing its own plumbing for reads, writes, and synchronization.
@@ -343,6 +346,7 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `lurek.ui.mousepressed(x, y, btn?) -> boolean`: Delivers a mouse press event to the UI.
 - `lurek.ui.mousereleased(x, y, btn?) -> boolean`: Delivers a mouse release event to the UI.
 - `lurek.ui.newAccordion() -> LAccordion`: Creates a new accordion widget with collapsible sections.
+- `lurek.ui.newAspectRatioContainer() -> LAspectRatioContainer`: Creates a container that fits its child to a fixed aspect ratio.
 - `lurek.ui.newBadge(count?) -> LBadge`: Creates a new badge widget for displaying counts.
 - `lurek.ui.newButton(text?) -> LButton`: Creates a new button widget with optional label text.
 - `lurek.ui.newCenterContainer() -> LLayout`: Creates a container that centers its child along both axes.
@@ -368,6 +372,7 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `lurek.ui.newProgressBar(min?, max?) -> LProgressBar`: Creates a new progress bar widget with min and max.
 - `lurek.ui.newPropertyWidget() -> LPropertyWidget`: Creates a new property inspector widget with collapsible groups and typed value rows.
 - `lurek.ui.newRadioButton(text?, group?) -> LRadioButton`: Creates a new radio button widget in a named group.
+- `lurek.ui.newRichLabel(text?) -> LRichLabel`: Creates a new rich label with simple inline formatting spans.
 - `lurek.ui.newScrollBar(vertical?) -> LScrollBar`: Creates a new scroll bar widget for content scrolling.
 - `lurek.ui.newScrollContainer() -> LScrollPanel`: Creates a scroll container alias for `newScrollPanel`.
 - `lurek.ui.newScrollPanel() -> LScrollPanel`: Creates a new scrollable panel widget.
@@ -385,6 +390,7 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `lurek.ui.newTabBar() -> LTabBar`: Creates a new tab bar widget for tabbed navigation.
 - `lurek.ui.newTabContainer() -> LTabContainer`: Creates a tab container with tab labels and one active child page.
 - `lurek.ui.newTable() -> LGuiTable`: Creates a new table widget for tabular data display.
+- `lurek.ui.newTextArea() -> LTextArea`: Creates a new multi-line text area widget.
 - `lurek.ui.newTextInput() -> LTextInput`: Creates a new text input widget for user entry.
 - `lurek.ui.newTheme() -> LTheme`: Creates a new UI theme for styling widgets.
 - `lurek.ui.newToast(message?, duration?) -> LToast`: Creates a new toast notification widget.
@@ -450,6 +456,21 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `LAccordion:isSectionExpanded(section_idx) -> boolean`: Returns whether an accordion section is expanded.
 - `LAccordion:setExclusive(v) -> nil`: Sets exclusive mode. When true, expanding one section collapses all others.
 - `LAccordion:toggleSection(section_idx) -> boolean`: Toggles the expanded state of an accordion section by its 1-based index.
+
+#### LAspectRatioContainer Type
+
+- Adds aspect-container-specific methods.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LAspectRatioContainer:getFit() -> string`: Returns how the child is fit into the aspect rectangle.
+- `LAspectRatioContainer:getRatio() -> number`: Returns the child aspect ratio used by this container.
+- `LAspectRatioContainer:setFit(fit) -> nil`: Sets how the child is fit into the aspect rectangle.
+- `LAspectRatioContainer:setRatio(ratio) -> nil`: Sets the child aspect ratio used by this container.
 
 #### LBadge Type
 
@@ -848,6 +869,20 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `LRadioButton:setSelected(v) -> nil`: Sets the selected state of this radio button.
 - `LRadioButton:setText(text) -> nil`: Sets the label text of this radio button.
 
+#### LRichLabel Type
+
+- Adds rich-label-specific methods to a formatted read-only label table.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LRichLabel:getPlainText() -> string`: Returns the rich label text with simple inline span markers stripped.
+- `LRichLabel:getText() -> string`: Returns the rich label source text, including inline span markers.
+- `LRichLabel:setText(text) -> nil`: Sets the rich label source text with simple `[b]` and `[color=...]` spans.
+
 #### LScrollBar Type
 
 - Adds scroll-bar-specific methods to a scroll bar widget table.
@@ -1036,6 +1071,24 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `LTabContainer:getTab(index) -> string|nil`: Returns a tab label by 1-based index.
 - `LTabContainer:getTabCount() -> integer`: Returns the number of tab labels in this tab container.
 - `LTabContainer:setActiveIndex(index) -> boolean`: Sets the active tab page by 1-based child index.
+
+#### LTextArea Type
+
+- Adds text-area-specific methods to a multi-line text widget table.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LTextArea:getCursorPosition() -> integer`: Returns the current cursor position as a zero-based character index.
+- `LTextArea:getPlaceholder() -> string`: Returns the placeholder text of this text area.
+- `LTextArea:getText() -> string`: Returns the current text content of this multi-line text area.
+- `LTextArea:isFocused() -> boolean`: Returns whether this text area currently has keyboard focus.
+- `LTextArea:setMaxLength(n) -> nil`: Sets the maximum number of characters allowed in this text area.
+- `LTextArea:setPlaceholder(text) -> nil`: Sets the placeholder text shown when the text area is empty.
+- `LTextArea:setText(text) -> nil`: Sets the text content of this multi-line text area and moves the cursor to the end.
 
 #### LTextInput Type
 
@@ -1293,3 +1346,4 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `LUiWidget:setShader` and `LUiWidget:setShaderLayer` accept only `ui` shaders created through `lurek.render.newShader`. UI stores `ShaderKey` bindings on retained widget state; WGSL validation, pipeline creation, fallback, and GPU execution remain owned by `render`.
 - `lurek.ui.draw()` queues retained widget render commands before invoking custom draw callbacks. Widget shader bindings affect that live render-command path and are inherited by child widgets until overridden by a child shader.
 - `lurek.ui.drawToImage` and `lurek.ui.renderToImage` remain deterministic software preview/export paths and do not execute GPU shaders.
+- `TextArea`, `RichLabel`, and `AspectRatioContainer` are intentionally pragmatic Godot-inspired additions: they cover multi-line editing, lightweight inline rich text spans, and aspect-ratio child fitting without attempting full Godot parity.

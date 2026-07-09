@@ -82,6 +82,83 @@ describe("lurek.ui module", function()
         expect_equal(2, label:getFlexShrink())
     end)
 
+    -- @covers lurek.ui.loadLayout
+    it("loadLayout accepts Godot-like TOML parity fields in Lua tables", function()
+        lurek.ui.loadLayout({
+            type = "panel",
+            id = "ui_contract_root",
+            children = {
+                {
+                    type = "richlabel",
+                    id = "notes_label",
+                    text = "[b]Notes[/b]",
+                    labelFor = "notes_area",
+                    styleClass = "form-label",
+                    mouseFilter = "ignore",
+                    zOrder = 2,
+                    tabIndex = 1,
+                    focusGroup = "form",
+                    ariaName = "Notes label",
+                    bind = "profile.notes",
+                },
+                {
+                    type = "textarea",
+                    id = "notes_area",
+                    text = "Line one\nLine two",
+                    placeholder = "Notes",
+                    focusNeighbors = { right = "mode_combo" },
+                    anchorLeft = 16,
+                    anchorTop = 48,
+                    anchorRight = 16,
+                    anchorBottom = 16,
+                    anchorCenter = { 0.5, 0.5 },
+                },
+                {
+                    type = "combobox",
+                    id = "mode_combo",
+                    items = { "Write", "Review" },
+                    focusNeighbors = { left = "notes_area" },
+                },
+                {
+                    type = "guitable",
+                    id = "table",
+                    columns = {
+                        { header = "Name", width = 120 },
+                        { header = "State", width = 80 },
+                    },
+                    rows = {
+                        { "TextArea", "Ready" },
+                    },
+                },
+                {
+                    type = "treeview",
+                    id = "tree",
+                    nodes = {
+                        { text = "Root", expanded = true },
+                        { text = "Child", parent = 0 },
+                    },
+                },
+                {
+                    type = "aspectcontainer",
+                    id = "aspect",
+                    ratio = 1.5,
+                    fit = "cover",
+                },
+            },
+        })
+        local root = lurek.ui.getRoot()
+        local text_area = root:findById("notes_area")
+        expect_equal("LTextArea", text_area:type())
+        expect_equal("Line one\nLine two", text_area:getText())
+        expect_equal("Notes", text_area:getPlaceholder())
+        local rich = root:findById("notes_label")
+        expect_equal("LRichLabel", rich:type())
+        expect_equal("Notes", rich:getPlainText())
+        local aspect = root:findById("aspect")
+        expect_equal("LAspectRatioContainer", aspect:type())
+        expect_equal("cover", aspect:getFit())
+    end)
+
     -- @covers lurek.ui.loadLayoutFile
     it("loadLayoutFile is callable", function()
         expect_type("function", lurek.ui.loadLayoutFile)
@@ -109,6 +186,36 @@ describe("lurek.ui module", function()
     -- @covers lurek.ui.newCustomWidget
     it("newCustomWidget returns a widget handle", function()
         expect_not_nil(make_basic_widget())
+    end)
+
+    -- @covers lurek.ui.newTextArea
+    it("newTextArea exposes multi-line text methods", function()
+        local area = lurek.ui.newTextArea()
+        expect_equal("LTextArea", area:type())
+        area:setText("A\nB")
+        area:setPlaceholder("Body")
+        area:setMaxLength(8)
+        expect_equal("A\nB", area:getText())
+        expect_equal("Body", area:getPlaceholder())
+        expect_type("number", area:getCursorPosition())
+    end)
+
+    -- @covers lurek.ui.newRichLabel
+    it("newRichLabel exposes rich and plain text", function()
+        local label = lurek.ui.newRichLabel("[b]Alert[/b]")
+        expect_equal("LRichLabel", label:type())
+        expect_equal("[b]Alert[/b]", label:getText())
+        expect_equal("Alert", label:getPlainText())
+    end)
+
+    -- @covers lurek.ui.newAspectRatioContainer
+    it("newAspectRatioContainer exposes ratio and fit", function()
+        local container = lurek.ui.newAspectRatioContainer()
+        expect_equal("LAspectRatioContainer", container:type())
+        container:setRatio(1.777)
+        container:setFit("cover")
+        expect_equal("cover", container:getFit())
+        expect_true(container:getRatio() > 1.7)
     end)
 
     -- @covers lurek.ui.draw

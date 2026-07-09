@@ -58,6 +58,8 @@ pub enum PostFxEffectType {
     Dither,
     /// Outline extraction and compositing.
     Outline,
+    /// Pixel-art edge-aware 2x upscaling.
+    Scale2x,
 }
 /// Name resolution, parameter defaults, and debug utilities for effect types.
 impl PostFxEffectType {
@@ -69,8 +71,11 @@ impl PostFxEffectType {
         PostFxParamSchema::float("radius", 2.0, 0.0, 64.0),
         PostFxParamSchema::float("strength", 1.0, 0.0, 8.0),
     ];
-    const CRT_SCHEMA: &'static [PostFxParamSchema] =
-        &[PostFxParamSchema::float("scanline_strength", 0.3, 0.0, 1.0)];
+    const CRT_SCHEMA: &'static [PostFxParamSchema] = &[
+        PostFxParamSchema::float("scanline_strength", 0.3, 0.0, 1.0),
+        PostFxParamSchema::float("warp", 0.12, 0.0, 1.0),
+        PostFxParamSchema::float("rgb_offset", 0.0015, 0.0, 0.05),
+    ];
     const GODRAYS_SCHEMA: &'static [PostFxParamSchema] =
         &[PostFxParamSchema::float("intensity", 1.0, 0.0, 8.0)];
     const VIGNETTE_SCHEMA: &'static [PostFxParamSchema] =
@@ -158,6 +163,7 @@ impl PostFxEffectType {
         (Self::Sharpen, "sharpen"),
         (Self::Dither, "dither"),
         (Self::Outline, "outline"),
+        (Self::Scale2x, "scale2x"),
     ];
     /// Ordered list of all non-custom built-in effect types.
     const BUILT_IN_TYPES: &'static [Self] = &[
@@ -184,9 +190,13 @@ impl PostFxEffectType {
         Self::Sharpen,
         Self::Dither,
         Self::Outline,
+        Self::Scale2x,
     ];
     /// Resolves a lowercase built-in effect name into the matching enum entry.
     pub fn from_name(name: &str) -> Option<Self> {
+        if name.eq_ignore_ascii_case("scalex2") {
+            return Some(Self::Scale2x);
+        }
         Self::BUILT_IN_TYPES
             .iter()
             .copied()
@@ -234,6 +244,7 @@ impl PostFxEffectType {
             Self::Sharpen => "SHARPEN",
             Self::Dither => "DITHER",
             Self::Outline => "OUTLINE",
+            Self::Scale2x => "SCALE2X",
         }
     }
     /// Returns the documented parameter schema for this effect type.
@@ -263,6 +274,7 @@ impl PostFxEffectType {
             Self::Sharpen => Self::SHARPEN_SCHEMA,
             Self::Dither => Self::DITHER_SCHEMA,
             Self::Outline => Self::OUTLINE_SCHEMA,
+            Self::Scale2x => &[],
         }
     }
 

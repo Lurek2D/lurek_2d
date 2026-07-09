@@ -1,0 +1,249 @@
+# containers_catalog.toml
+# Viewport: 1200 x 800
+resolution = [1200, 800]
+
+[root]
+widget_type = "panel"
+id = "containers_catalog_root"
+x = 0.0
+y = 0.0
+w = 1200.0
+h = 800.0
+
+[[root.children]]
+widget_type = "label"
+id = "title"
+text = "Containers Catalog"
+x = 24.0
+y = 16.0
+w = 360.0
+h = 32.0
+
+[[root.children]]
+widget_type = "layout"
+id = "vbox"
+direction = "vertical"
+x = 24.0
+y = 72.0
+w = 248.0
+h = 208.0
+spacing = 8.0
+padding = [8.0, 8.0, 8.0, 8.0]
+
+[[root.children.children]]
+widget_type = "button"
+id = "vbox_button_a"
+text = "VBox A"
+w = 216.0
+h = 32.0
+
+[[root.children.children]]
+widget_type = "button"
+id = "vbox_button_b"
+text = "VBox B"
+w = 216.0
+h = 32.0
+
+[[root.children]]
+widget_type = "layout"
+id = "hbox"
+direction = "horizontal"
+x = 296.0
+y = 72.0
+w = 360.0
+h = 96.0
+spacing = 8.0
+padding = [8.0, 8.0, 8.0, 8.0]
+
+[[root.children.children]]
+widget_type = "button"
+id = "hbox_button_a"
+text = "HBox A"
+w = 104.0
+h = 32.0
+
+[[root.children.children]]
+widget_type = "button"
+id = "hbox_button_b"
+text = "HBox B"
+w = 104.0
+h = 32.0
+
+[[root.children.children]]
+widget_type = "button"
+id = "hbox_button_c"
+text = "HBox C"
+w = 104.0
+h = 32.0
+
+[[root.children]]
+widget_type = "layout"
+id = "grid"
+direction = "grid"
+columns = 3
+x = 680.0
+y = 72.0
+w = 248.0
+h = 208.0
+spacing = 8.0
+padding = [8.0, 8.0, 8.0, 8.0]
+
+[[root.children.children]]
+widget_type = "button"
+id = "grid_a"
+text = "1"
+w = 64.0
+h = 48.0
+
+[[root.children.children]]
+widget_type = "button"
+id = "grid_b"
+text = "2"
+w = 64.0
+h = 48.0
+
+[[root.children.children]]
+widget_type = "button"
+id = "grid_c"
+text = "3"
+w = 64.0
+h = 48.0
+
+[[root.children.children]]
+widget_type = "button"
+id = "grid_d"
+text = "4"
+w = 64.0
+h = 48.0
+
+[[root.children]]
+widget_type = "scrollpanel"
+id = "scroll_panel"
+x = 952.0
+y = 72.0
+w = 200.0
+h = 208.0
+
+[[root.children.children]]
+widget_type = "label"
+id = "scroll_content"
+text = "Scrollable content block"
+x = 16.0
+y = 16.0
+w = 168.0
+h = 32.0
+
+[[root.children]]
+widget_type = "splitpanel"
+id = "split_panel"
+x = 24.0
+y = 312.0
+w = 360.0
+h = 176.0
+orientation = "horizontal"
+
+[[root.children.children]]
+widget_type = "panel"
+id = "split_left"
+slot = "first"
+w = 160.0
+h = 176.0
+
+[[root.children.children]]
+widget_type = "panel"
+id = "split_right"
+slot = "second"
+w = 160.0
+h = 176.0
+
+[[root.children]]
+widget_type = "stackcontainer"
+id = "stack_container"
+x = 408.0
+y = 312.0
+w = 248.0
+h = 176.0
+active_index = 1
+
+[[root.children.children]]
+widget_type = "panel"
+id = "stack_page_a"
+w = 248.0
+h = 176.0
+
+[[root.children.children]]
+widget_type = "panel"
+id = "stack_page_b"
+w = 248.0
+h = 176.0
+
+[[root.children]]
+widget_type = "tabcontainer"
+id = "tab_container"
+x = 680.0
+y = 312.0
+w = 248.0
+h = 176.0
+tabs = ["A", "B"]
+active_index = 1
+
+[[root.children.children]]
+widget_type = "panel"
+id = "tab_page_a"
+w = 248.0
+h = 136.0
+
+[[root.children.children]]
+widget_type = "panel"
+id = "tab_page_b"
+w = 248.0
+h = 136.0
+
+[[root.children]]
+widget_type = "aspectcontainer"
+id = "aspect_container"
+x = 952.0
+y = 312.0
+w = 200.0
+h = 176.0
+ratio = 1.3333334
+fit = "contain"
+
+[[root.children.children]]
+widget_type = "imagewidget"
+id = "aspect_image"
+w = 160.0
+h = 120.0
+
+[[root.children]]
+widget_type = "dockpanel"
+id = "dock_panel"
+x = 24.0
+y = 520.0
+w = 360.0
+h = 160.0
+
+[[root.children]]
+widget_type = "toolbar"
+id = "toolbar"
+x = 408.0
+y = 520.0
+w = 320.0
+h = 40.0
+orientation = "horizontal"
+
+[[root.children]]
+widget_type = "menubar"
+id = "menu_bar"
+x = 408.0
+y = 584.0
+w = 320.0
+h = 40.0
+
+[[root.children]]
+widget_type = "accordion"
+id = "accordion"
+x = 752.0
+y = 520.0
+w = 400.0
+h = 160.0

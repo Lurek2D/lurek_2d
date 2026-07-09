@@ -115,4 +115,83 @@ describe("integration: tilefield coordinates gameplay systems without raycaster 
     end)
 end)
 
+-- @describe integration: mutable side-view block edit pipeline
+describe("integration: mutable side-view block edit pipeline", function()
+    -- @integration LChunkMap:chunkToBytes
+    -- @integration LChunkMap:getDirtyChunks
+    -- @integration LChunkMap:loadChunkFromBytes
+    -- @integration LChunkMap:setTiles
+    -- @integration LLiquidMap:getDirtyChunks
+    -- @integration LMinimap:syncTileFieldBlockLayer
+    -- @integration LTerrain:flush
+    -- @integration LTerrain:getDirtyChunks
+    -- @integration LTileField:commitEdit
+    -- @integration LTileField:defineBlockWorldSlots
+    -- @integration LTileField:snapshot
+    -- @integration LTileField:restore
+    -- @integration lurek.minimap.newMinimap
+    -- @integration lurek.physics.newLiquidMap
+    -- @integration lurek.physics.newTerrain
+    -- @integration lurek.physics.newWorld
+    -- @integration lurek.tilefield.new
+    -- @integration lurek.tilelight.new
+    -- @integration lurek.tilemap.newChunkMap
+    it("mines and saves a small Terraria-like slice through existing owners", function()
+        local width, height = 12, 8
+        local field = lurek.tilefield.new({ width = width, height = height })
+        field:defineBlockWorldSlots()
+        field:beginEdit()
+        for x = 1, width do
+            field:setRef(x, 7, 1, "foreground", 2)
+            field:setBlock(x, 7, 1, "move", true)
+            field:setBlock(x, 7, 1, "light", true)
+        end
+        field:setRef(4, 6, 1, "wall", 3)
+        field:setResource(5, 7, 1, "copper")
+        local dirty_rects = field:commitEdit(4)
+        expect_true(#dirty_rects >= width)
+
+        local chunks = lurek.tilemap.newChunkMap(4)
+        chunks:setTiles({
+            { x = 3, y = 6, gid = 0 },
+            { x = 4, y = 6, gid = 0 },
+            { x = 5, y = 6, gid = 2 },
+        })
+        expect_true(#chunks:getDirtyChunks() >= 1)
+        local bytes = chunks:chunkToBytes(1, 1)
+        expect_type("string", bytes)
+        local chunk_clone = lurek.tilemap.newChunkMap(4)
+        chunk_clone:loadChunkFromBytes(1, 1, bytes)
+        expect_equal(2, chunk_clone:getTile(5, 6))
+
+        local world = lurek.physics.newWorld(0, 200)
+        local terrain = lurek.physics.newTerrain(width, height, 16, world)
+        for x = 0, width - 1 do
+            terrain:setCell(x, 6, true)
+        end
+        expect_true(#terrain:getDirtyChunks() >= 1)
+        terrain:flush()
+        expect_equal(0, #terrain:getDirtyChunks())
+
+        local liquid = lurek.physics.newLiquidMap(width, height, 16, world, terrain)
+        liquid:setCell(2, 5, 1.0, "water")
+        expect_true(#liquid:getDirtyChunks() >= 1)
+
+        local light = lurek.tilelight.new(field)
+        light:compute({ includePointLights = false, includeGlobalLight = true })
+        local mm = lurek.minimap.newMinimap(width, height)
+        mm:syncTileFieldBlockLayer(field, "move", 1)
+        expect_equal(255, mm:getLayerData(1)[(7 - 1) * width + 1])
+
+        local saved = field:snapshot()
+        local restored = lurek.tilefield.new({ width = 1, height = 1 })
+        restored:restore(saved)
+        expect_equal(2, restored:getRef(1, 7, 1, "foreground"))
+        expect_equal(3, restored:getRef(4, 6, 1, "wall"))
+        expect_equal("copper", restored:getResource(5, 7, 1))
+
+        lurek.physics.destroyWorld(world)
+    end)
+end)
+
 test_summary()

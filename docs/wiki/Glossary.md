@@ -48,6 +48,7 @@ The glossary collects terms that appear across module and API pages.
 - `LApiCatalog` ([lurek.docs](https://lurek2d.github.io/lurek_2d/modules/docs.html)) - Provides Lua methods for querying, merging, filtering, and exporting catalog data.
 - `LAreaChart` ([lurek.charts](https://lurek2d.github.io/lurek_2d/modules/charts.html)) - Lua handle for an area chart with stacked layers or named series.
 - `LArray` ([lurek.compute](https://lurek2d.github.io/lurek_2d/modules/compute.html)) - Lua-side multidimensional numeric array handle.
+- `LAspectRatioContainer` ([lurek.ui](https://lurek2d.github.io/lurek_2d/modules/ui.html)) - Adds aspect-container-specific methods.
 - `LAssetHandle` ([lurek.asset](https://lurek2d.github.io/lurek_2d/modules/asset.html)) - Lua-side handle for a single cached asset entry.
 - `LAtlasPacker` ([lurek.sprite](https://lurek2d.github.io/lurek_2d/modules/sprite.html)) - Lua-visible wrapper around an in-memory atlas packer for dynamic sprite region allocation.
 - `LAutoTileSheet` ([lurek.tilemap](https://lurek2d.github.io/lurek_2d/modules/tilemap.html)) - Lua-side handle wrapping an `AutoTileSheet` that maps bitmasks to tile quads for auto-tiling.
@@ -143,4 +144,3 @@ The glossary collects terms that appear across module and API pages.
 - `LGraphNode` ([lurek.flownet](https://lurek2d.github.io/lurek_2d/modules/flownet.html)) - Lua-side node handle referencing one node id inside a graph.
 - `LGrepEngine` ([lurek.grep](https://lurek2d.github.io/lurek_2d/modules/grep.html)) - Lua userdata that performs search operations across game content files.
 - `LGroupedFrame` ([lurek.dataframe](https://lurek2d.github.io/lurek_2d/modules/dataframe.html)) - Lua-side grouped dataframe object containing group keys and subframes.
-- `LGRU` ([lurek.learning](https://lurek2d.github.io/lurek_2d/modules/learning.html)) - Stateful Lua wrapper over `GruLayer` with a mutable recurrent hidden-state buffer.

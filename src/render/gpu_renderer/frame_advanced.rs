@@ -45,6 +45,7 @@ impl<'a> FrameCommandContext<'a> {
         let mut active_text_shader = self.active_text_shader;
         let mut pending_postfx = std::mem::take(&mut self.pending_postfx);
         let mut pending_canvas_postfx = std::mem::take(&mut self.pending_canvas_postfx);
+        let mut pending_canvas_effects = std::mem::take(&mut self.pending_canvas_effects);
         let mut pending_province_maps = std::mem::take(&mut self.pending_province_maps);
         let mut all_color_verts = std::mem::take(&mut self.all_color_verts);
         let mut all_color_idxs = std::mem::take(&mut self.all_color_idxs);
@@ -76,6 +77,7 @@ impl<'a> FrameCommandContext<'a> {
                 self.active_text_shader = active_text_shader;
                 self.pending_postfx = pending_postfx;
                 self.pending_canvas_postfx = pending_canvas_postfx;
+                self.pending_canvas_effects = pending_canvas_effects;
                 self.pending_province_maps = pending_province_maps;
                 self.all_color_verts = all_color_verts;
                 self.all_color_idxs = all_color_idxs;
@@ -893,6 +895,17 @@ impl<'a> FrameCommandContext<'a> {
             }
             RenderCommand::ApplyShaderToCanvas { canvas_key, passes } => {
                 pending_canvas_postfx.push((*canvas_key, passes.clone()));
+            }
+            RenderCommand::ApplyEffectToCanvas {
+                source_canvas_key,
+                target_canvas_key,
+                passes,
+            } => {
+                pending_canvas_effects.push((
+                    *source_canvas_key,
+                    *target_canvas_key,
+                    passes.clone(),
+                ));
             }
             RenderCommand::DrawRichText {
                 font_key,

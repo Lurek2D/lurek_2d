@@ -16,7 +16,7 @@
 - Source path: `src/tilemap`
 - Binding: `src/lua_api/tilemap_api.rs`
 - Namespace: `lurek.tilemap`
-- Lua API surface: `14` functions, `11` types, `115` methods
+- Lua API surface: `14` functions, `11` types, `121` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
@@ -255,14 +255,20 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 ##### Methods
 
 - `LChunkMap:chunkTileRange(cx, cy) -> integer`: Returns the tile-coordinate range covered by a specific chunk.
+- `LChunkMap:chunkToBytes(cx, cy) -> string`: Serializes one loaded chunk into binary bytes for save workflows.
+- `LChunkMap:clearDirtyChunks() -> nil`: Clears chunk dirty tracking without changing tile contents.
 - `LChunkMap:clearTile(x, y) -> nil`: Removes the tile at the given world-tile coordinate.
+- `LChunkMap:drainDirtyChunks() -> table`: Clears and returns chunk coordinates with pending tile changes.
 - `LChunkMap:fillRect(x0, y0, x1, y1, gid) -> nil`: Fills a rectangular region of tiles with a given GID.
 - `LChunkMap:getChunkSize() -> integer`: Returns the size of each chunk in tiles per side.
 - `LChunkMap:getChunksInView(vx, vy, vw, vh, tw, th) -> table`: Returns chunk coordinates that overlap a viewport region, given tile dimensions.
+- `LChunkMap:getDirtyChunks() -> table`: Returns loaded chunk coordinates with tile changes pending downstream updates.
 - `LChunkMap:getLoadedChunks() -> table`: Returns a list of all currently loaded chunk coordinates.
 - `LChunkMap:getTile(x, y) -> integer`: Returns the tile GID at the given world-tile coordinate.
 - `LChunkMap:loadChunk(cx, cy) -> nil`: Loads a chunk into memory at the given chunk coordinates.
+- `LChunkMap:loadChunkFromBytes(cx, cy, data) -> nil`: Loads one chunk from bytes previously returned by `chunkToBytes`.
 - `LChunkMap:setTile(x, y, gid) -> nil`: Sets the tile GID at the given world-tile coordinate.
+- `LChunkMap:setTiles(edits) -> table`: Applies multiple `{x, y, gid}` tile edits and returns the chunks dirtied by this batch.
 - `LChunkMap:type() -> string`: Returns the type name of this userdata.
 - `LChunkMap:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 - `LChunkMap:unloadChunk(cx, cy) -> nil`: Unloads a chunk from memory at the given chunk coordinates.

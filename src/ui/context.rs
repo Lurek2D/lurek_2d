@@ -16,11 +16,12 @@ use crate::log_msg;
 use crate::math::Rect;
 use crate::runtime::log_messages::{GU01_CTX_INIT, GU02_WIDGET_ADD};
 use crate::ui::containers::{
-    DockPanel, GUIWindow, Layout, NinePatch, Panel, ScrollPanel, SplitPanel, StackContainer,
+    AspectRatioContainer, DockPanel, GUIWindow, Layout, NinePatch, Panel, ScrollPanel, SplitPanel,
+    StackContainer,
 };
 use crate::ui::controls::{
-    Button, CheckBox, ComboBox, Label, ListBox, ProgressBar, RadioButton, ScrollBar, Slider,
-    SpinBox, Switch, TabBar, TextInput,
+    Button, CheckBox, ComboBox, Label, ListBox, ProgressBar, RadioButton, RichLabel, ScrollBar,
+    Slider, SpinBox, Switch, TabBar, TextArea, TextInput,
 };
 use crate::ui::diagnostics::{UiAccessibilityNode, UiDiagnostic};
 use crate::ui::extras::{
@@ -91,6 +92,10 @@ pub enum WidgetKind {
     Label(Label),
     /// Single-line editable text field.
     TextInput(TextInput),
+    /// Multi-line editable text field.
+    TextArea(TextArea),
+    /// Read-only lightweight formatted text label.
+    RichLabel(RichLabel),
     /// Toggled checkbox with a label.
     CheckBox(CheckBox),
     /// Draggable value slider.
@@ -105,6 +110,8 @@ pub enum WidgetKind {
     Panel(Panel),
     /// Flow/grid layout container.
     Layout(Layout),
+    /// Aspect-ratio constrained child container.
+    AspectRatioContainer(AspectRatioContainer),
     /// Scrollable content panel.
     ScrollPanel(ScrollPanel),
     /// 9-patch scalable border.
@@ -170,6 +177,8 @@ macro_rules! widget_kind_base_match {
             WidgetKind::Button(w) => $map!(w),
             WidgetKind::Label(w) => $map!(w),
             WidgetKind::TextInput(w) => $map!(w),
+            WidgetKind::TextArea(w) => $map!(w),
+            WidgetKind::RichLabel(w) => $map!(w),
             WidgetKind::CheckBox(w) => $map!(w),
             WidgetKind::Slider(w) => $map!(w),
             WidgetKind::ProgressBar(w) => $map!(w),
@@ -177,6 +186,7 @@ macro_rules! widget_kind_base_match {
             WidgetKind::ListBox(w) => $map!(w),
             WidgetKind::Panel(w) => $map!(w),
             WidgetKind::Layout(w) => $map!(w),
+            WidgetKind::AspectRatioContainer(w) => $map!(w),
             WidgetKind::ScrollPanel(w) => $map!(w),
             WidgetKind::NinePatch(w) => $map!(w),
             WidgetKind::TabBar(w) => $map!(w),
@@ -233,6 +243,7 @@ impl WidgetKind {
         match self {
             Self::Panel(p) => Some(&p.children),
             Self::Layout(l) => Some(&l.children),
+            Self::AspectRatioContainer(a) => Some(&a.children),
             Self::ScrollPanel(s) => Some(&s.children),
             Self::StackContainer(s) | Self::TabContainer(s) => Some(&s.children),
             Self::GUIWindow(w) => Some(&w.children),
@@ -245,6 +256,7 @@ impl WidgetKind {
         match self {
             Self::Panel(p) => Some(&mut p.children),
             Self::Layout(l) => Some(&mut l.children),
+            Self::AspectRatioContainer(a) => Some(&mut a.children),
             Self::ScrollPanel(s) => Some(&mut s.children),
             Self::StackContainer(s) | Self::TabContainer(s) => Some(&mut s.children),
             Self::GUIWindow(w) => Some(&mut w.children),
@@ -765,6 +777,53 @@ impl GuiContext {
         out
     }
 
+    fn perform_aspect_ratio_layout(&self, idx: usize, rect: Rect) -> Vec<(usize, Rect)> {
+        let WidgetKind::AspectRatioContainer(container) = &self.widgets[idx] else {
+            return Vec::new();
+        };
+        let child_rect = container.child_rect(rect);
+        container
+            .children
+            .iter()
+            .copied()
+            .map(|child_idx| (child_idx, child_rect))
+            .collect()
+    }
+
+    fn anchored_rect(base: &WidgetBase, parent_rect: &Rect, mut w: f32, mut h: f32) -> Rect {
+        let has_horizontal_anchors = base.anchor_left.is_some() || base.anchor_right.is_some();
+        let has_vertical_anchors = base.anchor_top.is_some() || base.anchor_bottom.is_some();
+        let mut x = parent_rect.x + base.x;
+        let mut y = parent_rect.y + base.y;
+        if let (Some(left), Some(right)) = (base.anchor_left, base.anchor_right) {
+            x = parent_rect.x + left;
+            w = (parent_rect.width - left - right).max(0.0);
+        } else if let Some(left) = base.anchor_left {
+            x = parent_rect.x + left;
+        } else if let Some(right) = base.anchor_right {
+            x = parent_rect.x + parent_rect.width - right - w;
+        } else if let Some(center_x) = base.anchor_center_x {
+            x = parent_rect.x + parent_rect.width * center_x - w * 0.5;
+        }
+        if let (Some(top), Some(bottom)) = (base.anchor_top, base.anchor_bottom) {
+            y = parent_rect.y + top;
+            h = (parent_rect.height - top - bottom).max(0.0);
+        } else if let Some(top) = base.anchor_top {
+            y = parent_rect.y + top;
+        } else if let Some(bottom) = base.anchor_bottom {
+            y = parent_rect.y + parent_rect.height - bottom - h;
+        } else if let Some(center_y) = base.anchor_center_y {
+            y = parent_rect.y + parent_rect.height * center_y - h * 0.5;
+        }
+        if !has_horizontal_anchors && base.anchor_center_x.is_none() {
+            x = parent_rect.x + base.x;
+        }
+        if !has_vertical_anchors && base.anchor_center_y.is_none() {
+            y = parent_rect.y + base.y;
+        }
+        Rect::new(x, y, w, h)
+    }
+
     /// Recursively lay out widget `idx` relative to `parent_rect`.
     fn layout_widget(
         &mut self,
@@ -780,9 +839,9 @@ impl GuiContext {
         let computed = if let Some(rect) = override_rect {
             rect
         } else {
-            let (x, y, mut w, mut h) = {
+            let (mut w, mut h) = {
                 let base = self.widgets[idx].base();
-                (base.x, base.y, base.width, base.height)
+                (base.width, base.height)
             };
             if w == 0.0 && parent_rect.width > 0.0 {
                 w = parent_rect.width;
@@ -790,7 +849,7 @@ impl GuiContext {
             if h == 0.0 && parent_rect.height > 0.0 {
                 h = parent_rect.height;
             }
-            crate::math::Rect::new(parent_rect.x + x, parent_rect.y + y, w, h)
+            Self::anchored_rect(self.widgets[idx].base(), parent_rect, w, h)
         };
 
         {
@@ -802,6 +861,7 @@ impl GuiContext {
         let mut overrides = self.perform_flex_layout(idx, &computed);
         overrides.extend(self.perform_stack_layout(idx, computed));
         overrides.extend(self.perform_split_layout(idx, computed));
+        overrides.extend(self.perform_aspect_ratio_layout(idx, computed));
         let mut child_indices: Vec<usize> =
             self.widgets[idx].children().cloned().unwrap_or_default();
         if let Some(WidgetKind::SplitPanel(split)) = self.widgets.get(idx) {
@@ -1123,6 +1183,21 @@ impl GuiContext {
                             }
                         }
                     }
+                    WidgetKind::TextArea(input) => {
+                        if input.text != *t {
+                            let previous = input.text.clone();
+                            input.set_text(t.clone());
+                            if input.text != previous {
+                                changed += 1;
+                            }
+                        }
+                    }
+                    WidgetKind::RichLabel(label) => {
+                        if label.text != *t {
+                            label.text = t.clone();
+                            changed += 1;
+                        }
+                    }
                     WidgetKind::MenuItem(item) => {
                         if item.text != *t {
                             item.text = t.clone();
@@ -1295,6 +1370,14 @@ impl GuiContext {
                     Some(text_input.text.as_str())
                 }
             }
+            WidgetKind::TextArea(text_area) => {
+                if text_area.text.is_empty() {
+                    None
+                } else {
+                    Some(text_area.text.as_str())
+                }
+            }
+            WidgetKind::RichLabel(rich_label) => Some(rich_label.text.as_str()),
             WidgetKind::CheckBox(check_box) => Some(check_box.text.as_str()),
             WidgetKind::ComboBox(combo) => combo.selected_item(),
             WidgetKind::ListBox(list) => list.selected_item(),
@@ -1326,6 +1409,14 @@ impl GuiContext {
             }
             match widget {
                 WidgetKind::Label(label) => {
+                    let text = label.text.trim();
+                    if text.is_empty() {
+                        None
+                    } else {
+                        Some(text)
+                    }
+                }
+                WidgetKind::RichLabel(label) => {
                     let text = label.text.trim();
                     if text.is_empty() {
                         None
@@ -1448,10 +1539,12 @@ impl GuiContext {
                     ));
                 }
             }
-            if base.label_for.is_some() && !matches!(widget, WidgetKind::Label(_)) {
+            if base.label_for.is_some()
+                && !matches!(widget, WidgetKind::Label(_) | WidgetKind::RichLabel(_))
+            {
                 diagnostics.push(UiDiagnostic::new(
                     Some(idx),
-                    "label_for is only supported on Label widgets",
+                    "label_for is only supported on Label and RichLabel widgets",
                 ));
             }
             if let Some(target_idx) = base.label_for {
@@ -1615,7 +1708,15 @@ impl GuiContext {
                 let text_w = Self::measure_text_width(&w.text, font);
                 (text_w + pad_h + 4.0, pad_v + 16.0)
             }
+            WidgetKind::RichLabel(w) => {
+                let text_w = Self::measure_text_width(&w.plain_text(), font);
+                (
+                    text_w.min(base.width.max(text_w)) + pad_h + 4.0,
+                    pad_v + 32.0,
+                )
+            }
             WidgetKind::TextInput(_) => (pad_h + 48.0, pad_v + 24.0),
+            WidgetKind::TextArea(_) => (pad_h + 96.0, pad_v + 72.0),
             WidgetKind::CheckBox(w) => {
                 let text_w = Self::measure_text_width(&w.text, font);
                 (text_w + pad_h + 20.0, pad_v + 16.0)
@@ -1659,6 +1760,16 @@ impl GuiContext {
                     }
                 }
                 (total_w + pad_h, total_h + pad_v)
+            }
+            WidgetKind::AspectRatioContainer(container) => {
+                let mut max_w = 0.0_f32;
+                let mut max_h = 0.0_f32;
+                for &child_idx in &container.children {
+                    let (cw, ch) = self.calculate_minimum_size(child_idx, font);
+                    max_w = max_w.max(cw);
+                    max_h = max_h.max(ch);
+                }
+                (max_w + pad_h, max_h + pad_v)
             }
             WidgetKind::Panel(p) => {
                 let mut max_w = 0.0_f32;

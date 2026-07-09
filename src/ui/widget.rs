@@ -142,6 +142,10 @@ pub enum WidgetType {
     Label,
     /// Editable single-line text field.
     TextInput,
+    /// Editable multi-line text field.
+    TextArea,
+    /// Read-only formatted text display.
+    RichLabel,
     /// Toggle tick-box.
     CheckBox,
     /// Draggable value slider.
@@ -156,6 +160,8 @@ pub enum WidgetType {
     Panel,
     /// Flow-layout container.
     Layout,
+    /// Container that fits one child to a fixed aspect ratio.
+    AspectRatioContainer,
     /// Overflow container with a scroll offset.
     ScrollPanel,
     /// 9-slice stretchable image frame.
@@ -222,6 +228,8 @@ impl WidgetType {
             Self::Button => "button",
             Self::Label => "label",
             Self::TextInput => "textinput",
+            Self::TextArea => "textarea",
+            Self::RichLabel => "richlabel",
             Self::CheckBox => "checkbox",
             Self::Slider => "slider",
             Self::ProgressBar => "progressbar",
@@ -229,6 +237,7 @@ impl WidgetType {
             Self::ListBox => "listbox",
             Self::Panel => "panel",
             Self::Layout => "layout",
+            Self::AspectRatioContainer => "aspectcontainer",
             Self::ScrollPanel => "scrollpanel",
             Self::NinePatch => "ninepatch",
             Self::TabBar => "tabbar",
@@ -266,6 +275,8 @@ impl WidgetType {
             "button" => Some(Self::Button),
             "label" => Some(Self::Label),
             "textinput" => Some(Self::TextInput),
+            "textarea" | "textedit" => Some(Self::TextArea),
+            "richlabel" | "richtextlabel" => Some(Self::RichLabel),
             "checkbox" => Some(Self::CheckBox),
             "slider" => Some(Self::Slider),
             "progressbar" => Some(Self::ProgressBar),
@@ -273,6 +284,7 @@ impl WidgetType {
             "listbox" => Some(Self::ListBox),
             "panel" => Some(Self::Panel),
             "layout" => Some(Self::Layout),
+            "aspectcontainer" | "aspectratiocontainer" => Some(Self::AspectRatioContainer),
             "scrollpanel" => Some(Self::ScrollPanel),
             "ninepatch" => Some(Self::NinePatch),
             "tabbar" => Some(Self::TabBar),
@@ -311,6 +323,8 @@ impl WidgetType {
             Self::Button => (128.0, 32.0),
             Self::Label => (128.0, 16.0),
             Self::TextInput => (192.0, 32.0),
+            Self::TextArea => (256.0, 128.0),
+            Self::RichLabel => (256.0, 64.0),
             Self::CheckBox => (128.0, 16.0),
             Self::Slider => (192.0, 16.0),
             Self::ProgressBar => (192.0, 16.0),
@@ -318,6 +332,7 @@ impl WidgetType {
             Self::ListBox => (192.0, 128.0),
             Self::Panel => (256.0, 192.0),
             Self::Layout => (256.0, 192.0),
+            Self::AspectRatioContainer => (256.0, 192.0),
             Self::ScrollPanel => (256.0, 192.0),
             Self::NinePatch => (256.0, 192.0),
             Self::TabBar => (256.0, 32.0),
@@ -355,6 +370,7 @@ impl WidgetType {
             self,
             Self::Button
                 | Self::TextInput
+                | Self::TextArea
                 | Self::CheckBox
                 | Self::Slider
                 | Self::ComboBox
@@ -383,6 +399,7 @@ impl WidgetType {
     pub fn default_mouse_filter(self) -> MouseFilter {
         match self {
             Self::Layout
+            | Self::AspectRatioContainer
             | Self::StackContainer
             | Self::Panel
             | Self::Spacer
@@ -399,6 +416,8 @@ impl WidgetType {
             Self::Button => "button",
             Self::Label => "label",
             Self::TextInput => "textbox",
+            Self::TextArea => "textbox",
+            Self::RichLabel => "label",
             Self::CheckBox => "checkbox",
             Self::Slider => "slider",
             Self::ProgressBar => "progressbar",
@@ -406,6 +425,7 @@ impl WidgetType {
             Self::ListBox => "listbox",
             Self::Panel
             | Self::Layout
+            | Self::AspectRatioContainer
             | Self::ScrollPanel
             | Self::StackContainer
             | Self::DockPanel => "group",

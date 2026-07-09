@@ -258,6 +258,17 @@ impl LiquidMap {
         });
     }
 
+    /// Return chunks with liquid changes pending downstream save/render/minimap work.
+    pub fn dirty_chunks(&self) -> Vec<(u32, u32)> {
+        let mut chunks = self
+            .dirty_chunks
+            .iter()
+            .map(|chunk| (chunk.cx, chunk.cy))
+            .collect::<Vec<_>>();
+        chunks.sort();
+        chunks
+    }
+
     fn neighbor_index(&self, cx: i32, cy: i32) -> Option<usize> {
         if cx < 0 || cy < 0 || cx >= self.width as i32 || cy >= self.height as i32 {
             return None;

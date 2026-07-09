@@ -65,6 +65,48 @@ do
     lurek.log.info(tostring("updated text = " .. lbl:getText()))
 end
 
+--@api: lurek.ui.newRichLabel
+do
+
+    local rich = lurek.ui.newRichLabel("[b]Warning[/b]")
+    local text = rich:getText()
+    local plain = rich:getPlainText()
+    rich:setText("[color=yellow]Ready[/color]")
+    lurek.log.info(tostring("rich text = " .. text))
+    lurek.log.info(tostring("plain text = " .. plain))
+end
+
+--@api: LRichLabel:setText
+do
+
+    local rich = lurek.ui.newRichLabel("Initial")
+    rich:setText("[b]Updated[/b]")
+    local text = rich:getText()
+    local plain = rich:getPlainText()
+    lurek.log.info(tostring("rich text = " .. text))
+    lurek.log.info(tostring("plain text = " .. plain))
+end
+
+--@api: LRichLabel:getText
+do
+
+    local rich = lurek.ui.newRichLabel("[b]Status[/b]")
+    local text = rich:getText()
+    rich:setText("[color=green]Online[/color]")
+    lurek.log.info(tostring("rich text = " .. text))
+    lurek.log.info(tostring("new plain = " .. rich:getPlainText()))
+end
+
+--@api: LRichLabel:getPlainText
+do
+
+    local rich = lurek.ui.newRichLabel("[b]Alert[/b]")
+    local plain = rich:getPlainText()
+    rich:setText("[color=red]Alert[/color]")
+    lurek.log.info(tostring("plain text = " .. plain))
+    lurek.log.info(tostring("updated text = " .. rich:getText()))
+end
+
 --@api: lurek.ui.newPanel
 do
 
@@ -74,6 +116,61 @@ do
     lurek.log.info(tostring("child count = " .. panel:getChildCount()))
     lurek.log.info(tostring("visible = " .. tostring(panel:isVisible())))
     lurek.log.info(tostring("panel children = " .. panel:getChildCount()))
+end
+
+--@api: lurek.ui.newAspectRatioContainer
+do
+
+    local container = lurek.ui.newAspectRatioContainer()
+    container:setRatio(16 / 9)
+    container:setFit("contain")
+    local ratio = container:getRatio()
+    lurek.log.info(tostring("aspect type = " .. container:type()))
+    lurek.log.info(tostring("aspect ratio = " .. ratio))
+end
+
+--@api: LAspectRatioContainer:setRatio
+do
+
+    local container = lurek.ui.newAspectRatioContainer()
+    container:setRatio(4 / 3)
+    container:setFit("cover")
+    local ratio = container:getRatio()
+    lurek.log.info(tostring("aspect ratio = " .. ratio))
+    lurek.log.info(tostring("aspect fit = " .. container:getFit()))
+end
+
+--@api: LAspectRatioContainer:getRatio
+do
+
+    local container = lurek.ui.newAspectRatioContainer()
+    container:setRatio(1.5)
+    local ratio = container:getRatio()
+    container:setFit("stretch")
+    lurek.log.info(tostring("aspect ratio = " .. ratio))
+    lurek.log.info(tostring("aspect fit = " .. container:getFit()))
+end
+
+--@api: LAspectRatioContainer:setFit
+do
+
+    local container = lurek.ui.newAspectRatioContainer()
+    container:setFit("cover")
+    container:setRatio(2.0)
+    local fit = container:getFit()
+    lurek.log.info(tostring("aspect fit = " .. fit))
+    lurek.log.info(tostring("aspect ratio = " .. container:getRatio()))
+end
+
+--@api: LAspectRatioContainer:getFit
+do
+
+    local container = lurek.ui.newAspectRatioContainer()
+    container:setFit("contain")
+    local fit = container:getFit()
+    container:setRatio(1.0)
+    lurek.log.info(tostring("aspect fit = " .. fit))
+    lurek.log.info(tostring("aspect ratio = " .. container:getRatio()))
 end
 
 --@api: LUiWidget:setPosition
@@ -1076,6 +1173,94 @@ do
     lurek.log.info(tostring("submit_on_enter = " .. tostring(input:getSubmitOnEnter())))
     lurek.log.info(tostring("focused = " .. tostring(input:isFocused())))
     lurek.log.info(tostring("text = " .. input:getText()))
+end
+
+--@api: lurek.ui.newTextArea
+do
+
+    local area = lurek.ui.newTextArea()
+    area:setText("Line one\nLine two")
+    area:setPlaceholder("Notes")
+    local cursor = area:getCursorPosition()
+    lurek.log.info(tostring("textarea type = " .. area:type()))
+    lurek.log.info(tostring("textarea cursor = " .. cursor))
+end
+
+--@api: LTextArea:setText
+do
+
+    local area = lurek.ui.newTextArea()
+    area:setText("Alpha\nBeta")
+    area:setPlaceholder("Body")
+    local text = area:getText()
+    lurek.log.info(tostring("textarea text = " .. text))
+    lurek.log.info(tostring("textarea placeholder = " .. area:getPlaceholder()))
+end
+
+--@api: LTextArea:getText
+do
+
+    local area = lurek.ui.newTextArea()
+    area:setText("Draft\nReady")
+    area:setMaxLength(32)
+    local text = area:getText()
+    lurek.log.info(tostring("textarea text = " .. text))
+    lurek.log.info(tostring("textarea cursor = " .. area:getCursorPosition()))
+end
+
+--@api: LTextArea:setPlaceholder
+do
+
+    local area = lurek.ui.newTextArea()
+    area:setPlaceholder("Enter notes")
+    area:setText("")
+    local placeholder = area:getPlaceholder()
+    lurek.log.info(tostring("textarea placeholder = " .. placeholder))
+    lurek.log.info(tostring("textarea focused = " .. tostring(area:isFocused())))
+end
+
+--@api: LTextArea:getPlaceholder
+do
+
+    local area = lurek.ui.newTextArea()
+    area:setPlaceholder("Body text")
+    area:setText("Existing body")
+    local placeholder = area:getPlaceholder()
+    lurek.log.info(tostring("textarea placeholder = " .. placeholder))
+    lurek.log.info(tostring("textarea text = " .. area:getText()))
+end
+
+--@api: LTextArea:setMaxLength
+do
+
+    local area = lurek.ui.newTextArea()
+    area:setMaxLength(5)
+    area:setText("abcdef")
+    local text = area:getText()
+    lurek.log.info(tostring("textarea capped = " .. text))
+    lurek.log.info(tostring("textarea cursor = " .. area:getCursorPosition()))
+end
+
+--@api: LTextArea:isFocused
+do
+
+    local area = lurek.ui.newTextArea()
+    area:setText("Focus target")
+    area:setPlaceholder("Focus")
+    local focused = area:isFocused()
+    lurek.log.info(tostring("textarea focused = " .. tostring(focused)))
+    lurek.log.info(tostring("textarea type = " .. area:type()))
+end
+
+--@api: LTextArea:getCursorPosition
+do
+
+    local area = lurek.ui.newTextArea()
+    area:setText("First\nSecond")
+    area:setMaxLength(64)
+    local cursor = area:getCursorPosition()
+    lurek.log.info(tostring("textarea cursor = " .. cursor))
+    lurek.log.info(tostring("textarea text = " .. area:getText()))
 end
 
 --@api: lurek.ui.newCheckbox

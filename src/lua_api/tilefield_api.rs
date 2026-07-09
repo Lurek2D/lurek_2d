@@ -23,6 +23,24 @@ use std::cell::RefCell;
 use std::collections::HashSet;
 use std::rc::Rc;
 
+const BLOCK_WORLD_REF_SLOTS: &[&str] = &[
+    "foreground",
+    "wall",
+    "platform",
+    "ore",
+    "furniture",
+    "liquid",
+    "spawn",
+    "biome",
+];
+const TILEFIELD_CHANNELS: &[TileChannel] = &[
+    TileChannel::Move,
+    TileChannel::Vision,
+    TileChannel::Action,
+    TileChannel::Light,
+    TileChannel::Sun,
+];
+
 /// Lua-side handle wrapping a shared tilefield.
 pub struct LuaTileField {
     /// Shared tilefield state used by adapters in sibling Lua modules.
@@ -1355,6 +1373,45 @@ fn read_optional_u32_layer(
     Ok(out)
 }
 
+fn dirty_rects_to_lua<'lua>(
+    lua: &'lua Lua,
+    rects: &[(u32, u32, u32, u32, u32)],
+    chunk_size: Option<u32>,
+) -> LuaResult<LuaTable<'lua>> {
+    let out = lua.create_table()?;
+    for (index, (x, y, z, w, h)) in rects.iter().enumerate() {
+        let entry = lua.create_table()?;
+        entry.set("x", x + 1)?;
+        entry.set("y", y + 1)?;
+        entry.set("z", z + 1)?;
+        entry.set("w", *w)?;
+        entry.set("h", *h)?;
+        if let Some(chunk_size) = chunk_size.filter(|value| *value > 0) {
+            entry.set("cx", x / chunk_size)?;
+            entry.set("cy", y / chunk_size)?;
+        }
+        out.set(index + 1, entry)?;
+    }
+    Ok(out)
+}
+
+fn coord_value_table<'lua, V>(
+    lua: &'lua Lua,
+    coord: CellCoord,
+    value_name: &str,
+    value: V,
+) -> LuaResult<LuaTable<'lua>>
+where
+    V: IntoLua<'lua>,
+{
+    let row = lua.create_table()?;
+    row.set("x", coord.x + 1)?;
+    row.set("y", coord.y + 1)?;
+    row.set("z", coord.z + 1)?;
+    row.set(value_name, value)?;
+    Ok(row)
+}
+
 impl LuaUserData for LuaTileField {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- getSize --
@@ -2136,6 +2193,292 @@ impl LuaUserData for LuaTileField {
         /// @return | integer | Monotonic field version incremented by data mutations.
         methods.add_method("getVersion", |_, this, ()| {
             Ok(this.inner.borrow().version())
+        });
+
+        // -- beginEdit --
+        /// Clears pending dirty rectangles before a grouped tilefield edit.
+        methods.add_method("beginEdit", |_, this, ()| {
+            this.inner.borrow_mut().begin_edit();
+            Ok(())
+        });
+
+        // -- getDirtyRects --
+        /// Returns pending dirty cell rectangles without clearing them.
+        /// @param | chunkSize | integer? | Optional chunk size used to add cx/cy fields to each dirty rect.
+        /// @return | table | Array of `{x, y, z, w, h, cx?, cy?}` one-based dirty rectangles.
+        methods.add_method("getDirtyRects", |lua, this, chunk_size: Option<u32>| {
+            let field = this.inner.borrow();
+            dirty_rects_to_lua(lua, field.dirty_rects(), chunk_size)
+        });
+
+        // -- drainDirtyRects --
+        /// Clears and returns pending dirty cell rectangles.
+        /// @param | chunkSize | integer? | Optional chunk size used to add cx/cy fields to each dirty rect.
+        /// @return | table | Array of `{x, y, z, w, h, cx?, cy?}` one-based dirty rectangles.
+        methods.add_method("drainDirtyRects", |lua, this, chunk_size: Option<u32>| {
+            let rects = this.inner.borrow_mut().drain_dirty_rects();
+            dirty_rects_to_lua(lua, &rects, chunk_size)
+        });
+
+        // -- commitEdit --
+        /// Clears and returns dirty rectangles accumulated since `beginEdit`.
+        /// @param | chunkSize | integer? | Optional chunk size used to add cx/cy fields to each dirty rect.
+        /// @return | table | Array of `{x, y, z, w, h, cx?, cy?}` one-based dirty rectangles.
+        methods.add_method("commitEdit", |lua, this, chunk_size: Option<u32>| {
+            let rects = this.inner.borrow_mut().commit_edit();
+            dirty_rects_to_lua(lua, &rects, chunk_size)
+        });
+
+        // -- defineBlockWorldSlots --
+        /// Defines conventional ref slots for mutable block worlds without adding a new module.
+        /// @return | table | Slot names: foreground, wall, platform, ore, furniture, liquid, spawn, biome.
+        methods.add_method("defineBlockWorldSlots", |lua, this, ()| {
+            {
+                let mut field = this.inner.borrow_mut();
+                for slot in BLOCK_WORLD_REF_SLOTS {
+                    field
+                        .define_slot((*slot).to_string())
+                        .map_err(|e| lua_err("defineBlockWorldSlots", e))?;
+                }
+            }
+            let out = lua.create_table()?;
+            for (index, slot) in BLOCK_WORLD_REF_SLOTS.iter().enumerate() {
+                out.set(index + 1, *slot)?;
+            }
+            Ok(out)
+        });
+
+        // -- snapshot --
+        /// Captures block/cost/ref layers plus resource, buildable, and occupant cell facts.
+        /// @return | table | Snapshot table suitable for `restore`.
+        methods.add_method("snapshot", |lua, this, ()| {
+            let field = this.inner.borrow();
+            let (width, height, levels) = field.size();
+            let snapshot = lua.create_table()?;
+            snapshot.set("width", width)?;
+            snapshot.set("height", height)?;
+            snapshot.set("levels", levels)?;
+            snapshot.set("topology", field.topology().as_str())?;
+
+            let slots = field.ref_slots();
+            let slot_table = lua.create_table()?;
+            for (index, slot) in slots.iter().enumerate() {
+                slot_table.set(index + 1, slot.as_str())?;
+            }
+            snapshot.set("slots", slot_table)?;
+
+            let blocks = lua.create_table()?;
+            let costs = lua.create_table()?;
+            for channel in TILEFIELD_CHANNELS {
+                let block_layers = lua.create_table()?;
+                let cost_layers = lua.create_table()?;
+                for z in 0..levels {
+                    block_layers.set(
+                        z + 1,
+                        export_bool_layer(lua, field.export_block_layer(*channel, z))?,
+                    )?;
+                    cost_layers.set(
+                        z + 1,
+                        export_number_layer(lua, field.export_cost_layer(*channel, z))?,
+                    )?;
+                }
+                blocks.set(channel.as_str(), block_layers)?;
+                costs.set(channel.as_str(), cost_layers)?;
+            }
+            snapshot.set("blocks", blocks)?;
+            snapshot.set("costs", costs)?;
+
+            let refs = lua.create_table()?;
+            for slot in &slots {
+                let layers = lua.create_table()?;
+                for z in 0..levels {
+                    layers.set(
+                        z + 1,
+                        export_ref_layer(lua, field.export_ref_layer(slot, z))?,
+                    )?;
+                }
+                refs.set(slot.as_str(), layers)?;
+            }
+            snapshot.set("refs", refs)?;
+
+            let resources = lua.create_table()?;
+            for (index, (coord, resource)) in field.resource_cells().into_iter().enumerate() {
+                resources.set(
+                    index + 1,
+                    coord_value_table(lua, coord, "resource", resource)?,
+                )?;
+            }
+            snapshot.set("resources", resources)?;
+
+            let buildable = lua.create_table()?;
+            for (index, (coord, value)) in field.buildable_cells().into_iter().enumerate() {
+                buildable.set(
+                    index + 1,
+                    coord_value_table(lua, coord, "buildable", value)?,
+                )?;
+            }
+            snapshot.set("buildable", buildable)?;
+
+            let occupants = lua.create_table()?;
+            for (index, (coord, value)) in field.occupant_cells().into_iter().enumerate() {
+                occupants.set(index + 1, coord_value_table(lua, coord, "occupant", value)?)?;
+            }
+            snapshot.set("occupants", occupants)?;
+            Ok(snapshot)
+        });
+
+        // -- restore --
+        /// Replaces this tilefield state from a snapshot returned by `snapshot`.
+        /// @param | snapshot | table | Snapshot table.
+        methods.add_method("restore", |_, this, snapshot: LuaTable| {
+            let width: u32 = snapshot.get("width").map_err(|e| lua_err("restore", e))?;
+            let height: u32 = snapshot.get("height").map_err(|e| lua_err("restore", e))?;
+            let levels: u32 = snapshot.get("levels").map_err(|e| lua_err("restore", e))?;
+            let topology_name: String = snapshot
+                .get("topology")
+                .map_err(|e| lua_err("restore", e))?;
+            let topology =
+                TileTopology::parse(&topology_name).map_err(|e| lua_err("restore", e))?;
+            let mut field = TileField::new(width, height, levels, topology)
+                .map_err(|e| lua_err("restore", e))?;
+
+            if let Some(slots) = snapshot
+                .get::<_, Option<LuaTable>>("slots")
+                .map_err(|e| lua_err("restore", e))?
+            {
+                for slot in slots.sequence_values::<String>() {
+                    field
+                        .define_slot(slot.map_err(|e| lua_err("restore", e))?)
+                        .map_err(|e| lua_err("restore", e))?;
+                }
+            }
+
+            if let Some(blocks) = snapshot
+                .get::<_, Option<LuaTable>>("blocks")
+                .map_err(|e| lua_err("restore", e))?
+            {
+                for channel in TILEFIELD_CHANNELS {
+                    if let Some(layers) = blocks
+                        .get::<_, Option<LuaTable>>(channel.as_str())
+                        .map_err(|e| lua_err("restore", e))?
+                    {
+                        for z in 0..levels {
+                            if let Some(values) = layers
+                                .get::<_, Option<LuaTable>>(z + 1)
+                                .map_err(|e| lua_err("restore", e))?
+                            {
+                                let values =
+                                    read_bool_layer(values, (width * height) as usize, "restore")?;
+                                field
+                                    .write_block_layer(*channel, z, &values)
+                                    .map_err(|e| lua_err("restore", e))?;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if let Some(costs) = snapshot
+                .get::<_, Option<LuaTable>>("costs")
+                .map_err(|e| lua_err("restore", e))?
+            {
+                for channel in TILEFIELD_CHANNELS {
+                    if let Some(layers) = costs
+                        .get::<_, Option<LuaTable>>(channel.as_str())
+                        .map_err(|e| lua_err("restore", e))?
+                    {
+                        for z in 0..levels {
+                            if let Some(values) = layers
+                                .get::<_, Option<LuaTable>>(z + 1)
+                                .map_err(|e| lua_err("restore", e))?
+                            {
+                                let values = read_number_layer(
+                                    values,
+                                    (width * height) as usize,
+                                    "restore",
+                                )?;
+                                field
+                                    .write_cost_layer(*channel, z, &values)
+                                    .map_err(|e| lua_err("restore", e))?;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if let Some(refs) = snapshot
+                .get::<_, Option<LuaTable>>("refs")
+                .map_err(|e| lua_err("restore", e))?
+            {
+                for slot in field.ref_slots() {
+                    if let Some(layers) = refs
+                        .get::<_, Option<LuaTable>>(slot.as_str())
+                        .map_err(|e| lua_err("restore", e))?
+                    {
+                        for z in 0..levels {
+                            if let Some(values) = layers
+                                .get::<_, Option<LuaTable>>(z + 1)
+                                .map_err(|e| lua_err("restore", e))?
+                            {
+                                let values = read_optional_u32_layer(
+                                    values,
+                                    (width * height) as usize,
+                                    "restore",
+                                )?;
+                                field
+                                    .write_ref_layer(&slot, z, &values)
+                                    .map_err(|e| lua_err("restore", e))?;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if let Some(resources) = snapshot
+                .get::<_, Option<LuaTable>>("resources")
+                .map_err(|e| lua_err("restore", e))?
+            {
+                for row in resources.sequence_values::<LuaTable>() {
+                    let row = row.map_err(|e| lua_err("restore", e))?;
+                    let coord = coord_from_table(row.clone(), "restore")?;
+                    let resource: Option<String> =
+                        row.get("resource").map_err(|e| lua_err("restore", e))?;
+                    field
+                        .set_resource(coord, resource)
+                        .map_err(|e| lua_err("restore", e))?;
+                }
+            }
+
+            if let Some(buildable) = snapshot
+                .get::<_, Option<LuaTable>>("buildable")
+                .map_err(|e| lua_err("restore", e))?
+            {
+                for row in buildable.sequence_values::<LuaTable>() {
+                    let row = row.map_err(|e| lua_err("restore", e))?;
+                    let coord = coord_from_table(row.clone(), "restore")?;
+                    let value: bool = row.get("buildable").map_err(|e| lua_err("restore", e))?;
+                    field
+                        .set_buildable(coord, value)
+                        .map_err(|e| lua_err("restore", e))?;
+                }
+            }
+
+            if let Some(occupants) = snapshot
+                .get::<_, Option<LuaTable>>("occupants")
+                .map_err(|e| lua_err("restore", e))?
+            {
+                for row in occupants.sequence_values::<LuaTable>() {
+                    let row = row.map_err(|e| lua_err("restore", e))?;
+                    let coord = coord_from_table(row.clone(), "restore")?;
+                    let occupant: u64 = row.get("occupant").map_err(|e| lua_err("restore", e))?;
+                    field
+                        .set_occupant(coord, occupant)
+                        .map_err(|e| lua_err("restore", e))?;
+                }
+            }
+
+            *this.inner.borrow_mut() = field;
+            Ok(())
         });
 
         // -- setSunOcclusion --

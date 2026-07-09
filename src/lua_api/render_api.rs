@@ -1,5 +1,6 @@
 //! Registers the `lurek.render` Lua API for render commands, sprites, fonts, shapes, and queued draw helpers.
 
+use super::effect_api::{LuaPostFxEffect, LuaPostFxStack};
 use super::scene_api::LuaDepthSorter;
 use super::SharedState;
 use crate::font::Font;
@@ -443,6 +444,22 @@ fn build_rich_text_spans(
         spans.push(TextSpan::new(text, r, g, b, a, scale));
     }
     Ok(spans)
+}
+
+fn postfx_passes_from_userdata(
+    state: &SharedState,
+    ud: &LuaAnyUserData,
+    api: &str,
+) -> LuaResult<Vec<PostFxPass>> {
+    if let Ok(effect) = ud.borrow::<LuaPostFxEffect>() {
+        return Ok(vec![effect.to_postfx_pass(state, api)?]);
+    }
+    if let Ok(stack) = ud.borrow::<LuaPostFxStack>() {
+        return stack.effect_passes_for_api(api);
+    }
+    Err(LuaError::RuntimeError(format!(
+        "{api}: expected LPostFxEffect or LPostFxStack"
+    )))
 }
 
 /// Off-screen render target that can be drawn to and then composited onto the screen.
@@ -3295,6 +3312,60 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 Ok(LuaCanvas {
                     state: s.clone(),
                     key: canvas_key,
+                })
+            },
+        )?,
+    )?;
+    let s = state.clone();
+    // -- applyEffectToCanvas --
+    /// Applies a post-processing effect or stack from one canvas into another canvas.
+    /// @param | sourceCanvas | LCanvas | Canvas used as the source texture.
+    /// @param | targetCanvas | LCanvas | Canvas receiving the processed output.
+    /// @param | effectOrStack | LPostFxEffect|LPostFxStack | Effect or stack created through `lurek.effect`.
+    /// @return | LCanvas | The target canvas handle.
+    graphics.set(
+        "applyEffectToCanvas",
+        lua.create_function(
+            move |_,
+                  (source_ud, target_ud, effect_ud): (
+                LuaAnyUserData,
+                LuaAnyUserData,
+                LuaAnyUserData,
+            )| {
+                let source = source_ud.borrow::<LuaCanvas>()?;
+                let source_canvas_key = source.key;
+                drop(source);
+                let target = target_ud.borrow::<LuaCanvas>()?;
+                let target_canvas_key = target.key;
+                drop(target);
+                let passes = {
+                    let st = s.borrow();
+                    if !st.canvases.contains_key(source_canvas_key) {
+                        return Err(LuaError::RuntimeError(
+                            "lurek.render.applyEffectToCanvas: source canvas handle is not valid"
+                                .into(),
+                        ));
+                    }
+                    if !st.canvases.contains_key(target_canvas_key) {
+                        return Err(LuaError::RuntimeError(
+                            "lurek.render.applyEffectToCanvas: target canvas handle is not valid"
+                                .into(),
+                        ));
+                    }
+                    postfx_passes_from_userdata(&st, &effect_ud, "applyEffectToCanvas")?
+                };
+                if !passes.is_empty() {
+                    s.borrow_mut()
+                        .render_commands
+                        .push(RenderCommand::ApplyEffectToCanvas {
+                            source_canvas_key,
+                            target_canvas_key,
+                            passes,
+                        });
+                }
+                Ok(LuaCanvas {
+                    state: s.clone(),
+                    key: target_canvas_key,
                 })
             },
         )?,

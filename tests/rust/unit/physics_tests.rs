@@ -1210,6 +1210,7 @@ mod terrain_tests {
         let mut terrain = TerrainMap::new(20, 20, 8.0);
         terrain.fill_all(true);
         assert!(terrain.is_dirty());
+        assert_eq!(terrain.dirty_chunks().len(), 4);
         assert!(terrain.get_cell(0, 0));
         assert!(terrain.get_cell(19, 19));
     }
@@ -1411,6 +1412,7 @@ mod liquid_tests {
         let mut liquid = LiquidMap::new(4, 3, 2.5);
         liquid.set_cell(0, 0, 1.0, LiquidKind::Water);
         liquid.set_cell(3, 2, 0.5, LiquidKind::Lava);
+        assert_eq!(liquid.dirty_chunks(), vec![(0, 0)]);
 
         let bytes = liquid.to_bytes();
         let restored = LiquidMap::from_bytes(&bytes).expect("roundtrip");

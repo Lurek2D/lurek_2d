@@ -406,7 +406,9 @@ pub fn validate_render_command(
             }
             Ok(())
         }
-        ApplyShaderToCanvas { passes, .. } => validate_postfx_passes(passes, limits),
+        ApplyShaderToCanvas { passes, .. } | ApplyEffectToCanvas { passes, .. } => {
+            validate_postfx_passes(passes, limits)
+        }
         Points { points } => {
             validate_count("points", points.len(), limits.max_vertices_per_command)?;
             for &(x, y) in points {

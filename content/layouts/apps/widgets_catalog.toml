@@ -1,0 +1,250 @@
+# widgets_catalog.toml
+# Viewport: 1200 x 800
+resolution = [1200, 800]
+
+[root]
+widget_type = "panel"
+id = "widgets_catalog_root"
+x = 0.0
+y = 0.0
+w = 1200.0
+h = 800.0
+
+[[root.children]]
+widget_type = "label"
+id = "catalog_title"
+text = "Widgets Catalog"
+x = 24.0
+y = 16.0
+w = 320.0
+h = 32.0
+
+[[root.children]]
+widget_type = "richlabel"
+id = "catalog_intro"
+text = "[b]Godot-inspired[/b] retained UI widgets with declarative data."
+x = 360.0
+y = 16.0
+w = 560.0
+h = 48.0
+
+[[root.children]]
+widget_type = "button"
+id = "primary_button"
+text = "Apply"
+x = 24.0
+y = 80.0
+w = 128.0
+h = 32.0
+
+[[root.children]]
+widget_type = "checkbox"
+id = "checkbox"
+text = "Enabled"
+x = 168.0
+y = 80.0
+w = 128.0
+h = 32.0
+checked = true
+
+[[root.children]]
+widget_type = "radiobutton"
+id = "radio"
+text = "Choice"
+group = "catalog_choice"
+x = 312.0
+y = 80.0
+w = 128.0
+h = 32.0
+
+[[root.children]]
+widget_type = "switch"
+id = "switch"
+x = 456.0
+y = 80.0
+w = 80.0
+h = 32.0
+on = true
+
+[[root.children]]
+widget_type = "badge"
+id = "badge"
+value = 7
+x = 552.0
+y = 80.0
+w = 48.0
+h = 32.0
+
+[[root.children]]
+widget_type = "textinput"
+id = "single_line_input"
+text = "Single line"
+x = 24.0
+y = 128.0
+w = 240.0
+h = 32.0
+label_for = "notes_area"
+focus_neighbors = { right = "combo" }
+
+[[root.children]]
+widget_type = "textarea"
+id = "notes_area"
+text = "Multi-line notes\nsupport Enter, caret, and scroll."
+placeholder = "Notes"
+x = 24.0
+y = 176.0
+w = 240.0
+h = 104.0
+focus_neighbors = { right = "listbox" }
+
+[[root.children]]
+widget_type = "combobox"
+id = "combo"
+items = ["Alpha", "Beta", "Gamma"]
+x = 288.0
+y = 128.0
+w = 200.0
+h = 32.0
+focus_neighbors = { left = "single_line_input", right = "tabbar" }
+
+[[root.children]]
+widget_type = "listbox"
+id = "listbox"
+items = ["One", "Two", "Three", "Four"]
+x = 288.0
+y = 176.0
+w = 200.0
+h = 104.0
+
+[[root.children]]
+widget_type = "tabbar"
+id = "tabbar"
+items = ["Stats", "Audit", "Preview"]
+x = 512.0
+y = 128.0
+w = 280.0
+h = 32.0
+focus_neighbors = { left = "combo" }
+
+[[root.children]]
+widget_type = "slider"
+id = "slider"
+min = 0.0
+max = 100.0
+value = 64.0
+x = 512.0
+y = 176.0
+w = 280.0
+h = 32.0
+
+[[root.children]]
+widget_type = "progressbar"
+id = "progress"
+min = 0.0
+max = 100.0
+value = 72.0
+x = 512.0
+y = 224.0
+w = 280.0
+h = 32.0
+
+[[root.children]]
+widget_type = "spinbox"
+id = "spinbox"
+min = 0.0
+max = 10.0
+value = 3.0
+x = 816.0
+y = 128.0
+w = 128.0
+h = 32.0
+
+[[root.children]]
+widget_type = "colorpicker"
+id = "colorpicker"
+x = 968.0
+y = 96.0
+w = 184.0
+h = 184.0
+
+[[root.children]]
+widget_type = "separator"
+id = "separator"
+x = 24.0
+y = 304.0
+w = 1128.0
+h = 8.0
+
+[[root.children]]
+widget_type = "treeview"
+id = "tree"
+x = 24.0
+y = 336.0
+w = 240.0
+h = 176.0
+nodes = [
+  { text = "Root", expanded = true },
+  { text = "Child A", parent = 0 },
+  { text = "Child B", parent = 0 },
+]
+
+[[root.children]]
+widget_type = "guitable"
+id = "table"
+x = 288.0
+y = 336.0
+w = 384.0
+h = 176.0
+columns = [
+  { header = "Widget", width = 160 },
+  { header = "State", width = 120 },
+]
+rows = [["Button", "Normal"], ["TextArea", "Focused"], ["Table", "Sortable"]]
+
+[[root.children]]
+widget_type = "propertywidget"
+id = "property_widget"
+x = 696.0
+y = 336.0
+w = 456.0
+h = 176.0
+property_label_width = 152.0
+
+[[root.children.property_groups]]
+title = "Runtime"
+collapsed = false
+
+[[root.children.property_groups.rows]]
+name = "Theme"
+value = "default_dark"
+value_type = "text"
+
+[[root.children.property_groups.rows]]
+name = "Focusable"
+value = "true"
+value_type = "bool"
+
+[[root.children]]
+widget_type = "imagewidget"
+id = "image_widget"
+x = 24.0
+y = 536.0
+w = 128.0
+h = 128.0
+
+[[root.children]]
+widget_type = "tooltippanel"
+id = "tooltip_panel"
+text = "Tooltip panel"
+x = 176.0
+y = 536.0
+w = 200.0
+h = 64.0
+
+[[root.children]]
+widget_type = "statusbar"
+id = "status_bar"
+x = 24.0
+y = 720.0
+w = 1128.0
+h = 32.0
