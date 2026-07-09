@@ -1,5 +1,5 @@
 ---@meta
---- Auto-generated Lureksome library API docs-general for LuaCATS.
+--- Auto-generated Lureksome library API documentation for LuaCATS.
 
 library = {}
 

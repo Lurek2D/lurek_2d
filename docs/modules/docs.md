@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Builds an API catalog to generate editor files and Markdown reference. - Analyzes docs-general coverage and quality using live table reflection.
+Builds an API catalog to generate editor files and Markdown reference. - Analyzes documentation coverage and quality using live table reflection.
 
 ## Summary
 

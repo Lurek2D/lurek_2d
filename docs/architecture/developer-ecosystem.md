@@ -252,7 +252,7 @@ The primary requirement for these editors is that they **must generate and save 
   - Reward dispensing triggers upon successful node completion.
   - Interactive quest stage simulation mimicking player progress.
   - Automatic layout generation for complex branching story arcs.
-  - Note and docs-general attachments for writers.
+  - Note and documentation attachments for writers.
   - Quest state tracking and live debugging overlay.
 
 ### 10. GuiWidgetEditor
@@ -347,11 +347,11 @@ The primary requirement for these editors is that they **must generate and save 
 
 ### 16. ApiReferenceEditor
 - **Reference / Inspiration:** Dash, Zeal, Godot built-in Help.
-- **Use case:** Quick, built-in offline access to the full, specific API docs-general of the Lurek2D engine.
-- **Lurek API Integration:** Pulls data from `lurek.docs` to provide fully generated, up-to-date offline docs-general.
-- **Ideas / Vision:** Acts as the offline heartbeat of the Love2D-style code-first philosophy. By reading directly from `lurek.docs`, it guarantees that the docs-general never drifts from the actual installed engine version.
+- **Use case:** Quick, built-in offline access to the full, specific API documentation of the Lurek2D engine.
+- **Lurek API Integration:** Pulls data from `lurek.docs` to provide fully generated, up-to-date offline documentation.
+- **Ideas / Vision:** Acts as the offline heartbeat of the Love2D-style code-first philosophy. By reading directly from `lurek.docs`, it guarantees that the documentation never drifts from the actual installed engine version.
 - **Feature list:**
-  - Full offline markdown-rendered docs-general browser.
+  - Full offline markdown-rendered documentation browser.
   - Fuzzy search across all Lurek API namespaces.
   - Syntax examples and executable code snippets.
   - Cross-linking hyperlinks between related functions.
@@ -363,7 +363,7 @@ The primary requirement for these editors is that they **must generate and save 
 ### 17. PostFxOverlayEditor
 - **Reference / Inspiration:** Unity Post Processing Stack v2, ReShade.
 - **Use case:** Live testing and refining of post-processing filters applied globally to game screens.
-- **Lurek API Integration:** Interfaces with `lurek.pipeline` and `lurek.effect` to apply visual overlays globally.
+- **Lurek API Integration:** Interfaces with `lurek.pipeline` and `lurek.effect` to apply post-processing passes globally.
 - **Ideas / Vision:** This editor is for designers tweaking global visual parameters (like bloom or blur intensity) over an existing game scene in `lurek.pipeline`, distinct from engineers writing raw compute shaders.
 - **Feature list:**
   - Full-screen interactive game viewport preview.

@@ -1,5 +1,5 @@
 ---@meta
---- Auto-generated Lurek2D API docs-general for LuaCATS.
+--- Auto-generated Lurek2D API documentation for LuaCATS.
 
 lurek = {}
 

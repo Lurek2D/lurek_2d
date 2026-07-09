@@ -236,7 +236,7 @@ Love2D is the dominant jam engine for Lua developers. Lurek2D's advantage is a r
 
 ### Description
 
-A university course or bootcamp teaches programming through game development. Instructors show: Lua as a scripting language; Rust as a systems language; engine architecture; test placement rules; API design; docs-general standards.
+A university course or bootcamp teaches programming through game development. Instructors show: Lua as a scripting language; Rust as a systems language; engine architecture; test placement rules; API design; documentation standards.
 
 The entire engine source is a teaching artefact: 5-tier module architecture, DAG dependency graph, test placement rules (TST-01 through TST-06), doc enforcement (Q-05), and the CAG agent system.
 
@@ -1025,7 +1025,7 @@ Template provided by organiser; teams may add any `lurek.*` module.
 ### Benefits
 
 - Single binary distributed to all participants — zero install friction.
-- VS Code extension provides IntelliSense for all `lurek.*` functions — no docs-general hunting.
+- VS Code extension provides IntelliSense for all `lurek.*` functions without documentation hunting.
 - AI copilot (Antigravity + CAG system) helps participants generate correct code fast.
 - REPL mode enables live Lua evaluation for quick experiments.
 - 67 examples cover every common pattern — teams copy and modify.
@@ -2177,7 +2177,7 @@ Example applications:
 ### Benefits
 
 - `evalCode` closes the loop: LLM generates code, engine runs it, results display immediately.
-- `addSkill` with API docs-general teaches the model the correct `lurek.*` API surface.
+- `addSkill` with API documentation teaches the model the correct `lurek.*` API surface.
 - Low temperature + JSON format = structured, reliable code output.
 - `terminal` renders the code and output side by side for a REPL-like experience.
 - Works fully offline with Ollama — no external API, no token cost.

@@ -5,7 +5,7 @@
 ## TL;DR
 
 - Builds an API catalog to generate editor files and Markdown reference.
-- Analyzes docs-general coverage and quality using live table reflection.
+- Analyzes documentation coverage and quality using live table reflection.
 
 ## General Info
 

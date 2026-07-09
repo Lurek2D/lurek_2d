@@ -604,7 +604,7 @@ lurek2d/
 │   ├── <module>/           One directory per module
 │   └── lua_api/            Scripting bridge (one <module>_api.rs per module)
 ├── content/
-│   ├── examples/           Single-file API usage scripts (docs-general only)
+│   ├── examples/           Single-file API usage scripts (documentation only)
 │   ├── games/              Playable game demos (must all pass CI)
 │   ├── layouts/            TOML UI layout files
 │   ├── plugins/            Plugin examples
@@ -614,7 +614,7 @@ lurek2d/
 │   ├── rust/               Rust tests (unit, stress, golden, config, security, ext)
 │   └── lua/                Lua BDD tests (unit, integration, content, stress, security)
 ├── docs/
-│   ├── architecture/       Architecture docs-general
+│   ├── architecture/       Architecture documentation
 │   ├── specs/              One <module>.md per src/<module>/
 │   ├── api/                Generated API references (never edit by hand)
 │   └── CHANGELOG.md        Version history

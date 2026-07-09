@@ -138,7 +138,7 @@ Load order: CORE-KEEP (Foundations â†’ Core Runtime â†’ â€¦) then 
 | **TIER-2-PLUGIN** | Built and shipped, not loaded unless game opts in | When `conf.lua` declares `plugins = { "physics" }` | Game omits the entry |
 | **THIRD-PARTY-PLUGIN** | Built by community author | Like TIER-1 or TIER-2 | User does not install it |
 
-**CORE-KEEP modules** (always compiled in): `math`, `log`, `data`, `serial`, `runtime`, `event`, `timer`, `thread`, `filesystem`, `render`, `audio`, `input`, `image`, `window`, `camera`, `light`, `effect`, `ecs`, `scene`, `animation`, `tween`, `particle`, `tilemap`, `sprite`, `i18n`, `graph`, `automation`, `app`, `lua_api`, `bin`, plus docs-general and tooling Edge modules.
+**CORE-KEEP modules** (always compiled in): `math`, `log`, `data`, `serial`, `runtime`, `event`, `timer`, `thread`, `filesystem`, `render`, `audio`, `input`, `image`, `window`, `camera`, `light`, `effect`, `ecs`, `scene`, `animation`, `tween`, `particle`, `tilemap`, `sprite`, `i18n`, `graph`, `automation`, `app`, `lua_api`, `bin`, plus documentation and tooling Edge modules.
 
 ---
 

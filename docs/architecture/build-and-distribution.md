@@ -707,5 +707,5 @@ Upstream and reference sources consulted:
 - `strip(1)`
 - `gzexe(1)`
 - ELFkickers / `sstrip`
-- AppImage docs-general
+- AppImage documentation
 
