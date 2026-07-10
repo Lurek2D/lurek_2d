@@ -38,11 +38,12 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - Owning tier: `Feature Systems`
 - Plugin tier: `tier_1_plugin`
 - Lua binding owner: `src/lua_api/spine_api.rs`
-- Referenced engine modules: `image`, `render`, `runtime`
+- Referenced engine modules: `image`, `math`, `render`, `runtime`
 
 ## Imports
 
 - `image`: Imports or references `src/image/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `math`: Imports or references `src/math/`. Cross-group dependency from `Feature Systems` into `Foundations`.
 - `render`: Imports or references `src/render/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
 - `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
 

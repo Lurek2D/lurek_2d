@@ -99,6 +99,43 @@ end
 
 ---
 
+#### `LSvgImage:containsPoint`
+
+Returns whether a visible SVG element contains the given document-space point.
+
+```lua
+LSvgImage:containsPoint(id, x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | string | Element or group ID. |
+| `x` | number | Document-space X coordinate. |
+| `y` | number | Document-space Y coordinate. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the point is inside the element, false when outside, or `nil` for unknown/no-geometry IDs. |
+
+**Example**
+
+```lua
+do
+
+    local svg = lurek.svg.load("content/examples/assets/test.svg")
+    local inside = svg:containsPoint("prov_1", 30, 30)
+    local outside = svg:containsPoint("prov_1", 120, 30)
+    local visible = svg:getElementVisible("prov_1")
+    lurek.log.info("containsPoint prov_1 inside=" .. tostring(inside) .. " outside=" .. tostring(outside) .. " visible=" .. tostring(visible))
+end
+```
+
+---
+
 #### `LSvgImage:draw`
 
 Renders the SVG document at the given position and transform overrides.
@@ -265,6 +302,43 @@ do
     local count = svg:getElementCount()
     local ids = svg:getElementIds()
     lurek.log.info("svg dimensions=" .. width .. "x" .. height .. " ids=" .. #ids .. " elements=" .. count)
+end
+```
+
+---
+
+#### `LSvgImage:getElementAtPoint`
+
+Returns the first visible element matching `prefix` that contains the document-space point.
+
+```lua
+LSvgImage:getElementAtPoint(prefix, x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `prefix` | string | Element ID prefix used to filter candidates. |
+| `x` | number | Document-space X coordinate. |
+| `y` | number | Document-space Y coordinate. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Matching element ID, or `nil` when no element contains the point. |
+
+**Example**
+
+```lua
+do
+
+    local svg = lurek.svg.load("content/examples/assets/test.svg")
+    local first = svg:getElementAtPoint("prov_", 30, 30)
+    local second = svg:getElementAtPoint("prov_", 120, 30)
+    local missing = svg:getElementAtPoint("prov_", 190, 95)
+    lurek.log.info("getElementAtPoint first=" .. tostring(first) .. " second=" .. tostring(second) .. " missing=" .. tostring(missing))
 end
 ```
 

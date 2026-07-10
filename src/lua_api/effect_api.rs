@@ -337,6 +337,7 @@ impl LuaPostFxStack {
         self.inner.enabled = enabled;
     }
 
+    /// Resolve enabled stack entries into renderer passes for the default apply API.
     pub(crate) fn effect_passes(&self) -> LuaResult<Vec<PostFxPass>> {
         self.effect_passes_for_api("LPostFxStack.apply")
     }

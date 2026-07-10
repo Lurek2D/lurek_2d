@@ -2695,7 +2695,7 @@ LIsoGrid = {}
 ---@class LJpsGrid
 LJpsGrid = {}
 
---- Provides Lua methods for navigation grid dimensions, costs, blocking, serialization, dirty regions, and diagonal mode.
+--- Lua userdata wrapper for a navigation grid and its optional HPA cache.
 ---@class LNavGrid
 LNavGrid = {}
 
@@ -30861,6 +30861,13 @@ lurek.sprite.parseAtlas = function(json_str) end
 ---@param h number Target canvas height in pixels.
 function LSvgImage:cacheToCanvas(id, w, h) end
 
+--- Returns whether a visible SVG element contains the given document-space point.
+---@param id string Element or group ID.
+---@param x number Document-space X coordinate.
+---@param y number Document-space Y coordinate.
+---@return boolean True when the point is inside the element, false when outside, or `nil` for unknown/no-geometry IDs.
+function LSvgImage:containsPoint(id, x, y) end
+
 --- Renders the SVG document at the given position and transform overrides.
 ---@param x number World X position.
 ---@param y number World Y position.
@@ -30891,6 +30898,13 @@ function LSvgImage:getCanvasKey(id) end
 ---@return number Width and height values. (value 1).
 ---@return number Width and height values. (value 2).
 function LSvgImage:getDimensions() end
+
+--- Returns the first visible element matching `prefix` that contains the document-space point.
+---@param prefix string Element ID prefix used to filter candidates.
+---@param x number Document-space X coordinate.
+---@param y number Document-space Y coordinate.
+---@return string Matching element ID, or `nil` when no element contains the point.
+function LSvgImage:getElementAtPoint(prefix, x, y) end
 
 --- Returns the axis-aligned bounding box `{min_x, min_y, max_x, max_y}` of the element.
 ---@param id string Element or group ID.

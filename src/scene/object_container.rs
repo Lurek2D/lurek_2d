@@ -26,11 +26,13 @@ impl LSceneObjectContainer {
         })
     }
 
+    /// Add a Lua object table to the container and keep it alive in the registry.
     pub fn add(&mut self, lua: &Lua, obj: LuaTable) -> LuaResult<()> {
         self.objects.push(lua.create_registry_value(obj)?);
         Ok(())
     }
 
+    /// Define or return a named group bit used to filter update, physics, and draw passes.
     pub fn define_group(&mut self, name: String) -> LuaResult<u8> {
         if let Some(bit) = self.group_bits.get(&name) {
             return Ok(*bit);
@@ -46,10 +48,12 @@ impl LSceneObjectContainer {
         Ok(bit as u8)
     }
 
+    /// Return the bit assigned to a named group.
     pub fn get_group_bit(&self, name: &str) -> Option<u8> {
         self.group_bits.get(name).copied()
     }
 
+    /// Enable or disable one group for a named pass.
     pub fn set_group_enabled(&mut self, group: LuaValue, pass: String, enabled: bool) -> bool {
         let Some(bit) = self.group_bit_from_lua(group) else {
             return false;
@@ -61,6 +65,7 @@ impl LSceneObjectContainer {
         true
     }
 
+    /// Return whether a group is enabled for a named pass.
     pub fn is_group_enabled(&self, group: LuaValue, pass: String) -> bool {
         let Some(bit) = self.group_bit_from_lua(group) else {
             return false;
@@ -74,6 +79,7 @@ impl LSceneObjectContainer {
             .unwrap_or(false)
     }
 
+    /// Remove the first registry-held object equal to the given Lua table.
     pub fn remove(&mut self, lua: &Lua, obj: LuaTable) -> LuaResult<()> {
         let mut remove_index = None;
         for (index, key) in self.objects.iter().enumerate() {
@@ -90,6 +96,7 @@ impl LSceneObjectContainer {
         Ok(())
     }
 
+    /// Remove all objects and release their Lua registry handles.
     pub fn clear(&mut self, lua: &Lua) -> LuaResult<()> {
         for key in self.objects.drain(..) {
             lua.remove_registry_value(key)?;
@@ -97,6 +104,7 @@ impl LSceneObjectContainer {
         Ok(())
     }
 
+    /// Call `update(self, dt)` on objects enabled for the update pass.
     pub fn update(&self, lua: &Lua, dt: f64) -> LuaResult<()> {
         for key in &self.objects {
             let obj: LuaTable = lua.registry_value(key)?;
@@ -109,6 +117,7 @@ impl LSceneObjectContainer {
         Ok(())
     }
 
+    /// Call `process_physics` or `physics` on objects enabled for the physics pass.
     pub fn process_physics(&self, lua: &Lua, dt: f64) -> LuaResult<()> {
         for key in &self.objects {
             let obj: LuaTable = lua.registry_value(key)?;
@@ -123,6 +132,7 @@ impl LSceneObjectContainer {
         Ok(())
     }
 
+    /// Draw objects enabled for the draw pass in ascending layer order.
     pub fn draw(&self, lua: &Lua) -> LuaResult<()> {
         let mut objects = self.objects_with_layers(lua)?;
         objects.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap_or(std::cmp::Ordering::Equal));
@@ -136,10 +146,12 @@ impl LSceneObjectContainer {
         Ok(())
     }
 
+    /// Return the number of objects currently retained by the container.
     pub fn count(&self) -> usize {
         self.objects.len()
     }
 
+    /// Return all retained objects as a one-based Lua array table.
     pub fn objects_table<'lua>(&self, lua: &'lua Lua) -> LuaResult<LuaTable<'lua>> {
         let out = lua.create_table()?;
         for (index, key) in self.objects.iter().enumerate() {
@@ -148,6 +160,7 @@ impl LSceneObjectContainer {
         Ok(out)
     }
 
+    /// Return retained objects whose `layer` field equals the requested layer.
     pub fn by_layer<'lua>(&self, lua: &'lua Lua, layer: i32) -> LuaResult<LuaTable<'lua>> {
         let out = lua.create_table()?;
         for key in &self.objects {
@@ -159,6 +172,7 @@ impl LSceneObjectContainer {
         Ok(out)
     }
 
+    /// Return whether the exact Lua table is retained by the container.
     pub fn has(&self, lua: &Lua, obj: LuaTable) -> LuaResult<bool> {
         for key in &self.objects {
             let current: LuaTable = lua.registry_value(key)?;

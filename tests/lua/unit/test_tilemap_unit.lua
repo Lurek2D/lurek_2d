@@ -908,9 +908,16 @@ describe("LChunkMap methods", function()
         expect_equal(16, y1)
     end)
 
-    -- @covers LChunkMap:setTiles
     -- @covers LChunkMap:getDirtyChunks
-    it("setTiles applies a batch and reports dirty chunks", function()
+    it("getDirtyChunks reports chunks dirtied by tile writes", function()
+        local cm = lurek.tilemap.newChunkMap(4)
+        cm:setTile(0, 0, 2)
+        cm:setTile(4, 0, 3)
+        expect_equal(2, #cm:getDirtyChunks())
+    end)
+
+    -- @covers LChunkMap:setTiles
+    it("setTiles applies a batch and returns dirty chunks", function()
         local cm = lurek.tilemap.newChunkMap(4)
         local dirty = cm:setTiles({
             { x = 0, y = 0, gid = 2 },
@@ -922,29 +929,38 @@ describe("LChunkMap methods", function()
         expect_equal(3, cm:getTile(4, 0))
         expect_equal(4, cm:getTile(-1, -1))
         expect_equal(3, #dirty)
-        expect_equal(3, #cm:getDirtyChunks())
     end)
 
     -- @covers LChunkMap:drainDirtyChunks
-    -- @covers LChunkMap:clearDirtyChunks
-    it("drainDirtyChunks and clearDirtyChunks manage pending chunks", function()
+    it("drainDirtyChunks returns and clears pending chunks", function()
         local cm = lurek.tilemap.newChunkMap(4)
         cm:setTile(0, 0, 1)
         expect_equal(1, #cm:drainDirtyChunks())
         expect_equal(0, #cm:getDirtyChunks())
+    end)
+
+    -- @covers LChunkMap:clearDirtyChunks
+    it("clearDirtyChunks drops pending chunk notifications", function()
+        local cm = lurek.tilemap.newChunkMap(4)
         cm:setTile(5, 0, 2)
         cm:clearDirtyChunks()
         expect_equal(0, #cm:getDirtyChunks())
     end)
 
     -- @covers LChunkMap:chunkToBytes
-    -- @covers LChunkMap:loadChunkFromBytes
-    it("chunk bytes roundtrip one chunk", function()
+    it("chunkToBytes serializes one chunk to bytes", function()
         local cm = lurek.tilemap.newChunkMap(4)
         cm:setTile(1, 2, 9)
         local bytes = cm:chunkToBytes(0, 0)
         expect_type("string", bytes)
+        expect_true(#bytes > 0)
+    end)
 
+    -- @covers LChunkMap:loadChunkFromBytes
+    it("loadChunkFromBytes restores one chunk at a target coordinate", function()
+        local cm = lurek.tilemap.newChunkMap(4)
+        cm:setTile(1, 2, 9)
+        local bytes = cm:chunkToBytes(0, 0)
         local clone = lurek.tilemap.newChunkMap(4)
         clone:loadChunkFromBytes(2, -1, bytes)
         expect_equal(9, clone:getTile(9, -2))

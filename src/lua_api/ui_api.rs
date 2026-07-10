@@ -7344,6 +7344,10 @@ impl LuaUserData for LuaTheme {
 }
 /// Parses a widget type name string into a `WidgetType` enum value.
 fn parse_widget_type(s: &str) -> Option<WidgetType> {
+    parse_widget_basic_type(s).or_else(|| parse_widget_container_type(s))
+}
+
+fn parse_widget_basic_type(s: &str) -> Option<WidgetType> {
     match s {
         "button" => Some(WidgetType::Button),
         "label" => Some(WidgetType::Label),
@@ -7355,23 +7359,11 @@ fn parse_widget_type(s: &str) -> Option<WidgetType> {
         "progressbar" => Some(WidgetType::ProgressBar),
         "combobox" => Some(WidgetType::ComboBox),
         "listbox" => Some(WidgetType::ListBox),
-        "panel" => Some(WidgetType::Panel),
-        "layout" => Some(WidgetType::Layout),
-        "aspectcontainer" | "aspectratiocontainer" => Some(WidgetType::AspectRatioContainer),
-        "scrollpanel" => Some(WidgetType::ScrollPanel),
-        "ninepatch" => Some(WidgetType::NinePatch),
-        "tabbar" => Some(WidgetType::TabBar),
         "toast" => Some(WidgetType::Toast),
         "separator" => Some(WidgetType::Separator),
         "spacer" => Some(WidgetType::Spacer),
-        "treeview" => Some(WidgetType::TreeView),
         "radiobutton" => Some(WidgetType::RadioButton),
         "scrollbar" => Some(WidgetType::ScrollBar),
-        "guiwindow" => Some(WidgetType::GUIWindow),
-        "splitpanel" => Some(WidgetType::SplitPanel),
-        "stackcontainer" | "stack" => Some(WidgetType::StackContainer),
-        "tabcontainer" => Some(WidgetType::TabContainer),
-        "dockpanel" => Some(WidgetType::DockPanel),
         "toolbar" => Some(WidgetType::Toolbar),
         "menubar" => Some(WidgetType::MenuBar),
         "menuitem" => Some(WidgetType::MenuItem),
@@ -7380,9 +7372,27 @@ fn parse_widget_type(s: &str) -> Option<WidgetType> {
         "accordion" => Some(WidgetType::Accordion),
         "tooltippanel" => Some(WidgetType::TooltipPanel),
         "colorpicker" => Some(WidgetType::ColorPicker),
+        "imagewidget" => Some(WidgetType::ImageWidget),
+        _ => None,
+    }
+}
+
+fn parse_widget_container_type(s: &str) -> Option<WidgetType> {
+    match s {
+        "panel" => Some(WidgetType::Panel),
+        "layout" => Some(WidgetType::Layout),
+        "aspectcontainer" | "aspectratiocontainer" => Some(WidgetType::AspectRatioContainer),
+        "scrollpanel" => Some(WidgetType::ScrollPanel),
+        "ninepatch" => Some(WidgetType::NinePatch),
+        "tabbar" => Some(WidgetType::TabBar),
+        "treeview" => Some(WidgetType::TreeView),
+        "guiwindow" => Some(WidgetType::GUIWindow),
+        "splitpanel" => Some(WidgetType::SplitPanel),
+        "stackcontainer" | "stack" => Some(WidgetType::StackContainer),
+        "tabcontainer" => Some(WidgetType::TabContainer),
+        "dockpanel" => Some(WidgetType::DockPanel),
         "guitable" => Some(WidgetType::GUITable),
         "propertywidget" => Some(WidgetType::PropertyWidget),
-        "imagewidget" => Some(WidgetType::ImageWidget),
         _ => None,
     }
 }
@@ -9392,6 +9402,13 @@ fn lua_dialog_actions(
 }
 
 fn apply_widget_scalar_fields(def: &mut crate::ui::WidgetDef, table: &mlua::Table) {
+    apply_widget_identity_fields(def, table);
+    apply_widget_value_fields(def, table);
+    apply_widget_icon_fields(def, table);
+    apply_widget_anchor_fields(def, table);
+}
+
+fn apply_widget_identity_fields(def: &mut crate::ui::WidgetDef, table: &mlua::Table) {
     def.id = table.get("id").ok();
     def.style_class = table
         .get("style_class")
@@ -9420,6 +9437,9 @@ fn apply_widget_scalar_fields(def: &mut crate::ui::WidgetDef, table: &mlua::Tabl
         .or_else(|_| table.get("labelFor"))
         .ok();
     def.bind = table.get("bind").ok();
+}
+
+fn apply_widget_value_fields(def: &mut crate::ui::WidgetDef, table: &mlua::Table) {
     def.x = table.get("x").ok();
     def.y = table.get("y").ok();
     def.w = table.get("w").ok();
@@ -9434,6 +9454,9 @@ fn apply_widget_scalar_fields(def: &mut crate::ui::WidgetDef, table: &mlua::Tabl
     def.enabled = table.get("enabled").ok();
     def.placeholder = table.get("placeholder").ok();
     def.tooltip = table.get("tooltip").ok();
+}
+
+fn apply_widget_icon_fields(def: &mut crate::ui::WidgetDef, table: &mlua::Table) {
     def.icon = table.get("icon").ok();
     def.icon_position = table
         .get("icon_position")
@@ -9443,6 +9466,9 @@ fn apply_widget_scalar_fields(def: &mut crate::ui::WidgetDef, table: &mlua::Tabl
         .get("icon_size")
         .or_else(|_| table.get("iconSize"))
         .ok();
+}
+
+fn apply_widget_anchor_fields(def: &mut crate::ui::WidgetDef, table: &mlua::Table) {
     def.anchor_left = table
         .get("anchor_left")
         .or_else(|_| table.get("anchorLeft"))
@@ -9583,40 +9609,51 @@ fn lua_columns_def(
         LuaValue::Number(value) if value.is_finite() && value >= 0.0 => Ok(Some(
             crate::ui::layout_loader::ColumnsDef::Count(value as usize),
         )),
-        LuaValue::Table(columns_table) => {
-            let len = columns_table.raw_len();
-            let mut names = Vec::new();
-            let mut objects = Vec::new();
-            for i in 1..=len {
-                match columns_table.get::<_, LuaValue>(i)? {
-                    LuaValue::String(value) => names.push(value.to_str()?.to_string()),
-                    LuaValue::Table(column_table) => {
-                        objects.push(crate::ui::layout_loader::TableColumnDef::Object {
-                            header: column_table.get("header")?,
-                            width: column_table.get("width").ok(),
-                        });
-                    }
-                    other => {
-                        return Err(mlua::Error::external(format!(
-                            "columns[{i}] must be string or table, got {}",
-                            other.type_name()
-                        )));
-                    }
-                }
-            }
-            if objects.is_empty() {
-                Ok(Some(crate::ui::layout_loader::ColumnsDef::Names(names)))
-            } else {
-                for name in names {
-                    objects.push(crate::ui::layout_loader::TableColumnDef::Header(name));
-                }
-                Ok(Some(crate::ui::layout_loader::ColumnsDef::Objects(objects)))
-            }
-        }
+        LuaValue::Table(columns_table) => lua_columns_def_from_table(columns_table),
         other => Err(mlua::Error::external(format!(
             "columns must be integer or table, got {}",
             other.type_name()
         ))),
+    }
+}
+
+fn lua_columns_def_from_table(
+    columns_table: mlua::Table,
+) -> mlua::Result<Option<crate::ui::layout_loader::ColumnsDef>> {
+    let len = columns_table.raw_len();
+    let mut names = Vec::new();
+    let mut objects = Vec::new();
+    for i in 1..=len {
+        match columns_table.get::<_, LuaValue>(i)? {
+            LuaValue::String(value) => names.push(value.to_str()?.to_string()),
+            LuaValue::Table(column_table) => {
+                objects.push(crate::ui::layout_loader::TableColumnDef::Object {
+                    header: column_table.get("header")?,
+                    width: column_table.get("width").ok(),
+                });
+            }
+            other => {
+                return Err(mlua::Error::external(format!(
+                    "columns[{i}] must be string or table, got {}",
+                    other.type_name()
+                )));
+            }
+        }
+    }
+    Ok(Some(lua_columns_def_from_parts(names, objects)))
+}
+
+fn lua_columns_def_from_parts(
+    names: Vec<String>,
+    mut objects: Vec<crate::ui::layout_loader::TableColumnDef>,
+) -> crate::ui::layout_loader::ColumnsDef {
+    if objects.is_empty() {
+        crate::ui::layout_loader::ColumnsDef::Names(names)
+    } else {
+        for name in names {
+            objects.push(crate::ui::layout_loader::TableColumnDef::Header(name));
+        }
+        crate::ui::layout_loader::ColumnsDef::Objects(objects)
     }
 }
 
@@ -9661,6 +9698,12 @@ fn apply_widget_property_fields(
     def: &mut crate::ui::WidgetDef,
     table: &mlua::Table,
 ) -> mlua::Result<()> {
+    apply_widget_property_metrics(def, table);
+    def.property_groups = lua_property_groups(table)?;
+    Ok(())
+}
+
+fn apply_widget_property_metrics(def: &mut crate::ui::WidgetDef, table: &mlua::Table) {
     def.property_label_width = table
         .get("property_label_width")
         .or_else(|_| table.get("propertyLabelWidth"))
@@ -9673,6 +9716,11 @@ fn apply_widget_property_fields(
         .get("property_group_header_height")
         .or_else(|_| table.get("propertyGroupHeaderHeight"))
         .ok();
+}
+
+fn lua_property_groups(
+    table: &mlua::Table,
+) -> mlua::Result<Option<Vec<crate::ui::layout_loader::PropertyGroupDef>>> {
     let groups_table = table
         .get::<_, Option<mlua::Table>>("property_groups")?
         .or_else(|| {
@@ -9682,48 +9730,57 @@ fn apply_widget_property_fields(
                 .flatten()
         });
     let Some(groups_table) = groups_table else {
-        return Ok(());
+        return Ok(None);
     };
     let mut groups = Vec::with_capacity(groups_table.raw_len());
     for group_idx in 1..=groups_table.raw_len() {
         let group_table: mlua::Table = groups_table.get(group_idx)?;
-        let rows_table = group_table.get::<_, Option<mlua::Table>>("rows")?;
-        let mut rows = Vec::new();
-        if let Some(rows_table) = rows_table {
-            for row_idx in 1..=rows_table.raw_len() {
-                let row_table: mlua::Table = rows_table.get(row_idx)?;
-                let value = row_table
-                    .get::<_, LuaValue>("value")
-                    .ok()
-                    .map(scalar_value_to_text)
-                    .transpose()?;
-                let options = row_table
-                    .get::<_, Option<mlua::Table>>("options")?
-                    .map(lua_string_array)
-                    .transpose()?;
-                rows.push(crate::ui::layout_loader::PropertyRowDef {
-                    name: row_table.get("name")?,
-                    value,
-                    value_type: row_table
-                        .get("value_type")
-                        .or_else(|_| row_table.get("valueType"))
-                        .ok(),
-                    options,
-                    read_only: row_table
-                        .get("read_only")
-                        .or_else(|_| row_table.get("readOnly"))
-                        .ok(),
-                });
-            }
-        }
         groups.push(crate::ui::layout_loader::PropertyGroupDef {
             title: group_table.get("title")?,
             collapsed: group_table.get("collapsed").ok(),
-            rows: Some(rows),
+            rows: Some(lua_property_rows(&group_table)?),
         });
     }
-    def.property_groups = Some(groups);
-    Ok(())
+    Ok(Some(groups))
+}
+
+fn lua_property_rows(
+    group_table: &mlua::Table,
+) -> mlua::Result<Vec<crate::ui::layout_loader::PropertyRowDef>> {
+    let Some(rows_table) = group_table.get::<_, Option<mlua::Table>>("rows")? else {
+        return Ok(Vec::new());
+    };
+    let mut rows = Vec::new();
+    for row_idx in 1..=rows_table.raw_len() {
+        let row_table: mlua::Table = rows_table.get(row_idx)?;
+        rows.push(lua_property_row(row_table)?);
+    }
+    Ok(rows)
+}
+
+fn lua_property_row(
+    row_table: mlua::Table,
+) -> mlua::Result<crate::ui::layout_loader::PropertyRowDef> {
+    Ok(crate::ui::layout_loader::PropertyRowDef {
+        name: row_table.get("name")?,
+        value: row_table
+            .get::<_, LuaValue>("value")
+            .ok()
+            .map(scalar_value_to_text)
+            .transpose()?,
+        value_type: row_table
+            .get("value_type")
+            .or_else(|_| row_table.get("valueType"))
+            .ok(),
+        options: row_table
+            .get::<_, Option<mlua::Table>>("options")?
+            .map(lua_string_array)
+            .transpose()?,
+        read_only: row_table
+            .get("read_only")
+            .or_else(|_| row_table.get("readOnly"))
+            .ok(),
+    })
 }
 fn scalar_value_to_text(value: LuaValue) -> LuaResult<String> {
     match value {

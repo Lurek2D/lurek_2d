@@ -207,6 +207,26 @@ do
     lurek.log.info("adjacency prov_1=" .. table.concat(p1, ",") .. " prov_2=" .. table.concat(p2, ","))
 end
 
+--@api: LSvgImage:containsPoint
+do
+
+    local svg = lurek.svg.load("content/examples/assets/test.svg")
+    local inside = svg:containsPoint("prov_1", 30, 30)
+    local outside = svg:containsPoint("prov_1", 120, 30)
+    local visible = svg:getElementVisible("prov_1")
+    lurek.log.info("containsPoint prov_1 inside=" .. tostring(inside) .. " outside=" .. tostring(outside) .. " visible=" .. tostring(visible))
+end
+
+--@api: LSvgImage:getElementAtPoint
+do
+
+    local svg = lurek.svg.load("content/examples/assets/test.svg")
+    local first = svg:getElementAtPoint("prov_", 30, 30)
+    local second = svg:getElementAtPoint("prov_", 120, 30)
+    local missing = svg:getElementAtPoint("prov_", 190, 95)
+    lurek.log.info("getElementAtPoint first=" .. tostring(first) .. " second=" .. tostring(second) .. " missing=" .. tostring(missing))
+end
+
 --@api: LSvgImage:cacheToCanvas
 do
 

@@ -1,0 +1,16 @@
+<svg width="240" height="120" viewBox="0 0 240 120" xmlns="http://www.w3.org/2000/svg">
+  <g id="large_group">
+    <path id="large_00" d="M 0 0 L 30 0 L 30 30 L 0 30 Z" fill="#d44" stroke="#111" stroke-width="1" />
+    <path id="large_01" d="M 30 0 L 60 0 L 60 30 L 30 30 Z" fill="#4d4" stroke="#111" stroke-width="1" />
+    <path id="large_02" d="M 60 0 L 90 0 L 90 30 L 60 30 Z" fill="#44d" stroke="#111" stroke-width="1" />
+    <path id="large_03" d="M 90 0 L 120 0 L 120 30 L 90 30 Z" fill="#dd4" stroke="#111" stroke-width="1" />
+    <path id="large_04" d="M 0 30 L 30 30 L 30 60 L 0 60 Z" fill="#d4d" stroke="#111" stroke-width="1" />
+    <path id="large_05" d="M 30 30 L 60 30 L 60 60 L 30 60 Z" fill="#4dd" stroke="#111" stroke-width="1" />
+    <path id="large_06" d="M 60 30 L 90 30 L 90 60 L 60 60 Z" fill="#c84" stroke="#111" stroke-width="1" />
+    <path id="large_07" d="M 90 30 L 120 30 L 120 60 L 90 60 Z" fill="#48c" stroke="#111" stroke-width="1" />
+    <path id="large_08" d="M 0 60 L 30 60 L 30 90 L 0 90 Z" fill="#8c4" stroke="#111" stroke-width="1" />
+    <path id="large_09" d="M 30 60 L 60 60 L 60 90 L 30 90 Z" fill="#84c" stroke="#111" stroke-width="1" />
+    <path id="large_10" d="M 60 60 L 90 60 L 90 90 L 60 90 Z" fill="#c48" stroke="#111" stroke-width="1" />
+    <path id="large_11" d="M 90 60 L 120 60 L 120 90 L 90 90 Z" fill="#4c8" stroke="#111" stroke-width="1" />
+  </g>
+</svg>

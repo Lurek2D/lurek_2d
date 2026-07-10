@@ -965,6 +965,11 @@ fn lua_integration_render_animation_integration() {
 }
 
 #[test]
+fn lua_integration_svg_animation_integration() {
+    run_lua_test("integration/test_svg_animation_integration.lua");
+}
+
+#[test]
 fn lua_integration_render_camera_integration() {
     run_lua_test("integration/test_render_camera_integration.lua");
 }
@@ -1257,6 +1262,11 @@ fn lua_stress_procgen_stress() {
 #[test]
 fn lua_stress_render_stress() {
     run_lua_test("stress/test_render_stress.lua");
+}
+
+#[test]
+fn lua_stress_svg_stress() {
+    run_lua_test("stress/test_svg_stress.lua");
 }
 
 #[test]

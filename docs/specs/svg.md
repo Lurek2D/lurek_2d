@@ -12,7 +12,7 @@
 - Source path: `src/svg`
 - Binding: `src/lua_api/svg_api.rs`
 - Namespace: `lurek.svg`
-- Lua API surface: `1` functions, `1` types, `24` methods
+- Lua API surface: `1` functions, `1` types, `26` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -91,11 +91,13 @@ This module primarily collaborates with `math`, `render`, `runtime`. Its respons
 ##### Methods
 
 - `LSvgImage:cacheToCanvas(id, w, h) -> nil`: Rasterizes a specific SVG element/group onto an off-screen GPU Canvas.
+- `LSvgImage:containsPoint(id, x, y) -> boolean`: Returns whether a visible SVG element contains the given document-space point.
 - `LSvgImage:draw(x, y, rotation?, sx?, sy?, ox?, oy?) -> nil`: Renders the SVG document at the given position and transform overrides.
 - `LSvgImage:getAdjacencies(prefix, epsilon?) -> table`: Detects neighboring provinces using point-to-point proximity.
 - `LSvgImage:getCanvas(id) -> LCanvas`: Returns the cached canvas handle for an element.
 - `LSvgImage:getCanvasKey(id) -> LCanvas`: Returns the LCanvas handle for a previously cached element/group.
 - `LSvgImage:getDimensions() -> number, number`: Returns both the document width and height as two values: `width, height`.
+- `LSvgImage:getElementAtPoint(prefix, x, y) -> string`: Returns the first visible element matching `prefix` that contains the document-space point.
 - `LSvgImage:getElementBounds(id) -> table`: Returns the axis-aligned bounding box `{min_x, min_y, max_x, max_y}` of the element.
 - `LSvgImage:getElementChildren(id) -> table`: Returns a sequential table of direct child element IDs for the given group element.
 - `LSvgImage:getElementColor(id) -> table`: Returns the current RGBA color override `{r, g, b, a}` table for the element.

@@ -176,6 +176,7 @@ impl World {
         self.body_altitudes.remove(&id);
     }
 
+    /// Sample terrain height at world-space X/Y, defaulting to zero without a layer.
     pub(crate) fn sample_ground_height(&self, x: f32, y: f32) -> Option<f32> {
         match &self.altitude_layer {
             Some(layer) => layer.sample_height(x, y).ok(),
@@ -183,6 +184,7 @@ impl World {
         }
     }
 
+    /// Return whether two closed altitude intervals overlap.
     pub(crate) fn altitude_intervals_overlap(
         &self,
         a_min: f32,
@@ -193,6 +195,7 @@ impl World {
         a_min <= b_max && b_min <= a_max
     }
 
+    /// Compute the swept world-space Z interval at a movement-safe fraction.
     pub(crate) fn moving_world_z_range(
         &self,
         z: f32,
@@ -204,6 +207,7 @@ impl World {
         (z_min, z_min + height.max(0.0))
     }
 
+    /// Build an altitude hit payload for a body collision at an impact point.
     pub(crate) fn altitude_hit_for_body(
         &self,
         body_id: usize,
@@ -227,6 +231,7 @@ impl World {
         })
     }
 
+    /// Trace a sampled ballistic arc and return the first 2.5D collision, if any.
     pub fn try_cast_ballistic_arc(
         &self,
         options: &BallisticArcOptions,
@@ -296,6 +301,7 @@ impl World {
         })
     }
 
+    /// Spawn a simulated ballistic projectile and return its slot id.
     pub fn spawn_ballistic_projectile(
         &mut self,
         options: BallisticProjectileOptions,
@@ -326,12 +332,14 @@ impl World {
         Ok(id)
     }
 
+    /// Return a live ballistic projectile by id without removing it.
     pub fn get_ballistic_projectile(&self, id: usize) -> Option<&BallisticProjectile> {
         self.ballistic_projectiles
             .get(id)
             .and_then(|slot| slot.as_ref())
     }
 
+    /// Remove a ballistic projectile slot, returning true when one existed.
     pub fn remove_ballistic_projectile(&mut self, id: usize) -> bool {
         match self.ballistic_projectiles.get_mut(id) {
             Some(slot) if slot.is_some() => {
@@ -342,14 +350,17 @@ impl World {
         }
     }
 
+    /// Return queued projectile hit records without clearing them.
     pub fn ballistic_projectile_hits(&self) -> &[AltitudeHit] {
         &self.ballistic_projectile_hits
     }
 
+    /// Drain and return queued projectile hit records.
     pub fn take_ballistic_projectile_hits(&mut self) -> Vec<AltitudeHit> {
         self.ballistic_projectile_hits.drain(..).collect()
     }
 
+    /// Advance per-body altitude state by `dt` seconds.
     pub(crate) fn step_body_altitudes(&mut self, dt: f32) {
         let body_ids: Vec<usize> = self.body_altitudes.keys().copied().collect();
         for id in body_ids {
@@ -448,6 +459,7 @@ impl World {
         Ok((vx, vy, vz))
     }
 
+    /// Advance all active ballistic projectiles by `dt` seconds and queue impacts.
     pub(crate) fn step_ballistic_projectiles(&mut self, dt: f32) {
         let projectile_ids: Vec<usize> = self
             .ballistic_projectiles

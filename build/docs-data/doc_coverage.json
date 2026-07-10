@@ -1,711 +1,26 @@
 {
-  "generated_at": "2026-07-09T15:04:55.842203+00:00",
+  "generated_at": "2026-07-09T19:35:09.133728+00:00",
   "summary": {
     "rust": {
-      "total": 9562,
-      "covered": 9510,
-      "missing": 52,
-      "pct": 99.5
+      "total": 9566,
+      "covered": 9566,
+      "missing": 0,
+      "pct": 100.0
     },
     "lua_api": {
-      "total": 239,
-      "covered": 215,
-      "missing": 24,
-      "pct": 90.0
+      "total": 248,
+      "covered": 248,
+      "missing": 0,
+      "pct": 100.0
     },
     "total": {
-      "total": 9801,
-      "covered": 9725,
-      "missing": 76,
-      "pct": 99.2
+      "total": 9814,
+      "covered": 9814,
+      "missing": 0,
+      "pct": 100.0
     }
   },
-  "missing": [
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/squad.rs",
-      "line": 366,
-      "kind": "fn",
-      "name": "next_path_request_version",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/squad.rs",
-      "line": 372,
-      "kind": "fn",
-      "name": "default_path_request_owner_id",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "dialog",
-      "file": "src/dialog/story.rs",
-      "line": 15,
-      "kind": "fn",
-      "name": "as_bool",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "dialog",
-      "file": "src/dialog/story.rs",
-      "line": 89,
-      "kind": "fn",
-      "name": "compile",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "dialog",
-      "file": "src/dialog/story.rs",
-      "line": 105,
-      "kind": "fn",
-      "name": "start",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "dialog",
-      "file": "src/dialog/story.rs",
-      "line": 120,
-      "kind": "fn",
-      "name": "can_continue",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "dialog",
-      "file": "src/dialog/story.rs",
-      "line": 124,
-      "kind": "fn",
-      "name": "continue_line",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "dialog",
-      "file": "src/dialog/story.rs",
-      "line": 168,
-      "kind": "fn",
-      "name": "continue_all",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "dialog",
-      "file": "src/dialog/story.rs",
-      "line": 178,
-      "kind": "fn",
-      "name": "choices",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "dialog",
-      "file": "src/dialog/story.rs",
-      "line": 185,
-      "kind": "fn",
-      "name": "choose",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "dialog",
-      "file": "src/dialog/story.rs",
-      "line": 208,
-      "kind": "fn",
-      "name": "goto_knot",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "dialog",
-      "file": "src/dialog/story.rs",
-      "line": 220,
-      "kind": "fn",
-      "name": "set_variable",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "dialog",
-      "file": "src/dialog/story.rs",
-      "line": 224,
-      "kind": "fn",
-      "name": "get_variable",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "dialog",
-      "file": "src/dialog/story.rs",
-      "line": 228,
-      "kind": "fn",
-      "name": "variable_names",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "dialog",
-      "file": "src/dialog/story.rs",
-      "line": 234,
-      "kind": "fn",
-      "name": "visit_count",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "dialog",
-      "file": "src/dialog/story.rs",
-      "line": 238,
-      "kind": "fn",
-      "name": "snapshot_state",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "dialog",
-      "file": "src/dialog/story.rs",
-      "line": 249,
-      "kind": "fn",
-      "name": "restore_state",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "lua_api",
-      "file": "src/lua_api/effect_api.rs",
-      "line": 340,
-      "kind": "fn",
-      "name": "effect_passes",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "lua_api",
-      "file": "src/lua_api/pathfind_api.rs",
-      "line": 48,
-      "kind": "fn",
-      "name": "next_async_path_request_id",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "lua_api",
-      "file": "src/lua_api/pathfind_api.rs",
-      "line": 52,
-      "kind": "fn",
-      "name": "submit_async_query",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "lua_api",
-      "file": "src/lua_api/pathfind_api.rs",
-      "line": 509,
-      "kind": "struct",
-      "name": "LuaNavGrid",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "lua_api",
-      "file": "src/lua_api/pathfind_api.rs",
-      "line": 516,
-      "kind": "fn",
-      "name": "cloned_grid",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "lua_api",
-      "file": "src/lua_api/pathfind_api.rs",
-      "line": 520,
-      "kind": "fn",
-      "name": "dimensions",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "lua_api",
-      "file": "src/lua_api/pathfind_api.rs",
-      "line": 524,
-      "kind": "fn",
-      "name": "footprint",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "pathfind",
-      "file": "src/pathfind/nav_grid.rs",
-      "line": 507,
-      "kind": "fn",
-      "name": "is_walkable_spec",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "pathfind",
-      "file": "src/pathfind/unit_pathfinder.rs",
-      "line": 473,
-      "kind": "fn",
-      "name": "find_paths_for_pairs_spec",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "physics",
-      "file": "src/physics/world/altitude.rs",
-      "line": 179,
-      "kind": "fn",
-      "name": "sample_ground_height",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "physics",
-      "file": "src/physics/world/altitude.rs",
-      "line": 186,
-      "kind": "fn",
-      "name": "altitude_intervals_overlap",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "physics",
-      "file": "src/physics/world/altitude.rs",
-      "line": 196,
-      "kind": "fn",
-      "name": "moving_world_z_range",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "physics",
-      "file": "src/physics/world/altitude.rs",
-      "line": 207,
-      "kind": "fn",
-      "name": "altitude_hit_for_body",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "physics",
-      "file": "src/physics/world/altitude.rs",
-      "line": 230,
-      "kind": "fn",
-      "name": "try_cast_ballistic_arc",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "physics",
-      "file": "src/physics/world/altitude.rs",
-      "line": 299,
-      "kind": "fn",
-      "name": "spawn_ballistic_projectile",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "physics",
-      "file": "src/physics/world/altitude.rs",
-      "line": 329,
-      "kind": "fn",
-      "name": "get_ballistic_projectile",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "physics",
-      "file": "src/physics/world/altitude.rs",
-      "line": 335,
-      "kind": "fn",
-      "name": "remove_ballistic_projectile",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "physics",
-      "file": "src/physics/world/altitude.rs",
-      "line": 345,
-      "kind": "fn",
-      "name": "ballistic_projectile_hits",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "physics",
-      "file": "src/physics/world/altitude.rs",
-      "line": 349,
-      "kind": "fn",
-      "name": "take_ballistic_projectile_hits",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "physics",
-      "file": "src/physics/world/altitude.rs",
-      "line": 353,
-      "kind": "fn",
-      "name": "step_body_altitudes",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "physics",
-      "file": "src/physics/world/altitude.rs",
-      "line": 451,
-      "kind": "fn",
-      "name": "step_ballistic_projectiles",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "scene",
-      "file": "src/scene/object_container.rs",
-      "line": 29,
-      "kind": "fn",
-      "name": "add",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "scene",
-      "file": "src/scene/object_container.rs",
-      "line": 34,
-      "kind": "fn",
-      "name": "define_group",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "scene",
-      "file": "src/scene/object_container.rs",
-      "line": 49,
-      "kind": "fn",
-      "name": "get_group_bit",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "scene",
-      "file": "src/scene/object_container.rs",
-      "line": 53,
-      "kind": "fn",
-      "name": "set_group_enabled",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "scene",
-      "file": "src/scene/object_container.rs",
-      "line": 64,
-      "kind": "fn",
-      "name": "is_group_enabled",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "scene",
-      "file": "src/scene/object_container.rs",
-      "line": 77,
-      "kind": "fn",
-      "name": "remove",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "scene",
-      "file": "src/scene/object_container.rs",
-      "line": 93,
-      "kind": "fn",
-      "name": "clear",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "scene",
-      "file": "src/scene/object_container.rs",
-      "line": 100,
-      "kind": "fn",
-      "name": "update",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "scene",
-      "file": "src/scene/object_container.rs",
-      "line": 112,
-      "kind": "fn",
-      "name": "process_physics",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "scene",
-      "file": "src/scene/object_container.rs",
-      "line": 126,
-      "kind": "fn",
-      "name": "draw",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "scene",
-      "file": "src/scene/object_container.rs",
-      "line": 139,
-      "kind": "fn",
-      "name": "count",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "scene",
-      "file": "src/scene/object_container.rs",
-      "line": 143,
-      "kind": "fn",
-      "name": "objects_table",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "scene",
-      "file": "src/scene/object_container.rs",
-      "line": 151,
-      "kind": "fn",
-      "name": "by_layer",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "scene",
-      "file": "src/scene/object_container.rs",
-      "line": 162,
-      "kind": "fn",
-      "name": "has",
-      "has_doc": false
-    },
-    {
-      "source": "lua_api",
-      "module": "pathfind_api",
-      "file": "src/lua_api/pathfind_api.rs",
-      "line": 458,
-      "kind": "fn",
-      "name": "paths",
-      "has_doc": false
-    },
-    {
-      "source": "lua_api",
-      "module": "pathfind_api",
-      "file": "src/lua_api/pathfind_api.rs",
-      "line": 459,
-      "kind": "fn",
-      "name": "paths",
-      "has_doc": false
-    },
-    {
-      "source": "lua_api",
-      "module": "physics_api",
-      "file": "src/lua_api/physics_api.rs",
-      "line": 770,
-      "kind": "fn",
-      "name": "travelTime",
-      "has_doc": false
-    },
-    {
-      "source": "lua_api",
-      "module": "physics_api",
-      "file": "src/lua_api/physics_api.rs",
-      "line": 771,
-      "kind": "fn",
-      "name": "expired",
-      "has_doc": false
-    },
-    {
-      "source": "lua_api",
-      "module": "physics_api",
-      "file": "src/lua_api/physics_api.rs",
-      "line": 919,
-      "kind": "fn",
-      "name": "toi",
-      "has_doc": false
-    },
-    {
-      "source": "lua_api",
-      "module": "physics_api",
-      "file": "src/lua_api/physics_api.rs",
-      "line": 920,
-      "kind": "fn",
-      "name": "safeFraction",
-      "has_doc": false
-    },
-    {
-      "source": "lua_api",
-      "module": "physics_api",
-      "file": "src/lua_api/physics_api.rs",
-      "line": 923,
-      "kind": "fn",
-      "name": "hit",
-      "has_doc": false
-    },
-    {
-      "source": "lua_api",
-      "module": "physics_api",
-      "file": "src/lua_api/physics_api.rs",
-      "line": 924,
-      "kind": "fn",
-      "name": "x",
-      "has_doc": false
-    },
-    {
-      "source": "lua_api",
-      "module": "physics_api",
-      "file": "src/lua_api/physics_api.rs",
-      "line": 925,
-      "kind": "fn",
-      "name": "y",
-      "has_doc": false
-    },
-    {
-      "source": "lua_api",
-      "module": "physics_api",
-      "file": "src/lua_api/physics_api.rs",
-      "line": 926,
-      "kind": "fn",
-      "name": "travel",
-      "has_doc": false
-    },
-    {
-      "source": "lua_api",
-      "module": "physics_api",
-      "file": "src/lua_api/physics_api.rs",
-      "line": 927,
-      "kind": "fn",
-      "name": "remaining",
-      "has_doc": false
-    },
-    {
-      "source": "lua_api",
-      "module": "physics_api",
-      "file": "src/lua_api/physics_api.rs",
-      "line": 928,
-      "kind": "fn",
-      "name": "hitBody",
-      "has_doc": false
-    },
-    {
-      "source": "lua_api",
-      "module": "physics_api",
-      "file": "src/lua_api/physics_api.rs",
-      "line": 929,
-      "kind": "fn",
-      "name": "bodyId",
-      "has_doc": false
-    },
-    {
-      "source": "lua_api",
-      "module": "physics_api",
-      "file": "src/lua_api/physics_api.rs",
-      "line": 930,
-      "kind": "fn",
-      "name": "normalX",
-      "has_doc": false
-    },
-    {
-      "source": "lua_api",
-      "module": "physics_api",
-      "file": "src/lua_api/physics_api.rs",
-      "line": 931,
-      "kind": "fn",
-      "name": "normalY",
-      "has_doc": false
-    },
-    {
-      "source": "lua_api",
-      "module": "physics_api",
-      "file": "src/lua_api/physics_api.rs",
-      "line": 932,
-      "kind": "fn",
-      "name": "toi",
-      "has_doc": false
-    },
-    {
-      "source": "lua_api",
-      "module": "physics_api",
-      "file": "src/lua_api/physics_api.rs",
-      "line": 933,
-      "kind": "fn",
-      "name": "safeFraction",
-      "has_doc": false
-    },
-    {
-      "source": "lua_api",
-      "module": "physics_api",
-      "file": "src/lua_api/physics_api.rs",
-      "line": 1019,
-      "kind": "fn",
-      "name": "heights",
-      "has_doc": false
-    },
-    {
-      "source": "lua_api",
-      "module": "physics_api",
-      "file": "src/lua_api/physics_api.rs",
-      "line": 1020,
-      "kind": "fn",
-      "name": "clearances",
-      "has_doc": false
-    },
-    {
-      "source": "lua_api",
-      "module": "physics_api",
-      "file": "src/lua_api/physics_api.rs",
-      "line": 1184,
-      "kind": "fn",
-      "name": "radius",
-      "has_doc": false
-    },
-    {
-      "source": "lua_api",
-      "module": "physics_api",
-      "file": "src/lua_api/physics_api.rs",
-      "line": 1185,
-      "kind": "fn",
-      "name": "height",
-      "has_doc": false
-    },
-    {
-      "source": "lua_api",
-      "module": "physics_api",
-      "file": "src/lua_api/physics_api.rs",
-      "line": 1186,
-      "kind": "fn",
-      "name": "gravity",
-      "has_doc": false
-    },
-    {
-      "source": "lua_api",
-      "module": "physics_api",
-      "file": "src/lua_api/physics_api.rs",
-      "line": 1187,
-      "kind": "fn",
-      "name": "timeRemaining",
-      "has_doc": false
-    },
-    {
-      "source": "lua_api",
-      "module": "physics_api",
-      "file": "src/lua_api/physics_api.rs",
-      "line": 1188,
-      "kind": "fn",
-      "name": "sampleDt",
-      "has_doc": false
-    }
-  ],
+  "missing": [],
   "items": [
     {
       "source": "rust",
@@ -4221,19 +3536,19 @@
       "source": "rust",
       "module": "ai",
       "file": "src/ai/squad.rs",
-      "line": 366,
+      "line": 367,
       "kind": "fn",
       "name": "next_path_request_version",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "ai",
       "file": "src/ai/squad.rs",
-      "line": 372,
+      "line": 374,
       "kind": "fn",
       "name": "default_path_request_owner_id",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
@@ -19719,16 +19034,16 @@
       "source": "rust",
       "module": "dialog",
       "file": "src/dialog/story.rs",
-      "line": 15,
+      "line": 16,
       "kind": "fn",
       "name": "as_bool",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "dialog",
       "file": "src/dialog/story.rs",
-      "line": 66,
+      "line": 67,
       "kind": "struct",
       "name": "StoryChoice",
       "has_doc": true
@@ -19737,7 +19052,7 @@
       "source": "rust",
       "module": "dialog",
       "file": "src/dialog/story.rs",
-      "line": 77,
+      "line": 78,
       "kind": "struct",
       "name": "DialogStory",
       "has_doc": true
@@ -19746,28 +19061,19 @@
       "source": "rust",
       "module": "dialog",
       "file": "src/dialog/story.rs",
-      "line": 89,
+      "line": 91,
       "kind": "fn",
       "name": "compile",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "dialog",
       "file": "src/dialog/story.rs",
-      "line": 105,
+      "line": 108,
       "kind": "fn",
       "name": "start",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "dialog",
-      "file": "src/dialog/story.rs",
-      "line": 120,
-      "kind": "fn",
-      "name": "can_continue",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
@@ -19775,26 +19081,26 @@
       "file": "src/dialog/story.rs",
       "line": 124,
       "kind": "fn",
-      "name": "continue_line",
-      "has_doc": false
+      "name": "can_continue",
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "dialog",
       "file": "src/dialog/story.rs",
-      "line": 168,
+      "line": 129,
+      "kind": "fn",
+      "name": "continue_line",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "dialog",
+      "file": "src/dialog/story.rs",
+      "line": 174,
       "kind": "fn",
       "name": "continue_all",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "dialog",
-      "file": "src/dialog/story.rs",
-      "line": 178,
-      "kind": "fn",
-      "name": "choices",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
@@ -19802,77 +19108,86 @@
       "file": "src/dialog/story.rs",
       "line": 185,
       "kind": "fn",
-      "name": "choose",
-      "has_doc": false
+      "name": "choices",
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "dialog",
       "file": "src/dialog/story.rs",
-      "line": 208,
+      "line": 193,
+      "kind": "fn",
+      "name": "choose",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "dialog",
+      "file": "src/dialog/story.rs",
+      "line": 217,
       "kind": "fn",
       "name": "goto_knot",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "dialog",
       "file": "src/dialog/story.rs",
-      "line": 220,
+      "line": 230,
       "kind": "fn",
       "name": "set_variable",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "dialog",
       "file": "src/dialog/story.rs",
-      "line": 224,
+      "line": 235,
       "kind": "fn",
       "name": "get_variable",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "dialog",
       "file": "src/dialog/story.rs",
-      "line": 228,
+      "line": 240,
       "kind": "fn",
       "name": "variable_names",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "dialog",
       "file": "src/dialog/story.rs",
-      "line": 234,
+      "line": 247,
       "kind": "fn",
       "name": "visit_count",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "dialog",
       "file": "src/dialog/story.rs",
-      "line": 238,
+      "line": 252,
       "kind": "fn",
       "name": "snapshot_state",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "dialog",
       "file": "src/dialog/story.rs",
-      "line": 249,
+      "line": 264,
       "kind": "fn",
       "name": "restore_state",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "dialog",
       "file": "src/dialog/story.rs",
-      "line": 333,
+      "line": 348,
       "kind": "struct",
       "name": "StorySnapshot",
       "has_doc": true
@@ -37728,16 +37043,16 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/effect_api.rs",
-      "line": 340,
+      "line": 341,
       "kind": "fn",
       "name": "effect_passes",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/effect_api.rs",
-      "line": 345,
+      "line": 346,
       "kind": "fn",
       "name": "effect_passes_for_api",
       "has_doc": true
@@ -37746,7 +37061,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/effect_api.rs",
-      "line": 622,
+      "line": 623,
       "kind": "struct",
       "name": "LuaImageEffect",
       "has_doc": true
@@ -37755,7 +37070,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/effect_api.rs",
-      "line": 738,
+      "line": 739,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -38601,61 +37916,61 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 48,
+      "line": 49,
       "kind": "fn",
       "name": "next_async_path_request_id",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 52,
+      "line": 54,
       "kind": "fn",
       "name": "submit_async_query",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 509,
+      "line": 514,
       "kind": "struct",
       "name": "LuaNavGrid",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 516,
+      "line": 522,
       "kind": "fn",
       "name": "cloned_grid",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 520,
+      "line": 527,
       "kind": "fn",
       "name": "dimensions",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 524,
+      "line": 532,
       "kind": "fn",
       "name": "footprint",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 946,
+      "line": 954,
       "kind": "struct",
       "name": "LuaUnitPathfinder",
       "has_doc": true
@@ -38664,7 +37979,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 1468,
+      "line": 1476,
       "kind": "struct",
       "name": "LuaFlowField",
       "has_doc": true
@@ -38673,7 +37988,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 1690,
+      "line": 1698,
       "kind": "struct",
       "name": "LuaPathGrid",
       "has_doc": true
@@ -38682,7 +37997,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 1829,
+      "line": 1837,
       "kind": "struct",
       "name": "LuaAiFlowField",
       "has_doc": true
@@ -38691,7 +38006,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 1912,
+      "line": 1920,
       "kind": "struct",
       "name": "LuaIsoGrid",
       "has_doc": true
@@ -38700,7 +38015,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 2007,
+      "line": 2015,
       "kind": "struct",
       "name": "LuaHexGrid",
       "has_doc": true
@@ -38709,7 +38024,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 2156,
+      "line": 2164,
       "kind": "struct",
       "name": "LuaJpsGrid",
       "has_doc": true
@@ -38718,7 +38033,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 2230,
+      "line": 2238,
       "kind": "struct",
       "name": "LuaNavMesh",
       "has_doc": true
@@ -38727,7 +38042,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 3310,
+      "line": 3318,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -38736,7 +38051,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 4273,
+      "line": 4281,
       "kind": "struct",
       "name": "LuaGoalMap",
       "has_doc": true
@@ -38754,7 +38069,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1673,
+      "line": 1704,
       "kind": "struct",
       "name": "LuaWorld",
       "has_doc": true
@@ -38763,7 +38078,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1681,
+      "line": 1712,
       "kind": "fn",
       "name": "world_handle",
       "has_doc": true
@@ -38772,7 +38087,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1687,
+      "line": 1718,
       "kind": "fn",
       "name": "lua_body_from_body",
       "has_doc": true
@@ -38781,7 +38096,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 3765,
+      "line": 3796,
       "kind": "struct",
       "name": "LuaFlowField",
       "has_doc": true
@@ -38790,7 +38105,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 3933,
+      "line": 3964,
       "kind": "struct",
       "name": "LuaZone",
       "has_doc": true
@@ -38799,7 +38114,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 4181,
+      "line": 4212,
       "kind": "struct",
       "name": "LuaAltitudeLayer",
       "has_doc": true
@@ -38808,7 +38123,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 4350,
+      "line": 4381,
       "kind": "struct",
       "name": "LuaTerrain",
       "has_doc": true
@@ -38817,7 +38132,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 4657,
+      "line": 4688,
       "kind": "struct",
       "name": "LuaLiquidMap",
       "has_doc": true
@@ -38826,7 +38141,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 4842,
+      "line": 4873,
       "kind": "struct",
       "name": "LuaBody",
       "has_doc": true
@@ -38835,7 +38150,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 4848,
+      "line": 4879,
       "kind": "fn",
       "name": "world_handle",
       "has_doc": true
@@ -38844,7 +38159,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 4853,
+      "line": 4884,
       "kind": "fn",
       "name": "body_id",
       "has_doc": true
@@ -38853,7 +38168,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 5533,
+      "line": 5564,
       "kind": "struct",
       "name": "LuaPhysicsShapeData",
       "has_doc": true
@@ -38862,7 +38177,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 5547,
+      "line": 5578,
       "kind": "struct",
       "name": "LuaPhysicsShape",
       "has_doc": true
@@ -38871,7 +38186,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 5552,
+      "line": 5583,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -38880,7 +38195,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 5565,
+      "line": 5596,
       "kind": "fn",
       "name": "data",
       "has_doc": true
@@ -38889,7 +38204,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 5735,
+      "line": 5766,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -39402,7 +38717,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/spine_api.rs",
-      "line": 349,
+      "line": 368,
       "kind": "struct",
       "name": "LuaSkeleton",
       "has_doc": true
@@ -39411,7 +38726,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/spine_api.rs",
-      "line": 908,
+      "line": 928,
       "kind": "struct",
       "name": "LuaSkeletonAnimation",
       "has_doc": true
@@ -39420,7 +38735,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/spine_api.rs",
-      "line": 1078,
+      "line": 1098,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -39501,7 +38816,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/svg_api.rs",
-      "line": 414,
+      "line": 440,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -39771,7 +39086,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/ui_api.rs",
-      "line": 7428,
+      "line": 7438,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -51003,10 +50318,10 @@
       "source": "rust",
       "module": "pathfind",
       "file": "src/pathfind/nav_grid.rs",
-      "line": 507,
+      "line": 508,
       "kind": "fn",
       "name": "is_walkable_spec",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
@@ -52002,10 +51317,10 @@
       "source": "rust",
       "module": "pathfind",
       "file": "src/pathfind/unit_pathfinder.rs",
-      "line": 473,
+      "line": 474,
       "kind": "fn",
       "name": "find_paths_for_pairs_spec",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
@@ -56394,109 +55709,109 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world/altitude.rs",
-      "line": 179,
+      "line": 180,
       "kind": "fn",
       "name": "sample_ground_height",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world/altitude.rs",
-      "line": 186,
+      "line": 188,
       "kind": "fn",
       "name": "altitude_intervals_overlap",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world/altitude.rs",
-      "line": 196,
+      "line": 199,
       "kind": "fn",
       "name": "moving_world_z_range",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world/altitude.rs",
-      "line": 207,
+      "line": 211,
       "kind": "fn",
       "name": "altitude_hit_for_body",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world/altitude.rs",
-      "line": 230,
+      "line": 235,
       "kind": "fn",
       "name": "try_cast_ballistic_arc",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world/altitude.rs",
-      "line": 299,
+      "line": 305,
       "kind": "fn",
       "name": "spawn_ballistic_projectile",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world/altitude.rs",
-      "line": 329,
+      "line": 336,
       "kind": "fn",
       "name": "get_ballistic_projectile",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world/altitude.rs",
-      "line": 335,
+      "line": 343,
       "kind": "fn",
       "name": "remove_ballistic_projectile",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world/altitude.rs",
-      "line": 345,
+      "line": 354,
       "kind": "fn",
       "name": "ballistic_projectile_hits",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world/altitude.rs",
-      "line": 349,
+      "line": 359,
       "kind": "fn",
       "name": "take_ballistic_projectile_hits",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world/altitude.rs",
-      "line": 353,
+      "line": 364,
       "kind": "fn",
       "name": "step_body_altitudes",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world/altitude.rs",
-      "line": 451,
+      "line": 463,
       "kind": "fn",
       "name": "step_ballistic_projectiles",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
@@ -72099,64 +71414,55 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/object_container.rs",
-      "line": 29,
+      "line": 30,
       "kind": "fn",
       "name": "add",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "scene",
       "file": "src/scene/object_container.rs",
-      "line": 34,
+      "line": 36,
       "kind": "fn",
       "name": "define_group",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "scene",
       "file": "src/scene/object_container.rs",
-      "line": 49,
+      "line": 52,
       "kind": "fn",
       "name": "get_group_bit",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "scene",
       "file": "src/scene/object_container.rs",
-      "line": 53,
+      "line": 57,
       "kind": "fn",
       "name": "set_group_enabled",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "scene",
       "file": "src/scene/object_container.rs",
-      "line": 64,
+      "line": 69,
       "kind": "fn",
       "name": "is_group_enabled",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "scene",
       "file": "src/scene/object_container.rs",
-      "line": 77,
+      "line": 83,
       "kind": "fn",
       "name": "remove",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "scene",
-      "file": "src/scene/object_container.rs",
-      "line": 93,
-      "kind": "fn",
-      "name": "clear",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
@@ -72164,62 +71470,71 @@
       "file": "src/scene/object_container.rs",
       "line": 100,
       "kind": "fn",
-      "name": "update",
-      "has_doc": false
+      "name": "clear",
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "scene",
       "file": "src/scene/object_container.rs",
-      "line": 112,
+      "line": 108,
+      "kind": "fn",
+      "name": "update",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "scene",
+      "file": "src/scene/object_container.rs",
+      "line": 121,
       "kind": "fn",
       "name": "process_physics",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "scene",
       "file": "src/scene/object_container.rs",
-      "line": 126,
+      "line": 136,
       "kind": "fn",
       "name": "draw",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "scene",
       "file": "src/scene/object_container.rs",
-      "line": 139,
+      "line": 150,
       "kind": "fn",
       "name": "count",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "scene",
       "file": "src/scene/object_container.rs",
-      "line": 143,
+      "line": 155,
       "kind": "fn",
       "name": "objects_table",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "scene",
       "file": "src/scene/object_container.rs",
-      "line": 151,
+      "line": 164,
       "kind": "fn",
       "name": "by_layer",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "scene",
       "file": "src/scene/object_container.rs",
-      "line": 162,
+      "line": 176,
       "kind": "fn",
       "name": "has",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
@@ -73359,7 +72674,7 @@
       "source": "rust",
       "module": "spine",
       "file": "src/spine/attachment.rs",
-      "line": 8,
+      "line": 10,
       "kind": "enum",
       "name": "AttachmentSourceKind",
       "has_doc": true
@@ -73368,7 +72683,7 @@
       "source": "rust",
       "module": "spine",
       "file": "src/spine/attachment.rs",
-      "line": 19,
+      "line": 23,
       "kind": "fn",
       "name": "parse",
       "has_doc": true
@@ -73377,7 +72692,7 @@
       "source": "rust",
       "module": "spine",
       "file": "src/spine/attachment.rs",
-      "line": 29,
+      "line": 34,
       "kind": "fn",
       "name": "as_str",
       "has_doc": true
@@ -73386,7 +72701,7 @@
       "source": "rust",
       "module": "spine",
       "file": "src/spine/attachment.rs",
-      "line": 40,
+      "line": 46,
       "kind": "struct",
       "name": "AttachmentSource",
       "has_doc": true
@@ -73485,7 +72800,7 @@
       "source": "rust",
       "module": "spine",
       "file": "src/spine/render.rs",
-      "line": 15,
+      "line": 16,
       "kind": "fn",
       "name": "generate_render_commands",
       "has_doc": true
@@ -74799,7 +74114,25 @@
       "source": "rust",
       "module": "svg",
       "file": "src/svg/svg_image.rs",
-      "line": 20,
+      "line": 21,
+      "kind": "struct",
+      "name": "SvgCachedMesh",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "svg",
+      "file": "src/svg/svg_image.rs",
+      "line": 32,
+      "kind": "struct",
+      "name": "SvgPathMeshCache",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "svg",
+      "file": "src/svg/svg_image.rs",
+      "line": 41,
       "kind": "struct",
       "name": "SvgPath",
       "has_doc": true
@@ -74808,7 +74141,7 @@
       "source": "rust",
       "module": "svg",
       "file": "src/svg/svg_image.rs",
-      "line": 29,
+      "line": 51,
       "kind": "struct",
       "name": "SvgElement",
       "has_doc": true
@@ -74817,7 +74150,7 @@
       "source": "rust",
       "module": "svg",
       "file": "src/svg/svg_image.rs",
-      "line": 50,
+      "line": 72,
       "kind": "struct",
       "name": "SvgImage",
       "has_doc": true
@@ -74826,7 +74159,7 @@
       "source": "rust",
       "module": "svg",
       "file": "src/svg/svg_image.rs",
-      "line": 60,
+      "line": 82,
       "kind": "fn",
       "name": "from_bytes",
       "has_doc": true
@@ -74835,7 +74168,7 @@
       "source": "rust",
       "module": "svg",
       "file": "src/svg/svg_image.rs",
-      "line": 209,
+      "line": 232,
       "kind": "fn",
       "name": "render",
       "has_doc": true
@@ -74844,7 +74177,7 @@
       "source": "rust",
       "module": "svg",
       "file": "src/svg/svg_image.rs",
-      "line": 308,
+      "line": 370,
       "kind": "fn",
       "name": "get_element_accumulated_transform",
       "has_doc": true
@@ -74853,7 +74186,7 @@
       "source": "rust",
       "module": "svg",
       "file": "src/svg/svg_image.rs",
-      "line": 331,
+      "line": 393,
       "kind": "fn",
       "name": "get_element_points",
       "has_doc": true
@@ -74862,7 +74195,7 @@
       "source": "rust",
       "module": "svg",
       "file": "src/svg/svg_image.rs",
-      "line": 442,
+      "line": 504,
       "kind": "fn",
       "name": "get_adjacencies",
       "has_doc": true
@@ -74871,7 +74204,25 @@
       "source": "rust",
       "module": "svg",
       "file": "src/svg/svg_image.rs",
-      "line": 511,
+      "line": 573,
+      "kind": "fn",
+      "name": "contains_point",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "svg",
+      "file": "src/svg/svg_image.rs",
+      "line": 587,
+      "kind": "fn",
+      "name": "get_element_at_point",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "svg",
+      "file": "src/svg/svg_image.rs",
+      "line": 600,
       "kind": "fn",
       "name": "cache_to_canvas",
       "has_doc": true
@@ -74880,7 +74231,7 @@
       "source": "rust",
       "module": "svg",
       "file": "src/svg/svg_image.rs",
-      "line": 619,
+      "line": 708,
       "kind": "fn",
       "name": "get_dimensions",
       "has_doc": true
@@ -74889,7 +74240,7 @@
       "source": "rust",
       "module": "svg",
       "file": "src/svg/svg_image.rs",
-      "line": 624,
+      "line": 713,
       "kind": "fn",
       "name": "get_element_count",
       "has_doc": true
@@ -74898,7 +74249,7 @@
       "source": "rust",
       "module": "svg",
       "file": "src/svg/svg_image.rs",
-      "line": 632,
+      "line": 721,
       "kind": "fn",
       "name": "get_element_bounds",
       "has_doc": true
@@ -74907,7 +74258,7 @@
       "source": "rust",
       "module": "svg",
       "file": "src/svg/svg_image.rs",
-      "line": 659,
+      "line": 748,
       "kind": "fn",
       "name": "get_element_color",
       "has_doc": true
@@ -74916,7 +74267,7 @@
       "source": "rust",
       "module": "svg",
       "file": "src/svg/svg_image.rs",
-      "line": 664,
+      "line": 753,
       "kind": "fn",
       "name": "get_element_visible",
       "has_doc": true
@@ -74925,7 +74276,7 @@
       "source": "rust",
       "module": "svg",
       "file": "src/svg/svg_image.rs",
-      "line": 672,
+      "line": 761,
       "kind": "fn",
       "name": "get_element_transform",
       "has_doc": true
@@ -74934,7 +74285,7 @@
       "source": "rust",
       "module": "svg",
       "file": "src/svg/svg_image.rs",
-      "line": 687,
+      "line": 776,
       "kind": "fn",
       "name": "reset_element_transform",
       "has_doc": true
@@ -74943,7 +74294,7 @@
       "source": "rust",
       "module": "svg",
       "file": "src/svg/svg_image.rs",
-      "line": 701,
+      "line": 790,
       "kind": "fn",
       "name": "reset_element_color",
       "has_doc": true
@@ -74952,7 +74303,7 @@
       "source": "rust",
       "module": "svg",
       "file": "src/svg/svg_image.rs",
-      "line": 713,
+      "line": 802,
       "kind": "fn",
       "name": "get_element_parent",
       "has_doc": true
@@ -74961,7 +74312,7 @@
       "source": "rust",
       "module": "svg",
       "file": "src/svg/svg_image.rs",
-      "line": 720,
+      "line": 809,
       "kind": "fn",
       "name": "get_element_children",
       "has_doc": true
@@ -87633,19 +86984,19 @@
       "source": "lua_api",
       "module": "pathfind_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 458,
+      "line": 461,
       "kind": "fn",
       "name": "paths",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "lua_api",
       "module": "pathfind_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 459,
+      "line": 463,
       "kind": "fn",
       "name": "paths",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "lua_api",
@@ -87732,27 +87083,18 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 770,
-      "kind": "fn",
-      "name": "travelTime",
-      "has_doc": false
-    },
-    {
-      "source": "lua_api",
-      "module": "physics_api",
-      "file": "src/lua_api/physics_api.rs",
       "line": 771,
       "kind": "fn",
-      "name": "expired",
-      "has_doc": false
+      "name": "travelTime",
+      "has_doc": true
     },
     {
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 792,
+      "line": 773,
       "kind": "fn",
-      "name": "outgoingDirX",
+      "name": "expired",
       "has_doc": true
     },
     {
@@ -87761,16 +87103,16 @@
       "file": "src/lua_api/physics_api.rs",
       "line": 794,
       "kind": "fn",
-      "name": "outgoingDirY",
+      "name": "outgoingDirX",
       "has_doc": true
     },
     {
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 798,
+      "line": 796,
       "kind": "fn",
-      "name": "outgoingDirX",
+      "name": "outgoingDirY",
       "has_doc": true
     },
     {
@@ -87779,7 +87121,43 @@
       "file": "src/lua_api/physics_api.rs",
       "line": 800,
       "kind": "fn",
+      "name": "outgoingDirX",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 802,
+      "kind": "fn",
       "name": "outgoingDirY",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 913,
+      "kind": "fn",
+      "name": "hit",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 915,
+      "kind": "fn",
+      "name": "x",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 917,
+      "kind": "fn",
+      "name": "y",
       "has_doc": true
     },
     {
@@ -87788,17 +87166,17 @@
       "file": "src/lua_api/physics_api.rs",
       "line": 919,
       "kind": "fn",
-      "name": "toi",
-      "has_doc": false
+      "name": "travel",
+      "has_doc": true
     },
     {
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 920,
+      "line": 921,
       "kind": "fn",
-      "name": "safeFraction",
-      "has_doc": false
+      "name": "remaining",
+      "has_doc": true
     },
     {
       "source": "lua_api",
@@ -87806,17 +87184,8 @@
       "file": "src/lua_api/physics_api.rs",
       "line": 923,
       "kind": "fn",
-      "name": "hit",
-      "has_doc": false
-    },
-    {
-      "source": "lua_api",
-      "module": "physics_api",
-      "file": "src/lua_api/physics_api.rs",
-      "line": 924,
-      "kind": "fn",
-      "name": "x",
-      "has_doc": false
+      "name": "hitBody",
+      "has_doc": true
     },
     {
       "source": "lua_api",
@@ -87824,17 +87193,8 @@
       "file": "src/lua_api/physics_api.rs",
       "line": 925,
       "kind": "fn",
-      "name": "y",
-      "has_doc": false
-    },
-    {
-      "source": "lua_api",
-      "module": "physics_api",
-      "file": "src/lua_api/physics_api.rs",
-      "line": 926,
-      "kind": "fn",
-      "name": "travel",
-      "has_doc": false
+      "name": "bodyId",
+      "has_doc": true
     },
     {
       "source": "lua_api",
@@ -87842,17 +87202,8 @@
       "file": "src/lua_api/physics_api.rs",
       "line": 927,
       "kind": "fn",
-      "name": "remaining",
-      "has_doc": false
-    },
-    {
-      "source": "lua_api",
-      "module": "physics_api",
-      "file": "src/lua_api/physics_api.rs",
-      "line": 928,
-      "kind": "fn",
-      "name": "hitBody",
-      "has_doc": false
+      "name": "normalX",
+      "has_doc": true
     },
     {
       "source": "lua_api",
@@ -87860,17 +87211,8 @@
       "file": "src/lua_api/physics_api.rs",
       "line": 929,
       "kind": "fn",
-      "name": "bodyId",
-      "has_doc": false
-    },
-    {
-      "source": "lua_api",
-      "module": "physics_api",
-      "file": "src/lua_api/physics_api.rs",
-      "line": 930,
-      "kind": "fn",
-      "name": "normalX",
-      "has_doc": false
+      "name": "normalY",
+      "has_doc": true
     },
     {
       "source": "lua_api",
@@ -87878,17 +87220,8 @@
       "file": "src/lua_api/physics_api.rs",
       "line": 931,
       "kind": "fn",
-      "name": "normalY",
-      "has_doc": false
-    },
-    {
-      "source": "lua_api",
-      "module": "physics_api",
-      "file": "src/lua_api/physics_api.rs",
-      "line": 932,
-      "kind": "fn",
       "name": "toi",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "lua_api",
@@ -87897,76 +87230,175 @@
       "line": 933,
       "kind": "fn",
       "name": "safeFraction",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1019,
+      "line": 937,
+      "kind": "fn",
+      "name": "hit",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 939,
+      "kind": "fn",
+      "name": "x",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 941,
+      "kind": "fn",
+      "name": "y",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 943,
+      "kind": "fn",
+      "name": "travel",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 945,
+      "kind": "fn",
+      "name": "remaining",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 947,
+      "kind": "fn",
+      "name": "hitBody",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 949,
+      "kind": "fn",
+      "name": "bodyId",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 951,
+      "kind": "fn",
+      "name": "normalX",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 953,
+      "kind": "fn",
+      "name": "normalY",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 955,
+      "kind": "fn",
+      "name": "toi",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 957,
+      "kind": "fn",
+      "name": "safeFraction",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 1044,
       "kind": "fn",
       "name": "heights",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1020,
+      "line": 1046,
       "kind": "fn",
       "name": "clearances",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1184,
+      "line": 1211,
       "kind": "fn",
       "name": "radius",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1185,
+      "line": 1213,
       "kind": "fn",
       "name": "height",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1186,
+      "line": 1215,
       "kind": "fn",
       "name": "gravity",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1187,
+      "line": 1217,
       "kind": "fn",
       "name": "timeRemaining",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1188,
+      "line": 1219,
       "kind": "fn",
       "name": "sampleDt",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1351,
+      "line": 1382,
       "kind": "fn",
       "name": "bodiesScanned",
       "has_doc": true
@@ -87975,7 +87407,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1353,
+      "line": 1384,
       "kind": "fn",
       "name": "collidersRebuilt",
       "has_doc": true
@@ -87984,7 +87416,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1355,
+      "line": 1386,
       "kind": "fn",
       "name": "zoneChecks",
       "has_doc": true
@@ -87993,7 +87425,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1357,
+      "line": 1388,
       "kind": "fn",
       "name": "flowSamples",
       "has_doc": true
@@ -88002,7 +87434,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1359,
+      "line": 1390,
       "kind": "fn",
       "name": "flowAffectedBodies",
       "has_doc": true
@@ -88011,7 +87443,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1361,
+      "line": 1392,
       "kind": "fn",
       "name": "contacts",
       "has_doc": true
@@ -88020,7 +87452,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1363,
+      "line": 1394,
       "kind": "fn",
       "name": "syncedBodies",
       "has_doc": true
@@ -88029,7 +87461,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1398,
+      "line": 1429,
       "kind": "fn",
       "name": "sources",
       "has_doc": true
@@ -88038,7 +87470,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1418,
+      "line": 1449,
       "kind": "fn",
       "name": "strength",
       "has_doc": true
@@ -88047,7 +87479,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1442,
+      "line": 1473,
       "kind": "fn",
       "name": "priority",
       "has_doc": true
@@ -88056,7 +87488,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1444,
+      "line": 1475,
       "kind": "fn",
       "name": "layerMask",
       "has_doc": true
@@ -88065,7 +87497,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1446,
+      "line": 1477,
       "kind": "fn",
       "name": "maxAccel",
       "has_doc": true
@@ -88074,7 +87506,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1448,
+      "line": 1479,
       "kind": "fn",
       "name": "drag",
       "has_doc": true
@@ -88083,7 +87515,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1452,
+      "line": 1483,
       "kind": "fn",
       "name": "geometry",
       "has_doc": true
@@ -88092,7 +87524,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1454,
+      "line": 1485,
       "kind": "fn",
       "name": "x",
       "has_doc": true
@@ -88101,7 +87533,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1456,
+      "line": 1487,
       "kind": "fn",
       "name": "y",
       "has_doc": true
@@ -88110,7 +87542,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1458,
+      "line": 1489,
       "kind": "fn",
       "name": "w",
       "has_doc": true
@@ -88119,7 +87551,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1460,
+      "line": 1491,
       "kind": "fn",
       "name": "h",
       "has_doc": true
@@ -88128,7 +87560,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1469,
+      "line": 1500,
       "kind": "fn",
       "name": "geometry",
       "has_doc": true
@@ -88137,7 +87569,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1471,
+      "line": 1502,
       "kind": "fn",
       "name": "x",
       "has_doc": true
@@ -88146,7 +87578,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1473,
+      "line": 1504,
       "kind": "fn",
       "name": "y",
       "has_doc": true
@@ -88155,7 +87587,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1475,
+      "line": 1506,
       "kind": "fn",
       "name": "radius",
       "has_doc": true
@@ -88164,7 +87596,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1477,
+      "line": 1508,
       "kind": "fn",
       "name": "innerRadius",
       "has_doc": true
@@ -88173,7 +87605,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1488,
+      "line": 1519,
       "kind": "fn",
       "name": "geometry",
       "has_doc": true
@@ -88182,7 +87614,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1490,
+      "line": 1521,
       "kind": "fn",
       "name": "x",
       "has_doc": true
@@ -88191,7 +87623,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1492,
+      "line": 1523,
       "kind": "fn",
       "name": "y",
       "has_doc": true
@@ -88200,7 +87632,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1494,
+      "line": 1525,
       "kind": "fn",
       "name": "radius",
       "has_doc": true
@@ -88209,7 +87641,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1496,
+      "line": 1527,
       "kind": "fn",
       "name": "innerRadius",
       "has_doc": true
@@ -88218,7 +87650,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1498,
+      "line": 1529,
       "kind": "fn",
       "name": "widthAngle",
       "has_doc": true
@@ -88227,7 +87659,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1503,
+      "line": 1534,
       "kind": "fn",
       "name": "directionVector",
       "has_doc": true
@@ -88236,7 +87668,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1507,
+      "line": 1538,
       "kind": "fn",
       "name": "geometry",
       "has_doc": true
@@ -88245,7 +87677,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1509,
+      "line": 1540,
       "kind": "fn",
       "name": "width",
       "has_doc": true
@@ -88254,7 +87686,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1518,
+      "line": 1549,
       "kind": "fn",
       "name": "points",
       "has_doc": true

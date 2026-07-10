@@ -504,6 +504,7 @@ impl NavGrid {
         img
     }
 
+    /// Return whether a footprint can occupy the zero-based cell origin.
     pub(crate) fn is_walkable_spec(&self, spec: FootprintSpec, x: u32, y: u32) -> bool {
         if let Some(cache) = self.clearance_caches.get(&spec) {
             if cache.built_generation == Some(self.generation) {

@@ -82,7 +82,7 @@ describe("lurek.ui module", function()
         expect_equal(2, label:getFlexShrink())
     end)
 
-    -- @covers lurek.ui.loadLayout
+    -- @covers LTextArea:getPlaceholder
     it("loadLayout accepts Godot-like TOML parity fields in Lua tables", function()
         lurek.ui.loadLayout({
             type = "panel",
@@ -189,33 +189,111 @@ describe("lurek.ui module", function()
     end)
 
     -- @covers lurek.ui.newTextArea
-    it("newTextArea exposes multi-line text methods", function()
+    it("newTextArea returns a text area handle", function()
         local area = lurek.ui.newTextArea()
         expect_equal("LTextArea", area:type())
+    end)
+
+    -- @covers LTextArea:setText
+    it("text area setText stores multi-line text", function()
+        local area = lurek.ui.newTextArea()
         area:setText("A\nB")
-        area:setPlaceholder("Body")
-        area:setMaxLength(8)
         expect_equal("A\nB", area:getText())
+    end)
+
+    -- @covers LTextArea:getText
+    it("text area getText returns current text", function()
+        local area = lurek.ui.newTextArea()
+        area:setText("A\nB")
+        expect_equal("A\nB", area:getText())
+    end)
+
+    -- @covers LTextArea:setPlaceholder
+    it("text area setPlaceholder stores hint text", function()
+        local area = lurek.ui.newTextArea()
+        area:setPlaceholder("Body")
         expect_equal("Body", area:getPlaceholder())
+    end)
+
+    -- @covers LTextArea:setMaxLength
+    it("text area setMaxLength clips stored text", function()
+        local area = lurek.ui.newTextArea()
+        area:setMaxLength(3)
+        area:setText("abcdef")
+        expect_equal("abc", area:getText())
+    end)
+
+    -- @covers LTextArea:isFocused
+    it("text area isFocused reports focus state", function()
+        local area = lurek.ui.newTextArea()
+        lurek.ui.setFocus(area)
+        expect_true(area:isFocused())
+        lurek.ui.clearFocus()
+    end)
+
+    -- @covers LTextArea:getCursorPosition
+    it("text area getCursorPosition returns a numeric cursor index", function()
+        local area = lurek.ui.newTextArea()
         expect_type("number", area:getCursorPosition())
     end)
 
     -- @covers lurek.ui.newRichLabel
-    it("newRichLabel exposes rich and plain text", function()
+    it("newRichLabel returns a rich label handle", function()
         local label = lurek.ui.newRichLabel("[b]Alert[/b]")
         expect_equal("LRichLabel", label:type())
+    end)
+
+    -- @covers LRichLabel:setText
+    it("rich label setText stores markup text", function()
+        local label = lurek.ui.newRichLabel()
+        label:setText("[b]Alert[/b]")
         expect_equal("[b]Alert[/b]", label:getText())
+    end)
+
+    -- @covers LRichLabel:getText
+    it("rich label getText returns markup text", function()
+        local label = lurek.ui.newRichLabel("[b]Alert[/b]")
+        expect_equal("[b]Alert[/b]", label:getText())
+    end)
+
+    -- @covers LRichLabel:getPlainText
+    it("rich label getPlainText strips markup tags", function()
+        local label = lurek.ui.newRichLabel("[b]Alert[/b]")
         expect_equal("Alert", label:getPlainText())
     end)
 
     -- @covers lurek.ui.newAspectRatioContainer
-    it("newAspectRatioContainer exposes ratio and fit", function()
+    it("newAspectRatioContainer returns an aspect-ratio handle", function()
         local container = lurek.ui.newAspectRatioContainer()
         expect_equal("LAspectRatioContainer", container:type())
+    end)
+
+    -- @covers LAspectRatioContainer:setRatio
+    it("aspect ratio container setRatio stores the ratio", function()
+        local container = lurek.ui.newAspectRatioContainer()
         container:setRatio(1.777)
+        expect_true(container:getRatio() > 1.7)
+    end)
+
+    -- @covers LAspectRatioContainer:getRatio
+    it("aspect ratio container getRatio returns current ratio", function()
+        local container = lurek.ui.newAspectRatioContainer()
+        container:setRatio(1.25)
+        expect_near(1.25, container:getRatio(), 0.001)
+    end)
+
+    -- @covers LAspectRatioContainer:setFit
+    it("aspect ratio container setFit stores fit mode", function()
+        local container = lurek.ui.newAspectRatioContainer()
         container:setFit("cover")
         expect_equal("cover", container:getFit())
-        expect_true(container:getRatio() > 1.7)
+    end)
+
+    -- @covers LAspectRatioContainer:getFit
+    it("aspect ratio container getFit returns current fit mode", function()
+        local container = lurek.ui.newAspectRatioContainer()
+        container:setFit("contain")
+        expect_equal("contain", container:getFit())
     end)
 
     -- @covers lurek.ui.draw

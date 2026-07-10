@@ -108964,7 +108964,7 @@
     },
     {
       "name": "LNavGrid",
-      "description": "Provides Lua methods for navigation grid dimensions, costs, blocking, serialization, dirty regions, and diagonal mode.",
+      "description": "Lua userdata wrapper for a navigation grid and its optional HPA cache.",
       "methods": [
         {
           "name": "getWidth",
@@ -159515,6 +159515,66 @@
           ],
           "returns": "table",
           "returnType": "table",
+          "isMethod": true,
+          "objectType": "LSvgImage"
+        },
+        {
+          "name": "containsPoint",
+          "fullPath": "LSvgImage:containsPoint",
+          "signature": "(id, x, y)",
+          "description": "Returns whether a visible SVG element contains the given document-space point.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "string",
+              "description": "Element or group ID.",
+              "optional": false
+            },
+            {
+              "name": "x",
+              "type": "number",
+              "description": "Document-space X coordinate.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Document-space Y coordinate.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LSvgImage"
+        },
+        {
+          "name": "getElementAtPoint",
+          "fullPath": "LSvgImage:getElementAtPoint",
+          "signature": "(prefix, x, y)",
+          "description": "Returns the first visible element matching `prefix` that contains the document-space point.",
+          "parameters": [
+            {
+              "name": "prefix",
+              "type": "string",
+              "description": "Element ID prefix used to filter candidates.",
+              "optional": false
+            },
+            {
+              "name": "x",
+              "type": "number",
+              "description": "Document-space X coordinate.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Document-space Y coordinate.",
+              "optional": false
+            }
+          ],
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LSvgImage"
         },

@@ -1,0 +1,8 @@
+<svg width="64" height="32" viewBox="0 0 64 32" xmlns="http://www.w3.org/2000/svg">
+  <g id="frame_0">
+    <path id="frame_0_body" d="M 4 4 L 28 4 L 28 28 L 4 28 Z" fill="#ffcc33" />
+  </g>
+  <g id="frame_1">
+    <path id="frame_1_body" d="M 36 4 L 60 4 L 60 28 L 36 28 Z" fill="#33ccff" />
+  </g>
+</svg>

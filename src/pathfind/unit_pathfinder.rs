@@ -470,6 +470,7 @@ impl UnitPathfinder {
         Self::paths_from_field(&field, starts, max_steps)
     }
 
+    /// Find paths for start-goal pairs using one shared flow field per distinct goal.
     pub(crate) fn find_paths_for_pairs_spec(
         &mut self,
         pairs: &[PathPair],

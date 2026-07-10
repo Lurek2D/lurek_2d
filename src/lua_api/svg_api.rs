@@ -88,8 +88,8 @@ impl LuaUserData for LSvgImage {
                         .push(crate::render::renderer::RenderCommand::Translate { x: -ox, y: -oy });
                 }
 
-                // Draw the SVG image paths
-                this.inner.borrow().render(&mut st);
+                // Draw the SVG image paths; this may lazily allocate cached meshes.
+                this.inner.borrow_mut().render(&mut st);
 
                 st.render_commands
                     .push(crate::render::renderer::RenderCommand::PopTransform);
@@ -339,6 +339,32 @@ impl LuaUserData for LSvgImage {
                     tbl.set(id.as_str(), neighbors_tbl)?;
                 }
                 Ok(tbl)
+            },
+        );
+
+        // -- containsPoint --
+        /// Returns whether a visible SVG element contains the given document-space point.
+        /// @param | id | string | Element or group ID.
+        /// @param | x | number | Document-space X coordinate.
+        /// @param | y | number | Document-space Y coordinate.
+        /// @return | boolean | True when the point is inside the element, false when outside, or `nil` for unknown/no-geometry IDs.
+        methods.add_method(
+            "containsPoint",
+            |_, this, (id, x, y): (String, f32, f32)| {
+                Ok(this.inner.borrow().contains_point(&id, x, y))
+            },
+        );
+
+        // -- getElementAtPoint --
+        /// Returns the first visible element matching `prefix` that contains the document-space point.
+        /// @param | prefix | string | Element ID prefix used to filter candidates.
+        /// @param | x | number | Document-space X coordinate.
+        /// @param | y | number | Document-space Y coordinate.
+        /// @return | string | Matching element ID, or `nil` when no element contains the point.
+        methods.add_method(
+            "getElementAtPoint",
+            |_, this, (prefix, x, y): (String, f32, f32)| {
+                Ok(this.inner.borrow().get_element_at_point(&prefix, x, y))
             },
         );
 

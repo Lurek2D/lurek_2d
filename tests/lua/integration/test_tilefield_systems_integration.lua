@@ -125,8 +125,11 @@ describe("integration: mutable side-view block edit pipeline", function()
     -- @integration LMinimap:syncTileFieldBlockLayer
     -- @integration LTerrain:flush
     -- @integration LTerrain:getDirtyChunks
+    -- @integration LTileField:beginEdit
     -- @integration LTileField:commitEdit
     -- @integration LTileField:defineBlockWorldSlots
+    -- @integration LTileField:setBlock
+    -- @integration LTileField:setRef
     -- @integration LTileField:snapshot
     -- @integration LTileField:restore
     -- @integration lurek.minimap.newMinimap

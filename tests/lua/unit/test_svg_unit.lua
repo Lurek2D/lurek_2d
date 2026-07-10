@@ -132,6 +132,28 @@ describe("LSvgImage geometry queries", function()
         expect_equal("prov_2", adj["prov_1"][1])
         expect_equal("prov_1", adj["prov_2"][1])
     end)
+
+    -- @covers LSvgImage:containsPoint
+    it("containsPoint reports point-in-polygon state for visible elements", function()
+        local svg = load_test_svg()
+
+        expect_equal(true, svg:containsPoint("prov_1", 20, 20))
+        expect_equal(false, svg:containsPoint("prov_1", 120, 20))
+        svg:setElementVisible("prov_1", false)
+        expect_equal(false, svg:containsPoint("prov_1", 20, 20))
+        expect_nil(svg:containsPoint("non_existent_id", 20, 20))
+    end)
+
+    -- @covers LSvgImage:getElementAtPoint
+    it("getElementAtPoint returns the first matching visible element by prefix", function()
+        local svg = load_test_svg()
+
+        expect_equal("prov_1", svg:getElementAtPoint("prov_", 20, 20))
+        expect_equal("prov_2", svg:getElementAtPoint("prov_", 100, 20))
+        svg:setElementVisible("prov_2", false)
+        expect_nil(svg:getElementAtPoint("prov_", 100, 20))
+        expect_nil(svg:getElementAtPoint("missing_", 20, 20))
+    end)
 end)
 
 -- @describe LSvgImage element state

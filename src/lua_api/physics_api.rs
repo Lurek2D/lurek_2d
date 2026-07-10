@@ -767,7 +767,9 @@ fn ballistic_trace_to_table<'lua>(
         Some(hit) => tbl.set("hit", altitude_hit_to_table(lua, hit)?)?,
         None => tbl.set("hit", LuaValue::Nil)?,
     }
+    /// Total simulated travel time in seconds.
     tbl.set("travelTime", trace.travel_time)?;
+    /// True when the trace reached its time budget without a collision.
     tbl.set("expired", trace.expired)?;
     Ok(tbl)
 }
@@ -907,29 +909,51 @@ fn projectile_result_to_table<'lua>(
     match hit {
         Some(hit) => {
             let travel = hit.toi.clamp(0.0, max_dist);
+            /// True when the projectile sweep hit a body.
             tbl.set("hit", true)?;
+            /// World-space X coordinate at the hit point.
             tbl.set("x", origin_x + dir_x * travel)?;
+            /// World-space Y coordinate at the hit point.
             tbl.set("y", origin_y + dir_y * travel)?;
+            /// Distance traveled before impact.
             tbl.set("travel", travel)?;
+            /// Remaining distance after impact.
             tbl.set("remaining", (max_dist - travel).max(0.0))?;
+            /// Hit body id, or `nil` when there is no hit.
             tbl.set("hitBody", hit.body_id)?;
+            /// Hit body id, or `nil` when there is no hit.
             tbl.set("bodyId", hit.body_id)?;
+            /// X component of the hit normal.
             tbl.set("normalX", hit.normal.0)?;
+            /// Y component of the hit normal.
             tbl.set("normalY", hit.normal.1)?;
+            /// Time-of-impact distance along the sweep.
             tbl.set("toi", hit.toi)?;
+            /// Conservative fraction before impact suitable for movement.
             tbl.set("safeFraction", hit.safe_fraction)?;
         }
         None => {
+            /// True when the projectile sweep hit a body.
             tbl.set("hit", false)?;
+            /// World-space X coordinate at the end of the sweep.
             tbl.set("x", origin_x + dir_x * max_dist)?;
+            /// World-space Y coordinate at the end of the sweep.
             tbl.set("y", origin_y + dir_y * max_dist)?;
+            /// Distance traveled by the sweep.
             tbl.set("travel", max_dist)?;
+            /// Remaining distance after the sweep.
             tbl.set("remaining", 0.0f32)?;
+            /// Hit body id, or `nil` when there is no hit.
             tbl.set("hitBody", LuaValue::Nil)?;
+            /// Hit body id, or `nil` when there is no hit.
             tbl.set("bodyId", LuaValue::Nil)?;
+            /// X component of the hit normal, or `nil` when there is no hit.
             tbl.set("normalX", LuaValue::Nil)?;
+            /// Y component of the hit normal, or `nil` when there is no hit.
             tbl.set("normalY", LuaValue::Nil)?;
+            /// Time-of-impact distance, or `nil` when there is no hit.
             tbl.set("toi", LuaValue::Nil)?;
+            /// Conservative movement fraction, or `nil` when there is no hit.
             tbl.set("safeFraction", LuaValue::Nil)?;
         }
     }
@@ -1016,7 +1040,9 @@ fn altitude_layer_data_to_table<'lua>(
     for (index, value) in data.clearances.iter().enumerate() {
         clearances.set(index + 1, *value)?;
     }
+    /// One-based row-major terrain height samples.
     tbl.set("heights", heights)?;
+    /// One-based row-major clearance samples.
     tbl.set("clearances", clearances)?;
     Ok(tbl)
 }
@@ -1181,10 +1207,15 @@ fn ballistic_projectile_to_table<'lua>(
     tbl.set("vx", projectile.velocity.0)?;
     tbl.set("vy", projectile.velocity.1)?;
     tbl.set("vz", projectile.velocity.2)?;
+    /// Projectile collision radius in world units.
     tbl.set("radius", projectile.radius)?;
+    /// Projectile vertical collision height in world units.
     tbl.set("height", projectile.height)?;
+    /// Projectile gravity acceleration in world units per second squared.
     tbl.set("gravity", projectile.gravity)?;
+    /// Remaining simulation lifetime in seconds.
     tbl.set("timeRemaining", projectile.time_remaining)?;
+    /// Fixed projectile collision sample step in seconds.
     tbl.set("sampleDt", projectile.sample_dt)?;
     Ok(tbl)
 }

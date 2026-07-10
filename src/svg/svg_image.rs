@@ -9,11 +9,32 @@
 //! This file is the owner boundary for vector scene behavior; higher layers should treat it as the source of SVG state.
 
 use crate::math::Vec2;
+use crate::render::mesh::{Mesh, MeshDrawMode, MeshVertex};
 use crate::render::renderer::{DrawMode, PathSegment, RenderCommand};
-use crate::runtime::resource_keys::CanvasKey;
+use crate::runtime::resource_keys::{CanvasKey, MeshKey};
 use crate::runtime::SharedState;
 use std::collections::HashMap;
 use usvg::{NodeExt, TreeParsing};
+
+/// Cached GPU mesh handle for one SVG path draw variant.
+#[derive(Clone, Debug)]
+pub struct SvgCachedMesh {
+    /// Mesh resource registered in `SharedState.meshes`.
+    pub mesh_key: MeshKey,
+    /// RGBA color baked into the mesh vertices.
+    pub color: [f32; 4],
+    /// Stroke width baked into the mesh geometry. Fill meshes use `0.0`.
+    pub stroke_width: f32,
+}
+
+/// Cached fill and stroke meshes for a parsed SVG path.
+#[derive(Clone, Debug, Default)]
+pub struct SvgPathMeshCache {
+    /// Fill mesh cached from path geometry and current color.
+    pub fill: Option<SvgCachedMesh>,
+    /// Stroke mesh cached from path geometry, stroke width, and current color.
+    pub stroke: Option<SvgCachedMesh>,
+}
 
 /// Represents a single path element (or shape normalized to path) in the SVG.
 #[derive(Clone, Debug)]
@@ -22,6 +43,7 @@ pub struct SvgPath {
     pub fill_color: Option<[f32; 4]>,
     pub stroke_color: Option<[f32; 4]>,
     pub stroke_width: f32,
+    pub mesh_cache: SvgPathMeshCache,
 }
 
 /// Represents an SVG group (<g>) or path (<path>) element inside the scene graph.
@@ -168,6 +190,7 @@ impl SvgImage {
                         fill_color,
                         stroke_color,
                         stroke_width,
+                        mesh_cache: SvgPathMeshCache::default(),
                     });
                 }
                 _ => {}
@@ -206,45 +229,52 @@ impl SvgImage {
     }
 
     /// Recursively submits render commands to draw the elements.
-    pub fn render(&self, st: &mut SharedState) {
+    pub fn render(&mut self, st: &mut SharedState) {
         // Render helper that applies transformations hierarchically
-        fn render_element(svg: &SvgImage, element_id: &str, st: &mut SharedState) {
+        fn render_element(svg: &mut SvgImage, element_id: &str, st: &mut SharedState) {
             let Some(el) = svg.elements.get(element_id) else {
                 return;
             };
             if !el.visible {
                 return;
             }
+            let local_transform = el.local_transform;
+            let translation = el.translation;
+            let rotation = el.rotation;
+            let scale = el.scale;
+            let color_override = el.color_override;
+            let child_ids = el.child_ids.clone();
+            let cached_canvas = svg.cached_canvases.get(element_id).copied();
 
             st.render_commands.push(RenderCommand::PushTransform);
 
             // Apply original SVG transform
             st.render_commands.push(RenderCommand::ApplyTransform {
-                matrix: el.local_transform,
+                matrix: local_transform,
             });
 
             // Apply runtime dynamic transform
-            if el.translation.x != 0.0 || el.translation.y != 0.0 {
+            if translation.x != 0.0 || translation.y != 0.0 {
                 st.render_commands.push(RenderCommand::Translate {
-                    x: el.translation.x,
-                    y: el.translation.y,
+                    x: translation.x,
+                    y: translation.y,
                 });
             }
-            if el.rotation != 0.0 {
+            if rotation != 0.0 {
                 st.render_commands
-                    .push(RenderCommand::Rotate { angle: el.rotation });
+                    .push(RenderCommand::Rotate { angle: rotation });
             }
-            if el.scale.x != 1.0 || el.scale.y != 1.0 {
+            if scale.x != 1.0 || scale.y != 1.0 {
                 st.render_commands.push(RenderCommand::Scale {
-                    sx: el.scale.x,
-                    sy: el.scale.y,
+                    sx: scale.x,
+                    sy: scale.y,
                 });
             }
 
             // If a cached canvas exists for this element/group, draw it as a single quad instead of paths!
-            if let Some(canvas_key) = svg.cached_canvases.get(element_id) {
+            if let Some(canvas_key) = cached_canvas {
                 st.render_commands.push(RenderCommand::DrawCanvas {
-                    canvas_key: *canvas_key,
+                    canvas_key,
                     x: 0.0,
                     y: 0.0,
                     rotation: 0.0,
@@ -255,45 +285,76 @@ impl SvgImage {
                 });
             } else {
                 // Otherwise, render geometry paths
-                for path in &el.paths {
-                    if path.segments.is_empty() {
-                        continue;
-                    }
-
-                    // Apply fill
-                    if let Some(mut fill) = path.fill_color {
-                        if let Some(over) = el.color_override {
-                            fill = over;
+                if let Some(el) = svg.elements.get_mut(element_id) {
+                    for path in &mut el.paths {
+                        if path.segments.is_empty() {
+                            continue;
                         }
-                        st.render_commands
-                            .push(RenderCommand::SetColor(fill[0], fill[1], fill[2], fill[3]));
-                        st.render_commands.push(RenderCommand::DrawPath {
-                            segments: path.segments.clone(),
-                            mode: DrawMode::Fill,
-                            close: true,
-                        });
-                    }
 
-                    // Apply stroke
-                    if let Some(mut stroke) = path.stroke_color {
-                        if let Some(over) = el.color_override {
-                            stroke = over;
+                        // Apply fill
+                        if let Some(mut fill) = path.fill_color {
+                            if let Some(over) = color_override {
+                                fill = over;
+                            }
+                            if let Some(mesh_key) = ensure_fill_mesh(path, fill, st) {
+                                st.render_commands.push(RenderCommand::DrawMesh {
+                                    mesh_key,
+                                    x: 0.0,
+                                    y: 0.0,
+                                    rotation: 0.0,
+                                    sx: 1.0,
+                                    sy: 1.0,
+                                    ox: 0.0,
+                                    oy: 0.0,
+                                });
+                            } else {
+                                st.render_commands.push(RenderCommand::SetColor(
+                                    fill[0], fill[1], fill[2], fill[3],
+                                ));
+                                st.render_commands.push(RenderCommand::DrawPath {
+                                    segments: path.segments.clone(),
+                                    mode: DrawMode::Fill,
+                                    close: true,
+                                });
+                            }
                         }
-                        st.render_commands
-                            .push(RenderCommand::SetLineWidth(path.stroke_width));
-                        st.render_commands.push(RenderCommand::SetColor(
-                            stroke[0], stroke[1], stroke[2], stroke[3],
-                        ));
-                        st.render_commands.push(RenderCommand::DrawPath {
-                            segments: path.segments.clone(),
-                            mode: DrawMode::Line,
-                            close: true,
-                        });
+
+                        // Apply stroke
+                        if let Some(mut stroke) = path.stroke_color {
+                            if let Some(over) = color_override {
+                                stroke = over;
+                            }
+                            if let Some(mesh_key) =
+                                ensure_stroke_mesh(path, stroke, path.stroke_width, st)
+                            {
+                                st.render_commands.push(RenderCommand::DrawMesh {
+                                    mesh_key,
+                                    x: 0.0,
+                                    y: 0.0,
+                                    rotation: 0.0,
+                                    sx: 1.0,
+                                    sy: 1.0,
+                                    ox: 0.0,
+                                    oy: 0.0,
+                                });
+                            } else {
+                                st.render_commands
+                                    .push(RenderCommand::SetLineWidth(path.stroke_width));
+                                st.render_commands.push(RenderCommand::SetColor(
+                                    stroke[0], stroke[1], stroke[2], stroke[3],
+                                ));
+                                st.render_commands.push(RenderCommand::DrawPath {
+                                    segments: path.segments.clone(),
+                                    mode: DrawMode::Line,
+                                    close: true,
+                                });
+                            }
+                        }
                     }
                 }
 
                 // Render children
-                for child_id in &el.child_ids {
+                for child_id in &child_ids {
                     render_element(svg, child_id, st);
                 }
             }
@@ -301,7 +362,8 @@ impl SvgImage {
             st.render_commands.push(RenderCommand::PopTransform);
         }
 
-        render_element(self, &self.root_id, st);
+        let root_id = self.root_id.clone();
+        render_element(self, &root_id, st);
     }
 
     /// Computes the accumulated transform matrix of an element.
@@ -505,6 +567,33 @@ impl SvgImage {
         }
 
         adj
+    }
+
+    /// Returns whether the flattened visible element polygon contains the given document-space point.
+    pub fn contains_point(&self, element_id: &str, x: f32, y: f32) -> Option<bool> {
+        let el = self.elements.get(element_id)?;
+        if !el.visible {
+            return Some(false);
+        }
+        let (min_x, min_y, max_x, max_y) = self.get_element_bounds(element_id)?;
+        if x < min_x || x > max_x || y < min_y || y > max_y {
+            return Some(false);
+        }
+        let points = self.get_element_points(element_id, Some(4.0))?;
+        Some(point_in_polygon(Vec2::new(x, y), &points))
+    }
+
+    /// Returns the first visible element matching `prefix` whose polygon contains the point.
+    pub fn get_element_at_point(&self, prefix: &str, x: f32, y: f32) -> Option<String> {
+        let mut ids: Vec<&str> = self
+            .elements
+            .keys()
+            .filter_map(|id| id.starts_with(prefix).then_some(id.as_str()))
+            .collect();
+        ids.sort_unstable();
+        ids.into_iter()
+            .find(|id| self.contains_point(id, x, y) == Some(true))
+            .map(str::to_string)
     }
 
     /// Renders the target element/group to a GPU off-screen texture (Canvas) and caches its key.
@@ -725,6 +814,222 @@ impl SvgImage {
 // ----------------------------------------------------
 // Matrix helper functions
 // ----------------------------------------------------
+
+fn ensure_fill_mesh(path: &mut SvgPath, color: [f32; 4], st: &mut SharedState) -> Option<MeshKey> {
+    let segments = path.segments.clone();
+    ensure_cached_mesh(&mut path.mesh_cache.fill, color, 0.0, st, || {
+        build_fill_mesh(&segments, color)
+    })
+}
+
+fn ensure_stroke_mesh(
+    path: &mut SvgPath,
+    color: [f32; 4],
+    stroke_width: f32,
+    st: &mut SharedState,
+) -> Option<MeshKey> {
+    let segments = path.segments.clone();
+    ensure_cached_mesh(&mut path.mesh_cache.stroke, color, stroke_width, st, || {
+        build_stroke_mesh(&segments, color, stroke_width)
+    })
+}
+
+fn ensure_cached_mesh(
+    cache: &mut Option<SvgCachedMesh>,
+    color: [f32; 4],
+    stroke_width: f32,
+    st: &mut SharedState,
+    build: impl FnOnce() -> Option<Mesh>,
+) -> Option<MeshKey> {
+    if let Some(cached) = cache {
+        if cached.color == color
+            && (cached.stroke_width - stroke_width).abs() <= f32::EPSILON
+            && st.meshes.contains_key(cached.mesh_key)
+        {
+            return Some(cached.mesh_key);
+        }
+    }
+
+    let mesh = build()?;
+    if mesh.validate().is_err() {
+        return None;
+    }
+    let mesh_key = if let Some(cached) = cache {
+        if st.meshes.contains_key(cached.mesh_key) {
+            if let Some(slot) = st.meshes.get_mut(cached.mesh_key) {
+                *slot = mesh.clone();
+            }
+            cached.mesh_key
+        } else {
+            st.meshes.insert(mesh.clone())
+        }
+    } else {
+        st.meshes.insert(mesh.clone())
+    };
+    st.render_commands
+        .push(RenderCommand::SyncMesh { mesh_key, mesh });
+    *cache = Some(SvgCachedMesh {
+        mesh_key,
+        color,
+        stroke_width,
+    });
+    Some(mesh_key)
+}
+
+fn build_fill_mesh(segments: &[PathSegment], color: [f32; 4]) -> Option<Mesh> {
+    let subpaths = flatten_subpaths(segments, 8);
+    let mut vertices = Vec::new();
+    for points in subpaths {
+        if points.len() < 3 {
+            continue;
+        }
+        let first = points[0];
+        for idx in 1..points.len().saturating_sub(1) {
+            push_mesh_vertex(&mut vertices, first, color);
+            push_mesh_vertex(&mut vertices, points[idx], color);
+            push_mesh_vertex(&mut vertices, points[idx + 1], color);
+        }
+    }
+    (!vertices.is_empty()).then(|| Mesh::from_vertices(vertices, MeshDrawMode::Triangles))
+}
+
+fn build_stroke_mesh(segments: &[PathSegment], color: [f32; 4], stroke_width: f32) -> Option<Mesh> {
+    let subpaths = flatten_subpaths(segments, 8);
+    let mut vertices = Vec::new();
+    let width = stroke_width.max(0.1);
+    for points in subpaths {
+        for pair in points.windows(2) {
+            push_stroke_segment(&mut vertices, pair[0], pair[1], width, color);
+        }
+        if points.len() > 2 {
+            push_stroke_segment(&mut vertices, *points.last()?, points[0], width, color);
+        }
+    }
+    (!vertices.is_empty()).then(|| Mesh::from_vertices(vertices, MeshDrawMode::Triangles))
+}
+
+fn push_mesh_vertex(vertices: &mut Vec<MeshVertex>, point: Vec2, color: [f32; 4]) {
+    vertices.push(MeshVertex {
+        x: point.x,
+        y: point.y,
+        u: 0.0,
+        v: 0.0,
+        r: color[0],
+        g: color[1],
+        b: color[2],
+        a: color[3],
+    });
+}
+
+fn push_stroke_segment(
+    vertices: &mut Vec<MeshVertex>,
+    a: Vec2,
+    b: Vec2,
+    width: f32,
+    color: [f32; 4],
+) {
+    let dx = b.x - a.x;
+    let dy = b.y - a.y;
+    let len = (dx * dx + dy * dy).sqrt();
+    if len <= f32::EPSILON {
+        return;
+    }
+    let half = width * 0.5;
+    let nx = -dy / len * half;
+    let ny = dx / len * half;
+    let p0 = Vec2::new(a.x + nx, a.y + ny);
+    let p1 = Vec2::new(b.x + nx, b.y + ny);
+    let p2 = Vec2::new(b.x - nx, b.y - ny);
+    let p3 = Vec2::new(a.x - nx, a.y - ny);
+    push_mesh_vertex(vertices, p0, color);
+    push_mesh_vertex(vertices, p1, color);
+    push_mesh_vertex(vertices, p2, color);
+    push_mesh_vertex(vertices, p0, color);
+    push_mesh_vertex(vertices, p2, color);
+    push_mesh_vertex(vertices, p3, color);
+}
+
+fn flatten_subpaths(segments: &[PathSegment], curve_steps: usize) -> Vec<Vec<Vec2>> {
+    let mut subpaths = Vec::new();
+    let mut current = Vec::new();
+    let mut pen = Vec2::new(0.0, 0.0);
+    for seg in segments {
+        match *seg {
+            PathSegment::MoveTo { x, y } => {
+                if !current.is_empty() {
+                    subpaths.push(current);
+                    current = Vec::new();
+                }
+                pen = Vec2::new(x, y);
+                current.push(pen);
+            }
+            PathSegment::LineTo { x, y } => {
+                pen = Vec2::new(x, y);
+                current.push(pen);
+            }
+            PathSegment::QuadTo { cx, cy, x, y } => {
+                let start = pen;
+                let control = Vec2::new(cx, cy);
+                let end = Vec2::new(x, y);
+                for idx in 1..=curve_steps {
+                    let t = idx as f32 / curve_steps as f32;
+                    let mt = 1.0 - t;
+                    current.push(start * (mt * mt) + control * (2.0 * mt * t) + end * (t * t));
+                }
+                pen = end;
+            }
+            PathSegment::CubicTo {
+                cx1,
+                cy1,
+                cx2,
+                cy2,
+                x,
+                y,
+            } => {
+                let start = pen;
+                let c1 = Vec2::new(cx1, cy1);
+                let c2 = Vec2::new(cx2, cy2);
+                let end = Vec2::new(x, y);
+                for idx in 1..=curve_steps {
+                    let t = idx as f32 / curve_steps as f32;
+                    let mt = 1.0 - t;
+                    current.push(
+                        start * (mt * mt * mt)
+                            + c1 * (3.0 * mt * mt * t)
+                            + c2 * (3.0 * mt * t * t)
+                            + end * (t * t * t),
+                    );
+                }
+                pen = end;
+            }
+        }
+    }
+    if !current.is_empty() {
+        subpaths.push(current);
+    }
+    subpaths
+}
+
+fn point_in_polygon(point: Vec2, polygon: &[Vec2]) -> bool {
+    if polygon.len() < 3 {
+        return false;
+    }
+    let mut inside = false;
+    let mut j = polygon.len() - 1;
+    for i in 0..polygon.len() {
+        let pi = polygon[i];
+        let pj = polygon[j];
+        let crosses = (pi.y > point.y) != (pj.y > point.y);
+        if crosses {
+            let x_intersection = (pj.x - pi.x) * (point.y - pi.y) / (pj.y - pi.y) + pi.x;
+            if point.x < x_intersection {
+                inside = !inside;
+            }
+        }
+        j = i;
+    }
+    inside
+}
 
 fn mul_matrix(a: &[f32; 9], b: &[f32; 9]) -> [f32; 9] {
     [

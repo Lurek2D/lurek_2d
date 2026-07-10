@@ -45,10 +45,12 @@ fn with_async_pool<T>(f: impl FnOnce(&mut PathThreadPool) -> T) -> T {
     f(&mut pool)
 }
 
+/// Allocate a process-local id for an asynchronous path request.
 pub(crate) fn next_async_path_request_id() -> u64 {
     NEXT_ASYNC_PATH_REQUEST_ID.fetch_add(1, Ordering::Relaxed)
 }
 
+/// Submit one asynchronous path request to the shared pathfinding thread pool.
 pub(crate) fn submit_async_query(request: AsyncPathRequest) {
     with_async_pool(|pool| {
         let _ = pool.submit_query(request);
@@ -455,7 +457,9 @@ fn path_event_to_lua<'a>(lua: &'a Lua, event: AsyncPathEvent) -> LuaResult<LuaTa
         None => tbl.set("path", LuaValue::Nil)?,
     }
     match event.paths {
+        /// Per-request path results for batched async queries, or `nil` for single-path events.
         Some(paths) => tbl.set("paths", tuple_path_options_to_lua(lua, &paths)?)?,
+        /// Per-request path results for batched async queries, or `nil` for single-path events.
         None => tbl.set("paths", LuaValue::Nil)?,
     }
     Ok(tbl)
@@ -506,6 +510,7 @@ struct CachedAbstractGraph {
     graph: AbstractGraph,
 }
 
+/// Lua userdata wrapper for a navigation grid and its optional HPA cache.
 pub struct LuaNavGrid {
     /// Shared navigation grid data exposed by the lurek engine.
     inner: Rc<RefCell<NavGrid>>,
@@ -513,14 +518,17 @@ pub struct LuaNavGrid {
     abstract_graph: Rc<RefCell<Option<CachedAbstractGraph>>>,
 }
 impl LuaNavGrid {
+    /// Return a cloned navigation grid for APIs that need owned grid data.
     pub(crate) fn cloned_grid(&self) -> NavGrid {
         self.inner.borrow().clone()
     }
 
+    /// Return the grid dimensions in zero-based Rust width and height units.
     pub(crate) fn dimensions(&self) -> (u32, u32) {
         self.inner.borrow().get_dimensions()
     }
 
+    /// Return a named footprint specification registered on the grid.
     pub(crate) fn footprint(&self, name: &str) -> Option<FootprintSpec> {
         self.inner.borrow().get_footprint(name)
     }

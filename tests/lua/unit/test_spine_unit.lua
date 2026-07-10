@@ -699,6 +699,18 @@ describe("spine attachment sources", function()
         local manual = sk:getAttachmentSource("head_slot")
         expect_equal("imageRegion", manual.kind)
         expect_equal(42, manual.textureId)
+
+        local svg = lurek.svg.load("tests/lua/fixtures/test.svg")
+        svg:cacheToCanvas("group1", 100, 100)
+        sk:setAttachmentSource("head_slot", {
+            kind = "canvas",
+            canvas = svg:getCanvasKey("group1"),
+            w = 100,
+            h = 100,
+        })
+        local canvas_source = sk:getAttachmentSource("head_slot")
+        expect_equal("canvas", canvas_source.kind)
+        expect_equal(true, canvas_source.hasCanvas)
     end)
 
     -- @covers LSkeleton:getAttachmentSource

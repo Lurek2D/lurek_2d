@@ -12,6 +12,7 @@ pub enum StoryValue {
 }
 
 impl StoryValue {
+    /// Convert this story value to the interpreter's truthiness rule.
     pub fn as_bool(&self) -> bool {
         match self {
             Self::Nil => false,
@@ -86,6 +87,7 @@ pub struct DialogStory {
 }
 
 impl DialogStory {
+    /// Compile safe Ink-subset source text into a story runtime.
     pub fn compile(source: &str) -> Result<Self, String> {
         let program = compile_program(source)?;
         let mut story = Self {
@@ -102,6 +104,7 @@ impl DialogStory {
         Ok(story)
     }
 
+    /// Start playback at a named knot, or at the default entry knot.
     pub fn start(&mut self, knot: Option<String>) -> Result<(), String> {
         let target = knot
             .or_else(|| {
@@ -117,10 +120,12 @@ impl DialogStory {
         self.goto_knot(target)
     }
 
+    /// Return whether the story can currently emit another line.
     pub fn can_continue(&self) -> bool {
         !self.ended && self.knot.is_some() && self.pending.is_empty()
     }
 
+    /// Advance until one line or tag is emitted, a choice is reached, or the story ends.
     pub fn continue_line(&mut self) -> Result<Option<(String, Vec<String>)>, String> {
         if self.ended || !self.pending.is_empty() {
             return Ok(None);
@@ -165,6 +170,7 @@ impl DialogStory {
         }
     }
 
+    /// Continue until blocked or ended and join emitted non-empty lines with `sep`.
     pub fn continue_all(&mut self, sep: &str) -> Result<String, String> {
         let mut lines = Vec::new();
         while let Some((line, _)) = self.continue_line()? {
@@ -175,6 +181,7 @@ impl DialogStory {
         Ok(lines.join(sep))
     }
 
+    /// Return the currently available choices, gathering them if needed.
     pub fn choices(&mut self) -> Result<Vec<StoryChoice>, String> {
         if self.pending.is_empty() && !self.ended {
             self.gather_choices()?;
@@ -182,6 +189,7 @@ impl DialogStory {
         Ok(self.pending.clone())
     }
 
+    /// Select a one-based choice index and continue at its target or next node.
     pub fn choose(&mut self, index: usize) -> Result<(), String> {
         if self.pending.is_empty() {
             self.gather_choices()?;
@@ -205,6 +213,7 @@ impl DialogStory {
         Ok(())
     }
 
+    /// Jump to a named knot and reset the program counter for that knot.
     pub fn goto_knot(&mut self, name: String) -> Result<(), String> {
         if !self.program.knots.contains_key(&name) {
             return Err(format!("unknown story knot '{name}'"));
@@ -217,24 +226,29 @@ impl DialogStory {
         Ok(())
     }
 
+    /// Set or replace one story variable.
     pub fn set_variable(&mut self, name: String, value: StoryValue) {
         self.vars.insert(name, value);
     }
 
+    /// Return one story variable, or `StoryValue::Nil` when absent.
     pub fn get_variable(&self, name: &str) -> StoryValue {
         self.vars.get(name).cloned().unwrap_or(StoryValue::Nil)
     }
 
+    /// Return sorted variable names currently stored by the runtime.
     pub fn variable_names(&self) -> Vec<String> {
         let mut names: Vec<String> = self.vars.keys().cloned().collect();
         names.sort();
         names
     }
 
+    /// Return how many times a knot has been entered in this runtime.
     pub fn visit_count(&self, knot: &str) -> u32 {
         self.visits.get(knot).copied().unwrap_or(0)
     }
 
+    /// Capture mutable story runtime state for later restoration.
     pub fn snapshot_state(&self) -> StorySnapshot {
         StorySnapshot {
             vars: self.vars.clone(),
@@ -246,6 +260,7 @@ impl DialogStory {
         }
     }
 
+    /// Replace mutable story runtime state from a previous snapshot.
     pub fn restore_state(&mut self, snapshot: StorySnapshot) {
         self.vars = snapshot.vars;
         self.visits = snapshot.visits;

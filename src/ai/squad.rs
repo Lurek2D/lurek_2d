@@ -363,12 +363,14 @@ impl Squad {
         self.layout_cache_misses.get()
     }
 
+    /// Increment and return the squad-local async path request version.
     pub(crate) fn next_path_request_version(&self) -> u64 {
         let next = self.path_request_version.get().saturating_add(1);
         self.path_request_version.set(next);
         next
     }
 
+    /// Return a stable owner id derived from the squad name for path events.
     pub(crate) fn default_path_request_owner_id(&self) -> u64 {
         let mut hasher = DefaultHasher::new();
         self.name.hash(&mut hasher);

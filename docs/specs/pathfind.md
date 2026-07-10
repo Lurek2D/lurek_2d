@@ -616,7 +616,7 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 
 #### LNavGrid Type
 
-- Provides Lua methods for navigation grid dimensions, costs, blocking, serialization, dirty regions, and diagonal mode.
+- Lua userdata wrapper for a navigation grid and its optional HPA cache.
 
 ##### Fields
 

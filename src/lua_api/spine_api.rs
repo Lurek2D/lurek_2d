@@ -2,6 +2,7 @@
 
 use super::ecs_api::LuaLoadout;
 use super::physics_api::{lua_body_from_body, LuaPhysicsShape, LuaWorld};
+use super::render_api::LuaCanvas;
 use super::sprite_api::LuaSpriteAtlas;
 use super::SharedState;
 use crate::image::ImageData;
@@ -205,6 +206,22 @@ fn attachment_source_from_table(api: &str, table: LuaTable) -> LuaResult<Attachm
         .get::<_, Option<f32>>("h")?
         .or_else(|| table.get::<_, Option<f32>>("height").ok().flatten())
         .unwrap_or(0.0);
+    let canvas_key = match table.get::<_, Option<LuaValue>>("canvas")? {
+        Some(LuaValue::Nil) | None => None,
+        Some(LuaValue::UserData(ud)) => Some(ud.borrow::<LuaCanvas>()?.key),
+        Some(_) => {
+            return Err(LuaError::RuntimeError(format!(
+                "{}: canvas attachment source field 'canvas' must be an LCanvas userdata",
+                api
+            )));
+        }
+    };
+    if kind == AttachmentSourceKind::Canvas && canvas_key.is_none() {
+        return Err(LuaError::RuntimeError(format!(
+            "{}: canvas attachment source requires an LCanvas in field 'canvas'",
+            api
+        )));
+    }
     Ok(AttachmentSource {
         kind,
         name: table.get::<_, Option<String>>("name")?,
@@ -223,6 +240,7 @@ fn attachment_source_from_table(api: &str, table: LuaTable) -> LuaResult<Attachm
         texture_id: table
             .get::<_, Option<u64>>("textureId")?
             .or_else(|| table.get::<_, Option<u64>>("texture_id").ok().flatten()),
+        canvas_key,
     })
 }
 
@@ -244,6 +262,7 @@ fn attachment_source_to_table<'lua>(
     if let Some(texture_id) = source.texture_id {
         table.set("textureId", texture_id)?;
     }
+    table.set("hasCanvas", source.canvas_key.is_some())?;
     Ok(table)
 }
 
@@ -439,6 +458,7 @@ impl LuaUserData for LuaSkeleton {
                             texture_w: (entry.x + entry.w) as f32,
                             texture_h: (entry.y + entry.h) as f32,
                             texture_id: None,
+                            canvas_key: None,
                         },
                     );
                     count += 1;

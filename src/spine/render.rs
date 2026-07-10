@@ -4,7 +4,8 @@
 //! Open this file when skeleton-to-command translation changes; pose updates and slot ownership live in siblings.
 
 use super::skeleton::Skeleton;
-use crate::render::renderer::{DrawMode, RenderCommand};
+use crate::math::Vec2;
+use crate::render::renderer::{BlendMode, DrawMode, RenderCommand, SpineSlotDraw};
 use crate::runtime::resource_keys::TextureKey;
 use slotmap::KeyData;
 
@@ -48,6 +49,34 @@ impl Skeleton {
             let bx = x + bone.world_x;
             let by = y + bone.world_y;
             if let Some(source) = self.get_attachment_source_for_slot(slot_idx) {
+                if let Some(canvas_key) = source.canvas_key {
+                    let w = source.w.max(1.0);
+                    let h = source.h.max(1.0);
+                    cmds.push(RenderCommand::DrawSpineSkeleton {
+                        slots: vec![SpineSlotDraw {
+                            texture_key: TextureKey::from(KeyData::from_ffi(0)),
+                            canvas_key: Some(canvas_key),
+                            corners: attachment_corners(
+                                bx,
+                                by,
+                                bone.world_rotation,
+                                bone.world_scale_x,
+                                bone.world_scale_y,
+                                w,
+                                h,
+                            ),
+                            uvs: [
+                                Vec2::new(0.0, 0.0),
+                                Vec2::new(1.0, 0.0),
+                                Vec2::new(1.0, 1.0),
+                                Vec2::new(0.0, 1.0),
+                            ],
+                            color: [slot.color_r, slot.color_g, slot.color_b, slot.color_a],
+                            blend_mode: BlendMode::Alpha,
+                        }],
+                    });
+                    continue;
+                }
                 if let Some(texture_id) = source.texture_id {
                     cmds.push(RenderCommand::SetColor(
                         slot.color_r,
@@ -92,4 +121,30 @@ impl Skeleton {
         }
         cmds
     }
+}
+
+fn attachment_corners(
+    x: f32,
+    y: f32,
+    rotation: f32,
+    scale_x: f32,
+    scale_y: f32,
+    width: f32,
+    height: f32,
+) -> [Vec2; 4] {
+    let hw = width * 0.5;
+    let hh = height * 0.5;
+    let cos = rotation.cos();
+    let sin = rotation.sin();
+    let transform = |lx: f32, ly: f32| {
+        let sx = lx * scale_x;
+        let sy = ly * scale_y;
+        Vec2::new(x + sx * cos - sy * sin, y + sx * sin + sy * cos)
+    };
+    [
+        transform(-hw, -hh),
+        transform(hw, -hh),
+        transform(hw, hh),
+        transform(-hw, hh),
+    ]
 }

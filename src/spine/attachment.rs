@@ -3,6 +3,8 @@
 //! Defines how spine attachment data is validated, transformed, or stored before neighboring systems consume it.
 //! Separates spine attachment behavior from Lua bindings, tests, and sibling owners so integration stays readable.
 
+use crate::runtime::resource_keys::CanvasKey;
+
 /// Neutral source kind for a resolved Spine slot attachment.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum AttachmentSourceKind {
@@ -12,6 +14,8 @@ pub enum AttachmentSourceKind {
     ImageRegion,
     /// A visual tile from a tileset.
     TilesetVisual,
+    /// A dynamic render canvas, including SVG-rasterized canvas attachments.
+    Canvas,
 }
 
 impl AttachmentSourceKind {
@@ -21,6 +25,7 @@ impl AttachmentSourceKind {
             "spriteRegion" | "sprite_region" => Some(Self::SpriteRegion),
             "imageRegion" | "image_region" => Some(Self::ImageRegion),
             "tilesetVisual" | "tileset_visual" => Some(Self::TilesetVisual),
+            "canvas" | "svgCanvas" | "svg_canvas" => Some(Self::Canvas),
             _ => None,
         }
     }
@@ -31,6 +36,7 @@ impl AttachmentSourceKind {
             Self::SpriteRegion => "spriteRegion",
             Self::ImageRegion => "imageRegion",
             Self::TilesetVisual => "tilesetVisual",
+            Self::Canvas => "canvas",
         }
     }
 }
@@ -56,4 +62,6 @@ pub struct AttachmentSource {
     pub texture_h: f32,
     /// Optional renderer texture handle.
     pub texture_id: Option<u64>,
+    /// Optional renderer canvas handle for dynamic attachment sources.
+    pub canvas_key: Option<CanvasKey>,
 }

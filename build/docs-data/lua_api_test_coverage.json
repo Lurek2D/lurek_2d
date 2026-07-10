@@ -1,15 +1,15 @@
 {
   "meta": {
-    "generated": "2026-07-09T15:05:25.610613+00:00",
+    "generated": "2026-07-09T19:35:20.290770+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
-    "total_api_functions": 6746,
-    "marker_covered": 6707,
+    "total_api_functions": 6748,
+    "marker_covered": 6723,
     "describe_covered": 150,
     "describe_coverage_pct": 2.2,
-    "heuristic_covered": 14,
-    "total_covered": 6746,
+    "heuristic_covered": 0,
+    "total_covered": 6748,
     "coverage_pct": 100.0
   },
   "modules": {
@@ -50876,11 +50876,11 @@
       ]
     },
     "svg": {
-      "total": 25,
-      "marker_covered": 25,
+      "total": 27,
+      "marker_covered": 27,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 25,
+      "covered": 27,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -51063,6 +51063,24 @@
         },
         {
           "lua_name": "LSvgImage:getAdjacencies",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LSvgImage:containsPoint",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LSvgImage:getElementAtPoint",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -56880,9 +56898,9 @@
     },
     "ui": {
       "total": 498,
-      "marker_covered": 484,
+      "marker_covered": 498,
       "describe_covered": 0,
-      "heuristic_covered": 14,
+      "heuristic_covered": 0,
       "covered": 498,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
@@ -58805,126 +58823,126 @@
         {
           "lua_name": "LTextArea:setText",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LTextArea:getText",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LTextArea:setPlaceholder",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LTextArea:getPlaceholder",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LTextArea:setMaxLength",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LTextArea:isFocused",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LTextArea:getCursorPosition",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LRichLabel:setText",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LRichLabel:getText",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LRichLabel:getPlainText",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LAspectRatioContainer:setRatio",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LAspectRatioContainer:getRatio",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LAspectRatioContainer:setFit",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LAspectRatioContainer:getFit",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
