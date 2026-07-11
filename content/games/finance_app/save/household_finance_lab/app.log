@@ -1,4 +1,6 @@
 Household Finance Lab app log
-[info] Restored dataframe database with lurek.dataframe.loadDatabase
-[info] Reloaded dataframe database cache
-[info] Screenshot requested: save/household_finance_lab/dashboard.png
+[info] Generated deterministic CSV with 2631 rows
+[info] Loading CSV with lurek.dataframe.fromCSVFileAsync
+[info] Executed 13 SQL files through LDatabase:query
+[info] Saved dataframe database with LDatabase:save
+[info] Regenerated CSV and SQL views

@@ -1,3 +1,8 @@
+---
+name: audio-manager
+description: "Load this skill when implementing music, sound effects, mixing, or spatial audio for a game. Skip it for unrelated gameplay systems or engine internals."
+---
+
 # Audio Manager
 
 BGM playback, crossfade, SFX with volume/pitch variation, spatial audio, and mute groups.

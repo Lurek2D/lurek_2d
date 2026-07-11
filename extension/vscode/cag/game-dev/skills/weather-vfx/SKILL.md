@@ -1,3 +1,8 @@
+---
+name: weather-vfx
+description: "Load this skill when implementing weather visuals such as rain, snow, wind, lightning, or fog in a game scene. Skip it for unrelated gameplay systems or engine internals."
+---
+
 # Weather VFX
 
 Rain particles, snow drift, wind force, lightning flash with thunder SFX, and fog overlay.

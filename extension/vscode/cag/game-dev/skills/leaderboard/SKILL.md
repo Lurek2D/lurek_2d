@@ -1,3 +1,8 @@
+---
+name: leaderboard
+description: "Load this skill when implementing scoreboards, ranking displays, or run result tracking in a game. Skip it for unrelated world simulation or engine internals."
+---
+
 # Leaderboard
 
 High score table with persistence, sorted display, new high score highlight, and reset.

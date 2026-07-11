@@ -1,3 +1,8 @@
+---
+name: combat-system
+description: "Load this skill when implementing hit detection, damage, knockback, combos, or combat feedback in a game. Skip it for unrelated UI, tooling, or engine internals."
+---
+
 # Combat System
 
 Hitbox/hurtbox, i-frames, knockback, damage numbers, drop tables, hitstop, and combo counters.

@@ -1,3 +1,8 @@
+---
+name: animation-state-machine
+description: "Load this skill when implementing animation states, transitions, blend rules, or state-driven playback in a game. Skip it for unrelated UI systems or engine internals."
+---
+
 # Animation State Machine
 
 State-driven sprite animation with transition conditions, priority, and frame events.

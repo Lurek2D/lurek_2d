@@ -8,15 +8,16 @@ Owns Codex-only guidance for `lurek_2D`.
 - Maintain active role mappings and reusable workflows.
 
 ## Files
-- `config.toml`: Active roles and tool capabilities.
+- `config.toml`: Codex workspace defaults and registered agent mappings.
 - `agents/`: Runtime role overlays, not direct task instructions.
 - `skills/`: Reusable task workflows.
 
 ## Rules
 - Pick the narrowest owner: contracts for invariants, `agents/` for roles, `skills/` for workflows.
 - Prefer links to nearest contracts over copied rules.
-- Register new skills in `config.toml`.
-- Review roles must not edit code unless the user asks for fixes.
+- Keep the existing `.codex/skills/` catalog intact; do not create replacement skills without explicit user approval.
+- Route only to agent profiles that actually exist under `.codex/agents/`.
+- Keep skill owner labels synced with the registered profile names they target.
 - Keep optional local runtimes repo-scoped; use `tools/dev/headroom_runtime.py` instead of hard-wiring Headroom into active `config.toml`.
 
 ## Workflow

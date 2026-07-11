@@ -1,3 +1,8 @@
+---
+name: crafting-system
+description: "Load this skill when implementing recipes, resource conversion, crafting stations, or production flows in a game. Skip it for unrelated rendering systems or engine internals."
+---
+
 # Crafting System
 
 Recipe tables, ingredient matching, multiple outputs, station restrictions, and discovery mechanics.

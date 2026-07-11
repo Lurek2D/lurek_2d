@@ -1,3 +1,8 @@
+---
+name: scene-management
+description: "Load this skill when implementing scene loading, transitions, scene lifetime, or shared scene services in a game. Skip it for unrelated UI widgets or engine internals."
+---
+
 # Scene Management
 
 Scene table pattern, transitions, scene stacking, preloading, and cleanup for multi-screen games.

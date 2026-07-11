@@ -1,3 +1,8 @@
+---
+name: save-load
+description: "Load this skill when implementing save data, checkpoints, persistence, or load flows in a game. Skip it for unrelated rendering systems or engine internals."
+---
+
 # Save / Load
 
 Persist game state with versioned TOML saves, migration, autosave, multiple slots, and validation.

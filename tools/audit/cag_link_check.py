@@ -27,6 +27,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "validate"))
 
 from _cag_common import (  # noqa: E402
+    AGENT_SKILLS_DIR,
+    CODEX_DIR,
     GITHUB_DIR,
     WORKSPACE_ROOT,
     extract_links,
@@ -36,7 +38,7 @@ from _cag_common import (  # noqa: E402
 
 
 def _categorise(target: str) -> str:
-    if target.startswith(".github/"):
+    if target.startswith((".agents/", ".codex/", ".github/")):
         return "cag"
     if target.startswith("docs/"):
         return "docs"
@@ -54,8 +56,14 @@ def _categorise(target: str) -> str:
 
 
 def scan() -> dict[str, object]:
-    """Walk .github/, return a structured report payload."""
-    md_files = sorted(GITHUB_DIR.rglob("*.md"))
+    """Walk active CAG surfaces and return a structured report payload."""
+    roots = (
+        AGENT_SKILLS_DIR,
+        CODEX_DIR,
+        WORKSPACE_ROOT / "extension" / "vscode" / "cag" / "game-dev",
+        GITHUB_DIR,
+    )
+    md_files = sorted({path for root in roots if root.exists() for path in root.rglob("*.md")})
     broken: list[dict[str, object]] = []
     by_cat: Counter[str] = Counter()
     broken_by_cat: Counter[str] = Counter()
@@ -130,10 +138,6 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    if not GITHUB_DIR.exists():
-        print(f"ERROR: {GITHUB_DIR} not found", file=sys.stderr)
-        return 2
-
     report = scan()
     if args.report:
         Path(args.report).parent.mkdir(parents=True, exist_ok=True)

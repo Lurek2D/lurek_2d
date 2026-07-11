@@ -1,3 +1,8 @@
+---
+name: particle-juice
+description: "Load this skill when implementing particle effects, impact feedback, bursts, trails, or visual juice in a game. Skip it for unrelated persistence systems or engine internals."
+---
+
 # Particle Juice
 
 On-hit sparks, walk dust, landing impact, death explosion, coin collect, and healing shimmer using lurek.particle.

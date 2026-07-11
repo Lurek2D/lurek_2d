@@ -5,7 +5,7 @@ description: "Load this skill when running a coordinated audit and fix sweep acr
 # review-all
 
 ## Mission
-- Coordinate review skills, aggregate findings, and route fixes to the correct owner profile.
+- Coordinate review skills, aggregate findings, and route fixes to the correct existing owner profile.
 
 ## When To Load
 - Running a coordinated audit and fix sweep across API, docs, examples, performance, quality, specs, and tests.
@@ -25,7 +25,8 @@ description: "Load this skill when running a coordinated audit and fix sweep acr
 - Run RAG and read root plus relevant contracts before starting the sweep.
 - Run reviews in this order: API, tests, examples, specs, docstrings, architecture, performance, quality.
 - Aggregate findings by owner profile and severity before fixing.
-- If running under read-only `reviewer`, stop after findings and provide owner handoff.
+- Use owner profiles that already exist under `.codex/agents/`.
+- If a needed owner profile is missing, report the gap instead of inventing one.
 - If edit-capable and fixes are requested, dispatch fixes through the matching create/review skill and rerun audits.
 - Finish by reporting changed files and validation evidence.
 

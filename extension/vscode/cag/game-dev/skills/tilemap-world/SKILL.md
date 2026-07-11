@@ -1,3 +1,8 @@
+---
+name: tilemap-world
+description: "Load this skill when implementing tilemap loading, rendering, collision, triggers, or camera bounds for a world. Skip it for non-tilemap gameplay systems or engine internals."
+---
+
 # Tilemap World
 
 Load tilemaps, render layers, tile-based collision, auto-tiling, camera bounds, and trigger zones.

@@ -1,3 +1,8 @@
+---
+name: platformer-movement
+description: "Load this skill when implementing platformer locomotion such as jump, coyote time, ladders, or wall movement. Skip it for top-down movement, UI, or engine internals."
+---
+
 # Platformer Movement
 
 Tight, responsive 2D platformer controls with jump arcs, coyote time, jump buffering, and wall mechanics.

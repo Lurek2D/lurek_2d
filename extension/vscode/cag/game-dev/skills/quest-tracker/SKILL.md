@@ -1,3 +1,8 @@
+---
+name: quest-tracker
+description: "Load this skill when implementing quest state, objectives, progress tracking, or quest UI in a game. Skip it for unrelated combat systems or engine internals."
+---
+
 # Quest Tracker
 
 Quest tables, objective types, multi-step progression, journal UI, and completion rewards.

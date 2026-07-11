@@ -1,3 +1,8 @@
+---
+name: camera-system
+description: "Load this skill when implementing camera follow, bounds, shake, zoom, or framing logic in a game. Skip it for unrelated UI systems or engine internals."
+---
+
 # Camera System
 
 Smooth follow, deadzone, screenshake, zoom, and bounds-clamped camera for 2D games.

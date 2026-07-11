@@ -1,3 +1,8 @@
+---
+name: game-states
+description: "Load this skill when implementing game state flow such as menus, pause, combat, or transitions between major modes. Skip it for unrelated low-level engine internals."
+---
+
 # Game States
 
 State stack with push/pop for pause and overlays, state table pattern, transitions, and persistent state.

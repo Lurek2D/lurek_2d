@@ -1,6 +1,6 @@
 ---
 name: convert-gemini-game
-description: "Load this skill when converting Gemini Canvas, React, TSX, JavaScript, HTML canvas, or other web game prototypes into runnable Lurek2D Lua games under content/games. Use it when the user pastes or provides a web prototype and asks to port, map, redesign, or recreate it in Lurek while maximizing real lurek.* API usage."
+description: "Load this skill when converting Gemini Canvas, React, TSX, JavaScript, HTML canvas, or other web game prototypes into runnable Lurek2D Lua games under content/games. Skip it for engine internals, docs-only edits, or tasks that do not start from an existing web prototype."
 ---
 
 # Convert Gemini Game

@@ -1,3 +1,8 @@
+---
+name: input-handling
+description: "Load this skill when implementing keyboard, mouse, gamepad, rebinding, or input buffering logic. Skip it for unrelated rendering systems or engine internals."
+---
+
 # Input Handling
 
 Action map pattern, just-pressed vs held detection, gamepad support, configurable bindings, and input buffering.

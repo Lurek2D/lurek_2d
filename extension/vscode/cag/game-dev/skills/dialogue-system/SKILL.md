@@ -1,3 +1,8 @@
+---
+name: dialogue-system
+description: "Load this skill when implementing dialogue trees, text flow, choices, or conversation triggers in a game. Skip it for unrelated combat, rendering, or engine internals."
+---
+
 # Dialogue System
 
 Dialog node trees, portraits, typewriter text, conditional branches, choices, and shop integration.

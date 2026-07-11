@@ -1,3 +1,8 @@
+---
+name: object-pool
+description: "Load this skill when implementing reusable object pools for bullets, particles, enemies, or other repeated allocations. Skip it for unrelated UI systems or engine internals."
+---
+
 # Object Pool
 
 Pre-allocated tables for bullets, particles, and enemies. Acquire/release pattern with resize policy.

@@ -1,3 +1,8 @@
+---
+name: inventory-system
+description: "Load this skill when implementing item storage, pickup, equip, consume, or inventory UI flows. Skip it for unrelated combat, rendering, or engine internals."
+---
+
 # Inventory System
 
 Item storage, stacking, transfer, equipped state, and serialization for RPG/adventure games.

@@ -1,3 +1,8 @@
+---
+name: collision-response
+description: "Load this skill when implementing collision handling, contact reactions, pushback, or trigger responses. Skip it for unrelated UI systems or engine internals."
+---
+
 # Collision Response
 
 Physics body callbacks, bounce, slide, one-way platforms, slopes, damage zones, and triggers using lurek.physics.

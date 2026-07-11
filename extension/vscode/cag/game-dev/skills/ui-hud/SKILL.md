@@ -1,3 +1,8 @@
+---
+name: ui-hud
+description: "Load this skill when implementing HUD, status bars, counters, prompts, or other in-game UI overlays. Skip it for unrelated gameplay systems or engine internals."
+---
+
 # UI / HUD
 
 Health bars, minimap, inventory slots, tooltips, damage numbers, cooldown indicators, and speech bubbles.

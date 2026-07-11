@@ -1,3 +1,8 @@
+---
+name: event-bus
+description: "Load this skill when implementing publish-subscribe messaging, decoupled event flow, or game signal routing. Skip it for unrelated UI systems or engine internals."
+---
+
 # Event Bus
 
 Central event system with subscribe, emit, and unsubscribe for decoupled game systems.

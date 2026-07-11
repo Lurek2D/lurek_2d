@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import json
 import re
+import tomllib
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Iterable, Iterator
@@ -28,6 +29,10 @@ from typing import Iterable, Iterator
 
 WORKSPACE_ROOT = Path(__file__).resolve().parents[2]
 GITHUB_DIR = WORKSPACE_ROOT / ".github"
+CODEX_DIR = WORKSPACE_ROOT / ".codex"
+AGENT_SKILLS_DIR = CODEX_DIR / "skills"
+ROLE_CONFIG_DIR = CODEX_DIR / "agents"
+CODEX_CONFIG = CODEX_DIR / "config.toml"
 SYSTEM_PROMPT = GITHUB_DIR / "copilot-instructions.md"
 AGENTS_DIR = GITHUB_DIR / "agents"
 SKILLS_DIR = GITHUB_DIR / "skills"
@@ -379,15 +384,56 @@ def discover_agents() -> list[Path]:
 
 
 def discover_skills() -> list[Path]:
-    if not SKILLS_DIR.exists():
+    """Discover the repository's active local skill catalog."""
+    if not AGENT_SKILLS_DIR.exists():
         return []
     out: list[Path] = []
-    for d in sorted(SKILLS_DIR.iterdir()):
+    for d in sorted(AGENT_SKILLS_DIR.iterdir()):
         if d.is_dir():
             sk = d / "SKILL.md"
             if sk.exists():
                 out.append(sk)
     return out
+
+
+def discover_role_configs() -> list[Path]:
+    """Discover active role overlays registered in .codex/config.toml."""
+    if not ROLE_CONFIG_DIR.exists() or not CODEX_CONFIG.exists():
+        return []
+    try:
+        config = tomllib.loads(safe_read(CODEX_CONFIG))
+    except (tomllib.TOMLDecodeError, OSError):
+        return []
+    agents = config.get("agents")
+    if not isinstance(agents, dict):
+        return []
+
+    out: list[Path] = []
+    for key, value in agents.items():
+        if key in {"max_depth", "max_threads", "job_max_runtime_seconds"}:
+            continue
+        if not isinstance(value, dict):
+            continue
+        config_file = value.get("config_file")
+        if not isinstance(config_file, str) or not config_file.strip():
+            continue
+        path = (CODEX_DIR / config_file).resolve()
+        try:
+            path.relative_to(ROLE_CONFIG_DIR.resolve())
+        except ValueError:
+            continue
+        if path.exists():
+            out.append(path)
+    return sorted(set(out))
+
+
+def parse_role_config(path: Path) -> dict[str, object]:
+    """Read a role TOML file and return an empty mapping for invalid data."""
+    try:
+        data = tomllib.loads(safe_read(path))
+    except (tomllib.TOMLDecodeError, OSError):
+        return {}
+    return data if isinstance(data, dict) else {}
 
 
 def discover_prompts() -> list[Path]:
@@ -410,6 +456,7 @@ def discover_all() -> dict[str, list[Path]]:
         "system_prompt": [SYSTEM_PROMPT] if SYSTEM_PROMPT.exists() else [],
         "agent": discover_agents(),
         "skill": discover_skills(),
+        "role_config": discover_role_configs(),
         "prompt": discover_prompts(),
         "repo_agent": discover_repo_agents(),
     }
@@ -417,7 +464,12 @@ def discover_all() -> dict[str, list[Path]]:
 
 
 def known_agent_names() -> set[str]:
-    return {p.name.removesuffix(".agent.md") for p in discover_agents()}
+    names = {p.name.removesuffix(".agent.md") for p in discover_agents()}
+    for path in discover_role_configs():
+        name = parse_role_config(path).get("name")
+        if isinstance(name, str):
+            names.add(name)
+    return names
 
 
 def known_skill_names() -> set[str]:
@@ -596,7 +648,8 @@ __all__ = [
     "Frontmatter", "parse_frontmatter", "body_after_frontmatter",
     "parse_cag_metadata_section",
     "LinkRef", "extract_links", "strip_fenced_blocks", "find_fenced_block_lines",
-    "discover_agents", "discover_skills", "discover_prompts", "discover_repo_agents", "discover_all",
+    "discover_agents", "discover_role_configs", "discover_skills", "discover_prompts", "discover_repo_agents", "discover_all",
+    "parse_role_config",
     "known_agent_names", "known_skill_names", "known_prompt_names",
     "find_sections", "has_section", "first_section_line",
     "relpath", "safe_read",

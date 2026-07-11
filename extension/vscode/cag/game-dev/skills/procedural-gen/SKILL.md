@@ -1,3 +1,8 @@
+---
+name: procedural-gen
+description: "Load this skill when implementing procedural maps, loot, encounters, or generated content in a game. Skip it for unrelated UI systems or engine internals."
+---
+
 # Procedural Generation
 
 BSP room generation, corridor connection, weighted loot tables, enemy placement, secret rooms, and seeded random.

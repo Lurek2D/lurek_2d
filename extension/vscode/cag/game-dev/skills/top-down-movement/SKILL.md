@@ -1,3 +1,8 @@
+---
+name: top-down-movement
+description: "Load this skill when implementing top-down player or NPC movement, acceleration, and facing logic. Skip it for platforming, UI, or engine internals."
+---
+
 # Top-Down Movement
 
 8-directional, grid-locked RPG, and analog movement for overhead perspective games.

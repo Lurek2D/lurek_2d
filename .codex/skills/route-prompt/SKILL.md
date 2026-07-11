@@ -1,14 +1,14 @@
 ---
 name: route-prompt
-description: "Load this skill when choosing the best active Codex skill, owner profile, or legacy prompt for a user request. Skip it for executing the selected workflow or doing implementation directly."
+description: "Load this skill when choosing the best active Codex skill and owner profile for a user request. Skip it for executing the selected workflow or doing implementation directly."
 ---
 # route-prompt
 
 ## Mission
-- Route user requests to the narrowest active Codex skill and owner profile before falling back to legacy prompts.
+- Route user requests to the narrowest active Codex skill and an existing owner profile.
 
 ## When To Load
-- Choosing the best active Codex skill, owner profile, or legacy prompt for a user request.
+- Choosing the best active Codex skill and owner profile for a user request.
 
 ## When To Skip
 - Executing the selected workflow or doing implementation directly.
@@ -21,13 +21,13 @@ description: "Load this skill when choosing the best active Codex skill, owner p
 - Read `.codex/AGENTS.md`, root `AGENTS.md`, active agent TOMLs, and relevant skill metadata.
 - Search `.codex/skills` first because it is the active Codex surface.
 - Choose one primary skill and one owner profile; mention supporting skills only when needed.
-- Use `.github/prompts` only as a legacy mirror when the user explicitly asks for a prompt or no active skill matches.
+- Use only owner profiles that are actually registered under `.codex/agents/`.
+- Do not invent new agent names in routing output.
 - Return a concrete invocation or handoff with no invented filenames.
 - Finish by reporting changed files and validation evidence.
 
 ## Success Criteria
-- Output names exactly one primary active skill and one owner profile unless no active skill fits.
-- Legacy prompts are used only as fallback or explicit user request.
+- Output names exactly one primary active skill and one existing owner profile unless no active skill fits.
 - Listed validation tools complete successfully, or any remaining failure is reported with exact output and next owner.
 
 ## Stop Conditions
@@ -37,7 +37,7 @@ description: "Load this skill when choosing the best active Codex skill, owner p
 
 ## Companion File Index
 - Contracts: `.codex/AGENTS.md`, `AGENTS.md`
-- Primary tools: `tools/python.cmd tools/rag/query.py "codex skills agents routing" --profile all --limit 10`, `filesystem reads of .codex/skills, .codex/agents, and .github/prompts`
+- Primary tools: `tools/python.cmd tools/rag/query.py "codex skills agents routing" --profile all --limit 10`, `filesystem reads of .codex/skills and .codex/agents`
 - Owner profile: `manager`
 
 ## Common RAG Queries
@@ -47,5 +47,5 @@ description: "Load this skill when choosing the best active Codex skill, owner p
 
 ## References
 - `contracts: .codex/AGENTS.md, AGENTS.md`
-- `tools: tools/python.cmd tools/rag/query.py "codex skills agents routing" --profile all --limit 10, filesystem reads of .codex/skills, .codex/agents, and .github/prompts`
+- `tools: tools/python.cmd tools/rag/query.py "codex skills agents routing" --profile all --limit 10, filesystem reads of .codex/skills and .codex/agents`
 - `agent: manager`

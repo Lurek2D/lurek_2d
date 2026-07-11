@@ -1,3 +1,8 @@
+---
+name: pathfinding-ai
+description: "Load this skill when implementing pathfinding, steering, enemy AI, or navigation logic in a game. Skip it for unrelated UI systems or engine internals."
+---
+
 # Pathfinding & AI
 
 A* grid pathfinding, path following, obstacle avoidance, aggro radius, AI modes, and formations.

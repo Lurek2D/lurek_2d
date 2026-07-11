@@ -1,3 +1,8 @@
+---
+name: tween-easing
+description: "Load this skill when implementing tweens, easing curves, or motion interpolation for game objects or UI. Skip it for unrelated systems or engine internals."
+---
+
 # Tween & Easing
 
 Animate values over time with easing functions, chaining, callbacks, and cancellation.

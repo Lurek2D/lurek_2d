@@ -22,9 +22,10 @@
 ## Rules
 - Read root `AGENTS.md`, then nested contracts on the target path, then relevant skills/agents.
 - CAG is active guidance: `AGENTS.md` contracts, `.codex/agents/`, `.codex/skills/`, and task skills.
+- Use only registered agent profiles from `.codex/agents/`; do not invent role names in contracts or skills.
 - RAG is first-pass discovery: use `tools/rag/query.py "<keywords>" --profile all|game|engine` before broad reads.
 - MCP/repo CLI comes before ad hoc scripts when a matching tool exists.
-- Prefer `python path/to/script.py` for parsing, reporting, and automation.
+- Prefer `tools/python.cmd path/to/script.py` for parsing, reporting, and automation on Windows.
 - When a repo tool enforces a marker, path, registry, or file-shape contract, treat that parser as source of truth and keep the nearest `AGENTS.md` plus task skills synced.
 - Keep output short; cap captured output at 1000 lines.
 - Do not read huge files unless needed.

@@ -1,14 +1,14 @@
 ---
 name: create-cag-artifact
-description: "Load this skill when creating or modifying Codex CAG artifacts such as local skills, agents, prompts, routing guidance, or legacy prompt mirrors. Skip it for product code, docs content unrelated to Codex behavior, or broad repo audits."
+description: "Load this skill when creating or modifying Codex CAG artifacts such as local skills, agents, and routing guidance. Skip it for product code, docs content unrelated to Codex behavior, or broad repo audits."
 ---
 # create-cag-artifact
 
 ## Mission
-- Create or modify active Codex CAG artifacts and keep validation, routing, and legacy mirrors coherent.
+- Create or modify active Codex CAG artifacts and keep validation and routing coherent.
 
 ## When To Load
-- Creating or modifying Codex CAG artifacts such as local skills, agents, prompts, routing guidance, or legacy prompt mirrors.
+- Creating or modifying Codex CAG artifacts such as local skills, agents, and routing guidance.
 
 ## When To Skip
 - Product code, docs content unrelated to Codex behavior, or broad repo audits.
@@ -22,10 +22,10 @@ description: "Load this skill when creating or modifying Codex CAG artifacts suc
 - Treat create skills as create-or-modify workflows; existing artifacts are the default owner when present.
 
 ## Workflow
-- Identify the active surface first: `.codex/agents/`, `.codex/skills/`, or `.github/prompts/` legacy mirror.
+- Identify the active surface first: `.codex/agents/` or `.codex/skills/`.
 - Read validator rules before editing; skill frontmatter requires only `name` and `description`.
 - Use `## CAG Metadata` only where the validator or artifact type needs body metadata such as related skills; do not require it for every skill.
-- For same-name legacy prompt mirrors, sync only the parts that would otherwise conflict with the active `.codex` artifact.
+- Reference existing agent profiles and config surfaces as they exist in the repo; do not invent new role names inside skills or contracts.
 - Run CAG validation and strict link checking after edits.
 - Finish by reporting changed files and validation evidence.
 
@@ -51,7 +51,6 @@ description: "Load this skill when creating or modifying Codex CAG artifacts suc
   - `.codex skills agents vendor_imports`
 - Common areas to inspect after top hits:
   - `.codex/`
-  - `.agents/`
   - root `AGENTS.md`
   - nested `AGENTS.md`
 

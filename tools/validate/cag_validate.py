@@ -50,6 +50,7 @@ from _cag_common import (  # noqa: E402
     WORKSPACE_ROOT,
     body_after_frontmatter,
     discover_agents,
+    discover_role_configs,
     discover_prompts,
     discover_repo_agents,
     discover_skills,
@@ -60,6 +61,7 @@ from _cag_common import (  # noqa: E402
     has_section,
     known_agent_names,
     known_skill_names,
+    parse_role_config,
     parse_cag_metadata_section,
     parse_frontmatter,
     relpath,
@@ -67,6 +69,37 @@ from _cag_common import (  # noqa: E402
 )
 
 BASELINE_PATH = Path(__file__).resolve().parent / "cag_validate.baseline.json"
+
+_ROLE_REQUIRED_KEYS = {
+    "name", "description", "model", "model_reasoning_effort",
+    "approval_policy", "sandbox_mode",
+}
+_VALID_APPROVAL_POLICIES = {"never", "on-request", "on-failure"}
+_VALID_SANDBOX_MODES = {"read-only", "workspace-write", "danger-full-access"}
+
+
+def check_role_config(path: Path) -> list[Violation]:
+    """Validate an active registered TOML role overlay."""
+    rel = relpath(path)
+    data = parse_role_config(path)
+    if not data:
+        return [Violation(rel, "E120", "error", "Invalid TOML role configuration")]
+    missing = sorted(key for key in _ROLE_REQUIRED_KEYS if not data.get(key))
+    if missing:
+        return [Violation(rel, "E120", "error", f"Missing required keys: {', '.join(missing)}")]
+    name = data.get("name")
+    if not isinstance(name, str) or not name.strip():
+        return [Violation(rel, "E121", "error", "Active role config must define a non-empty string name")]
+    violations: list[Violation] = []
+    if path.stem != name:
+        violations.append(Violation(rel, "E121", "error", "Role config filename stem must match the role name"))
+    approval_policy = data.get("approval_policy")
+    if approval_policy not in _VALID_APPROVAL_POLICIES:
+        violations.append(Violation(rel, "E122", "error", f"Unsupported approval_policy: {approval_policy!r}"))
+    sandbox_mode = data.get("sandbox_mode")
+    if sandbox_mode not in _VALID_SANDBOX_MODES:
+        violations.append(Violation(rel, "E122", "error", f"Unsupported sandbox_mode: {sandbox_mode!r}"))
+    return violations
 
 # ─── System prompt rules ─────────────────────────────────────────────────────
 
@@ -610,7 +643,7 @@ def run_validation(
     skills = known_skill_names()
     agents = known_agent_names()
     violations: list[Violation] = []
-    scanned = {"system_prompt": 0, "agent": 0, "skill": 0, "prompt": 0, "repo_agent": 0}
+    scanned = {"system_prompt": 0, "agent": 0, "role_config": 0, "skill": 0, "prompt": 0, "repo_agent": 0}
 
     if single_file is not None:
         if single_file.name == "copilot-instructions.md":
@@ -621,6 +654,9 @@ def run_validation(
             duplicates = _check_agent_duplicate_bullets(discover_agents())
             violations.extend(v for v in duplicates if v.file == relpath(single_file))
             scanned["agent"] = 1
+        elif single_file.suffix == ".toml" and single_file.parent.name == "agents":
+            violations.extend(check_role_config(single_file))
+            scanned["role_config"] = 1
         elif single_file.name == "SKILL.md":
             violations.extend(check_skill(single_file, skills=skills))
             scanned["skill"] = 1
@@ -642,6 +678,9 @@ def run_validation(
             violations.extend(check_agent(a, skills=skills, agents=agents))
             scanned["agent"] += 1
         violations.extend(_check_agent_duplicate_bullets(agent_paths))
+        for role in discover_role_configs():
+            violations.extend(check_role_config(role))
+            scanned["role_config"] += 1
     if type_filter in (None, "skill"):
         for s in discover_skills():
             violations.extend(check_skill(s, skills=skills))
@@ -654,6 +693,11 @@ def run_validation(
         for a in discover_repo_agents():
             violations.extend(check_repo_agent(a))
             scanned["repo_agent"] += 1
+    if type_filter is None:
+        if scanned["skill"] == 0:
+            violations.append(Violation(".codex/skills", "E900", "error", "No active repository skills discovered"))
+        if scanned["role_config"] == 0:
+            violations.append(Violation(".codex/agents", "E901", "error", "No active role configurations discovered"))
     return violations, scanned
 
 
@@ -730,6 +774,7 @@ def format_text(violations: list[Violation], scanned: dict[str, int]) -> str:
     lines.append(
         f"Scanned: system_prompt={scanned.get('system_prompt', 0)} "
         f"agents={scanned.get('agent', 0)} "
+        f"role_configs={scanned.get('role_config', 0)} "
         f"skills={scanned.get('skill', 0)} "
         f"prompts={scanned.get('prompt', 0)} "
         f"repo_agents={scanned.get('repo_agent', 0)}"
@@ -764,10 +809,6 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    if not GITHUB_DIR.exists():
-        print(f"ERROR: {GITHUB_DIR} not found", file=sys.stderr)
-        return 2
-
     single_file: Path | None = None
     if args.file:
         candidate = WORKSPACE_ROOT / args.file

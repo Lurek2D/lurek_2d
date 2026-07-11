@@ -1,3 +1,8 @@
+---
+name: debug-console
+description: "Load this skill when implementing an in-game debug console, command runner, or runtime inspection tools. Skip it for player-facing gameplay systems or engine internals."
+---
+
 # Debug Console
 
 Toggle overlay with command input, built-in commands, and extensible command registration.
