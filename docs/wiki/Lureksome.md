@@ -12,7 +12,7 @@
 
 Lureksome is the set of reusable Lua libraries built on top of the runtime. This page summarizes the generated `docs/api/lureksome.md` reference and links to the LuaCATS stub in `docs/api/lureksome.lua`.
 
-**11 libraries, 960 functions**
+**9 libraries, 821 functions**
 
 Markdown reference: [docs/api/lureksome.md](../blob/main/docs/api/lureksome.md)
 LuaCATS stub: [docs/api/lureksome.lua](../blob/main/docs/api/lureksome.lua)
@@ -27,6 +27,4 @@ LuaCATS stub: [docs/api/lureksome.lua](../blob/main/docs/api/lureksome.lua)
 | [library.inventory](../blob/main/docs/api/lureksome.lua) | — 90 fn, 6 classes |
 | [library.item](../blob/main/docs/api/lureksome.lua) | — 138 fn, 7 classes |
 | [library.loot](../blob/main/docs/api/lureksome.lua) | — 32 fn, 4 classes |
-| [library.quest](../blob/main/docs/api/lureksome.lua) | — 56 fn, 4 classes |
 | [library.roguelike](../blob/main/docs/api/lureksome.lua) | — 32 fn, 3 classes |
-| [library.stats](../blob/main/docs/api/lureksome.lua) | — 83 fn, 3 classes |

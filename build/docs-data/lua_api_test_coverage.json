@@ -1,15 +1,15 @@
 {
   "meta": {
-    "generated": "2026-07-09T19:35:20.290770+00:00",
+    "generated": "2026-07-13T07:29:20.561106+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
-    "total_api_functions": 6748,
-    "marker_covered": 6723,
+    "total_api_functions": 7008,
+    "marker_covered": 6981,
     "describe_covered": 150,
-    "describe_coverage_pct": 2.2,
+    "describe_coverage_pct": 2.1,
     "heuristic_covered": 0,
-    "total_covered": 6748,
+    "total_covered": 7008,
     "coverage_pct": 100.0
   },
   "modules": {
@@ -44405,6 +44405,2363 @@
         },
         {
           "lua_name": "LCellular:typeOf",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        }
+      ]
+    },
+    "progression": {
+      "total": 260,
+      "marker_covered": 260,
+      "describe_covered": 0,
+      "heuristic_covered": 0,
+      "covered": 260,
+      "coverage_pct": 100.0,
+      "describe_coverage_pct": 0.0,
+      "describe_score": 0.0,
+      "uncovered": [],
+      "test_files": [
+        "tests/lua/unit/test_progression_unit.lua"
+      ],
+      "describe_files": [],
+      "functions": [
+        {
+          "lua_name": "lurek.progression.define",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.get",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.getBase",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.setBase",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.setMin",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.setMax",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.getMin",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.getMax",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.setRegen",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.getRegen",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.getStatNames",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.addBuff",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.removeBuff",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.clearBuffs",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.getBuffCount",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.applyTraitBuffs",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.removeTraitBuffs",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.hasTrait",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.getActiveTraits",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.getBuffs",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.addXP",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.getXP",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.setXP",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.getLevel",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.setLevel",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.setLevelThresholds",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.defineSkill",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.learnSkill",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.useSkill",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.getSkillLevel",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.getCooldownRemaining",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.definePerk",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.acquirePerk",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.hasPerk",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.setActionPoints",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.getActionPoints",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.spendActionPoints",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.recoverActionPoints",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.beginTurn",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.setMorale",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.getMorale",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.adjustMorale",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.setPanicThreshold",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.setBerserkThreshold",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.checkMorale",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.setFlag",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.clearFlag",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.hasFlag",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.getFlags",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.setResistance",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.getResistance",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.applyDamage",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.recordUse",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.getUseCount",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.setEncumbrance",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.getEncumbrance",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.isEncumbered",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.setInitiative",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.getInitiative",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.update",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.snapshot",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.restore",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.type",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.typeOf",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.addQuest",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.questCount",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.questIds",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.removeQuest",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.startQuest",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.completeQuest",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.failQuest",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.advanceObjective",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.addJournalEntry",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.getQuest",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.questsWithStatus",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.activeIds",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.completedIds",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.failedIds",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.activeCount",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.completedCount",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.setQuestReward",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.getQuestReward",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.resetQuest",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.type",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.typeOf",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.newStore",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.loadStore",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.importLegacyStatsSnapshot",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.importLegacyQuestSnapshot",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.createLegacyStatsAdapter",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.progression.createLegacyQuestAdapter",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionProfile:getId",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionProfile:type",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionProfile:typeOf",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionTransaction:addCounter",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionTransaction:setCounter",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionTransaction:setAttributeBase",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionTransaction:setResource",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionTransaction:addModifier",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionTransaction:setQuestObjective",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionTransaction:addExperience",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionTransaction:commit",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionTransaction:rollback",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionTransaction:type",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionTransaction:typeOf",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:getId",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:getRevision",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:getSchemaVersion",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:getDefinitionHash",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:getTime",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:setTime",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:advanceTime",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:update",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:stats",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:clear",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:validate",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:compileCondition",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:validateCondition",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:evaluateCondition",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:explainCondition",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:debugSnapshot",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:exportSnapshot",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:exportChangesSince",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:exportChangeset",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:loadSnapshot",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:applyChangeset",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:applyChangesetEnvelope",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:ackChangesThrough",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:compactChanges",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:drainEvents",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:clearEvents",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:createProfile",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:ensureProfile",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:hasProfile",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:getProfile",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:updateProfile",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:removeProfile",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:listProfiles",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:countProfiles",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:addProfileTag",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:removeProfileTag",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:setProfileMetadata",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:removeProfileMetadata",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:defineCounter",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:addCounter",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:setCounter",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:getCounter",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:getCounterState",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:listCounters",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:defineAttribute",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:getAttribute",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:getAttributeState",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:setAttributeBase",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:addAttributeBase",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:explainAttribute",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:addModifier",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:removeModifier",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:listModifiers",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:defineResource",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:getResource",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:setResource",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:addResource",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:spendResource",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:canSpendResource",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:refillResource",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:defineLevelTrack",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:defineDerivedValue",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:defineProfileTemplate",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:defineTrait",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:applyTrait",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:removeTrait",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:hasTrait",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:listTraits",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:definePerk",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:defineSkill",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:learnSkill",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:useSkill",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:getSkillLevel",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:getSkillCooldown",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:acquirePerk",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:hasPerk",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:applyProfileTemplate",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:defineLeaderboard",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:defineSeason",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:startSeason",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:endSeason",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:getSeason",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:listSeasons",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:getSeasonArchive",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:definePrestige",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:canPrestige",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:applyPrestige",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:getPrestige",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:listPrestiges",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:defineCollection",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:collectCollectionItem",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:getCollection",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:listCollections",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:pinRival",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:getRival",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:listRivals",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:getRivalDelta",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:getActivityFeed",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:definePopulationTemplate",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:validatePopulationTemplate",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:generatePopulation",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:getPopulation",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:updatePopulation",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:simulatePopulationUntil",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:pausePopulation",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:resumePopulation",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:removePopulation",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:regeneratePopulation",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:getPopulationStatistics",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:listPopulationProfiles",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:materializePopulationProfile",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:dematerializePopulationProfile",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:removeDerivedValue",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:getDerivedValue",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:explainDerivedValue",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:validateDerivedValues",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:submitScore",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:getLeaderboardEntry",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:listLeaderboardTop",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:listLeaderboardRange",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:listLeaderboardAroundProfile",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:addExperience",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:getExperience",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:setExperience",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:getLevel",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:setLevel",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:getExperienceToNextLevel",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:defineQuest",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:defineChallengeTemplate",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:activateChallenge",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:setChallengeProgress",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:getChallenge",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:listChallenges",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:defineAchievement",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:unlockAchievement",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:getAchievement",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:listAchievements",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:getPendingRewards",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:claimReward",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:markRewardApplied",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:rejectReward",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:acceptQuest",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:revealQuest",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:addQuestJournalEntry",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:listQuestJournalEntries",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:refreshQuestLifecycle",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:completeQuest",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:failQuest",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:setQuestObjective",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:setQuestObjectiveStatus",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:setQuestObjectiveVisibility",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:getQuestState",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:beginTransaction",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:type",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProgressionStore:typeOf",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,

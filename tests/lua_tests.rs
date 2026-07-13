@@ -355,6 +355,11 @@ fn lua_evidence_procgen_evidence() {
 }
 
 #[test]
+fn lua_evidence_progression_evidence() {
+    run_lua_test("evidence/test_progression_evidence.lua");
+}
+
+#[test]
 fn lua_evidence_raycaster_evidence() {
     run_lua_test("evidence/test_raycaster_evidence.lua");
 }
@@ -1130,18 +1135,8 @@ fn lua_library_loot_library() {
 }
 
 #[test]
-fn lua_library_quest_library() {
-    run_lua_test("library/test_quest_library.lua");
-}
-
-#[test]
 fn lua_library_roguelike_library() {
     run_lua_test("library/test_roguelike_library.lua");
-}
-
-#[test]
-fn lua_library_stats_library() {
-    run_lua_test("library/test_stats_library.lua");
 }
 
 #[test]
@@ -1257,6 +1252,11 @@ fn lua_stress_physics_stress() {
 #[test]
 fn lua_stress_procgen_stress() {
     run_lua_test("stress/test_procgen_stress.lua");
+}
+
+#[test]
+fn lua_stress_progression_stress() {
+    run_lua_test("stress/test_progression_stress.lua");
 }
 
 #[test]
@@ -1567,6 +1567,11 @@ fn lua_unit_physics_unit() {
 #[test]
 fn lua_unit_pipeline_unit() {
     run_lua_test("unit/test_pipeline_unit.lua");
+}
+
+#[test]
+fn lua_unit_progression_unit() {
+    run_lua_test("unit/test_progression_unit.lua");
 }
 
 #[test]

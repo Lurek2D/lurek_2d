@@ -1,0 +1,12 @@
+scenario=legacy_adapter_migration
+library_stats_present=false
+library_quest_present=false
+hp_base=70
+hp_effective=80
+actual_damage=30
+xp=10
+level=3
+quest_status=completed
+quest_reward=gold
+journal_entries=1
+metadata_origin=engine

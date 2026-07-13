@@ -23,9 +23,7 @@ pure Lua gameplay libraries that sit on top of the public `lurek.*` API.
 | `library.inventory` | Containers, item stacks, equip slots, item sets, and inventory helpers | Full |
 | `library.item` | Type registry, items, stacks, weighted pools, stack history, and analysis helpers | Full |
 | `library.loot` | Weighted loot tables, drop DSL, pity trackers, and loot modifiers | Full |
-| `library.quest` | Quest logs, staged objectives, journal entries, rewards, and status helpers | Full |
 | `library.roguelike` | FOV, energy scheduler, and goal-map pathing helpers for tile-grid games | Full |
-| `library.stats` | Attributes, buffs, thresholds, traits, skills, perks, AP, morale, and snapshots | Full |
 
 ## Usage
 

@@ -418,6 +418,10 @@ name = "runtime_tests"
 path = "tests/rust/unit/runtime_tests.rs"
 
 [[test]]
+name = "progression_tests"
+path = "tests/rust/unit/progression_tests.rs"
+
+[[test]]
 name = "save_tests"
 path = "tests/rust/unit/save_tests.rs"
 

@@ -246,12 +246,12 @@ Bundled examples
 Lureksome standard libraries (library\)
 ----------------------------------------
   Pure-Lua game modules you can require from your game scripts.
-  Available: battle, cardgame, combat, crafting, dialog, economy,
-             inventory, item, quest, stats, and more.
+  Available: battle, combat, crafting, economy, inventory, item,
+             loot, roguelike, and more.
 
   Usage in your game:
     local inventory = require("library.inventory")
-    local quest     = require("library.quest")
+    local loot      = require("library.loot")
 
 API Reference (docs\)
 ----------------------

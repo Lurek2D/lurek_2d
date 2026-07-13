@@ -1,20 +1,20 @@
 {
   "meta": {
-    "generated": "2026-07-09T19:34:45.740740+00:00",
+    "generated": "2026-07-13T07:28:30.358500+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "rust_items": 3279,
-      "rust_modules": 768,
-      "rust_tests": 498,
-      "lua_tests": 282
+      "rust_items": 3342,
+      "rust_modules": 784,
+      "rust_tests": 499,
+      "lua_tests": 283
     }
   },
   "rust_api": {
     "summary": {
-      "total_items": 3279,
-      "documented": 3279,
-      "modules": 768
+      "total_items": 3342,
+      "documented": 3340,
+      "modules": 784
     },
     "modules": {
       "agent::chat": {
@@ -17503,6 +17503,530 @@
           }
         ]
       },
+      "progression::attribute": {
+        "module_doc": "`src/progression/attribute.rs` reserves the attribute-focused extraction surface planned for base values, modifiers, and explanations. This file exists to align the progression module layout with the implementation roadmap.",
+        "source_file": "src/progression/attribute.rs",
+        "items": []
+      },
+      "progression::challenge": {
+        "module_doc": "`src/progression/challenge.rs` owns reusable challenge templates, per-profile challenge runs, and challenge progression helpers. It keeps engagement-style timed challenge logic out of `store.rs` while preserving deterministic offline behavior.",
+        "source_file": "src/progression/challenge.rs",
+        "items": []
+      },
+      "progression::collection": {
+        "module_doc": "`src/progression/collection.rs` owns collections, achievement-linked discovery, completion checks, and collection snapshots. It keeps virtual-profile simulation and related store helpers out of `store.rs` while preserving the same API surface.",
+        "source_file": "src/progression/collection.rs",
+        "items": []
+      },
+      "progression::condition": {
+        "module_doc": "`src/progression/condition.rs` reserves the condition-focused extraction surface planned for authored conditions and explanations. This file exists to align the progression module layout with the implementation roadmap.",
+        "source_file": "src/progression/condition.rs",
+        "items": []
+      },
+      "progression::counter": {
+        "module_doc": "`src/progression/counter.rs` reserves the counter-focused extraction surface planned for mutation, thresholds, and history helpers. This file exists to align the progression module layout with the implementation roadmap.",
+        "source_file": "src/progression/counter.rs",
+        "items": []
+      },
+      "progression::event": {
+        "module_doc": "`src/progression/event.rs` owns bounded activity-feed projections over retained progression events. It keeps virtual-profile simulation and related store helpers out of `store.rs` while preserving the same API surface.",
+        "source_file": "src/progression/event.rs",
+        "items": []
+      },
+      "progression::leaderboard": {
+        "module_doc": "`src/progression/leaderboard.rs` owns leaderboard definitions, score mutation, rank queries, and leaderboard-side event helpers. It keeps virtual-profile simulation and related store helpers out of `store.rs` while preserving the same API surface.",
+        "source_file": "src/progression/leaderboard.rs",
+        "items": []
+      },
+      "progression": {
+        "module_doc": "`src/progression/mod.rs` declares the headless progression domain used by `lurek.progression`. This module owns offline progression state, deterministic mutations, and snapshot-shaped data. Lua bindings live in `src/lua_api/progression_api.rs` and should stay thin over these types. The store is CPU-only and does not depend on rendering, audio, networking, or a live Lua VM.",
+        "source_file": "src/progression/mod.rs",
+        "items": [
+          {
+            "name": "store",
+            "kind": "mod",
+            "description": "",
+            "file": "src/progression/mod.rs",
+            "line": 6
+          },
+          {
+            "name": "types",
+            "kind": "mod",
+            "description": "",
+            "file": "src/progression/mod.rs",
+            "line": 7
+          }
+        ]
+      },
+      "progression::persistence": {
+        "module_doc": "`src/progression/persistence.rs` owns snapshot and incremental-sync helpers for progression state. It adds bounded changeset envelopes, validation, acknowledgements, and compaction without changing the headless store model.",
+        "source_file": "src/progression/persistence.rs",
+        "items": []
+      },
+      "progression::population": {
+        "module_doc": "`src/progression/population.rs` owns offline population templates, simulation, materialization, and population validation helpers. It keeps virtual-profile simulation and related store helpers out of `store.rs` while preserving the same API surface.",
+        "source_file": "src/progression/population.rs",
+        "items": []
+      },
+      "progression::prestige": {
+        "module_doc": "`src/progression/prestige.rs` owns prestige definitions, reset application, lifetime tracking, and prestige serialization. It keeps virtual-profile simulation and related store helpers out of `store.rs` while preserving the same API surface.",
+        "source_file": "src/progression/prestige.rs",
+        "items": []
+      },
+      "progression::profile": {
+        "module_doc": "`src/progression/profile.rs` owns profile-template application helpers and trait-definition validation shared by progression profiles. It keeps profile-shaping helper logic out of `store.rs` while preserving the same store API surface.",
+        "source_file": "src/progression/profile.rs",
+        "items": []
+      },
+      "progression::rival": {
+        "module_doc": "`src/progression/rival.rs` owns pinned rival relationships, rival deltas, and rivalry overtake event helpers. It keeps virtual-profile simulation and related store helpers out of `store.rs` while preserving the same API surface.",
+        "source_file": "src/progression/rival.rs",
+        "items": []
+      },
+      "progression::season": {
+        "module_doc": "`src/progression/season.rs` owns authored seasons, archive snapshots, resets, and season serialization helpers. It keeps virtual-profile simulation and related store helpers out of `store.rs` while preserving the same API surface.",
+        "source_file": "src/progression/season.rs",
+        "items": []
+      },
+      "progression::store": {
+        "module_doc": "`src/progression/store.rs` owns the deterministic in-memory progression store. It implements store mutation rules, profile state, transactions, event emission, and snapshots. Rendering, networking, UI text, and Lua conversion are intentionally out of scope here.",
+        "source_file": "src/progression/store.rs",
+        "items": [
+          {
+            "name": "ProgressionError",
+            "kind": "enum",
+            "description": "Stable error type returned by progression domain operations.",
+            "file": "src/progression/store.rs",
+            "line": 24
+          },
+          {
+            "name": "ChangeSummary",
+            "kind": "struct",
+            "description": "Summary returned after a committed mutation batch.",
+            "file": "src/progression/store.rs",
+            "line": 47
+          },
+          {
+            "name": "AttributeExplanation",
+            "kind": "struct",
+            "description": "Human-readable explanation of one attribute value.",
+            "file": "src/progression/store.rs",
+            "line": 56
+          },
+          {
+            "name": "ProgressionOperation",
+            "kind": "enum",
+            "description": "One queued progression mutation used by transactions.",
+            "file": "src/progression/store.rs",
+            "line": 252
+          },
+          {
+            "name": "ProgressionTransaction",
+            "kind": "struct",
+            "description": "Transaction object used to batch operations into a single revision.",
+            "file": "src/progression/store.rs",
+            "line": 331
+          },
+          {
+            "name": "ProgressionStore",
+            "kind": "struct",
+            "description": "Headless progression store used by `lurek.progression`.",
+            "file": "src/progression/store.rs",
+            "line": 440
+          }
+        ]
+      },
+      "progression::types": {
+        "module_doc": "`src/progression/types.rs` owns the data contracts for the progression store. These types are serializable, deterministic, and reusable by Rust tests and Lua bindings. Runtime mutation logic stays in `store.rs`; this file only defines durable shapes and enums.",
+        "source_file": "src/progression/types.rs",
+        "items": [
+          {
+            "name": "ProgressionStoreOptions",
+            "kind": "struct",
+            "description": "Configuration used when creating a new progression store.",
+            "file": "src/progression/types.rs",
+            "line": 11
+          },
+          {
+            "name": "ProfileOptions",
+            "kind": "struct",
+            "description": "Creation and patch data for a progression profile.",
+            "file": "src/progression/types.rs",
+            "line": 44
+          },
+          {
+            "name": "CounterKind",
+            "kind": "enum",
+            "description": "Supported counter storage modes in the initial progression slice.",
+            "file": "src/progression/types.rs",
+            "line": 61
+          },
+          {
+            "name": "CounterDefinition",
+            "kind": "struct",
+            "description": "Definition for one named counter.",
+            "file": "src/progression/types.rs",
+            "line": 78
+          },
+          {
+            "name": "AttributeDefinition",
+            "kind": "struct",
+            "description": "Definition for one named attribute.",
+            "file": "src/progression/types.rs",
+            "line": 108
+          },
+          {
+            "name": "AttributeMode",
+            "kind": "enum",
+            "description": "View mode for attribute reads.",
+            "file": "src/progression/types.rs",
+            "line": 135
+          },
+          {
+            "name": "ResourceDefinition",
+            "kind": "struct",
+            "description": "Definition for one named spendable resource.",
+            "file": "src/progression/types.rs",
+            "line": 150
+          },
+          {
+            "name": "LevelTrackDefinition",
+            "kind": "struct",
+            "description": "Definition for a level/experience track.",
+            "file": "src/progression/types.rs",
+            "line": 177
+          },
+          {
+            "name": "DerivedValueInput",
+            "kind": "enum",
+            "description": "Named input binding for one derived value definition.",
+            "file": "src/progression/types.rs",
+            "line": 208
+          },
+          {
+            "name": "DerivedValueDefinition",
+            "kind": "struct",
+            "description": "Author-time definition for one named derived value.",
+            "file": "src/progression/types.rs",
+            "line": 240
+          },
+          {
+            "name": "ProfileTemplateDefinition",
+            "kind": "struct",
+            "description": "Author-time definition for one reusable profile template.",
+            "file": "src/progression/types.rs",
+            "line": 255
+          },
+          {
+            "name": "TraitModifierDefinition",
+            "kind": "struct",
+            "description": "One modifier entry authored inside a trait definition.",
+            "file": "src/progression/types.rs",
+            "line": 278
+          },
+          {
+            "name": "TraitDefinition",
+            "kind": "struct",
+            "description": "Author-time definition for one reusable trait.",
+            "file": "src/progression/types.rs",
+            "line": 289
+          },
+          {
+            "name": "PerkDefinition",
+            "kind": "struct",
+            "description": "Author-time definition for one perk unlock.",
+            "file": "src/progression/types.rs",
+            "line": 296
+          },
+          {
+            "name": "SkillDefinition",
+            "kind": "struct",
+            "description": "Author-time definition for one skill track.",
+            "file": "src/progression/types.rs",
+            "line": 307
+          },
+          {
+            "name": "QuestJournalEntry",
+            "kind": "struct",
+            "description": "One structured quest journal entry retained in canonical progression state.",
+            "file": "src/progression/types.rs",
+            "line": 320
+          },
+          {
+            "name": "LeaderboardSort",
+            "kind": "enum",
+            "description": "Sort direction for one leaderboard.",
+            "file": "src/progression/types.rs",
+            "line": 332
+          },
+          {
+            "name": "LeaderboardRankMode",
+            "kind": "enum",
+            "description": "Rank numbering mode for one leaderboard.",
+            "file": "src/progression/types.rs",
+            "line": 342
+          },
+          {
+            "name": "LeaderboardDefinition",
+            "kind": "struct",
+            "description": "Author-time definition for one leaderboard.",
+            "file": "src/progression/types.rs",
+            "line": 353
+          },
+          {
+            "name": "SeasonResetDefinition",
+            "kind": "struct",
+            "description": "Reset targets applied when a season ends.",
+            "file": "src/progression/types.rs",
+            "line": 370
+          },
+          {
+            "name": "SeasonDefinition",
+            "kind": "struct",
+            "description": "Author-time definition for one named season.",
+            "file": "src/progression/types.rs",
+            "line": 379
+          },
+          {
+            "name": "ProgressionCondition",
+            "kind": "enum",
+            "description": "Declarative condition tree used by progression definitions and queries.",
+            "file": "src/progression/types.rs",
+            "line": 395
+          },
+          {
+            "name": "QuestObjectiveDefinition",
+            "kind": "struct",
+            "description": "Author-time definition for one quest objective.",
+            "file": "src/progression/types.rs",
+            "line": 452
+          },
+          {
+            "name": "QuestStageDefinition",
+            "kind": "struct",
+            "description": "Author-time definition for one quest stage.",
+            "file": "src/progression/types.rs",
+            "line": 469
+          },
+          {
+            "name": "QuestDefinition",
+            "kind": "struct",
+            "description": "Author-time definition for one quest.",
+            "file": "src/progression/types.rs",
+            "line": 480
+          },
+          {
+            "name": "ChallengeTemplateDefinition",
+            "kind": "struct",
+            "description": "Author-time definition for one reusable challenge template.",
+            "file": "src/progression/types.rs",
+            "line": 501
+          },
+          {
+            "name": "ComparisonOp",
+            "kind": "enum",
+            "description": "Simple comparison operators supported by the initial achievement trigger slice.",
+            "file": "src/progression/types.rs",
+            "line": 527
+          },
+          {
+            "name": "CounterTriggerDefinition",
+            "kind": "struct",
+            "description": "Counter-based trigger definition for an authored achievement.",
+            "file": "src/progression/types.rs",
+            "line": 542
+          },
+          {
+            "name": "AchievementDefinition",
+            "kind": "struct",
+            "description": "Author-time definition for one achievement.",
+            "file": "src/progression/types.rs",
+            "line": 553
+          },
+          {
+            "name": "PrestigeResetDefinition",
+            "kind": "struct",
+            "description": "Reset targets applied when a prestige action is accepted.",
+            "file": "src/progression/types.rs",
+            "line": 574
+          },
+          {
+            "name": "PrestigePreserveDefinition",
+            "kind": "struct",
+            "description": "Preserve flags applied during prestige.",
+            "file": "src/progression/types.rs",
+            "line": 583
+          },
+          {
+            "name": "PrestigeDefinition",
+            "kind": "struct",
+            "description": "Author-time definition for one prestige/rebirth path.",
+            "file": "src/progression/types.rs",
+            "line": 592
+          },
+          {
+            "name": "CollectionItemDefinition",
+            "kind": "struct",
+            "description": "One item authored inside a collection.",
+            "file": "src/progression/types.rs",
+            "line": 605
+          },
+          {
+            "name": "CollectionDefinition",
+            "kind": "struct",
+            "description": "Author-time definition for one collection or achievement set.",
+            "file": "src/progression/types.rs",
+            "line": 618
+          },
+          {
+            "name": "RivalDefinition",
+            "kind": "struct",
+            "description": "One pinned rival relationship retained in progression state.",
+            "file": "src/progression/types.rs",
+            "line": 633
+          },
+          {
+            "name": "PopulationNameGeneratorDefinition",
+            "kind": "struct",
+            "description": "Deterministic name generator configuration for a virtual population.",
+            "file": "src/progression/types.rs",
+            "line": 644
+          },
+          {
+            "name": "PopulationIdentityDefinition",
+            "kind": "struct",
+            "description": "Identity configuration applied to generated virtual profiles.",
+            "file": "src/progression/types.rs",
+            "line": 658
+          },
+          {
+            "name": "PopulationActivityDefinition",
+            "kind": "struct",
+            "description": "Min/max activity band for one archetype.",
+            "file": "src/progression/types.rs",
+            "line": 672
+          },
+          {
+            "name": "PopulationSkillDefinition",
+            "kind": "struct",
+            "description": "Score/skill distribution config for one archetype.",
+            "file": "src/progression/types.rs",
+            "line": 683
+          },
+          {
+            "name": "PopulationArchetypeDefinition",
+            "kind": "struct",
+            "description": "One weighted archetype used when generating a population.",
+            "file": "src/progression/types.rs",
+            "line": 694
+          },
+          {
+            "name": "PopulationInitialScoreDefinition",
+            "kind": "struct",
+            "description": "Initial score distribution config for one simulated leaderboard.",
+            "file": "src/progression/types.rs",
+            "line": 707
+          },
+          {
+            "name": "PopulationScoreProgressionDefinition",
+            "kind": "struct",
+            "description": "Progression rule for one simulated leaderboard.",
+            "file": "src/progression/types.rs",
+            "line": 714
+          },
+          {
+            "name": "PopulationLeaderboardDefinition",
+            "kind": "struct",
+            "description": "Per-leaderboard simulation config inside a population template.",
+            "file": "src/progression/types.rs",
+            "line": 725
+          },
+          {
+            "name": "PopulationTemplateDefinition",
+            "kind": "struct",
+            "description": "Author-time definition for one virtual population template.",
+            "file": "src/progression/types.rs",
+            "line": 739
+          },
+          {
+            "name": "RewardState",
+            "kind": "enum",
+            "description": "Reward state tracked by the store.",
+            "file": "src/progression/types.rs",
+            "line": 757
+          },
+          {
+            "name": "RewardRecord",
+            "kind": "struct",
+            "description": "One reward record emitted by progression systems.",
+            "file": "src/progression/types.rs",
+            "line": 770
+          },
+          {
+            "name": "ModifierAddOptions",
+            "kind": "struct",
+            "description": "Options accepted when creating a modifier.",
+            "file": "src/progression/types.rs",
+            "line": 787
+          },
+          {
+            "name": "EventRecord",
+            "kind": "struct",
+            "description": "One structured event emitted by the store.",
+            "file": "src/progression/types.rs",
+            "line": 802
+          },
+          {
+            "name": "ChangeRecord",
+            "kind": "struct",
+            "description": "One retained transport-neutral change record.",
+            "file": "src/progression/types.rs",
+            "line": 819
+          },
+          {
+            "name": "ChangesetEnvelope",
+            "kind": "struct",
+            "description": "Bounded transport-neutral changeset envelope for incremental sync.",
+            "file": "src/progression/types.rs",
+            "line": 828
+          },
+          {
+            "name": "ChangesetMergePolicy",
+            "kind": "enum",
+            "description": "Merge policy used when applying a transport-neutral changeset envelope.",
+            "file": "src/progression/types.rs",
+            "line": 846
+          },
+          {
+            "name": "ChangesetApplyOptions",
+            "kind": "struct",
+            "description": "Options controlling validated changeset-envelope application.",
+            "file": "src/progression/types.rs",
+            "line": 857
+          },
+          {
+            "name": "ChangesetConflict",
+            "kind": "struct",
+            "description": "One detected conflict while comparing a local store against an incoming changeset snapshot.",
+            "file": "src/progression/types.rs",
+            "line": 878
+          },
+          {
+            "name": "SeasonState",
+            "kind": "struct",
+            "description": "Runtime lifecycle state for one season definition.",
+            "file": "src/progression/types.rs",
+            "line": 895
+          },
+          {
+            "name": "SeasonArchiveRecord",
+            "kind": "struct",
+            "description": "Retained archive entry for one completed season run.",
+            "file": "src/progression/types.rs",
+            "line": 910
+          }
+        ]
+      },
       "province::border_index": {
         "module_doc": "Owns the province border index implementation for the province subsystem and keeps related runtime rules local here. Keeps province data, render helpers, and map-facing transforms so helpers stay close to invariants this file updates. Defines how province border index data is validated, transformed, or stored before neighboring systems consume it. Separates province border index behavior from Lua bindings, tests, and sibling owners so integration stays readable. Documents the boundary where province code accepts inputs, reports errors, allocates state, or emits outputs. Use this file when changing province border index defaults, lifecycle handling, validation, or data ownership rules.",
         "source_file": "src/province/border_index.rs",
@@ -20782,7 +21306,7 @@
             "kind": "struct",
             "description": "Performance-related runtime configuration. # Fields",
             "file": "src/runtime/config.rs",
-            "line": 467
+            "line": 470
           }
         ]
       },
@@ -29267,903 +29791,903 @@
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_raycaster_evidence",
+        "name": "lua_evidence_progression_evidence",
         "description": "",
         "line": 358
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_repl_evidence",
+        "name": "lua_evidence_raycaster_evidence",
         "description": "",
         "line": 363
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_render_evidence",
+        "name": "lua_evidence_repl_evidence",
         "description": "",
         "line": 368
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_scene_evidence",
+        "name": "lua_evidence_render_evidence",
         "description": "",
         "line": 373
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_render_shader_evidence",
+        "name": "lua_evidence_scene_evidence",
         "description": "",
         "line": 378
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_spine_evidence",
+        "name": "lua_evidence_render_shader_evidence",
         "description": "",
         "line": 383
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_sprite_evidence",
+        "name": "lua_evidence_spine_evidence",
         "description": "",
         "line": 388
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_svg_evidence",
+        "name": "lua_evidence_sprite_evidence",
         "description": "",
         "line": 393
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_tilemap_evidence",
+        "name": "lua_evidence_svg_evidence",
         "description": "",
         "line": 398
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_tilefield_evidence",
+        "name": "lua_evidence_tilemap_evidence",
         "description": "",
         "line": 403
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_tilelight_evidence",
+        "name": "lua_evidence_tilefield_evidence",
         "description": "",
         "line": 408
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_terminal_evidence",
+        "name": "lua_evidence_tilelight_evidence",
         "description": "",
         "line": 413
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_tween_evidence",
+        "name": "lua_evidence_terminal_evidence",
         "description": "",
         "line": 418
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_ui_evidence",
+        "name": "lua_evidence_tween_evidence",
         "description": "",
         "line": 423
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_golden_ai_golden",
+        "name": "lua_evidence_ui_evidence",
         "description": "",
         "line": 428
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
+        "name": "lua_golden_ai_golden",
+        "description": "",
+        "line": 433
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
         "name": "lua_golden_animation_golden",
         "description": "",
-        "line": 436
+        "line": 441
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_agent_golden",
         "description": "",
-        "line": 444
+        "line": 449
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_awareness_golden",
         "description": "",
-        "line": 452
+        "line": 457
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_automation_golden",
         "description": "",
-        "line": 460
+        "line": 465
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_audio_golden",
         "description": "",
-        "line": 468
+        "line": 473
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_binary_golden",
         "description": "",
-        "line": 476
+        "line": 481
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_camera_golden",
         "description": "",
-        "line": 484
+        "line": 489
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_charts_golden",
         "description": "",
-        "line": 492
+        "line": 497
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_cinematic_golden",
         "description": "",
-        "line": 500
+        "line": 505
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_color_golden",
         "description": "",
-        "line": 508
+        "line": 513
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_compute_golden",
         "description": "",
-        "line": 516
+        "line": 521
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_dataframe_golden",
         "description": "",
-        "line": 524
+        "line": 529
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_ecs_golden",
         "description": "",
-        "line": 532
+        "line": 537
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_dsp_golden",
         "description": "",
-        "line": 540
+        "line": 545
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_effect_golden",
         "description": "",
-        "line": 548
+        "line": 553
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_globe_golden",
         "description": "",
-        "line": 556
+        "line": 561
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_image_golden",
         "description": "",
-        "line": 564
+        "line": 569
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_flownet_golden",
         "description": "",
-        "line": 572
+        "line": 577
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_layout_golden",
         "description": "",
-        "line": 580
+        "line": 585
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_light_golden",
         "description": "",
-        "line": 588
+        "line": 593
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_math_golden",
         "description": "",
-        "line": 596
+        "line": 601
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_mapblock_golden",
         "description": "",
-        "line": 604
+        "line": 609
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_minimap_golden",
         "description": "",
-        "line": 612
+        "line": 617
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_overlay_golden",
         "description": "",
-        "line": 620
+        "line": 625
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_particle_golden",
         "description": "",
-        "line": 628
+        "line": 633
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_parallax_golden",
         "description": "",
-        "line": 636
+        "line": 641
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_pathfind_golden",
         "description": "",
-        "line": 644
+        "line": 649
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_physics_golden",
         "description": "",
-        "line": 652
+        "line": 657
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_procgen_golden",
         "description": "",
-        "line": 660
+        "line": 665
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_province_golden",
         "description": "",
-        "line": 668
+        "line": 673
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_raycaster_golden",
         "description": "",
-        "line": 676
+        "line": 681
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_repl_golden",
         "description": "",
-        "line": 684
+        "line": 689
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_render_golden",
         "description": "",
-        "line": 692
+        "line": 697
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_scene_golden",
         "description": "",
-        "line": 700
+        "line": 705
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_serialize_golden",
         "description": "",
-        "line": 708
+        "line": 713
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_spine_golden",
         "description": "",
-        "line": 716
+        "line": 721
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_sprite_golden",
         "description": "",
-        "line": 724
+        "line": 729
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_svg_golden",
         "description": "",
-        "line": 732
+        "line": 737
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_tilemap_golden",
         "description": "",
-        "line": 740
+        "line": 745
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_tilefield_golden",
         "description": "",
-        "line": 748
+        "line": 753
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_tilelight_golden",
         "description": "",
-        "line": 756
+        "line": 761
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_terminal_golden",
         "description": "",
-        "line": 764
+        "line": 769
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_tween_golden",
         "description": "",
-        "line": 772
+        "line": 777
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_ui_golden",
         "description": "",
-        "line": 780
+        "line": 785
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ai_ecs_scene_integration",
         "description": "",
-        "line": 788
+        "line": 793
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ai_pathfind_integration",
         "description": "",
-        "line": 793
+        "line": 798
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ai_physics_integration",
         "description": "",
-        "line": 798
+        "line": 803
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ai_scene_camera_integration",
         "description": "",
-        "line": 803
+        "line": 808
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_animation_tween_integration",
         "description": "",
-        "line": 808
+        "line": 813
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_audio_event_integration",
         "description": "",
-        "line": 813
+        "line": 818
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_audio_scene_integration",
         "description": "",
-        "line": 818
+        "line": 823
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_automation_event_integration",
         "description": "",
-        "line": 823
+        "line": 828
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_binary_compute_integration",
         "description": "",
-        "line": 828
+        "line": 833
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_binary_filesystem_integration",
         "description": "",
-        "line": 833
+        "line": 838
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_compute_dataframe_integration",
         "description": "",
-        "line": 838
+        "line": 843
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ecs_ai_integration",
         "description": "",
-        "line": 843
+        "line": 848
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ecs_scene_object_model_integration",
         "description": "",
-        "line": 848
+        "line": 853
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ecs_physics_integration",
         "description": "",
-        "line": 853
+        "line": 858
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ecs_render_integration",
         "description": "",
-        "line": 858
+        "line": 863
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_effect_camera_integration",
         "description": "",
-        "line": 863
+        "line": 868
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_effect_light_integration",
         "description": "",
-        "line": 868
+        "line": 873
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_event_entity_integration",
         "description": "",
-        "line": 873
+        "line": 878
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_i18n_ui_integration",
         "description": "",
-        "line": 878
+        "line": 883
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_image_dataframe_integration",
         "description": "",
-        "line": 883
+        "line": 888
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_math_pathfind_integration",
         "description": "",
-        "line": 888
+        "line": 893
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_math_physics_integration",
         "description": "",
-        "line": 893
+        "line": 898
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_minimap_pathfind_integration",
         "description": "",
-        "line": 898
+        "line": 903
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_minimap_tilemap_camera_integration",
         "description": "",
-        "line": 903
+        "line": 908
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_mods_filesystem_integration",
         "description": "",
-        "line": 908
+        "line": 913
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_network_save_integration",
         "description": "",
-        "line": 913
+        "line": 918
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_parallax_camera_integration",
         "description": "",
-        "line": 918
+        "line": 923
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_particle_timer_integration",
         "description": "",
-        "line": 923
+        "line": 928
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_shooter_helpers_integration",
         "description": "",
-        "line": 928
+        "line": 933
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_pathfind_ecs_integration",
         "description": "",
-        "line": 933
+        "line": 938
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_pathfind_graph_integration",
         "description": "",
-        "line": 938
+        "line": 943
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_postfx_camera_integration",
         "description": "",
-        "line": 943
+        "line": 948
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_procgen_tilemap_integration",
         "description": "",
-        "line": 948
+        "line": 953
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_raycaster_render_integration",
         "description": "",
-        "line": 953
+        "line": 958
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_raycaster_tilemap_integration",
         "description": "",
-        "line": 958
+        "line": 963
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_render_animation_integration",
         "description": "",
-        "line": 963
+        "line": 968
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_svg_animation_integration",
         "description": "",
-        "line": 968
+        "line": 973
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_render_camera_integration",
         "description": "",
-        "line": 973
+        "line": 978
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_save_ecs_integration",
         "description": "",
-        "line": 978
+        "line": 983
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_save_ecs_scene_integration",
         "description": "",
-        "line": 983
+        "line": 988
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_save_tilemap_integration",
         "description": "",
-        "line": 988
+        "line": 993
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_scene_camera_integration",
         "description": "",
-        "line": 993
+        "line": 998
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_scene_physics_activation_integration",
         "description": "",
-        "line": 998
+        "line": 1003
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_serialize_filesystem_integration",
         "description": "",
-        "line": 1003
+        "line": 1008
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_terminal_input_integration",
         "description": "",
-        "line": 1008
+        "line": 1013
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_thread_data_integration",
         "description": "",
-        "line": 1013
+        "line": 1018
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tilemap_camera_integration",
         "description": "",
-        "line": 1018
+        "line": 1023
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tilemap_pathfind_integration",
         "description": "",
-        "line": 1023
+        "line": 1028
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tilefield_pathfind_integration",
         "description": "",
-        "line": 1028
+        "line": 1033
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tilefield_awareness_integration",
         "description": "",
-        "line": 1033
+        "line": 1038
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tilefield_raycaster_integration",
         "description": "",
-        "line": 1038
+        "line": 1043
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_minimap_tilefield_integration",
         "description": "",
-        "line": 1043
+        "line": 1048
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tilefield_systems_integration",
         "description": "",
-        "line": 1048
+        "line": 1053
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_procgen_tilefield_integration",
         "description": "",
-        "line": 1053
+        "line": 1058
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tilemap_physics_integration",
         "description": "",
-        "line": 1058
+        "line": 1063
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_timer_event_integration",
         "description": "",
-        "line": 1063
+        "line": 1068
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_timer_math_integration",
         "description": "",
-        "line": 1068
+        "line": 1073
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tween_camera_integration",
         "description": "",
-        "line": 1073
+        "line": 1078
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tween_ecs_integration",
         "description": "",
-        "line": 1078
+        "line": 1083
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ui_localization_data_integration",
         "description": "",
-        "line": 1083
+        "line": 1088
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_workbench_particle_integration",
         "description": "",
-        "line": 1088
+        "line": 1093
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_battle_library",
         "description": "",
-        "line": 1093
+        "line": 1098
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_combat_library",
         "description": "",
-        "line": 1098
+        "line": 1103
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_crafting_library",
         "description": "",
-        "line": 1103
+        "line": 1108
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_doll_library",
         "description": "",
-        "line": 1108
+        "line": 1113
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_economy_library",
         "description": "",
-        "line": 1113
+        "line": 1118
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_inventory_library",
         "description": "",
-        "line": 1118
+        "line": 1123
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_item_library",
         "description": "",
-        "line": 1123
-      },
-      {
-        "file": "tests/lua_tests.rs",
-        "module": "lua",
-        "name": "lua_library_loot_library",
-        "description": "",
         "line": 1128
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_library_quest_library",
+        "name": "lua_library_loot_library",
         "description": "",
         "line": 1133
       },
@@ -30177,168 +30701,168 @@
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_library_stats_library",
+        "name": "lua_security_filesystem_security",
         "description": "",
         "line": 1143
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_security_filesystem_security",
+        "name": "lua_security_network_security",
         "description": "",
         "line": 1148
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_security_network_security",
+        "name": "lua_security_render_security",
         "description": "",
         "line": 1153
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_security_render_security",
+        "name": "lua_security_runtime_security",
         "description": "",
         "line": 1158
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_security_runtime_security",
+        "name": "lua_security_save_security",
         "description": "",
         "line": 1163
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_security_save_security",
+        "name": "lua_stress_ai_stress",
         "description": "",
         "line": 1168
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_ai_stress",
+        "name": "lua_stress_animation_stress",
         "description": "",
         "line": 1173
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_animation_stress",
+        "name": "lua_stress_binary_stress",
         "description": "",
         "line": 1178
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_binary_stress",
+        "name": "lua_stress_camera_stress",
         "description": "",
         "line": 1183
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_camera_stress",
+        "name": "lua_stress_compute_stress",
         "description": "",
         "line": 1188
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_compute_stress",
+        "name": "lua_stress_dataframe_stress",
         "description": "",
         "line": 1193
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_dataframe_stress",
+        "name": "lua_stress_ecs_stress",
         "description": "",
         "line": 1198
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_ecs_stress",
+        "name": "lua_stress_event_stress",
         "description": "",
         "line": 1203
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_event_stress",
+        "name": "lua_stress_filesystem_stress",
         "description": "",
         "line": 1208
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_filesystem_stress",
+        "name": "lua_stress_image_stress",
         "description": "",
         "line": 1213
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_image_stress",
+        "name": "lua_stress_learning_stress",
         "description": "",
         "line": 1218
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_learning_stress",
+        "name": "lua_stress_light_stress",
         "description": "",
         "line": 1223
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_light_stress",
+        "name": "lua_stress_math_stress",
         "description": "",
         "line": 1228
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_math_stress",
+        "name": "lua_stress_particle_stress",
         "description": "",
         "line": 1233
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_particle_stress",
+        "name": "lua_stress_pathfind_stress",
         "description": "",
         "line": 1238
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_pathfind_stress",
+        "name": "lua_stress_patterns_stress",
         "description": "",
         "line": 1243
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_patterns_stress",
+        "name": "lua_stress_physics_stress",
         "description": "",
         "line": 1248
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_physics_stress",
+        "name": "lua_stress_procgen_stress",
         "description": "",
         "line": 1253
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_procgen_stress",
+        "name": "lua_stress_progression_stress",
         "description": "",
         "line": 1258
       },
@@ -30779,198 +31303,205 @@
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_procgen_unit",
+        "name": "lua_unit_progression_unit",
         "description": "",
         "line": 1573
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_procgen_gap_unit",
+        "name": "lua_unit_procgen_unit",
         "description": "",
         "line": 1578
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_province_unit",
+        "name": "lua_unit_procgen_gap_unit",
         "description": "",
         "line": 1583
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_raycaster_unit",
+        "name": "lua_unit_province_unit",
         "description": "",
         "line": 1588
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_render_unit",
+        "name": "lua_unit_raycaster_unit",
         "description": "",
         "line": 1593
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_repl_unit",
+        "name": "lua_unit_render_unit",
         "description": "",
         "line": 1598
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_runtime_unit",
+        "name": "lua_unit_repl_unit",
         "description": "",
         "line": 1603
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_save_unit",
+        "name": "lua_unit_runtime_unit",
         "description": "",
         "line": 1608
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_scene_unit",
+        "name": "lua_unit_save_unit",
         "description": "",
         "line": 1613
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_serialize_unit",
+        "name": "lua_unit_scene_unit",
         "description": "",
         "line": 1618
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_shape_unit",
+        "name": "lua_unit_serialize_unit",
         "description": "",
         "line": 1623
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_spine_unit",
+        "name": "lua_unit_shape_unit",
         "description": "",
         "line": 1628
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_sprite_unit",
+        "name": "lua_unit_spine_unit",
         "description": "",
         "line": 1633
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_svg_unit",
+        "name": "lua_unit_sprite_unit",
         "description": "",
         "line": 1638
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_terminal_unit",
+        "name": "lua_unit_svg_unit",
         "description": "",
         "line": 1643
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_thread_unit",
+        "name": "lua_unit_terminal_unit",
         "description": "",
         "line": 1648
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tilemap_unit",
+        "name": "lua_unit_thread_unit",
         "description": "",
         "line": 1653
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tilefield_unit",
+        "name": "lua_unit_tilemap_unit",
         "description": "",
         "line": 1658
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tilefield_gap_unit",
+        "name": "lua_unit_tilefield_unit",
         "description": "",
         "line": 1663
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tilelight_unit",
+        "name": "lua_unit_tilefield_gap_unit",
         "description": "",
         "line": 1668
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tileset_unit",
+        "name": "lua_unit_tilelight_unit",
         "description": "",
         "line": 1673
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_timer_unit",
+        "name": "lua_unit_tileset_unit",
         "description": "",
         "line": 1678
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tween_unit",
+        "name": "lua_unit_timer_unit",
         "description": "",
         "line": 1683
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_ui_unit",
+        "name": "lua_unit_tween_unit",
         "description": "",
         "line": 1688
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_validator_unit",
+        "name": "lua_unit_ui_unit",
         "description": "",
         "line": 1693
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_awareness_unit",
+        "name": "lua_unit_validator_unit",
         "description": "",
         "line": 1698
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_window_unit",
+        "name": "lua_unit_awareness_unit",
         "description": "",
         "line": 1703
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_demo_colocated_games",
+        "name": "lua_unit_window_unit",
         "description": "",
         "line": 1708
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
+        "name": "lua_demo_colocated_games",
+        "description": "",
+        "line": 1713
       },
       {
         "file": "tests/workbench_smoke_tests.rs",
@@ -31217,6 +31748,13 @@
         "module": "test_procgen_evidence",
         "name": "test_procgen_evidence",
         "description": "test_procgen_evidence.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/evidence/test_progression_evidence.lua",
+        "module": "test_progression_evidence",
+        "name": "test_progression_evidence",
+        "description": "Canonical evidence file for lurek.progression artifacts.",
         "kind": "lua"
       },
       {
@@ -32165,24 +32703,10 @@
         "kind": "lua"
       },
       {
-        "file": "tests/lua/library/test_quest_library.lua",
-        "module": "test_quest_library",
-        "name": "test_quest_library",
-        "description": "tests/lua/library/test_quest_library.lua",
-        "kind": "lua"
-      },
-      {
         "file": "tests/lua/library/test_roguelike_library.lua",
         "module": "test_roguelike_library",
         "name": "test_roguelike_library",
         "description": "tests/lua/library/test_roguelike_library.lua",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/library/test_stats_library.lua",
-        "module": "test_stats_library",
-        "name": "test_stats_library",
-        "description": "Attribute",
         "kind": "lua"
       },
       {
@@ -32344,6 +32868,13 @@
         "module": "test_procgen_stress",
         "name": "test_procgen_stress",
         "description": "tests/lua/stress/test_procgen_stress.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/stress/test_progression_stress.lua",
+        "module": "test_progression_stress",
+        "name": "test_progression_stress",
+        "description": "Lurek2D stress test for lurek.progression population, leaderboard, and sync throughput.",
         "kind": "lua"
       },
       {
@@ -32798,6 +33329,13 @@
         "file": "tests/lua/unit/test_procgen_unit.lua",
         "module": "test_procgen_unit",
         "name": "test_procgen_unit",
+        "description": "Reorganized unit test file.",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/unit/test_progression_unit.lua",
+        "module": "test_progression_unit",
+        "name": "test_progression_unit",
         "description": "Reorganized unit test file.",
         "kind": "lua"
       },

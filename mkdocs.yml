@@ -146,6 +146,7 @@ nav:
     - Physics: modules/physics.md
     - Pipeline: modules/pipeline.md
     - Procgen: modules/procgen.md
+    - Progression: modules/progression.md
     - Province: modules/province.md
     - Raycaster: modules/raycaster.md
     - Render: modules/render.md

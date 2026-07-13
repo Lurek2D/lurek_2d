@@ -1,9 +1,9 @@
 {
   "rust": {
-    "total": 7433,
-    "covered": 4240,
-    "uncovered": 3193,
-    "coverage_pct": 57.0,
+    "total": 7619,
+    "covered": 4371,
+    "uncovered": 3248,
+    "coverage_pct": 57.4,
     "covered_items": [
       {
         "module": "agent",
@@ -2014,6 +2014,12 @@
         "name": "BeatClock::latency",
         "file": "src/audio/beat_clock.rs",
         "line": 362
+      },
+      {
+        "module": "audio",
+        "name": "BeatClock::tap",
+        "file": "src/audio/beat_clock.rs",
+        "line": 385
       },
       {
         "module": "audio",
@@ -5563,6 +5569,12 @@
       },
       {
         "module": "dsp",
+        "name": "Synthesizer::set_envelope",
+        "file": "src/dsp/synthesis.rs",
+        "line": 202
+      },
+      {
+        "module": "dsp",
         "name": "Synthesizer::generate",
         "file": "src/dsp/synthesis.rs",
         "line": 207
@@ -7249,6 +7261,12 @@
       },
       {
         "module": "globe",
+        "name": "FogMask::set_state",
+        "file": "src/globe/fog.rs",
+        "line": 51
+      },
+      {
+        "module": "globe",
         "name": "FogMask::reveal",
         "file": "src/globe/fog.rs",
         "line": 58
@@ -7366,6 +7384,12 @@
         "name": "FogStore::state",
         "file": "src/globe/fog.rs",
         "line": 224
+      },
+      {
+        "module": "globe",
+        "name": "FogStore::set_state",
+        "file": "src/globe/fog.rs",
+        "line": 231
       },
       {
         "module": "globe",
@@ -10489,6 +10513,12 @@
       },
       {
         "module": "learning",
+        "name": "QLearner::set_q",
+        "file": "src/learning/qlearner.rs",
+        "line": 193
+      },
+      {
+        "module": "learning",
         "name": "QLearner::rng_snapshot",
         "file": "src/learning/qlearner.rs",
         "line": 212
@@ -10546,6 +10576,12 @@
         "name": "LearningRng::new",
         "file": "src/learning/rng.rs",
         "line": 29
+      },
+      {
+        "module": "learning",
+        "name": "LearningRng::from_snapshot",
+        "file": "src/learning/rng.rs",
+        "line": 36
       },
       {
         "module": "learning",
@@ -11660,6 +11696,12 @@
       {
         "module": "lua_api",
         "name": "register",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 4271
+      },
+      {
+        "module": "lua_api",
+        "name": "register",
         "file": "src/lua_api/province_api.rs",
         "line": 2363
       },
@@ -11673,13 +11715,13 @@
         "module": "lua_api",
         "name": "create_lua_vm",
         "file": "src/lua_api/register.rs",
-        "line": 145
+        "line": 146
       },
       {
         "module": "lua_api",
         "name": "create_test_vm",
         "file": "src/lua_api/register.rs",
-        "line": 172
+        "line": 173
       },
       {
         "module": "lua_api",
@@ -12790,6 +12832,12 @@
         "name": "RandomGenerator::get_state",
         "file": "src/math/random.rs",
         "line": 60
+      },
+      {
+        "module": "math",
+        "name": "RandomGenerator::set_state",
+        "file": "src/math/random.rs",
+        "line": 64
       },
       {
         "module": "math",
@@ -14326,6 +14374,12 @@
         "name": "ParticleSystem::new",
         "file": "src/particle/emitter.rs",
         "line": 444
+      },
+      {
+        "module": "particle",
+        "name": "ParticleSystem::seeded",
+        "file": "src/particle/emitter.rs",
+        "line": 449
       },
       {
         "module": "particle",
@@ -18265,6 +18319,12 @@
       },
       {
         "module": "procgen",
+        "name": "Lcg::set_state",
+        "file": "src/procgen/lcg.rs",
+        "line": 65
+      },
+      {
+        "module": "procgen",
         "name": "LSystem::new",
         "file": "src/procgen/lsystem.rs",
         "line": 20
@@ -18598,6 +18658,732 @@
         "name": "WorldGraph::mst",
         "file": "src/procgen/world_graph.rs",
         "line": 162
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::define_challenge_template",
+        "file": "src/progression/challenge.rs",
+        "line": 8
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::activate_challenge",
+        "file": "src/progression/challenge.rs",
+        "line": 42
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::get_challenge",
+        "file": "src/progression/challenge.rs",
+        "line": 231
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::list_challenges",
+        "file": "src/progression/challenge.rs",
+        "line": 254
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::define_collection",
+        "file": "src/progression/collection.rs",
+        "line": 8
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::collect_collection_item",
+        "file": "src/progression/collection.rs",
+        "line": 53
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::get_collection",
+        "file": "src/progression/collection.rs",
+        "line": 95
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::get_activity_feed",
+        "file": "src/progression/event.rs",
+        "line": 8
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::define_leaderboard",
+        "file": "src/progression/leaderboard.rs",
+        "line": 8
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::submit_score",
+        "file": "src/progression/leaderboard.rs",
+        "line": 64
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::get_leaderboard_entry",
+        "file": "src/progression/leaderboard.rs",
+        "line": 131
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::list_leaderboard_top",
+        "file": "src/progression/leaderboard.rs",
+        "line": 163
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::list_leaderboard_range",
+        "file": "src/progression/leaderboard.rs",
+        "line": 185
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::list_leaderboard_around_profile",
+        "file": "src/progression/leaderboard.rs",
+        "line": 214
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::export_changeset",
+        "file": "src/progression/persistence.rs",
+        "line": 15
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::apply_changeset_envelope",
+        "file": "src/progression/persistence.rs",
+        "line": 51
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::apply_changeset_envelope_with_options",
+        "file": "src/progression/persistence.rs",
+        "line": 68
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::acknowledge_changes_through",
+        "file": "src/progression/persistence.rs",
+        "line": 184
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::compact_changes",
+        "file": "src/progression/persistence.rs",
+        "line": 205
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::define_population_template",
+        "file": "src/progression/population.rs",
+        "line": 8
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::generate_population",
+        "file": "src/progression/population.rs",
+        "line": 39
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::get_population",
+        "file": "src/progression/population.rs",
+        "line": 82
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::list_population_profiles",
+        "file": "src/progression/population.rs",
+        "line": 399
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::materialize_population_profile",
+        "file": "src/progression/population.rs",
+        "line": 421
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::dematerialize_population_profile",
+        "file": "src/progression/population.rs",
+        "line": 493
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::define_prestige",
+        "file": "src/progression/prestige.rs",
+        "line": 8
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::can_prestige",
+        "file": "src/progression/prestige.rs",
+        "line": 20
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::apply_prestige",
+        "file": "src/progression/prestige.rs",
+        "line": 35
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::pin_rival",
+        "file": "src/progression/rival.rs",
+        "line": 8
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::get_rival",
+        "file": "src/progression/rival.rs",
+        "line": 67
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::get_rival_delta",
+        "file": "src/progression/rival.rs",
+        "line": 102
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::define_season",
+        "file": "src/progression/season.rs",
+        "line": 8
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::start_season",
+        "file": "src/progression/season.rs",
+        "line": 29
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::end_season",
+        "file": "src/progression/season.rs",
+        "line": 84
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::get_season",
+        "file": "src/progression/season.rs",
+        "line": 163
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::get_season_archive",
+        "file": "src/progression/season.rs",
+        "line": 214
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionTransaction::new",
+        "file": "src/progression/store.rs",
+        "line": 339
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionTransaction::add_counter",
+        "file": "src/progression/store.rs",
+        "line": 347
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionTransaction::set_attribute_base",
+        "file": "src/progression/store.rs",
+        "line": 365
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionTransaction::set_resource",
+        "file": "src/progression/store.rs",
+        "line": 375
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionTransaction::add_modifier",
+        "file": "src/progression/store.rs",
+        "line": 384
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionTransaction::set_quest_objective",
+        "file": "src/progression/store.rs",
+        "line": 398
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionTransaction::add_experience",
+        "file": "src/progression/store.rs",
+        "line": 415
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionTransaction::submit_score",
+        "file": "src/progression/store.rs",
+        "line": 424
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionTransaction::operations",
+        "file": "src/progression/store.rs",
+        "line": 433
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::new",
+        "file": "src/progression/store.rs",
+        "line": 511
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::id",
+        "file": "src/progression/store.rs",
+        "line": 570
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::revision",
+        "file": "src/progression/store.rs",
+        "line": 575
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::schema_version",
+        "file": "src/progression/store.rs",
+        "line": 580
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::definition_hash",
+        "file": "src/progression/store.rs",
+        "line": 585
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::time",
+        "file": "src/progression/store.rs",
+        "line": 612
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::advance_time",
+        "file": "src/progression/store.rs",
+        "line": 625
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::clear",
+        "file": "src/progression/store.rs",
+        "line": 640
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::stats",
+        "file": "src/progression/store.rs",
+        "line": 656
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::validate",
+        "file": "src/progression/store.rs",
+        "line": 687
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::validate_condition",
+        "file": "src/progression/store.rs",
+        "line": 748
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::evaluate_condition",
+        "file": "src/progression/store.rs",
+        "line": 761
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::explain_condition",
+        "file": "src/progression/store.rs",
+        "line": 771
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::export_snapshot",
+        "file": "src/progression/store.rs",
+        "line": 781
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::from_snapshot",
+        "file": "src/progression/store.rs",
+        "line": 796
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::create_profile",
+        "file": "src/progression/store.rs",
+        "line": 802
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::update_profile",
+        "file": "src/progression/store.rs",
+        "line": 863
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::add_profile_tag",
+        "file": "src/progression/store.rs",
+        "line": 917
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::set_profile_metadata",
+        "file": "src/progression/store.rs",
+        "line": 947
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::has_profile",
+        "file": "src/progression/store.rs",
+        "line": 980
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::get_profile_snapshot",
+        "file": "src/progression/store.rs",
+        "line": 985
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::define_profile_template",
+        "file": "src/progression/store.rs",
+        "line": 1036
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::apply_profile_template",
+        "file": "src/progression/store.rs",
+        "line": 1048
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::define_trait",
+        "file": "src/progression/store.rs",
+        "line": 1065
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::apply_trait",
+        "file": "src/progression/store.rs",
+        "line": 1077
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::remove_trait",
+        "file": "src/progression/store.rs",
+        "line": 1129
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::has_trait",
+        "file": "src/progression/store.rs",
+        "line": 1155
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::define_perk",
+        "file": "src/progression/store.rs",
+        "line": 1173
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::define_skill",
+        "file": "src/progression/store.rs",
+        "line": 1202
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::learn_skill",
+        "file": "src/progression/store.rs",
+        "line": 1237
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::use_skill",
+        "file": "src/progression/store.rs",
+        "line": 1276
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::get_skill_cooldown",
+        "file": "src/progression/store.rs",
+        "line": 1369
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::acquire_perk",
+        "file": "src/progression/store.rs",
+        "line": 1392
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::has_perk",
+        "file": "src/progression/store.rs",
+        "line": 1441
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::define_counter",
+        "file": "src/progression/store.rs",
+        "line": 1450
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::define_attribute",
+        "file": "src/progression/store.rs",
+        "line": 1461
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::define_resource",
+        "file": "src/progression/store.rs",
+        "line": 1473
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::define_level_track",
+        "file": "src/progression/store.rs",
+        "line": 1490
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::define_derived_value",
+        "file": "src/progression/store.rs",
+        "line": 1502
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::define_quest",
+        "file": "src/progression/store.rs",
+        "line": 1520
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::get_derived_value",
+        "file": "src/progression/store.rs",
+        "line": 1588
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::explain_derived_value",
+        "file": "src/progression/store.rs",
+        "line": 1601
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::validate_derived_values",
+        "file": "src/progression/store.rs",
+        "line": 1629
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::define_achievement",
+        "file": "src/progression/store.rs",
+        "line": 1643
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::add_counter",
+        "file": "src/progression/store.rs",
+        "line": 1691
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::unlock_achievement",
+        "file": "src/progression/store.rs",
+        "line": 1806
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::get_achievement",
+        "file": "src/progression/store.rs",
+        "line": 1824
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::get_pending_rewards",
+        "file": "src/progression/store.rs",
+        "line": 1866
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::claim_reward",
+        "file": "src/progression/store.rs",
+        "line": 1883
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::mark_reward_applied",
+        "file": "src/progression/store.rs",
+        "line": 1916
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::reject_reward",
+        "file": "src/progression/store.rs",
+        "line": 1951
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::get_counter",
+        "file": "src/progression/store.rs",
+        "line": 1985
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::set_attribute_base",
+        "file": "src/progression/store.rs",
+        "line": 2028
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::get_attribute",
+        "file": "src/progression/store.rs",
+        "line": 2089
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::explain_attribute",
+        "file": "src/progression/store.rs",
+        "line": 2127
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::add_modifier",
+        "file": "src/progression/store.rs",
+        "line": 2176
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::set_resource",
+        "file": "src/progression/store.rs",
+        "line": 2255
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::add_resource",
+        "file": "src/progression/store.rs",
+        "line": 2286
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::spend_resource",
+        "file": "src/progression/store.rs",
+        "line": 2308
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::get_resource",
+        "file": "src/progression/store.rs",
+        "line": 2356
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::add_experience",
+        "file": "src/progression/store.rs",
+        "line": 2398
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::set_experience",
+        "file": "src/progression/store.rs",
+        "line": 2462
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::get_level",
+        "file": "src/progression/store.rs",
+        "line": 2505
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::set_level",
+        "file": "src/progression/store.rs",
+        "line": 2514
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::accept_quest",
+        "file": "src/progression/store.rs",
+        "line": 2582
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::add_quest_journal_entry",
+        "file": "src/progression/store.rs",
+        "line": 2741
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::list_quest_journal_entries",
+        "file": "src/progression/store.rs",
+        "line": 2794
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::set_quest_objective",
+        "file": "src/progression/store.rs",
+        "line": 2822
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::set_quest_objective_status",
+        "file": "src/progression/store.rs",
+        "line": 2995
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::set_quest_objective_visibility",
+        "file": "src/progression/store.rs",
+        "line": 3081
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::get_quest_state",
+        "file": "src/progression/store.rs",
+        "line": 3115
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::drain_events",
+        "file": "src/progression/store.rs",
+        "line": 3261
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::update",
+        "file": "src/progression/store.rs",
+        "line": 3266
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::list_events",
+        "file": "src/progression/store.rs",
+        "line": 3291
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::export_changes_since",
+        "file": "src/progression/store.rs",
+        "line": 3301
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::apply_changeset",
+        "file": "src/progression/store.rs",
+        "line": 3310
       },
       {
         "module": "province",
@@ -20733,37 +21519,37 @@
         "module": "runtime",
         "name": "ModulesConfig::apply_headless_profile",
         "file": "src/runtime/config.rs",
-        "line": 373
+        "line": 376
       },
       {
         "module": "runtime",
         "name": "ModulesConfig::validate_and_fix",
         "file": "src/runtime/config.rs",
-        "line": 395
+        "line": 398
       },
       {
         "module": "runtime",
         "name": "Config::load",
         "file": "src/runtime/config.rs",
-        "line": 607
+        "line": 611
       },
       {
         "module": "runtime",
         "name": "Config::load_from_conf_toml",
         "file": "src/runtime/config.rs",
-        "line": 616
+        "line": 620
       },
       {
         "module": "runtime",
         "name": "Config::load_from_conf_toml_with_options",
         "file": "src/runtime/config.rs",
-        "line": 630
+        "line": 634
       },
       {
         "module": "runtime",
         "name": "Config::validate",
         "file": "src/runtime/config.rs",
-        "line": 669
+        "line": 673
       },
       {
         "module": "runtime",
@@ -27051,12 +27837,6 @@
       },
       {
         "module": "audio",
-        "name": "BeatClock::tap",
-        "file": "src/audio/beat_clock.rs",
-        "line": 385
-      },
-      {
-        "module": "audio",
         "name": "BeatClock::schedule_at",
         "file": "src/audio/beat_clock.rs",
         "line": 407
@@ -31059,12 +31839,6 @@
       },
       {
         "module": "dsp",
-        "name": "Synthesizer::set_envelope",
-        "file": "src/dsp/synthesis.rs",
-        "line": 202
-      },
-      {
-        "module": "dsp",
         "name": "waveform_to_png",
         "file": "src/dsp/visualizer.rs",
         "line": 89
@@ -32385,12 +33159,6 @@
       },
       {
         "module": "globe",
-        "name": "FogMask::set_state",
-        "file": "src/globe/fog.rs",
-        "line": 51
-      },
-      {
-        "module": "globe",
         "name": "FogMask::explored_ids",
         "file": "src/globe/fog.rs",
         "line": 101
@@ -32400,12 +33168,6 @@
         "name": "FogStore::explored_ids",
         "file": "src/globe/fog.rs",
         "line": 220
-      },
-      {
-        "module": "globe",
-        "name": "FogStore::set_state",
-        "file": "src/globe/fog.rs",
-        "line": 231
       },
       {
         "module": "globe",
@@ -33501,12 +34263,6 @@
       },
       {
         "module": "learning",
-        "name": "QLearner::set_q",
-        "file": "src/learning/qlearner.rs",
-        "line": 193
-      },
-      {
-        "module": "learning",
         "name": "QLearner::try_set_q",
         "file": "src/learning/qlearner.rs",
         "line": 198
@@ -33516,12 +34272,6 @@
         "name": "QLearner::validate_hyperparams",
         "file": "src/learning/qlearner.rs",
         "line": 225
-      },
-      {
-        "module": "learning",
-        "name": "LearningRng::from_snapshot",
-        "file": "src/learning/rng.rs",
-        "line": 36
       },
       {
         "module": "learning",
@@ -33581,31 +34331,31 @@
         "module": "root",
         "name": "is_lurek_archive_path",
         "file": "src/lib.rs",
-        "line": 172
+        "line": 174
       },
       {
         "module": "root",
         "name": "cli_startup_main_path",
         "file": "src/lib.rs",
-        "line": 179
+        "line": 181
       },
       {
         "module": "root",
         "name": "lurek_run_desktop",
         "file": "src/lib.rs",
-        "line": 202
+        "line": 204
       },
       {
         "module": "root",
         "name": "lurek_run",
         "file": "src/lib.rs",
-        "line": 209
+        "line": 211
       },
       {
         "module": "root",
         "name": "build_builtin_cli_script",
         "file": "src/lib.rs",
-        "line": 557
+        "line": 559
       },
       {
         "module": "light",
@@ -34337,7 +35087,7 @@
         "module": "lua_api",
         "name": "create_headless_vm",
         "file": "src/lua_api/register.rs",
-        "line": 161
+        "line": 162
       },
       {
         "module": "lua_api",
@@ -35178,12 +35928,6 @@
         "name": "RandomGenerator::get_seed",
         "file": "src/math/random.rs",
         "line": 56
-      },
-      {
-        "module": "math",
-        "name": "RandomGenerator::set_state",
-        "file": "src/math/random.rs",
-        "line": 64
       },
       {
         "module": "math",
@@ -36546,12 +37290,6 @@
         "name": "emission_shape_offset",
         "file": "src/particle/emission.rs",
         "line": 68
-      },
-      {
-        "module": "particle",
-        "name": "ParticleSystem::seeded",
-        "file": "src/particle/emitter.rs",
-        "line": 449
       },
       {
         "module": "particle",
@@ -39069,12 +39807,6 @@
       },
       {
         "module": "procgen",
-        "name": "Lcg::set_state",
-        "file": "src/procgen/lcg.rs",
-        "line": 65
-      },
-      {
-        "module": "procgen",
         "name": "Lcg::next_bounded_u32",
         "file": "src/procgen/lcg.rs",
         "line": 70
@@ -39192,6 +39924,390 @@
         "name": "generate_world_graph",
         "file": "src/procgen/world_graph.rs",
         "line": 204
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::set_challenge_progress",
+        "file": "src/progression/challenge.rs",
+        "line": 129
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::validate_challenge_template_definition",
+        "file": "src/progression/challenge.rs",
+        "line": 289
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::evaluate_counter_challenges",
+        "file": "src/progression/challenge.rs",
+        "line": 334
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::expire_active_challenges",
+        "file": "src/progression/challenge.rs",
+        "line": 367
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::list_collections",
+        "file": "src/progression/collection.rs",
+        "line": 114
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::validate_collection_definition",
+        "file": "src/progression/collection.rs",
+        "line": 125
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::sync_collections_for_achievement",
+        "file": "src/progression/collection.rs",
+        "line": 214
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::refresh_counter_leaderboards",
+        "file": "src/progression/leaderboard.rs",
+        "line": 249
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::sync_counter_bound_leaderboards_silent",
+        "file": "src/progression/leaderboard.rs",
+        "line": 264
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::validate_change_records",
+        "file": "src/progression/persistence.rs",
+        "line": 385
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::validate_population_template",
+        "file": "src/progression/population.rs",
+        "line": 20
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::update_population",
+        "file": "src/progression/population.rs",
+        "line": 88
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::simulate_population_until",
+        "file": "src/progression/population.rs",
+        "line": 215
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::pause_population",
+        "file": "src/progression/population.rs",
+        "line": 232
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::resume_population",
+        "file": "src/progression/population.rs",
+        "line": 250
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::remove_population",
+        "file": "src/progression/population.rs",
+        "line": 268
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::regenerate_population",
+        "file": "src/progression/population.rs",
+        "line": 304
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::get_population_statistics",
+        "file": "src/progression/population.rs",
+        "line": 352
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::validate_population_template_definition",
+        "file": "src/progression/population.rs",
+        "line": 526
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::get_prestige",
+        "file": "src/progression/prestige.rs",
+        "line": 102
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::list_prestiges",
+        "file": "src/progression/prestige.rs",
+        "line": 125
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::validate_prestige_definition",
+        "file": "src/progression/prestige.rs",
+        "line": 141
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::validate_profile_template_definition",
+        "file": "src/progression/profile.rs",
+        "line": 7
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::validate_trait_definition",
+        "file": "src/progression/profile.rs",
+        "line": 49
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::apply_profile_template_inner",
+        "file": "src/progression/profile.rs",
+        "line": 67
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::list_rivals",
+        "file": "src/progression/rival.rs",
+        "line": 89
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::capture_rival_relations",
+        "file": "src/progression/rival.rs",
+        "line": 160
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::emit_rival_overtake_events",
+        "file": "src/progression/rival.rs",
+        "line": 195
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::list_seasons",
+        "file": "src/progression/season.rs",
+        "line": 186
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::validate_season_definition",
+        "file": "src/progression/season.rs",
+        "line": 239
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionTransaction::set_counter",
+        "file": "src/progression/store.rs",
+        "line": 356
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::set_time",
+        "file": "src/progression/store.rs",
+        "line": 617
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::compile_condition",
+        "file": "src/progression/store.rs",
+        "line": 738
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::load_snapshot",
+        "file": "src/progression/store.rs",
+        "line": 786
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::ensure_profile",
+        "file": "src/progression/store.rs",
+        "line": 850
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::remove_profile",
+        "file": "src/progression/store.rs",
+        "line": 895
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::remove_profile_tag",
+        "file": "src/progression/store.rs",
+        "line": 932
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::remove_profile_metadata",
+        "file": "src/progression/store.rs",
+        "line": 966
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::list_profiles",
+        "file": "src/progression/store.rs",
+        "line": 1016
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::count_profiles",
+        "file": "src/progression/store.rs",
+        "line": 1031
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::list_traits",
+        "file": "src/progression/store.rs",
+        "line": 1164
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::get_skill_level",
+        "file": "src/progression/store.rs",
+        "line": 1346
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::remove_derived_value",
+        "file": "src/progression/store.rs",
+        "line": 1515
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::set_counter",
+        "file": "src/progression/store.rs",
+        "line": 1757
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::list_achievements",
+        "file": "src/progression/store.rs",
+        "line": 1853
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::get_counter_state",
+        "file": "src/progression/store.rs",
+        "line": 2003
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::list_counters",
+        "file": "src/progression/store.rs",
+        "line": 2015
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::set_attribute_bounds",
+        "file": "src/progression/store.rs",
+        "line": 2059
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::add_attribute_base",
+        "file": "src/progression/store.rs",
+        "line": 2078
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::get_attribute_state",
+        "file": "src/progression/store.rs",
+        "line": 2162
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::remove_modifier",
+        "file": "src/progression/store.rs",
+        "line": 2212
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::list_modifiers",
+        "file": "src/progression/store.rs",
+        "line": 2232
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::can_spend_resource",
+        "file": "src/progression/store.rs",
+        "line": 2297
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::refill_resource",
+        "file": "src/progression/store.rs",
+        "line": 2334
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::get_experience",
+        "file": "src/progression/store.rs",
+        "line": 2477
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::get_experience_to_next_level",
+        "file": "src/progression/store.rs",
+        "line": 2559
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::complete_quest",
+        "file": "src/progression/store.rs",
+        "line": 2677
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::fail_quest",
+        "file": "src/progression/store.rs",
+        "line": 2686
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::reveal_quest",
+        "file": "src/progression/store.rs",
+        "line": 2709
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::refresh_quest_lifecycle",
+        "file": "src/progression/store.rs",
+        "line": 2813
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::begin_transaction",
+        "file": "src/progression/store.rs",
+        "line": 3178
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::commit_transaction",
+        "file": "src/progression/store.rs",
+        "line": 3183
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::clear_events",
+        "file": "src/progression/store.rs",
+        "line": 3296
+      },
+      {
+        "module": "progression",
+        "name": "ProgressionStore::debug_snapshot",
+        "file": "src/progression/store.rs",
+        "line": 3339
       },
       {
         "module": "province",
@@ -40475,7 +41591,7 @@
         "module": "runtime",
         "name": "Config::validate_with_mode",
         "file": "src/runtime/config.rs",
-        "line": 674
+        "line": 678
       },
       {
         "module": "runtime",
@@ -44608,8 +45724,8 @@
     ]
   },
   "lua": {
-    "total": 6748,
-    "covered": 6748,
+    "total": 7008,
+    "covered": 7008,
     "uncovered": 0,
     "coverage_pct": 100.0,
     "covered_items": [
@@ -78457,6 +79573,1826 @@
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
         "line": 2908
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.define",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 863
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.get",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 901
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.getBase",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 915
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.setBase",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 929
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.setMin",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 943
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.setMax",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 960
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.getMin",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 977
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.getMax",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 986
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.setRegen",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 995
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.getRegen",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1005
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.getStatNames",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1014
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.addBuff",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1032
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.removeBuff",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1064
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.clearBuffs",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1078
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.getBuffCount",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1103
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.applyTraitBuffs",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1125
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.removeTraitBuffs",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1141
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.hasTrait",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1157
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.getActiveTraits",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1171
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.getBuffs",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1188
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.addXP",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1222
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.getXP",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1243
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.setXP",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1257
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.getLevel",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1281
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.setLevel",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1295
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.setLevelThresholds",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1319
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.defineSkill",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1363
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.learnSkill",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1384
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.useSkill",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1398
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.getSkillLevel",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1414
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.getCooldownRemaining",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1428
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.definePerk",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1444
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.acquirePerk",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1484
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.hasPerk",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1498
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.setActionPoints",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1512
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.getActionPoints",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1542
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.spendActionPoints",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1562
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.recoverActionPoints",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1579
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.beginTurn",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1596
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.setMorale",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1611
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.getMorale",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1637
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.adjustMorale",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1655
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.setPanicThreshold",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1675
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.setBerserkThreshold",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1683
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.checkMorale",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1691
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.setFlag",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1729
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.clearFlag",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1737
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.hasFlag",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1745
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.getFlags",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1752
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.setResistance",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1772
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.getResistance",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1780
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.applyDamage",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1788
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.recordUse",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1810
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.getUseCount",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1819
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.setEncumbrance",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1827
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.getEncumbrance",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1836
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.isEncumbered",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1849
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.setInitiative",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1859
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.getInitiative",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1866
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.update",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1874
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.snapshot",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1887
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.restore",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1919
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.type",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1965
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.typeOf",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1969
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.addQuest",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 1994
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.questCount",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2068
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.questIds",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2081
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.removeQuest",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2094
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.startQuest",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2119
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.completeQuest",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2133
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.failQuest",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2147
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.advanceObjective",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2161
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.addJournalEntry",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2206
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.getQuest",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2240
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.questsWithStatus",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2270
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.activeIds",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2290
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.completedIds",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2297
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.failedIds",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2304
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.activeCount",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2312
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.completedCount",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2320
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.setQuestReward",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2329
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.getQuestReward",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2338
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.resetQuest",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2349
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.type",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2366
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.typeOf",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2370
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionProfile:getId",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2381
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionProfile:type",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2382
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionProfile:typeOf",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2383
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionTransaction:addCounter",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2391
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionTransaction:setCounter",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2401
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionTransaction:setAttributeBase",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2411
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionTransaction:setResource",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2421
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionTransaction:addModifier",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2431
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionTransaction:setQuestObjective",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2443
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionTransaction:addExperience",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2453
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionTransaction:commit",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2463
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionTransaction:rollback",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2477
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionTransaction:type",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2481
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionTransaction:typeOf",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2482
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:getId",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2490
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:getRevision",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2493
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:getSchemaVersion",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2496
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:getDefinitionHash",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2499
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:getTime",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2502
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:setTime",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2503
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:advanceTime",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2509
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:update",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2515
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:stats",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2527
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:clear",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2530
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:validate",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2534
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:compileCondition",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2537
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:validateCondition",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2546
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:evaluateCondition",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2554
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:explainCondition",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2564
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:debugSnapshot",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2577
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:exportSnapshot",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2580
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:exportChangesSince",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2585
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:exportChangeset",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2591
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:loadSnapshot",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2609
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:applyChangeset",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2615
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:applyChangesetEnvelope",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2627
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:ackChangesThrough",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2656
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:compactChanges",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2664
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:drainEvents",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2673
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:clearEvents",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2679
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:createProfile",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2683
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:ensureProfile",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2693
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:hasProfile",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2704
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:getProfile",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2707
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:updateProfile",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2716
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:removeProfile",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2725
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:listProfiles",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2734
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:countProfiles",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2737
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:addProfileTag",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2740
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:removeProfileTag",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2746
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:setProfileMetadata",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2755
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:removeProfileMetadata",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2764
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:defineCounter",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2773
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:addCounter",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2782
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:setCounter",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2792
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:getCounter",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2802
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:getCounterState",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2812
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:listCounters",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2825
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:defineAttribute",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2837
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:getAttribute",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2846
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:getAttributeState",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2856
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:setAttributeBase",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2869
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:addAttributeBase",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2879
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:explainAttribute",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2889
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:addModifier",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2908
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:removeModifier",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2918
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:listModifiers",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2928
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:defineResource",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2940
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:getResource",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2949
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:setResource",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2962
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:addResource",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2972
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:spendResource",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2982
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:canSpendResource",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 2992
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:refillResource",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3002
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:defineLevelTrack",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3012
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:defineDerivedValue",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3021
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:defineProfileTemplate",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3030
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:defineTrait",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3039
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:applyTrait",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3048
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:removeTrait",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3058
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:hasTrait",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3068
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:listTraits",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3078
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:definePerk",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3093
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:defineSkill",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3102
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:learnSkill",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3111
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:useSkill",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3121
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:getSkillLevel",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3134
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:getSkillCooldown",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3144
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:acquirePerk",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3154
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:hasPerk",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3164
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:applyProfileTemplate",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3174
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:defineLeaderboard",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3187
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:defineSeason",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3196
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:startSeason",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3205
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:endSeason",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3221
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:getSeason",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3241
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:listSeasons",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3250
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:getSeasonArchive",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3260
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:definePrestige",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3276
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:canPrestige",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3285
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:applyPrestige",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3295
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:getPrestige",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3308
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:listPrestiges",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3321
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:defineCollection",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3333
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:collectCollectionItem",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3342
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:getCollection",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3355
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:listCollections",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3368
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:pinRival",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3380
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:getRival",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3398
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:listRivals",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3412
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:getRivalDelta",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3424
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:getActivityFeed",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3438
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:definePopulationTemplate",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3476
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:validatePopulationTemplate",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3488
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:generatePopulation",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3497
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:getPopulation",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3513
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:updatePopulation",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3522
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:simulatePopulationUntil",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3534
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:pausePopulation",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3546
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:resumePopulation",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3555
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:removePopulation",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3564
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:regeneratePopulation",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3579
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:getPopulationStatistics",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3597
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:listPopulationProfiles",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3613
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:materializePopulationProfile",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3635
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:dematerializePopulationProfile",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3647
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:removeDerivedValue",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3662
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:getDerivedValue",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3665
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:explainDerivedValue",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3675
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:validateDerivedValues",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3688
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:submitScore",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3691
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:getLeaderboardEntry",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3704
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:listLeaderboardTop",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3717
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:listLeaderboardRange",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3731
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:listLeaderboardAroundProfile",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3745
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:addExperience",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3774
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:getExperience",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3787
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:setExperience",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3800
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:getLevel",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3813
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:setLevel",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3823
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:getExperienceToNextLevel",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3836
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:defineQuest",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3846
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:defineChallengeTemplate",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3855
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:activateChallenge",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3867
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:setChallengeProgress",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3885
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:getChallenge",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3898
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:listChallenges",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3911
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:defineAchievement",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3931
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:unlockAchievement",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3940
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:getAchievement",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3953
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:listAchievements",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3966
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:getPendingRewards",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3978
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:claimReward",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 3992
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:markRewardApplied",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 4010
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:rejectReward",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 4026
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:acceptQuest",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 4044
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:revealQuest",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 4054
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:addQuestJournalEntry",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 4067
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:listQuestJournalEntries",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 4083
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:refreshQuestLifecycle",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 4101
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:completeQuest",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 4108
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:failQuest",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 4118
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:setQuestObjective",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 4128
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:setQuestObjectiveStatus",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 4141
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:setQuestObjectiveVisibility",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 4154
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:getQuestState",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 4167
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:beginTransaction",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 4180
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:type",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 4194
+      },
+      {
+        "module": "progression",
+        "lua_name": "LProgressionStore:typeOf",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 4195
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.newStore",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 4273
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.loadStore",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 4283
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.importLegacyStatsSnapshot",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 4293
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.importLegacyQuestSnapshot",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 4297
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.createLegacyStatsAdapter",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 4301
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.createLegacyQuestAdapter",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 4311
       },
       {
         "module": "province",

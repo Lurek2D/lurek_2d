@@ -1,6 +1,6 @@
 {
   "version": "auto-generated",
-  "generated": "2026-07-09",
+  "generated": "2026-07-13",
   "modules": [
     {
       "name": "agent",
@@ -22689,6 +22689,2091 @@
           ],
           "returns": "table",
           "returnType": "table",
+          "isMethod": false,
+          "objectType": null
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "progression",
+      "description": "Registers the public `lurek.progression` Lua API for deterministic offline progression state.",
+      "functions": [
+        {
+          "name": "define",
+          "fullPath": "lurek.progression.define",
+          "signature": "(this, name, base, [opts])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "base",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "get",
+          "fullPath": "lurek.progression.get",
+          "signature": "(this, name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getBase",
+          "fullPath": "lurek.progression.getBase",
+          "signature": "(this, name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "setBase",
+          "fullPath": "lurek.progression.setBase",
+          "signature": "(this, name, value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "setMin",
+          "fullPath": "lurek.progression.setMin",
+          "signature": "(this, name, value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "setMax",
+          "fullPath": "lurek.progression.setMax",
+          "signature": "(this, name, value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getMin",
+          "fullPath": "lurek.progression.getMin",
+          "signature": "(this, name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getMax",
+          "fullPath": "lurek.progression.getMax",
+          "signature": "(this, name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "setRegen",
+          "fullPath": "lurek.progression.setRegen",
+          "signature": "(this, name, value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getRegen",
+          "fullPath": "lurek.progression.getRegen",
+          "signature": "(this, name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getStatNames",
+          "fullPath": "lurek.progression.getStatNames",
+          "signature": "(this, )",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "addBuff",
+          "fullPath": "lurek.progression.addBuff",
+          "signature": "lurek.progression.addBuff()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "removeBuff",
+          "fullPath": "lurek.progression.removeBuff",
+          "signature": "(this, handle)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "handle",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "clearBuffs",
+          "fullPath": "lurek.progression.clearBuffs",
+          "signature": "(this, [stat])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "stat",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getBuffCount",
+          "fullPath": "lurek.progression.getBuffCount",
+          "signature": "(this, [stat])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "stat",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "applyTraitBuffs",
+          "fullPath": "lurek.progression.applyTraitBuffs",
+          "signature": "(this, trait_name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "trait_name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "removeTraitBuffs",
+          "fullPath": "lurek.progression.removeTraitBuffs",
+          "signature": "(this, trait_name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "trait_name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "hasTrait",
+          "fullPath": "lurek.progression.hasTrait",
+          "signature": "(this, trait_name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "trait_name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getActiveTraits",
+          "fullPath": "lurek.progression.getActiveTraits",
+          "signature": "(this, )",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getBuffs",
+          "fullPath": "lurek.progression.getBuffs",
+          "signature": "(this, [stat])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "stat",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "addXP",
+          "fullPath": "lurek.progression.addXP",
+          "signature": "(this, amount)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "amount",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getXP",
+          "fullPath": "lurek.progression.getXP",
+          "signature": "(this, )",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "setXP",
+          "fullPath": "lurek.progression.setXP",
+          "signature": "(this, value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getLevel",
+          "fullPath": "lurek.progression.getLevel",
+          "signature": "(this, )",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "setLevel",
+          "fullPath": "lurek.progression.setLevel",
+          "signature": "(this, value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "setLevelThresholds",
+          "fullPath": "lurek.progression.setLevelThresholds",
+          "signature": "(this, thresholds)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "thresholds",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "defineSkill",
+          "fullPath": "lurek.progression.defineSkill",
+          "signature": "(this, name, [opts])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "learnSkill",
+          "fullPath": "lurek.progression.learnSkill",
+          "signature": "(this, name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "useSkill",
+          "fullPath": "lurek.progression.useSkill",
+          "signature": "(this, name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getSkillLevel",
+          "fullPath": "lurek.progression.getSkillLevel",
+          "signature": "(this, name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getCooldownRemaining",
+          "fullPath": "lurek.progression.getCooldownRemaining",
+          "signature": "(this, name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "definePerk",
+          "fullPath": "lurek.progression.definePerk",
+          "signature": "(this, name, [opts])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "acquirePerk",
+          "fullPath": "lurek.progression.acquirePerk",
+          "signature": "(this, name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "hasPerk",
+          "fullPath": "lurek.progression.hasPerk",
+          "signature": "(this, name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "setActionPoints",
+          "fullPath": "lurek.progression.setActionPoints",
+          "signature": "(this, max_val)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "max_val",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getActionPoints",
+          "fullPath": "lurek.progression.getActionPoints",
+          "signature": "(this, )",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "spendActionPoints",
+          "fullPath": "lurek.progression.spendActionPoints",
+          "signature": "(this, amount)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "amount",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "recoverActionPoints",
+          "fullPath": "lurek.progression.recoverActionPoints",
+          "signature": "(this, amount)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "amount",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "beginTurn",
+          "fullPath": "lurek.progression.beginTurn",
+          "signature": "(this, )",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "setMorale",
+          "fullPath": "lurek.progression.setMorale",
+          "signature": "(this, max_val)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "max_val",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getMorale",
+          "fullPath": "lurek.progression.getMorale",
+          "signature": "(this, )",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "adjustMorale",
+          "fullPath": "lurek.progression.adjustMorale",
+          "signature": "(this, delta)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "delta",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "setPanicThreshold",
+          "fullPath": "lurek.progression.setPanicThreshold",
+          "signature": "(this, value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "setBerserkThreshold",
+          "fullPath": "lurek.progression.setBerserkThreshold",
+          "signature": "(this, value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "checkMorale",
+          "fullPath": "lurek.progression.checkMorale",
+          "signature": "(this, )",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "setFlag",
+          "fullPath": "lurek.progression.setFlag",
+          "signature": "(this, name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "clearFlag",
+          "fullPath": "lurek.progression.clearFlag",
+          "signature": "(this, name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "hasFlag",
+          "fullPath": "lurek.progression.hasFlag",
+          "signature": "(this, name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getFlags",
+          "fullPath": "lurek.progression.getFlags",
+          "signature": "(this, )",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "setResistance",
+          "fullPath": "lurek.progression.setResistance",
+          "signature": "(this, dtype, value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "dtype",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getResistance",
+          "fullPath": "lurek.progression.getResistance",
+          "signature": "(this, dtype)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "dtype",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "applyDamage",
+          "fullPath": "lurek.progression.applyDamage",
+          "signature": "(this, stat, amount, [dtype])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "stat",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "amount",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "dtype",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "recordUse",
+          "fullPath": "lurek.progression.recordUse",
+          "signature": "(this, name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getUseCount",
+          "fullPath": "lurek.progression.getUseCount",
+          "signature": "(this, name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "setEncumbrance",
+          "fullPath": "lurek.progression.setEncumbrance",
+          "signature": "(this, cur, max_val)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "cur",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "max_val",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getEncumbrance",
+          "fullPath": "lurek.progression.getEncumbrance",
+          "signature": "(this, )",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "isEncumbered",
+          "fullPath": "lurek.progression.isEncumbered",
+          "signature": "(this, )",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "setInitiative",
+          "fullPath": "lurek.progression.setInitiative",
+          "signature": "(this, value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getInitiative",
+          "fullPath": "lurek.progression.getInitiative",
+          "signature": "(this, )",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "update",
+          "fullPath": "lurek.progression.update",
+          "signature": "(this, dt)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "dt",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "snapshot",
+          "fullPath": "lurek.progression.snapshot",
+          "signature": "(this, )",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "restore",
+          "fullPath": "lurek.progression.restore",
+          "signature": "(this, snap)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "snap",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "type",
+          "fullPath": "lurek.progression.type",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "lurek.progression.typeOf",
+          "signature": "(name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "addQuest",
+          "fullPath": "lurek.progression.addQuest",
+          "signature": "(this, quest)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "quest",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "questCount",
+          "fullPath": "lurek.progression.questCount",
+          "signature": "(this, )",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "questIds",
+          "fullPath": "lurek.progression.questIds",
+          "signature": "(this, )",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "removeQuest",
+          "fullPath": "lurek.progression.removeQuest",
+          "signature": "(this, id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "startQuest",
+          "fullPath": "lurek.progression.startQuest",
+          "signature": "(this, id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "completeQuest",
+          "fullPath": "lurek.progression.completeQuest",
+          "signature": "(this, id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "failQuest",
+          "fullPath": "lurek.progression.failQuest",
+          "signature": "(this, id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "advanceObjective",
+          "fullPath": "lurek.progression.advanceObjective",
+          "signature": "lurek.progression.advanceObjective()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "addJournalEntry",
+          "fullPath": "lurek.progression.addJournalEntry",
+          "signature": "(this, quest_id, text, [tag])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "quest_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "text",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "tag",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getQuest",
+          "fullPath": "lurek.progression.getQuest",
+          "signature": "(this, id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "questsWithStatus",
+          "fullPath": "lurek.progression.questsWithStatus",
+          "signature": "(this, wanted)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "wanted",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "activeIds",
+          "fullPath": "lurek.progression.activeIds",
+          "signature": "(this, )",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "completedIds",
+          "fullPath": "lurek.progression.completedIds",
+          "signature": "(this, )",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "failedIds",
+          "fullPath": "lurek.progression.failedIds",
+          "signature": "(this, )",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "activeCount",
+          "fullPath": "lurek.progression.activeCount",
+          "signature": "(this, )",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "completedCount",
+          "fullPath": "lurek.progression.completedCount",
+          "signature": "(this, )",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "setQuestReward",
+          "fullPath": "lurek.progression.setQuestReward",
+          "signature": "(this, id, reward)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "reward",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getQuestReward",
+          "fullPath": "lurek.progression.getQuestReward",
+          "signature": "(this, id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "resetQuest",
+          "fullPath": "lurek.progression.resetQuest",
+          "signature": "(this, id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "type",
+          "fullPath": "lurek.progression.type",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "lurek.progression.typeOf",
+          "signature": "(name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newStore",
+          "fullPath": "lurek.progression.newStore",
+          "signature": "([options])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "options",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "loadStore",
+          "fullPath": "lurek.progression.loadStore",
+          "signature": "(snapshot)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "snapshot",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "importLegacyStatsSnapshot",
+          "fullPath": "lurek.progression.importLegacyStatsSnapshot",
+          "signature": "(snapshot)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "snapshot",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "importLegacyQuestSnapshot",
+          "fullPath": "lurek.progression.importLegacyQuestSnapshot",
+          "signature": "(snapshot)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "snapshot",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "createLegacyStatsAdapter",
+          "fullPath": "lurek.progression.createLegacyStatsAdapter",
+          "signature": "(store, profile, [options])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "store",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "options",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "createLegacyQuestAdapter",
+          "fullPath": "lurek.progression.createLegacyQuestAdapter",
+          "signature": "(store, profile, [options])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "store",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "options",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": false,
           "objectType": null
         }
@@ -125280,6 +127365,3856 @@
           "returnType": "nil",
           "isMethod": true,
           "objectType": "LProgressBar"
+        }
+      ]
+    },
+    {
+      "name": "LProgressionProfile",
+      "description": "",
+      "methods": [
+        {
+          "name": "getId",
+          "fullPath": "LProgressionProfile:getId",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionProfile"
+        },
+        {
+          "name": "type",
+          "fullPath": "LProgressionProfile:type",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionProfile"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LProgressionProfile:typeOf",
+          "signature": "(name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionProfile"
+        }
+      ]
+    },
+    {
+      "name": "LProgressionStore",
+      "description": "",
+      "methods": [
+        {
+          "name": "getId",
+          "fullPath": "LProgressionStore:getId",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "getRevision",
+          "fullPath": "LProgressionStore:getRevision",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "getSchemaVersion",
+          "fullPath": "LProgressionStore:getSchemaVersion",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "getDefinitionHash",
+          "fullPath": "LProgressionStore:getDefinitionHash",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "getTime",
+          "fullPath": "LProgressionStore:getTime",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "setTime",
+          "fullPath": "LProgressionStore:setTime",
+          "signature": "(seconds)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "seconds",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "advanceTime",
+          "fullPath": "LProgressionStore:advanceTime",
+          "signature": "(seconds)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "seconds",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "update",
+          "fullPath": "LProgressionStore:update",
+          "signature": "(dt, [opts])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "dt",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "stats",
+          "fullPath": "LProgressionStore:stats",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "clear",
+          "fullPath": "LProgressionStore:clear",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "validate",
+          "fullPath": "LProgressionStore:validate",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "compileCondition",
+          "fullPath": "LProgressionStore:compileCondition",
+          "signature": "(condition)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "condition",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "validateCondition",
+          "fullPath": "LProgressionStore:validateCondition",
+          "signature": "(condition)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "condition",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "evaluateCondition",
+          "fullPath": "LProgressionStore:evaluateCondition",
+          "signature": "(profile, condition)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "condition",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "explainCondition",
+          "fullPath": "LProgressionStore:explainCondition",
+          "signature": "(profile, condition)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "condition",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "debugSnapshot",
+          "fullPath": "LProgressionStore:debugSnapshot",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "exportSnapshot",
+          "fullPath": "LProgressionStore:exportSnapshot",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "exportChangesSince",
+          "fullPath": "LProgressionStore:exportChangesSince",
+          "signature": "(revision)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "revision",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "exportChangeset",
+          "fullPath": "LProgressionStore:exportChangeset",
+          "signature": "(revision, [options])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "revision",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "options",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "loadSnapshot",
+          "fullPath": "LProgressionStore:loadSnapshot",
+          "signature": "(snapshot)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "snapshot",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "applyChangeset",
+          "fullPath": "LProgressionStore:applyChangeset",
+          "signature": "(changeset)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "changeset",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "applyChangesetEnvelope",
+          "fullPath": "LProgressionStore:applyChangesetEnvelope",
+          "signature": "(changeset, [options])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "changeset",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "options",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "ackChangesThrough",
+          "fullPath": "LProgressionStore:ackChangesThrough",
+          "signature": "(revision)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "revision",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "compactChanges",
+          "fullPath": "LProgressionStore:compactChanges",
+          "signature": "(max_records)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "max_records",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "drainEvents",
+          "fullPath": "LProgressionStore:drainEvents",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "clearEvents",
+          "fullPath": "LProgressionStore:clearEvents",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "createProfile",
+          "fullPath": "LProgressionStore:createProfile",
+          "signature": "(id, [options])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "options",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "ensureProfile",
+          "fullPath": "LProgressionStore:ensureProfile",
+          "signature": "(id, [options])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "options",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "hasProfile",
+          "fullPath": "LProgressionStore:hasProfile",
+          "signature": "(id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "getProfile",
+          "fullPath": "LProgressionStore:getProfile",
+          "signature": "(id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "updateProfile",
+          "fullPath": "LProgressionStore:updateProfile",
+          "signature": "(id, [patch])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "patch",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "removeProfile",
+          "fullPath": "LProgressionStore:removeProfile",
+          "signature": "(id, [opts])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "listProfiles",
+          "fullPath": "LProgressionStore:listProfiles",
+          "signature": "([])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "countProfiles",
+          "fullPath": "LProgressionStore:countProfiles",
+          "signature": "([])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "addProfileTag",
+          "fullPath": "LProgressionStore:addProfileTag",
+          "signature": "(id, tag)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "tag",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "removeProfileTag",
+          "fullPath": "LProgressionStore:removeProfileTag",
+          "signature": "(id, tag)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "tag",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "setProfileMetadata",
+          "fullPath": "LProgressionStore:setProfileMetadata",
+          "signature": "(id, key, value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "key",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "removeProfileMetadata",
+          "fullPath": "LProgressionStore:removeProfileMetadata",
+          "signature": "(id, key)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "key",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "defineCounter",
+          "fullPath": "LProgressionStore:defineCounter",
+          "signature": "(id, definition)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "definition",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "addCounter",
+          "fullPath": "LProgressionStore:addCounter",
+          "signature": "(profile, counter_id, [amount])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "counter_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "amount",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "setCounter",
+          "fullPath": "LProgressionStore:setCounter",
+          "signature": "(profile, counter_id, value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "counter_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "getCounter",
+          "fullPath": "LProgressionStore:getCounter",
+          "signature": "(profile, counter_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "counter_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "getCounterState",
+          "fullPath": "LProgressionStore:getCounterState",
+          "signature": "(profile, counter_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "counter_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "listCounters",
+          "fullPath": "LProgressionStore:listCounters",
+          "signature": "(profile, )",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "defineAttribute",
+          "fullPath": "LProgressionStore:defineAttribute",
+          "signature": "(id, definition)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "definition",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "getAttribute",
+          "fullPath": "LProgressionStore:getAttribute",
+          "signature": "(profile, attribute_id, [mode])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "attribute_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "mode",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "getAttributeState",
+          "fullPath": "LProgressionStore:getAttributeState",
+          "signature": "(profile, attribute_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "attribute_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "setAttributeBase",
+          "fullPath": "LProgressionStore:setAttributeBase",
+          "signature": "(profile, attribute_id, value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "attribute_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "addAttributeBase",
+          "fullPath": "LProgressionStore:addAttributeBase",
+          "signature": "(profile, attribute_id, amount)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "attribute_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "amount",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "explainAttribute",
+          "fullPath": "LProgressionStore:explainAttribute",
+          "signature": "(profile, attribute_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "attribute_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "addModifier",
+          "fullPath": "LProgressionStore:addModifier",
+          "signature": "(profile, target_id, opts)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "target_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "removeModifier",
+          "fullPath": "LProgressionStore:removeModifier",
+          "signature": "(profile, handle)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "handle",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "listModifiers",
+          "fullPath": "LProgressionStore:listModifiers",
+          "signature": "(profile, )",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "defineResource",
+          "fullPath": "LProgressionStore:defineResource",
+          "signature": "(id, definition)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "definition",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "getResource",
+          "fullPath": "LProgressionStore:getResource",
+          "signature": "(profile, resource_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "resource_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "setResource",
+          "fullPath": "LProgressionStore:setResource",
+          "signature": "(profile, resource_id, value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "resource_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "addResource",
+          "fullPath": "LProgressionStore:addResource",
+          "signature": "(profile, resource_id, amount)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "resource_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "amount",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "spendResource",
+          "fullPath": "LProgressionStore:spendResource",
+          "signature": "(profile, resource_id, amount)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "resource_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "amount",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "canSpendResource",
+          "fullPath": "LProgressionStore:canSpendResource",
+          "signature": "(profile, resource_id, amount)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "resource_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "amount",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "refillResource",
+          "fullPath": "LProgressionStore:refillResource",
+          "signature": "(profile, resource_id, [amount])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "resource_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "amount",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "defineLevelTrack",
+          "fullPath": "LProgressionStore:defineLevelTrack",
+          "signature": "(id, definition)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "definition",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "defineDerivedValue",
+          "fullPath": "LProgressionStore:defineDerivedValue",
+          "signature": "(id, definition)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "definition",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "defineProfileTemplate",
+          "fullPath": "LProgressionStore:defineProfileTemplate",
+          "signature": "(id, definition)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "definition",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "defineTrait",
+          "fullPath": "LProgressionStore:defineTrait",
+          "signature": "(id, definition)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "definition",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "applyTrait",
+          "fullPath": "LProgressionStore:applyTrait",
+          "signature": "(profile, trait_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "trait_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "removeTrait",
+          "fullPath": "LProgressionStore:removeTrait",
+          "signature": "(profile, trait_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "trait_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "hasTrait",
+          "fullPath": "LProgressionStore:hasTrait",
+          "signature": "(profile, trait_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "trait_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "listTraits",
+          "fullPath": "LProgressionStore:listTraits",
+          "signature": "(profile, )",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "definePerk",
+          "fullPath": "LProgressionStore:definePerk",
+          "signature": "(id, definition)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "definition",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "defineSkill",
+          "fullPath": "LProgressionStore:defineSkill",
+          "signature": "(id, definition)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "definition",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "learnSkill",
+          "fullPath": "LProgressionStore:learnSkill",
+          "signature": "(profile, skill_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "skill_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "useSkill",
+          "fullPath": "LProgressionStore:useSkill",
+          "signature": "(profile, skill_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "skill_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "getSkillLevel",
+          "fullPath": "LProgressionStore:getSkillLevel",
+          "signature": "(profile, skill_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "skill_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "getSkillCooldown",
+          "fullPath": "LProgressionStore:getSkillCooldown",
+          "signature": "(profile, skill_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "skill_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "acquirePerk",
+          "fullPath": "LProgressionStore:acquirePerk",
+          "signature": "(profile, perk_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "perk_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "hasPerk",
+          "fullPath": "LProgressionStore:hasPerk",
+          "signature": "(profile, perk_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "perk_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "applyProfileTemplate",
+          "fullPath": "LProgressionStore:applyProfileTemplate",
+          "signature": "(profile, template_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "template_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "defineLeaderboard",
+          "fullPath": "LProgressionStore:defineLeaderboard",
+          "signature": "(id, definition)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "definition",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "defineSeason",
+          "fullPath": "LProgressionStore:defineSeason",
+          "signature": "(id, definition)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "definition",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "startSeason",
+          "fullPath": "LProgressionStore:startSeason",
+          "signature": "(id, [options])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "options",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "endSeason",
+          "fullPath": "LProgressionStore:endSeason",
+          "signature": "(id, [options])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "options",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "getSeason",
+          "fullPath": "LProgressionStore:getSeason",
+          "signature": "(id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "listSeasons",
+          "fullPath": "LProgressionStore:listSeasons",
+          "signature": "([query])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "query",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "getSeasonArchive",
+          "fullPath": "LProgressionStore:getSeasonArchive",
+          "signature": "(id, [query])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "query",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "definePrestige",
+          "fullPath": "LProgressionStore:definePrestige",
+          "signature": "(id, definition)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "definition",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "canPrestige",
+          "fullPath": "LProgressionStore:canPrestige",
+          "signature": "(profile, prestige_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "prestige_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "applyPrestige",
+          "fullPath": "LProgressionStore:applyPrestige",
+          "signature": "(profile, prestige_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "prestige_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "getPrestige",
+          "fullPath": "LProgressionStore:getPrestige",
+          "signature": "(profile, prestige_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "prestige_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "listPrestiges",
+          "fullPath": "LProgressionStore:listPrestiges",
+          "signature": "(profile, )",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "defineCollection",
+          "fullPath": "LProgressionStore:defineCollection",
+          "signature": "(id, definition)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "definition",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "collectCollectionItem",
+          "fullPath": "LProgressionStore:collectCollectionItem",
+          "signature": "(profile, collection_id, item_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "collection_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "item_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "getCollection",
+          "fullPath": "LProgressionStore:getCollection",
+          "signature": "(profile, collection_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "collection_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "listCollections",
+          "fullPath": "LProgressionStore:listCollections",
+          "signature": "(profile, )",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "pinRival",
+          "fullPath": "LProgressionStore:pinRival",
+          "signature": "(profile, rival_profile, [options])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "rival_profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "options",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "getRival",
+          "fullPath": "LProgressionStore:getRival",
+          "signature": "(profile, rival_profile)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "rival_profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "listRivals",
+          "fullPath": "LProgressionStore:listRivals",
+          "signature": "(profile, )",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "getRivalDelta",
+          "fullPath": "LProgressionStore:getRivalDelta",
+          "signature": "(profile, rival_profile)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "rival_profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "getActivityFeed",
+          "fullPath": "LProgressionStore:getActivityFeed",
+          "signature": "([query])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "query",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "definePopulationTemplate",
+          "fullPath": "LProgressionStore:definePopulationTemplate",
+          "signature": "(id, definition)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "definition",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "validatePopulationTemplate",
+          "fullPath": "LProgressionStore:validatePopulationTemplate",
+          "signature": "(id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "generatePopulation",
+          "fullPath": "LProgressionStore:generatePopulation",
+          "signature": "(template_id, [options])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "template_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "options",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "getPopulation",
+          "fullPath": "LProgressionStore:getPopulation",
+          "signature": "(handle_or_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "handle_or_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "updatePopulation",
+          "fullPath": "LProgressionStore:updatePopulation",
+          "signature": "(handle_or_id, dt, [options])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "handle_or_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "dt",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "options",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "simulatePopulationUntil",
+          "fullPath": "LProgressionStore:simulatePopulationUntil",
+          "signature": "(handle_or_id, logical_time, [options])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "handle_or_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "logical_time",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "options",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "pausePopulation",
+          "fullPath": "LProgressionStore:pausePopulation",
+          "signature": "(handle_or_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "handle_or_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "resumePopulation",
+          "fullPath": "LProgressionStore:resumePopulation",
+          "signature": "(handle_or_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "handle_or_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "removePopulation",
+          "fullPath": "LProgressionStore:removePopulation",
+          "signature": "(handle_or_id, [options])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "handle_or_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "options",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "regeneratePopulation",
+          "fullPath": "LProgressionStore:regeneratePopulation",
+          "signature": "(handle_or_id, [options])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "handle_or_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "options",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "getPopulationStatistics",
+          "fullPath": "LProgressionStore:getPopulationStatistics",
+          "signature": "(handle_or_id, [query])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "handle_or_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "query",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "listPopulationProfiles",
+          "fullPath": "LProgressionStore:listPopulationProfiles",
+          "signature": "(handle_or_id, [query])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "handle_or_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "query",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "materializePopulationProfile",
+          "fullPath": "LProgressionStore:materializePopulationProfile",
+          "signature": "(profile_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "dematerializePopulationProfile",
+          "fullPath": "LProgressionStore:dematerializePopulationProfile",
+          "signature": "(profile_id, [options])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "options",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "removeDerivedValue",
+          "fullPath": "LProgressionStore:removeDerivedValue",
+          "signature": "(id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "getDerivedValue",
+          "fullPath": "LProgressionStore:getDerivedValue",
+          "signature": "(profile, id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "explainDerivedValue",
+          "fullPath": "LProgressionStore:explainDerivedValue",
+          "signature": "(profile, id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "validateDerivedValues",
+          "fullPath": "LProgressionStore:validateDerivedValues",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "submitScore",
+          "fullPath": "LProgressionStore:submitScore",
+          "signature": "(profile, leaderboard_id, score)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "leaderboard_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "score",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "getLeaderboardEntry",
+          "fullPath": "LProgressionStore:getLeaderboardEntry",
+          "signature": "(profile, leaderboard_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "leaderboard_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "listLeaderboardTop",
+          "fullPath": "LProgressionStore:listLeaderboardTop",
+          "signature": "(leaderboard_id, [limit])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "leaderboard_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "limit",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "listLeaderboardRange",
+          "fullPath": "LProgressionStore:listLeaderboardRange",
+          "signature": "(leaderboard_id, start_rank, [limit])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "leaderboard_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "start_rank",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "limit",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "listLeaderboardAroundProfile",
+          "fullPath": "LProgressionStore:listLeaderboardAroundProfile",
+          "signature": "LProgressionStore:listLeaderboardAroundProfile()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "addExperience",
+          "fullPath": "LProgressionStore:addExperience",
+          "signature": "(profile, track_id, amount)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "track_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "amount",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "getExperience",
+          "fullPath": "LProgressionStore:getExperience",
+          "signature": "(profile, track_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "track_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "setExperience",
+          "fullPath": "LProgressionStore:setExperience",
+          "signature": "(profile, track_id, value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "track_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "getLevel",
+          "fullPath": "LProgressionStore:getLevel",
+          "signature": "(profile, track_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "track_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "setLevel",
+          "fullPath": "LProgressionStore:setLevel",
+          "signature": "(profile, track_id, level)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "track_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "level",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "getExperienceToNextLevel",
+          "fullPath": "LProgressionStore:getExperienceToNextLevel",
+          "signature": "(profile, track_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "track_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "defineQuest",
+          "fullPath": "LProgressionStore:defineQuest",
+          "signature": "(id, definition)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "definition",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "defineChallengeTemplate",
+          "fullPath": "LProgressionStore:defineChallengeTemplate",
+          "signature": "(id, definition)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "definition",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "activateChallenge",
+          "fullPath": "LProgressionStore:activateChallenge",
+          "signature": "(profile, challenge_id, [options])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "challenge_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "options",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "setChallengeProgress",
+          "fullPath": "LProgressionStore:setChallengeProgress",
+          "signature": "(profile, challenge_id, value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "challenge_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "getChallenge",
+          "fullPath": "LProgressionStore:getChallenge",
+          "signature": "(profile, challenge_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "challenge_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "listChallenges",
+          "fullPath": "LProgressionStore:listChallenges",
+          "signature": "(profile, [options])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "options",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "defineAchievement",
+          "fullPath": "LProgressionStore:defineAchievement",
+          "signature": "(id, definition)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "definition",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "unlockAchievement",
+          "fullPath": "LProgressionStore:unlockAchievement",
+          "signature": "(profile, achievement_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "achievement_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "getAchievement",
+          "fullPath": "LProgressionStore:getAchievement",
+          "signature": "(profile, achievement_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "achievement_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "listAchievements",
+          "fullPath": "LProgressionStore:listAchievements",
+          "signature": "(profile, )",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "getPendingRewards",
+          "fullPath": "LProgressionStore:getPendingRewards",
+          "signature": "(profile, )",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "claimReward",
+          "fullPath": "LProgressionStore:claimReward",
+          "signature": "(profile, reward_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "reward_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "markRewardApplied",
+          "fullPath": "LProgressionStore:markRewardApplied",
+          "signature": "(profile, reward_id, [external_receipt])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "reward_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "external_receipt",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "rejectReward",
+          "fullPath": "LProgressionStore:rejectReward",
+          "signature": "(profile, reward_id, [reason])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "reward_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "reason",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "acceptQuest",
+          "fullPath": "LProgressionStore:acceptQuest",
+          "signature": "(profile, quest_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "quest_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "revealQuest",
+          "fullPath": "LProgressionStore:revealQuest",
+          "signature": "(profile, quest_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "quest_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "addQuestJournalEntry",
+          "fullPath": "LProgressionStore:addQuestJournalEntry",
+          "signature": "(profile, quest_id, text, [tag])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "quest_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "text",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "tag",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "listQuestJournalEntries",
+          "fullPath": "LProgressionStore:listQuestJournalEntries",
+          "signature": "(profile, quest_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "quest_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "refreshQuestLifecycle",
+          "fullPath": "LProgressionStore:refreshQuestLifecycle",
+          "signature": "(profile)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "completeQuest",
+          "fullPath": "LProgressionStore:completeQuest",
+          "signature": "(profile, quest_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "quest_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "failQuest",
+          "fullPath": "LProgressionStore:failQuest",
+          "signature": "(profile, quest_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "quest_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "setQuestObjective",
+          "fullPath": "LProgressionStore:setQuestObjective",
+          "signature": "(profile, quest_id, objective_id, value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "quest_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "objective_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "setQuestObjectiveStatus",
+          "fullPath": "LProgressionStore:setQuestObjectiveStatus",
+          "signature": "(profile, quest_id, objective_id, status)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "quest_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "objective_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "status",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "setQuestObjectiveVisibility",
+          "fullPath": "LProgressionStore:setQuestObjectiveVisibility",
+          "signature": "(profile, quest_id, objective_id, visible)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "quest_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "objective_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "visible",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "getQuestState",
+          "fullPath": "LProgressionStore:getQuestState",
+          "signature": "(profile, quest_id)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "quest_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "beginTransaction",
+          "fullPath": "LProgressionStore:beginTransaction",
+          "signature": "([options])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "options",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "type",
+          "fullPath": "LProgressionStore:type",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LProgressionStore:typeOf",
+          "signature": "(name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionStore"
+        }
+      ]
+    },
+    {
+      "name": "LProgressionTransaction",
+      "description": "",
+      "methods": [
+        {
+          "name": "addCounter",
+          "fullPath": "LProgressionTransaction:addCounter",
+          "signature": "(profile, counter_id, amount)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "counter_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "amount",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionTransaction"
+        },
+        {
+          "name": "setCounter",
+          "fullPath": "LProgressionTransaction:setCounter",
+          "signature": "(profile, counter_id, value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "counter_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionTransaction"
+        },
+        {
+          "name": "setAttributeBase",
+          "fullPath": "LProgressionTransaction:setAttributeBase",
+          "signature": "(profile, attribute_id, value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "attribute_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionTransaction"
+        },
+        {
+          "name": "setResource",
+          "fullPath": "LProgressionTransaction:setResource",
+          "signature": "(profile, resource_id, value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "resource_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionTransaction"
+        },
+        {
+          "name": "addModifier",
+          "fullPath": "LProgressionTransaction:addModifier",
+          "signature": "(profile, target_id, opts)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "target_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionTransaction"
+        },
+        {
+          "name": "setQuestObjective",
+          "fullPath": "LProgressionTransaction:setQuestObjective",
+          "signature": "(profile, quest_id, objective_id, value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "quest_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "objective_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionTransaction"
+        },
+        {
+          "name": "addExperience",
+          "fullPath": "LProgressionTransaction:addExperience",
+          "signature": "(profile, track_id, amount)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "profile",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "track_id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "amount",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionTransaction"
+        },
+        {
+          "name": "commit",
+          "fullPath": "LProgressionTransaction:commit",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionTransaction"
+        },
+        {
+          "name": "rollback",
+          "fullPath": "LProgressionTransaction:rollback",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionTransaction"
+        },
+        {
+          "name": "type",
+          "fullPath": "LProgressionTransaction:type",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionTransaction"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LProgressionTransaction:typeOf",
+          "signature": "(name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressionTransaction"
         }
       ]
     },

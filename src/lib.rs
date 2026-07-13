@@ -119,6 +119,8 @@ pub mod physics;
 pub mod pipeline;
 /// Exposes the procedural generation subsystem module.
 pub mod procgen;
+/// Exposes the progression subsystem module.
+pub mod progression;
 /// Exposes the province subsystem module.
 pub mod province;
 /// Exposes the raycaster subsystem module.

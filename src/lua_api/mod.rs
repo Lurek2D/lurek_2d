@@ -114,6 +114,8 @@ pub mod physics_api;
 pub mod pipeline_api;
 /// Exposes the `lurek.procgen` binding module.
 pub mod procgen_api;
+/// Exposes the `lurek.progression` binding module.
+pub mod progression_api;
 /// Exposes the `lurek.province` binding module.
 pub mod province_api;
 /// Exposes the `lurek.raycaster` binding module.

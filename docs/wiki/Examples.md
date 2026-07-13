@@ -62,6 +62,7 @@ Examples come from `content/examples/` and show isolated `lurek.*` namespaces. A
 | [physics.lua](../blob/main/content/examples/physics.lua) | `lurek.physics` | API example |
 | [pipeline.lua](../blob/main/content/examples/pipeline.lua) | `lurek.pipeline` | API example |
 | [procgen.lua](../blob/main/content/examples/procgen.lua) | `lurek.procgen` | API example |
+| [progression.lua](../blob/main/content/examples/progression.lua) | `lurek.progression` | API example |
 | [province.lua](../blob/main/content/examples/province.lua) | `lurek.province` | API example |
 | [raycaster.lua](../blob/main/content/examples/raycaster.lua) | `lurek.raycaster` | API example |
 | [render.lua](../blob/main/content/examples/render.lua) | `lurek.render` | API example |

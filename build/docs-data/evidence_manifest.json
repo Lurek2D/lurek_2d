@@ -1089,6 +1089,21 @@
       "tests/lua/golden/test_procgen_golden.lua"
     ]
   },
+  "progression": {
+    "baseline_artifacts": [],
+    "current_artifacts": [
+      "tests/artifacts/current/progression/progression_changeset_roundtrip_perf.json",
+      "tests/artifacts/current/progression/progression_changeset_roundtrip_perf.txt",
+      "tests/artifacts/current/progression/progression_legacy_adapter_migration.json",
+      "tests/artifacts/current/progression/progression_legacy_adapter_migration.txt",
+      "tests/artifacts/current/progression/progression_population_leaderboard_perf.json",
+      "tests/artifacts/current/progression/progression_population_leaderboard_perf.txt"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_progression_evidence.lua"
+    ],
+    "golden_tests": []
+  },
   "province": {
     "baseline_artifacts": [
       "tests/artifacts/baselines/province/province_border_segments.png",

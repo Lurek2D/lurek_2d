@@ -260,6 +260,9 @@ pub struct ModulesConfig {
     pub dsp: bool,
     /// Enable physics module.
     pub physics: bool,
+    /// Enable progression module.
+    #[serde(default = "default_true")]
+    pub progression: bool,
     /// Enable render module.
     pub render: bool,
     /// Enable input module.
@@ -518,6 +521,7 @@ impl Default for Config {
                 audio: true,
                 dsp: true,
                 physics: true,
+                progression: true,
                 render: true,
                 input: true,
                 timer: true,

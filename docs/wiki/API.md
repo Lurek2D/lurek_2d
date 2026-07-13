@@ -16,17 +16,17 @@ The Wiki does not duplicate the full API reference. Use it as a map to the offic
 
 ## Official API Sources
 
-- Full Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (9992 lines)
-- LuaCATS editor stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (36760 lines)
+- Full Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (10277 lines)
+- LuaCATS editor stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (37759 lines)
 - Runtime callbacks: [docs/api/callbacks.md](../blob/main/docs/api/callbacks.md)
 - Lureksome library API: [docs/api/lureksome.md](../blob/main/docs/api/lureksome.md)
 - Machine-readable Lua API data: [build/docs-data/lua_api.json](../blob/main/build/docs-data/lua_api.json)
 
 ## Coverage
 
-- 71 modules
-- 6744 functions and methods
-- 100.0% documented
+- 72 modules
+- 7002 functions and methods
+- 96.3% documented
 
 ## Module Map
 
@@ -83,6 +83,7 @@ Use the module guides for cookbook-level orientation, then open the full API ref
 | [lurek.physics](https://lurek2d.github.io/lurek_2d/modules/physics.html) | The physics module is the engine's 2D simulation authority for users who want motion, contact, shapes, joints, and collision queries to live inside one consistent world model. |
 | [lurek.pipeline](https://lurek2d.github.io/lurek_2d/modules/pipeline.html) | The pipeline module is the engine's workflow-orchestration surface for users who want multi-step processing to behave like explicit directed workflows instead of loosely nested call sequences. |
 | [lurek.procgen](https://lurek2d.github.io/lurek_2d/modules/procgen.html) | The procgen module is the engine's procedural-content creation toolkit for users who want maps, regions, structures, names, distributions, and generated support data to be produced inside the engine from reusable algorithms. |
+| [lurek.progression](https://lurek2d.github.io/lurek_2d/modules/progression.html) | lurek.progression introduces a store-based progression model under and exposes it to Lua as lurek.progression. |
 | [lurek.province](https://lurek2d.github.io/lurek_2d/modules/province.html) | The province module is the engine's territory-region system for users who want named areas, borders, ownership, routing, and province-like gameplay state to behave as one native feature. |
 | [lurek.raycaster](https://lurek2d.github.io/lurek_2d/modules/raycaster.html) | The raycaster module is the engine's pseudo-3D first-person view system for users who want corridor shooters, dungeon crawlers, exploration views, or tactical previews built from structured 2D world data instead of from a full freeform 3D engine stack. |
 | [lurek.render](https://lurek2d.github.io/lurek_2d/modules/render.html) | The render module is the engine's central visual execution layer, responsible for turning high-level drawing intent from many other systems into concrete frame output on GPU-backed and software-backed paths. |

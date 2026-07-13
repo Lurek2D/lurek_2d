@@ -1857,6 +1857,9 @@ lurek.pipeline = {}
 ---@class lurek.procgen
 lurek.procgen = {}
 
+---@class lurek.progression
+lurek.progression = {}
+
 ---@class lurek.province
 lurek.province = {}
 
@@ -2878,6 +2881,15 @@ LProcgenGrid = {}
 --- Lua-visible typed result for procgen functions that produce a 2D scalar field.
 ---@class LProcgenScalarGrid
 LProcgenScalarGrid = {}
+
+---@class LProgressionProfile
+LProgressionProfile = {}
+
+---@class LProgressionStore
+LProgressionStore = {}
+
+---@class LProgressionTransaction
+LProgressionTransaction = {}
 
 --- Handle to a named province registry, exposing spatial queries, style mutations, rendering, and change tracking to Lua scripts.
 ---@class LProvinceRegistry
@@ -27080,6 +27092,993 @@ lurek.procgen.wfcGenerateGrid = function(opts) end
 ---@param seed? number RNG seed (default 0).
 ---@return LProcgenWorldGraphResult Table with regions and edges arrays.
 lurek.procgen.worldGraph = function(width, height, regionCount, seed) end
+
+function LProgressionProfile:getId() end
+
+function LProgressionProfile:type() end
+
+---@param name any
+function LProgressionProfile:typeOf(name) end
+
+---@param profile any
+---@param quest_id any
+function LProgressionStore:acceptQuest(profile, quest_id) end
+
+---@param revision any
+function LProgressionStore:ackChangesThrough(revision) end
+
+---@param profile any
+---@param perk_id any
+function LProgressionStore:acquirePerk(profile, perk_id) end
+
+---@param profile any
+---@param challenge_id any
+---@param options? any
+function LProgressionStore:activateChallenge(profile, challenge_id, options) end
+
+---@param profile any
+---@param attribute_id any
+---@param amount any
+function LProgressionStore:addAttributeBase(profile, attribute_id, amount) end
+
+---@param profile any
+---@param counter_id any
+---@param amount? any
+function LProgressionStore:addCounter(profile, counter_id, amount) end
+
+---@param profile any
+---@param track_id any
+---@param amount any
+function LProgressionStore:addExperience(profile, track_id, amount) end
+
+---@param profile any
+---@param target_id any
+---@param opts any
+function LProgressionStore:addModifier(profile, target_id, opts) end
+
+---@param id any
+---@param tag any
+function LProgressionStore:addProfileTag(id, tag) end
+
+---@param profile any
+---@param quest_id any
+---@param text any
+---@param tag? any
+function LProgressionStore:addQuestJournalEntry(profile, quest_id, text, tag) end
+
+---@param profile any
+---@param resource_id any
+---@param amount any
+function LProgressionStore:addResource(profile, resource_id, amount) end
+
+---@param seconds any
+function LProgressionStore:advanceTime(seconds) end
+
+---@param changeset any
+function LProgressionStore:applyChangeset(changeset) end
+
+---@param changeset any
+---@param options? any
+function LProgressionStore:applyChangesetEnvelope(changeset, options) end
+
+---@param profile any
+---@param prestige_id any
+function LProgressionStore:applyPrestige(profile, prestige_id) end
+
+---@param profile any
+---@param template_id any
+function LProgressionStore:applyProfileTemplate(profile, template_id) end
+
+---@param profile any
+---@param trait_id any
+function LProgressionStore:applyTrait(profile, trait_id) end
+
+---@param options? any
+function LProgressionStore:beginTransaction(options) end
+
+---@param profile any
+---@param prestige_id any
+function LProgressionStore:canPrestige(profile, prestige_id) end
+
+---@param profile any
+---@param resource_id any
+---@param amount any
+function LProgressionStore:canSpendResource(profile, resource_id, amount) end
+
+---@param profile any
+---@param reward_id any
+function LProgressionStore:claimReward(profile, reward_id) end
+
+function LProgressionStore:clear() end
+
+function LProgressionStore:clearEvents() end
+
+---@param profile any
+---@param collection_id any
+---@param item_id any
+function LProgressionStore:collectCollectionItem(profile, collection_id, item_id) end
+
+---@param max_records any
+function LProgressionStore:compactChanges(max_records) end
+
+---@param condition any
+function LProgressionStore:compileCondition(condition) end
+
+---@param profile any
+---@param quest_id any
+function LProgressionStore:completeQuest(profile, quest_id) end
+
+function LProgressionStore:countProfiles() end
+
+---@param id any
+---@param options? any
+function LProgressionStore:createProfile(id, options) end
+
+function LProgressionStore:debugSnapshot() end
+
+---@param id any
+---@param definition any
+function LProgressionStore:defineAchievement(id, definition) end
+
+---@param id any
+---@param definition any
+function LProgressionStore:defineAttribute(id, definition) end
+
+---@param id any
+---@param definition any
+function LProgressionStore:defineChallengeTemplate(id, definition) end
+
+---@param id any
+---@param definition any
+function LProgressionStore:defineCollection(id, definition) end
+
+---@param id any
+---@param definition any
+function LProgressionStore:defineCounter(id, definition) end
+
+---@param id any
+---@param definition any
+function LProgressionStore:defineDerivedValue(id, definition) end
+
+---@param id any
+---@param definition any
+function LProgressionStore:defineLeaderboard(id, definition) end
+
+---@param id any
+---@param definition any
+function LProgressionStore:defineLevelTrack(id, definition) end
+
+---@param id any
+---@param definition any
+function LProgressionStore:definePerk(id, definition) end
+
+---@param id any
+---@param definition any
+function LProgressionStore:definePopulationTemplate(id, definition) end
+
+---@param id any
+---@param definition any
+function LProgressionStore:definePrestige(id, definition) end
+
+---@param id any
+---@param definition any
+function LProgressionStore:defineProfileTemplate(id, definition) end
+
+---@param id any
+---@param definition any
+function LProgressionStore:defineQuest(id, definition) end
+
+---@param id any
+---@param definition any
+function LProgressionStore:defineResource(id, definition) end
+
+---@param id any
+---@param definition any
+function LProgressionStore:defineSeason(id, definition) end
+
+---@param id any
+---@param definition any
+function LProgressionStore:defineSkill(id, definition) end
+
+---@param id any
+---@param definition any
+function LProgressionStore:defineTrait(id, definition) end
+
+---@param profile_id any
+---@param options? any
+function LProgressionStore:dematerializePopulationProfile(profile_id, options) end
+
+function LProgressionStore:drainEvents() end
+
+---@param id any
+---@param options? any
+function LProgressionStore:endSeason(id, options) end
+
+---@param id any
+---@param options? any
+function LProgressionStore:ensureProfile(id, options) end
+
+---@param profile any
+---@param condition any
+function LProgressionStore:evaluateCondition(profile, condition) end
+
+---@param profile any
+---@param attribute_id any
+function LProgressionStore:explainAttribute(profile, attribute_id) end
+
+---@param profile any
+---@param condition any
+function LProgressionStore:explainCondition(profile, condition) end
+
+---@param profile any
+---@param id any
+function LProgressionStore:explainDerivedValue(profile, id) end
+
+---@param revision any
+function LProgressionStore:exportChangesSince(revision) end
+
+---@param revision any
+---@param options? any
+function LProgressionStore:exportChangeset(revision, options) end
+
+function LProgressionStore:exportSnapshot() end
+
+---@param profile any
+---@param quest_id any
+function LProgressionStore:failQuest(profile, quest_id) end
+
+---@param template_id any
+---@param options? any
+function LProgressionStore:generatePopulation(template_id, options) end
+
+---@param profile any
+---@param achievement_id any
+function LProgressionStore:getAchievement(profile, achievement_id) end
+
+---@param query? any
+function LProgressionStore:getActivityFeed(query) end
+
+---@param profile any
+---@param attribute_id any
+---@param mode? any
+function LProgressionStore:getAttribute(profile, attribute_id, mode) end
+
+---@param profile any
+---@param attribute_id any
+function LProgressionStore:getAttributeState(profile, attribute_id) end
+
+---@param profile any
+---@param challenge_id any
+function LProgressionStore:getChallenge(profile, challenge_id) end
+
+---@param profile any
+---@param collection_id any
+function LProgressionStore:getCollection(profile, collection_id) end
+
+---@param profile any
+---@param counter_id any
+function LProgressionStore:getCounter(profile, counter_id) end
+
+---@param profile any
+---@param counter_id any
+function LProgressionStore:getCounterState(profile, counter_id) end
+
+function LProgressionStore:getDefinitionHash() end
+
+---@param profile any
+---@param id any
+function LProgressionStore:getDerivedValue(profile, id) end
+
+---@param profile any
+---@param track_id any
+function LProgressionStore:getExperience(profile, track_id) end
+
+---@param profile any
+---@param track_id any
+function LProgressionStore:getExperienceToNextLevel(profile, track_id) end
+
+function LProgressionStore:getId() end
+
+---@param profile any
+---@param leaderboard_id any
+function LProgressionStore:getLeaderboardEntry(profile, leaderboard_id) end
+
+---@param profile any
+---@param track_id any
+function LProgressionStore:getLevel(profile, track_id) end
+
+---@param profile any
+function LProgressionStore:getPendingRewards(profile) end
+
+---@param handle_or_id any
+function LProgressionStore:getPopulation(handle_or_id) end
+
+---@param handle_or_id any
+---@param query? any
+function LProgressionStore:getPopulationStatistics(handle_or_id, query) end
+
+---@param profile any
+---@param prestige_id any
+function LProgressionStore:getPrestige(profile, prestige_id) end
+
+---@param id any
+function LProgressionStore:getProfile(id) end
+
+---@param profile any
+---@param quest_id any
+function LProgressionStore:getQuestState(profile, quest_id) end
+
+---@param profile any
+---@param resource_id any
+function LProgressionStore:getResource(profile, resource_id) end
+
+function LProgressionStore:getRevision() end
+
+---@param profile any
+---@param rival_profile any
+function LProgressionStore:getRival(profile, rival_profile) end
+
+---@param profile any
+---@param rival_profile any
+function LProgressionStore:getRivalDelta(profile, rival_profile) end
+
+function LProgressionStore:getSchemaVersion() end
+
+---@param id any
+function LProgressionStore:getSeason(id) end
+
+---@param id any
+---@param query? any
+function LProgressionStore:getSeasonArchive(id, query) end
+
+---@param profile any
+---@param skill_id any
+function LProgressionStore:getSkillCooldown(profile, skill_id) end
+
+---@param profile any
+---@param skill_id any
+function LProgressionStore:getSkillLevel(profile, skill_id) end
+
+function LProgressionStore:getTime() end
+
+---@param profile any
+---@param perk_id any
+function LProgressionStore:hasPerk(profile, perk_id) end
+
+---@param id any
+function LProgressionStore:hasProfile(id) end
+
+---@param profile any
+---@param trait_id any
+function LProgressionStore:hasTrait(profile, trait_id) end
+
+---@param profile any
+---@param skill_id any
+function LProgressionStore:learnSkill(profile, skill_id) end
+
+---@param profile any
+function LProgressionStore:listAchievements(profile) end
+
+---@param profile any
+---@param options? any
+function LProgressionStore:listChallenges(profile, options) end
+
+---@param profile any
+function LProgressionStore:listCollections(profile) end
+
+---@param profile any
+function LProgressionStore:listCounters(profile) end
+
+function LProgressionStore:listLeaderboardAroundProfile() end
+
+---@param leaderboard_id any
+---@param start_rank any
+---@param limit? any
+function LProgressionStore:listLeaderboardRange(leaderboard_id, start_rank, limit) end
+
+---@param leaderboard_id any
+---@param limit? any
+function LProgressionStore:listLeaderboardTop(leaderboard_id, limit) end
+
+---@param profile any
+function LProgressionStore:listModifiers(profile) end
+
+---@param handle_or_id any
+---@param query? any
+function LProgressionStore:listPopulationProfiles(handle_or_id, query) end
+
+---@param profile any
+function LProgressionStore:listPrestiges(profile) end
+
+function LProgressionStore:listProfiles() end
+
+---@param profile any
+---@param quest_id any
+function LProgressionStore:listQuestJournalEntries(profile, quest_id) end
+
+---@param profile any
+function LProgressionStore:listRivals(profile) end
+
+---@param query? any
+function LProgressionStore:listSeasons(query) end
+
+---@param profile any
+function LProgressionStore:listTraits(profile) end
+
+---@param snapshot any
+function LProgressionStore:loadSnapshot(snapshot) end
+
+---@param profile any
+---@param reward_id any
+---@param external_receipt? any
+function LProgressionStore:markRewardApplied(profile, reward_id, external_receipt) end
+
+---@param profile_id any
+function LProgressionStore:materializePopulationProfile(profile_id) end
+
+---@param handle_or_id any
+function LProgressionStore:pausePopulation(handle_or_id) end
+
+---@param profile any
+---@param rival_profile any
+---@param options? any
+function LProgressionStore:pinRival(profile, rival_profile, options) end
+
+---@param profile any
+---@param resource_id any
+---@param amount? any
+function LProgressionStore:refillResource(profile, resource_id, amount) end
+
+---@param profile any
+function LProgressionStore:refreshQuestLifecycle(profile) end
+
+---@param handle_or_id any
+---@param options? any
+function LProgressionStore:regeneratePopulation(handle_or_id, options) end
+
+---@param profile any
+---@param reward_id any
+---@param reason? any
+function LProgressionStore:rejectReward(profile, reward_id, reason) end
+
+---@param id any
+function LProgressionStore:removeDerivedValue(id) end
+
+---@param profile any
+---@param handle any
+function LProgressionStore:removeModifier(profile, handle) end
+
+---@param handle_or_id any
+---@param options? any
+function LProgressionStore:removePopulation(handle_or_id, options) end
+
+---@param id any
+---@param opts? any
+function LProgressionStore:removeProfile(id, opts) end
+
+---@param id any
+---@param key any
+function LProgressionStore:removeProfileMetadata(id, key) end
+
+---@param id any
+---@param tag any
+function LProgressionStore:removeProfileTag(id, tag) end
+
+---@param profile any
+---@param trait_id any
+function LProgressionStore:removeTrait(profile, trait_id) end
+
+---@param handle_or_id any
+function LProgressionStore:resumePopulation(handle_or_id) end
+
+---@param profile any
+---@param quest_id any
+function LProgressionStore:revealQuest(profile, quest_id) end
+
+---@param profile any
+---@param attribute_id any
+---@param value any
+function LProgressionStore:setAttributeBase(profile, attribute_id, value) end
+
+---@param profile any
+---@param challenge_id any
+---@param value any
+function LProgressionStore:setChallengeProgress(profile, challenge_id, value) end
+
+---@param profile any
+---@param counter_id any
+---@param value any
+function LProgressionStore:setCounter(profile, counter_id, value) end
+
+---@param profile any
+---@param track_id any
+---@param value any
+function LProgressionStore:setExperience(profile, track_id, value) end
+
+---@param profile any
+---@param track_id any
+---@param level any
+function LProgressionStore:setLevel(profile, track_id, level) end
+
+---@param id any
+---@param key any
+---@param value any
+function LProgressionStore:setProfileMetadata(id, key, value) end
+
+---@param profile any
+---@param quest_id any
+---@param objective_id any
+---@param value any
+function LProgressionStore:setQuestObjective(profile, quest_id, objective_id, value) end
+
+---@param profile any
+---@param quest_id any
+---@param objective_id any
+---@param status any
+function LProgressionStore:setQuestObjectiveStatus(profile, quest_id, objective_id, status) end
+
+---@param profile any
+---@param quest_id any
+---@param objective_id any
+---@param visible any
+function LProgressionStore:setQuestObjectiveVisibility(profile, quest_id, objective_id, visible) end
+
+---@param profile any
+---@param resource_id any
+---@param value any
+function LProgressionStore:setResource(profile, resource_id, value) end
+
+---@param seconds any
+function LProgressionStore:setTime(seconds) end
+
+---@param handle_or_id any
+---@param logical_time any
+---@param options? any
+function LProgressionStore:simulatePopulationUntil(handle_or_id, logical_time, options) end
+
+---@param profile any
+---@param resource_id any
+---@param amount any
+function LProgressionStore:spendResource(profile, resource_id, amount) end
+
+---@param id any
+---@param options? any
+function LProgressionStore:startSeason(id, options) end
+
+function LProgressionStore:stats() end
+
+---@param profile any
+---@param leaderboard_id any
+---@param score any
+function LProgressionStore:submitScore(profile, leaderboard_id, score) end
+
+function LProgressionStore:type() end
+
+---@param name any
+function LProgressionStore:typeOf(name) end
+
+---@param profile any
+---@param achievement_id any
+function LProgressionStore:unlockAchievement(profile, achievement_id) end
+
+---@param dt any
+---@param opts? any
+function LProgressionStore:update(dt, opts) end
+
+---@param handle_or_id any
+---@param dt any
+---@param options? any
+function LProgressionStore:updatePopulation(handle_or_id, dt, options) end
+
+---@param id any
+---@param patch? any
+function LProgressionStore:updateProfile(id, patch) end
+
+---@param profile any
+---@param skill_id any
+function LProgressionStore:useSkill(profile, skill_id) end
+
+function LProgressionStore:validate() end
+
+---@param condition any
+function LProgressionStore:validateCondition(condition) end
+
+function LProgressionStore:validateDerivedValues() end
+
+---@param id any
+function LProgressionStore:validatePopulationTemplate(id) end
+
+---@param profile any
+---@param counter_id any
+---@param amount any
+function LProgressionTransaction:addCounter(profile, counter_id, amount) end
+
+---@param profile any
+---@param track_id any
+---@param amount any
+function LProgressionTransaction:addExperience(profile, track_id, amount) end
+
+---@param profile any
+---@param target_id any
+---@param opts any
+function LProgressionTransaction:addModifier(profile, target_id, opts) end
+
+function LProgressionTransaction:commit() end
+
+function LProgressionTransaction:rollback() end
+
+---@param profile any
+---@param attribute_id any
+---@param value any
+function LProgressionTransaction:setAttributeBase(profile, attribute_id, value) end
+
+---@param profile any
+---@param counter_id any
+---@param value any
+function LProgressionTransaction:setCounter(profile, counter_id, value) end
+
+---@param profile any
+---@param quest_id any
+---@param objective_id any
+---@param value any
+function LProgressionTransaction:setQuestObjective(profile, quest_id, objective_id, value) end
+
+---@param profile any
+---@param resource_id any
+---@param value any
+function LProgressionTransaction:setResource(profile, resource_id, value) end
+
+function LProgressionTransaction:type() end
+
+---@param name any
+function LProgressionTransaction:typeOf(name) end
+
+---@param this any
+---@param name any
+lurek.progression.acquirePerk = function(this, name) end
+
+---@param this any
+lurek.progression.activeCount = function(this) end
+
+---@param this any
+lurek.progression.activeIds = function(this) end
+
+lurek.progression.addBuff = function() end
+
+---@param this any
+---@param quest_id any
+---@param text any
+---@param tag? any
+lurek.progression.addJournalEntry = function(this, quest_id, text, tag) end
+
+---@param this any
+---@param quest any
+lurek.progression.addQuest = function(this, quest) end
+
+---@param this any
+---@param amount any
+lurek.progression.addXP = function(this, amount) end
+
+---@param this any
+---@param delta any
+lurek.progression.adjustMorale = function(this, delta) end
+
+lurek.progression.advanceObjective = function() end
+
+---@param this any
+---@param stat any
+---@param amount any
+---@param dtype? any
+lurek.progression.applyDamage = function(this, stat, amount, dtype) end
+
+---@param this any
+---@param trait_name any
+lurek.progression.applyTraitBuffs = function(this, trait_name) end
+
+---@param this any
+lurek.progression.beginTurn = function(this) end
+
+---@param this any
+lurek.progression.checkMorale = function(this) end
+
+---@param this any
+---@param stat? any
+lurek.progression.clearBuffs = function(this, stat) end
+
+---@param this any
+---@param name any
+lurek.progression.clearFlag = function(this, name) end
+
+---@param this any
+---@param id any
+lurek.progression.completeQuest = function(this, id) end
+
+---@param this any
+lurek.progression.completedCount = function(this) end
+
+---@param this any
+lurek.progression.completedIds = function(this) end
+
+---@param store any
+---@param profile any
+---@param options? any
+lurek.progression.createLegacyQuestAdapter = function(store, profile, options) end
+
+---@param store any
+---@param profile any
+---@param options? any
+lurek.progression.createLegacyStatsAdapter = function(store, profile, options) end
+
+---@param this any
+---@param name any
+---@param base any
+---@param opts? any
+lurek.progression.define = function(this, name, base, opts) end
+
+---@param this any
+---@param name any
+---@param opts? any
+lurek.progression.definePerk = function(this, name, opts) end
+
+---@param this any
+---@param name any
+---@param opts? any
+lurek.progression.defineSkill = function(this, name, opts) end
+
+---@param this any
+---@param id any
+lurek.progression.failQuest = function(this, id) end
+
+---@param this any
+lurek.progression.failedIds = function(this) end
+
+---@param this any
+---@param name any
+lurek.progression.get = function(this, name) end
+
+---@param this any
+lurek.progression.getActionPoints = function(this) end
+
+---@param this any
+lurek.progression.getActiveTraits = function(this) end
+
+---@param this any
+---@param name any
+lurek.progression.getBase = function(this, name) end
+
+---@param this any
+---@param stat? any
+lurek.progression.getBuffCount = function(this, stat) end
+
+---@param this any
+---@param stat? any
+lurek.progression.getBuffs = function(this, stat) end
+
+---@param this any
+---@param name any
+lurek.progression.getCooldownRemaining = function(this, name) end
+
+---@param this any
+lurek.progression.getEncumbrance = function(this) end
+
+---@param this any
+lurek.progression.getFlags = function(this) end
+
+---@param this any
+lurek.progression.getInitiative = function(this) end
+
+---@param this any
+lurek.progression.getLevel = function(this) end
+
+---@param this any
+---@param name any
+lurek.progression.getMax = function(this, name) end
+
+---@param this any
+---@param name any
+lurek.progression.getMin = function(this, name) end
+
+---@param this any
+lurek.progression.getMorale = function(this) end
+
+---@param this any
+---@param id any
+lurek.progression.getQuest = function(this, id) end
+
+---@param this any
+---@param id any
+lurek.progression.getQuestReward = function(this, id) end
+
+---@param this any
+---@param name any
+lurek.progression.getRegen = function(this, name) end
+
+---@param this any
+---@param dtype any
+lurek.progression.getResistance = function(this, dtype) end
+
+---@param this any
+---@param name any
+lurek.progression.getSkillLevel = function(this, name) end
+
+---@param this any
+lurek.progression.getStatNames = function(this) end
+
+---@param this any
+---@param name any
+lurek.progression.getUseCount = function(this, name) end
+
+---@param this any
+lurek.progression.getXP = function(this) end
+
+---@param this any
+---@param name any
+lurek.progression.hasFlag = function(this, name) end
+
+---@param this any
+---@param name any
+lurek.progression.hasPerk = function(this, name) end
+
+---@param this any
+---@param trait_name any
+lurek.progression.hasTrait = function(this, trait_name) end
+
+---@param snapshot any
+lurek.progression.importLegacyQuestSnapshot = function(snapshot) end
+
+---@param snapshot any
+lurek.progression.importLegacyStatsSnapshot = function(snapshot) end
+
+---@param this any
+lurek.progression.isEncumbered = function(this) end
+
+---@param this any
+---@param name any
+lurek.progression.learnSkill = function(this, name) end
+
+---@param snapshot any
+lurek.progression.loadStore = function(snapshot) end
+
+---@param options? any
+lurek.progression.newStore = function(options) end
+
+---@param this any
+lurek.progression.questCount = function(this) end
+
+---@param this any
+lurek.progression.questIds = function(this) end
+
+---@param this any
+---@param wanted any
+lurek.progression.questsWithStatus = function(this, wanted) end
+
+---@param this any
+---@param name any
+lurek.progression.recordUse = function(this, name) end
+
+---@param this any
+---@param amount any
+lurek.progression.recoverActionPoints = function(this, amount) end
+
+---@param this any
+---@param handle any
+lurek.progression.removeBuff = function(this, handle) end
+
+---@param this any
+---@param id any
+lurek.progression.removeQuest = function(this, id) end
+
+---@param this any
+---@param trait_name any
+lurek.progression.removeTraitBuffs = function(this, trait_name) end
+
+---@param this any
+---@param id any
+lurek.progression.resetQuest = function(this, id) end
+
+---@param this any
+---@param snap any
+lurek.progression.restore = function(this, snap) end
+
+---@param this any
+---@param max_val any
+lurek.progression.setActionPoints = function(this, max_val) end
+
+---@param this any
+---@param name any
+---@param value any
+lurek.progression.setBase = function(this, name, value) end
+
+---@param this any
+---@param value any
+lurek.progression.setBerserkThreshold = function(this, value) end
+
+---@param this any
+---@param cur any
+---@param max_val any
+lurek.progression.setEncumbrance = function(this, cur, max_val) end
+
+---@param this any
+---@param name any
+lurek.progression.setFlag = function(this, name) end
+
+---@param this any
+---@param value any
+lurek.progression.setInitiative = function(this, value) end
+
+---@param this any
+---@param value any
+lurek.progression.setLevel = function(this, value) end
+
+---@param this any
+---@param thresholds any
+lurek.progression.setLevelThresholds = function(this, thresholds) end
+
+---@param this any
+---@param name any
+---@param value any
+lurek.progression.setMax = function(this, name, value) end
+
+---@param this any
+---@param name any
+---@param value any
+lurek.progression.setMin = function(this, name, value) end
+
+---@param this any
+---@param max_val any
+lurek.progression.setMorale = function(this, max_val) end
+
+---@param this any
+---@param value any
+lurek.progression.setPanicThreshold = function(this, value) end
+
+---@param this any
+---@param id any
+---@param reward any
+lurek.progression.setQuestReward = function(this, id, reward) end
+
+---@param this any
+---@param name any
+---@param value any
+lurek.progression.setRegen = function(this, name, value) end
+
+---@param this any
+---@param dtype any
+---@param value any
+lurek.progression.setResistance = function(this, dtype, value) end
+
+---@param this any
+---@param value any
+lurek.progression.setXP = function(this, value) end
+
+---@param this any
+lurek.progression.snapshot = function(this) end
+
+---@param this any
+---@param amount any
+lurek.progression.spendActionPoints = function(this, amount) end
+
+---@param this any
+---@param id any
+lurek.progression.startQuest = function(this, id) end
+
+lurek.progression.type = function() end
+
+lurek.progression.type = function() end
+
+---@param name any
+lurek.progression.typeOf = function(name) end
+
+---@param name any
+lurek.progression.typeOf = function(name) end
+
+---@param this any
+---@param dt any
+lurek.progression.update = function(this, dt) end
+
+---@param this any
+---@param name any
+lurek.progression.useSkill = function(this, name) end
 
 --- Returns all adjacency pairs in the registry. Each entry has `province_a` and `province_b` fields representing two neighboring provinces.
 ---@return LProvinceRegistryAdjacenciesResult Array of tables with fields: province_a (number), province_b (number).

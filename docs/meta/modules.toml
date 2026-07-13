@@ -528,6 +528,16 @@ lua_unit_test = "tests/lua/unit/test_physics_unit.lua"
 user_facing = true
 plugin_tier = "tier_2_plugin"
 
+[progression]
+tier = "feature_systems"
+source = "src/progression"
+lua_binding = "src/lua_api/progression_api.rs"
+namespace = "lurek.progression"
+example_file = "content/examples/progression.lua"
+lua_unit_test = "tests/lua/unit/test_progression_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
 [pipeline]
 tier = "feature_systems"
 source = "src/pipeline"
